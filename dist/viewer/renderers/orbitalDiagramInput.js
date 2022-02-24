@@ -15,8 +15,10 @@ export default function orbitalDiagramInput(props) {
     return null;
   }
   function deselect(e) {
-    if (e.relatedTarget?.id !== `OrbitalText${selectedRow}` && e.relatedTarget?.id !== `OrbitalRow${selectedRow}` && e.relatedTarget?.id !== "orbitaladdrow" && e.relatedTarget?.id !== "orbitalremoverow" && e.relatedTarget?.id !== "orbitaladdbox" && e.relatedTarget?.id !== "orbitaladduparrow" && e.relatedTarget?.id !== "orbitaladddownarrow" && e.relatedTarget?.id !== "orbitalremovearrow" && e.relatedTarget?.id !== "orbitalremovebox") {
-      setSelectedRow(-1);
+    if (e.relatedTarget?.id !== `orbitaladdrow${name}` && e.relatedTarget?.id !== `orbitalremoverow${name}` && e.relatedTarget?.id !== `orbitaladdbox${name}` && e.relatedTarget?.id !== `orbitaladduparrow${name}` && e.relatedTarget?.id !== `orbitaladddownarrow${name}` && e.relatedTarget?.id !== `orbitalremovearrow${name}` && e.relatedTarget?.id !== `orbitalremovebox${name}`) {
+      if (e.relatedTarget?.id !== `OrbitalText${selectedRow}${name}` && e.relatedTarget?.id !== `OrbitalRow${selectedRow}${name}` && e.relatedTarget?.id.substring(0, 10 + name.length) !== `orbitalbox${name}`) {
+        setSelectedRow(-1);
+      }
       setSelectedBox(-1);
     }
   }
@@ -33,11 +35,12 @@ export default function orbitalDiagramInput(props) {
       setRows,
       selectedBox,
       setSelectedBox,
-      deselect
+      deselect,
+      name
     }));
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("button", {
-    id: `orbitaladdrow`,
+    id: `orbitaladdrow${name}`,
     onBlur: (e) => {
       deselect(e);
     },
@@ -55,12 +58,12 @@ export default function orbitalDiagramInput(props) {
       }
     }
   }, "Add Row"), /* @__PURE__ */ React.createElement("button", {
-    id: `orbitalremoverow`,
+    id: `orbitalremoverow${name}`,
     onClick: () => {
       if (rows.length > 1) {
         let removeRowNumber = rows.length - 1 - selectedRow;
-        if (removeRowNumber === -1) {
-          removeRowNumber = rows.length - 1;
+        if (selectedRow === -1) {
+          removeRowNumber = 0;
         }
         setSelectedRow(-1);
         setSelectedBox(-1);
@@ -76,7 +79,7 @@ export default function orbitalDiagramInput(props) {
       }
     }
   }, "Remove Row"), /* @__PURE__ */ React.createElement("button", {
-    id: `orbitaladdbox`,
+    id: `orbitaladdbox${name}`,
     onBlur: (e) => {
       deselect(e);
     },
@@ -96,7 +99,7 @@ export default function orbitalDiagramInput(props) {
       }
     }
   }, "Add Box"), /* @__PURE__ */ React.createElement("button", {
-    id: `orbitalremovebox`,
+    id: `orbitalremovebox${name}`,
     onBlur: (e) => {
       deselect(e);
     },
@@ -114,7 +117,7 @@ export default function orbitalDiagramInput(props) {
       });
     }
   }, "Remove Box"), /* @__PURE__ */ React.createElement("button", {
-    id: `orbitaladduparrow`,
+    id: `orbitaladduparrow${name}`,
     onBlur: (e) => {
       deselect(e);
     },
@@ -144,7 +147,7 @@ export default function orbitalDiagramInput(props) {
       });
     }
   }, "Add Up Arrow"), /* @__PURE__ */ React.createElement("button", {
-    id: `orbitaladddownarrow`,
+    id: `orbitaladddownarrow${name}`,
     onBlur: (e) => {
       deselect(e);
     },
@@ -174,7 +177,7 @@ export default function orbitalDiagramInput(props) {
       });
     }
   }, "Add Down Arrow"), /* @__PURE__ */ React.createElement("button", {
-    id: `orbitalremovearrow`,
+    id: `orbitalremovearrow${name}`,
     onBlur: (e) => {
       deselect(e);
     },
@@ -205,8 +208,17 @@ export default function orbitalDiagramInput(props) {
     }
   }, "Remove Arrow")), rowsJSX);
 }
-function OrbitalRow({rowNumber, selectedRow, setSelectedRow, orbitalText, boxes, setRows, selectedBox, setSelectedBox, deselect}) {
-  let rowStyle = {width: "800px", height: "40px", display: "flex"};
+function OrbitalRow({rowNumber, selectedRow, setSelectedRow, orbitalText, boxes, setRows, selectedBox, setSelectedBox, deselect, name}) {
+  let rowStyle = {
+    width: "800px",
+    height: "44px",
+    display: "flex",
+    backgroundColor: "#E2E2E2",
+    marginTop: "2px",
+    marginBottom: "2px",
+    padding: "2px",
+    border: "white solid 2px"
+  };
   if (selectedRow === rowNumber) {
     rowStyle["border"] = "#1A5A99 solid 2px";
   }
@@ -219,14 +231,16 @@ function OrbitalRow({rowNumber, selectedRow, setSelectedRow, orbitalText, boxes,
     boxesJSX.push(/* @__PURE__ */ React.createElement(OrbitalBox, {
       key: `OrbitalBox${rowNumber}-${index}`,
       boxNum: index,
+      rowNumber,
       arrows: code,
       isSelected,
-      setSelectedBox
+      setSelectedBox,
+      name
     }));
   }
   return /* @__PURE__ */ React.createElement("div", {
     key: `OrbitalRow${rowNumber}`,
-    id: `OrbitalRow${rowNumber}`,
+    id: `OrbitalRow${rowNumber}${name}`,
     tabIndex: "-1",
     onClick: () => {
       if (selectedRow !== rowNumber) {
@@ -237,22 +251,21 @@ function OrbitalRow({rowNumber, selectedRow, setSelectedRow, orbitalText, boxes,
       deselect(e);
     },
     style: rowStyle
-  }, /* @__PURE__ */ React.createElement("span", {
-    style: {marginRight: "2px"}
-  }, "row ", rowNumber + 1), /* @__PURE__ */ React.createElement(OrbitalText, {
+  }, /* @__PURE__ */ React.createElement(OrbitalText, {
     orbitalText,
     setRows,
     rowNumber,
     selectedRow,
-    setSelectedRow
+    setSelectedRow,
+    name
   }), boxesJSX);
 }
-function OrbitalText({rowNumber, selectedRow, setSelectedRow, orbitalText, setRows}) {
+function OrbitalText({rowNumber, selectedRow, setSelectedRow, orbitalText, setRows, name}) {
   return /* @__PURE__ */ React.createElement("input", {
-    id: `OrbitalText${rowNumber}`,
-    style: {marginRight: "4px"},
+    id: `OrbitalText${rowNumber}${name}`,
+    style: {marginRight: "4px", height: "14px"},
     type: "text",
-    size: "2",
+    size: "4",
     value: orbitalText,
     onChange: (e) => {
       let newValue = e.target.value;
@@ -266,7 +279,7 @@ function OrbitalText({rowNumber, selectedRow, setSelectedRow, orbitalText, setRo
     }
   });
 }
-function OrbitalBox({boxNum, arrows = "", setSelectedBox, isSelected}) {
+function OrbitalBox({boxNum, arrows = "", setSelectedBox, isSelected, rowNumber, name}) {
   const firstUp = /* @__PURE__ */ React.createElement("polyline", {
     key: `orbitalboxfirstUp${boxNum}`,
     id: `firstUp${boxNum}`,
@@ -328,11 +341,14 @@ function OrbitalBox({boxNum, arrows = "", setSelectedBox, isSelected}) {
     boxWidth = 56;
   }
   let boxColor = "black";
+  let strokeWidth = "2px";
   if (isSelected) {
     boxColor = "#1A5A99";
+    strokeWidth = "6px";
   }
   return /* @__PURE__ */ React.createElement(Box, {
     key: `orbitalbox${boxNum}`,
+    id: `orbitalbox${name}${rowNumber}-${boxNum}`,
     tabIndex: "-1",
     onClick: () => {
       setSelectedBox(boxNum);
@@ -346,6 +362,6 @@ function OrbitalBox({boxNum, arrows = "", setSelectedBox, isSelected}) {
     ry: "4",
     width: boxWidth,
     height: "40",
-    style: {fill: "white", stroke: boxColor, strokeWidth: "2", fillOpacity: "1", strokeOpacity: "1"}
+    style: {fill: "white", stroke: boxColor, strokeWidth, fillOpacity: "1", strokeOpacity: "1"}
   }), arrowsJSX);
 }
