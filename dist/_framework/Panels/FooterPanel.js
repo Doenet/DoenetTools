@@ -8,6 +8,7 @@ export default function NavPanel({children, id, isInitOpen, height = 120}) {
     direction: handleDirection.UP,
     panelSize: height,
     isInitOpen,
-    id
+    id,
+    handleSize: id === "keyboard" ? 16 : null
   }, children);
 }

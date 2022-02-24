@@ -13,7 +13,6 @@ import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGrou
 import CollapseSection from "../../_reactComponents/PanelHeaderComponents/CollapseSection.js";
 import {useToast, toastType} from "../Toast.js";
 import axios from "../../_snowpack/pkg/axios.js";
-import {getSHAofContent} from "../ToolHandlers/CourseToolHandler.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {CopyToClipboard} from "../../_snowpack/pkg/react-copy-to-clipboard.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
@@ -53,19 +52,30 @@ function EditableText({text, submit}) {
   let [editingMode, setEditingMode] = useState(false);
   let [editText, setText] = useState(text);
   let displayText = text;
-  if (!editingMode && editText !== displayText) {
+  if (!editingMode) {
     displayText = editText;
+  }
+  let textSpanStyle = {width: "110px", display: "inline-block", textOverflow: "ellipsis", whiteSpace: "nowrap"};
+  if (displayText === "") {
+    displayText = " *Required";
+    textSpanStyle["border"] = "solid 2px #C1292E";
   }
   if (!editingMode) {
     return /* @__PURE__ */ React.createElement("span", {
+      style: textSpanStyle,
       onClick: () => setEditingMode(true)
     }, displayText);
   }
   return /* @__PURE__ */ React.createElement("input", {
+    autoFocus: true,
     type: "text",
-    width: "100px",
+    style: {width: "116px"},
     value: editText,
     onChange: (e) => setText(e.target.value),
+    onBlur: (e) => {
+      setEditingMode(false);
+      submit(editText);
+    },
     onKeyDown: (e) => {
       if (e.key === "Enter") {
         setEditingMode(false);
@@ -90,6 +100,21 @@ export default function SupportingFilesMenu(props) {
         if (file.contentId === contentId) {
           newSupportingFiles[index] = {...newSupportingFiles[index]};
           newSupportingFiles[index].description = description;
+        }
+      });
+      newObj.supportingFiles = newSupportingFiles;
+      return newObj;
+    });
+  }, [doenetId]);
+  const updateAsFileName = useRecoilCallback(({set}) => async (asFileName, contentId) => {
+    let {data} = await axios.get("/api/updateFileAsFileName.php", {params: {doenetId, contentId, asFileName}});
+    set(supportingFilesAndPermissionByDoenetIdSelector(doenetId), (was) => {
+      let newObj = {...was};
+      let newSupportingFiles = [...was.supportingFiles];
+      newSupportingFiles.map((file, index) => {
+        if (file.contentId === contentId) {
+          newSupportingFiles[index] = {...newSupportingFiles[index]};
+          newSupportingFiles[index].asFileName = asFileName;
         }
       });
       newObj.supportingFiles = newSupportingFiles;
@@ -127,8 +152,8 @@ export default function SupportingFilesMenu(props) {
       success = false;
     }
     files.map((file) => {
-      if (file.size >= 2e6) {
-        addToast(`File '${file.name}' is larger than 2MB. No files uploaded.`, toastType.ERROR);
+      if (file.size >= 1e6) {
+        addToast(`File '${file.name}' is larger than 1MB. No files uploaded.`, toastType.ERROR);
         success = false;
       }
     });
@@ -166,9 +191,13 @@ export default function SupportingFilesMenu(props) {
           if (numberOfFilesUploading.current < 1) {
             setUploadProgress([]);
           }
-          let {success: success2, fileName, contentId, description, asFileName, msg, userQuotaBytesAvailable: userQuotaBytesAvailable2} = data;
+          let {success: success2, fileName, contentId, asFileName, width, height, msg, userQuotaBytesAvailable: userQuotaBytesAvailable2} = data;
           if (msg) {
-            addToast(msg, toastType.ERROR);
+            if (success2) {
+              addToast(msg, toastType.INFO);
+            } else {
+              addToast(msg, toastType.ERROR);
+            }
           }
           if (success2) {
             setSupportFileInfo((was) => {
@@ -178,7 +207,9 @@ export default function SupportingFilesMenu(props) {
                 contentId,
                 fileName,
                 fileType: file.type,
-                description,
+                width,
+                height,
+                description: "",
                 asFileName
               });
               newObj.supportingFiles = newSupportingFiles;
@@ -216,22 +247,36 @@ export default function SupportingFilesMenu(props) {
     contentId,
     fileName,
     fileType,
+    width,
+    height,
     description,
     asFileName
   }) => {
     let doenetMLCode = "Error";
     let source = `doenet:cid=${contentId}`;
     if (fileType === "image/jpeg" || fileType === "image/png") {
-      doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}'/>`;
+      doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}' width='${width}' height='${height}' mimeType='${fileType}' />`;
     } else if (fileType === "text/csv") {
       doenetMLCode = `<dataset source='${source}' />`;
     }
-    supportFilesJSX.push(/* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(EditableText, {
+    let description_required_css = {};
+    supportFilesJSX.push(/* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("span", {
+      style: {width: "116px"}
+    }, "asFileName:"), /* @__PURE__ */ React.createElement(EditableText, {
+      text: asFileName,
+      submit: (text) => {
+        updateAsFileName(text, contentId);
+      }
+    })), /* @__PURE__ */ React.createElement("div", {
+      style: description_required_css
+    }, /* @__PURE__ */ React.createElement("span", {
+      style: {width: "116px"}
+    }, "description:"), /* @__PURE__ */ React.createElement(EditableText, {
       text: description,
       submit: (text) => {
         updateDescription(text, contentId);
       }
-    }), /* @__PURE__ */ React.createElement("button", {
+    })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("button", {
       onClick: () => {
         deleteFile(contentId);
       }
@@ -243,7 +288,7 @@ export default function SupportingFilesMenu(props) {
       }
     }, "Code ", /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faClipboard
-    })))));
+    })))), /* @__PURE__ */ React.createElement("hr", null)));
   });
   return /* @__PURE__ */ React.createElement("div", null, uploadingSection, /* @__PURE__ */ React.createElement("br", null), supportFilesJSX);
 }

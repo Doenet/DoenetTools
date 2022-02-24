@@ -38,8 +38,8 @@ export default class CodeViewer extends BlockComponent {
 
     let addRenderDoenetML = function ({ matchedChildren, componentAttributes }) {
 
-      if (matchedChildren.length > 0){
-        return {success: false}
+      if (matchedChildren.length > 0) {
+        return { success: false }
       }
 
 
@@ -47,13 +47,13 @@ export default class CodeViewer extends BlockComponent {
         componentType: "renderDoenetML",
         attributes: {
           codeSource: {
-            primitive:componentAttributes.codeSource
+            primitive: componentAttributes.codeSource
           }
         }
       };
 
-      if (componentAttributes.renderedName){
-        renderDoenetML.props = {name:componentAttributes.renderedName}
+      if (componentAttributes.renderedName) {
+        renderDoenetML.props = { name: componentAttributes.renderedName }
       }
 
       return {
@@ -92,11 +92,11 @@ export default class CodeViewer extends BlockComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.codeEditorParent){
-          return { setValue: { hasCodeEditorParent: true} };
-        }else{
+        if (dependencyValues.codeEditorParent) {
+          return { setValue: { hasCodeEditorParent: true } };
+        } else {
           //Default
-          return { setValue: { hasCodeEditorParent: false} };
+          return { setValue: { hasCodeEditorParent: false } };
         }
       },
 
@@ -121,15 +121,15 @@ export default class CodeViewer extends BlockComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.widthAttr){
+        if (dependencyValues.widthAttr) {
           //Author specified width
           return { setValue: { width: dependencyValues.widthAttr.stateValues.componentSize } };
-        }else if(dependencyValues.parentWidth){
+        } else if (dependencyValues.parentWidth) {
           //Parent component specified viewerWidth
           return { setValue: { width: dependencyValues.parentWidth } };
-        }else{
+        } else {
           //Default
-          return { useEssentialOrDefaultValue: {width: true} };
+          return { useEssentialOrDefaultValue: { width: true } };
         }
       },
     }
@@ -153,15 +153,15 @@ export default class CodeViewer extends BlockComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.heightAttr){
+        if (dependencyValues.heightAttr) {
           //Author specified height
           return { setValue: { height: dependencyValues.heightAttr.stateValues.componentSize } };
-        }else if(dependencyValues.parentViewerHeight){
+        } else if (dependencyValues.parentViewerHeight) {
           //Parent component specified viewerheight
           return { setValue: { height: dependencyValues.parentViewerHeight } };
-        }else{
+        } else {
           //Default
-          return { useEssentialOrDefaultValue: {height: true} };
+          return { useEssentialOrDefaultValue: { height: true } };
         }
       },
     }
@@ -197,14 +197,14 @@ export default class CodeViewer extends BlockComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.codeSourceComponentName){
-          return { setValue: { codeSource: dependencyValues.codeSourceComponentName } }; 
-        }else if(dependencyValues.codeEditorParent){
-          return { setValue: { codeSource: dependencyValues.codeEditorParent.componentName } }; 
-        }else{
-          return { setValue: { codeSource: null } }; 
+        if (dependencyValues.codeSourceComponentName) {
+          return { setValue: { codeSource: dependencyValues.codeSourceComponentName } };
+        } else if (dependencyValues.codeEditorParent) {
+          return { setValue: { codeSource: dependencyValues.codeEditorParent.componentName } };
+        } else {
+          return { setValue: { codeSource: null } };
         }
-     
+
       },
     }
 
@@ -212,24 +212,24 @@ export default class CodeViewer extends BlockComponent {
 
   }
 
-  async updateComponents(){
+  async updateComponents() {
 
     if (this.definingChildren.length === 1 &&
-      this.definingChildren[0].componentType === 'renderDoenetML'){
-        await this.coreFunctions.performAction({
-          componentName: this.definingChildren[0].componentName,
-          actionName: "updateComponents",
-          // event: {
-          //   verb: "selected",
-          //   object: {
-          //     componentName: this.componentName,
-          //     componentType: this.componentType,
-          //   },
-          // },
-            });
+      this.definingChildren[0].componentType === 'renderDoenetML') {
+      await this.coreFunctions.performAction({
+        componentName: this.definingChildren[0].componentName,
+        actionName: "updateComponents",
+        // event: {
+        //   verb: "selected",
+        //   object: {
+        //     componentName: this.componentName,
+        //     componentType: this.componentType,
+        //   },
+        // },
+      });
     }
 
-    
+
   }
 
   actions = {

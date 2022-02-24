@@ -3,7 +3,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 export default function BooleanInput(props) {
-  let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction} = useDoenetRender(props);
+  let {name, SVs, actions, ignoreUpdate, callAction} = useDoenetRender(props);
   BooleanInput.baseStateVariable = "value";
   const [rendererValue, setRendererValue] = useState(SVs.value);
   let valueWhenSetState = useRef(null);
@@ -65,12 +65,12 @@ export default function BooleanInput(props) {
         tabIndex: "0",
         disabled,
         style: checkWorkStyle,
-        onClick: () => props.callAction({
+        onClick: () => callAction({
           action: actions.submitAnswer
         }),
         onKeyPress: (e) => {
           if (e.key === "Enter") {
-            props.callAction({
+            callAction({
               action: actions.submitAnswer
             });
           }

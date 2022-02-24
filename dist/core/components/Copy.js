@@ -294,7 +294,7 @@ export default class Copy extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.contentId = {
+    stateVariableDefinitions.CID = {
       additionalStateVariablesDefined: ["doenetId"],
       returnDependencies: () => ({
         uri: {
@@ -307,31 +307,31 @@ export default class Copy extends CompositeComponent {
           dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            setValue: { contentId: null, doenetId: null }
+            setValue: { CID: null, doenetId: null }
           }
         }
 
-        let contentId = null, doenetId = null;
+        let CID = null, doenetId = null;
 
-        let result = dependencyValues.uri.match(/[:&]contentid=([^&]+)/i);
+        let result = dependencyValues.uri.match(/[:&]CID=([^&]+)/i);
         if (result) {
-          contentId = result[1];
+          CID = result[1];
         }
         result = dependencyValues.uri.match(/[:&]doenetid=([^&]+)/i);
         if (result) {
           doenetId = result[1];
         }
 
-        return { setValue: { contentId, doenetId } };
+        return { setValue: { CID, doenetId } };
       },
     };
 
 
-    stateVariableDefinitions.serializedComponentsForContentId = {
+    stateVariableDefinitions.serializedComponentsForCID = {
       returnDependencies: () => ({
-        contentId: {
+        CID: {
           dependencyType: "stateVariable",
-          variableName: "contentId"
+          variableName: "CID"
         },
         externalContentChild: {
           dependencyType: "child",
@@ -340,30 +340,30 @@ export default class Copy extends CompositeComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.contentId) {
+        if (!dependencyValues.CID) {
           return {
-            setValue: { serializedComponentsForContentId: null }
+            setValue: { serializedComponentsForCID: null }
           }
         }
         let externalContentChild = dependencyValues.externalContentChild[0];
         if (!externalContentChild) {
           return {
-            setValue: { serializedComponentsForContentId: null }
+            setValue: { serializedComponentsForCID: null }
           }
         }
         let childrenOfContent = externalContentChild.stateValues.serializedChildren;
-        let serializedComponentsForContentId = {
+        let serializedComponentsForCID = {
           componentType: "externalContent",
           state: { rendered: true },
           children: childrenOfContent,
           originalName: externalContentChild.componentName,
         }
         if (externalContentChild.stateValues.newNamespace) {
-          serializedComponentsForContentId.attributes = { newNamespace: { primitive: true } }
+          serializedComponentsForCID.attributes = { newNamespace: { primitive: true } }
         }
         return {
           setValue: {
-            serializedComponentsForContentId
+            serializedComponentsForCID
           }
         }
       }
@@ -661,9 +661,9 @@ export default class Copy extends CompositeComponent {
           dependencyType: "attributePrimitive",
           attributeName: "link"
         },
-        serializedComponentsForContentId: {
+        serializedComponentsForCID: {
           dependencyType: "stateVariable",
-          variableName: "serializedComponentsForContentId",
+          variableName: "serializedComponentsForCID",
         },
         replacementSourceIdentities: {
           dependencyType: "stateVariable",
@@ -673,7 +673,7 @@ export default class Copy extends CompositeComponent {
       definition({ dependencyValues, componentInfoObjects }) {
         let link;
         if (dependencyValues.linkAttr === null) {
-          if (dependencyValues.serializedComponentsForContentId ||
+          if (dependencyValues.serializedComponentsForCID ||
             dependencyValues.replacementSourceIdentities &&
             dependencyValues.replacementSourceIdentities.some(x =>
               componentInfoObjects.isInheritedComponentType({
@@ -714,9 +714,9 @@ export default class Copy extends CompositeComponent {
           //   dependencyType: "stateVariable",
           //   variableName: "replacementSources",
           // },
-          serializedComponentsForContentId: {
+          serializedComponentsForCID: {
             dependencyType: "stateVariable",
-            variableName: "serializedComponentsForContentId",
+            variableName: "serializedComponentsForCID",
           },
           link: {
             dependencyType: "stateVariable",
@@ -909,8 +909,8 @@ export default class Copy extends CompositeComponent {
     workspace.sourceNames = [];
     workspace.uniqueIdentifiersUsedBySource = {};
 
-    // if (component.state.contentIDChild !== undefined) {
-    //   if (!component.state.serializedComponentsForContentId) {
+    // if (component.state.CIDChild !== undefined) {
+    //   if (!component.state.serializedComponentsForCID) {
     //     return { replacements: [] };
     //   }
     // }
@@ -921,12 +921,12 @@ export default class Copy extends CompositeComponent {
 
     let assignNames = await component.stateValues.effectiveAssignNames;
 
-    let serializedComponentsForContentId = await component.stateValues.serializedComponentsForContentId;
+    let serializedComponentsForCID = await component.stateValues.serializedComponentsForCID;
 
-    if (serializedComponentsForContentId) {
+    if (serializedComponentsForCID) {
       // Note: any attributes (other than hide) specified on copy are ignored
       // when have serialized components from uri
-      let replacements = [deepClone(serializedComponentsForContentId)];
+      let replacements = [deepClone(serializedComponentsForCID)];
 
       if (replacements[0].children) {
         serializeFunctions.restrictTNamesToNamespace({
@@ -1466,8 +1466,8 @@ export default class Copy extends CompositeComponent {
 
     // console.log("Calculating replacement changes for " + component.componentName);
 
-    // if copying a contentID, no changes
-    if (await component.stateValues.serializedComponentsForContentId) {
+    // if copying a CID, no changes
+    if (await component.stateValues.serializedComponentsForCID) {
       return [];
     }
 

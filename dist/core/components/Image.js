@@ -36,6 +36,14 @@ export default class Image extends BlockComponent {
     attributes.asFileName = {
       createComponentOfType: "text",
       createStateVariable: "asFileName",
+      defaultValue: null,
+      public: true,
+      forRenderer: true,
+    };
+    attributes.mimeType = {
+      createComponentOfType: "text",
+      createStateVariable: "mimeType",
+      defaultValue: null,
       public: true,
       forRenderer: true,
     };
