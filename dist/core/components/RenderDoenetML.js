@@ -152,10 +152,9 @@ export default class RenderDoenetML extends CompositeComponent {
 
     try {
       let expandResult = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
-        contentIds: [], doenetMLs: [doenetML],
+        CIDs: [], doenetMLs: [doenetML],
         componentInfoObjects,
         flags,
-        contentIdsToDoenetMLs: component.coreFunctions.contentIdsToDoenetMLs
       });
 
       serializedComponents = expandResult.fullSerializedComponents[0];

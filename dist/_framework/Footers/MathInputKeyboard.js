@@ -4,35 +4,42 @@ import MathJax from "../../_snowpack/pkg/react-mathjax.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.js";
 import ToggleButtonGroup from "../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup.js";
+import VerticalDivider from "../../_reactComponents/PanelHeaderComponents/VerticalDivider.js";
 import {faBackspace, faArrowUp} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {useRecoilState, useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import {
   focusedMathField,
   palletRef,
-  buttonRef,
-  functionRef,
   focusedMathFieldReturn
 } from "./MathInputSelector.js";
 import {panelOpen} from "../Panels/Panel.js";
 import {doenetMainBlue} from "../../_reactComponents/PanelHeaderComponents/theme.js";
 import {useRef} from "../../_snowpack/pkg/react.js";
 const Panel = styled.div`
-  height: 230px;
+  height: 240px;
   // position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   background-color: #fff;
   color: white;
-  text-align: center;
   display: flex;
   flex-direction: row;
+  text-align: center;
   justify-content: center;
 `;
 const ContainerSection = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: no-wrap;
+  flex-basis: 27%;
+  flex-grow: 1;
+`;
+const ControlSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-wrap: no-wrap;
+  flex-basis: 19%;
 `;
 const ToggleButtonSection = styled.div`
   margin-left: auto;
@@ -43,9 +50,8 @@ const Section = styled.div`
   height: 160px;
   min-width: 100px;
   max-width: 300px;
-  margin-left: 5px;
-  margin-right: 5px;
-  /* border: 0.5px solid gray; */
+  margin-left: auto;
+  margin-right: auto;
   margin-top: auto;
   margin-bottom: auto;
   display: flex;
@@ -54,12 +60,10 @@ const Section = styled.div`
 `;
 const LettersSection = styled.div`
   height: 150px;
-  /* min-width: 100px; */
   max-width: 700px;
   flex-basis: 90%;
   margin-left: 5px;
   margin-right: 5px;
-  /* border: 0.5px solid gray; */
   margin-top: auto;
   margin-bottom: auto;
   display: flex;
@@ -69,71 +73,69 @@ const LettersSection = styled.div`
 const Button = styled.button`
   flex-basis: 23%;
   height: 30px;
-  background: ${doenetMainBlue};
-  color: white;
-  border: 0;
-  border-radius: 3px;
+  color: ${doenetMainBlue};
+  border: 2px solid ${doenetMainBlue};
+  background: white;
+  border-radius: 5px;
 `;
 const Button33 = styled.button`
   flex-basis: 30%;
   height: 30px;
-  background: ${doenetMainBlue};
-  color: white;
-  border: 0;
-  border-radius: 3px;
-`;
-const WhiteButton = styled.button`
-  flex-basis: 23%;
-  height: 30px;
-  background: white;
-  border: 2px solid black;
+  color: ${doenetMainBlue};
+  border: 2px solid ${doenetMainBlue};
   border-radius: 5px;
+  background: white;
 `;
 const White15Button = styled.button`
   flex-basis: 14%;
   margin: 1px;
   height: 30px;
-  background: white;
-  border: 2px solid black;
+  background: ${doenetMainBlue};
+  border: none;
+  color: white;
   border-radius: 5px;
 `;
 const CursorButton = styled.button`
   flex-basis: 42%;
   height: 30px;
-  background: white;
-  border: 2px solid black;
+  background: ${doenetMainBlue};
+  border: none;
+  color: white;
   border-radius: 5px;
 `;
 const DeleteButton = styled.button`
   flex-basis: 90%;
   height: 30px;
-  background: white;
-  border: 2px solid black;
+  background: ${doenetMainBlue};
+  border: none;
+  color: white;
   border-radius: 5px;
 `;
 const EnterButton = styled.button`
   flex-basis: 90%;
   height: 30px;
-  background: white;
-  border: 2px solid black;
+  background: ${doenetMainBlue};
+  border: none;
+  color: white;
   border-radius: 5px;
 `;
 const White20Button = styled.button`
   flex-basis: 19%;
   margin: 1px;
   height: 30px;
-  background: white;
-  border: 2px solid black;
+  background: ${doenetMainBlue};
+  border: none;
+  color: white;
   border-radius: 5px;
 `;
 const LetterButton = styled.button`
   flex-basis: 9%;
   margin: 1px;
   height: 30px;
-  background: ${doenetMainBlue};
-  color: white;
-  border: 0;
-  border-radius: 3px;
+  color: ${doenetMainBlue};
+  border: 2px solid ${doenetMainBlue};
+  background: white;
+  border-radius: 5px;
 `;
 export default function VirtualKeyboard() {
   const [toggleKeyboard, setToggleKeyboard] = useRecoilState(panelOpen("keyboard"));
@@ -400,40 +402,40 @@ export default function VirtualKeyboard() {
       inline: true,
       formula: "\\sin"
     })), /* @__PURE__ */ React.createElement(Button33, {
-      onClick: () => callback("write \\sin^{-1}")
+      onClick: () => callback("cmd \\cos")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
       inline: true,
-      formula: "\\sin^{-1}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
-      onClick: () => callback("cmd \\sinh")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\sinh"
+      formula: "\\cos"
     })), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\tan")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
       inline: true,
       formula: "\\tan"
     })), /* @__PURE__ */ React.createElement(Button33, {
-      onClick: () => callback("write \\tan^{-1}")
+      onClick: () => callback("write \\sin^{-1}")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
       inline: true,
-      formula: "\\tan^{-1}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
-      onClick: () => callback("cmd \\tanh")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\tanh"
-    })), /* @__PURE__ */ React.createElement(Button33, {
-      onClick: () => callback("cmd \\cos")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\cos"
+      formula: "\\sin^{-1}"
     })), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\cos^{-1}")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
       inline: true,
       formula: "\\cos^{-1}"
+    })), /* @__PURE__ */ React.createElement(Button33, {
+      onClick: () => callback("write \\tan^{-1}")
+    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
+      inline: true,
+      formula: "\\tan^{-1}"
+    })), /* @__PURE__ */ React.createElement(Button33, {
+      onClick: () => callback("cmd \\sinh")
+    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
+      inline: true,
+      formula: "\\sinh"
+    })), /* @__PURE__ */ React.createElement(Button33, {
+      onClick: () => callback("cmd \\tanh")
+    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
+      inline: true,
+      formula: "\\tanh"
     })), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\cosh")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
@@ -446,40 +448,40 @@ export default function VirtualKeyboard() {
       inline: true,
       formula: "\\csc"
     })), /* @__PURE__ */ React.createElement(Button33, {
-      onClick: () => callback("write \\csc^{-1}")
+      onClick: () => callback("cmd \\sec")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
       inline: true,
-      formula: "\\csc^{-1}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
-      onClick: () => callback("cmd \\csch")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "csch"
+      formula: "\\sec"
     })), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\cot")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
       inline: true,
       formula: "\\cot"
     })), /* @__PURE__ */ React.createElement(Button33, {
-      onClick: () => callback("write \\cot^{-1}")
+      onClick: () => callback("write \\csc^{-1}")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
       inline: true,
-      formula: "\\cot^{-1}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
-      onClick: () => callback("cmd \\coth")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\coth"
-    })), /* @__PURE__ */ React.createElement(Button33, {
-      onClick: () => callback("cmd \\sec")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\sec"
+      formula: "\\csc^{-1}"
     })), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\sec^{-1}")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
       inline: true,
       formula: "\\sec^{-1}"
+    })), /* @__PURE__ */ React.createElement(Button33, {
+      onClick: () => callback("write \\cot^{-1}")
+    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
+      inline: true,
+      formula: "\\cot^{-1}"
+    })), /* @__PURE__ */ React.createElement(Button33, {
+      onClick: () => callback("cmd \\csch")
+    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
+      inline: true,
+      formula: "csch"
+    })), /* @__PURE__ */ React.createElement(Button33, {
+      onClick: () => callback("cmd \\coth")
+    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
+      inline: true,
+      formula: "\\coth"
     })), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\sech")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
@@ -528,6 +530,7 @@ export default function VirtualKeyboard() {
       inline: true,
       formula: "10^{x}"
     })));
+    let sectionGreekNone = null;
     let sectionGreek1 = /* @__PURE__ */ React.createElement(Section, null, /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\alpha")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
@@ -745,11 +748,11 @@ export default function VirtualKeyboard() {
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
       inline: true,
       formula: "\\geq"
-    })), /* @__PURE__ */ React.createElement(WhiteButton, {
-      onClick: handleToggleLetters
+    })), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("cmd /")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
       inline: true,
-      formula: "ABC"
+      formula: "\\div"
     })), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("type sqrt")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
@@ -848,7 +851,7 @@ export default function VirtualKeyboard() {
       formula: "+"
     })));
     let sectionControl = /* @__PURE__ */ React.createElement(Section, {
-      style: {marginTop: "10px"}
+      style: {marginTop: "57px"}
     }, /* @__PURE__ */ React.createElement(CursorButton, {
       onClick: () => callback("keystroke Left")
     }, /* @__PURE__ */ React.createElement(MathJax.Node, {
@@ -867,10 +870,7 @@ export default function VirtualKeyboard() {
       onClick: () => returncallback()
     }, "Enter"), /* @__PURE__ */ React.createElement(EnterButton, {
       onClick: handleToggleLetters
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "ABC"
-    })));
+    }, "ABC"));
     return /* @__PURE__ */ React.createElement(MathJax.Provider, null, /* @__PURE__ */ React.createElement(Panel, {
       tabIndex: "0",
       ref: containerRef
@@ -880,22 +880,31 @@ export default function VirtualKeyboard() {
       value: "Greek 1"
     }), /* @__PURE__ */ React.createElement(ToggleButton, {
       value: "Greek 2"
-    }))), toggleGreek === 0 ? sectionGreek1 : toggleGreek === 1 ? sectionGreek2 : null), /* @__PURE__ */ React.createElement(ContainerSection, null, /* @__PURE__ */ React.createElement(ToggleButtonSection, null, /* @__PURE__ */ React.createElement(ToggleButtonGroup, {
+    }))), toggleGreek === 0 ? sectionGreek1 : toggleGreek === 1 ? sectionGreek2 : null), /* @__PURE__ */ React.createElement(VerticalDivider, {
+      height: "230px",
+      marginTop: "10px"
+    }), /* @__PURE__ */ React.createElement(ContainerSection, null, /* @__PURE__ */ React.createElement(ToggleButtonSection, null, /* @__PURE__ */ React.createElement(ToggleButtonGroup, {
       onClick: handleFnToggle
     }, /* @__PURE__ */ React.createElement(ToggleButton, {
-      value: "Set"
-    }), /* @__PURE__ */ React.createElement(ToggleButton, {
       value: "Trig 1"
     }), /* @__PURE__ */ React.createElement(ToggleButton, {
       value: "Trig 2"
     }), /* @__PURE__ */ React.createElement(ToggleButton, {
+      value: "Set"
+    }), /* @__PURE__ */ React.createElement(ToggleButton, {
       value: "Fn"
-    }))), toggleFn === 0 ? sectionSet : toggleFn === 1 ? sectionTrig1 : toggleFn === 2 ? sectionTrig2 : toggleFn === 3 ? sectionFn : null), /* @__PURE__ */ React.createElement(ContainerSection, null, /* @__PURE__ */ React.createElement(ToggleButtonSection, null, /* @__PURE__ */ React.createElement(ToggleButtonGroup, {
+    }))), toggleFn === 0 ? sectionTrig1 : toggleFn === 1 ? sectionTrig2 : toggleFn === 2 ? sectionSet : toggleFn === 3 ? sectionFn : null), /* @__PURE__ */ React.createElement(VerticalDivider, {
+      height: "230px",
+      marginTop: "10px"
+    }), /* @__PURE__ */ React.createElement(ContainerSection, null, /* @__PURE__ */ React.createElement(ToggleButtonSection, null, /* @__PURE__ */ React.createElement(ToggleButtonGroup, {
       onClick: handleNumpadToggle
     }, /* @__PURE__ */ React.createElement(ToggleButton, {
-      value: "xyz"
-    }), /* @__PURE__ */ React.createElement(ToggleButton, {
       value: "123"
-    }))), toggleNumpad === 0 ? sectionXYZ : toggleNumpad === 1 ? section123 : null), /* @__PURE__ */ React.createElement(ContainerSection, null, sectionControl)));
+    }), /* @__PURE__ */ React.createElement(ToggleButton, {
+      value: "xy"
+    }))), toggleNumpad === 0 ? section123 : toggleNumpad === 1 ? sectionXYZ : null), /* @__PURE__ */ React.createElement(VerticalDivider, {
+      height: "230px",
+      marginTop: "10px"
+    }), /* @__PURE__ */ React.createElement(ControlSection, null, sectionControl)));
   }
 }

@@ -6,14 +6,18 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "cidFromSHA.php";
 
-$sql = "
-SELECT screenName
-FROM user
+
+$doenetML = "
+<graph>
+  <point>(0,3)</point>
+</graph>
 ";
-$result = $conn->query($sql);
-while($row = $result->fetch_assoc()){
-  echo $row['screenName']."\n";
-}
+
+echo $doenetML;
+echo cidFromSHA(hash("sha256",$doenetML));
+
+
 $conn->close();
 ?>

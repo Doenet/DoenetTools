@@ -4,6 +4,7 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import {faChevronRight, faCog} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {atom, useRecoilCallback, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
+import Banner from "../../_reactComponents/PanelHeaderComponents/Banner.js";
 export const mainPanelClickAtom = atom({
   key: "mainPanelClickAtom",
   default: []

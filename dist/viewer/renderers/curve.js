@@ -1,12 +1,12 @@
-import React, {useContext, useEffect, useRef, useState} from "../../_snowpack/pkg/react.js";
+import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import {createFunctionFromDefinition} from "../../core/utils/function.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
-import me from "../../_snowpack/pkg/math-expressions.js";
 export default function Curve(props) {
-  let {name, SVs, actions, sourceOfUpdate} = useDoenetRender(props);
+  let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+  Curve.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
-  let curveJXG = useRef({});
+  let curveJXG = useRef(null);
   let throughPointsJXG = useRef(null);
   let controlPointsJXG = useRef(null);
   let previousCurveType = useRef(null);
@@ -25,20 +25,23 @@ export default function Curve(props) {
   let hitObject = useRef(null);
   let vectorControlDirections = useRef(null);
   let previousVectorControlDirections = useRef(null);
+  let tpCoords = useRef([]);
+  let cvCoords = useRef([]);
   vectorControlDirections.current = SVs.vectorControlDirections;
   let lastThroughPointPositionsFromCore = useRef(null);
   lastThroughPointPositionsFromCore.current = SVs.numericalThroughPoints;
+  let lastControlPointPositionsFromCore = useRef(null);
+  lastControlPointPositionsFromCore.current = SVs.numericalControlPoints;
   useEffect(() => {
     return () => {
-      if (Object.keys(curveJXG.current).length !== 0) {
+      if (curveJXG.current) {
         deleteCurveJXG();
-        curveJXG.current = {};
       }
     };
   }, []);
   function createCurveJXG() {
     if (SVs.curveType === "bezier" && SVs.numericalThroughPoints.length < 2) {
-      return {};
+      return null;
     }
     var curveAttributes = {
       name: SVs.label,
@@ -92,9 +95,6 @@ export default function Curve(props) {
         anchorx
       };
     }
-    if (!SVs.draggable || SVs.fixed) {
-      curveAttributes.highlightStrokeWidth = SVs.selectedStyle.lineWidth;
-    }
     let newCurveJXG;
     if (SVs.curveType === "parameterization") {
       let f1 = createFunctionFromDefinition(SVs.fDefinitions[0]);
@@ -135,7 +135,7 @@ export default function Curve(props) {
     draggedThroughPoint.current = null;
     newCurveJXG.on("up", function(e) {
       if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null && SVs.switchable && !SVs.fixed) {
-        props.callAction({
+        callAction({
           action: actions.switchCurve
         });
       }
@@ -208,6 +208,7 @@ export default function Curve(props) {
     board.off("up", upBoard);
     curveJXG.current.off("down");
     board.removeObject(curveJXG.current);
+    curveJXG.current = null;
     deleteControls();
   }
   function createControls() {
@@ -223,17 +224,17 @@ export default function Curve(props) {
       let seg1 = board.create("segment", [tp, cp1], segmentAttributes.current);
       let seg2 = board.create("segment", [tp, cp2], segmentAttributes.current);
       segmentsJXG.current.push([seg1, seg2]);
-      tp.on("drag", (e) => dragThroughPoint(i, true, e));
+      tp.on("drag", (e) => dragThroughPoint(i));
       tp.on("down", (e) => downThroughPoint(i, e));
-      tp.on("up", (e) => dragThroughPoint(i, false, e));
-      cp1.on("drag", (e) => dragControlPoint(i, 0, true, e));
-      cp2.on("drag", (e) => dragControlPoint(i, 1, true, e));
+      tp.on("up", (e) => upThroughPoint(i));
+      cp1.on("drag", (e) => dragControlPoint(i, 0));
+      cp2.on("drag", (e) => dragControlPoint(i, 1));
       cp1.on("down", downOther);
       cp2.on("down", downOther);
       seg1.on("down", downOther);
       seg1.on("down", downOther);
-      cp1.on("up", (e) => dragControlPoint(i, 0, false, e));
-      cp2.on("up", (e) => dragControlPoint(i, 1, false, e));
+      cp1.on("up", (e) => upControlPoint(i, 0));
+      cp2.on("up", (e) => upControlPoint(i, 1));
     }
     vectorControlsVisible.current = [];
   }
@@ -264,41 +265,63 @@ export default function Curve(props) {
       throughPointsJXG.current = [];
     }
   }
-  function dragThroughPoint(i, transient) {
-    if (transient) {
-      draggedThroughPoint.current = i;
-    } else if (draggedThroughPoint.current !== i) {
-      return;
-    }
-    let tpcoords = [throughPointsJXG.current[i].X(), throughPointsJXG.current[i].Y()];
-    props.callAction({
+  function dragThroughPoint(i) {
+    draggedThroughPoint.current = i;
+    tpCoords.current[i] = [throughPointsJXG.current[i].X(), throughPointsJXG.current[i].Y()];
+    callAction({
       action: actions.moveThroughPoint,
       args: {
-        throughPoint: tpcoords,
+        throughPoint: tpCoords.current[i],
         throughPointInd: i,
-        transient,
-        skippable: transient
+        transient: true,
+        skippable: true
       }
     });
     throughPointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, lastThroughPointPositionsFromCore.current[i]);
     board.updateInfobox(throughPointsJXG.current[i]);
   }
-  function dragControlPoint(point, i, transient) {
-    if (transient) {
-      draggedControlPoint.current = point + "_" + i;
-    } else if (draggedControlPoint.current !== point + "_" + i) {
+  function upThroughPoint(i) {
+    if (draggedThroughPoint.current !== i) {
       return;
     }
-    props.callAction({
+    callAction({
+      action: actions.moveThroughPoint,
+      args: {
+        throughPoint: tpCoords.current[i],
+        throughPointInd: i
+      }
+    });
+  }
+  function dragControlPoint(point, i) {
+    draggedControlPoint.current = point + "_" + i;
+    if (!cvCoords.current[point]) {
+      cvCoords.current[point] = {};
+    }
+    cvCoords.current[point][i] = [
+      controlPointsJXG.current[point][i].X() - throughPointsJXG.current[point].X(),
+      controlPointsJXG.current[point][i].Y() - throughPointsJXG.current[point].Y()
+    ];
+    callAction({
       action: actions.moveControlVector,
       args: {
-        controlVector: [
-          controlPointsJXG.current[point][i].X() - throughPointsJXG.current[point].X(),
-          controlPointsJXG.current[point][i].Y() - throughPointsJXG.current[point].Y()
-        ],
+        controlVector: cvCoords.current[point][i],
         controlVectorInds: [point, i],
-        transient,
-        skippable: transient
+        transient: true,
+        skippable: true
+      }
+    });
+    controlPointsJXG.current[point][i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastControlPointPositionsFromCore.current[point][i]]);
+    board.updateInfobox(controlPointsJXG.current[point][i]);
+  }
+  function upControlPoint(point, i) {
+    if (draggedControlPoint.current !== point + "_" + i) {
+      return;
+    }
+    callAction({
+      action: actions.moveControlVector,
+      args: {
+        controlVector: cvCoords.current[point][i],
+        controlVectorInds: [point, i]
       }
     });
   }
@@ -407,11 +430,10 @@ export default function Curve(props) {
     board.updateRenderer();
   }
   if (board) {
-    if (Object.keys(curveJXG.current).length === 0) {
+    if (!curveJXG.current) {
       curveJXG.current = createCurveJXG();
     } else if (SVs.curveType === "bezier" && SVs.numericalThroughPoints.length < 2) {
       deleteCurveJXG();
-      curveJXG.current = {};
     } else if (previousCurveType.current !== SVs.curveType || previousCurveType.current === "function" && previousFlipFunction.current !== SVs.flipFunction) {
       deleteCurveJXG();
       curveJXG.current = createCurveJXG();
@@ -521,15 +543,15 @@ export default function Curve(props) {
           seg1.visProp.visible = false;
           cp2.visProp.visible = false;
           seg2.visProp.visible = false;
-          tp.on("drag", (e) => dragThroughPoint(i, true, e));
+          tp.on("drag", (e) => dragThroughPoint(i));
           tp.on("down", (e) => downThroughPoint(i, e));
-          tp.on("up", (e) => dragThroughPoint(i, false, e));
-          cp1.on("drag", (e) => dragControlPoint(i, 0, true, e));
+          tp.on("up", (e) => upThroughPoint(i));
+          cp1.on("drag", (e) => dragControlPoint(i, 0));
           cp1.on("down", downOther);
-          cp1.on("up", (e) => dragControlPoint(i, 0, false, e));
-          cp2.on("drag", (e) => dragControlPoint(i, 1, true, e));
+          cp1.on("up", (e) => upControlPoint(i, 0));
+          cp2.on("drag", (e) => dragControlPoint(i, 1));
           cp2.on("down", downOther);
-          cp2.on("up", (e) => dragControlPoint(i, 1, false, e));
+          cp2.on("up", (e) => upControlPoint(i, 1));
           seg1.on("down", downOther);
           seg2.on("down", downOther);
         }
@@ -587,11 +609,11 @@ export default function Curve(props) {
         throughPointsJXG.current[i].visPropCalc["visible"] = !SVs.hidden;
       }
       if (sourceOfUpdate.sourceInformation && name in sourceOfUpdate.sourceInformation) {
-        let ind = sourceOfUpdate.sourceInformation.throughPointMoved;
+        let ind = sourceOfUpdate.sourceInformation[name].throughPointMoved;
         if (ind !== void 0) {
           board.updateInfobox(throughPointsJXG.current[ind]);
         } else {
-          ind = sourceOfUpdate.sourceInformation.controlVectorMoved;
+          ind = sourceOfUpdate.sourceInformation[name].controlVectorMoved;
           if (ind !== void 0) {
             board.updateInfobox(controlPointsJXG.current[ind[0]][ind[1]]);
           }
