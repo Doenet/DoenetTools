@@ -285,11 +285,7 @@ export default class CallAction extends InlineComponent {
   }
 
   actions = {
-    callAction: this.callAction.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    callActionIfTriggerNewlyTrue: this.callActionIfTriggerNewlyTrue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    callAction: this.callAction.bind(this),
+    callActionIfTriggerNewlyTrue: this.callActionIfTriggerNewlyTrue.bind(this),
   };
 }

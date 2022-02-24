@@ -110,14 +110,14 @@ export default function EditorViewer() {
       readOnly: false,
       solutionDisplayMode,
       showFeedback: true,
-      showHints: true
+      showHints: true,
+      allowLoadPageState: false,
+      allowSavePageState: false,
+      allowLocalPageState: false,
+      allowSaveSubmissions: false,
+      allowSaveEvents: false
     },
     attemptNumber,
-    allowLoadPageState: false,
-    allowSavePageState: false,
-    allowLocalPageState: false,
-    allowSaveSubmissions: false,
-    allowSaveEvents: false,
     generatedVariantCallback: variantCallback,
     requestedVariant: variantInfo.requestedVariant,
     setIsInErrorState

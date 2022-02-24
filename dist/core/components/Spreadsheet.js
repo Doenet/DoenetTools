@@ -1005,9 +1005,7 @@ export default class Spreadsheet extends BlockComponent {
   }
 
   actions = {
-    onChange: this.onChange.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
+    onChange: this.onChange.bind(this),
   };
 
 

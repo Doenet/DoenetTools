@@ -1,7 +1,7 @@
 /* Hand-written tokenizer for XML tag matching. */
 
-import {ExternalTokenizer, ContextTracker} from "../_snowpack/pkg/lezer.js"
-import {StartTag, StartCloseTag, mismatchedStartCloseTag, incompleteStartCloseTag, Element, OpenTag,
+import {ExternalTokenizer, ContextTracker} from "../_snowpack/pkg/@lezer/lr.js"
+import {StartTag, StartCloseTag, mismatchedStartCloseTag, incompleteStartCloseTag, MissingCloseTag, Element, OpenTag,
         commentContent as _commentContent} from "./doenet.terms.js"
 
 function nameChar(ch) {
@@ -13,15 +13,19 @@ function isSpace(ch) {
 }
 
 let cachedName = null, cachedInput = null, cachedPos = 0
-function tagNameAfter(input, pos) {
-  if (cachedPos == pos && cachedInput == input) return cachedName
-  let next = input.get(pos)
-  while (isSpace(next)) next = input.get(++pos)
-  let start = pos
-  while (nameChar(next)) next = input.get(++pos)
-  // Undefined to signal there's a <? or <!, null for just missing
+function tagNameAfter(input, offset) {
+  let pos = input.pos + offset
+  if (cachedInput == input && cachedPos == pos) return cachedName
+  while (isSpace(input.peek(offset))) offset++
+  let name = ""
+  for (;;) {
+    let next = input.peek(offset)
+    if (!nameChar(next)) break
+    name += String.fromCharCode(next)
+    offset++
+  }
   cachedInput = input; cachedPos = pos
-  return cachedName = pos > start ? input.read(start, pos).toLowerCase() : null
+  return cachedName = name || null
 }
 
 function ElementContext(name, parent) {
@@ -33,52 +37,54 @@ function ElementContext(name, parent) {
 
 export const elementContext = new ContextTracker({
   start: null,
-  shift(context, term, input, stack) {
-    return term == StartTag ? new ElementContext(tagNameAfter(input, stack.pos) || "", context) : context
+  shift(context, term, stack, input) {
+    return term == StartTag ? new ElementContext(tagNameAfter(input, 1) || "", context) : context
   },
   reduce(context, term) {
     return term == Element && context ? context.parent : context
   },
-  reuse(context, node, input, stack) {
+  reuse(context, node, _stack, input) {
     let type = node.type.id
     return type == StartTag || type == OpenTag
-      ? new ElementContext(tagNameAfter(input, stack.pos - node.length + 1) || "", context) : context
+      ? new ElementContext(tagNameAfter(input, 1) || "", context) : context
   },
   hash(context) { return context ? context.hash : 0 },
   strict: false
 })
 
-export const startTag = new ExternalTokenizer((input, token, stack) => {
-  let pos = token.start
-  if (input.get(pos++) != 60 /* '<' */) return
-  let next = input.get(pos)
-  if (next == 47 /* '/' */) {
-    pos++
-    let name = tagNameAfter(input, pos)
-    if (!name) return token.accept(incompleteStartCloseTag, pos)
-    if (stack.context && name == stack.context.name) return token.accept(StartCloseTag, pos)
-    for (let cx = stack.context; cx; cx = cx.parent) if (cx.name == name) return
-    token.accept(mismatchedStartCloseTag, pos)
-  } else if (next != 33 /* '!' */ && next != 63 /* '?' */) {
-    return token.accept(StartTag, pos)
+export const startTag = new ExternalTokenizer((input, stack) => {
+  if (input.next != 60 /* '<' */) return
+  input.advance()
+  if (input.next == 47 /* '/' */) {
+    input.advance()
+    let name = tagNameAfter(input, 0)
+    if (!name) return input.acceptToken(incompleteStartCloseTag)
+    if (stack.context && name == stack.context.name) return input.acceptToken(StartCloseTag)
+    for (let cx = stack.context; cx; cx = cx.parent) if (cx.name == name) return input.acceptToken(MissingCloseTag, -2)
+    input.acceptToken(mismatchedStartCloseTag)
+  } else if (input.next != 33 /* '!' */ && input.next != 63 /* '?' */ && !isSpace(input.next)) {
+    return input.acceptToken(StartTag)
   }
-})
+}, {contextual: true})
 
 function scanTo(type, end) {
-  return new ExternalTokenizer((input, token) => {
-    let pos = token.start, endPos = 0
-    for (;;) {
-      let next = input.get(pos)
-      if (next < 0) break
-      pos++
-      if (next == end.charCodeAt(endPos)) {
+  return new ExternalTokenizer(input => {
+    for (let endPos = 0, len = 0;; len++) {
+      if (input.next < 0) {
+        if (len) input.acceptToken(type)
+        break
+      }
+      if (input.next == end.charCodeAt(endPos)) {
         endPos++
-        if (endPos == end.length) { pos -= end.length; break }
+        if (endPos == end.length) {
+          if (len > end.length) input.acceptToken(type, 1 - end.length)
+          break
+        }
       } else {
         endPos = 0
       }
+      input.advance()
     }
-    if (pos > token.start) token.accept(type, pos)
   })
 }
 

@@ -8,12 +8,7 @@ export default class Circle extends Curve {
   static rendererType = "circle";
 
   actions = {
-    moveCircle: this.moveCircle.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    finalizeCirclePosition: this.finalizeCirclePosition.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    moveCircle: this.moveCircle.bind(this),
   };
 
 
@@ -2212,15 +2207,6 @@ export default class Circle extends Curve {
 
   }
 
-  async finalizeCirclePosition() {
-    // trigger a moveCircle 
-    // to send the final values with transient=false
-    // so that the final position will be recorded
-    return await this.actions.moveCircle({
-      center: await this.stateValues.numericalCenter,
-      transient: false
-    });
-  }
 }
 
 function circleFromTwoNumericalPoints({ point1, point2 }) {

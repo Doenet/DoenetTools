@@ -180,9 +180,7 @@ export default class Feedback extends BlockComponent {
   }
 
   actions = {
-    updateHide: this.updateHide.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
+    updateHide: this.updateHide.bind(this),
   };
 
 }

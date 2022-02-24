@@ -278,15 +278,6 @@ export default class SectioningComponent extends BlockComponent {
       definition: () => ({ setValue: { displayDigitsForCreditAchieved: 3 } })
     }
 
-    stateVariableDefinitions.sectionPlaceholder = {
-      defaultValue: false,
-      hasEssential: true,
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: { sectionPlaceholder: true }
-      })
-    }
-
     stateVariableDefinitions.creditAchieved = {
       public: true,
       componentType: "number",
@@ -319,10 +310,6 @@ export default class SectioningComponent extends BlockComponent {
             dependencyType: "stateVariable",
             variableName: "scoredDescendants"
           }
-          dependencies.sectionPlaceholder = {
-            dependencyType: "stateVariable",
-            variableName: "sectionPlaceholder"
-          }
           for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
             dependencies["creditAchieved" + ind] = {
               dependencyType: "stateVariable",
@@ -345,14 +332,6 @@ export default class SectioningComponent extends BlockComponent {
           }
         }
 
-        if (dependencyValues.sectionPlaceholder) {
-          return {
-            useEssentialOrDefaultValue: {
-              creditAchieved: true,
-              percentCreditAchieved: true,
-            }
-          }
-        }
 
         let creditSum = 0;
         let totalWeight = 0;
@@ -373,28 +352,6 @@ export default class SectioningComponent extends BlockComponent {
 
         return { setValue: { creditAchieved, percentCreditAchieved } }
 
-      },
-      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-        if (!dependencyValues.sectionPlaceholder) {
-          return { success: false }
-        }
-
-        let instructions = [];
-
-        for (let varName in desiredStateVariableValues) {
-          if (!["creditAchieved", "percentCreditAchieved"].includes(varName)) {
-            continue;
-          }
-          instructions.push({
-            setEssentialValue: varName,
-            value: desiredStateVariableValues[varName]
-          })
-        }
-
-        return {
-          success: true,
-          instructions
-        }
       }
     }
 
@@ -482,16 +439,9 @@ export default class SectioningComponent extends BlockComponent {
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
         },
-        variants: {
-          dependencyType: "variants",
-        },
         suppressAutomaticVariants: {
           dependencyType: "stateVariable",
           variableName: "suppressAutomaticVariants"
-        },
-        sectionPlaceholder: {
-          dependencyType: "stateVariable",
-          variableName: "sectionPlaceholder"
         }
 
       }),
@@ -519,33 +469,17 @@ export default class SectioningComponent extends BlockComponent {
         }
 
 
-        let subvariantsSpecified = Boolean(
-          dependencyValues.variants &&
-          dependencyValues.variants.desiredVariant &&
-          dependencyValues.variants.desiredVariant.subvariants
-        );
-
         generatedVariantInfo.meta = {
           createdBy: componentName,
-          // subvariantsSpecified
         }
 
 
-        if (dependencyValues.sectionPlaceholder) {
-          // section placeholders don't have the descedants to determine
-          // the variant info
-          // so just give the subvariants specified
-          if (subvariantsSpecified) {
-            generatedVariantInfo.subvariants = dependencyValues.variants.desiredVariant.subvariants
-          }
-        } else {
-          let subvariants = generatedVariantInfo.subvariants = [];
-          for (let descendant of dependencyValues.variantDescendants) {
-            if (descendant.stateValues.isVariantComponent) {
-              subvariants.push(descendant.stateValues.generatedVariantInfo)
-            } else if (descendant.stateValues.generatedVariantInfo) {
-              subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
-            }
+        let subvariants = generatedVariantInfo.subvariants = [];
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.generatedVariantInfo)
+          } else if (descendant.stateValues.generatedVariantInfo) {
+            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
           }
         }
 
@@ -785,15 +719,15 @@ export default class SectioningComponent extends BlockComponent {
       if (variantIndex === undefined) {
         // if variant index wasn't specifed
 
-        // if selectRng exists
+        // if variantRng exists
         // randomly pick variant index
-        if (sharedParameters.selectRng) {
+        if (sharedParameters.variantRng) {
           // random number in [0, 1)
-          let rand = sharedParameters.selectRng();
+          let rand = sharedParameters.variantRng();
           // random integer from 1 to nVariants
           variantIndex = Math.floor(rand * nVariants) + 1;
         } else {
-          // if selectRng does not exist, we are in document
+          // if variantRng does not exist, we are in document
           // Just choose the first variant
           variantIndex = 1;
         }
@@ -801,20 +735,16 @@ export default class SectioningComponent extends BlockComponent {
       sharedParameters.variantSeed = variantIndex.toString();
       sharedParameters.variantIndex = variantIndex;
       sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
-      sharedParameters.selectRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
+      sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
 
 
     } else {
       sharedParameters.variantSeed = await variantControlChild.state.selectedSeed.value;
       sharedParameters.variantName = await variantControlChild.state.selectedVariantName.value;
       sharedParameters.variantIndex = await variantControlChild.state.selectedVariantIndex.value;
-      sharedParameters.selectRng = await variantControlChild.state.selectRng.value;
+      sharedParameters.variantRng = await variantControlChild.state.variantRng.value;
       sharedParameters.allPossibleVariants = await variantControlChild.state.variantNames.value;
     }
-
-    // seed rng for random numbers predictably from variant using selectRng
-    let seedForRandomNumbers = Math.floor(sharedParameters.selectRng() * 1000000).toString()
-    sharedParameters.rng = new sharedParameters.rngClass(seedForRandomNumbers);
 
     // console.log("****Variant for sectioning component****")
     // console.log("Selected seed: " + variantControlChild.state.selectedSeed);

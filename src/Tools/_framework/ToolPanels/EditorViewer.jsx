@@ -147,13 +147,13 @@ export default function EditorViewer(){
       solutionDisplayMode: solutionDisplayMode,
       showFeedback: true,
       showHints: true,
+      allowLoadPageState: false,
+      allowSavePageState: false,
+      allowLocalPageState: false,
+      allowSaveSubmissions: false,
+      allowSaveEvents: false
     }}
     attemptNumber={attemptNumber}
-    allowLoadPageState={false}
-    allowSavePageState={false}
-    allowLocalPageState={false}
-    allowSaveSubmissions={false}
-    allowSaveEvents={false}
     generatedVariantCallback={variantCallback} //TODO:Replace
     requestedVariant={variantInfo.requestedVariant}
     setIsInErrorState={setIsInErrorState}

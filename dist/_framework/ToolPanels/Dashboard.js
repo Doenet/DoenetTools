@@ -2,10 +2,13 @@ import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue, useSetRecoilState, useRecoilValueLoadable} from "../../_snowpack/pkg/recoil.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
+import Card from "../../_reactComponents/PanelHeaderComponents/Card.js";
 import {pageToolViewAtom, searchParamAtomFamily, profileAtom} from "../NewToolRoot.js";
 import Next7Days from "../Widgets/Next7Days.js";
 import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import {suppressMenusAtom} from "../NewToolRoot.js";
+import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import {faCode, faUser, faChartPie, faTasks} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily("path"));
@@ -25,16 +28,24 @@ export default function Dashboard(props) {
     style: props?.style ?? {}
   }, /* @__PURE__ */ React.createElement("div", {
     style: {marginLeft: "10px", marginRight: "10px"}
-  }, /* @__PURE__ */ React.createElement("h1", null, "Welcome!"), /* @__PURE__ */ React.createElement(ButtonGroup, {
-    vertical: true
-  }, /* @__PURE__ */ React.createElement(Button, {
+  }, /* @__PURE__ */ React.createElement("h1", null, "Welcome!"), /* @__PURE__ */ React.createElement("div", {
+    style: {display: "grid", gridAutoFlow: "column dense", gridAutoColumns: "min-content", gap: "30px", width: "850px"}
+  }, /* @__PURE__ */ React.createElement(Card, {
+    name: "Content",
+    icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faCode
+    }),
     value: "Content",
     onClick: () => {
       setPageToolView((was) => {
         return {...was, tool: "navigation"};
       });
     }
-  }), effectiveRole === "instructor" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
+  }), effectiveRole === "instructor" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Card, {
+    name: "Enrollment",
+    icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faUser
+    }),
     value: "Enrollment",
     onClick: () => setPageToolView({
       page: "course",
@@ -42,7 +53,11 @@ export default function Dashboard(props) {
       view: "",
       params: {driveId}
     })
-  }), /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement(Card, {
+    name: "Surveys",
+    icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faChartPie
+    }),
     value: "Surveys",
     onClick: () => setPageToolView({
       page: "course",
@@ -50,7 +65,11 @@ export default function Dashboard(props) {
       view: "",
       params: {driveId}
     })
-  })) : null, effectiveRole === "instructor" ? /* @__PURE__ */ React.createElement(Button, {
+  })) : null, effectiveRole === "instructor" ? /* @__PURE__ */ React.createElement(Card, {
+    name: "Gradebook",
+    icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faTasks
+    }),
     value: "Gradebook",
     onClick: () => setPageToolView((was) => {
       return {
@@ -60,7 +79,12 @@ export default function Dashboard(props) {
         params: {driveId}
       };
     })
-  }) : /* @__PURE__ */ React.createElement(Button, {
+  }) : /* @__PURE__ */ React.createElement(Card, {
+    name: "Gradebook",
+    icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faTasks
+    }),
+    style: {marginLeft: "-600px"},
     value: "Gradebook",
     onClick: () => setPageToolView((was) => {
       return {

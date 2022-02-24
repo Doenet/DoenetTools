@@ -1,187 +1,186 @@
-import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class Line extends DoenetRenderer {
-  constructor(props) {
-    super(props);
-    if (props.board) {
-      this.createGraphicalObject();
-      this.doenetPropsForChildren = {board: this.props.board};
-      this.initializeChildren();
+import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js";
+import useDoenetRender from "./useDoenetRenderer.js";
+import {BoardContext} from "./graph.js";
+import me from "../../_snowpack/pkg/math-expressions.js";
+export default function Line(props) {
+  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  Line.ignoreActionsWithoutCore = true;
+  const board = useContext(BoardContext);
+  let lineJXG = useRef({});
+  let pointerAtDown = useRef(false);
+  let pointsAtDown = useRef(false);
+  let dragged = useRef(false);
+  let previousWithLabel = useRef(null);
+  let pointCoords = useRef(null);
+  let lastPositionsFromCore = useRef(null);
+  lastPositionsFromCore.current = SVs.numericalPoints;
+  useEffect(() => {
+    if (!board && window.MathJax) {
+      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
+      window.MathJax.Hub.processSectionDelay = 0;
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
     }
-  }
-  static initializeChildrenOnConstruction = false;
-  createGraphicalObject() {
-    if (this.doenetSvData.numericalPoints.length !== 2 || this.doenetSvData.numericalPoints.some((x) => x.length !== 2)) {
+  });
+  useEffect(() => {
+    return () => {
+      if (Object.keys(lineJXG.current).length !== 0) {
+        deleteLineJXG();
+      }
+    };
+  }, []);
+  function createLineJXG() {
+    if (SVs.numericalPoints?.length !== 2 || SVs.numericalPoints.some((x) => x.length !== 2)) {
+      lineJXG.current = {};
       return;
     }
     var jsxLineAttributes = {
-      name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hidden,
-      withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
-      layer: 10 * this.doenetSvData.layer + 7,
-      strokeColor: this.doenetSvData.selectedStyle.lineColor,
-      highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
-      strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
-      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed)
+      name: SVs.label,
+      visible: !SVs.hidden,
+      withLabel: SVs.showLabel && SVs.label !== "",
+      fixed: !SVs.draggable || SVs.fixed,
+      layer: 10 * SVs.layer + 7,
+      strokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      strokeWidth: SVs.selectedStyle.lineWidth,
+      dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed)
     };
-    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-      jsxLineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
+    if (!SVs.draggable || SVs.fixed) {
+      jsxLineAttributes.highlightStrokeWidth = SVs.selectedStyle.lineWidth;
     }
     let through = [
-      [...this.doenetSvData.numericalPoints[0]],
-      [...this.doenetSvData.numericalPoints[1]]
+      [...SVs.numericalPoints[0]],
+      [...SVs.numericalPoints[1]]
     ];
-    this.lineJXG = this.props.board.create("line", through, jsxLineAttributes);
-    this.lineJXG.on("drag", function(e) {
-      this.dragged = true;
-      this.onDragHandler(e);
-    }.bind(this));
-    this.lineJXG.on("up", function(e) {
-      if (this.dragged) {
-        this.actions.finalizeLinePosition();
-      } else if (this.doenetSvData.switchable && !this.doenetSvData.fixed) {
-        this.actions.switchLine();
-      }
-    }.bind(this));
-    this.lineJXG.on("down", function(e) {
-      this.dragged = false;
-      this.pointerAtDown = [e.x, e.y];
-      this.pointsAtDown = [
-        [...this.lineJXG.point1.coords.scrCoords],
-        [...this.lineJXG.point2.coords.scrCoords]
-      ];
-    }.bind(this));
-    this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-    return this.lineJXG;
-  }
-  deleteGraphicalObject() {
-    this.lineJXG.off("drag");
-    this.lineJXG.off("down");
-    this.lineJXG.off("up");
-    this.props.board.removeObject(this.lineJXG);
-    delete this.lineJXG;
-  }
-  componentWillUnmount() {
-    if (this.lineJXG) {
-      this.deleteGraphicalObject();
-    }
-  }
-  update({sourceOfUpdate}) {
-    if (!this.props.board) {
-      this.forceUpdate();
-      return;
-    }
-    if (this.lineJXG === void 0) {
-      return this.createGraphicalObject();
-    }
-    if (this.doenetSvData.numericalPoints.length !== 2 || this.doenetSvData.numericalPoints.some((x) => x.length !== 2)) {
-      return this.deleteGraphicalObject();
-    }
-    let validCoords = true;
-    for (let coords of [this.doenetSvData.numericalPoints[0], this.doenetSvData.numericalPoints[1]]) {
-      if (!Number.isFinite(coords[0])) {
-        validCoords = false;
-      }
-      if (!Number.isFinite(coords[1])) {
-        validCoords = false;
-      }
-    }
-    this.lineJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalPoints[0]);
-    this.lineJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalPoints[1]);
-    let visible = !this.doenetSvData.hidden;
-    if (validCoords) {
-      let actuallyChangedVisibility = this.lineJXG.visProp["visible"] !== visible;
-      this.lineJXG.visProp["visible"] = visible;
-      this.lineJXG.visPropCalc["visible"] = visible;
-      if (actuallyChangedVisibility) {
-        this.lineJXG.setAttribute({visible});
-      }
-    } else {
-      this.lineJXG.visProp["visible"] = false;
-      this.lineJXG.visPropCalc["visible"] = false;
-    }
-    if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
-      this.lineJXG.visProp.fixed = false;
-    } else {
-      this.lineJXG.visProp.fixed = true;
-    }
-    if (this.lineJXG.visProp.strokecolor !== this.doenetSvData.selectedStyle.lineColor) {
-      this.lineJXG.visProp.strokecolor = this.doenetSvData.selectedStyle.lineColor;
-      this.lineJXG.visProp.highlightstrokecolor = this.doenetSvData.selectedStyle.lineColor;
-    }
-    let newDash = styleToDash(this.doenetSvData.selectedStyle.lineStyle, this.doenetSvData.dashed);
-    if (this.lineJXG.visProp.dash !== newDash) {
-      this.lineJXG.visProp.dash = newDash;
-    }
-    if (this.lineJXG.visProp.strokewidth !== this.doenetSvData.selectedStyle.lineWidth) {
-      this.lineJXG.visProp.strokewidth = this.doenetSvData.selectedStyle.lineWidth;
-    }
-    this.lineJXG.name = this.doenetSvData.label;
-    let withlabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-    if (withlabel != this.previousWithLabel) {
-      this.lineJXG.setAttribute({withlabel});
-      this.previousWithLabel = withlabel;
-    }
-    this.lineJXG.needsUpdate = true;
-    this.lineJXG.update();
-    if (this.lineJXG.hasLabel) {
-      this.lineJXG.label.needsUpdate = true;
-      this.lineJXG.label.update();
-    }
-    this.props.board.updateRenderer();
-  }
-  onDragHandler(e) {
-    let pointCoords = this.calculatePointPositions(e);
-    this.actions.moveLine({
-      point1coords: pointCoords[0],
-      point2coords: pointCoords[1],
-      transient: true,
-      skippable: true
+    let newLineJXG = board.create("line", through, jsxLineAttributes);
+    newLineJXG.on("drag", function(e) {
+      dragged.current = true;
+      calculatePointPositions(e);
+      callAction({
+        action: actions.moveLine,
+        args: {
+          point1coords: pointCoords.current[0],
+          point2coords: pointCoords.current[1],
+          transient: true,
+          skippable: true
+        }
+      });
+      newLineJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[0]);
+      newLineJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[1]);
     });
+    newLineJXG.on("up", function(e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveLine,
+          args: {
+            point1coords: pointCoords.current[0],
+            point2coords: pointCoords.current[1]
+          }
+        });
+      } else if (SVs.switchable && !SVs.fixed) {
+        callAction({
+          action: actions.switchLine
+        });
+      }
+    });
+    newLineJXG.on("down", function(e) {
+      dragged.current = false;
+      pointerAtDown.current = [e.x, e.y];
+      pointsAtDown.current = [
+        [...newLineJXG.point1.coords.scrCoords],
+        [...newLineJXG.point2.coords.scrCoords]
+      ];
+    });
+    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    lineJXG.current = newLineJXG;
   }
-  calculatePointPositions(e) {
-    var o = this.props.board.origin.scrCoords;
-    let pointCoords = [];
+  function calculatePointPositions(e) {
+    var o = board.origin.scrCoords;
+    pointCoords.current = [];
     for (let i = 0; i < 2; i++) {
-      let calculatedX = (this.pointsAtDown[i][1] + e.x - this.pointerAtDown[0] - o[1]) / this.props.board.unitX;
-      let calculatedY = (o[2] - (this.pointsAtDown[i][2] + e.y - this.pointerAtDown[1])) / this.props.board.unitY;
-      pointCoords.push([calculatedX, calculatedY]);
+      let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0] - o[1]) / board.unitX;
+      let calculatedY = (o[2] - (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1])) / board.unitY;
+      pointCoords.current.push([calculatedX, calculatedY]);
     }
-    return pointCoords;
   }
-  componentDidMount() {
-    if (!this.props.board) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-        window.MathJax.Hub.processSectionDelay = 0;
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+  function deleteLineJXG() {
+    lineJXG.current.off("drag");
+    lineJXG.current.off("down");
+    lineJXG.current.off("up");
+    board.removeObject(lineJXG.current);
+    lineJXG.current = {};
+  }
+  if (board) {
+    if (Object.keys(lineJXG.current).length === 0) {
+      createLineJXG();
+    } else if (SVs.numericalPoints?.length !== 2 || SVs.numericalPoints.some((x) => x.length !== 2)) {
+      deleteLineJXG();
+    } else {
+      let validCoords = true;
+      for (let coords of [SVs.numericalPoints[0], SVs.numericalPoints[1]]) {
+        if (!Number.isFinite(coords[0])) {
+          validCoords = false;
+        }
+        if (!Number.isFinite(coords[1])) {
+          validCoords = false;
+        }
       }
-    }
-  }
-  componentDidUpdate() {
-    if (!this.props.board) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      lineJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalPoints[0]);
+      lineJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalPoints[1]);
+      let visible = !SVs.hidden;
+      if (validCoords) {
+        let actuallyChangedVisibility = lineJXG.current.visProp["visible"] !== visible;
+        lineJXG.current.visProp["visible"] = visible;
+        lineJXG.current.visPropCalc["visible"] = visible;
+        if (actuallyChangedVisibility) {
+          lineJXG.current.setAttribute({visible});
+        }
+      } else {
+        lineJXG.current.visProp["visible"] = false;
+        lineJXG.current.visPropCalc["visible"] = false;
       }
+      if (SVs.draggable && !SVs.fixed) {
+        lineJXG.current.visProp.fixed = false;
+      } else {
+        lineJXG.current.visProp.fixed = true;
+      }
+      if (lineJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        lineJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        lineJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      if (lineJXG.current.visProp.dash !== newDash) {
+        lineJXG.current.visProp.dash = newDash;
+      }
+      if (lineJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        lineJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+      }
+      lineJXG.current.name = SVs.label;
+      let withlabel = SVs.showLabel && SVs.label !== "";
+      if (withlabel != previousWithLabel.current) {
+        lineJXG.current.setAttribute({withlabel});
+        previousWithLabel.current = withlabel;
+      }
+      lineJXG.current.needsUpdate = true;
+      lineJXG.current.update();
+      if (lineJXG.current.hasLabel) {
+        lineJXG.current.label.needsUpdate = true;
+        lineJXG.current.label.update();
+      }
+      board.updateRenderer();
     }
-  }
-  render() {
-    if (this.props.board) {
-      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), this.children);
-    }
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    let mathJaxify = "\\(" + this.doenetSvData.equation + "\\)";
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), /* @__PURE__ */ React.createElement("span", {
-      id: this.componentName
-    }, mathJaxify));
+      name
+    }));
   }
+  if (SVs.hidden) {
+    return null;
+  }
+  let mathJaxify = "\\(" + me.fromAst(SVs.equation).toLatex() + "\\)";
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), /* @__PURE__ */ React.createElement("span", {
+    id: name
+  }, mathJaxify));
 }
 function styleToDash(style, dash) {
   if (style === "dashed" || dash) {

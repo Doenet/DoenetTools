@@ -13,7 +13,6 @@ import {
 import {
   searchParamAtomFamily,
   pageToolViewAtom,
-  footerAtom,
 } from '../NewToolRoot';
 import {
   itemHistoryAtom,
@@ -72,7 +71,6 @@ function pushRandomVariantOfRemaining({ previous, from }) {
 
 export default function AssignmentViewer() {
   // console.log(">>>===AssignmentViewer")
-  const setFooter = useSetRecoilState(footerAtom);
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState('Initializing');
@@ -85,7 +83,7 @@ export default function AssignmentViewer() {
       showCorrectness,
       showFeedback,
       showHints,
-      doenetML,
+      CID,
       doenetId,
       solutionDisplayMode,
     },
@@ -206,7 +204,7 @@ export default function AssignmentViewer() {
             }
           }
         }
-        let doenetML = null;
+
         // console.log('>>>>initializeValues contentId', contentId);
         if (!isAssigned) {
           setStage('Problem');
@@ -233,19 +231,10 @@ export default function AssignmentViewer() {
         //   return;
         // }
 
-        //Set doenetML
-        let response = await snapshot.getPromise(fileByContentId(contentId));
-        if (typeof response === 'object') {
-          response = response.data;
-        }
-        doenetML = response;
-
         //Find allPossibleVariants
         returnAllPossibleVariants({
-          doenetML,
-        }).then(isCollection
-          ? setCollectionVariant
-          : setVariantsFromDoenetML);
+          CID: contentId,
+        }).then(isCollection ? setCollectionVariant : setVariantsFromDoenetML);
 
         async function setVariantsFromDoenetML({ allPossibleVariants }) {
           storedAllPossibleVariants.current = allPossibleVariants;
@@ -293,7 +282,7 @@ export default function AssignmentViewer() {
             showCorrectness,
             showFeedback,
             showHints,
-            doenetML,
+            CID: contentId,
             doenetId,
             solutionDisplayMode,
           });
@@ -316,7 +305,7 @@ export default function AssignmentViewer() {
             showCorrectness,
             showFeedback,
             showHints,
-            doenetML,
+            CID: contentId,
             doenetId,
             solutionDisplayMode,
           });
@@ -363,14 +352,6 @@ export default function AssignmentViewer() {
         //TESTING set contentId to null
         // console.log(">>>>updateAttemptNumberAndRequestedVariant contentId",contentId)
 
-        let doenetML = null;
-
-        let response = await snapshot.getPromise(fileByContentId(contentId));
-        if (typeof response === 'object') {
-          response = response.data;
-        }
-        doenetML = response;
-
         const { data } = await axios.get('/api/loadTakenVariants.php', {
           params: { doenetId },
         });
@@ -399,7 +380,7 @@ export default function AssignmentViewer() {
           let newObj = { ...was };
           newObj.attemptNumber = newAttemptNumber;
           newObj.requestedVariant = newRequestedVariant;
-          newObj.doenetML = doenetML;
+          newObj.CID = contentId;
           return newObj;
         });
       },
@@ -445,45 +426,26 @@ export default function AssignmentViewer() {
     return null;
   }
 
-
-
   return (
     <>
-      <button
-        onClick={() => {
-          setFooter((was) => {
-            let newObj = null;
-            if (!was) {
-              newObj = {
-                height: 220,
-                open: true,
-                component: 'MathInputKeyboard',
-              };
-            }
-            return newObj;
-          });
-        }}
-      >
-        Toggle Keyboard
-      </button>
       <DoenetViewer
         key={`doenetviewer${doenetId}`}
-        doenetML={doenetML}
+        CID={CID}
         doenetId={doenetId}
         flags={{
-          showCorrectness: showCorrectness,
+          showCorrectness,
           readOnly: false,
-          solutionDisplayMode: solutionDisplayMode,
-          showFeedback: showFeedback,
-          showHints: showHints,
+          solutionDisplayMode,
+          showFeedback,
+          showHints,
           isAssignment: true,
+          allowLoadPageState: true,
+          allowSavePageState: true,
+          allowLocalPageState: false, //Still working out localStorage kinks
+          allowSaveSubmissions: true,
+          allowSaveEvents: true,
         }}
         attemptNumber={attemptNumber}
-        allowLoadPageState={true}
-        allowSavePageState={true}
-        allowLocalPageState={false} //Still working out localStorage kinks
-        allowSaveSubmissions={true}
-        allowSaveEvents={true}
         requestedVariant={requestedVariant}
         updateCreditAchievedCallback={updateCreditAchieved}
         // generatedVariantCallback={variantCallback}

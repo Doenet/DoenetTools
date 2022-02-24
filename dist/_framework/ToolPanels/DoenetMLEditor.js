@@ -10,21 +10,13 @@ import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {currentDraftSelectedAtom} from "../Menus/VersionHistory.js";
 import CodeMirror from "../CodeMirror.js";
 import {itemHistoryAtom, fileByContentId} from "../ToolHandlers/CourseToolHandler.js";
-import sha256 from "../../_snowpack/pkg/crypto-js/sha256.js";
-import CryptoJS from "../../_snowpack/pkg/crypto-js.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {nanoid} from "../../_snowpack/pkg/nanoid.js";
+import {CIDFromDoenetML} from "../../core/utils/cid.js";
 export const editorSaveTimestamp = atom({
   key: "",
   default: null
 });
-const getSHAofContent = (doenetML) => {
-  if (doenetML === void 0) {
-    return;
-  }
-  let contentId = sha256(doenetML).toString(CryptoJS.enc.Hex);
-  return contentId;
-};
 function buildTimestamp() {
   const dt = new Date();
   return `${dt.getFullYear().toString().padStart(2, "0")}-${(dt.getMonth() + 1).toString().padStart(2, "0")}-${dt.getDate().toString().padStart(2, "0")} ${dt.getHours().toString().padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt.getSeconds().toString().padStart(2, "0")}`;
@@ -45,7 +37,7 @@ export default function DoenetMLEditor(props) {
       const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
       const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
       let newDraft = {...oldVersions.draft};
-      const contentId = getSHAofContent(doenetML);
+      const contentId = await CIDFromDoenetML(doenetML);
       newDraft.contentId = contentId;
       newDraft.timestamp = buildTimestamp();
       set(itemHistoryAtom(doenetId), (was) => {
@@ -76,7 +68,7 @@ export default function DoenetMLEditor(props) {
   }, []);
   const autoSave = useRecoilCallback(({snapshot, set}) => async (doenetId) => {
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-    const contentId = getSHAofContent(doenetML);
+    const contentId = await CIDFromDoenetML(doenetML);
     const timestamp = buildTimestamp();
     const versionId = nanoid();
     let newVersion = {

@@ -97,7 +97,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
         },
         rng: {
           dependencyType: "value",
-          value: sharedParameters.selectRng,
+          value: sharedParameters.variantRng,
           doNotProxy: true,
         },
 

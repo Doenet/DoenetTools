@@ -1,7 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
-export default function C(props) {
+export default function CallAction(props) {
   let {name, SVs, actions} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;

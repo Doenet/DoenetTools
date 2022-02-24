@@ -1,12 +1,16 @@
 import { convertAttributesForComponentType } from '../utils/copy';
 import { sampleFromRandomNumbers } from '../utils/randomNumbers';
 import { processAssignNames } from '../utils/serializedStateProcessing';
+import { setUpVariantSeedAndRng } from '../utils/variants';
 import CompositeComponent from './abstract/CompositeComponent';
 
 export default class SampleRandomNumbers extends CompositeComponent {
   static componentType = "sampleRandomNumbers";
 
   static assignNamesToReplacements = true;
+
+  static createsVariants = true;
+  static alwaysSetUpVariant = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
@@ -81,6 +85,13 @@ export default class SampleRandomNumbers extends CompositeComponent {
     }
     attributes.displaySmallAsZero = {
       leaveRaw: true
+    }
+
+    attributes.variantDeterminesSeed = {
+      createComponentOfType: "boolean",
+      createStateVariable: "variantDeterminesSeed",
+      defaultValue: false,
+      public: true,
     }
 
     return attributes;
@@ -318,47 +329,57 @@ export default class SampleRandomNumbers extends CompositeComponent {
     stateVariableDefinitions.sampledValues = {
       shadowVariable: true,
       hasEssential: true,
-      returnDependencies: ({ sharedParameters }) => ({
-        numberOfSamples: {
-          dependencyType: "stateVariable",
-          variableName: "numberOfSamples",
-        },
-        type: {
-          dependencyType: "stateVariable",
-          variableName: "type"
-        },
-        from: {
-          dependencyType: "stateVariable",
-          variableName: "from"
-        },
-        to: {
-          dependencyType: "stateVariable",
-          variableName: "to"
-        },
-        step: {
-          dependencyType: "stateVariable",
-          variableName: "step"
-        },
-        nDiscreteValues: {
-          dependencyType: "stateVariable",
-          variableName: "nDiscreteValues"
-        },
-        mean: {
-          dependencyType: "stateVariable",
-          variableName: "mean"
-        },
-        standardDeviation: {
-          dependencyType: "stateVariable",
-          variableName: "standardDeviation"
-        },
-        rng: {
-          dependencyType: "value",
-          value: sharedParameters.rng,
-          doNotProxy: true,
-        },
-
-
-      }),
+      stateVariablesDeterminingDependencies: ["variantDeterminesSeed"],
+      returnDependencies({ stateValues, sharedParameters }) {
+        let dependencies = {
+          numberOfSamples: {
+            dependencyType: "stateVariable",
+            variableName: "numberOfSamples",
+          },
+          type: {
+            dependencyType: "stateVariable",
+            variableName: "type"
+          },
+          from: {
+            dependencyType: "stateVariable",
+            variableName: "from"
+          },
+          to: {
+            dependencyType: "stateVariable",
+            variableName: "to"
+          },
+          step: {
+            dependencyType: "stateVariable",
+            variableName: "step"
+          },
+          nDiscreteValues: {
+            dependencyType: "stateVariable",
+            variableName: "nDiscreteValues"
+          },
+          mean: {
+            dependencyType: "stateVariable",
+            variableName: "mean"
+          },
+          standardDeviation: {
+            dependencyType: "stateVariable",
+            variableName: "standardDeviation"
+          }
+        };
+        if (stateValues.variantDeterminesSeed) {
+          dependencies.rng = {
+            dependencyType: "value",
+            value: sharedParameters.variantRng,
+            doNotProxy: true,
+          }
+        } else {
+          dependencies.rng = {
+            dependencyType: "value",
+            value: sharedParameters.rngWithDateSeed,
+            doNotProxy: true,
+          }
+        }
+        return dependencies;
+      },
       definition({ dependencyValues }) {
         if (dependencyValues.numberOfSamples < 1) {
           return {
@@ -400,6 +421,37 @@ export default class SampleRandomNumbers extends CompositeComponent {
         return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
+
+
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { isVariantComponent: true } })
+    }
+
+    stateVariableDefinitions.generatedVariantInfo = {
+      returnDependencies: ({ sharedParameters }) => ({
+        variantSeed: {
+          dependencyType: "value",
+          value: sharedParameters.variantSeed,
+        },
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let generatedVariantInfo = {
+          seed: dependencyValues.variantSeed,
+          meta: {
+            createdBy: componentName,
+          }
+        };
+
+        return {
+          setValue: {
+            generatedVariantInfo,
+          }
+        }
+
+      }
+    }
 
     return stateVariableDefinitions;
 
@@ -519,6 +571,23 @@ export default class SampleRandomNumbers extends CompositeComponent {
   }
 
 
+  static async setUpVariant({
+    serializedComponent, sharedParameters,
+    descendantVariantComponents,
+  }) {
+
+    setUpVariantSeedAndRng({
+      serializedComponent, sharedParameters,
+      descendantVariantComponents
+    });
+
+    // seed from date plus a few digits from variant
+    let seedForRandomNumbers = sharedParameters.variantRng().toString().slice(2, 8) + (+(new Date));
+    sharedParameters.rngWithDateSeed = new sharedParameters.rngClass(seedForRandomNumbers);
+
+  }
+
+
   async resample() {
 
     let sampledValues = sampleFromRandomNumbers({
@@ -530,7 +599,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
       from: await this.stateValues.from,
       step: await this.stateValues.step,
       nDiscreteValues: await this.stateValues.nDiscreteValues,
-      rng: this.sharedParameters.rng
+      rng: (await this.stateValues.variantDeterminesSeed) ? this.sharedParameters.variantRng : this.sharedParameters.rngWithDateSeed
     });
 
 

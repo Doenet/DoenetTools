@@ -114,7 +114,7 @@ export default class Ref extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.contentId = {
+    stateVariableDefinitions.CID = {
       forRenderer: true,
       additionalStateVariablesDefined: [{
         variableName: "doenetId",
@@ -131,22 +131,22 @@ export default class Ref extends InlineComponent {
           dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            setValue: { contentId: null, doenetId: null }
+            setValue: { CID: null, doenetId: null }
           }
         }
 
-        let contentId = null, doenetId = null;
+        let CID = null, doenetId = null;
 
-        let result = dependencyValues.uri.match(/[:&]contentid=([^&]+)/i);
+        let result = dependencyValues.uri.match(/[:&]CID=([^&]+)/i);
         if (result) {
-          contentId = result[1];
+          CID = result[1];
         }
         result = dependencyValues.uri.match(/[:&]doenetid=([^&]+)/i);
         if (result) {
           doenetId = result[1];
         }
 
-        return { setValue: { contentId, doenetId } };
+        return { setValue: { CID, doenetId } };
       },
     };
 
