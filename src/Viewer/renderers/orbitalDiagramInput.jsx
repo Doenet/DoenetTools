@@ -11,6 +11,21 @@ export default function orbitalDiagramInput(props){
     return null;
   }
 
+  function deselect(e){
+    if (e.relatedTarget?.id !== `OrbitalText${selectedRow}` &&
+    e.relatedTarget?.id !== `OrbitalRow${selectedRow}` &&
+    e.relatedTarget?.id !== 'orbitalremoverow' &&
+    e.relatedTarget?.id !== 'orbitaladdbox' &&
+    e.relatedTarget?.id !== 'orbitaladduparrow' &&
+    e.relatedTarget?.id !== 'orbitaladddownarrow' &&
+    e.relatedTarget?.id !== 'orbitalremovearrow' &&
+    e.relatedTarget?.id !== 'orbitalremovebox'
+    ){
+      setSelectedRow(-1);
+      setSelectedBox(-1);
+    }
+  }
+
   let rowsJSX = [];
   for (let [index,row] of Object.entries(rows)){
     let rowNumber = rows.length - index - 1;
@@ -23,6 +38,7 @@ export default function orbitalDiagramInput(props){
       boxes={row.boxes}
       setRows={setRows}
       setSelectedBox={setSelectedBox}
+      deselect={deselect}
       />)
   }
 
@@ -31,6 +47,8 @@ export default function orbitalDiagramInput(props){
     <button id={`orbitaladdrow`} onClick={()=>{
       let numberOfRows = rows.length;
       if (numberOfRows < 20){ //maximum number of rows
+        setSelectedRow(-1);
+        setSelectedBox(-1);
         setRows((was)=>{
           return [{orbitalText:"",boxes:[]},...was]
         })
@@ -45,6 +63,7 @@ export default function orbitalDiagramInput(props){
           removeRowNumber = rows.length - 1;
         }
         setSelectedRow(-1);
+        setSelectedBox(-1);
         setRows((was)=>{
           let newObj = [];
           for(let [index,obj] of Object.entries(was)){
@@ -56,8 +75,12 @@ export default function orbitalDiagramInput(props){
         })
       }
       
-    }} >Remove Row</button>
+    }}>Remove Row</button>
+
     <button id={`orbitaladdbox`}
+    onBlur={(e)=>{
+      deselect(e);
+    }}
     onClick={()=>{
       let activeRowNumber = rows.length - selectedRow -1;
       if (selectedRow === -1){
@@ -73,7 +96,11 @@ export default function orbitalDiagramInput(props){
         })
       }
     }}>Add Box</button>
+
     <button id={`orbitalremovebox`}
+    onBlur={(e)=>{
+      deselect(e);
+    }}
     onClick={()=>{
       let activeRowNumber = rows.length - selectedRow -1;
       if (selectedRow === -1){
@@ -92,6 +119,9 @@ export default function orbitalDiagramInput(props){
     }}>Remove Box</button>
 
     <button id={`orbitaladduparrow`}
+    onBlur={(e)=>{
+      deselect(e);
+    }}
     onClick={()=>{
       let activeRowNumber = rows.length - selectedRow -1;
       if (selectedRow === -1){
@@ -120,6 +150,9 @@ export default function orbitalDiagramInput(props){
     }}>Add Up Arrow</button>
 
     <button id={`orbitaladddownarrow`}
+    onBlur={(e)=>{
+      deselect(e);
+    }}
     onClick={()=>{
       let activeRowNumber = rows.length - selectedRow -1;
       if (selectedRow === -1){
@@ -148,6 +181,9 @@ export default function orbitalDiagramInput(props){
     }}>Add Down Arrow</button>
     
     <button id={`orbitalremovearrow`}
+    onBlur={(e)=>{
+      deselect(e);
+    }}
     onClick={()=>{
       let activeRowNumber = rows.length - selectedRow -1;
       if (selectedRow === -1){
@@ -181,7 +217,7 @@ export default function orbitalDiagramInput(props){
 //disabled={selectedRow === -1}
 
 
-function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows,setSelectedBox}){
+function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows,setSelectedBox,deselect}){
   let rowStyle = {width:"800px",height:"40px",display:"flex"};
   if (selectedRow === rowNumber){ 
     rowStyle['border'] = '#1A5A99 solid 2px';
@@ -203,18 +239,7 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
       setSelectedRow(rowNumber)}
     }}
     onBlur={(e)=>{
-      // console.log("onBlur!!! e.relatedTarget",e.relatedTarget?.id)
-      if (e.relatedTarget?.id !== `OrbitalText${rowNumber}` &&
-      e.relatedTarget?.id !== `OrbitalRow${rowNumber}` &&
-      e.relatedTarget?.id !== 'orbitalremoverow' &&
-      e.relatedTarget?.id !== 'orbitaladdbox' &&
-      e.relatedTarget?.id !== 'orbitaladduparrow' &&
-      e.relatedTarget?.id !== 'orbitaladddownarrow' &&
-      e.relatedTarget?.id !== 'orbitalremovearrow' &&
-      e.relatedTarget?.id !== 'orbitalremovebox'
-      ){
-        setSelectedRow(-1);
-      }
+      deselect(e);
     }}
    style={rowStyle}>
      <span style={{marginRight:"2px"}}>row {rowNumber + 1}</span>
