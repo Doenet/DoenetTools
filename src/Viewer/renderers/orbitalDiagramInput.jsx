@@ -21,16 +21,16 @@ export default function orbitalDiagramInput(props){
   }
 
   function deselect(e){
-    if (e.relatedTarget?.id !== 'orbitaladdrow' &&
-    e.relatedTarget?.id !== 'orbitalremoverow' &&
-    e.relatedTarget?.id !== 'orbitaladdbox' &&
-    e.relatedTarget?.id !== 'orbitaladduparrow' &&
-    e.relatedTarget?.id !== 'orbitaladddownarrow' &&
-    e.relatedTarget?.id !== 'orbitalremovearrow' &&
-    e.relatedTarget?.id !== 'orbitalremovebox'){
-      if (e.relatedTarget?.id !== `OrbitalText${selectedRow}` &&
-      e.relatedTarget?.id !== `OrbitalRow${selectedRow}` &&
-      e.relatedTarget?.id.substring(0,10) !== `orbitalbox` 
+    if (e.relatedTarget?.id !== `orbitaladdrow${name}` &&
+    e.relatedTarget?.id !== `orbitalremoverow${name}` &&
+    e.relatedTarget?.id !== `orbitaladdbox${name}` &&
+    e.relatedTarget?.id !== `orbitaladduparrow${name}` &&
+    e.relatedTarget?.id !== `orbitaladddownarrow${name}` &&
+    e.relatedTarget?.id !== `orbitalremovearrow${name}` &&
+    e.relatedTarget?.id !== `orbitalremovebox${name}`){
+      if (e.relatedTarget?.id !== `OrbitalText${selectedRow}${name}` &&
+      e.relatedTarget?.id !== `OrbitalRow${selectedRow}${name}` &&
+      e.relatedTarget?.id.substring(0,(10+name.length)) !== `orbitalbox${name}` 
       ){
         setSelectedRow(-1);
       }
@@ -53,12 +53,13 @@ export default function orbitalDiagramInput(props){
       selectedBox={selectedBox}
       setSelectedBox={setSelectedBox}
       deselect={deselect}
+      name={name}
       />)
   }
 
   return <>
   <div>
-    <button id={`orbitaladdrow`} 
+    <button id={`orbitaladdrow${name}`} 
     onBlur={(e)=>{
       deselect(e);
     }}
@@ -77,7 +78,7 @@ export default function orbitalDiagramInput(props){
       
     }}>Add Row</button>
 
-    <button id={`orbitalremoverow`} onClick={()=>{
+    <button id={`orbitalremoverow${name}`} onClick={()=>{
       if (rows.length > 1){ //Don't delete the last one
         let removeRowNumber = rows.length - 1 - selectedRow;
         if (selectedRow === -1){
@@ -98,7 +99,7 @@ export default function orbitalDiagramInput(props){
       
     }}>Remove Row</button>
 
-    <button id={`orbitaladdbox`}
+    <button id={`orbitaladdbox${name}`}
     onBlur={(e)=>{
       deselect(e);
     }}
@@ -118,7 +119,7 @@ export default function orbitalDiagramInput(props){
       }
     }}>Add Box</button>
 
-    <button id={`orbitalremovebox`}
+    <button id={`orbitalremovebox${name}`}
     onBlur={(e)=>{
       deselect(e);
     }}
@@ -139,7 +140,7 @@ export default function orbitalDiagramInput(props){
       
     }}>Remove Box</button>
 
-    <button id={`orbitaladduparrow`}
+    <button id={`orbitaladduparrow${name}`}
     onBlur={(e)=>{
       deselect(e);
     }}
@@ -170,7 +171,7 @@ export default function orbitalDiagramInput(props){
       })
     }}>Add Up Arrow</button>
 
-    <button id={`orbitaladddownarrow`}
+    <button id={`orbitaladddownarrow${name}`}
     onBlur={(e)=>{
       deselect(e);
     }}
@@ -201,7 +202,7 @@ export default function orbitalDiagramInput(props){
       })
     }}>Add Down Arrow</button>
     
-    <button id={`orbitalremovearrow`}
+    <button id={`orbitalremovearrow${name}`}
     onBlur={(e)=>{
       deselect(e);
     }}
@@ -236,7 +237,7 @@ export default function orbitalDiagramInput(props){
   </>
 }
 
-function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows,selectedBox,setSelectedBox,deselect}){
+function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows,selectedBox,setSelectedBox,deselect,name}){
   let rowStyle = {
     width:"800px",
     height:"44px",
@@ -259,12 +260,12 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
     if (selectedRow === rowNumber && selectedBox === index){
       isSelected = true;
     }
-    boxesJSX.push(<OrbitalBox key={`OrbitalBox${rowNumber}-${index}`} boxNum={index} rowNumber={rowNumber} arrows={code} isSelected={isSelected} setSelectedBox={setSelectedBox}/>)
+    boxesJSX.push(<OrbitalBox key={`OrbitalBox${rowNumber}-${index}`} boxNum={index} rowNumber={rowNumber} arrows={code} isSelected={isSelected} setSelectedBox={setSelectedBox} name={name}/>)
   }
 
   return <div 
   key={`OrbitalRow${rowNumber}`}
-  id={`OrbitalRow${rowNumber}`}
+  id={`OrbitalRow${rowNumber}${name}`}
   tabIndex="-1"
   onClick={()=>{
     if (selectedRow !== rowNumber){
@@ -275,14 +276,14 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
     }}
    style={rowStyle}>
      {/* <span style={{marginRight:"2px"}}>row {rowNumber + 1}</span> */}
-     <OrbitalText orbitalText={orbitalText} setRows={setRows} rowNumber={rowNumber} selectedRow={selectedRow} setSelectedRow={setSelectedRow}/> 
+     <OrbitalText orbitalText={orbitalText} setRows={setRows} rowNumber={rowNumber} selectedRow={selectedRow} setSelectedRow={setSelectedRow} name={name}/> 
      {boxesJSX}
      </div>
 }
 
-function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows}){
+function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows,name}){
   return <input 
-  id={`OrbitalText${rowNumber}`} 
+  id={`OrbitalText${rowNumber}${name}`} 
   style={{marginRight:"4px",height:'14px'}} 
   type='text' 
   size='4' 
@@ -300,7 +301,7 @@ function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows})
   />
 }
 
-function OrbitalBox({boxNum,arrows='',setSelectedBox,isSelected,rowNumber}){
+function OrbitalBox({boxNum,arrows='',setSelectedBox,isSelected,rowNumber,name}){
 
   const firstUp = <polyline key={`orbitalboxfirstUp${boxNum}`} id={`firstUp${boxNum}`} points="6,14 12,6 18,14 12,6 12,35" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
   const firstDown = <polyline key={`orbitalboxfirstDown${boxNum}`} id={`firstDown${boxNum}`} points="6,26 12,34 18,26 12,34 12,5" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
@@ -345,7 +346,7 @@ function OrbitalBox({boxNum,arrows='',setSelectedBox,isSelected,rowNumber}){
 
   return <Box 
   key={`orbitalbox${boxNum}`}
-  id={`orbitalbox${rowNumber}-${boxNum}`}
+  id={`orbitalbox${name}${rowNumber}-${boxNum}`}
   tabIndex="-1" 
   onClick={()=>{
     setSelectedBox(boxNum);
