@@ -1,5 +1,14 @@
 import React, {useState} from 'react';
 import useDoenetRenderer from './useDoenetRenderer';
+import styled from 'styled-components';
+
+// border: ${(props) => (props.alert ? '2px solid #C1292E' : '2px solid black')};
+
+const Box = styled.svg`
+border: '2px solid red';
+margin: 2px;
+outline: none;
+`;
 
 export default function orbitalDiagramInput(props){
   let {name, SVs, children} = useDoenetRenderer(props);
@@ -37,6 +46,7 @@ export default function orbitalDiagramInput(props){
       orbitalText={row.orbitalText}
       boxes={row.boxes}
       setRows={setRows}
+      selectedBox={selectedBox}
       setSelectedBox={setSelectedBox}
       deselect={deselect}
       />)
@@ -215,7 +225,7 @@ export default function orbitalDiagramInput(props){
   </>
 }
 
-function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows,setSelectedBox,deselect}){
+function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows,selectedBox,setSelectedBox,deselect}){
   let rowStyle = {width:"800px",height:"40px",display:"flex"};
   if (selectedRow === rowNumber){ 
     rowStyle['border'] = '#1A5A99 solid 2px';
@@ -225,7 +235,11 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
   //Make boxes
   let boxesJSX = [];
   for (let [index,code] of Object.entries(boxes)){
-    boxesJSX.push(<OrbitalBox key={`OrbitalBox${rowNumber}-${index}`} boxNum={index} arrows={code} setSelectedBox={setSelectedBox}/>)
+    let isSelected = false;
+    if (selectedRow === rowNumber && selectedBox === index){
+      isSelected = true;
+    }
+    boxesJSX.push(<OrbitalBox key={`OrbitalBox${rowNumber}-${index}`} boxNum={index} arrows={code} isSelected={isSelected} setSelectedBox={setSelectedBox}/>)
   }
 
   return <div 
@@ -266,7 +280,7 @@ function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows})
   />
 }
 
-function OrbitalBox({boxNum,arrows='',setSelectedBox}){
+function OrbitalBox({boxNum,arrows='',setSelectedBox,isSelected}){
 
   const firstUp = <polyline key={`orbitalboxfirstUp${boxNum}`} id={`firstUp${boxNum}`} points="6,14 12,6 18,14 12,6 12,35" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
   const firstDown = <polyline key={`orbitalboxfirstDown${boxNum}`} id={`firstDown${boxNum}`} points="6,26 12,34 18,26 12,34 12,5" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
@@ -277,7 +291,7 @@ function OrbitalBox({boxNum,arrows='',setSelectedBox}){
 
   let arrowsJSX = [];
   let [first,second,third] = arrows.split('');
-  // console.log(first,second,third)
+
   if (first == 'U'){
     arrowsJSX.push(firstUp);
   }
@@ -302,20 +316,24 @@ function OrbitalBox({boxNum,arrows='',setSelectedBox}){
     boxWidth = 56;
   }
 
-  return <svg 
+  let boxColor = 'black';
+  if (isSelected){
+    boxColor = '#1A5A99';
+  }
+
+  return <Box 
   key={`orbitalbox${boxNum}`}
   tabIndex="-1" 
   onClick={()=>{
     setSelectedBox(boxNum);
   }}
-  style={{margin:'2px'}} 
   width={boxWidth} 
   height='40'
   >
     <rect x="0" y="0" rx="4" ry="4" width={boxWidth} height="40"
-  style={{fill:"white",stroke:"black",strokeWidth:"2",fillOpacity:"1",strokeOpacity:"1"}} />
+  style={{fill:"white",stroke:boxColor,strokeWidth:"2",fillOpacity:"1",strokeOpacity:"1"}} />
   {arrowsJSX}
-  </svg>
+  </Box>
 }
 
 
