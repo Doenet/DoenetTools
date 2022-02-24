@@ -240,43 +240,44 @@ const DriveCardWrapper = (props) => {
         className="driveCardList"
         style={{ height: Math.max(...heights) }}
       >
-        {driveCardItems.map((style, item, t, index) => {
-            <a.div style={style}>
-              <div
-                role="button"
-                style={{ height: '100%', outline: 'none' }}
-                tabIndex={index + 1}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  drivecardselection(e, item, props);
-                }}
-                onBlur={() => handleOnBlur()}
-                onKeyDown={(e) => handleKeyDown(e, item)}
-                onKeyUp={(e) => handleKeyUp(e, item)}
-                onDoubleClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setDrivecardSelection([]); //TODO: on leave instead
-                  setPageToolView({
-                    page: 'course',
-                    tool: 'dashboard',
-                    view: '',
-                    params: {
-                      path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`,
-                    },
-                  });
-                }}>
-                <DriveCard
-                  image={item.image}
-                  color={item.color}
-                  label={item.label}
-                  isSelected={getSelectedCard(item)}
-                  role={item.role}
-                />
-              </div>
-            </a.div>
-        })}
+        {/* {driveCardItems.map((style, item, t, index) => { */}
+        {transitions((style, item, t, index) => 
+          <a.div style={style}>
+          <div
+            role="button"
+            style={{ height: '100%', outline: 'none' }}
+            tabIndex={index + 1}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              drivecardselection(e, item, props);
+            }}
+            onBlur={() => handleOnBlur()}
+            onKeyDown={(e) => handleKeyDown(e, item)}
+            onKeyUp={(e) => handleKeyUp(e, item)}
+            onDoubleClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDrivecardSelection([]); //TODO: on leave instead
+              setPageToolView({
+                page: 'course',
+                tool: 'dashboard',
+                view: '',
+                params: {
+                  path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`,
+                },
+              });
+            }}>
+            <DriveCard
+              image={item.image}
+              color={item.color}
+              label={item.label}
+              isSelected={getSelectedCard(item)}
+              role={item.role}
+            />
+          </div>
+        </a.div>
+        )}
       </div>
     </div>
   );
