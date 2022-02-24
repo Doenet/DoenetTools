@@ -79,40 +79,58 @@ export default function orbitalDiagramInput(props){
         return newObj;
       })
     }}>Remove Box</button>
+
     <button id={`orbitaladduparrow`}
     onClick={()=>{
       let activeRowNumber = rows.length - selectedRow -1;
       if (selectedRow === -1){
         activeRowNumber = 0;
       }
+      let activeBox = selectedBox;
+      if (activeBox === -1){
+        activeBox = rows[activeRowNumber].boxes.length -1;
+      }
       setRows((was)=>{
+        if (activeBox === -1){
+          //No box in the row to add an arrow to
+          return was;
+        }
         let newObj = [...was];
         newObj[activeRowNumber] = {...was[activeRowNumber]}
         newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes']];
         if (newObj[activeRowNumber]['boxes'].length == 0){
           return was;
         }
-        if (newObj[activeRowNumber]['boxes'][selectedBox].length < 3){
-          newObj[activeRowNumber]['boxes'][selectedBox] = newObj[activeRowNumber]['boxes'][selectedBox] + 'U';
+        if (newObj[activeRowNumber]['boxes'][activeBox].length < 3){
+          newObj[activeRowNumber]['boxes'][activeBox] = newObj[activeRowNumber]['boxes'][activeBox] + 'U';
         }
         return newObj;
       })
     }}>Add Up Arrow</button>
+
     <button id={`orbitaladddownarrow`}
     onClick={()=>{
       let activeRowNumber = rows.length - selectedRow -1;
       if (selectedRow === -1){
         activeRowNumber = 0;
       }
+      let activeBox = selectedBox;
+      if (activeBox === -1){
+        activeBox = rows[activeRowNumber].boxes.length -1;
+      }
       setRows((was)=>{
+        if (activeBox === -1){
+          //No box in the row to add an arrow to
+          return was;
+        }
         let newObj = [...was];
         newObj[activeRowNumber] = {...was[activeRowNumber]}
         newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes']];
         if (newObj[activeRowNumber]['boxes'].length == 0){
           return was;
         }
-        if (newObj[activeRowNumber]['boxes'][selectedBox].length < 3){
-          newObj[activeRowNumber]['boxes'][selectedBox] = newObj[activeRowNumber]['boxes'][selectedBox] + 'D';
+        if (newObj[activeRowNumber]['boxes'][activeBox].length < 3){
+          newObj[activeRowNumber]['boxes'][activeBox] = newObj[activeRowNumber]['boxes'][activeBox] + 'D';
         }
         return newObj;
       })
@@ -124,15 +142,23 @@ export default function orbitalDiagramInput(props){
       if (selectedRow === -1){
         activeRowNumber = 0;
       }
+      let activeBox = selectedBox;
+      if (activeBox === -1){
+        activeBox = rows[activeRowNumber].boxes.length -1;
+      }
       setRows((was)=>{
+        if (activeBox === -1){
+          //No box in the row to remove arrow from
+          return was;
+        }
         let newObj = [...was];
         newObj[activeRowNumber] = {...was[activeRowNumber]}
         newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes']];
         if (newObj[activeRowNumber]['boxes'].length == 0){
           return was;
         }
-        if (newObj[activeRowNumber]['boxes'][selectedBox].length > 0){
-          newObj[activeRowNumber]['boxes'][selectedBox] = newObj[activeRowNumber]['boxes'][selectedBox].slice(0, -1)
+        if (newObj[activeRowNumber]['boxes'][activeBox].length > 0){
+          newObj[activeRowNumber]['boxes'][activeBox] = newObj[activeRowNumber]['boxes'][activeBox].slice(0, -1)
         }
         return newObj;
       })
@@ -158,6 +184,7 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
   }
 
   return <div 
+  key={`OrbitalRow${rowNumber}`}
   id={`OrbitalRow${rowNumber}`}
   tabIndex="-1"
   onClick={()=>{
@@ -185,8 +212,6 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
      </div>
 }
 
-//<OrbitalBox boxNum='1' arrows='UUU' /><OrbitalBox boxNum='2' arrows='DDD' /><OrbitalBox boxNum='3' arrows='UD' />
-
 function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows}){
   return <input 
   id={`OrbitalText${rowNumber}`} 
@@ -209,12 +234,12 @@ function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows})
 
 function OrbitalBox({boxNum,arrows='',setSelectedBox}){
 
-  const firstUp = <polyline id={`firstUp${boxNum}`} points="6,14 12,6 18,14 12,6 12,35" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
-  const firstDown = <polyline id={`firstDown${boxNum}`} points="6,26 12,34 18,26 12,34 12,5" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
-  const secondUp = <polyline id={`secondUp${boxNum}`} points="22,14 28,6 34,14 28,6 28,35" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
-  const secondDown = <polyline id={`secondDown${boxNum}`} points="22,26 28,34 34,26 28,34 28,5" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
-  const thirdUp = <polyline id={`thirdUp${boxNum}`} points="38,14 44,6 50,14 44,6 44,35" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
-  const thirdDown = <polyline id={`thirdDown${boxNum}`} points="38,26 44,34 50,26 44,34 44,5" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
+  const firstUp = <polyline key={`orbitalboxfirstUp${boxNum}`} id={`firstUp${boxNum}`} points="6,14 12,6 18,14 12,6 12,35" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
+  const firstDown = <polyline key={`orbitalboxfirstDown${boxNum}`} id={`firstDown${boxNum}`} points="6,26 12,34 18,26 12,34 12,5" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
+  const secondUp = <polyline key={`orbitalboxsecondUp${boxNum}`} id={`secondUp${boxNum}`} points="22,14 28,6 34,14 28,6 28,35" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
+  const secondDown = <polyline key={`orbitalboxsecondDown${boxNum}`} id={`secondDown${boxNum}`} points="22,26 28,34 34,26 28,34 28,5" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
+  const thirdUp = <polyline key={`orbitalboxthirdUp${boxNum}`} id={`thirdUp${boxNum}`} points="38,14 44,6 50,14 44,6 44,35" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
+  const thirdDown = <polyline key={`orbitalboxthirdDown${boxNum}`} id={`thirdDown${boxNum}`} points="38,26 44,34 50,26 44,34 44,5" style={{fill:"none",stroke:"black",strokeWidth:"2"}} />
 
   let arrowsJSX = [];
   let [first,second,third] = arrows.split('');
@@ -244,6 +269,7 @@ function OrbitalBox({boxNum,arrows='',setSelectedBox}){
   }
 
   return <svg 
+  key={`orbitalbox${boxNum}`}
   tabIndex="-1" 
   onClick={()=>{
     setSelectedBox(boxNum);
