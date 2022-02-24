@@ -23,6 +23,7 @@ export default function orbitalDiagramInput(props){
   function deselect(e){
     if (e.relatedTarget?.id !== `OrbitalText${selectedRow}` &&
     e.relatedTarget?.id !== `OrbitalRow${selectedRow}` &&
+    e.relatedTarget?.id !== 'orbitaladdrow' &&
     e.relatedTarget?.id !== 'orbitalremoverow' &&
     e.relatedTarget?.id !== 'orbitaladdbox' &&
     e.relatedTarget?.id !== 'orbitaladduparrow' &&
@@ -54,10 +55,17 @@ export default function orbitalDiagramInput(props){
 
   return <>
   <div>
-    <button id={`orbitaladdrow`} onClick={()=>{
+    <button id={`orbitaladdrow`} 
+    onBlur={(e)=>{
+      deselect(e);
+    }}
+    onClick={()=>{
       let numberOfRows = rows.length;
       if (numberOfRows < 20){ //maximum number of rows
-        setSelectedRow(-1);
+        if (selectedRow !== -1){
+          let topRowIndex = rows.length;
+          setSelectedRow(topRowIndex); //Select top row if a row was selected
+        }
         setSelectedBox(-1);
         setRows((was)=>{
           return [{orbitalText:"",boxes:[]},...was]
