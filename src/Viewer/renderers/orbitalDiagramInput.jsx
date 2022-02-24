@@ -29,10 +29,15 @@ export default function orbitalDiagramInput(props){
   return <>
   <div>
     <button id={`orbitaladdrow`} onClick={()=>{
-      setRows((was)=>{
-        return [{orbitalText:"",boxes:[]},...was]
-      })
+      let numberOfRows = rows.length;
+      if (numberOfRows < 20){ //maximum number of rows
+        setRows((was)=>{
+          return [{orbitalText:"",boxes:[]},...was]
+        })
+      }
+      
     }}>Add Row</button>
+
     <button id={`orbitalremoverow`} onClick={()=>{
       if (rows.length > 1){ //Don't delete the last one
         let removeRowNumber = selectedRow;
@@ -58,12 +63,15 @@ export default function orbitalDiagramInput(props){
       if (selectedRow === -1){
         activeRowNumber = 0;
       }
-      setRows((was)=>{
-        let newObj = [...was];
-        newObj[activeRowNumber] = {...was[activeRowNumber]}
-        newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes'],""];
-        return newObj;
-      })
+      let numberOfBoxes = rows[activeRowNumber].boxes.length;
+      if (numberOfBoxes < 20){ //maximum boxes in one row
+        setRows((was)=>{
+          let newObj = [...was];
+          newObj[activeRowNumber] = {...was[activeRowNumber]}
+          newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes'],""];
+          return newObj;
+        })
+      }
     }}>Add Box</button>
     <button id={`orbitalremovebox`}
     onClick={()=>{
@@ -71,6 +79,7 @@ export default function orbitalDiagramInput(props){
       if (selectedRow === -1){
         activeRowNumber = 0;
       }
+      
       setRows((was)=>{
         let newObj = [...was];
         newObj[activeRowNumber] = {...was[activeRowNumber]}
@@ -78,6 +87,8 @@ export default function orbitalDiagramInput(props){
         newObj[activeRowNumber]['boxes'].splice(selectedBox, 1); //-1 removes last box
         return newObj;
       })
+      
+      
     }}>Remove Box</button>
 
     <button id={`orbitaladduparrow`}
