@@ -63,14 +63,15 @@ const SectionHeader = Styled.div `
 
 const CaretIcon = Styled.span `
   display: inline-block;
+  /* position: absolute; */
   margin: 0em .5em;
   transition: transform .25s;
 `;
 
-// const HeaderIconContainer = Styled.div `
-//   float: right;
-//   margin-right: .5em;
-// `;
+const HeaderIconContainer = Styled.div `
+  float: right;
+  margin-right: .5em;
+`;
 
 const SectionContent = Styled.div `
   padding: 1em;
@@ -89,13 +90,13 @@ export default function CollapseSection(props) {
 
   const sectionStyle = {width: props.widthCSS || "240px"};
 
-  // if (props.iconElements !== undefined) {
-  //     var iconElements = props.iconElements.map((iconEl, index) => (
-  //         <HeaderIconContainer key={"aaaaa" + index}>
-  //             {iconEl}
-  //         </HeaderIconContainer>
-  //     ));
-  // }
+  if (props.iconElements !== undefined) {
+      var iconElements = props.iconElements.map((iconEl, index) => (
+          <HeaderIconContainer key={"aaaaa" + index}>
+              {iconEl}
+          </HeaderIconContainer>
+      ));
+  }
 
   return (
       <Section style={sectionStyle}>
@@ -108,7 +109,7 @@ export default function CollapseSection(props) {
               </ArrowIcon> */}
               <FontAwesomeIcon icon={faCaretDown} style={CaretIcon}/>
               {props.title ? String(props.title) : "Untitled Section"}
-              {/* {iconElements} */}
+              {iconElements}
           </SectionHeader>
           <SectionContent style={contentStyle}>
               {props.children}
