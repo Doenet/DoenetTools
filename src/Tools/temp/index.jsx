@@ -29,7 +29,8 @@ ReactDOM.render(
 
 // const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"
 
-let doenetMl = `<math test="blah">\\begin{matrix}a & b\\\\c &amp; d\\end{matrix}</math>`
+// let doenetMl = `<math test="blah">\\begin{matrix}a & b\\\\c &amp; d\\end{matrix}</math>`
+let doenetMl = `<tag>$(a='b')</tag>`
 
 
 // let t = parse(doenetMl);
