@@ -5,8 +5,7 @@ import {
   faCheck,
   faLevelDownAlt,
   faTimes,
-  faCloud,
-  faPercentage
+  faCloud
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import mathquill from "../../_snowpack/pkg/react-mathquill.js";
 mathquill.addStyles();
@@ -14,15 +13,14 @@ let EditableMathField = mathquill.EditableMathField;
 import {
   focusedMathField,
   focusedMathFieldReturn,
+  focusedMathFieldID,
   palletRef,
-  buttonRef,
-  functionRef
+  handleRef
 } from "../../_framework/Footers/MathInputSelector.js";
 import {useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 export default function MathInput(props) {
   let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction} = useDoenetRender(props);
   MathInput.baseStateVariable = "rawRendererValue";
-  const focused = useRef(false);
   const [mathField, setMathField] = useState(null);
   let rendererValue = useRef(null);
   if (!ignoreUpdate) {
@@ -30,10 +28,11 @@ export default function MathInput(props) {
   }
   let validationState = useRef(null);
   const setFocusedField = useSetRecoilState(focusedMathField);
+  const setFocusedFieldID = useSetRecoilState(focusedMathFieldID);
+  const focusedFieldID = useRecoilValue(focusedMathFieldID);
   const setFocusedFieldReturn = useSetRecoilState(focusedMathFieldReturn);
   const containerRef = useRecoilValue(palletRef);
-  const toggleButtonRef = useRecoilValue(buttonRef);
-  const functionTabRef = useRecoilValue(functionRef);
+  const dragHandleRef = useRecoilValue(handleRef);
   const updateValidationState = () => {
     validationState.current = "unvalidated";
     if (SVs.valueHasBeenValidated) {
@@ -80,25 +79,27 @@ export default function MathInput(props) {
     }
   };
   const handleFocus = (e) => {
-    focus.current = true;
     setFocusedField(() => handleVirtualKeyboardClick);
     setFocusedFieldReturn(() => handlePressEnter);
+    setFocusedFieldID(mathField.id);
   };
   const handleBlur = (e) => {
     if (containerRef?.current?.contains(e.relatedTarget)) {
-      console.log(">>> clicked inside the panel");
-    } else if (toggleButtonRef?.current?.contains(e.relatedTarget)) {
-      console.log(">>> clicked inside the button");
-    } else if (functionTabRef?.current?.contains(e.relatedTarget)) {
-      console.log(">>> clicked inside the panel functional panel");
+      setTimeout(() => {
+        mathField.focus();
+      }, 100);
+    } else if (dragHandleRef?.current?.contains(e.relatedTarget)) {
+      setTimeout(() => {
+        mathField.focus();
+      }, 100);
     } else {
       callAction({
         action: actions.updateValue,
         baseVariableValue: rendererValue.current
       });
-      focus.current = false;
       setFocusedField(() => handleDefaultVirtualKeyboardClick);
       setFocusedFieldReturn(() => handleDefaultVirtualKeyboardReturn);
+      setFocusedFieldID(null);
     }
   };
   const onChangeHandler = (text) => {
@@ -117,10 +118,6 @@ export default function MathInput(props) {
     return null;
   }
   updateValidationState();
-  let surroundingBorderColor = "#efefef";
-  if (focused.current) {
-    surroundingBorderColor = "#82a5ff";
-  }
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
     let checkWorkStyle = {

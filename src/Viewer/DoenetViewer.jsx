@@ -18,7 +18,7 @@ const rendererUpdatesToIgnore = atomFamily({
 class DoenetViewerChild extends Component {
 
   constructor(props) {
-    // console.log("===DoenetViewerChild constructor")
+    // console.log("===DoenetViewerChild constructor",props)
 
     super(props);
     this.updateRenderers = this.updateRenderers.bind(this);
@@ -346,7 +346,7 @@ class DoenetViewerChild extends Component {
         doenetId: this.props.doenetId,
         weights: coreInfo.scoredItemWeights,
         attemptNumber: this.attemptNumber,
-        CID: this.CID,
+        contentId: this.CID,
         requestedVariant: JSON.stringify(this.requestedVariant, serializedComponentsReplacer),
         generatedVariant: JSON.stringify(this.coreInfo.generatedVariantInfo, serializedComponentsReplacer),
         itemVariantInfo: this.coreInfo.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
@@ -434,7 +434,7 @@ class DoenetViewerChild extends Component {
 
 
     const data = {
-      CID,
+      contentId:CID,
       stateVariables: changeString,
       attemptNumber: this.attemptNumber,
       doenetId: this.props.doenetId,

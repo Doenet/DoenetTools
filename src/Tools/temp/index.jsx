@@ -4,8 +4,8 @@ import {doenetMLToSerializedComponents} from  '../../Core/utils/serializedStateP
 import {parseAndCompile} from '../../Parser/parser'
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
+import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
 import Banner from '../../_reactComponents/PanelHeaderComponents/Banner.jsx';
-
 
 
 // serializeFunctions.expandDoenetMLsToFullSerializedComponents({
@@ -22,15 +22,14 @@ import Banner from '../../_reactComponents/PanelHeaderComponents/Banner.jsx';
 
 
 ReactDOM.render(
-  <Banner></Banner>,
+  <ProgressBar donutIcon progress={1} showProgress></ProgressBar>,
   document.getElementById('root'),
 );
 
 
 // const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"
 
-// let doenetMl = `<math test="blah">\\begin{matrix}a & b\\\\c &amp; d\\end{matrix}</math>`
-let doenetMl = `<tag>$(a='b')</tag>`
+let doenetMl = `<math test="blah">\\begin{matrix}a & b\\\\c &amp; d\\end{matrix}</math>`
 
 
 // let t = parse(doenetMl);

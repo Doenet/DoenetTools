@@ -9,7 +9,8 @@ export default function VerticalDivider(props) {
     width: "0px",
     display: "inline-block",
     margin: "0px",
-    verticalAlign: "middle"
+    verticalAlign: "middle",
+    marginTop: props.marginTop ? props.marginTop : 0
   };
   return /* @__PURE__ */ React.createElement("div", {
     style: verticalHeaderDivider

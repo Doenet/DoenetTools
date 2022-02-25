@@ -10,8 +10,7 @@ import {
 } from "../../_snowpack/pkg/recoil.js";
 import {
   searchParamAtomFamily,
-  pageToolViewAtom,
-  footerAtom
+  pageToolViewAtom
 } from "../NewToolRoot.js";
 import {
   itemHistoryAtom,
@@ -57,7 +56,6 @@ function pushRandomVariantOfRemaining({previous, from}) {
   return usersVariantAttempts;
 }
 export default function AssignmentViewer() {
-  const setFooter = useSetRecoilState(footerAtom);
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState("Initializing");
@@ -70,7 +68,7 @@ export default function AssignmentViewer() {
       showCorrectness,
       showFeedback,
       showHints,
-      doenetML,
+      CID,
       doenetId,
       solutionDisplayMode
     },
@@ -152,19 +150,13 @@ export default function AssignmentViewer() {
         }
       }
     }
-    let doenetML2 = null;
     if (!isAssigned) {
       setStage("Problem");
       setMessage("Assignment is not assigned.");
       return;
     }
-    let response = await snapshot.getPromise(fileByContentId(contentId));
-    if (typeof response === "object") {
-      response = response.data;
-    }
-    doenetML2 = response;
     returnAllPossibleVariants({
-      doenetML: doenetML2
+      CID: contentId
     }).then(isCollection ? setCollectionVariant : setVariantsFromDoenetML);
     async function setVariantsFromDoenetML({allPossibleVariants}) {
       storedAllPossibleVariants.current = allPossibleVariants;
@@ -202,7 +194,7 @@ export default function AssignmentViewer() {
         showCorrectness: showCorrectness2,
         showFeedback: showFeedback2,
         showHints: showHints2,
-        doenetML: doenetML2,
+        CID: contentId,
         doenetId: doenetId2,
         solutionDisplayMode: solutionDisplayMode2
       });
@@ -224,7 +216,7 @@ export default function AssignmentViewer() {
         showCorrectness: showCorrectness2,
         showFeedback: showFeedback2,
         showHints: showHints2,
-        doenetML: doenetML2,
+        CID: contentId,
         doenetId: doenetId2,
         solutionDisplayMode: solutionDisplayMode2
       });
@@ -245,12 +237,6 @@ export default function AssignmentViewer() {
         break;
       }
     }
-    let doenetML2 = null;
-    let response = await snapshot.getPromise(fileByContentId(contentId));
-    if (typeof response === "object") {
-      response = response.data;
-    }
-    doenetML2 = response;
     const {data} = await axios.get("/api/loadTakenVariants.php", {
       params: {doenetId: doenetId2}
     });
@@ -272,7 +258,7 @@ export default function AssignmentViewer() {
       let newObj = {...was};
       newObj.attemptNumber = newAttemptNumber;
       newObj.requestedVariant = newRequestedVariant;
-      newObj.doenetML = doenetML2;
+      newObj.CID = contentId;
       return newObj;
     });
   }, []);
@@ -301,23 +287,9 @@ export default function AssignmentViewer() {
     updateAttemptNumberAndRequestedVariant(recoilAttemptNumber);
     return null;
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", {
-    onClick: () => {
-      setFooter((was) => {
-        let newObj = null;
-        if (!was) {
-          newObj = {
-            height: 220,
-            open: true,
-            component: "MathInputKeyboard"
-          };
-        }
-        return newObj;
-      });
-    }
-  }, "Toggle Keyboard"), /* @__PURE__ */ React.createElement(DoenetViewer, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(DoenetViewer, {
     key: `doenetviewer${doenetId}`,
-    doenetML,
+    CID,
     doenetId,
     flags: {
       showCorrectness,
@@ -325,14 +297,14 @@ export default function AssignmentViewer() {
       solutionDisplayMode,
       showFeedback,
       showHints,
-      isAssignment: true
+      isAssignment: true,
+      allowLoadPageState: true,
+      allowSavePageState: true,
+      allowLocalPageState: false,
+      allowSaveSubmissions: true,
+      allowSaveEvents: true
     },
     attemptNumber,
-    allowLoadPageState: true,
-    allowSavePageState: true,
-    allowLocalPageState: false,
-    allowSaveSubmissions: true,
-    allowSaveEvents: true,
     requestedVariant,
     updateCreditAchievedCallback: updateCreditAchieved
   }));

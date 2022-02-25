@@ -49,16 +49,24 @@ export default function AssignmentInfoCap(){
   // if (!docInfo){ return null;}
 
   let image;
+  let color;
   let driveLabel = "";
  for (let info of driveInfo.driveIdsAndLabels){
    if (info.driveId === driveId){
      image = info.image;
+     color = info.color;
      driveLabel = info.label;
      break;
    }
  }
 
- let imageURL = `/media/drive_pictures/${image}`
+ if (image != 'none'){
+  image = 'url(/media/drive_pictures/' + image + ')';
+ }
+ if (color != 'none'){
+  color = '#' + color;
+ }
+//  let imageURL = `/media/drive_pictures/${image}`
  let attemptsAllowedDescription = numberOfAttemptsAllowed;
  if (!numberOfAttemptsAllowed){
   attemptsAllowedDescription = "Unlimited";
@@ -71,7 +79,7 @@ export default function AssignmentInfoCap(){
 
   return <div>
     <div style={{position: 'relative', paddingBottom: '135px'}}>
-    <img style={{position: "absolute", height: "135px", objectFit: 'cover'}} src={imageURL} alt={`${driveLabel} course`} width='240px' />
+    <img style={{position: "absolute", height: "135px", objectFit: 'cover', backgroundImage: image, backgroundColor: color}} width='240px' />
     </div>
     <div style={{padding:'8px'}}>
     <div>{driveLabel}</div>

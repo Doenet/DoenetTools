@@ -1,146 +1,155 @@
-import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class Ray extends DoenetRenderer {
-  constructor(props) {
-    super(props);
-    if (props.board) {
-      this.createGraphicalObject();
-      this.doenetPropsForChildren = {board: this.props.board};
-      this.initializeChildren();
-    }
-  }
-  static initializeChildrenOnConstruction = false;
-  createGraphicalObject() {
-    if (this.doenetSvData.numericalEndpoint.length !== 2 || this.doenetSvData.numericalThroughpoint.length !== 2) {
+import React, {useContext, useEffect, useState, useRef} from "../../_snowpack/pkg/react.js";
+import useDoenetRender from "./useDoenetRenderer.js";
+import {BoardContext} from "./graph.js";
+import me from "../../_snowpack/pkg/math-expressions.js";
+export default function Ray(props) {
+  let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+  Ray.ignoreActionsWithoutCore = true;
+  const board = useContext(BoardContext);
+  let rayJXG = useRef(null);
+  let pointerAtDown = useRef(false);
+  let pointsAtDown = useRef(false);
+  let dragged = useRef(false);
+  let previousWithLabel = useRef(false);
+  let pointCoords = useRef(null);
+  let lastEndpointFromCore = useRef(null);
+  let lastThroughpointFromCore = useRef(null);
+  lastEndpointFromCore.current = SVs.numericalEndpoint;
+  lastThroughpointFromCore.current = SVs.numericalThroughpoint;
+  useEffect(() => {
+    return () => {
+      if (Object.keys(rayJXG.current).length !== 0) {
+        deleteRayJXG();
+      }
+    };
+  }, []);
+  function createRayJXG() {
+    if (SVs.numericalEndpoint.length !== 2 || SVs.numericalThroughpoint.length !== 2) {
+      rayJXG.current = null;
       return;
     }
     var jsxRayAttributes = {
-      name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hidden,
-      withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
-      layer: 10 * this.doenetSvData.layer + 7,
-      strokeColor: this.doenetSvData.selectedStyle.lineColor,
-      highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
-      strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
-      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
+      name: SVs.label,
+      visible: !SVs.hidden,
+      withLabel: SVs.showLabel && SVs.label !== "",
+      fixed: !SVs.draggable || SVs.fixed,
+      layer: 10 * SVs.layer + 7,
+      strokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      strokeWidth: SVs.selectedStyle.lineWidth,
+      highlightStrokeWidth: SVs.selectedStyle.lineWidth,
+      dash: styleToDash(SVs.selectedStyle.lineStyle),
       straightFirst: false
     };
-    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-      jsxRayAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.rayWidth;
-    }
     let through = [
-      [...this.doenetSvData.numericalEndpoint],
-      [...this.doenetSvData.numericalThroughpoint]
+      [...SVs.numericalEndpoint],
+      [...SVs.numericalThroughpoint]
     ];
-    this.rayJXG = this.props.board.create("line", through, jsxRayAttributes);
-    this.rayJXG.on("drag", function(e) {
-      this.dragged = true;
-      this.onDragHandler(e);
-    }.bind(this));
-    this.rayJXG.on("up", function(e) {
-      if (this.dragged) {
-        this.actions.finalizeRayPosition();
-      }
-    }.bind(this));
-    this.rayJXG.on("down", function(e) {
-      this.dragged = false;
-      this.pointerAtDown = [e.x, e.y];
-      this.pointsAtDown = [
-        [...this.rayJXG.point1.coords.scrCoords],
-        [...this.rayJXG.point2.coords.scrCoords]
-      ];
-    }.bind(this));
-    this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-    return this.rayJXG;
-  }
-  deleteGraphicalObject() {
-    this.rayJXG.off("drag");
-    this.rayJXG.off("down");
-    this.rayJXG.off("up");
-    this.props.board.removeObject(this.rayJXG);
-    delete this.rayJXG;
-  }
-  componentWillUnmount() {
-    if (this.rayJXG) {
-      this.deleteGraphicalObject();
-    }
-  }
-  update({sourceOfUpdate}) {
-    if (!this.props.board) {
-      this.forceUpdate();
-      return;
-    }
-    if (this.rayJXG === void 0) {
-      return this.createGraphicalObject();
-    }
-    if (this.doenetSvData.numericalEndpoint.length !== 2 || this.doenetSvData.numericalThroughpoint.length !== 2) {
-      return this.deleteGraphicalObject();
-    }
-    let validCoords = true;
-    for (let coords of [this.doenetSvData.numericalEndpoint, this.doenetSvData.numericalThroughpoint]) {
-      if (!Number.isFinite(coords[0])) {
-        validCoords = false;
-      }
-      if (!Number.isFinite(coords[1])) {
-        validCoords = false;
-      }
-    }
-    this.rayJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalEndpoint);
-    this.rayJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalThroughpoint);
-    let visible = !this.doenetSvData.hidden;
-    if (validCoords) {
-      let actuallyChangedVisibility = this.rayJXG.visProp["visible"] !== visible;
-      this.rayJXG.visProp["visible"] = visible;
-      this.rayJXG.visPropCalc["visible"] = visible;
-      if (actuallyChangedVisibility) {
-        this.rayJXG.setAttribute({visible});
-      }
-    } else {
-      this.rayJXG.visProp["visible"] = false;
-      this.rayJXG.visPropCalc["visible"] = false;
-    }
-    this.rayJXG.name = this.doenetSvData.label;
-    let withlabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-    if (withlabel != this.previousWithLabel) {
-      this.rayJXG.setAttribute({withlabel});
-      this.previousWithLabel = withlabel;
-    }
-    this.rayJXG.needsUpdate = true;
-    this.rayJXG.update();
-    if (this.rayJXG.hasLabel) {
-      this.rayJXG.label.needsUpdate = true;
-      this.rayJXG.label.update();
-    }
-    this.props.board.updateRenderer();
-  }
-  onDragHandler(e) {
-    let pointCoords = this.calculatePointPositions(e);
-    this.actions.moveRay({
-      point1coords: pointCoords[0],
-      point2coords: pointCoords[1],
-      transient: true,
-      skippable: true
+    let newRayJXG = board.create("line", through, jsxRayAttributes);
+    newRayJXG.on("drag", function(e) {
+      dragged.current = true;
+      pointCoords.current = calculatePointPositions(e);
+      callAction({
+        action: actions.moveRay,
+        args: {
+          endpointcoords: pointCoords.current[0],
+          throughcoords: pointCoords.current[1],
+          transient: true,
+          skippable: true
+        }
+      });
+      rayJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastEndpointFromCore.current);
+      rayJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastThroughpointFromCore.current);
     });
+    newRayJXG.on("up", function(e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveRay,
+          args: {
+            endpointcoords: pointCoords.current[0],
+            throughcoords: pointCoords.current[1]
+          }
+        });
+      }
+    });
+    newRayJXG.on("down", function(e) {
+      dragged.current = false;
+      pointerAtDown.current = [e.x, e.y];
+      pointsAtDown.current = [
+        [...newRayJXG.point1.coords.scrCoords],
+        [...newRayJXG.point2.coords.scrCoords]
+      ];
+    });
+    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
+    rayJXG.current = newRayJXG;
   }
-  calculatePointPositions(e) {
-    var o = this.props.board.origin.scrCoords;
-    let pointCoords = [];
+  function deleteRayJXG() {
+    rayJXG.current.off("drag");
+    rayJXG.current.off("down");
+    rayJXG.current.off("up");
+    board.removeObject(rayJXG.current);
+    rayJXG.current = null;
+  }
+  function calculatePointPositions(e) {
+    var o = board.origin.scrCoords;
+    let pointCoords2 = [];
     for (let i = 0; i < 2; i++) {
-      let calculatedX = (this.pointsAtDown[i][1] + e.x - this.pointerAtDown[0] - o[1]) / this.props.board.unitX;
-      let calculatedY = (o[2] - (this.pointsAtDown[i][2] + e.y - this.pointerAtDown[1])) / this.props.board.unitY;
-      pointCoords.push([calculatedX, calculatedY]);
+      let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0] - o[1]) / board.unitX;
+      let calculatedY = (o[2] - (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1])) / board.unitY;
+      pointCoords2.push([calculatedX, calculatedY]);
     }
-    return pointCoords;
+    return pointCoords2;
   }
-  render() {
-    if (this.props.board) {
-      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), this.children);
+  if (board) {
+    if (rayJXG.current === null) {
+      createRayJXG();
+    } else if (SVs.numericalEndpoint.length !== 2 || SVs.numericalThroughpoint.length !== 2) {
+      deleteRayJXG();
+    } else {
+      let validCoords = true;
+      for (let coords of [SVs.numericalEndpoint, SVs.numericalThroughpoint]) {
+        if (!Number.isFinite(coords[0])) {
+          validCoords = false;
+        }
+        if (!Number.isFinite(coords[1])) {
+          validCoords = false;
+        }
+      }
+      rayJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoint);
+      rayJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalThroughpoint);
+      let visible = !SVs.hidden;
+      if (validCoords) {
+        let actuallyChangedVisibility = rayJXG.current.visProp["visible"] !== visible;
+        rayJXG.current.visProp["visible"] = visible;
+        rayJXG.current.visPropCalc["visible"] = visible;
+        if (actuallyChangedVisibility) {
+          rayJXG.current.setAttribute({visible});
+        }
+      } else {
+        rayJXG.current.visProp["visible"] = false;
+        rayJXG.current.visPropCalc["visible"] = false;
+      }
+      rayJXG.current.name = SVs.label;
+      let withlabel = SVs.showLabel && SVs.label !== "";
+      if (withlabel != previousWithLabel.current) {
+        rayJXG.current.setAttribute({withlabel});
+        previousWithLabel.current = withlabel;
+      }
+      rayJXG.current.needsUpdate = true;
+      rayJXG.current.update();
+      if (rayJXG.current.hasLabel) {
+        rayJXG.current.label.needsUpdate = true;
+        rayJXG.current.label.update();
+      }
+      board.updateRenderer();
     }
+  }
+  if (SVs.hidden) {
     return null;
   }
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+    name
+  }));
 }
 function styleToDash(style) {
   if (style === "solid") {

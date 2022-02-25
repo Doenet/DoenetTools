@@ -14,16 +14,16 @@ const DriveCardContainer = styled.figure`
   display: flex; // added
   flex-direction: column; // added
   justify-content: space-between;
-  background-image: url(${(props) => props.url});
-  background-color: ${(props) => `#${props.color}`};
+  
   border: 2px solid #040f1a;
 `;
 const Image = styled.img`
   height: 100%;
   //width: 100%;
   color: red;
-  background-image: url(${(props) => props.url});
-  background-color: ${(props) => `#${props.color}`};
+  // display: none;
+  background-image: ${(props) => props.url == "url(/media/drive_pictures/none)" ? "none" : props.url};
+  background-color: ${(props) => props.color == "none" ? "none" : "#" + props.color};
   background-size: cover;
   background-position: center;
 `;
@@ -47,7 +47,7 @@ const LabelContainer = styled.p`
   text-overflow: ellipsis;
 `;
 const DriveCard = (props) => {
-  let imageURL = `/media/drive_pictures/${props.image}`;
+  let imageURL = `url(/media/drive_pictures/${props.image})`;
   return /* @__PURE__ */ React.createElement(DriveCardContainer, {
     "data-cy": "driveCard",
     url: imageURL,

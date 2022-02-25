@@ -20,7 +20,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
 import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx';
+import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/ColorImagePicker.jsx';
 import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
+import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -67,6 +69,8 @@ export default function attempt() {
   const absolute = () => {};
   const left = () => {};
   const noSearchButton = () => {};
+  const donutIcon = () => {};
+  const showProgress = () => {};
 
   //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -674,6 +678,59 @@ export default function attempt() {
           propCode: { disabled: true },
           description: 'Makes button not able to be used.',
         },
+      ],
+    },
+    {
+      name: 'ProgressBar',
+      id: 'progressbar',
+      code: ProgressBar,
+      codePreview: '<ProgressBar/>',
+      req_props: null,
+      req_children: null,
+      use: 'Currently used to track the progress of uploads. The progress prop must ALWAYS be defined.',
+      props: [
+        {
+          name: 'Donut Icon',
+          propPreview: '<ProgressBar donutIcon />',
+          propCode: { donutIcon, progress: 0.4 },
+          description: 'Progress bar with a donut icon',
+        },
+        {
+          name: 'Progress',
+          propPreview: '<ProgressBar progress={0.4}/>',
+          propCode: { progress: 0.4 },
+          description: 'Sets the progress of the bar',
+        },
+        {
+          name: 'Width',
+          propPreview: '<ProgressBar width=400 />',
+          propCode: { width: 400, progress: 0.4 },
+          description: 'Changes the width of the component in px; pass in the number without any units',
+        },
+        {
+          name: 'Progress Label',
+          propPreview: '<ProgressBar showProgress"/>',
+          propCode: { showProgress, progress: 0.4 },
+          description: 'Adds progress label to componenet',
+        },
+        {
+          name: 'Label',
+          propPreview: '<ProgressBar label="What: "/>',
+          propCode: { label: 'What: ', progress: 0.4 },
+          description: 'Adds label to componenet',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<ProgressBar label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical, progress: 0.4 },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Aria Label',
+            propPreview: '<ProgressBar ariaLabel="Progress Bar"/>',
+            propCode: { ariaLabel: 'Progress Bar', progress: 0.4 },
+            description: 'Adds aria label to component'
+        }
       ],
     },
     {

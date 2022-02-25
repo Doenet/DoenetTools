@@ -18,7 +18,6 @@ const verticalToggleGroup = {
 const ToggleButtonGroup = (props) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const handleClick = (index) => {
-    console.log("handle click called by index", index);
     setSelectedIndex(index);
     if (props.onClick) {
       props.onClick(index);
@@ -28,7 +27,6 @@ const ToggleButtonGroup = (props) => {
   let last_prop = props.vertical ? "last_vert" : "last";
   let elem = React.Children.toArray(props.children);
   let modElem = elem.map((element, index) => {
-    console.log("index: ", index, " selectedIndex: ", selectedIndex);
     let props2 = {
       index,
       isSelected: index === selectedIndex,

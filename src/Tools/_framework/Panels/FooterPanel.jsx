@@ -12,6 +12,7 @@ export default function NavPanel({ children, id, isInitOpen, height = 120 }) {
       panelSize={height}
       isInitOpen={isInitOpen}
       id={id}
+      handleSize={id === 'keyboard' ? 16 : null}
     >
       {children}
     </DragPanel>

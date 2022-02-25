@@ -163,7 +163,7 @@ export class Md extends InlineComponent {
           // just return latex if can't parse with math-expressions
           return { setValue: { text: dependencyValues.latex } };
         }
-        return { neswValues: { text: expressionText } };
+        return { setValue: { text: expressionText } };
       }
     }
 

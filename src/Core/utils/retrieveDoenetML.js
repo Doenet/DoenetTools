@@ -8,69 +8,69 @@ export function retrieveDoenetMLForCID(CID) {
     let resultIPFS = retrieveDoenetMLFromIPFS(CID);
 
     let promiseIPFS = resultIPFS.promise;
-    let requestIPFS = resultIPFS.request;
+    let controllerIPFS = resultIPFS.controller;
 
-    let requestServer;
+    let controllerServer;
 
     let rejectedIPFS = false;
     let rejectedServer = false;
 
-    let timerId;
+    let timeoutId;
 
     promiseIPFS
       .then(res => {
         // if successfully retrieve from IPFS
         // then cancel timer (for either starting the server request or waiting 5 seconds at end)
         // and abort the server request if it is in progress
-        clearTimeout(timerId);
-        if (requestServer && !rejectedServer) {
-          requestServer.abort();
+        clearTimeout(timeoutId);
+        if (controllerServer && !rejectedServer) {
+          controllerServer.abort();
         }
         resolve(res);
       })
       .catch(e => {
         rejectedIPFS = true;
-        if(rejectedServer) {
+        if (rejectedServer) {
           // rejected from both server and IPFS
           // so cancel the 5 second wait at the end and reject
-          clearTimeout(timerId);
+          clearTimeout(timeoutId);
           reject(e);
         }
       })
 
 
-    timerId = setTimeout(() => {
+    timeoutId = setTimeout(() => {
 
       // if the timer wasn't cleared then IPFS has not yet retrieved
       // so start retrieving from the server
       let resultServer = retrieveDoenetMLFromServer(CID);
 
       let promiseServer = resultServer.promise;
-      requestServer = resultServer.request;
+      controllerServer = resultServer.controller;
 
       promiseServer
-      .then(res => {
-        if (!rejectedIPFS) {
-          requestIPFS.abort();
-        }
-        resolve(res);
-      })
-      .catch(e => {
-        rejectedServer = true;
+        .then(res => {
+          if (!rejectedIPFS) {
+            controllerIPFS.abort();
+          }
+          resolve(res);
+        })
+        .catch(e => {
+          rejectedServer = true;
 
-        if(rejectedIPFS) {
-          reject(e);
-        } else {
-          // give IPFS server 5 more seconds to retrieve
-          timerId = setTimeout(() => {
-            requestIPFS.abort();
-            reject(e)
-          }, 5000)
+          if (rejectedIPFS) {
+            reject(e);
+          } else {
+            // give IPFS server 5 more seconds to retrieve
+            timeoutId = setTimeout(() => {
+              controllerIPFS.abort();
+              reject(e)
+            }, 5000)
 
-        }
+          }
 
-      })
-  
+        })
+
 
     }, 100);
 
@@ -82,49 +82,36 @@ export function retrieveDoenetMLForCID(CID) {
 
 function retrieveDoenetMLFromIPFS(CID) {
 
-  let request;
+  let controller = new AbortController();
+  let signal = controller.signal;
 
-  let promise = new Promise((resolve, reject) => {
+  let retrieveFromIPFS = async function () {
+    try {
+      let response = await fetch(`https://${CID}.ipfs.dweb.link/`, { signal });
 
-    request = new XMLHttpRequest();
-    request.open("GET", `https://${CID}.ipfs.dweb.link/`, true);
+      if (response.ok) {
+        let doenetML = await response.text();
 
-    request.onload = async function () {
+        let CIDRetrieved = await CIDFromDoenetML(doenetML);
 
-      if (request.status === 200) {
-        if (request.getResponseHeader('content-type').substring(0, 10) === "text/plain") {
-          // have a text response
-
-          let doenetML = request.responseText;
-
-          let CIDRetrieved = await CIDFromDoenetML(doenetML);
-
-          if (CIDRetrieved === CID) {
-            resolve(doenetML)
-          } else {
-            reject(new Error("CID mismatch"));
-          }
+        if (CIDRetrieved === CID) {
+          return doenetML;
         } else {
-            reject(new Error(`CID does not return text: ${CID}`));
+          return Promise.reject(new Error("CID mismatch"));
         }
-
-        return;
+      } else {
+        return Promise.reject(new Error(`CID not found: ${CID}`));
       }
-
-      // got a response other than success
-      reject(new Error(`CID not found: ${CID}`));
-
     }
+    catch (e) {
+      return Promise.reject(new Error(`CID not found: ${CID}`));
+    }
+  }
 
-    request.onabort = () => reject(new Error("Request aborted"));
 
-    request.error = () => reject(new Error(`Error in retrieving CID ${CID}`));
+  let promise = retrieveFromIPFS();
 
-    request.send();
-
-  })
-
-  return { promise, request };
+  return { promise, controller };
 
 
 }
@@ -132,43 +119,37 @@ function retrieveDoenetMLFromIPFS(CID) {
 
 function retrieveDoenetMLFromServer(CID) {
 
-  let request;
 
-  let promise = new Promise((resolve, reject) => {
+  let controller = new AbortController();
+  let signal = controller.signal;
 
-    let request = new XMLHttpRequest();
-    request.open("GET", `/media/${CID}.doenet`, true);
 
-    request.onload = async function () {
-      if (request.status === 200) {
+  let retrieveFromServer = async function () {
+    try {
+      let response = await fetch(`/media/${CID}.doenet`, { signal });
 
-        let doenetML = request.responseText;
+      if (response.ok) {
+        let doenetML = await response.text();
 
         let CIDRetrieved = await CIDFromDoenetML(doenetML);
 
         if (CIDRetrieved === CID) {
-          resolve(doenetML);
+          return doenetML;
         } else {
-          reject(new Error("CID mismatch"));
+          return Promise.reject(new Error("CID mismatch"));
         }
-
-        return;
-
+      } else {
+        return Promise.reject(new Error(`CID not found: ${CID}`));
       }
-
-      // got a response other than success
-      reject(new Error(`CID not found: ${CID}`));
-
     }
+    catch (e) {
+      return Promise.reject(new Error(`CID not found: ${CID}`));
+    }
+  }
 
-    request.onabort = () => reject(new Error("Request aborted"));
 
-    request.error = () => reject(new Error(`Error in retrieving CID ${CID}`))
+  let promise = retrieveFromServer();
 
-    request.send();
-
-  })
-
-  return { promise, request };
+  return { promise, controller };
 
 }

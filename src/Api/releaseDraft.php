@@ -6,7 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 // header('Content-Type: application/json');
 
 include "db_connection.php";
-
+include "cidFromSHA.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -18,7 +18,8 @@ $dangerousDoenetML = $_POST["doenetML"];
 $timestamp = mysqli_real_escape_string($conn,$_POST["timestamp"]);
 $newVersionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 
-$contentId = hash('sha256', $dangerousDoenetML);
+$SHA = hash('sha256', $dangerousDoenetML);
+$contentId = cidFromSHA($SHA);
 
 $success = TRUE;
 $message = "";

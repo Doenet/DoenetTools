@@ -617,7 +617,7 @@ export const fetchDrivesSelector = selector({
       newDriveData.driveIdsAndLabels.unshift(newDrive);
       set(fetchDrivesQuery, newDriveData);
       const payload = {params};
-      axios.get("/api/addDrive.php", payload);
+      axios.get("/api/addDrive.php", payload).then((resp) => console.log(">>>resp", resp.data));
     } else if (labelTypeDriveIdColorImage.type === "new course drive") {
       newDrive = {
         driveId: labelTypeDriveIdColorImage.newDriveId,
@@ -645,6 +645,31 @@ export const fetchDrivesSelector = selector({
       const payload = {params};
       axios.get("/api/updateDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "update drive color") {
+      for (let [i, drive] of newDriveData.driveIdsAndLabels.entries()) {
+        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId) {
+          let newDrive2 = {...drive};
+          newDrive2.color = labelTypeDriveIdColorImage.color;
+          newDrive2.image = labelTypeDriveIdColorImage.image;
+          newDriveData.driveIdsAndLabels[i] = newDrive2;
+          break;
+        }
+      }
+      set(fetchDrivesQuery, newDriveData);
+      const payload = {params};
+      axios.get("/api/updateDrive.php", payload);
+    } else if (labelTypeDriveIdColorImage.type === "update drive image") {
+      for (let [i, drive] of newDriveData.driveIdsAndLabels.entries()) {
+        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId) {
+          let newDrive2 = {...drive};
+          newDrive2.image = labelTypeDriveIdColorImage.image;
+          newDrive2.color = labelTypeDriveIdColorImage.color;
+          newDriveData.driveIdsAndLabels[i] = newDrive2;
+          break;
+        }
+      }
+      set(fetchDrivesQuery, newDriveData);
+      const payload = {params};
+      axios.get("/api/updateDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "delete drive") {
       let driveIdsAndLabelsLength = newDriveData.driveIdsAndLabels;
       for (let i = 0; i < driveIdsAndLabelsLength.length; i++) {
