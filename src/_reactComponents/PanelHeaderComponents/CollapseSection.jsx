@@ -41,73 +41,84 @@ There are no preset action icons, you must implement these in the parent compone
 
 */
 
-import React, {
-  useState
-} from "react";
+import React, { useState } from "react";
 import Styled from "styled-components";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
 const Section = Styled.div `
 transition: height .25s;
 border-radius: .5em;
+margin: 0px 4px 0px 4px;
 `;
 
 const SectionHeader = Styled.div `
 font-weight: bold;
-height: 1.5em;
-width: 100%;
+height: 24px;
 line-height: 1.5em;
 user-select: none;
 cursor: pointer;
 overflow: auto;
+border: 2px solid black;
+display: block;
+text-align: center;
+background-color: #e2e2e2;
+color: black;
 `;
 
-const ArrowIcon = Styled.span `
-display: inline-block;
-margin: 0em .5em;
-transition: transform .25s;
-`;
-
-const HeaderIconContainer = Styled.div `
-float: right;
-margin-right: .5em;
-`;
+// const HeaderIconContainer = Styled.div `
+// float: right;
+// margin-right: 2px;
+// `;
 
 const SectionContent = Styled.div `
 padding: 1em;
 border-radius: 0 0 .5em .5em;
+border: 2px solid black;
+border-top: none;
+background-color: white;
 `;
 
 export default function CollapseSection(props) {
   const [collapsed, setCollapsed] = useState(Boolean(props.collapsed));
 
-  const arrowStyle = collapsed ? {} : {transform: "rotate(90deg)"};
+  // const arrowCollapsed = collapsed ? {} : {transform: "rotate(90deg)"};
   let contentStyle = collapsed ? {display: "none"} : {display: "block"};
-  contentStyle.backgroundColor = props.bodyBackground || "#f8f8f8";
+  // contentStyle.backgroundColor = props.bodyBackground || "white";
+  
   let headerStyle = collapsed ? {borderRadius: ".5em"} : {borderRadius: ".5em .5em 0 0"};
-  headerStyle.backgroundColor = props.headerBackground || "lightgrey";
-  headerStyle.color = props.headerTextColor || "black";
+  // headerStyle.backgroundColor = props.headerBackground || "#e2e2e2";
+  // headerStyle.color = props.headerTextColor || "black";
 
-  const sectionStyle = {width: props.widthCSS || "240px"};
+  // const sectionStyle = {width: props.widthCSS || "menu"};
 
-  if (props.iconElements !== undefined) {
-      var iconElements = props.iconElements.map((iconEl, index) => (
-          <HeaderIconContainer key={"aaaaa" + index}>
-              {iconEl}
-          </HeaderIconContainer>
-      ));
+  const arrowIcon = {
+    // display: "inline-block",
+    marginRight: "7px",
+    transition: "transform .25s",
+    transform: `${collapsed ? "" : "rotate(90deg)"}`
   }
 
+  // if (props.iconElements !== undefined) {
+  //     var iconElements = props.iconElements.map((iconEl, index) => (
+  //         <HeaderIconContainer key={"aaaaa" + index}>
+  //             {iconEl}
+  //         </HeaderIconContainer>
+  //     ));
+  // }
+
   return (
-      <Section style={sectionStyle}>
+      <Section >
           <SectionHeader
               style={headerStyle}
               onClick = {() => {setCollapsed(!collapsed);}}
           >
-              <ArrowIcon style={arrowStyle}>
+              {/* <ArrowIcon style={arrowStyle}>
                   &gt;
-              </ArrowIcon>
+              </ArrowIcon> */}
+              <FontAwesomeIcon icon={faCaretRight} style={arrowIcon}/>
               {props.title ? String(props.title) : "Untitled Section"}
-              {iconElements}
+              {/* {iconElements} */}
           </SectionHeader>
           <SectionContent style={contentStyle}>
               {props.children}

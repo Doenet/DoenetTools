@@ -328,6 +328,47 @@ export default function attempt() {
       ],
     },
     {
+      name: 'CollapseSection',
+      id: 'collapseSection',
+      code: CollapseSection,
+      codePreview: '<CollapseSecction/>',
+      req_props: null,
+      req_children: null,
+      use: 'Card is an eye-catching button that brings that user to more content or a new location.',
+      props: [
+        {
+          name: 'Width - Menu Panel',
+          propPreview: '<Button width="menu" />',
+          propCode: { width: 'menu' },
+          description: 'Sets width to fill menu panel width',
+        },
+        {
+          name: 'Value',
+          propPreview: '<Card value="Click Me!"/>',
+          propCode: { value: 'Click Me!' },
+          description: 'Changes the text',
+        },
+        {
+          name: 'Label',
+          propPreview: '<Card label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to card',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<Card label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Disabled',
+          propPreview: '<Card disabled />',
+          propCode: { disabled },
+          description: 'Makes button not able to be used.',
+        },
+      ],
+    },
+    {
       name: 'DateTime',
       id: 'datetime',
       code: DateTime,
