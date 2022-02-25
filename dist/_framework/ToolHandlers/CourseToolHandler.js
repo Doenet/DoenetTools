@@ -7,8 +7,6 @@ import {
   useRecoilCallback
 } from "../../_snowpack/pkg/recoil.js";
 import axios from "../../_snowpack/pkg/axios.js";
-import sha256 from "../../_snowpack/pkg/crypto-js/sha256.js";
-import CryptoJS from "../../_snowpack/pkg/crypto-js.js";
 import {CopyToClipboard} from "../../_snowpack/pkg/react-copy-to-clipboard.js";
 import {useToast, toastType} from "../Toast.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
@@ -116,13 +114,6 @@ export function buildTimestamp() {
   const dt = new Date();
   return `${dt.getFullYear().toString().padStart(2, "0")}-${(dt.getMonth() + 1).toString().padStart(2, "0")}-${dt.getDate().toString().padStart(2, "0")} ${dt.getHours().toString().padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt.getSeconds().toString().padStart(2, "0")}`;
 }
-export const getSHAofContent = (doenetML) => {
-  if (doenetML === void 0) {
-    return;
-  }
-  let contentId = sha256(doenetML).toString(CryptoJS.enc.Hex);
-  return contentId;
-};
 export function ClipboardLinkButtons(props) {
   const addToast = useToast();
   let link = `http://localhost/#/content?doenetId=${props.doenetId}`;

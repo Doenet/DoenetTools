@@ -22,7 +22,6 @@ export function retrieveDoenetMLForCID(CID) {
         // if successfully retrieve from IPFS
         // then cancel timer (for either starting the server request or waiting 5 seconds at end)
         // and abort the server request if it is in progress
-        console.log(`retrieved ${CID} from IPFS`)
         clearTimeout(timeoutId);
         if (controllerServer && !rejectedServer) {
           controllerServer.abort();

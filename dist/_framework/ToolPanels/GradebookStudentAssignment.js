@@ -168,15 +168,15 @@ export default function GradebookStudentAssignmentView() {
         solutionDisplayMode,
         showFeedback: true,
         showHints: true,
-        isAssignment: true
+        isAssignment: true,
+        allowLoadPageState: true,
+        allowSavePageState: false,
+        allowLocalPageState: false,
+        allowSaveSubmissions: false,
+        allowSaveEvents: false,
+        pageStateSource: "submissions"
       },
       attemptNumber,
-      allowLoadPageState: true,
-      allowSavePageState: false,
-      allowLocalPageState: false,
-      allowSaveSubmissions: false,
-      allowSaveEvents: false,
-      pageStateSource: "submissions",
       requestedVariant: variant
     });
     attemptNumberJSX = /* @__PURE__ */ React.createElement("div", {

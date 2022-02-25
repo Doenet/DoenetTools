@@ -16,7 +16,6 @@ import {
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import {
   buildTimestamp,
-  getSHAofContent,
   ClipboardLinkButtons,
   RenameVersionControl,
   fileByContentId
@@ -27,6 +26,7 @@ import {useToast, toastType} from "../Toast.js";
 import {folderDictionary} from "../../_reactComponents/Drive/NewDrive.js";
 import {editorSaveTimestamp} from "../ToolPanels/DoenetMLEditor.js";
 import {DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
+import {CIDFromDoenetML} from "../../core/utils/cid.js";
 export const currentDraftSelectedAtom = atom({
   key: "currentDraftSelectedAtom",
   default: true
@@ -127,7 +127,7 @@ export default function VersionHistory(props) {
   const saveVersion = useRecoilCallback(({snapshot, set}) => async (doenetId2) => {
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const timestamp = buildTimestamp();
-    const contentId = getSHAofContent(doenetML);
+    const contentId = await CIDFromDoenetML(doenetML);
     const versionId = nanoid();
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId2));
     let newVersions = {...oldVersions};
@@ -163,7 +163,7 @@ export default function VersionHistory(props) {
   const saveAndReleaseCurrent = useRecoilCallback(({snapshot, set}) => async ({doenetId: doenetId2, driveId: driveId2, folderId: folderId2, itemId: itemId2}) => {
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const timestamp = DateToUTCDateString(new Date());
-    const contentId = getSHAofContent(doenetML);
+    const contentId = await CIDFromDoenetML(doenetML);
     const versionId = nanoid();
     const {data} = await axios.post("/api/releaseDraft.php", {
       doenetId: doenetId2,
@@ -226,7 +226,7 @@ export default function VersionHistory(props) {
       const wasDraftSelected = await snapshot.getPromise(currentDraftSelectedAtom);
       if (wasDraftSelected) {
         const newDraftDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-        const newDraftContentId = getSHAofContent(newDraftDoenetML);
+        const newDraftContentId = await CIDFromDoenetML(newDraftDoenetML);
         if (newDraftContentId !== oldDraftContentId) {
           let newDraft = {...oldVersions.draft};
           newDraft.contentId = newDraftContentId;

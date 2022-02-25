@@ -7,7 +7,6 @@ import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVar
 import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 
 
-
 // serializeFunctions.expandDoenetMLsToFullSerializedComponents({
 //     contentIds: [],
 //     doenetMLs: [doenetML],

@@ -145,6 +145,8 @@ export class Problem extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    // Delete the suppressAutomaticVariants state variable definition that inherited
+    // so that will instead use the state variable created from the attribute, above
     delete stateVariableDefinitions.suppressAutomaticVariants;
 
     stateVariableDefinitions.sectionName.definition = () => ({

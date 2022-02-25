@@ -2,6 +2,7 @@ import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import { createUniqueName } from '../utils/naming';
+import { setUpVariantSeedAndRng } from '../utils/variants';
 
 export default class ConditionalContent extends CompositeComponent {
   static componentType = "conditionalContent";
@@ -11,6 +12,8 @@ export default class ConditionalContent extends CompositeComponent {
   static assignNamesToReplacements = true;
   static originalNamesAreConsistent = true;
 
+  static createsVariants = true;
+  static alwaysSetUpVariant = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
@@ -35,7 +38,7 @@ export default class ConditionalContent extends CompositeComponent {
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
-    
+
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
     }
@@ -204,6 +207,62 @@ export default class ConditionalContent extends CompositeComponent {
       }
     }
 
+
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { isVariantComponent: true } })
+    }
+
+    stateVariableDefinitions.generatedVariantInfo = {
+      returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
+        variantSeed: {
+          dependencyType: "value",
+          value: sharedParameters.variantSeed,
+        },
+        variantDescendants: {
+          dependencyType: "descendant",
+          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          variableNames: [
+            "isVariantComponent",
+            "generatedVariantInfo",
+          ],
+          useReplacementsForComposites: true,
+          recurseToMatchedChildren: false,
+          variablesOptional: true,
+          includeNonActiveChildren: true,
+          ignoreReplacementsOfMatchedComposites: true,
+        },
+
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let generatedVariantInfo = {
+          seed: dependencyValues.variantSeed,
+          meta: {
+            createdBy: componentName,
+          }
+        };
+
+
+        let subvariants = generatedVariantInfo.subvariants = [];
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.generatedVariantInfo)
+          } else if (descendant.stateValues.generatedVariantInfo) {
+            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+          }
+        }
+
+        return {
+          setValue: {
+            generatedVariantInfo,
+          }
+        }
+
+      }
+    }
+
+
     return stateVariableDefinitions;
   }
 
@@ -214,9 +273,9 @@ export default class ConditionalContent extends CompositeComponent {
     workspace.previousSelectedIndices = [...await component.stateValues.selectedIndices];
     workspace.previousBaseConditionSatisfied = await component.stateValues.baseConditionSatisfied;
 
-    // console.log(`replacements for ${component.componentName}`)
-    // console.log(JSON.parse(JSON.stringify(replacements)));
-    // console.log(replacements);
+    console.log(`replacements for ${component.componentName}`)
+    console.log(JSON.parse(JSON.stringify(replacements)));
+    console.log(replacements);
 
     return { replacements };
 
@@ -237,7 +296,7 @@ export default class ConditionalContent extends CompositeComponent {
 
       let caseChildren = await component.stateValues.caseChildren;
 
-      for (let selectedIndex of await component.stateValues.selectedIndices) {
+      for (let [replInd, selectedIndex] of (await component.stateValues.selectedIndices).entries()) {
 
         let selectedChildName, childComponentType, newNameForSelectedChild;
         if (selectedIndex < await component.stateValues.nCases) {
@@ -265,6 +324,7 @@ export default class ConditionalContent extends CompositeComponent {
           doenetAttributes: Object.assign({}, components[selectedChildName].doenetAttributes),
           children: serializedGrandchildren,
           originalName: newNameForSelectedChild,
+          variants: { desiredVariant: { seed: component.sharedParameters.variantSeed + replInd.toString() + '|' + selectedIndex.toString() } }
         }
 
         if (components[selectedChildName].attributes.newNamespace) {
@@ -294,9 +354,9 @@ export default class ConditionalContent extends CompositeComponent {
 
   static async calculateReplacementChanges({ component, componentChanges, components, workspace, componentInfoObjects }) {
 
-    // console.log(`calculate replacement changes for selectByCondition ${component.componentName}`)
-    // console.log(workspace.previousSelectedIndices);
-    // console.log(component.stateValues.selectedIndices);
+    console.log(`calculate replacement changes for selectByCondition ${component.componentName}`)
+    console.log(workspace.previousSelectedIndices);
+    console.log(component.stateValues.selectedIndices);
 
     let selectedIndices = await component.stateValues.selectedIndices;
     let baseConditionSatisfied = await component.stateValues.baseConditionSatisfied;
@@ -364,6 +424,19 @@ export default class ConditionalContent extends CompositeComponent {
     return replacementChanges;
 
   }
+
+  static async setUpVariant({
+    serializedComponent, sharedParameters,
+    descendantVariantComponents,
+  }) {
+
+    setUpVariantSeedAndRng({
+      serializedComponent, sharedParameters,
+      descendantVariantComponents
+    });
+
+  }
+
 
   get allPotentialRendererTypes() {
 

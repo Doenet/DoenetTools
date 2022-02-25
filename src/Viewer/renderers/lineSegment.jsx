@@ -57,12 +57,10 @@ export default function LineSegment(props) {
       strokeColor: SVs.selectedStyle.lineColor,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
       strokeWidth: SVs.selectedStyle.lineWidth,
+      highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
     };
 
-    if (!SVs.draggable || SVs.fixed) {
-      jsxSegmentAttributes.highlightStrokeWidth = SVs.selectedStyle.lineWidth;
-    }
 
     let jsxPointAttributes = Object.assign({}, jsxSegmentAttributes);
     Object.assign(jsxPointAttributes, {

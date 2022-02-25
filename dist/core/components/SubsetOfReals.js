@@ -2,8 +2,6 @@ import MathComponent from './Math.js';
 import subsets, { buildSubsetFromMathExpression } from '../utils/subset-of-reals.js';
 import { renameStateVariable } from '../utils/stateVariables.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
-import { deepCompare } from '../utils/deepFunctions.js';
-
 export default class SubsetOfReals extends MathComponent {
 
   static componentType = "subsetOfReals";

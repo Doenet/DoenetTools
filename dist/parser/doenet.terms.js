@@ -5,7 +5,7 @@ export const
   MissingCloseTag = 3,
   mismatchedStartCloseTag = 4,
   incompleteStartCloseTag = 5,
-  commentContent = 29,
+  commentContent = 28,
   Document = 6,
   Text = 7,
   Comment = 8,
@@ -17,8 +17,6 @@ export const
   AttributeName = 14,
   Is = 15,
   AttributeValue = 16,
-  EntityReference = 17,
-  CharacterReference = 18,
-  MismatchedCloseTag = 19,
-  CloseTag = 20,
-  SelfClosingTag = 21
+  MismatchedCloseTag = 17,
+  CloseTag = 18,
+  SelfClosingTag = 19
