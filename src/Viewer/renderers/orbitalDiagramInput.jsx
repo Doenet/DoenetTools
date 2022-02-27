@@ -12,7 +12,7 @@ outline: none;
 
 export default function orbitalDiagramInput(props){
   let {name, SVs, actions, callAction} = useDoenetRenderer(props);
-  console.log("orbitalDiagramInput SVs",SVs);
+  console.log("orbitalDiagramInput SVs ",SVs);
 
   orbitalDiagramInput.ignoreActionsWithoutCore = true;
 
@@ -108,20 +108,9 @@ export default function orbitalDiagramInput(props){
       deselect(e);
     }}
     onClick={()=>{
-      let activeRowNumber = rows.length - selectedRow -1;
-      if (selectedRow === -1){
-        activeRowNumber = 0;
-      }
-      
-      setRows((was)=>{
-        let newObj = [...was];
-        newObj[activeRowNumber] = {...was[activeRowNumber]}
-        newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes']];
-        newObj[activeRowNumber]['boxes'].splice(selectedBox, 1); //-1 removes last box
-        return newObj;
-      })
-      
-      
+      callAction({
+        action: actions.removeBox,
+      });
     }}>Remove Box</button>
 
     <button id={`orbitaladduparrow${name}`}
@@ -129,30 +118,9 @@ export default function orbitalDiagramInput(props){
       deselect(e);
     }}
     onClick={()=>{
-      let activeRowNumber = rows.length - selectedRow -1;
-      if (selectedRow === -1){
-        activeRowNumber = 0;
-      }
-      let activeBox = selectedBox;
-      if (activeBox === -1){
-        activeBox = rows[activeRowNumber].boxes.length -1;
-      }
-      setRows((was)=>{
-        if (activeBox === -1){
-          //No box in the row to add an arrow to
-          return was;
-        }
-        let newObj = [...was];
-        newObj[activeRowNumber] = {...was[activeRowNumber]}
-        newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes']];
-        if (newObj[activeRowNumber]['boxes'].length == 0){
-          return was;
-        }
-        if (newObj[activeRowNumber]['boxes'][activeBox].length < 3){
-          newObj[activeRowNumber]['boxes'][activeBox] = newObj[activeRowNumber]['boxes'][activeBox] + 'U';
-        }
-        return newObj;
-      })
+      callAction({
+        action: actions.addUpArrow,
+      });
     }}>Add Up Arrow</button>
 
     <button id={`orbitaladddownarrow${name}`}
@@ -160,30 +128,9 @@ export default function orbitalDiagramInput(props){
       deselect(e);
     }}
     onClick={()=>{
-      let activeRowNumber = rows.length - selectedRow -1;
-      if (selectedRow === -1){
-        activeRowNumber = 0;
-      }
-      let activeBox = selectedBox;
-      if (activeBox === -1){
-        activeBox = rows[activeRowNumber].boxes.length -1;
-      }
-      setRows((was)=>{
-        if (activeBox === -1){
-          //No box in the row to add an arrow to
-          return was;
-        }
-        let newObj = [...was];
-        newObj[activeRowNumber] = {...was[activeRowNumber]}
-        newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes']];
-        if (newObj[activeRowNumber]['boxes'].length == 0){
-          return was;
-        }
-        if (newObj[activeRowNumber]['boxes'][activeBox].length < 3){
-          newObj[activeRowNumber]['boxes'][activeBox] = newObj[activeRowNumber]['boxes'][activeBox] + 'D';
-        }
-        return newObj;
-      })
+      callAction({
+        action: actions.addDownArrow,
+      });
     }}>Add Down Arrow</button>
     
     <button id={`orbitalremovearrow${name}`}
@@ -191,30 +138,9 @@ export default function orbitalDiagramInput(props){
       deselect(e);
     }}
     onClick={()=>{
-      let activeRowNumber = rows.length - selectedRow -1;
-      if (selectedRow === -1){
-        activeRowNumber = 0;
-      }
-      let activeBox = selectedBox;
-      if (activeBox === -1){
-        activeBox = rows[activeRowNumber].boxes.length -1;
-      }
-      setRows((was)=>{
-        if (activeBox === -1){
-          //No box in the row to remove arrow from
-          return was;
-        }
-        let newObj = [...was];
-        newObj[activeRowNumber] = {...was[activeRowNumber]}
-        newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes']];
-        if (newObj[activeRowNumber]['boxes'].length == 0){
-          return was;
-        }
-        if (newObj[activeRowNumber]['boxes'][activeBox].length > 0){
-          newObj[activeRowNumber]['boxes'][activeBox] = newObj[activeRowNumber]['boxes'][activeBox].slice(0, -1)
-        }
-        return newObj;
-      })
+      callAction({
+        action: actions.removeArrow,
+      });
     }}>Remove Arrow</button>
     </div>
   {rowsJSX}
@@ -241,7 +167,8 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
   let boxesJSX = [];
   for (let [index,code] of Object.entries(boxes)){
     let isSelected = false;
-    if (selectedRow === rowNumber && selectedBox === index){
+    // console.log("selectedBox === index",selectedBox,index,selectedBox === index,selectedBox == index)
+    if (selectedRow == rowNumber && selectedBox == index){
       isSelected = true;
     }
     boxesJSX.push(<OrbitalBox key={`OrbitalBox${rowNumber}-${index}`} boxNum={index} rowNumber={rowNumber} arrows={code} isSelected={isSelected} setSelectedBox={setSelectedBox} name={name}/>)
