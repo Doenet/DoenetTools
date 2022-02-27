@@ -11,13 +11,31 @@ outline: none;
 `;
 
 export default function orbitalDiagramInput(props){
-  let {name, SVs, children} = useDoenetRenderer(props);
-  // console.log("name",name)
-  let [selectedRow,setSelectedRow] = useState(-1);
-  let [selectedBox,setSelectedBox] = useState(-1);
-  let [rows,setRows] = useState([{orbitalText:"",boxes:[]}])
+  let {name, SVs, actions, callAction} = useDoenetRenderer(props);
+  console.log("orbitalDiagramInput SVs",SVs);
+
+  orbitalDiagramInput.ignoreActionsWithoutCore = true;
+
+  // let [selectedRow,setSelectedRow] = useState(-1); //-1 indicates nothing is selected
+  // let [selectedBox,setSelectedBox] = useState(-1); //-1 indicates nothing is selected
+  // let [rows,setRows] = useState([{orbitalText:"",boxes:[]}])
+
   if (SVs.hidden) {
     return null;
+  }
+
+  function setSelectedRow(index){
+    callAction({
+      action: actions.selectRow,
+      args:index
+    });
+  }
+
+  function setSelectedBox(index){
+    callAction({
+      action: actions.selectBox,
+      args:index
+    });
   }
 
   function deselect(e){
@@ -28,8 +46,8 @@ export default function orbitalDiagramInput(props){
     e.relatedTarget?.id !== `orbitaladddownarrow${name}` &&
     e.relatedTarget?.id !== `orbitalremovearrow${name}` &&
     e.relatedTarget?.id !== `orbitalremovebox${name}`){
-      if (e.relatedTarget?.id !== `OrbitalText${selectedRow}${name}` &&
-      e.relatedTarget?.id !== `OrbitalRow${selectedRow}${name}` &&
+      if (e.relatedTarget?.id !== `OrbitalText${SVs.selectedRowIndex}${name}` &&
+      e.relatedTarget?.id !== `OrbitalRow${SVs.selectedRowIndex}${name}` &&
       e.relatedTarget?.id.substring(0,(10+name.length)) !== `orbitalbox${name}` 
       ){
         setSelectedRow(-1);
@@ -40,17 +58,17 @@ export default function orbitalDiagramInput(props){
   }
 
   let rowsJSX = [];
-  for (let [index,row] of Object.entries(rows)){
-    let rowNumber = rows.length - index - 1;
+  for (let [index,row] of Object.entries(SVs.rows)){
+    let rowNumber = SVs.rows.length - index - 1;
     rowsJSX.push(<OrbitalRow 
       key={`OrbitalRow${rowNumber}`}
       rowNumber={rowNumber} 
-      selectedRow={selectedRow} 
+      selectedRow={SVs.selectedRowIndex} 
       setSelectedRow={setSelectedRow} 
       orbitalText={row.orbitalText}
       boxes={row.boxes}
-      setRows={setRows}
-      selectedBox={selectedBox}
+      setRows={()=>{}} //Call Actions
+      selectedBox={SVs.selectedBoxIndex}
       setSelectedBox={setSelectedBox}
       deselect={deselect}
       name={name}
@@ -64,39 +82,15 @@ export default function orbitalDiagramInput(props){
       deselect(e);
     }}
     onClick={()=>{
-      let numberOfRows = rows.length;
-      if (numberOfRows < 20){ //maximum number of rows
-        if (selectedRow !== -1){
-          let topRowIndex = rows.length;
-          setSelectedRow(topRowIndex); //Select top row if a row was selected
-        }
-        setSelectedBox(-1);
-        setRows((was)=>{
-          return [{orbitalText:"",boxes:[]},...was]
-        })
-      }
-      
+      callAction({
+        action: actions.addRow,
+      });
     }}>Add Row</button>
 
     <button id={`orbitalremoverow${name}`} onClick={()=>{
-      if (rows.length > 1){ //Don't delete the last one
-        let removeRowNumber = rows.length - 1 - selectedRow;
-        if (selectedRow === -1){
-          removeRowNumber = 0;
-        }
-        setSelectedRow(-1);
-        setSelectedBox(-1);
-        setRows((was)=>{
-          let newObj = [];
-          for(let [index,obj] of Object.entries(was)){
-            if (index != removeRowNumber){
-              newObj.push(obj)
-            }
-          }
-          return newObj;
-        })
-      }
-      
+      callAction({
+        action: actions.removeRow,
+      });
     }}>Remove Row</button>
 
     <button id={`orbitaladdbox${name}`}
@@ -104,19 +98,9 @@ export default function orbitalDiagramInput(props){
       deselect(e);
     }}
     onClick={()=>{
-      let activeRowNumber = rows.length - selectedRow -1;
-      if (selectedRow === -1){
-        activeRowNumber = 0;
-      }
-      let numberOfBoxes = rows[activeRowNumber].boxes.length;
-      if (numberOfBoxes < 20){ //maximum boxes in one row
-        setRows((was)=>{
-          let newObj = [...was];
-          newObj[activeRowNumber] = {...was[activeRowNumber]}
-          newObj[activeRowNumber]['boxes'] = [...was[activeRowNumber]['boxes'],""];
-          return newObj;
-        })
-      }
+      callAction({
+        action: actions.addBox,
+      });
     }}>Add Box</button>
 
     <button id={`orbitalremovebox${name}`}
