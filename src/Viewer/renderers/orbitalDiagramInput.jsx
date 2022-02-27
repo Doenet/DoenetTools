@@ -38,6 +38,13 @@ export default function orbitalDiagramInput(props){
     });
   }
 
+  function updateRowText(newValue){
+    callAction({
+      action: actions.updateRowText,
+      args:newValue
+    });
+  }
+
   function deselect(e){
     if (e.relatedTarget?.id !== `orbitaladdrow${name}` &&
     e.relatedTarget?.id !== `orbitalremoverow${name}` &&
@@ -62,12 +69,12 @@ export default function orbitalDiagramInput(props){
     let rowNumber = SVs.rows.length - index - 1;
     rowsJSX.push(<OrbitalRow 
       key={`OrbitalRow${rowNumber}`}
+      updateRowText={updateRowText}
       rowNumber={rowNumber} 
       selectedRow={SVs.selectedRowIndex} 
       setSelectedRow={setSelectedRow} 
       orbitalText={row.orbitalText}
       boxes={row.boxes}
-      setRows={()=>{}} //Call Actions
       selectedBox={SVs.selectedBoxIndex}
       setSelectedBox={setSelectedBox}
       deselect={deselect}
@@ -147,7 +154,7 @@ export default function orbitalDiagramInput(props){
   </>
 }
 
-function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setRows,selectedBox,setSelectedBox,deselect,name}){
+function OrbitalRow({rowNumber,updateRowText,selectedRow,setSelectedRow,orbitalText,boxes,selectedBox,setSelectedBox,deselect,name}){
   let rowStyle = {
     width:"800px",
     height:"44px",
@@ -187,12 +194,12 @@ function OrbitalRow({rowNumber,selectedRow,setSelectedRow,orbitalText,boxes,setR
     }}
    style={rowStyle}>
      {/* <span style={{marginRight:"2px"}}>row {rowNumber + 1}</span> */}
-     <OrbitalText orbitalText={orbitalText} setRows={setRows} rowNumber={rowNumber} selectedRow={selectedRow} setSelectedRow={setSelectedRow} name={name}/> 
+     <OrbitalText orbitalText={orbitalText} rowNumber={rowNumber} updateRowText={updateRowText} name={name}/> 
      {boxesJSX}
      </div>
 }
 
-function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows,name}){
+function OrbitalText({rowNumber,updateRowText,orbitalText,name}){
   return <input 
   id={`OrbitalText${rowNumber}${name}`} 
   style={{marginRight:"4px",height:'14px'}} 
@@ -201,13 +208,8 @@ function OrbitalText({rowNumber,selectedRow,setSelectedRow,orbitalText,setRows,n
   value={orbitalText}
   onChange={(e)=>{
     let newValue = e.target.value;
-    setRows((was)=>{
-      let index = was.length - rowNumber - 1;
-    let newObj = [...was];
-      newObj[index] = {...was[index]}
-      newObj[index]['orbitalText'] = newValue;
-      return newObj;
-    })
+    console.log("newValue",newValue)
+    updateRowText(newValue);
   }}
   />
 }

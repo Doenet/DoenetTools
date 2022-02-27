@@ -470,6 +470,43 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
+  async updateRowText(newValue) {
+    
+    let oldRows = await this.stateValues.rows;
+    let newRows = oldRows;
+    let selectedRowIndex = await this.stateValues.selectedRowIndex;
+
+    let activeRowIndex = oldRows.length - selectedRowIndex -1;
+    if (selectedRowIndex === -1){
+      activeRowIndex = 0;
+    }
+
+    newRows[activeRowIndex].orbitalText = newValue;
+
+    let updateInstructions = [{
+      updateType: "updateValue",
+      componentName: this.componentName,
+      stateVariable: "rows",
+      value: newRows,
+    }]
+
+
+    return await this.coreFunctions.performUpdate({
+      updateInstructions,
+      event: {
+        verb: "interacted",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+        result: {
+          rows:newRows
+        }
+      }
+    });
+
+  }
+
   async selectRow(index) {
 
     return await this.coreFunctions.performUpdate({
@@ -524,6 +561,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
     addUpArrow: this.addUpArrow.bind(this),
     addDownArrow: this.addDownArrow.bind(this),
     removeArrow: this.removeArrow.bind(this),
+    updateRowText: this.updateRowText.bind(this),
     selectRow: this.selectRow.bind(this),
     selectBox: this.selectBox.bind(this),
   };
