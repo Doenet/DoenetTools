@@ -18,15 +18,15 @@ let processEnv = {
 
 
 require('esbuild').build({
-  entryPoints: ['src/Core/Core.js'],
+  entryPoints: ['src/Core/CoreWorker.js'],
   format: 'esm',
   bundle: true,
   minify: true,
   // watch: true,
-  define: {
-    global:"window",
-  },
-  external: ['math-expressions'],
+  // define: {
+  //   global:"window",
+  // },
+  external: ['math-expressions','@Toast', 'axios'],
   plugins: [processEnv],
   outfile: 'src/Viewer/core.js',
 }).catch(() => process.exit(1))

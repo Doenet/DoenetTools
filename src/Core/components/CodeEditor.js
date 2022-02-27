@@ -213,12 +213,12 @@ export default class CodeEditor extends BlockComponent {
           variableName: "value"
         }
       }),
-      definition: function ({ dependencyValues, changes }) {
+      definition: function ({ dependencyValues, changes, justUpdatedForNewComponent }) {
         // console.log(`definition of immediateValue`)
         // console.log(dependencyValues)
         // console.log(changes);
 
-        if (changes.value) {
+        if (changes.value && !justUpdatedForNewComponent) {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
