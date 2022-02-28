@@ -19,6 +19,7 @@ import {driveColors} from "../../_reactComponents/Drive/util.js";
 import {useToast} from "../Toast.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
+import ColorImagePicker from "../../_reactComponents/PanelHeaderComponents/ColorImagePicker.js";
 export default function SelectedCourse() {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
@@ -297,20 +298,28 @@ const DriveInfoPanel = function(props) {
     }
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(CoursePassword, {
     driveId: props.driveId
-  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("label", null, "Image (soon)", /* @__PURE__ */ React.createElement(DoenetDriveCardMenu, {
-    key: `colorMenu${props.driveId}`,
-    colors: driveColors,
-    initialValue: props.color,
-    callback: (color) => {
+  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ColorImagePicker, {
+    initialImage: props.image,
+    initialColor: props.color,
+    imageCallback: (newImage) => {
       setDrivesInfo({
-        color,
-        label: driveLabel,
-        image: props.image,
+        color: "none",
+        label: props.label,
+        image: newImage,
+        newDriveId: props.driveId,
+        type: "update drive image"
+      });
+    },
+    colorCallback: (newColor) => {
+      setDrivesInfo({
+        image: "none",
+        color: newColor,
+        label: props.label,
         newDriveId: props.driveId,
         type: "update drive color"
       });
     }
-  })), /* @__PURE__ */ React.createElement("br", null), addOwners, ownersList, /* @__PURE__ */ React.createElement("br", null), ownerPerms, /* @__PURE__ */ React.createElement("br", null), addAdmins, /* @__PURE__ */ React.createElement("br", null), adminsList, adminPerms, deleteCourseButton));
+  }), /* @__PURE__ */ React.createElement("br", null), addOwners, ownersList, /* @__PURE__ */ React.createElement("br", null), ownerPerms, /* @__PURE__ */ React.createElement("br", null), addAdmins, /* @__PURE__ */ React.createElement("br", null), adminsList, adminPerms, deleteCourseButton));
 };
 function NewUser(props) {
   const [email, setEmail] = useState("");

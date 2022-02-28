@@ -76,7 +76,7 @@ doubleQuoteAttributeValue { "\"" (attributeContentDoubleQuote | Macro)* "\"" }
 
   TagName { identifier }
 
-  Macro { "$" "$"? identifier | "$" "$"? "(" identifier ")" }
+  Macro { "$" "$"? identifier | "$" "$"? "(" ![)]+ ")" }
 
   AttributeName { identifier }
 

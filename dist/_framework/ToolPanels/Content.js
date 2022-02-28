@@ -74,15 +74,15 @@ export default function Content(props) {
       readOnly: false,
       solutionDisplayMode,
       showFeedback: true,
-      showHints: true
+      showHints: true,
+      allowLoadPageState: true,
+      allowSavePageState: true,
+      allowLocalPageState: false,
+      allowSaveSubmissions: true,
+      allowSaveEvents: true
     },
     attemptNumber,
     doenetId,
-    allowLoadPageState: true,
-    allowSavePageState: true,
-    allowLocalPageState: true,
-    allowSaveSubmissions: true,
-    allowSaveEvents: true,
     requestedVariant
   }));
 }

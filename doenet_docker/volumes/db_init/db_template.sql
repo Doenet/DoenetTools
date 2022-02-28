@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-02-15 20:49:16 +0000
+# Generation Time: 2022-02-22 20:30:56 +0000
 # ************************************************************
 
 
@@ -364,6 +364,22 @@ CREATE TABLE `experiment` (
 
 
 
+# Dump of table ipfs_to_upload
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `ipfs_to_upload`;
+
+CREATE TABLE `ipfs_to_upload` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `contentId` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fileType` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `sizeInBytes` int(11) DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
 # Dump of table support_files
 # ------------------------------------------------------------
 
@@ -378,6 +394,8 @@ CREATE TABLE `support_files` (
   `description` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `asFileName` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `sizeInBytes` mediumint(11) DEFAULT NULL,
+  `widthPixels` int(11) DEFAULT NULL,
+  `heightPixels` int(11) DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
   `isListed` tinyint(1) NOT NULL DEFAULT '0',
   `isPublic` tinyint(1) NOT NULL DEFAULT '0',

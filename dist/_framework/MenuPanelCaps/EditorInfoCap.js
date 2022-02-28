@@ -16,21 +16,26 @@ export default function EditorInfoCap() {
     status = "Released";
   }
   let image;
+  let color;
   let course_label = "";
   for (let info of driveInfo.driveIdsAndLabels) {
     if (info.driveId === driveId) {
+      color = info.color;
       image = info.image;
       course_label = info.label;
       break;
     }
   }
-  let imageURL = `/media/drive_pictures/${image}`;
+  if (image != "none") {
+    image = "url(/media/drive_pictures/" + image + ")";
+  }
+  if (color != "none") {
+    color = "#" + color;
+  }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: {position: "relative", paddingBottom: "135px"}
   }, /* @__PURE__ */ React.createElement("img", {
-    style: {position: "absolute", height: "135px", objectFit: "cover"},
-    src: imageURL,
-    alt: `${course_label} course`,
+    style: {position: "absolute", height: "135px", objectFit: "cover", backgroundImage: image, backgroundColor: color},
     width: "240px"
   })), /* @__PURE__ */ React.createElement("div", {
     style: {padding: "8px"}

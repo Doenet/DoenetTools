@@ -57,13 +57,7 @@ export const paramObjAtom = atom({
   key: "paramObjAtom",
   default: {}
 });
-export const footerAtom = atom({
-  key: "footerAtom",
-  default: null
-});
 export default function ToolRoot() {
-  console.log(">>>===ToolRoot ");
-  let footerObj = useRecoilValue(footerAtom);
   const [toolRootMenusAndPanels, setToolRootMenusAndPanels] = useState({
     pageName: "init",
     menuPanelCap: "",
@@ -76,7 +70,8 @@ export default function ToolRoot() {
     supportPanelIndex: 0,
     hasNoMenuPanel: false,
     headerControls: [],
-    displaySettings: true
+    displaySettings: true,
+    footer: null
   });
   let mainPanel = null;
   let supportPanel = /* @__PURE__ */ React.createElement(SupportPanel, {
@@ -179,17 +174,16 @@ export default function ToolRoot() {
     openMenuButton = false;
   }
   let footer = null;
-  console.log("footerObj", footerObj);
-  if (footerObj) {
+  if (toolRootMenusAndPanels.footer) {
     let footerKey = `footer`;
     footer = /* @__PURE__ */ React.createElement(FooterPanel, {
       id: "keyboard",
-      isInitOpen: footerObj.open,
-      height: footerObj.height
+      isInitOpen: toolRootMenusAndPanels.footer.open,
+      height: toolRootMenusAndPanels.footer.height
     }, /* @__PURE__ */ React.createElement(Suspense, {
       key: footerKey,
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
-    }, React.createElement(LazyFooterObj[footerObj.component], {
+    }, React.createElement(LazyFooterObj[toolRootMenusAndPanels.footer.component], {
       key: {footerKey}
     })));
   }
@@ -240,7 +234,8 @@ let navigationObj = {
       menusInitOpen: [true],
       headerControls: [],
       displaySettings: false,
-      waitForMenuSuppression: true
+      waitForMenuSuppression: true,
+      footer: {height: 250, open: false, component: "MathInputKeyboard"}
     },
     endExam: {
       pageName: "endExam",
@@ -261,7 +256,8 @@ let navigationObj = {
       menusTitles: ["Credit Achieved", "Time Remaining"],
       menusInitOpen: [true, true],
       headerControls: ["AssignmentBreadCrumb", "AssignmentNewAttempt"],
-      waitForMenuSuppression: true
+      waitForMenuSuppression: true,
+      footer: {height: 250, open: false, component: "MathInputKeyboard"}
     },
     courseChooser: {
       pageName: "Course",
@@ -345,7 +341,8 @@ let navigationObj = {
       supportPanelTitles: ["DoenetML Editor"],
       supportPanelIndex: 0,
       headerControls: ["EditorBreadCrumb", "ViewerUpdateButton"],
-      onLeave: "EditorLeave"
+      onLeave: "EditorLeave",
+      footer: {height: 250, open: false, component: "MathInputKeyboard"}
     },
     collection: {
       currentMainPanel: "CollectionEditor",
