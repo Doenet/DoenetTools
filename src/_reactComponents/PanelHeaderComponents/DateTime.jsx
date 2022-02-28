@@ -63,7 +63,7 @@ export default function DateTime(props) {
         ) : null}
         <input
           {...propsRI}
-          style={{ border: borderColor, cursor: cursorStyle }}
+          style={{ border: borderColor, cursor: cursorStyle, ...props.style }}
           ref={inputRef}
           onChange={(e) => {
             // console.log(e.target.selectionStart, e.target.selectionEnd);
@@ -110,8 +110,9 @@ export default function DateTime(props) {
           color: '#545454',
           height: '18px',
           width: '177px',
-          border: '2px solid #e2e2e2',
+          border: '2px solid black',
           borderRadius: '5px',
+          ...props.style,
         }}
       />
     );
