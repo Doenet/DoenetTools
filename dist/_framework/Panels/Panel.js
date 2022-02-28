@@ -1,13 +1,15 @@
-import React, {useEffect} from "../../_snowpack/pkg/react.js";
+import React, {useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {animated, useSpring} from "../../_snowpack/pkg/@react-spring/web.js";
 import {useGesture} from "../../_snowpack/pkg/react-use-gesture.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {
   faGripLinesVertical,
-  faGripLines
+  faGripLines,
+  faKeyboard
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import {useRecoilState, atomFamily} from "../../_snowpack/pkg/recoil.js";
+import {useRecoilState, atomFamily, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {handleRef} from "../Footers/MathInputSelector.js";
 export const handleDirection = {
   LEFT: {
     flexDir: "row-reverse",
@@ -39,7 +41,7 @@ const Wrapper = styled(animated.div)`
   display: flex;
   flex-direction: ${({$flexDir}) => $flexDir};
   align-items: center;
-  overflow: hidden;
+  // overflow: ${(props) => props.id === "keyboard" ? "visible" : "hidden"};
 `;
 const Background = styled.div`
   flex: 1 1 auto;
@@ -52,15 +54,13 @@ const Background = styled.div`
 const DragHandle = styled.div`
   flex: 0 0 ${({$handleSize}) => $handleSize}px;
   display: flex;
-  align-items: center;
   justify-content: center;
   color: rgb(246, 248, 255);
-  font-size: 12px;
+  font-size: ${(props) => props.id === "keyboard" ? 16 : 12};
   padding: 0;
   cursor: ${({$vertical}) => $vertical ? "ew-resize" : "ns-resize"};
   background-color: #1a5a99;
-  // border-radius: ${({$rounding}) => $rounding};
-  height: ${({$vertical}) => $vertical ? "25%" : ""};
+  height: ${({$vertical}) => $vertical ? "23%" : ""};
   width: ${({$vertical}) => $vertical ? "" : "25%"};
   box-sizing: border-box;
   touch-action: none;
@@ -74,17 +74,19 @@ export default function DragPanel({
   direction,
   id,
   gridArea = "auto",
-  handleSize = 10,
+  handleSize = 12,
   panelSize = 240,
   isInitOpen = false
 }) {
-  console.log("id", id);
+  const setHandleRef = useSetRecoilState(handleRef);
+  const handle = useRef(null);
   const [open, setOpen] = useRecoilState(panelOpen(id));
   const [{dir}, api] = useSpring(() => ({
     dir: open ? handleSize + panelSize : handleSize
   }), [open]);
   useEffect(() => {
     setOpen(isInitOpen);
+    setHandleRef({...handle});
   }, [isInitOpen, setOpen]);
   const bindX = useGesture({
     onDrag: ({tap, movement: [mx, my]}) => {
@@ -126,16 +128,19 @@ export default function DragPanel({
   return /* @__PURE__ */ React.createElement(Wrapper, {
     $gridArea: gridArea,
     $flexDir: direction.flexDir,
-    style: direction.drag[0] === "x" ? {width: dir} : {height: dir}
+    style: direction.drag[0] === "x" ? {width: dir} : {height: dir},
+    id
   }, /* @__PURE__ */ React.createElement(Background, {
     $vertical: direction.vertical
   }, children), /* @__PURE__ */ React.createElement(DragHandle, {
+    tabIndex: "0",
+    ref: handle,
     "data-cy": "panelDragHandle",
     $vertical: direction.vertical,
     $rounding: direction.rounding,
     $handleSize: handleSize,
     ...bindX()
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-    icon: direction.vertical ? faGripLinesVertical : faGripLines
+    icon: id === "keyboard" ? faKeyboard : direction.vertical ? faGripLinesVertical : faGripLines
   })));
 }

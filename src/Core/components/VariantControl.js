@@ -226,9 +226,9 @@ export default class VariantControl extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "nVariantsSpecified"
         },
-        selectRng: {
+        variantRng: {
           dependencyType: "value",
-          value: sharedParameters.selectRng,
+          value: sharedParameters.variantRng,
           doNotProxy: true,
         }
       }),
@@ -240,7 +240,7 @@ export default class VariantControl extends BaseComponent {
         //    then use that for variantIndex
         // 2. if variants.desiredVariantName is defined and is a valid variantName
         //    then use the variantIndex corresponding to that name
-        // 3. else, randomly generate variantIndex (except use 0 for document)
+        // 3. else, randomly generate variantIndex (except use 1 for document)
 
 
         // no essential state variable, so try to find desiredVariant
@@ -297,15 +297,15 @@ export default class VariantControl extends BaseComponent {
 
         let selectedVariantIndex;
 
-        // if selectRng exists
+        // if variantRng exists
         // randomly pick variant index
-        if (dependencyValues.selectRng) {
+        if (dependencyValues.variantRng) {
           // random number in [0, 1)
-          let rand = dependencyValues.selectRng();
+          let rand = dependencyValues.variantRng();
           // random integer from 1 to nVariants
           selectedVariantIndex = Math.floor(rand * dependencyValues.nVariantsSpecified) + 1;
         } else {
-          // if selectRng does not exist, we are in document
+          // if variantRng does not exist, we are in document
           // Just choose the first variant
           selectedVariantIndex = 1;
         }
@@ -378,7 +378,7 @@ export default class VariantControl extends BaseComponent {
       }
     }
 
-    stateVariableDefinitions.selectRng = {
+    stateVariableDefinitions.variantRng = {
       returnDependencies: ({ sharedParameters }) => ({
         selectedSeed: {
           dependencyType: "stateVariable",
@@ -392,7 +392,7 @@ export default class VariantControl extends BaseComponent {
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          selectRng: new dependencyValues.rngClass(dependencyValues.selectedSeed)
+          variantRng: new dependencyValues.rngClass(dependencyValues.selectedSeed)
         }
       })
     }

@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "cidFromSHA.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
@@ -106,7 +107,8 @@ if ($success){
 if ($success){
 
 //save to file as contentid
-$contentId = hash('sha256', $dangerousDoenetML);
+$SHA = hash('sha256', $dangerousDoenetML);
+$contentId = cidFromSHA($SHA);
 
 if ($isDraft == '1' and $isSetAsCurrent != '1'){
     $sql = "UPDATE content 

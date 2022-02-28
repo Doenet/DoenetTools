@@ -60,13 +60,14 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
     stateVariableDefinitions.function = {
       additionalStateVariablesDefined: [{
         variableName: "haveFunction", forRenderer: true,
+      }, {
+        variableName: "fDefinition", forRenderer: true,
       }],
-      forRenderer: true,
       returnDependencies: () => ({
         functionAttr: {
           dependencyType: "attributeComponent",
           attributeName: "function",
-          variableNames: ["numericalfs", "nInputs", "nOutputs"],
+          variableNames: ["numericalfs", "nInputs", "nOutputs", "fDefinition"],
         },
       }),
       definition({ dependencyValues }) {
@@ -74,13 +75,14 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
           || dependencyValues.functionAttr.stateValues.nInputs !== 1
           || dependencyValues.functionAttr.stateValues.nOutputs !== 1
         ) {
-          return { setValue: { function: () => NaN, haveFunction: false } }
+          return { setValue: { function: () => NaN, haveFunction: false, fDefinition: {} } }
         }
 
         return {
           setValue: {
             function: dependencyValues.functionAttr.stateValues.numericalfs[0],
-            haveFunction: true
+            haveFunction: true,
+            fDefinition: dependencyValues.functionAttr.stateValues.fDefinition,
           }
         }
       }

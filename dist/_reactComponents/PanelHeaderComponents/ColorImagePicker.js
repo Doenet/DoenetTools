@@ -8,7 +8,7 @@ const Display = styled.div`
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    background-color: ${(props) => props.color || "#f6f8ff"};
+    background-color: ${(props) => props.color || "#ffffff"};
     background-image: ${(props) => props.image || "none"};
 
 `;
@@ -16,8 +16,8 @@ const Menu = styled.div`
     border: 2px solid black;
     border-radius: 5px;
     background-color: #f6f8ff;
-    height: 224px;
-    width: 224px;
+    height: 246px;
+    width: 220px;
     display: none;
     position: relative;
     top: 40px;
@@ -31,26 +31,38 @@ const ColorSection = styled.div`
     grid-template-columns: repeat(9, 24px);
     grid-template-rows: 20px;
     width: 224px;
-    height: 32px;
+    height: 24px;
 `;
 const ImageSection = styled.div`
     display: grid;
-    grid-template-columns: repeat(3, 72px);
+    grid-template-columns: repeat(4, 54px);
     grid-template-rows: repeat(5, 54px);
     width: 224px;
     height: 100px;
+    padding-bottom: 6px;
 `;
 const Color = styled.div`
     border-radius: 5px;
     height: 20px;
     width: 20px;
     margin: 4px;
-    background-color: ${(props) => props.color || "#f6f8ff"};
+    background-color: ${(props) => props.color || "#ffffff"};
+`;
+const Label = styled.p`
+
+  display: static;
+  margin-right: 5px;
+  font-family: Open Sans;
+  margin-bottom: 6px;
+`;
+const Container = styled.div`
+  display: static;
+  width: auto;
 `;
 const Image = styled.div`
     border-radius: 5px;
     height: 50px;
-    width: 68px;
+    width: 50px;
     margin: 4px;
     background-size: cover;
     background-position: center center;
@@ -60,30 +72,34 @@ const Image = styled.div`
 `;
 export default function ColorImagePicker(props) {
   const [menuOpen, setMenuOpen] = useState("False");
-  const [displayColor, setDisplayColor] = useState("#e2e2e2");
-  const [displayImage, setDisplayImage] = useState("none");
-  function handleClick() {
+  const [displayColor, setDisplayColor] = useState(props.initialColor ? props.initialColor : "#ffffff");
+  const [displayImage, setDisplayImage] = useState(props.initialImage ? props.initialImage : "none");
+  function handleClick(e) {
     if (menuOpen == "True") {
       setMenuOpen("False");
     } else if (menuOpen == "False") {
       setMenuOpen("True");
     }
-    if (props.callback)
-      props.callback();
   }
   function changeColor(newColor) {
     setDisplayColor(newColor);
     setDisplayImage("none");
+    setMenuOpen("False");
+    if (props.colorCallback)
+      props.colorCallback(newColor);
   }
   function changeImage(newImage) {
     setDisplayImage(newImage);
     setDisplayColor("none");
+    setMenuOpen("False");
+    if (props.imageCallback)
+      props.imageCallback(newImage);
   }
   var colorArray = [];
   for (let i = 0; i < driveColors.length; i++) {
     colorArray.push(/* @__PURE__ */ React.createElement(Color, {
       key: i,
-      color: driveColors[i],
+      color: "#" + driveColors[i],
       onClick: () => {
         changeColor(driveColors[i]);
       }
@@ -93,19 +109,19 @@ export default function ColorImagePicker(props) {
   for (let i = 0; i < driveImages.length; i++) {
     imageArray.push(/* @__PURE__ */ React.createElement(Image, {
       key: i,
-      image: "url(/media/" + driveImages[i] + ")",
+      image: "url(/media/drive_pictures/" + driveImages[i] + ")",
       onClick: () => {
-        changeImage("url(/media/" + driveImages[i] + ")");
+        changeImage(driveImages[i]);
       }
     }));
   }
-  return /* @__PURE__ */ React.createElement(Display, {
-    onClick: () => {
-      handleClick();
+  return /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Label, null, "Background Image"), /* @__PURE__ */ React.createElement(Display, {
+    onClick: (e) => {
+      handleClick(e);
     },
-    color: displayColor,
-    image: displayImage
+    color: "#" + displayColor,
+    image: "url(/media/drive_pictures/" + displayImage + ")"
   }, /* @__PURE__ */ React.createElement(Menu, {
     visible: menuOpen
-  }, /* @__PURE__ */ React.createElement(ColorSection, null, colorArray), /* @__PURE__ */ React.createElement(ImageSection, null, imageArray)));
+  }, /* @__PURE__ */ React.createElement(ColorSection, null, colorArray), /* @__PURE__ */ React.createElement(ImageSection, null, imageArray))));
 }

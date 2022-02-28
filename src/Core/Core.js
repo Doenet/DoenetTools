@@ -1076,18 +1076,57 @@ export default class Core {
           descendantVariantComponents
         });
 
-        let indicesToCreate = [...serializedChildren.keys()].filter(v => v !== variantControlInd);
-        let childrenToCreate = serializedChildren.filter((v, i) => i !== variantControlInd);
+        if (componentClass.keepChildrenSerialized && variantControlInd === undefined) {
+          let childrenAddressed = new Set([]);
 
-        let childrenResult = await this.createIsolatedComponentsSub({
-          serializedComponents: childrenToCreate,
-          ancestors: ancestorsForChildren,
-          shadow,
-          namespaceForUnamed,
-        });
+          let keepSerializedInds = componentClass.keepChildrenSerialized({
+            serializedComponent,
+            componentInfoObjects: this.componentInfoObjects,
+          });
 
-        for (let [createInd, locationInd] of indicesToCreate.entries()) {
-          definingChildren[locationInd] = childrenResult.components[createInd];
+          for (let ind of keepSerializedInds) {
+            if (childrenAddressed.has(Number(ind))) {
+              throw Error("Invalid instructions to keep children serialized from " + componentClass.componentType
+                + ": child repeated");
+            }
+            childrenAddressed.add(Number(ind));
+            childrenToRemainSerialized.push(serializedChildren[ind]);
+          }
+
+          // create any remaining children
+          let childrenToCreate = [];
+          for (let [ind, child] of serializedChildren.entries()) {
+            if (!(childrenAddressed.has(ind))) {
+              childrenToCreate.push(child)
+            }
+          }
+
+          if (childrenToCreate.length > 0) {
+            let childrenResult = await this.createIsolatedComponentsSub({
+              serializedComponents: childrenToCreate,
+              ancestors: ancestorsForChildren,
+              shadow,
+              namespaceForUnamed,
+            });
+
+            definingChildren = childrenResult.components;
+          }
+
+        } else {
+
+          let indicesToCreate = [...serializedChildren.keys()].filter(v => v !== variantControlInd);
+          let childrenToCreate = serializedChildren.filter((v, i) => i !== variantControlInd);
+
+          let childrenResult = await this.createIsolatedComponentsSub({
+            serializedComponents: childrenToCreate,
+            ancestors: ancestorsForChildren,
+            shadow,
+            namespaceForUnamed,
+          });
+
+          for (let [createInd, locationInd] of indicesToCreate.entries()) {
+            definingChildren[locationInd] = childrenResult.components[createInd];
+          }
         }
 
       } else if (componentClass.keepChildrenSerialized) {

@@ -29,7 +29,7 @@ export default function Line(props) {
     };
   }, []);
   function createLineJXG() {
-    if (SVs.numericalPoints.length !== 2 || SVs.numericalPoints.some((x) => x.length !== 2)) {
+    if (SVs.numericalPoints?.length !== 2 || SVs.numericalPoints.some((x) => x.length !== 2)) {
       lineJXG.current = {};
       return;
     }
@@ -42,11 +42,9 @@ export default function Line(props) {
       strokeColor: SVs.selectedStyle.lineColor,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
       strokeWidth: SVs.selectedStyle.lineWidth,
+      highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed)
     };
-    if (!SVs.draggable || SVs.fixed) {
-      jsxLineAttributes.highlightStrokeWidth = SVs.selectedStyle.lineWidth;
-    }
     let through = [
       [...SVs.numericalPoints[0]],
       [...SVs.numericalPoints[1]]
@@ -112,7 +110,7 @@ export default function Line(props) {
   if (board) {
     if (Object.keys(lineJXG.current).length === 0) {
       createLineJXG();
-    } else if (SVs.numericalPoints.length !== 2 || SVs.numericalPoints.some((x) => x.length !== 2)) {
+    } else if (SVs.numericalPoints?.length !== 2 || SVs.numericalPoints.some((x) => x.length !== 2)) {
       deleteLineJXG();
     } else {
       let validCoords = true;

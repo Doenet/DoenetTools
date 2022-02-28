@@ -62,7 +62,7 @@ export const startTag = new ExternalTokenizer((input, stack) => {
     if (stack.context && name == stack.context.name) return input.acceptToken(StartCloseTag)
     for (let cx = stack.context; cx; cx = cx.parent) if (cx.name == name) return input.acceptToken(MissingCloseTag, -2)
     input.acceptToken(mismatchedStartCloseTag)
-  } else if (input.next != 33 /* '!' */ && input.next != 63 /* '?' */) {
+  } else if (input.next != 33 /* '!' */ && input.next != 63 /* '?' */ && !isSpace(input.next)) {
     return input.acceptToken(StartTag)
   }
 }, {contextual: true})
@@ -73,7 +73,7 @@ function scanTo(type, end) {
       if (input.next < 0) {
         if (len) input.acceptToken(type)
         break
-      } 
+      }
       if (input.next == end.charCodeAt(endPos)) {
         endPos++
         if (endPos == end.length) {

@@ -13,7 +13,6 @@ import {
 import {
   searchParamAtomFamily,
   pageToolViewAtom,
-  footerAtom,
 } from '../NewToolRoot';
 import {
   itemHistoryAtom,
@@ -72,7 +71,6 @@ function pushRandomVariantOfRemaining({ previous, from }) {
 
 export default function AssignmentViewer() {
   // console.log(">>>===AssignmentViewer")
-  const setFooter = useSetRecoilState(footerAtom);
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState('Initializing');
@@ -430,23 +428,6 @@ export default function AssignmentViewer() {
 
   return (
     <>
-      <button
-        onClick={() => {
-          setFooter((was) => {
-            let newObj = null;
-            if (!was) {
-              newObj = {
-                height: 250,
-                open: true,
-                component: 'MathInputKeyboard',
-              };
-            }
-            return newObj;
-          });
-        }}
-      >
-        Toggle Keyboard
-      </button>
       <DoenetViewer
         key={`doenetviewer${doenetId}`}
         CID={CID}

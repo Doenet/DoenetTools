@@ -1,22 +1,18 @@
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {atomFamily, useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import {renderersloadComponent} from "../DoenetViewer.js";
-export const rendererSVs = atomFamily({
-  key: "rendererSVs",
-  default: {stateValues: {}, sourceOfUpdate: {}, ignoreUpdate: false}
+export const rendererState = atomFamily({
+  key: "rendererState",
+  default: {stateValues: {}, sourceOfUpdate: {}, ignoreUpdate: false, childrenInstructions: []}
 });
 export default function useDoenetRenderer(props, initializeChildrenOnConstruction = true) {
   let actions = props.componentInstructions.actions;
   let name = props.componentInstructions.componentName;
   let [renderersToLoad, setRenderersToLoad] = useState({});
-  let {stateValues, sourceOfUpdate = {}, ignoreUpdate} = useRecoilValue(rendererSVs(name));
-  props.rendererUpdateMethods[name] = {
-    update: () => {
-    }
-  };
+  let {stateValues, sourceOfUpdate = {}, ignoreUpdate, childrenInstructions} = useRecoilValue(rendererState(name));
   let children = [];
   const loadMoreRenderers = Object.keys(renderersToLoad).length === 0;
-  for (let childInstructions of props.componentInstructions.children) {
+  for (let childInstructions of childrenInstructions) {
     let child = createChildFromInstructions(childInstructions, loadMoreRenderers);
     children.push(child);
   }
@@ -36,7 +32,6 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
       key: childInstructions.componentName,
       componentInstructions: childInstructions,
       rendererClasses: props.rendererClasses,
-      rendererUpdateMethods: props.rendererUpdateMethods,
       flags: props.flags,
       callAction: props.callAction
     };

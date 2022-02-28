@@ -70,23 +70,13 @@ export const paramObjAtom = atom({
   default: {},
 });
 
-//height: 120
-//open: true
-//component: "mathKeyboard"
-export const footerAtom = atom({
-  key: 'footerAtom',
-  default: null,
-});
-
 // **** ToolRoot ****
 //Keep  as simple as we can
 //Keep refreshes to a minimum
 //Don't use recoil in ToolRoot
 
 export default function ToolRoot() {
-  console.log('>>>===ToolRoot ');
-
-  let footerObj = useRecoilValue(footerAtom);
+  // console.log('>>>===ToolRoot ');
 
   const [toolRootMenusAndPanels, setToolRootMenusAndPanels] = useState({
     pageName: 'init',
@@ -101,6 +91,7 @@ export default function ToolRoot() {
     hasNoMenuPanel: false,
     headerControls: [],
     displaySettings: true,
+    footer: null,
   });
   let mainPanel = null;
   let supportPanel = <SupportPanel hide={true}>null</SupportPanel>;
@@ -258,24 +249,23 @@ export default function ToolRoot() {
     openMenuButton = false;
   }
 
-  //MathInputKeyboard
+
   let footer = null;
 
-  //Todo: Why is this null?
-  console.log('footerObj', footerObj);
-  if (footerObj) {
+
+  if (toolRootMenusAndPanels.footer) {
     let footerKey = `footer`;
     footer = (
       <FooterPanel
         id="keyboard"
-        isInitOpen={footerObj.open}
-        height={footerObj.height}
+        isInitOpen={toolRootMenusAndPanels.footer.open}
+        height={toolRootMenusAndPanels.footer.height}
       >
         <Suspense
           key={footerKey}
           fallback={<LoadingFallback>loading...</LoadingFallback>}
         >
-          {React.createElement(LazyFooterObj[footerObj.component], {
+          {React.createElement(LazyFooterObj[toolRootMenusAndPanels.footer.component], {
             key: { footerKey },
           })}
         </Suspense>
@@ -327,6 +317,7 @@ export default function ToolRoot() {
 // headerControls:["BackButton"],
 // hasNoMenuPanel: true,
 // waitForMenuSuppression:true,
+// footer: {height,open,component}
 
 let navigationObj = {
   content: {
@@ -361,6 +352,7 @@ let navigationObj = {
       headerControls: [],
       displaySettings: false,
       waitForMenuSuppression: true,
+      footer:{height:250,open:false,component:"MathInputKeyboard"}
     },
     endExam: {
       pageName: 'endExam',
@@ -382,6 +374,7 @@ let navigationObj = {
       menusInitOpen: [true, true],
       headerControls: ['AssignmentBreadCrumb', 'AssignmentNewAttempt'],
       waitForMenuSuppression: true,
+      footer:{height:250,open:false,component:"MathInputKeyboard"}
     },
     courseChooser: {
       //allCourses
@@ -482,6 +475,7 @@ let navigationObj = {
       supportPanelIndex: 0,
       headerControls: ['EditorBreadCrumb', 'ViewerUpdateButton'],
       onLeave: 'EditorLeave',
+      footer:{height:250,open:false,component:"MathInputKeyboard"}
     },
     collection: {
       currentMainPanel: 'CollectionEditor',

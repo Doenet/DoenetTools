@@ -1,5 +1,5 @@
 import React from "react";
-import "./ProgressBar.css"
+// import "./ProgressBar.css"
 
 //In progress
 export default function ScaleDonut() {

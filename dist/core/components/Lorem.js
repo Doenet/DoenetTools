@@ -1,11 +1,15 @@
 import CompositeComponent from './abstract/CompositeComponent.js';
 import { LoremIpsum } from "../../_snowpack/pkg/lorem-ipsum.js";
 import { processAssignNames } from '../utils/serializedStateProcessing.js';
+import { setUpVariantSeedAndRng } from '../utils/variants.js';
 
 export default class Lorem extends CompositeComponent {
   static componentType = "lorem";
 
   static assignNamesToReplacements = true;
+
+  static createsVariants = true;
+  static alwaysSetUpVariant = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
@@ -106,6 +110,38 @@ export default class Lorem extends CompositeComponent {
     };
 
 
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { isVariantComponent: true } })
+    }
+
+    stateVariableDefinitions.generatedVariantInfo = {
+      returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
+        variantSeed: {
+          dependencyType: "value",
+          value: sharedParameters.variantSeed,
+        },
+
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let generatedVariantInfo = {
+          seed: dependencyValues.variantSeed,
+          meta: {
+            createdBy: componentName,
+          }
+        };
+
+        return {
+          setValue: {
+            generatedVariantInfo,
+          }
+        }
+
+      }
+    }
+
+
     return stateVariableDefinitions;
 
   }
@@ -122,7 +158,7 @@ export default class Lorem extends CompositeComponent {
         max: await component.stateValues.maxWordsPerSentence,
         min: await component.stateValues.minWordsPerSentence
       },
-      random: component.sharedParameters.rng
+      random: component.sharedParameters.variantRng
     });
 
     let replacements = [];
@@ -211,6 +247,18 @@ export default class Lorem extends CompositeComponent {
     };
 
     return [replacementInstruction];
+
+  }
+
+  static async setUpVariant({
+    serializedComponent, sharedParameters,
+    descendantVariantComponents,
+  }) {
+
+    setUpVariantSeedAndRng({
+      serializedComponent, sharedParameters,
+      descendantVariantComponents
+    });
 
   }
 

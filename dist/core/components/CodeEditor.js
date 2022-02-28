@@ -69,32 +69,32 @@ export default class CodeEditor extends BlockComponent {
 
     let addCodeViewer = function ({ matchedChildren, componentAttributes }) {
 
-      if (matchedChildren.length > 0){
-        return {success: false}
+      if (matchedChildren.length > 0) {
+        return { success: false }
       }
 
       let codeViewer = {
         componentType: "codeViewer",
-        children:[{componentType: "renderDoenetML"}]
+        children: [{ componentType: "renderDoenetML" }]
       };
-      
+
       //Update depends on this being the 1st index position
       let newChildren = [codeViewer];
 
-      if (componentAttributes.renderedName){
+      if (componentAttributes.renderedName) {
         codeViewer.attributes = {
-          renderedName: {primitive:componentAttributes.renderedName}
+          renderedName: { primitive: componentAttributes.renderedName }
         }
-        codeViewer.children[0].props = {name:componentAttributes.renderedName}
+        codeViewer.children[0].props = { name: componentAttributes.renderedName }
       }
 
-      if (componentAttributes.staticName){
-        let hiddenRenderDoenetML ={
+      if (componentAttributes.staticName) {
+        let hiddenRenderDoenetML = {
           componentType: "codeViewer",
-          attributes:{hide:{component:{componentType:"boolean",state:{value:true}}}},
-          children:[{
+          attributes: { hide: { component: { componentType: "boolean", state: { value: true } } } },
+          children: [{
             componentType: "renderDoenetML",
-            props: {name:componentAttributes.staticName},
+            props: { name: componentAttributes.staticName },
           }]
         };
         //Update code depends on this being the 2nd index position
@@ -140,11 +140,11 @@ export default class CodeEditor extends BlockComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.height.isAbsolute){
+        if (!dependencyValues.height.isAbsolute) {
           throw Error("Codeeditor relative height not implemented")
         }
-        let size = dependencyValues.height.size*dependencyValues.viewerRatio;
-        let viewerHeight = {size,isAbsolute:true}
+        let size = dependencyValues.height.size * dependencyValues.viewerRatio;
+        let viewerHeight = { size, isAbsolute: true }
         return { setValue: { viewerHeight } };
       },
     }
@@ -305,7 +305,7 @@ export default class CodeEditor extends BlockComponent {
     //Only update when value is out of date
     if (!this.stateValues.disabled &&
       this.stateValues.immediateValue !== this.stateValues.value
-      ) {
+    ) {
       let updateInstructions = [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -351,10 +351,10 @@ export default class CodeEditor extends BlockComponent {
       }).then(() => {
         this.coreFunctions.triggerChainedActions({
           componentName: this.componentName,
-        }) 
+        })
         if (this.attributes.staticName &&
-            this.definingChildren.length === 2 &&
-            this.definingChildren[1].componentType === 'codeViewer'){
+          this.definingChildren.length === 2 &&
+          this.definingChildren[1].componentType === 'codeViewer') {
           this.coreFunctions.performAction({
             componentName: this.definingChildren[1].componentName,
             actionName: "updateComponents",
@@ -365,21 +365,21 @@ export default class CodeEditor extends BlockComponent {
     }
   }
 
-  async updateComponents(){
+  async updateComponents() {
 
     if (this.definingChildren.length === 1 &&
-      this.definingChildren[0].componentType === 'codeViewer'){
-        await this.coreFunctions.performAction({
-          componentName: this.definingChildren[0].componentName,
-          actionName: "updateComponents",
-          // event: {
-          //   verb: "selected",
-          //   object: {
-          //     componentName: this.componentName,
-          //     componentType: this.componentType,
-          //   },
-          // },
-            });
+      this.definingChildren[0].componentType === 'codeViewer') {
+      await this.coreFunctions.performAction({
+        componentName: this.definingChildren[0].componentName,
+        actionName: "updateComponents",
+        // event: {
+        //   verb: "selected",
+        //   object: {
+        //     componentName: this.componentName,
+        //     componentType: this.componentType,
+        //   },
+        // },
+      });
     }
   }
 

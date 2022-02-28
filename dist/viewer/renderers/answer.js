@@ -3,16 +3,16 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 export default function Answer(props) {
-  let {name, SVs, actions, children, sourceOfUpdate} = useDoenetRender(props);
+  let {name, SVs, actions, children, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
   }
   let disabled = SVs.disabled;
-  let submitAnswer = () => props.callAction({
+  let submitAnswer = () => callAction({
     action: actions.submitAnswer
   });
   if (SVs.submitAllAnswersAtAncestor) {
-    submitAnswer = () => props.callAction({
+    submitAnswer = () => callAction({
       action: actions.submitAllAnswers
     });
   }

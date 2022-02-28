@@ -37,15 +37,22 @@ export default function AssignmentInfoCap() {
     contentLabel = doenetIdLabel;
   }
   let image;
+  let color;
   let driveLabel = "";
   for (let info of driveInfo.driveIdsAndLabels) {
     if (info.driveId === driveId) {
       image = info.image;
+      color = info.color;
       driveLabel = info.label;
       break;
     }
   }
-  let imageURL = `/media/drive_pictures/${image}`;
+  if (image != "none") {
+    image = "url(/media/drive_pictures/" + image + ")";
+  }
+  if (color != "none") {
+    color = "#" + color;
+  }
   let attemptsAllowedDescription = numberOfAttemptsAllowed;
   if (!numberOfAttemptsAllowed) {
     attemptsAllowedDescription = "Unlimited";
@@ -57,9 +64,7 @@ export default function AssignmentInfoCap() {
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
     style: {position: "relative", paddingBottom: "135px"}
   }, /* @__PURE__ */ React.createElement("img", {
-    style: {position: "absolute", height: "135px", objectFit: "cover"},
-    src: imageURL,
-    alt: `${driveLabel} course`,
+    style: {position: "absolute", height: "135px", objectFit: "cover", backgroundImage: image, backgroundColor: color},
     width: "240px"
   })), /* @__PURE__ */ React.createElement("div", {
     style: {padding: "8px"}
