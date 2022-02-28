@@ -153,9 +153,9 @@ export default class Choiceinput extends Input {
           dependencyType: "stateVariable",
           variableName: "randomizeOrder"
         },
-        selectRng: {
+        variantRng: {
           dependencyType: "value",
-          value: sharedParameters.selectRng,
+          value: sharedParameters.variantRng,
           doNotProxy: true,
         },
         variants: {
@@ -200,7 +200,7 @@ export default class Choiceinput extends Input {
           // https://stackoverflow.com/a/12646864
           choiceOrder = [...Array(numberChoices).keys()].map(x => x + 1)
           for (let i = numberChoices - 1; i > 0; i--) {
-            const rand = dependencyValues.selectRng();
+            const rand = dependencyValues.variantRng();
             const j = Math.floor(rand * (i + 1));
             [choiceOrder[i], choiceOrder[j]] = [choiceOrder[j], choiceOrder[i]];
           }
