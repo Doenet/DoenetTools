@@ -1,3 +1,0 @@
-<slider name='s' from='.5' to='3' step='.1'/>
-<p>$s</p>
-
