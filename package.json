@@ -1,4 +1,5 @@
 {
+  "name": "doenet_tools",
   "scripts": {
     "start": "docker-compose up",
     "start:ci": "docker-compose up -d",
@@ -129,7 +130,7 @@
       "react-hooks/exhaustive-deps": [
         "warn",
         {
-          "additionalHooks": "useRecoilCallback"
+          "additionalHooks": "(useRecoilCallback)"
         }
       ]
     },
