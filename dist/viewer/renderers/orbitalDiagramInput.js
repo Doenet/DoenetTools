@@ -7,33 +7,50 @@ margin: 2px;
 outline: none;
 `;
 export default function orbitalDiagramInput(props) {
-  let {name, SVs, children} = useDoenetRenderer(props);
-  let [selectedRow, setSelectedRow] = useState(-1);
-  let [selectedBox, setSelectedBox] = useState(-1);
-  let [rows, setRows] = useState([{orbitalText: "", boxes: []}]);
+  let {name, SVs, actions, callAction} = useDoenetRenderer(props);
+  console.log("orbitalDiagramInput SVs ", SVs);
+  orbitalDiagramInput.ignoreActionsWithoutCore = true;
   if (SVs.hidden) {
     return null;
   }
+  function setSelectedRow(index) {
+    callAction({
+      action: actions.selectRow,
+      args: index
+    });
+  }
+  function setSelectedBox(index) {
+    callAction({
+      action: actions.selectBox,
+      args: index
+    });
+  }
+  function updateRowText(newValue) {
+    callAction({
+      action: actions.updateRowText,
+      args: newValue
+    });
+  }
   function deselect(e) {
     if (e.relatedTarget?.id !== `orbitaladdrow${name}` && e.relatedTarget?.id !== `orbitalremoverow${name}` && e.relatedTarget?.id !== `orbitaladdbox${name}` && e.relatedTarget?.id !== `orbitaladduparrow${name}` && e.relatedTarget?.id !== `orbitaladddownarrow${name}` && e.relatedTarget?.id !== `orbitalremovearrow${name}` && e.relatedTarget?.id !== `orbitalremovebox${name}`) {
-      if (e.relatedTarget?.id !== `OrbitalText${selectedRow}${name}` && e.relatedTarget?.id !== `OrbitalRow${selectedRow}${name}` && e.relatedTarget?.id.substring(0, 10 + name.length) !== `orbitalbox${name}`) {
+      if (e.relatedTarget?.id !== `OrbitalText${SVs.selectedRowIndex}${name}` && e.relatedTarget?.id !== `OrbitalRow${SVs.selectedRowIndex}${name}` && e.relatedTarget?.id.substring(0, 10 + name.length) !== `orbitalbox${name}`) {
         setSelectedRow(-1);
       }
       setSelectedBox(-1);
     }
   }
   let rowsJSX = [];
-  for (let [index, row] of Object.entries(rows)) {
-    let rowNumber = rows.length - index - 1;
+  for (let [index, row] of Object.entries(SVs.rows)) {
+    let rowNumber = SVs.rows.length - index - 1;
     rowsJSX.push(/* @__PURE__ */ React.createElement(OrbitalRow, {
       key: `OrbitalRow${rowNumber}`,
+      updateRowText,
       rowNumber,
-      selectedRow,
+      selectedRow: SVs.selectedRowIndex,
       setSelectedRow,
       orbitalText: row.orbitalText,
       boxes: row.boxes,
-      setRows,
-      selectedBox,
+      selectedBox: SVs.selectedBoxIndex,
       setSelectedBox,
       deselect,
       name
@@ -45,38 +62,16 @@ export default function orbitalDiagramInput(props) {
       deselect(e);
     },
     onClick: () => {
-      let numberOfRows = rows.length;
-      if (numberOfRows < 20) {
-        if (selectedRow !== -1) {
-          let topRowIndex = rows.length;
-          setSelectedRow(topRowIndex);
-        }
-        setSelectedBox(-1);
-        setRows((was) => {
-          return [{orbitalText: "", boxes: []}, ...was];
-        });
-      }
+      callAction({
+        action: actions.addRow
+      });
     }
   }, "Add Row"), /* @__PURE__ */ React.createElement("button", {
     id: `orbitalremoverow${name}`,
     onClick: () => {
-      if (rows.length > 1) {
-        let removeRowNumber = rows.length - 1 - selectedRow;
-        if (selectedRow === -1) {
-          removeRowNumber = 0;
-        }
-        setSelectedRow(-1);
-        setSelectedBox(-1);
-        setRows((was) => {
-          let newObj = [];
-          for (let [index, obj] of Object.entries(was)) {
-            if (index != removeRowNumber) {
-              newObj.push(obj);
-            }
-          }
-          return newObj;
-        });
-      }
+      callAction({
+        action: actions.removeRow
+      });
     }
   }, "Remove Row"), /* @__PURE__ */ React.createElement("button", {
     id: `orbitaladdbox${name}`,
@@ -84,19 +79,9 @@ export default function orbitalDiagramInput(props) {
       deselect(e);
     },
     onClick: () => {
-      let activeRowNumber = rows.length - selectedRow - 1;
-      if (selectedRow === -1) {
-        activeRowNumber = 0;
-      }
-      let numberOfBoxes = rows[activeRowNumber].boxes.length;
-      if (numberOfBoxes < 20) {
-        setRows((was) => {
-          let newObj = [...was];
-          newObj[activeRowNumber] = {...was[activeRowNumber]};
-          newObj[activeRowNumber]["boxes"] = [...was[activeRowNumber]["boxes"], ""];
-          return newObj;
-        });
-      }
+      callAction({
+        action: actions.addBox
+      });
     }
   }, "Add Box"), /* @__PURE__ */ React.createElement("button", {
     id: `orbitalremovebox${name}`,
@@ -104,16 +89,8 @@ export default function orbitalDiagramInput(props) {
       deselect(e);
     },
     onClick: () => {
-      let activeRowNumber = rows.length - selectedRow - 1;
-      if (selectedRow === -1) {
-        activeRowNumber = 0;
-      }
-      setRows((was) => {
-        let newObj = [...was];
-        newObj[activeRowNumber] = {...was[activeRowNumber]};
-        newObj[activeRowNumber]["boxes"] = [...was[activeRowNumber]["boxes"]];
-        newObj[activeRowNumber]["boxes"].splice(selectedBox, 1);
-        return newObj;
+      callAction({
+        action: actions.removeBox
       });
     }
   }, "Remove Box"), /* @__PURE__ */ React.createElement("button", {
@@ -122,28 +99,8 @@ export default function orbitalDiagramInput(props) {
       deselect(e);
     },
     onClick: () => {
-      let activeRowNumber = rows.length - selectedRow - 1;
-      if (selectedRow === -1) {
-        activeRowNumber = 0;
-      }
-      let activeBox = selectedBox;
-      if (activeBox === -1) {
-        activeBox = rows[activeRowNumber].boxes.length - 1;
-      }
-      setRows((was) => {
-        if (activeBox === -1) {
-          return was;
-        }
-        let newObj = [...was];
-        newObj[activeRowNumber] = {...was[activeRowNumber]};
-        newObj[activeRowNumber]["boxes"] = [...was[activeRowNumber]["boxes"]];
-        if (newObj[activeRowNumber]["boxes"].length == 0) {
-          return was;
-        }
-        if (newObj[activeRowNumber]["boxes"][activeBox].length < 3) {
-          newObj[activeRowNumber]["boxes"][activeBox] = newObj[activeRowNumber]["boxes"][activeBox] + "U";
-        }
-        return newObj;
+      callAction({
+        action: actions.addUpArrow
       });
     }
   }, "Add Up Arrow"), /* @__PURE__ */ React.createElement("button", {
@@ -152,28 +109,8 @@ export default function orbitalDiagramInput(props) {
       deselect(e);
     },
     onClick: () => {
-      let activeRowNumber = rows.length - selectedRow - 1;
-      if (selectedRow === -1) {
-        activeRowNumber = 0;
-      }
-      let activeBox = selectedBox;
-      if (activeBox === -1) {
-        activeBox = rows[activeRowNumber].boxes.length - 1;
-      }
-      setRows((was) => {
-        if (activeBox === -1) {
-          return was;
-        }
-        let newObj = [...was];
-        newObj[activeRowNumber] = {...was[activeRowNumber]};
-        newObj[activeRowNumber]["boxes"] = [...was[activeRowNumber]["boxes"]];
-        if (newObj[activeRowNumber]["boxes"].length == 0) {
-          return was;
-        }
-        if (newObj[activeRowNumber]["boxes"][activeBox].length < 3) {
-          newObj[activeRowNumber]["boxes"][activeBox] = newObj[activeRowNumber]["boxes"][activeBox] + "D";
-        }
-        return newObj;
+      callAction({
+        action: actions.addDownArrow
       });
     }
   }, "Add Down Arrow"), /* @__PURE__ */ React.createElement("button", {
@@ -182,33 +119,13 @@ export default function orbitalDiagramInput(props) {
       deselect(e);
     },
     onClick: () => {
-      let activeRowNumber = rows.length - selectedRow - 1;
-      if (selectedRow === -1) {
-        activeRowNumber = 0;
-      }
-      let activeBox = selectedBox;
-      if (activeBox === -1) {
-        activeBox = rows[activeRowNumber].boxes.length - 1;
-      }
-      setRows((was) => {
-        if (activeBox === -1) {
-          return was;
-        }
-        let newObj = [...was];
-        newObj[activeRowNumber] = {...was[activeRowNumber]};
-        newObj[activeRowNumber]["boxes"] = [...was[activeRowNumber]["boxes"]];
-        if (newObj[activeRowNumber]["boxes"].length == 0) {
-          return was;
-        }
-        if (newObj[activeRowNumber]["boxes"][activeBox].length > 0) {
-          newObj[activeRowNumber]["boxes"][activeBox] = newObj[activeRowNumber]["boxes"][activeBox].slice(0, -1);
-        }
-        return newObj;
+      callAction({
+        action: actions.removeArrow
       });
     }
   }, "Remove Arrow")), rowsJSX);
 }
-function OrbitalRow({rowNumber, selectedRow, setSelectedRow, orbitalText, boxes, setRows, selectedBox, setSelectedBox, deselect, name}) {
+function OrbitalRow({rowNumber, updateRowText, selectedRow, setSelectedRow, orbitalText, boxes, selectedBox, setSelectedBox, deselect, name}) {
   let rowStyle = {
     width: "800px",
     height: "44px",
@@ -225,7 +142,7 @@ function OrbitalRow({rowNumber, selectedRow, setSelectedRow, orbitalText, boxes,
   let boxesJSX = [];
   for (let [index, code] of Object.entries(boxes)) {
     let isSelected = false;
-    if (selectedRow === rowNumber && selectedBox === index) {
+    if (selectedRow == rowNumber && selectedBox == index) {
       isSelected = true;
     }
     boxesJSX.push(/* @__PURE__ */ React.createElement(OrbitalBox, {
@@ -253,14 +170,12 @@ function OrbitalRow({rowNumber, selectedRow, setSelectedRow, orbitalText, boxes,
     style: rowStyle
   }, /* @__PURE__ */ React.createElement(OrbitalText, {
     orbitalText,
-    setRows,
     rowNumber,
-    selectedRow,
-    setSelectedRow,
+    updateRowText,
     name
   }), boxesJSX);
 }
-function OrbitalText({rowNumber, selectedRow, setSelectedRow, orbitalText, setRows, name}) {
+function OrbitalText({rowNumber, updateRowText, orbitalText, name}) {
   return /* @__PURE__ */ React.createElement("input", {
     id: `OrbitalText${rowNumber}${name}`,
     style: {marginRight: "4px", height: "14px"},
@@ -269,13 +184,8 @@ function OrbitalText({rowNumber, selectedRow, setSelectedRow, orbitalText, setRo
     value: orbitalText,
     onChange: (e) => {
       let newValue = e.target.value;
-      setRows((was) => {
-        let index = was.length - rowNumber - 1;
-        let newObj = [...was];
-        newObj[index] = {...was[index]};
-        newObj[index]["orbitalText"] = newValue;
-        return newObj;
-      });
+      console.log("newValue", newValue);
+      updateRowText(newValue);
     }
   });
 }

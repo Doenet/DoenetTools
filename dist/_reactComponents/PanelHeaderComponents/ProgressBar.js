@@ -1,78 +1,109 @@
-import React from "../../_snowpack/pkg/react.js";
-import "./ProgressBar.css.proxy.js";
+import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+const Container = styled.div`
+  // Depend on if we have a label or the showProgress props
+  display: ${(props) => props.align};
+  align-items: ${(props) => props.alignItems};
+`;
+const Svg = styled.svg``;
+const Rect = styled.rect`;
+  x: 0px;
+  y: 0px;
+  rx: ${(props) => props.radius}; // Depends on if we have the donutIcon prop
+  stroke: none;
+  stroke-width: 0;
+  height: ${(props) => props.height};
+  // width prop is passed in as a number without "px"
+  // Usage: <ProgressBar width=400/> to set the width of the progress bar to 400px
+  width: ${(props) => props.width.toString() + "px"};
+`;
+const DonutG = styled.g``;
+const Circle = styled.circle`
+  cy: 12.5px;
+`;
+const Label = styled.p`
+  font-size: 14px;
+  display: ${(props) => props.labelVisible}; // Only visible with label prop
+  margin-right: 5px;
+  margin-bottom: ${(props) => props.align == "flex" ? "none" : "2px"};
+`;
+const Progress = styled.p`
+    font-size: 12px;
+    display: ${(props) => props.showProgress}; // Only visible with showProgress prop
+    margin-left: 5px; // Percentage appears to the right of the progress bar
+`;
 export default function ProgressBar(props) {
-  function convert() {
-    var elem = document.getElementById("moving");
-    var width = elem.width.animVal.value;
-    var decimalPercent = percent / 100;
-    width = decimalPercent * 1e3;
-    elem.setAttribute("width", width);
-    return width;
-  }
-  function load(percent2) {
-    var elem = document.getElementById("moving");
-    var length = elem.width.animVal.value;
-    if (length == 1e3) {
-      length = 0;
-    } else {
-      length = percent2 * 1e3;
-    }
-    elem.setAttribute("width", length);
-    return length;
-  }
-  function submit() {
-    var percent2 = document.getElementById("percent").value / 100;
-    load(percent2);
-  }
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("svg", {
-    viewBox: "0 -200 1500 500"
-  }, /* @__PURE__ */ React.createElement("rect", {
-    id: "main",
-    x: "50",
-    y: "150",
-    rx: "25",
-    fill: "#E2E2E2",
-    stroke: "none",
-    strokeWidth: "0",
-    width: "1000",
-    height: "50"
-  }), /* @__PURE__ */ React.createElement("rect", {
-    id: "moving",
-    x: "50",
-    y: "150",
-    rx: "25",
-    fill: "#1A5A99",
-    stroke: "none",
-    strokeWidth: "0",
-    width: "0",
-    height: "50"
-  }), /* @__PURE__ */ React.createElement("g", {
-    className: "donut-main"
-  }, /* @__PURE__ */ React.createElement("circle", {
+  const [fillWidth, setFillWidth] = useState("0px");
+  const [donutPosition, setDonutPosition] = useState("12.5px");
+  const [barWidth, setBarWidth] = useState(props.width ? props.width : 235);
+  const height = props.donutIcon ? "25px" : "10px";
+  const radius = props.donutIcon ? "12.5px" : "5px";
+  const ariaLabel = props.ariaLabel ? props.ariaLabel : null;
+  const labelVisible = props.label ? "static" : "none";
+  var donut = /* @__PURE__ */ React.createElement(DonutG, null, /* @__PURE__ */ React.createElement(Circle, {
     id: "donut",
+    cx: donutPosition,
     fill: "rgb(238,161,119)",
-    cx: "100",
-    cy: "100",
-    r: "50"
-  }), /* @__PURE__ */ React.createElement("circle", {
+    r: "12.5"
+  }), /* @__PURE__ */ React.createElement(Circle, {
     id: "donut-topping",
-    cx: "100",
-    cy: "100",
-    r: "40",
-    fill: "rgb(109,68,69)"
-  }), /* @__PURE__ */ React.createElement("circle", {
+    cx: donutPosition,
+    fill: "rgb(109,68,69)",
+    r: "10"
+  }), /* @__PURE__ */ React.createElement(Circle, {
     id: "donut-hole",
-    cx: "100",
-    cy: "100",
-    r: "15",
-    fill: "#FFFFFF"
-  }))), /* @__PURE__ */ React.createElement("input", {
-    type: "text",
-    id: "percent"
-  }), /* @__PURE__ */ React.createElement("p", null, "%"), /* @__PURE__ */ React.createElement("button", {
-    className: "button",
-    onClick: () => {
-      submit();
+    cx: donutPosition,
+    r: "4",
+    fill: "#E2E2E2"
+  }));
+  var align = "flex";
+  var alignItems = "none";
+  var label = "";
+  if (props.label) {
+    label = props.label;
+    alignItems = "center";
+    if (props.vertical) {
+      align = "static";
     }
-  }, "Submit"));
+  }
+  ;
+  var percent = "";
+  if (props.showProgress) {
+    percent = (props.progress * 100).toString() + "%";
+    alignItems = "center";
+  }
+  ;
+  useEffect(() => {
+    let progress = props.progress ? props.progress : 0;
+    progress *= barWidth;
+    setFillWidth(progress);
+    setDonutPosition(progress - 12.5);
+    if (props.showProgress) {
+      setBarWidth(200);
+    }
+    ;
+  }, [props.progress, props.showProgress, barWidth]);
+  return /* @__PURE__ */ React.createElement(Container, {
+    align,
+    alignItems
+  }, /* @__PURE__ */ React.createElement(Label, {
+    labelVisible,
+    align
+  }, label), /* @__PURE__ */ React.createElement(Svg, {
+    width: barWidth,
+    height
+  }, /* @__PURE__ */ React.createElement(Rect, {
+    id: "main",
+    fill: "#E2E2E2",
+    width: barWidth,
+    height,
+    radius,
+    "aria-label": ariaLabel
+  }), /* @__PURE__ */ React.createElement(Rect, {
+    id: "moving",
+    fill: "#1A5A99",
+    width: fillWidth,
+    height,
+    radius
+  }), props.donutIcon ? donut : ""), props.showProgress ? /* @__PURE__ */ React.createElement(Progress, null, percent) : "");
 }

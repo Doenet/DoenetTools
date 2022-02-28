@@ -142,8 +142,8 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
   for (let doenetML of doenetMLs) {
 
-    // let serializedComponents = parseAndCompile(doenetML);
-    let serializedComponents = doenetMLToSerializedComponents(doenetML);
+    let serializedComponents = parseAndCompile(doenetML);
+    // let serializedComponents = doenetMLToSerializedComponents(doenetML);
 
     substituteDeprecations(serializedComponents);
 

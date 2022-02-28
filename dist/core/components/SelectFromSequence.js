@@ -136,9 +136,9 @@ export default class SelectFromSequence extends Sequence {
           dependencyType: "stateVariable",
           variableName: "variants"
         },
-        selectRng: {
+        variantRng: {
           dependencyType: "value",
-          value: sharedParameters.selectRng,
+          value: sharedParameters.variantRng,
           doNotProxy: true,
         },
 
@@ -614,7 +614,7 @@ function makeSelection({ dependencyValues }) {
       numberUniqueRequired: numberUniqueRequired,
       numberToSelect: dependencyValues.numberToSelect,
       withReplacement: dependencyValues.withReplacement,
-      rng: dependencyValues.selectRng,
+      rng: dependencyValues.variantRng,
     });
 
     selectedValues = selectedObj.selectedValues;
@@ -679,7 +679,7 @@ function makeSelection({ dependencyValues }) {
         numberUniqueRequired: numberUniqueRequired,
         numberToSelect: dependencyValues.numberToSelect,
         withReplacement: dependencyValues.withReplacement,
-        rng: dependencyValues.selectRng,
+        rng: dependencyValues.variantRng,
       });
 
       selectedValues = selectedObj.selectedValues;
