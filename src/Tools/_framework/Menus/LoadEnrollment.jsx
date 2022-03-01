@@ -39,13 +39,13 @@ export default function LoadEnrollment(props){
         {isDragActive ? (
           <p>Drop the files here</p>
         ) : (
-          <ButtonGroup vertical>
+          <ButtonGroup vertical >
             <Button width="menu" value="Import CSV file"></Button>
-          </ButtonGroup>
+          </ButtonGroup >
         )}
       </div>
-      <br />
-      <CollapseSection title="Formatting Instructions" collapsed={true} >
+      <div style={{height: "4px"}}></div>
+      <CollapseSection title="Formatting Instructions" collapsed={true} style={{marginTop: "12px"}}>
       <p>Your file needs to contain an email address.  The parser will ignore columns which are not listed.</p>
         <div><b>Email (required)</b></div>
         <div><b>EmplID or ID</b></div>

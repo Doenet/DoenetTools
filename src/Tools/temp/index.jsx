@@ -4,8 +4,7 @@ import {doenetMLToSerializedComponents} from  '../../Core/utils/serializedStateP
 import {parseAndCompile} from '../../Parser/parser'
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
-import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
-import Banner from '../../_reactComponents/PanelHeaderComponents/Banner.jsx';
+import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 
 
 // serializeFunctions.expandDoenetMLsToFullSerializedComponents({
@@ -22,7 +21,7 @@ import Banner from '../../_reactComponents/PanelHeaderComponents/Banner.jsx';
 
 
 ReactDOM.render(
-  <ProgressBar donutIcon progress={1} showProgress></ProgressBar>,
+  <CollapseSection></CollapseSection>,
   document.getElementById('root'),
 );
 
