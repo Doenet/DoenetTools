@@ -22,6 +22,7 @@ import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownM
 import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx';
 import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/ColorImagePicker.jsx';
 import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
+import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
 
 // === HOW TO ADD TO UI DOCS ===
@@ -332,43 +333,43 @@ export default function attempt() {
     },
     {
       name: 'CollapseSection',
-      id: 'collapseSection',
+      id: 'collapsesection',
       code: CollapseSection,
-      codePreview: '<CollapseSecction/>',
+      codePreview: '<CollapseSection/>',
       req_props: null,
       req_children: null,
-      use: 'Card is an eye-catching button that brings that user to more content or a new location.',
+      use: 'Displays additional text when the header is clicked.',
       props: [
         {
           name: 'Width - Menu Panel',
-          propPreview: '<Button width="menu" />',
+          propPreview: '<CollapseSection width="menu" />',
           propCode: { width: 'menu' },
           description: 'Sets width to fill menu panel width',
         },
         {
-          name: 'Value',
-          propPreview: '<Card value="Click Me!"/>',
-          propCode: { value: 'Click Me!' },
-          description: 'Changes the text',
-        },
-        {
-          name: 'Label',
-          propPreview: '<Card label="What: "/>',
-          propCode: { label: 'What: ' },
-          description: 'Adds label to card',
+          name: 'Title',
+          propPreview: '<CollapseSection title="Look Here!"/>',
+          propCode: { title: 'Look Here!' },
+          description: 'Changes the title',
         },
         {
           name: 'Vertical Label',
-          propPreview: '<Card label="What: " vertical/>',
+          propPreview: '<CollapseSection label="What: " vertical/>',
           propCode: { label: 'What: ', vertical },
           description: 'Adds label to component on top',
         },
         {
           name: 'Disabled',
-          propPreview: '<Card disabled />',
+          propPreview: '<CollapseSection disabled />',
           propCode: { disabled },
-          description: 'Makes button not able to be used.',
+          description: 'Makes collapse section not able to be used',
         },
+        {
+          name: 'Aria Label',
+            propPreview: '<CollapseSection ariaLabel="Collapse Section"/>',
+            propCode: { ariaLabel: 'Collapse Section' },
+            description: 'Adds aria label to component'
+        }
       ],
     },
     {
