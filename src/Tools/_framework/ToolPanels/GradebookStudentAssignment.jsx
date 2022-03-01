@@ -261,7 +261,7 @@ export default function GradebookStudentAssignmentView(){
           isAssignment: true,
           allowLoadPageState: true,
           allowSavePageState: false,
-          allowLocalPageState: false, //Still working out localStorage kinks
+          allowLocalPageState: false,
           allowSaveSubmissions: false,
           allowSaveEvents: false,
           pageStateSource: "submissions",
