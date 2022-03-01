@@ -14,7 +14,7 @@ import { preprocessMathInverseDefinition } from './utils/math';
 import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 import { nanoid } from 'nanoid';
 import { CIDFromDoenetML } from './utils/cid';
-import { preprocessForPostMessage } from './CoreWorker';
+import { removeFunctionsMathExpressionClass } from './CoreWorker';
 import createComponentInfoObjects from './utils/componentInfoObjects';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { toastType } from '@Toast';
@@ -25,16 +25,20 @@ import axios from 'axios';
 
 export default class Core {
   constructor({ doenetML, doenetId, attemptNumber,
+    serverSaveId,
     requestedVariant, requestedVariantIndex,
     flags = {},
     stateVariableChanges = {},
-    coreId }) {
+    coreId, noCIDSpecified }) {
     // console.time('core');
 
 
     this.coreId = coreId;
     this.doenetId = doenetId;
     this.attemptNumber = attemptNumber;
+
+    this.serverSaveId = serverSaveId;
+    this.noCIDSpecified = noCIDSpecified;
 
     this.numerics = new Numerics();
     // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
@@ -608,7 +612,7 @@ export default class Core {
           let stateValuesForRenderer = {};
           for (let stateVariable in component.state) {
             if (component.state[stateVariable].forRenderer) {
-              let value = preprocessForPostMessage(await component.state[stateVariable].value);
+              let value = removeFunctionsMathExpressionClass(await component.state[stateVariable].value);
               // if (value !== null && typeof value === 'object') {
               //   value = new Proxy(value, readOnlyProxyHandler)
               // }
@@ -673,7 +677,7 @@ export default class Core {
     let stateValuesForRenderer = {};
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
-        stateValuesForRenderer[stateVariable] = preprocessForPostMessage(await component.state[stateVariable].value);
+        stateValuesForRenderer[stateVariable] = removeFunctionsMathExpressionClass(await component.state[stateVariable].value);
       }
     }
 
@@ -7909,7 +7913,7 @@ export default class Core {
         newStateVariableValues = {};
 
       } else if (instruction.updateType === "recordItemSubmission") {
-        recordItemSubmissions.push(instruction.itemNumber)
+        recordItemSubmissions.push(instruction)
       }
 
     }
@@ -7956,7 +7960,8 @@ export default class Core {
 
 
     if (recordItemSubmissions.length > 0) {
-      recordItemSubmissions = [...new Set(recordItemSubmissions)];
+
+      let itemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
       let itemsWithCreditAchieved = {};
 
       if (event) {
@@ -7969,15 +7974,19 @@ export default class Core {
         event.context.documentCreditAchieved = await this.document.stateValues.creditAchieved;
       }
       let itemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
-      for (let itemNumber of recordItemSubmissions) {
-        itemsWithCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1];
-        // if (this.externalFunctions.submitResponse) {
-        //   this.externalFunctions.submitResponse({
-        //     itemNumber,
-        //     itemCreditAchieved: itemCreditAchieved[itemNumber - 1],
-        //     callBack: this.submitResponseCallBack,
-        //   });
-        // }
+      for (let itemNumber of itemsSubmitted) {
+        itemsWithCreditAchieved[itemNumber] = { itemCreditAchieved: itemCreditAchieved[itemNumber - 1] };
+        let componentsSubmitted = itemsWithCreditAchieved[itemNumber].componentsSubmitted = [];
+
+        for (let itemSubmission of recordItemSubmissions.filter(x => x.itemNumber === itemNumber)) {
+          componentsSubmitted.push({
+            componentName: itemSubmission.submittedComponent,
+            response: itemSubmission.response,
+            responseText: itemSubmission.responseText,
+            creditAchieved: itemSubmission.creditAchieved
+          });
+        }
+
         if (event) {
           event.context.itemCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1]
         }
@@ -8002,9 +8011,9 @@ export default class Core {
               // if cumValues is an object with mergeObject = true,
               // then merge attributes from newStateVariableValues into cumValues
               if (typeof cumValues === "object" && cumValues !== null && cumValues.mergeObject) {
-                Object.assign(cumValues, preprocessForPostMessage(essentialState[varName]))
+                Object.assign(cumValues, removeFunctionsMathExpressionClass(essentialState[varName]))
               } else {
-                this.cumulativeStateVariableChanges[componentName][varName] = preprocessForPostMessage(essentialState[varName]);
+                this.cumulativeStateVariableChanges[componentName][varName] = removeFunctionsMathExpressionClass(essentialState[varName]);
               }
             }
           }
@@ -8025,9 +8034,9 @@ export default class Core {
           // if cumValues is an object with mergeObject = true,
           // then merge attributes from newStateVariableValues into cumValues
           if (typeof cumValues === "object" && cumValues !== null && cumValues.mergeObject) {
-            Object.assign(cumValues, preprocessForPostMessage(newValuesProcessed[componentName][varName]))
+            Object.assign(cumValues, removeFunctionsMathExpressionClass(newValuesProcessed[componentName][varName]))
           } else {
-            this.cumulativeStateVariableChanges[componentName][varName] = preprocessForPostMessage(newValuesProcessed[componentName][varName]);
+            this.cumulativeStateVariableChanges[componentName][varName] = removeFunctionsMathExpressionClass(newValuesProcessed[componentName][varName]);
           }
         }
       }
@@ -9100,7 +9109,6 @@ export default class Core {
     }
 
     let saveId = nanoid();
-    let serverSaveId;
 
     if (this.flags.allowLocalPageState) {
       idb_set(
@@ -9112,7 +9120,6 @@ export default class Core {
           saveId,
         }
       )
-      serverSaveId = await idb_get(`${this.CID}|${this.doenetId}|${this.attemptNumber}ServerSaveId`);
     }
 
     if (!this.flags.allowSavePageState) {
@@ -9128,7 +9135,8 @@ export default class Core {
       attemptNumber: this.attemptNumber,
       doenetId: this.doenetId,
       saveId,
-      serverSaveId
+      serverSaveId: this.serverSaveId,
+      updateTableOnContentChange: this.noCIDSpecified,
     }
 
     // mark presence of changes
@@ -9184,6 +9192,8 @@ export default class Core {
       return;
     }
 
+    console.log('result from saving to database:', resp.data);
+
     if (resp.status === null) {
       postMessage({
         messageType: "sendToast",
@@ -9208,6 +9218,7 @@ export default class Core {
       return;
     }
 
+    this.serverSaveId = data.saveId;
 
     if (this.flags.allowLocalPageState) {
       idb_set(
@@ -9221,9 +9232,9 @@ export default class Core {
         idb_set(
           `${data.CID}|${this.doenetId}|${data.attemptNumber}`,
           {
-            coreState: JSON.stringify(data.coreState, serializeFunctions.serializedComponentsReviver),
-            rendererState: JSON.stringify(data.rendererState, serializeFunctions.serializedComponentsReviver),
-            coreInfo: JSON.stringify(data.coreInfo, serializeFunctions.serializedComponentsReviver),
+            coreState: JSON.parse(data.coreState, serializeFunctions.serializedComponentsReviver),
+            rendererState: JSON.parse(data.rendererState, serializeFunctions.serializedComponentsReviver),
+            coreInfo: JSON.parse(data.coreInfo, serializeFunctions.serializedComponentsReviver),
             saveId: data.saveId,
           }
         )
@@ -9234,7 +9245,7 @@ export default class Core {
         args: {
           changedOnDevice: data.device,
           newCID: data.CID,
-          newAttemptNumber: data.attemptNumber,
+          newAttemptNumber: Number(data.attemptNumber),
         }
       })
 
@@ -9253,15 +9264,16 @@ export default class Core {
 
     for (let itemNumber in itemsWithCreditAchieved) {
 
-      const payload2 = {
+      const payload = {
         doenetId: this.doenetId,
         contentId: this.CID,
         attemptNumber: this.attemptNumber,
-        credit: itemsWithCreditAchieved[itemNumber],
+        credit: itemsWithCreditAchieved[itemNumber].itemCreditAchieved,
         itemNumber,
+        componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(itemsWithCreditAchieved[itemNumber].componentsSubmitted, serializeFunctions.serializedComponentsReplacer))
       }
 
-      axios.post('/api/saveCreditForItem.php', payload2)
+      axios.post('/api/saveCreditForItem.php', payload)
         .then(resp => {
           // console.log('>>>>saveCreditForItem resp', resp.data);
 

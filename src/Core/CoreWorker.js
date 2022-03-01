@@ -5,6 +5,7 @@ import { retrieveDoenetMLForCID } from './utils/retrieveDoenetML';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { serializedComponentsReplacer, serializedComponentsReviver } from './utils/serializedStateProcessing';
 import axios from 'axios';
+import { toastType } from '@Toast';
 
 let core;
 
@@ -41,6 +42,7 @@ onmessage = function (e) {
           .then(CID => {
             let args = { ...e.data.args };
             args.CID = CID;
+            args.noCIDSpecified = true;
             loadStateAndCreateCore(args);
           })
       }
@@ -88,7 +90,7 @@ onmessage = function (e) {
 
 
 async function loadStateAndCreateCore({ coreId, userId, doenetML, CID, doenetId,
-  flags, requestedVariantIndex, attemptNumber }) {
+  flags, requestedVariantIndex, attemptNumber, noCIDSpecified = false }) {
 
   let newFlags = { ...flags };
 
@@ -103,12 +105,12 @@ async function loadStateAndCreateCore({ coreId, userId, doenetML, CID, doenetId,
   }
 
 
-  let coreState, requestedVariant;
+  let coreState, requestedVariant, serverSaveId;
 
   if (newFlags.allowLocalPageState) {
 
     let localInfo;
-    
+
     try {
       localInfo = await idb_get(`${CID}|${doenetId}|${attemptNumber}`);
     } catch (e) {
@@ -121,10 +123,12 @@ async function loadStateAndCreateCore({ coreId, userId, doenetML, CID, doenetId,
         // attempt to save local info to database,
         // reseting data to that from database if it has changed since last save
 
-        let result = await saveLoadedLocalStateToDatabase({ CID, doenetId, attemptNumber, localInfo });
+        let result = await saveLoadedLocalStateToDatabase({
+          CID, doenetId, attemptNumber, localInfo, noCIDSpecified
+        });
 
         if (result.changedOnDevice) {
-          if (result.newCID !== CID || result.newAttemptNumber !== attemptNumber) {
+          if (result.newCID !== CID || Number(result.newAttemptNumber) !== attemptNumber) {
             // can't handle changes in CID or attemptNumber locally,
             // so send message and quit
             postMessage({
@@ -132,7 +136,7 @@ async function loadStateAndCreateCore({ coreId, userId, doenetML, CID, doenetId,
               args: {
                 changedOnDevice: result.changedOnDevice,
                 newCID: result.newCID,
-                newAttemptNumber: result.newAttemptNumber,
+                newAttemptNumber: Number(result.newAttemptNumber),
               }
             });
             return;
@@ -141,14 +145,15 @@ async function loadStateAndCreateCore({ coreId, userId, doenetML, CID, doenetId,
           // if just the localInfo changed, use that instead
           localInfo = result.newLocalInfo;
           postMessage({
-            messageType: `Reverted page to state saved on device ${result.changedOnDevice}`,
+            messageType: "sendToast",
             args: {
-              message: data.message,
+              message: `Reverted page to state saved on device ${result.changedOnDevice}`,
               toastType: toastType.ERROR
             }
           });
 
         }
+
       }
 
 
@@ -161,6 +166,7 @@ async function loadStateAndCreateCore({ coreId, userId, doenetML, CID, doenetId,
       });
 
       coreState = localInfo.coreState;
+      serverSaveId = localInfo.saveId;
       requestedVariant = JSON.parse(localInfo.coreInfo.generatedVariantString, serializedComponentsReviver);
 
     }
@@ -187,10 +193,8 @@ async function loadStateAndCreateCore({ coreId, userId, doenetML, CID, doenetId,
     try {
       let resp = await axios.get('/api/loadPageState.php', payload);
 
-      // console.log(">>>>>resp",resp.data)
-
       if (!resp.data.success) {
-        if(newFlags.allowLoadPageState) {
+        if (newFlags.allowLoadPageState) {
           postMessage({
             messageType: "inErrorState",
             args: {
@@ -200,16 +204,18 @@ async function loadStateAndCreateCore({ coreId, userId, doenetML, CID, doenetId,
           return;
         } else {
           // ignore this error if didn't allow loading of page state
-          
+
         }
 
       }
 
-      if (resp.data.loadState) {
+      if (resp.data.loadedState) {
         let coreInfo = JSON.parse(resp.data.coreInfo, serializedComponentsReviver);
         let rendererState = JSON.parse(resp.data.rendererState, serializedComponentsReviver);
         coreState = JSON.parse(resp.data.coreState, serializedComponentsReviver);
         requestedVariant = JSON.parse(coreInfo.generatedVariantString, serializedComponentsReviver);
+        serverSaveId = resp.data.saveId;
+
 
         postMessage({
           messageType: "initializeRenderers",
@@ -225,7 +231,7 @@ async function loadStateAndCreateCore({ coreId, userId, doenetML, CID, doenetId,
 
     } catch (e) {
 
-      if(newFlags.allowLoadPageState) {
+      if (newFlags.allowLoadPageState) {
         postMessage({
           messageType: "inErrorState",
           args: {
@@ -235,24 +241,26 @@ async function loadStateAndCreateCore({ coreId, userId, doenetML, CID, doenetId,
         return;
       } else {
         // ignore this error if didn't allow loading of page state
-        
+
       }
 
-     
+
     }
 
   }
 
+
   createCore({
-    coreId, userId, doenetML, CID, doenetId,
+    coreId, userId, doenetML, CID, doenetId, serverSaveId,
     flags: newFlags,
     requestedVariant,
     requestedVariantIndex, attemptNumber,
-    stateVariableChanges: coreState
+    stateVariableChanges: coreState,
+    noCIDSpecified,
   });
 }
 
-async function saveLoadedLocalStateToDatabase({ CID, doenetId, attemptNumber, localInfo }) {
+async function saveLoadedLocalStateToDatabase({ CID, doenetId, attemptNumber, localInfo, noCIDSpecified }) {
 
   let serverSaveId = await idb_get(`${CID}|${doenetId}|${attemptNumber}ServerSaveId`);
 
@@ -264,7 +272,8 @@ async function saveLoadedLocalStateToDatabase({ CID, doenetId, attemptNumber, lo
     attemptNumber,
     doenetId,
     saveId: localInfo.saveId,
-    serverSaveId
+    serverSaveId,
+    updateTableOnContentChange: noCIDSpecified,
   }
 
   let resp;
@@ -277,7 +286,7 @@ async function saveLoadedLocalStateToDatabase({ CID, doenetId, attemptNumber, lo
   }
 
   let data = resp.data;
-  
+
   if (!data.success) {
     // since this is initial load, don't show error message
     return { localInfo, CID, attemptNumber };
@@ -295,6 +304,7 @@ async function saveLoadedLocalStateToDatabase({ CID, doenetId, attemptNumber, lo
       coreInfo: JSON.parse(data.coreInfo, serializedComponentsReviver),
       saveId: data.saveId,
     }
+
     idb_set(
       `${data.CID}|${doenetId}|${data.attemptNumber}`,
       newLocalInfo
@@ -358,24 +368,24 @@ async function returnAllStateVariables(core) {
       stateValues: {}
     }
     for (let vName in component.state) {
-      compObj.stateValues[vName] = preprocessForPostMessage(await component.state[vName].value);
+      compObj.stateValues[vName] = removeFunctionsMathExpressionClass(await component.state[vName].value);
     }
     compObj.activeChildren = component.activeChildren.map(x => x.componentName ? x.componentName : x)
   }
   return componentsObj;
 }
 
-export function preprocessForPostMessage(value) {
+export function removeFunctionsMathExpressionClass(value) {
   if (value instanceof me.class) {
     value = value.tree;
   } else if (typeof value === "function") {
     value = undefined;
   } else if (Array.isArray(value)) {
-    value = value.map(x => preprocessForPostMessage(x))
+    value = value.map(x => removeFunctionsMathExpressionClass(x))
   } else if (typeof value === "object" && value !== null) {
     let valueCopy = {}
     for (let key in value) {
-      valueCopy[key] = preprocessForPostMessage(value[key]);
+      valueCopy[key] = removeFunctionsMathExpressionClass(value[key]);
     }
     value = valueCopy;
   }

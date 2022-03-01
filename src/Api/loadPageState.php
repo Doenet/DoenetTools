@@ -62,13 +62,13 @@ if ($success) {
     if ($paramUserId !== "") {
         //TODO: Need a permission related to see grades (not du.canEditContent)
         $sql = "
-    SELECT du.canEditContent 
-    FROM drive_user AS du
-    LEFT JOIN drive_content AS dc
-    ON dc.driveId = du.driveId
-    WHERE du.userId = '$userId'
-    AND dc.doenetId = '$doenetId'
-    AND du.canEditContent = '1'
+            SELECT du.canEditContent 
+            FROM drive_user AS du
+            LEFT JOIN drive_content AS dc
+            ON dc.driveId = du.driveId
+            WHERE du.userId = '$userId'
+            AND dc.doenetId = '$doenetId'
+            AND du.canEditContent = '1'
     ";
 
         $result = $conn->query($sql);
@@ -79,29 +79,25 @@ if ($success) {
 
     $loadedState = false;
 
-    if ($allowLoadPageState) {
-        $sql = "SELECT CID, saveId, coreInfo, coreState, rendererState
-    FROM pageState
-    WHERE userId = '$effectiveUserId'
-    AND doenetId = '$doenetId'
-    AND attemptNumber='$attemptNumber'
-    ";
+    if ($allowLoadPageState == "true") {
+        $sql = "SELECT saveId, coreInfo, coreState, rendererState
+            FROM page_state
+            WHERE userId = '$effectiveUserId'
+            AND doenetId = '$doenetId'
+            AND CID = '$CID'
+            AND attemptNumber='$attemptNumber'
+            ";
 
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
 
-            if ($row["CID"] !== $CID) {
-                $success = false;
-                $CID2 = $row[$CID];
-                $message = "Internal error: CID mismatch, $CID, $CID2";
-            } else {
-                $coreState = $row["coreState"];
-                $rendererState = $row["rendererState"];
-                $coreInfo = $row["coreInfo"];
-                $loadedState = true;
-            }
+            $coreState = $row["coreState"];
+            $rendererState = $row["rendererState"];
+            $coreInfo = $row["coreInfo"];
+            $saveId = $row["saveId"];
+            $loadedState = true;
 
             // TODO: check if instructor changed CID
         }
@@ -112,7 +108,7 @@ if ($success) {
         // look up initial renderer state
 
         $sql = "SELECT rendererState, coreInfo
-            FROM initialRendererState
+            FROM initial_renderer_state
             WHERE CID = '$CID'
             AND variantIndex = '$requestedVariantIndex'
             ";
@@ -126,7 +122,7 @@ if ($success) {
             $rendererState = $row["rendererState"];
             $coreInfo = $row["coreInfo"];
         } else {
-            // value missing from initialRendererState
+            // value missing from initial_renderer_state
             // will need to initialize core to determine rendererState
             $coreState = null;
             $rendererState = null;
@@ -141,6 +137,7 @@ $response_arr = [
     "coreState" => $coreState,
     "rendererState" => $rendererState,
     "coreInfo" => $coreInfo,
+    "saveId" => $saveId,
     "message" => $message,
 ];
 
@@ -150,5 +147,3 @@ echo json_encode($response_arr);
 
 $conn->close();
 ?>
-
- ?>

@@ -131,7 +131,7 @@ export default function DoenetViewer(props) {
           initializeRenderers(e.data.args)
         }
       } else if (e.data.messageType === "updateCreditAchieved") {
-        props.updateCreditAchievedCallback(e.data.args);
+        props.updateCreditAchievedCallback?.(e.data.args);
       } else if (e.data.messageType === "sendToast") {
         console.log(`Sending toast message: ${e.data.args.message}`);
         toast(e.data.args.message, e.data.args.toastType)
@@ -275,6 +275,8 @@ export default function DoenetViewer(props) {
 
 
   function resetCore({ changedOnDevice, newCID, newAttemptNumber }) {
+    console.log('resetCore', changedOnDevice, newCID, newAttemptNumber);
+
     toast(`Reverted page to state saved on device ${changedOnDevice}`, toastType.ERROR);
 
     if (CID && newCID !== CID) {
@@ -288,6 +290,8 @@ export default function DoenetViewer(props) {
       }
       setErrMsg("Have not implemented handling creating new attempt from other device.  Please reload page");
     } else {
+      // TODO: are there cases where will get an infinite loop here?
+
       setNeedNewCoreFlag(true);
     }
 

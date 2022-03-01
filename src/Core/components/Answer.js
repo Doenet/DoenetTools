@@ -1476,12 +1476,6 @@ export default class Answer extends InlineComponent {
     }
 
 
-    instructions.push({
-      updateType: "recordItemSubmission",
-      itemNumber: await this.stateValues.inItemNumber
-    })
-
-
     let responseText = [];
     for (let response of currentResponses) {
       if (response.toString) {
@@ -1490,6 +1484,15 @@ export default class Answer extends InlineComponent {
         responseText.push(response)
       }
     }
+
+    instructions.push({
+      updateType: "recordItemSubmission",
+      itemNumber: await this.stateValues.inItemNumber,
+      submittedComponent: this.componentName,
+      response: currentResponses,
+      responseText,
+      creditAchieved,
+    })
 
     // console.log(`submit instructions`)
     // console.log(instructions);
