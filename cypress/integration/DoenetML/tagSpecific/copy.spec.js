@@ -748,9 +748,9 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <title>Two problems</title>
 
-    <copy assignNames="problem1" uri="doenet:conTentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d&DoenEtiD=abcdefg" />
+    <copy assignNames="problem1" uri="doenet:cId=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu&DoenEtiD=abcdefg" />
     
-    <copy assignNames="problem2" uri="doenet:doeneTiD=hijklmnop&contentId=64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a" />
+    <copy assignNames="problem2" uri="doenet:doeneTiD=hijklmnop&contentId=CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
     `}, "*");
     });
     cy.get('#\\/_title1').should('have.text', 'Two problems');  // to wait for page to load
@@ -765,9 +765,9 @@ describe('Copy Tag Tests', function () {
       expect(problem1Version).not.eq(-1)
       cy.window().then(async (win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components["/_copy1"].stateValues.contentId).eq("a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d")
+        expect(components["/_copy1"].stateValues.contentId).eq("bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu")
         expect(components["/_copy1"].stateValues.doenetId).eq("abcdefg")
-        expect(components["/_copy2"].stateValues.contentId).eq("64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a")
+        expect(components["/_copy2"].stateValues.contentId).eq("bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti")
         expect(components["/_copy2"].stateValues.doenetId).eq("hijklmnop")
       })
     })
@@ -831,9 +831,9 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <title>Four problems</title>
 
-    <copy assignNames="problem12" uri="doenet:contentId=251ff8a0091dcd0b876862bcfb914e8e78ac395ffe22583d149ceec9bebf2b4e" />
+    <copy assignNames="problem12" uri="doenet:CID=bafkreih7bmpf7mbimgeoxgffdt6tbc6o462wj7gtxkzrqsk3kzhdaqzabi" />
     
-    <copy assignNames="problem34" newNamespace name="set2" uri="doenet:contentId=251ff8a0091dcd0b876862bcfb914e8e78ac395ffe22583d149ceec9bebf2b4e" />
+    <copy assignNames="problem34" newNamespace name="set2" uri="doenet:CID=bafkreih7bmpf7mbimgeoxgffdt6tbc6o462wj7gtxkzrqsk3kzhdaqzabi" />
     `}, "*");
     });
 
@@ -968,9 +968,9 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <title>Four problems</title>
 
-    <copy assignNames="problem12" newNamespace name="set1" uri="doenet:contentId=251ff8a0091dcd0b876862bcfb914e8e78ac395ffe22583d149ceec9bebf2b4e" />
+    <copy assignNames="problem12" newNamespace name="set1" uri="doenet:CID=bafkreih7bmpf7mbimgeoxgffdt6tbc6o462wj7gtxkzrqsk3kzhdaqzabi" />
     
-    <copy assignNames="problem34" uri="doenet:contentId=251ff8a0091dcd0b876862bcfb914e8e78ac395ffe22583d149ceec9bebf2b4e" />
+    <copy assignNames="problem34" uri="doenet:CID=bafkreih7bmpf7mbimgeoxgffdt6tbc6o462wj7gtxkzrqsk3kzhdaqzabi" />
     `}, "*");
     });
 
@@ -1937,7 +1937,7 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <group name="g" newNamespace>
-    <copy uri="doenet:contentId=64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a" assignNames="p" />
+    <copy uri="doenet:contentId=CID=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" assignNames="p" />
     <p>Credit achieved: <copy prop="creditAchieved" target="p/derivativeProblem/_answer1" assignNames="ca" /></p>
     </group>
     

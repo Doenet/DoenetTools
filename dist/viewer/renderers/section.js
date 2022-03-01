@@ -6,7 +6,7 @@ import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/fr
 import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export default function Section(props) {
-  let {name, SVs, children, actions} = useDoenetRender(props);
+  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
   }
@@ -80,7 +80,7 @@ export default function Section(props) {
             backgroundColor: "#ebebeb",
             cursor: "pointer"
           },
-          onClick: actions.closeSection
+          onClick: () => callAction({action: actions.closeSection})
         }, /* @__PURE__ */ React.createElement("a", {
           name
         }), heading), /* @__PURE__ */ React.createElement("span", {
@@ -100,7 +100,7 @@ export default function Section(props) {
             backgroundColor: "#ebebeb",
             cursor: "pointer"
           },
-          onClick: actions.closeSection
+          onClick: () => callAction({action: actions.closeSection})
         }, /* @__PURE__ */ React.createElement("a", {
           name
         }), heading), /* @__PURE__ */ React.createElement("span", {
@@ -119,7 +119,7 @@ export default function Section(props) {
           backgroundColor: "#ebebeb",
           cursor: "pointer"
         },
-        onClick: actions.revealSection
+        onClick: () => callAction({action: actions.revealSection})
       }, heading));
     }
   } else if (SVs.boxed) {

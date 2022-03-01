@@ -1,35 +1,108 @@
 import React, {Component} from "../_snowpack/pkg/react.js";
 import Core from "./core.js";
 import axios from "../_snowpack/pkg/axios.js";
-import sha256 from "../_snowpack/pkg/crypto-js/sha256.js";
-import CryptoJS from "../_snowpack/pkg/crypto-js.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
 import {useToast, toastType} from "../_framework/Toast.js";
 import {serializedComponentsReplacer, serializedComponentsReviver} from "../core/utils/serializedStateProcessing.js";
 import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faExclamationCircle} from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import {rendererSVs} from "./renderers/useDoenetRenderer.js";
-import {useRecoilCallback} from "../_snowpack/pkg/recoil.js";
+import {rendererState} from "./renderers/useDoenetRenderer.js";
+import {atomFamily, useRecoilCallback} from "../_snowpack/pkg/recoil.js";
+import {CIDFromDoenetML} from "../core/utils/cid.js";
+const rendererUpdatesToIgnore = atomFamily({
+  key: "rendererUpdatesToIgnore",
+  default: {}
+});
 class DoenetViewerChild extends Component {
   constructor(props) {
     super(props);
-    this.update = this.update.bind(this);
+    this.updateRenderers = this.updateRenderers.bind(this);
     this.coreReady = this.coreReady.bind(this);
     this.createCore = this.createCore.bind(this);
     this.loadState = this.loadState.bind(this);
-    this.localStateChanged = this.localStateChanged.bind(this);
-    this.recordSolutionView = this.recordSolutionView.bind(this);
-    this.recordEvent = this.recordEvent.bind(this);
-    this.rendererUpdateMethods = {};
+    this.callAction = this.callAction.bind(this);
+    this.rendererStateValues = {};
     this.cumulativeStateVariableChanges = {};
     this.needNewCoreFlag = false;
     this.weightsStored = false;
     this.state = {
       doenetML: null,
       attemptNumber: null,
-      contentId: null,
+      CID: null,
       errMsg: null
     };
+    if (!this.props.useUnbundledCore) {
+      this.coreWorker = new Worker("core/Core.js", {type: "module"});
+    } else {
+      this.coreWorker = new Worker("viewer/core.js", {type: "module"});
+    }
+    let viewer = this;
+    this.coreCreated = false;
+    this.coreWorker.onmessage = function(e) {
+      if (e.data.messageType === "coreCreated") {
+        viewer.coreCreated = true;
+        if (viewer.coreInfo && JSON.stringify(viewer.coreInfo) === JSON.stringify(e.data.args)) {
+          console.log("do we skip sending core ready since already have coreInfo?");
+        } else {
+          console.log("creating new core");
+          viewer.coreReady(e.data.args);
+        }
+      } else if (e.data.messageType === "updateRenderers") {
+        if (e.data.init && viewer.coreInfo) {
+          console.log("do we skip initial render state values since already have coreInfo?");
+        } else {
+          viewer.updateRenderers(e.data.args);
+        }
+      } else if (e.data.messageType === "saveState") {
+        viewer.saveState(e.data.args);
+      } else if (e.data.messageType === "recordSolutionView") {
+        viewer.recordSolutionView(e.data.args);
+      } else if (e.data.messageType === "returnAllStateVariables") {
+        console.log(e.data.args);
+        viewer.resolveAllStateVariables(e.data.args);
+      } else if (e.data.messageType === "inErrorState") {
+        if (viewer.props.setIsInErrorState) {
+          viewer.props.setIsInErrorState(true);
+        }
+        viewer.setState({errMsg: e.data.args.errMsg});
+      }
+    };
+    window.returnAllStateVariables = function() {
+      this.coreWorker.postMessage({
+        messageType: "returnAllStateVariables"
+      });
+      return new Promise((resolve, reject) => {
+        viewer.resolveAllStateVariables = resolve;
+      });
+    }.bind(this);
+    window.callAction = function({actionName, componentName, args}) {
+      this.callAction({
+        action: {actionName, componentName},
+        args
+      });
+    }.bind(this);
+  }
+  callAction({action, args, baseVariableValue, name, rendererType}) {
+    if (this.coreCreated || !this.rendererClasses?.[rendererType]?.ignoreActionsWithoutCore) {
+      if (baseVariableValue !== void 0 && name) {
+        let actionId = nanoid();
+        this.props.updateRendererUpdatesToIgnore({
+          componentName: name,
+          baseVariableValue,
+          actionId
+        });
+        args = {...args};
+        args.actionId = actionId;
+      }
+      this.coreWorker.postMessage({
+        messageType: "requestAction",
+        args: {
+          actionName: action.actionName,
+          componentName: action.componentName,
+          args
+        }
+      });
+    }
   }
   createCore({stateVariables, variant}) {
     if (!stateVariables) {
@@ -44,41 +117,18 @@ class DoenetViewerChild extends Component {
     }
     this.coreId = nanoid();
     try {
-      if (this.props.core) {
-        new this.props.core({
+      this.coreWorker.postMessage({
+        messageType: "createCore",
+        args: {
           coreId: this.coreId,
-          coreReadyCallback: this.coreReady,
-          coreUpdatedCallback: this.update,
+          userId: this.props.userId,
           doenetML: this.doenetML,
-          externalFunctions: {
-            localStateChanged: this.localStateChanged,
-            updateRendererSVsWithRecoil: this.props.updateRendererSVsWithRecoil,
-            recordSolutionView: this.recordSolutionView,
-            recordEvent: this.recordEvent,
-            contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
-          },
+          CID: this.CID,
+          doenetId: this.doenetId,
           flags: this.props.flags,
-          requestedVariant: this.requestedVariant,
-          stateVariableChanges: this.cumulativeStateVariableChanges
-        });
-      } else {
-        new Core({
-          coreId: this.coreId,
-          coreReadyCallback: this.coreReady,
-          coreUpdatedCallback: this.update,
-          doenetML: this.doenetML,
-          externalFunctions: {
-            localStateChanged: this.localStateChanged,
-            updateRendererSVsWithRecoil: this.props.updateRendererSVsWithRecoil,
-            recordSolutionView: this.recordSolutionView,
-            recordEvent: this.recordEvent,
-            contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
-          },
-          flags: this.props.flags,
-          requestedVariant: this.requestedVariant,
-          stateVariableChanges: this.cumulativeStateVariableChanges
-        });
-      }
+          attemptNumber: this.attemptNumber
+        }
+      });
     } catch (e) {
       throw e;
       if (this.props.setIsInErrorState) {
@@ -87,50 +137,47 @@ class DoenetViewerChild extends Component {
       this.setState({errMsg: e.message});
     }
   }
-  coreReady(core) {
-    this.core = core;
-    this.generatedVariant = core.document.stateValues.generatedVariantInfo;
-    this.itemVariantInfo = core.document.stateValues.itemVariantInfo;
-    this.allPossibleVariants = [...core.document.sharedParameters.allPossibleVariants];
+  coreReady(coreInfo) {
+    this.coreInfo = coreInfo;
     if (this.props.generatedVariantCallback) {
-      this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
+      this.props.generatedVariantCallback(this.coreInfo.generatedVariantInfo, this.coreInfo.allPossibleVariants);
     }
     let renderPromises = [];
     let rendererClassNames = [];
-    for (let rendererClassName of core.rendererTypesInDocument) {
+    for (let rendererClassName of coreInfo.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
       renderPromises.push(import(`./renderers/${rendererClassName}.js`));
     }
+    let documentComponentInstructions = coreInfo.documentToRender;
     renderersloadComponent(renderPromises, rendererClassNames).then((rendererClasses) => {
       this.rendererClasses = rendererClasses;
-      let documentComponentInstructions = core.renderedComponentInstructions[core.documentName];
       let documentRendererClass = this.rendererClasses[documentComponentInstructions.rendererType];
       this.documentRenderer = React.createElement(documentRendererClass, {
         key: documentComponentInstructions.componentName,
         componentInstructions: documentComponentInstructions,
         rendererClasses: this.rendererClasses,
-        rendererUpdateMethods: this.rendererUpdateMethods,
-        flags: this.props.flags
+        flags: this.props.flags,
+        callAction: this.callAction
       });
       this.needNewCoreFlag = false;
       this.setState({
         doenetML: this.doenetML,
         attemptNumber: this.attemptNumber,
-        contentId: this.contentId
+        CID: this.CID
       });
     });
-    if (this.allowSavePageState && Number.isInteger(this.attemptNumber) && this.savedUserAssignmentAttemptNumber !== this.attemptNumber) {
+    if (this.props.flags.allowSavePageState && Number.isInteger(this.attemptNumber) && this.savedUserAssignmentAttemptNumber !== this.attemptNumber) {
       if (!navigator.onLine) {
         this.props.toast("You're not connected to the internet. ", toastType.ERROR);
       }
       axios.post("/api/initAssignmentAttempt.php", {
         doenetId: this.props.doenetId,
-        weights: this.core.scoredItemWeights,
+        weights: coreInfo.scoredItemWeights,
         attemptNumber: this.attemptNumber,
-        contentId: this.contentId,
+        contentId: this.CID,
         requestedVariant: JSON.stringify(this.requestedVariant, serializedComponentsReplacer),
-        generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
-        itemVariantInfo: this.itemVariantInfo.map((x) => JSON.stringify(x, serializedComponentsReplacer))
+        generatedVariant: JSON.stringify(this.coreInfo.generatedVariantInfo, serializedComponentsReplacer),
+        itemVariantInfo: this.coreInfo.itemVariantInfo.map((x) => JSON.stringify(x, serializedComponentsReplacer))
       }).then(({data}) => {
         if (!data.success) {
           if (this.props.setIsInErrorState) {
@@ -146,19 +193,14 @@ class DoenetViewerChild extends Component {
         this.setState({errMsg: errMsg.message});
       });
     }
-    if (this.props.onCoreReady) {
-      this.props.onCoreReady();
-    }
   }
-  localStateChanged({
+  saveState({
     newStateVariableValues,
-    contentId,
-    sourceOfUpdate,
-    transient = false,
+    CID,
     itemsWithCreditAchieved,
     currentVariant
   }) {
-    if (transient || !this.allowSavePageState && !this.allowLocalPageState) {
+    if (!this.props.flags.allowSavePageState && !this.props.flags.allowLocalPageState) {
       return;
     }
     for (let componentName in newStateVariableValues) {
@@ -175,26 +217,31 @@ class DoenetViewerChild extends Component {
       }
     }
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedComponentsReplacer);
-    let variantString = JSON.stringify(this.generatedVariant, serializedComponentsReplacer);
+    let variantString = JSON.stringify(this.coreInfo.generatedVariantInfo, serializedComponentsReplacer);
     let currentVariantString = JSON.stringify(currentVariant, serializedComponentsReplacer);
     if (currentVariantString !== variantString) {
-      this.generatedVariant = currentVariant;
+      this.coreInfo.generatedVariantInfo = currentVariant;
       variantString = currentVariantString;
       if (this.props.generatedVariantCallback) {
-        this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
+        this.props.generatedVariantCallback(this.coreInfo.generatedVariantInfo, this.coreInfo.allPossibleVariants);
       }
     }
     const data = {
-      contentId,
+      contentId: CID,
       stateVariables: changeString,
       attemptNumber: this.attemptNumber,
       doenetId: this.props.doenetId,
       variant: variantString
     };
-    if (this.allowLocalPageState) {
-      localStorage.setItem(`${contentId}${this.props.doenetId}${this.attemptNumber}`, JSON.stringify({stateVariables: changeString, variant: variantString}));
+    if (this.props.flags.allowLocalPageState) {
+      localStorage.setItem(`${CID}${this.props.doenetId}${this.attemptNumber}`, JSON.stringify({
+        stateVariables: changeString,
+        variant: variantString,
+        rendererStateValues: this.rendererStateValues,
+        coreInfo: this.coreInfo
+      }));
     }
-    if (!this.allowSavePageState) {
+    if (!this.props.flags.allowSavePageState) {
       return;
     }
     if (!navigator.onLine) {
@@ -210,14 +257,14 @@ class DoenetViewerChild extends Component {
         }
       });
     }, 1e3);
-    if (!this.allowSaveSubmissions) {
+    if (!this.props.flags.allowSaveSubmissions) {
       return;
     }
     for (let itemNumber in itemsWithCreditAchieved) {
       let itemCreditAchieved = itemsWithCreditAchieved[itemNumber];
       const payload2 = {
         doenetId: this.props.doenetId,
-        contentId: this.contentId,
+        contentId: this.CID,
         attemptNumber: this.attemptNumber,
         credit: itemCreditAchieved,
         itemNumber,
@@ -246,27 +293,42 @@ class DoenetViewerChild extends Component {
       });
     }
   }
-  loadState(callback) {
-    if (!this.allowLoadPageState && !this.allowLocalPageState) {
-      callback({
+  async loadState() {
+    if (!this.props.flags.allowLoadPageState && !this.props.flags.allowLocalPageState) {
+      return {
         stateVariables: null,
         variant: null
-      });
-      return;
+      };
     }
-    if (this.allowLocalPageState) {
-      let stateVarVariant = JSON.parse(localStorage.getItem(`${this.contentId}${this.props.doenetId}${this.attemptNumber}`));
+    if (this.props.flags.allowLocalPageState) {
+      let localInfo = JSON.parse(localStorage.getItem(`${this.CID}${this.props.doenetId}${this.attemptNumber}`));
       let stateVariables = null;
       let variant = null;
-      if (stateVarVariant) {
-        stateVariables = stateVarVariant.stateVariables;
-        variant = stateVarVariant.variant;
+      let rendererStateValues = {};
+      if (localInfo) {
+        stateVariables = localInfo.stateVariables;
+        variant = localInfo.variant;
+        if (localInfo.rendererStateValues) {
+          this.rendererStateValues = localInfo.rendererStateValues;
+          console.log("loading renderer values");
+          console.log(this.rendererStateValues);
+          for (let componentName in this.rendererStateValues) {
+            this.props.updateRendererSVsWithRecoil({
+              componentName,
+              stateValues: this.rendererStateValues[componentName]
+            });
+          }
+        }
+        this.coreInfo = localInfo.coreInfo;
+        if (this.coreInfo) {
+          console.log("pretending core ready from database");
+          this.coreReady(this.coreInfo);
+        }
       }
-      callback({
+      return {
         stateVariables,
         variant
-      });
-      return;
+      };
     }
     let effectivePageStateSource = "pageState";
     if (this.props.pageStateSource) {
@@ -274,48 +336,56 @@ class DoenetViewerChild extends Component {
     }
     const payload = {
       params: {
-        contentId: this.contentId,
+        contentId: this.CID,
         attemptNumber: this.attemptNumber,
         doenetId: this.props.doenetId,
         userId: this.props.userId,
         pageStateSource: effectivePageStateSource
       }
     };
-    axios.get("/api/loadContentInteractions.php", payload).then((resp) => {
+    try {
+      let resp = await axios.get("/api/loadContentInteractions.php", payload);
       if (!resp.data.success) {
         throw new Error(resp.data.message);
       }
-      if (callback) {
-        callback({
-          stateVariables: resp.data.stateVariables,
-          variant: resp.data.variant
-        });
-      }
-    }).catch((errMsg) => {
+      return {
+        stateVariables: resp.data.stateVariables,
+        variant: resp.data.variant
+      };
+    } catch (errMsg) {
       if (this.props.setIsInErrorState) {
         this.props.setIsInErrorState(true);
       }
       this.setState({errMsg: errMsg.message});
-    });
+      return null;
+    }
   }
-  async update(instructions) {
-    for (let instruction of instructions) {
-      if (instruction.instructionType === "updateStateVariable") {
-        for (let componentName of instruction.renderersToUpdate.filter((x) => x in this.rendererUpdateMethods)) {
-          this.rendererUpdateMethods[componentName].update({
-            sourceOfUpdate: instruction.sourceOfUpdate
+  async updateRenderers(updateInstructions) {
+    for (let instruction of updateInstructions) {
+      if (instruction.instructionType === "updateRendererStates") {
+        for (let {componentName, stateValues, rendererType, childrenInstructions} of instruction.rendererStatesToUpdate) {
+          this.props.updateRendererSVsWithRecoil({
+            componentName,
+            stateValues,
+            childrenInstructions,
+            sourceOfUpdate: instruction.sourceOfUpdate,
+            baseStateVariable: this.rendererClasses?.[rendererType]?.baseStateVariable
           });
+          this.rendererStateValues[componentName] = stateValues;
         }
       }
     }
   }
-  async recordSolutionView({itemNumber, scoredComponent}) {
+  async recordSolutionView({itemNumber, scoredComponent, messageId}) {
     const resp = await axios.post("/api/reportSolutionViewed.php", {
       doenetId: this.props.doenetId,
       itemNumber,
       attemptNumber: this.attemptNumber
     });
-    return {allowView: true, message: "", scoredComponent};
+    this.coreWorker.postMessage({
+      messageType: "allowSolutionView",
+      args: {allowView: true, message: "", scoredComponent, messageId}
+    });
   }
   recordEvent(event) {
     if (!this.allowSaveEvents) {
@@ -325,7 +395,7 @@ class DoenetViewerChild extends Component {
       doenetId: this.props.doenetId,
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
-      variant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
+      variant: JSON.stringify(this.coreInfo.generatedVariantInfo, serializedComponentsReplacer),
       verb: event.verb,
       object: JSON.stringify(event.object, serializedComponentsReplacer),
       result: JSON.stringify(event.result, serializedComponentsReplacer),
@@ -334,28 +404,6 @@ class DoenetViewerChild extends Component {
       version: "0.1.0"
     };
     axios.post("/api/recordEvent.php", payload);
-  }
-  contentIdsToDoenetMLs(contentIds) {
-    let promises = [];
-    let newDoenetMLs = {};
-    let newContentIds = contentIds;
-    for (let contentId of contentIds) {
-      promises.push(axios.get(`/media/${contentId}.doenet`));
-    }
-    return Promise.all(promises).then((resps) => {
-      newDoenetMLs = resps.map((x) => x.data);
-      return Promise.resolve({newDoenetMLs, newContentIds});
-    }).catch((err) => {
-      let message;
-      if (newContentIds.length === 1) {
-        message = `Could not retrieve contentId ${newContentIds[0]}`;
-      } else {
-        message = `Could not retrieve contentIds ${newContentIds.join(",")}`;
-      }
-      message += ": " + err.message;
-      console.error(message);
-      return Promise.reject(new Error(message));
-    });
   }
   render() {
     if (this.state.errMsg !== null) {
@@ -367,26 +415,6 @@ class DoenetViewerChild extends Component {
       return /* @__PURE__ */ React.createElement("div", {
         style: {fontSize: "1.3em", marginLeft: "20px", marginTop: "20px"}
       }, errorIcon, " ", this.state.errMsg);
-    }
-    this.allowLoadPageState = true;
-    if (this.props.allowLoadPageState === false) {
-      this.allowLoadPageState = false;
-    }
-    this.allowSavePageState = true;
-    if (this.props.allowSavePageState === false) {
-      this.allowSavePageState = false;
-    }
-    this.allowLocalPageState = true;
-    if (this.props.allowLocalPageState === false) {
-      this.allowLocalPageState = false;
-    }
-    this.allowSaveSubmissions = true;
-    if (this.props.allowSaveSubmissions === false) {
-      this.allowSaveSubmissions = false;
-    }
-    this.allowSaveEvents = true;
-    if (this.props.allowSaveEvents === false) {
-      this.allowSaveEvents = false;
     }
     this.attemptNumber = this.props.attemptNumber;
     if (this.attemptNumber === void 0) {
@@ -400,30 +428,31 @@ class DoenetViewerChild extends Component {
       this.needNewCoreFlag = true;
     }
     this.requestedVariant = adjustedRequestedVariantFromProp;
-    if (typeof this.props.doenetML === "string" && !this.props.contentId) {
+    if (typeof this.props.doenetML === "string" && !this.props.CID) {
       this.doenetML = this.props.doenetML;
       if (this.doenetML !== this.state.doenetML) {
-        this.contentId = sha256(this.props.doenetML).toString(CryptoJS.enc.Hex);
         this.needNewCoreFlag = true;
-      }
-    } else if (!this.props.doenetML && this.props.contentId) {
-      this.contentId = this.props.contentId;
-      if (this.contentId !== this.state.contentId) {
-        this.needNewCoreFlag = true;
-        try {
-          axios.get(`/media/${this.contentId}.doenet`).then((resp) => {
-            this.doenetML = resp.data;
-            this.forceUpdate();
+        delete this.coreInfo;
+        this.coreCreated = false;
+        CIDFromDoenetML(this.props.doenetML).then((CID) => {
+          this.CID = CID;
+          this.loadState().then((createCoreInfo) => {
+            if (createCoreInfo) {
+              this.createCore(createCoreInfo);
+            }
           });
-        } catch (err) {
-          return "Error Loading";
-        }
+        });
         return null;
       }
-    } else if (this.props.doenetML && this.props.contentId) {
+    } else if (!this.props.doenetML && this.props.CID) {
+      this.CID = this.props.CID;
+      if (this.CID !== this.state.CID) {
+        this.needNewCoreFlag = true;
+      }
+    } else if (this.props.doenetML && this.props.CID) {
       this.doenetML = this.props.doenetML;
-      this.contentId = this.props.contentId;
-      if (this.contentId !== this.state.contentId) {
+      this.CID = this.props.CID;
+      if (this.CID !== this.state.CID) {
         this.needNewCoreFlag = true;
       }
     }
@@ -431,7 +460,13 @@ class DoenetViewerChild extends Component {
       this.needNewCoreFlag = true;
     }
     if (this.needNewCoreFlag) {
-      this.loadState(this.createCore);
+      delete this.coreInfo;
+      this.coreCreated = false;
+      this.loadState().then((createCoreInfo) => {
+        if (createCoreInfo) {
+          this.createCore(createCoreInfo);
+        }
+      });
       return null;
     }
     return /* @__PURE__ */ React.createElement("div", {
@@ -462,10 +497,47 @@ class ErrorBoundary extends React.Component {
 }
 function DoenetViewer(props) {
   const toast = useToast();
-  const updateRendererSVsWithRecoil = useRecoilCallback(({snapshot, set}) => async ({componentName, stateValues, sourceOfUpdate}) => {
-    set(rendererSVs(componentName), {stateValues, sourceOfUpdate});
+  const updateRendererSVsWithRecoil = useRecoilCallback(({snapshot, set}) => async ({
+    componentName,
+    stateValues,
+    childrenInstructions,
+    sourceOfUpdate,
+    baseStateVariable
+  }) => {
+    let ignoreUpdate = false;
+    if (baseStateVariable) {
+      let sourceActionId = sourceOfUpdate?.sourceInformation?.[componentName]?.actionId;
+      let updatesToIgnore = snapshot.getLoadable(rendererUpdatesToIgnore(componentName)).contents;
+      if (Object.keys(updatesToIgnore).length > 0) {
+        let valueFromRenderer = updatesToIgnore[sourceActionId];
+        let valueFromCore = stateValues[baseStateVariable];
+        if (valueFromRenderer === valueFromCore || Array.isArray(valueFromRenderer) && Array.isArray(valueFromCore) && valueFromRenderer.length == valueFromCore.length && valueFromRenderer.every((v, i) => valueFromCore[i] === v)) {
+          ignoreUpdate = true;
+          set(rendererUpdatesToIgnore(componentName), (was) => {
+            let newUpdatesToIgnore = {...was};
+            delete newUpdatesToIgnore[sourceActionId];
+            return newUpdatesToIgnore;
+          });
+        } else {
+          set(rendererUpdatesToIgnore(componentName), {});
+        }
+      }
+    }
+    let newRendererState = {stateValues, childrenInstructions, sourceOfUpdate, ignoreUpdate};
+    if (childrenInstructions === void 0) {
+      let previousRendererState = snapshot.getLoadable(rendererState(componentName)).contents;
+      newRendererState.childrenInstructions = previousRendererState.childrenInstructions;
+    }
+    set(rendererState(componentName), newRendererState);
   });
-  let newProps = {...props, toast, updateRendererSVsWithRecoil};
+  const updateRendererUpdatesToIgnore = useRecoilCallback(({snapshot, set}) => async ({componentName, baseVariableValue, actionId}) => {
+    set(rendererUpdatesToIgnore(componentName), (was) => {
+      let newUpdatesToIgnore = {...was};
+      newUpdatesToIgnore[actionId] = baseVariableValue;
+      return newUpdatesToIgnore;
+    });
+  });
+  let newProps = {...props, toast, updateRendererSVsWithRecoil, updateRendererUpdatesToIgnore};
   return /* @__PURE__ */ React.createElement(ErrorBoundary, null, /* @__PURE__ */ React.createElement(DoenetViewerChild, {
     ...newProps
   }));

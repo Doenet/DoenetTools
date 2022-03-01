@@ -498,23 +498,14 @@ export default class Document extends BaseComponent {
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
         },
-        variants: {
-          dependencyType: "variants",
-        },
       }),
       definition({ dependencyValues, componentName, previousValues }) {
-
-        let subvariantsSpecified = Boolean(
-          dependencyValues.variants.desiredVariant &&
-          dependencyValues.variants.desiredVariant.subvariants
-        )
 
         let generatedVariantInfo = {
           index: dependencyValues.variantIndex,
           name: dependencyValues.variantName,
           meta: {
             createdBy: componentName,
-            subvariantsSpecified
           },
         }
 
@@ -669,7 +660,7 @@ export default class Document extends BaseComponent {
       sharedParameters.variantSeed = variantIndex.toString();
       sharedParameters.variantIndex = variantIndex;
       sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
-      sharedParameters.selectRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
+      sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
 
 
     } else {
@@ -677,13 +668,9 @@ export default class Document extends BaseComponent {
       sharedParameters.variantSeed = await variantControlChild.state.selectedSeed.value;
       sharedParameters.variantName = await variantControlChild.state.selectedVariantName.value;
       sharedParameters.variantIndex = await variantControlChild.state.selectedVariantIndex.value;
-      sharedParameters.selectRng = await variantControlChild.state.selectRng.value;
+      sharedParameters.variantRng = await variantControlChild.state.variantRng.value;
       sharedParameters.allPossibleVariants = await variantControlChild.state.variantNames.value;
     }
-
-    // seed rng for random numbers predictably from variant using selectRng
-    let seedForRandomNumbers = Math.floor(sharedParameters.selectRng() * 1000000).toString()
-    sharedParameters.rng = new sharedParameters.rngClass(seedForRandomNumbers);
 
     // console.log("Document variant name: " + sharedParameters.variantName);
 

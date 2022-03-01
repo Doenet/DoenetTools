@@ -47,3 +47,42 @@ export function getVariantsForDescendants({
     desiredVariants
   }
 }
+
+export function setUpVariantSeedAndRng({
+  serializedComponent, sharedParameters,
+  descendantVariantComponents,
+}) {
+
+  let variantSeed;
+  // check if desiredVariant was specified
+  let desiredVariant;
+  if (serializedComponent.variants) {
+    desiredVariant = serializedComponent.variants.desiredVariant;
+  }
+  if (desiredVariant?.seed !== undefined) {
+    variantSeed = desiredVariant.seed.toString();
+  } else {
+
+    // if variant seed wasn't specifed
+
+    // randomly pick variant seed
+    variantSeed = sharedParameters.variantRng().toString().slice(2);
+  }
+
+  sharedParameters.variantSeed = variantSeed;
+  sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
+
+  // if subvariants were specified, add those the corresponding descendants
+
+  if (desiredVariant?.subvariants && descendantVariantComponents) {
+    for (let ind in desiredVariant.subvariants) {
+      let subvariant = desiredVariant.subvariants[ind];
+      let variantComponent = descendantVariantComponents[ind];
+      if (variantComponent === undefined) {
+        break;
+      }
+      variantComponent.variants.desiredVariant = subvariant;
+    }
+  }
+
+}

@@ -1,14 +1,13 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class Alert extends DoenetRenderer {
+export default function Sq(props) {
+  let { name, SVs, children } = useDoenetRender(props);
 
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <><a name={this.componentName} />&lsquo;{this.children}&rsquo;</>
+  if (SVs.hidden) {
+    return null;
   }
+
+  return <><a name={name} />&lsquo;{children}&rsquo;</>
+
 }

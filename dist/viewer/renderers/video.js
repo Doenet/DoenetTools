@@ -1,21 +1,25 @@
-import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-import cssesc from "../../_snowpack/pkg/cssesc.js";
+import React, {useRef, useEffect} from "../../_snowpack/pkg/react.js";
+import useDoenetRender from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
-export default class Video extends DoenetRenderer {
-  constructor(props) {
-    super(props);
-    this.onPlayerReady = this.onPlayerReady.bind(this);
-    this.onPlayerStateChange = this.onPlayerStateChange.bind(this);
-    this.onPlaybackRateChange = this.onPlaybackRateChange.bind(this);
-  }
-  componentDidMount() {
-    if (this.doenetSvData.youtube) {
-      let cName = cssesc(this.componentName);
-      this.player = new window.YT.Player(cName, {
-        videoId: this.doenetSvData.youtube,
-        width: sizeToCSS(this.doenetSvData.width),
-        height: sizeToCSS(this.doenetSvData.height),
+import cssesc from "../../_snowpack/pkg/cssesc.js";
+import DoenetRenderer from "./DoenetRenderer.js";
+export default function Video(props) {
+  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  let player = useRef(null);
+  let skippedCurrentTime = useRef(null);
+  let currentTime = useRef(null);
+  let rates = useRef([]);
+  let lastPlayerState = useRef(null);
+  let timer = useRef(null);
+  let lastPausedTime = useRef(0);
+  let lastPlayedTime = useRef(0);
+  useEffect(() => {
+    if (SVs.youtube) {
+      let cName = cssesc(name);
+      player.current = new window.YT.Player(cName, {
+        videoId: SVs.youtube,
+        width: sizeToCSS(SVs.width),
+        height: sizeToCSS(SVs.height),
         playerVars: {
           autoplay: 0,
           controls: 1,
@@ -24,177 +28,194 @@ export default class Video extends DoenetRenderer {
           showinfo: 0
         },
         events: {
-          onReady: this.onPlayerReady,
-          onStateChange: this.onPlayerStateChange,
-          onPlaybackRateChange: this.onPlaybackRateChange
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange,
+          onPlaybackRateChange
         }
       });
     }
-  }
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    if (this.doenetSvData.youtube) {
-      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      }), /* @__PURE__ */ React.createElement("div", {
-        className: "video",
-        id: this.componentName
-      }));
-    } else if (this.doenetSvData.source) {
-      let extension = this.doenetSvData.source.split("/").pop().split(".").pop();
-      let type;
-      if (extension === "ogg") {
-        type = "video/ogg";
-      } else if (extension === "webm") {
-        type = "video/webm";
-      } else if (extension === "mp4") {
-        type = "video/mp4";
-      } else {
-        console.warn("Haven't implemented video for any extension other than .ogg, .webm, .mp4");
-      }
-      if (type) {
-        return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-          name: this.componentName
-        }), /* @__PURE__ */ React.createElement("video", {
-          className: "video",
-          id: this.componentName,
-          style: {objectFit: "fill"},
-          controls: true,
-          width: sizeToCSS(this.doenetSvData.width),
-          height: sizeToCSS(this.doenetSvData.height)
-        }, /* @__PURE__ */ React.createElement("source", {
-          src: this.doenetSvData.source,
-          type
-        }), "Your browser does not support the <video> tag."));
-      } else {
-        return null;
-      }
-    }
-    console.warn("No video returned youtube or no valid sources specified");
-    return null;
-  }
-  onPlayerReady() {
-    let player = this.player;
-    let renderer = this;
-    player.setPlaybackQuality("hd720");
+  }, []);
+  function onPlayerReady(event) {
     window.setInterval(function() {
-      let newTime = player.getCurrentTime();
+      let newTime = player.current.getCurrentTime();
       let timeInterval;
-      if (renderer.skippedCurrentTime) {
-        timeInterval = newTime - renderer.skippedCurrentTime;
+      if (skippedCurrentTime.current) {
+        timeInterval = newTime - skippedCurrentTime.current;
       } else {
-        timeInterval = newTime - renderer.currentTime;
+        timeInterval = newTime - currentTime.current;
       }
-      if (!(renderer.currentTime >= 0) || timeInterval > 0 && timeInterval < 1) {
-        renderer.currentTime = newTime;
-        renderer.skippedCurrentTime = null;
+      if (!(currentTime.current >= 0) || timeInterval > 0 && timeInterval < 1) {
+        currentTime.current = newTime;
+        skippedCurrentTime.current = null;
       } else {
-        renderer.skippedCurrentTime = newTime;
+        skippedCurrentTime.current = newTime;
       }
     }, 200);
   }
-  async onPlayerStateChange(event) {
-    var lastPlayerState = this.lastPlayerState;
-    let renderer = this;
-    let player = this.player;
-    let duration = player.getDuration();
+  async function onPlayerStateChange(event) {
+    let duration = player.current.getDuration();
     switch (event.data) {
       case window.YT.PlayerState.PLAYING:
-        if (this.lastEventState !== event.data) {
-          let newTime = player.getCurrentTime();
-          if (this.lastEventState === window.YT.PlayerState.PAUSED) {
-            let timeSincePaused = newTime - this.lastPausedTime;
+        if (lastPlayerState.current !== event.data) {
+          let currentTime3 = player.current.getCurrentTime();
+          if (lastPlayerState.current === window.YT.PlayerState.PAUSED) {
+            let timeSincePaused = currentTime3 - lastPausedTime.current;
             if (timeSincePaused < 0 || timeSincePaused > 0.5) {
-              await this.actions.recordVideoSkipped({
-                beginTime: this.lastPausedTime,
-                endTime: newTime,
-                duration
+              callAction({
+                action: actions.recordVideoSkipped,
+                args: {
+                  beginTime: lastPausedTime.current,
+                  endTime: currentTime3,
+                  duration
+                }
               });
             }
           }
-          this.lastPlayedTime = newTime;
-          let rate = player.getPlaybackRate();
-          this.rates = [{
-            startingPoint: newTime,
+          let rate = player.current.getPlaybackRate();
+          rates.current = [{
+            startingPoint: currentTime3,
             rate
           }];
-          this.currentTime = NaN;
-          await this.actions.recordVideoStarted({
-            beginTime: player.getCurrentTime(),
-            duration,
-            rate
+          lastPlayedTime.current = currentTime3;
+          callAction({
+            action: actions.recordVideoStarted,
+            args: {
+              beginTime: player.current.getCurrentTime(),
+              duration,
+              rate
+            }
           });
-          this.lastEventState = event.data;
+          lastPlayerState.current = event.data;
         }
         break;
       case window.YT.PlayerState.PAUSED:
-        var timer = setTimeout(async function() {
-          let currentTime = player.getCurrentTime();
-          if (renderer.lastEventState === window.YT.PlayerState.PLAYING) {
-            renderer.rates[renderer.rates.length - 1].endingPoint = currentTime;
-            await renderer.actions.recordVideoWatched({
-              beginTime: renderer.lastPlayedTime,
-              endTime: currentTime,
-              duration,
-              rates: renderer.rates
+        timer.current = setTimeout(async function() {
+          let currentTime3 = player.current.getCurrentTime();
+          if (lastPlayerState.current === window.YT.PlayerState.PLAYING) {
+            rates.current[rates.current.length - 1].endingPoint = currentTime3;
+            callAction({
+              action: actions.recordVideoWatched,
+              args: {
+                beginTime: lastPlayedTime.current,
+                endTime: currentTime3,
+                duration,
+                rates: rates.current
+              }
             });
           }
-          await renderer.actions.recordVideoPaused({
-            endTime: currentTime,
-            duration
+          callAction({
+            action: actions.recordVideoPaused,
+            args: {
+              endTime: currentTime3,
+              duration
+            }
           });
-          renderer.currentTime = NaN;
-          renderer.lastEventState = event.data;
-          renderer.lastPausedTime = currentTime;
+          lastPausedTime.current = currentTime3;
+          lastPlayerState.current = event.data;
         }, 250);
-        this.timer = timer;
         break;
       case window.YT.PlayerState.BUFFERING:
-        clearTimeout(this.timer);
-        if (lastPlayerState !== window.YT.PlayerState.UNSTARTED && Number.isFinite(this.currentTime)) {
-          let newTime = player.getCurrentTime();
-          this.rates[this.rates.length - 1].endingPoint = this.currentTime;
-          await this.actions.recordVideoWatched({
-            beginTime: this.lastPlayedTime,
-            endTime: this.currentTime,
-            duration,
-            rates: this.rates
+        clearTimeout(timer.current);
+        let currentTime2 = player.current.getCurrentTime();
+        if (lastPlayerState.current !== window.YT.PlayerState.UNSTARTED) {
+          rates.current[rates.current.length - 1].endingPoint = currentTime2;
+          callAction({
+            action: actions.recordVideoWatched,
+            args: {
+              beginTime: lastPlayedTime.current,
+              endTime: currentTime2,
+              duration,
+              rates: rates.current
+            }
           });
-          await this.actions.recordVideoSkipped({
-            beginTime: this.currentTime,
-            endTime: newTime,
-            duration
+          callAction({
+            action: actions.recordVideoSkipped,
+            args: {
+              beginTime: lastPlayedTime.current,
+              endTime: currentTime2,
+              duration
+            }
           });
-          this.currentTime = NaN;
-          this.lastEventState = event.data;
+          lastPlayerState.current = event.data;
         }
         break;
       case window.YT.PlayerState.ENDED:
-        this.rates[this.rates.length - 1].endingPoint = player.getCurrentTime();
-        await this.actions.recordVideoWatched({
-          beginTime: this.lastPlayedTime,
-          endTime: player.getCurrentTime(),
-          duration,
-          rates: this.rates
+        rates.current[rates.current.length - 1].endingPoint = player.current.getCurrentTime();
+        callAction({
+          action: actions.recordVideoWatched,
+          args: {
+            beginTime: lastPlayedTime.current,
+            endTime: player.current.getCurrentTime(),
+            duration,
+            rates: rates.current
+          }
         });
-        await this.actions.recordVideoCompleted({
-          duration
+        callAction({
+          action: actions.recordVideoCompleted,
+          args: {
+            duration
+          }
         });
-        this.currentTime = NaN;
-        this.lastEventState = event.data;
+        lastPlayerState.current = event.data;
         break;
       case window.YT.PlayerState.UNSTARTED:
+        lastPlayerState.current = event.data;
         break;
     }
-    this.lastPlayerState = event.data;
   }
-  onPlaybackRateChange(event) {
-    this.rates[this.rates.length - 1].endingPoint = this.currentTime;
-    this.rates.push({
-      startingPoint: this.currentTime,
+  function onPlaybackRateChange(event) {
+    let currentTime2 = player.current.getCurrentTime();
+    rates.current[rates.current.length - 1].endingPoint = currentTime2;
+    rates.current.push({
+      startingPoint: currentTime2,
       rate: event.data
     });
   }
+  if (SVs.hidden) {
+    return null;
+  }
+  if (SVs.youtube) {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+      name
+    }), /* @__PURE__ */ React.createElement("div", {
+      className: "video",
+      id: name
+    }));
+  } else if (SVs.source) {
+    let extension = SVs.source.split("/").pop().split(".").pop();
+    let type;
+    if (extension === "ogg") {
+      type = "video/ogg";
+    } else if (extension === "webm") {
+      type = "video/webm";
+    } else if (extension === "mp4") {
+      type = "video/mp4";
+    } else {
+      console.warn("Haven't implemented video for any extension other than .ogg, .webm, .mp4");
+    }
+    if (type) {
+      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+        name
+      }), /* @__PURE__ */ React.createElement("video", {
+        className: "video",
+        id: name,
+        style: {objectFit: "fill"},
+        controls: true,
+        width: sizeToCSS(SVs.width),
+        height: sizeToCSS(SVs.height)
+      }, /* @__PURE__ */ React.createElement("source", {
+        src: SVs.source,
+        type
+      }), "Your browser does not support the <video> tag."));
+    } else {
+      return null;
+    }
+  }
+  console.warn("No video returned youtube or no valid sources specified");
+  return null;
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), /* @__PURE__ */ React.createElement("span", {
+    id: name
+  }, SVs.text));
 }

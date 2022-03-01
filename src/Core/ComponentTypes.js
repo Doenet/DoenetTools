@@ -21,6 +21,7 @@ import * as Indexing from './components/Indexing';
 import * as Divisions from './components/Divisions';
 import * as Verbatim from './components/Verbatim';
 import * as Paginator from './components/Paginator';
+import * as MatrixInput from './components/MatrixInput';
 
 import Document from './components/Document';
 import Text from './components/Text';
@@ -60,7 +61,6 @@ import Answer from './components/Answer';
 import Award from './components/Award';
 import When from './components/When';
 import MathInput from './components/MathInput';
-import MatrixInput from './components/MatrixInput';
 import TextInput from './components/TextInput';
 import BooleanInput from './components/BooleanInput';
 import ChoiceInput from './components/ChoiceInput';
@@ -149,6 +149,7 @@ import RegionHalfPlane from './components/RegionHalfPlane';
 import CodeEditor from './components/CodeEditor';
 import CodeViewer from './components/CodeViewer';
 import RenderDoenetML from './components/RenderDoenetML';
+import OrbitalDiagramInput from './components/OrbitalDiagramInput';
 
 
 //Extended
@@ -194,6 +195,7 @@ const componentTypeArray = [
   ...Object.values(Divisions),
   ...Object.values(Verbatim),
   ...Object.values(Paginator),
+  ...Object.values(MatrixInput),
   Document,
   Text, TextList,
   RandomizedTextList,
@@ -217,7 +219,7 @@ const componentTypeArray = [
   Vector,
   Angle,
   Answer, Award, When,
-  MathInput, MatrixInput, TextInput, BooleanInput, ChoiceInput,
+  MathInput, TextInput, BooleanInput, ChoiceInput,
   Choice,
   NumberComponent, Integer,
   Graph,
@@ -295,6 +297,8 @@ const componentTypeArray = [
   CodeEditor,
   CodeViewer,
   RenderDoenetML,
+  OrbitalDiagramInput,
+
 
   BaseComponent,
   InlineComponent,
@@ -318,30 +322,6 @@ const componentTypeArray = [
   SingleCharacterInline,
 ];
 
-export function standardComponentClasses() {
-  const componentClasses = {};
-  const lowerCaseComponentTypes = new Set();
-  for (let ct of componentTypeArray) {
-    let newComponentType = ct.componentType;
-
-    if (newComponentType.substring(0, 1) !== "_") {
-
-      if (newComponentType === undefined) {
-        throw Error("Cannot create component as componentType is undefined for class " + ct)
-      }
-      let lowerCaseType = newComponentType.toLowerCase();
-      if (lowerCaseComponentTypes.has(lowerCaseType)) {
-        throw Error("component type " + newComponentType + " defined in two classes");
-      }
-      if (!(/[a-zA-Z]/.test(newComponentType.substring(0, 1)))) {
-        throw Error("Invalid component type " + newComponentType + ". Component types must begin with a letter.");
-      }
-      componentClasses[newComponentType] = ct;
-      lowerCaseComponentTypes.add(lowerCaseType);
-    }
-  }
-  return componentClasses;
-}
 
 export function allComponentClasses() {
   const componentClasses = {};

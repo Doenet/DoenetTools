@@ -365,10 +365,6 @@ export default class Vector extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "tailShadow"
         },
-        sourceOfDisplacement: {
-          dependencyType: "stateVariable",
-          variableName: "sourceOfDisplacement"
-        },
       }),
       definition: function ({ dependencyValues }) {
 
@@ -787,10 +783,10 @@ export default class Vector extends GraphicalComponent {
 
 
     // allowed possibilities for specified properties
-    // nothing (tail set to zero, head set to (1,0s),  displacement/xs set to head-tail)
+    // nothing (tail set to zero, displacement/xs set to (1,0s), head set to tail+displacement/xs)
     // head (tail set to zero, displacement/xs set to head-tail)
-    // tail (head set to tail + (1,0s), displacement/xs set to head-tail)
-    // displacement/xs (tail set to zero, head set to displacement)
+    // tail (displacement/xs set to (1,0s), head set to tail+displacement/xs)
+    // displacement/xs (tail set to zero, head set to tail+displacement)
     // head and tail (displacement/xs set to head-tail)
     // head and displacement/xs (tail set to head-displacement)
     // tail and displacement/xs (head set to tail+displacement)

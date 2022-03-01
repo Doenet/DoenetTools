@@ -280,7 +280,7 @@ function nearestValue(refval, points, SVs) {
   return [val, index];
 }
 export default function Slider(props) {
-  let {name, SVs, actions} = useDoenetRender(props);
+  let {name, SVs, actions, callAction} = useDoenetRender(props);
   const containerRef = useRef(null);
   const [thumbXPos, setThumbXPos] = useState(0);
   const [thumbValue, setThumbValue] = useState(SVs.firstItem);
@@ -362,12 +362,12 @@ export default function Slider(props) {
       let valindexpair = nearestValue(refval, SVs.items, SVs);
       setThumbValue(valindexpair[0]);
       setIndex(valindexpair[1]);
-      actions.changeValue({value: valindexpair[0], transient: true});
+      callAction({action: actions.changeValue, args: {value: valindexpair[0], transient: true}});
     } else {
       let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
       setIndex(i);
       setThumbValue(SVs.items[i]);
-      actions.changeValue({value: SVs.items[i], transient: true});
+      callAction({action: actions.changeValue, args: {value: SVs.items[i], transient: true}});
     }
   }
   function handleDragExit(e) {
@@ -384,14 +384,14 @@ export default function Slider(props) {
       setThumbValue(valindexpair[0]);
       setIndex(valindexpair[1]);
       setThumbXPos(valindexpair[1] * divisionWidth);
-      actions.changeValue({value: valindexpair[0]});
+      callAction({action: actions.changeValue, args: {value: valindexpair[0]}});
     } else {
       let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
       i = Math.max(0, Math.min(SVs.nItems - 1, i));
       setIndex(i);
       setThumbValue(SVs.items[i]);
       setThumbXPos(i * divisionWidth);
-      actions.changeValue({value: SVs.items[i]});
+      callAction({action: actions.changeValue, args: {value: SVs.items[i]}});
     }
   }
   function handleDragThrough(e) {
@@ -402,12 +402,12 @@ export default function Slider(props) {
         let valindexpair = nearestValue(refval, SVs.items, SVs);
         setThumbValue(valindexpair[0]);
         setIndex(valindexpair[1]);
-        actions.changeValue({value: valindexpair[0], transient: true, skippable: true});
+        callAction({action: actions.changeValue, args: {value: valindexpair[0], transient: true, skippable: true}});
       } else {
         let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
         setIndex(i);
         setThumbValue(SVs.items[i]);
-        actions.changeValue({value: SVs.items[i], transient: true, skippable: true});
+        callAction({action: actions.changeValue, args: {value: SVs.items[i], transient: true, skippable: true}});
       }
     }
   }
@@ -421,7 +421,7 @@ export default function Slider(props) {
     } else {
       val = SVs.items[index + 1];
     }
-    actions.changeValue({value: val});
+    callAction({action: actions.changeValue, args: {value: val}});
     setThumbValue(val);
     setIndex(index + 1);
   }
@@ -435,7 +435,7 @@ export default function Slider(props) {
     } else {
       val = SVs.items[index - 1];
     }
-    actions.changeValue({value: val});
+    callAction({action: actions.changeValue, args: {value: val}});
     setThumbValue(val);
     setIndex(index - 1);
   }

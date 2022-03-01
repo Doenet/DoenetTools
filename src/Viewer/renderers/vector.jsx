@@ -6,6 +6,8 @@ import me from 'math-expressions';
 export default function Vector(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
+  Vector.ignoreActionsWithoutCore = true;
+
   const board = useContext(BoardContext);
 
   let vectorJXG = useRef({});

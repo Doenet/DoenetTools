@@ -9,8 +9,8 @@ include 'db_connection.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
-$examUserId = $jwtArray['examineeUserId'];
-$examDoenetId = $jwtArray['doenetId'];
+$examUserId = array_key_exists("examineeUserId",$jwtArray) ? $jwtArray['examineeUserId'] : "";
+$examDoenetId = array_key_exists("doenetId",$jwtArray) ? $jwtArray['doenetId'] : "";
 
 // $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 

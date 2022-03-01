@@ -2,10 +2,13 @@ import React, { useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState, useRecoilValueLoadable } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Card from '../../../_reactComponents/PanelHeaderComponents/Card';
 import { pageToolViewAtom, searchParamAtomFamily, profileAtom } from '../NewToolRoot';
 import Next7Days from '../Widgets/Next7Days';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { suppressMenusAtom } from '../NewToolRoot';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCode, faUser, faChartPie, faTasks } from '@fortawesome/free-solid-svg-icons';
 
 
 export default function Dashboard(props) {
@@ -26,72 +29,82 @@ export default function Dashboard(props) {
     },[effectiveRole,setSuppressMenus])
 
   return (
-    
     <div style={props?.style ?? {}}>
       <div style={{marginLeft: '10px', marginRight: '10px'}}>
         <h1>Welcome!</h1>
-        <ButtonGroup vertical>
-        <Button
-          value="Content"
-          onClick={() => {
-            setPageToolView((was) => {
-              // console.log(">>>>was",was);
-            return { ...was, tool: 'navigation' }
-          })}}
-          
-        />
-        {effectiveRole === 'instructor' ?
-        <>
-        <Button
-          value="Enrollment"
-          onClick={() =>
-            setPageToolView({
+        <div style={{display: 'grid', gridAutoFlow: 'column dense', gridAutoColumns: 'min-content', gap: '30px', width: '850px'}}>
+          <Card 
+            name='Content' 
+            icon={<FontAwesomeIcon icon={faCode}/>}
+            value="Content"
+            onClick={() => {
+              setPageToolView((was) => {
+                // console.log(">>>>was",was);
+              return { ...was, tool: 'navigation' }
+            })}}
+          />
+          {effectiveRole === 'instructor' ?
+          <>
+          <Card 
+            name='Enrollment' 
+            icon={<FontAwesomeIcon icon={faUser}/>}
+            value="Enrollment"
+            onClick={() =>
+              setPageToolView({
+                page: 'course',
+                tool: 'enrollment',
+                view: '',
+                params: { driveId },
+              })
+            }
+          />
+          <Card 
+            name='Surveys' 
+            icon={<FontAwesomeIcon icon={faChartPie}/>}
+            value="Surveys"
+            onClick={() =>
+              setPageToolView({
+                page: 'course',
+                tool: 'surveyList',
+                view: '',
+                params: { driveId },
+              })
+            }
+          />
+          </>
+          : null}
+          {effectiveRole === 'instructor' ?
+          <Card 
+            name='Gradebook' 
+            icon={<FontAwesomeIcon icon={faTasks}/>}
+            value="Gradebook" 
+            onClick={() => 
+            setPageToolView((was)=>{return {
               page: 'course',
-              tool: 'enrollment',
-              view: '',
+              tool: 'gradebook',
+              view: was.view,
               params: { driveId },
-            })
-          }
-        />
-        <Button
-          value="Surveys"
-          onClick={() =>
-            setPageToolView({
+              }})
+            } 
+          />
+          :
+          <Card 
+            name='Gradebook' 
+            icon={<FontAwesomeIcon icon={faTasks}/>}
+            style={{marginLeft: '-600px'}}
+            value="Gradebook" 
+            onClick={() => 
+            setPageToolView((was)=>{return {
               page: 'course',
-              tool: 'surveyList',
-              view: '',
-              params: { driveId },
-            })
-          }
-        />
-        </>
-        : null }
-        {effectiveRole === 'instructor' ?
-        <Button value="Gradebook" 
-        onClick={() => 
-        setPageToolView((was)=>{return {
-          page: 'course',
-          tool: 'gradebook',
-          view: was.view,
-          params: { driveId },
-          }})
-        } 
-      />
-        : 
-        <Button value="Gradebook" 
-          onClick={() => 
-          setPageToolView((was)=>{return {
-            page: 'course',
-            tool: 'gradebookStudent',
-            view: was.view,
-            params: { driveId, userId:profile.userId },
-            }})
+              tool: 'gradebookStudent',
+              view: was.view,
+              params: { driveId, userId:profile.userId },
+              }})
 
-          } 
-        />
-         }
-        
-        </ButtonGroup>
+            } 
+          />
+          }
+        </div>
       </div>
       <div style={{ marginTop: '10px', margin: '10px'}}>
       <Next7Days driveId={driveId}/>

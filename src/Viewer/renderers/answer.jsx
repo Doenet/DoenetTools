@@ -5,7 +5,7 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortaw
 
 
 export default function Answer(props) {
-  let { name, SVs, actions, children, sourceOfUpdate } = useDoenetRender(props);
+  let { name, SVs, actions, children, callAction } = useDoenetRender(props);
 
 
   if (SVs.hidden) {
@@ -14,11 +14,11 @@ export default function Answer(props) {
 
   let disabled = SVs.disabled;
 
-  let submitAnswer = () => props.callAction({
+  let submitAnswer = () => callAction({
     action: actions.submitAnswer
   })
   if (SVs.submitAllAnswersAtAncestor) {
-    submitAnswer = () => props.callAction({
+    submitAnswer = () => callAction({
       action: actions.submitAllAnswers
     })
   }
@@ -139,7 +139,7 @@ export default function Answer(props) {
           (no attempts remaining)
         </span>
       </>
-    } else if (SVs.numberOfAttemptsLeft < Infinity) {
+    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
 
       checkworkComponent = <>
         {checkworkComponent}

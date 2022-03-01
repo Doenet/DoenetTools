@@ -1,9 +1,9 @@
 import { _ as _objectWithoutPropertiesLoose, a as _extends } from './common/setPrototypeOf-ac807fbe.js';
 import { _ as _inheritsLoose } from './common/inheritsLoose-90c3012b.js';
-import { r as react } from './common/index-61a7c514.js';
-import { p as propTypes } from './common/index-01840a39.js';
+import { r as react } from './common/index-f66788ca.js';
+import { p as propTypes } from './common/index-4bda1d4e.js';
 import { i as index } from './common/ResizeObserver.es-a52566ff.js';
-import './common/_commonjsHelpers-b3efd043.js';
+import './common/_commonjsHelpers-f5d70792.js';
 import './common/_polyfill-node:global-acbc543a.js';
 
 var types = ['client', 'offset', 'scroll', 'bounds', 'margin'];

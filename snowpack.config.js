@@ -71,6 +71,7 @@ module.exports = {
   },
   devOptions: {
     output: 'stream',
+    hmr: false,
     port: 80,
     hmrPort: 80,
     openUrl: '/exampleTool',

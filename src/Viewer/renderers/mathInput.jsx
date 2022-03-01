@@ -6,7 +6,6 @@ import {
   faLevelDownAlt,
   faTimes,
   faCloud,
-  faPercentage,
 } from '@fortawesome/free-solid-svg-icons';
 import mathquill from 'react-mathquill';
 mathquill.addStyles(); //Styling for react-mathquill input field
@@ -14,39 +13,20 @@ let EditableMathField = mathquill.EditableMathField;
 import {
   focusedMathField,
   focusedMathFieldReturn,
+  focusedMathFieldID,
   palletRef,
-  buttonRef,
-  functionRef,
+  handleRef,
 } from '../../Tools/_framework/Footers/MathInputSelector';
+
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
-// const Prev = styled.div`
-//   font-size: 23px;
-//   // min-height: 30px;
-//   background: rgba(0, 0, 0, 0.8);
-//   width: auto;
-//   display: inline-block;
-//   border-radius: 5px;
-//   color: white;
-//   // line-height: 0px;
-//   z-index: 10;
-//   padding: 3px;
-//   // position: absolute;
-//   user-select: none;
-//   // left: ${props => `${props.left}px`};
-//   // top: ${props => `${props.top}px`};
-// `;
-
 export default function MathInput(props) {
-  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction } = useDoenetRender(props);
+  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction } =
+    useDoenetRender(props);
 
-  MathInput.baseStateVariable = "rawRendererValue";
-
-  // const [focused, setFocus] = useState(false);
-  const focused = useRef(false);
+  MathInput.baseStateVariable = 'rawRendererValue';
 
   const [mathField, setMathField] = useState(null);
-
 
   let rendererValue = useRef(null);
 
@@ -54,17 +34,16 @@ export default function MathInput(props) {
     rendererValue.current = SVs.rawRendererValue;
   }
 
-
   // need to use a ref for validation state as handlePressEnter
   // does not update to current values
   let validationState = useRef(null);
 
   const setFocusedField = useSetRecoilState(focusedMathField);
+  const setFocusedFieldID = useSetRecoilState(focusedMathFieldID);
+  const focusedFieldID = useRecoilValue(focusedMathFieldID);
   const setFocusedFieldReturn = useSetRecoilState(focusedMathFieldReturn);
   const containerRef = useRecoilValue(palletRef);
-  const toggleButtonRef = useRecoilValue(buttonRef);
-  const functionTabRef = useRecoilValue(functionRef);
-
+  const dragHandleRef = useRecoilValue(handleRef);
 
   const updateValidationState = () => {
     validationState.current = 'unvalidated';
@@ -106,7 +85,6 @@ export default function MathInput(props) {
   };
 
   const handlePressEnter = (e) => {
-
     callAction({
       action: actions.updateValue,
       baseVariableValue: rendererValue.current,
@@ -120,43 +98,34 @@ export default function MathInput(props) {
   };
 
   const handleFocus = (e) => {
-    focus.current = true; //setFocus(true);
     setFocusedField(() => handleVirtualKeyboardClick);
     setFocusedFieldReturn(() => handlePressEnter);
+    setFocusedFieldID(mathField.id);
   };
 
   const handleBlur = (e) => {
-    if (
-      containerRef?.current?.contains(e.relatedTarget)
-    ) {
-      console.log('>>> clicked inside the panel');
-    } else if (
-      toggleButtonRef?.current?.contains(e.relatedTarget)
-    ) {
-      console.log('>>> clicked inside the button');
-    } else if (
-      functionTabRef?.current?.contains(e.relatedTarget)
-    ) {
-      console.log('>>> clicked inside the panel functional panel');
+    if (containerRef?.current?.contains(e.relatedTarget)) {
+      setTimeout(() => {
+        mathField.focus();
+      }, 100);
+    } else if (dragHandleRef?.current?.contains(e.relatedTarget)) {
+      setTimeout(() => {
+        mathField.focus();
+      }, 100);
     } else {
-
       callAction({
         action: actions.updateValue,
         baseVariableValue: rendererValue.current,
       });
-
-      // setFocus(false);
-      focus.current = false;
       //console.log(">>>", e.target, e.currentTarget, e.relatedTarget);
       setFocusedField(() => handleDefaultVirtualKeyboardClick);
       setFocusedFieldReturn(() => handleDefaultVirtualKeyboardReturn);
+      setFocusedFieldID(null);
     }
   };
 
   const onChangeHandler = (text) => {
-
     if (text !== rendererValue.current) {
-
       rendererValue.current = text;
 
       callAction({
@@ -165,9 +134,7 @@ export default function MathInput(props) {
           rawRendererValue: text,
         },
         baseVariableValue: text,
-      })
-
-
+      });
     }
   };
 
@@ -179,16 +146,9 @@ export default function MathInput(props) {
 
   // const inputKey = this.componentName + '_input';
 
-  let surroundingBorderColor = '#efefef';
-  if (focused.current) {
-    surroundingBorderColor = '#82a5ff';
-  }
-
-
   //Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
-
     let checkWorkStyle = {
       position: 'relative',
       width: '30px',
@@ -205,9 +165,9 @@ export default function MathInput(props) {
 
     if (validationState.current === 'unvalidated') {
       if (SVs.disabled) {
-        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+        checkWorkStyle.backgroundColor = 'rgb(200,200,200)';
       } else {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        checkWorkStyle.backgroundColor = 'rgb(2, 117, 216)';
       }
       checkWorkButton = (
         <button
@@ -215,9 +175,11 @@ export default function MathInput(props) {
           tabIndex="0"
           disabled={SVs.disabled}
           style={checkWorkStyle}
-          onClick={() => callAction({
-            action: actions.submitAnswer,
-          })}
+          onClick={() =>
+            callAction({
+              action: actions.submitAnswer,
+            })
+          }
           onKeyPress={(e) => {
             if (e.key === 'Enter') {
               callAction({
@@ -234,10 +196,7 @@ export default function MathInput(props) {
         if (validationState.current === 'correct') {
           checkWorkStyle.backgroundColor = 'rgb(92, 184, 92)';
           checkWorkButton = (
-            <span
-              id={name + '_correct'}
-              style={checkWorkStyle}
-            >
+            <span id={name + '_correct'} style={checkWorkStyle}>
               <FontAwesomeIcon icon={faCheck} />
             </span>
           );
@@ -250,10 +209,7 @@ export default function MathInput(props) {
 
           checkWorkStyle.backgroundColor = '#efab34';
           checkWorkButton = (
-            <span
-              id={name + '_partial'}
-              style={checkWorkStyle}
-            >
+            <span id={name + '_partial'} style={checkWorkStyle}>
               {partialCreditContents}
             </span>
           );
@@ -261,10 +217,7 @@ export default function MathInput(props) {
           //incorrect
           checkWorkStyle.backgroundColor = 'rgb(187, 0, 0)';
           checkWorkButton = (
-            <span
-              id={name + '_incorrect'}
-              style={checkWorkStyle}
-            >
+            <span id={name + '_incorrect'} style={checkWorkStyle}>
               <FontAwesomeIcon icon={faTimes} />
             </span>
           );
@@ -273,10 +226,7 @@ export default function MathInput(props) {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = 'rgb(74, 3, 217)';
         checkWorkButton = (
-          <span
-            id={name + '_saved'}
-            style={checkWorkStyle}
-          >
+          <span id={name + '_saved'} style={checkWorkStyle}>
             <FontAwesomeIcon icon={faCloud} />
           </span>
         );
@@ -284,20 +234,19 @@ export default function MathInput(props) {
     }
 
     if (SVs.numberOfAttemptsLeft < 0) {
-      checkWorkButton = <>
-        {checkWorkButton}
-        <span>
-          (no attempts remaining)
-        </span>
-      </>
-    } else if (SVs.numberOfAttemptsLeft < Infinity) {
-
-      checkWorkButton = <>
-        {checkWorkButton}
-        <span>
-          (attempts remaining: {SVs.numberOfAttemptsLeft})
-        </span>
-      </>
+      checkWorkButton = (
+        <>
+          {checkWorkButton}
+          <span>(no attempts remaining)</span>
+        </>
+      );
+    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
+      checkWorkButton = (
+        <>
+          {checkWorkButton}
+          <span>(attempts remaining: {SVs.numberOfAttemptsLeft})</span>
+        </>
+      );
     }
   }
 
@@ -341,4 +290,3 @@ export default function MathInput(props) {
     </React.Fragment>
   );
 }
-

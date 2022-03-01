@@ -9,20 +9,20 @@ function cesc(s) {
   return s;
 }
 
+function nInDOM(n) {
+  if (n < 0) {
+    return `−${Math.abs(n)}`
+  } else {
+    return String(n);
+  }
+}
+
 describe('Vector Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/cypressTest')
 
   })
-
-  function nInDOM(n) {
-    if (n < 0) {
-      return `−${Math.abs(n)}`
-    } else {
-      return String(n);
-    }
-  }
 
   async function testVectorCopiedHTD({ headx, heady, tailx, taily,
     displacementTailShiftx = 0, displacementTailShifty = 0,
@@ -4497,6 +4497,26 @@ describe('Vector Tag Tests', function () {
       });
     })
 
+    cy.log('move point')
+    cy.window().then(async (win) => {
+      let xorig = -4.4;
+      let yorig = 4.5;
+
+      win.callAction({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: xorig, y: yorig }
+      })
+
+      cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(-4.4)},${nInDOM(4.5)})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables();
+
+        expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(-4.4, 1E-12);
+        expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(4.5, 1E-12);
+      });
+    })
 
   })
 

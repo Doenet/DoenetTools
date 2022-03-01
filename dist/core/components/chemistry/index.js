@@ -1,1 +1,1 @@
-export { default as ChemAtom } from './ChemAtom.js';
+export { default as Atom } from './Atom.js';

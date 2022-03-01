@@ -1,35 +1,24 @@
-import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class Number extends DoenetRenderer {
-  static initializeChildrenOnConstruction = false;
-  componentDidMount() {
-    if (this.doenetSvData.renderAsMath) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-        window.MathJax.Hub.processSectionDelay = 0;
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
-      }
+import React, {useEffect} from "../../_snowpack/pkg/react.js";
+import useDoenetRender from "./useDoenetRenderer.js";
+export default function Number(props) {
+  let {name, SVs, actions, sourceOfUpdate} = useDoenetRender(props);
+  useEffect(() => {
+    if (window.MathJax && SVs.renderAsMath) {
+      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
+      window.MathJax.Hub.processSectionDelay = 0;
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
     }
+  });
+  if (SVs.hidden) {
+    return null;
   }
-  componentDidUpdate() {
-    if (this.doenetSvData.renderAsMath) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
-      }
-    }
+  let number = SVs.valueForDisplay;
+  if (SVs.renderAsMath) {
+    number = "\\(" + number + "\\)";
   }
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    let number = this.doenetSvData.valueForDisplay;
-    if (this.doenetSvData.renderAsMath) {
-      number = "\\(" + number + "\\)";
-    }
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), /* @__PURE__ */ React.createElement("span", {
-      id: this.componentName
-    }, number));
-  }
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), /* @__PURE__ */ React.createElement("span", {
+    id: name
+  }, number));
 }

@@ -57,13 +57,7 @@ export const paramObjAtom = atom({
   key: "paramObjAtom",
   default: {}
 });
-export const footerAtom = atom({
-  key: "footerAtom",
-  default: null
-});
 export default function ToolRoot() {
-  console.log(">>>===ToolRoot ");
-  let footerObj = useRecoilValue(footerAtom);
   const [toolRootMenusAndPanels, setToolRootMenusAndPanels] = useState({
     pageName: "init",
     menuPanelCap: "",
@@ -76,7 +70,8 @@ export default function ToolRoot() {
     supportPanelIndex: 0,
     hasNoMenuPanel: false,
     headerControls: [],
-    displaySettings: true
+    displaySettings: true,
+    footer: null
   });
   let mainPanel = null;
   let supportPanel = /* @__PURE__ */ React.createElement(SupportPanel, {
@@ -179,15 +174,18 @@ export default function ToolRoot() {
     openMenuButton = false;
   }
   let footer = null;
-  if (footerObj) {
+  if (toolRootMenusAndPanels.footer) {
     let footerKey = `footer`;
     footer = /* @__PURE__ */ React.createElement(FooterPanel, {
-      isInitOpen: footerObj.open,
-      height: footerObj.height
+      id: "keyboard",
+      isInitOpen: toolRootMenusAndPanels.footer.open,
+      height: toolRootMenusAndPanels.footer.height
     }, /* @__PURE__ */ React.createElement(Suspense, {
       key: footerKey,
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
-    }, React.createElement(LazyFooterObj[footerObj.component], {key: {footerKey}})));
+    }, React.createElement(LazyFooterObj[toolRootMenusAndPanels.footer.component], {
+      key: {footerKey}
+    })));
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ToolContainer, null, menus, /* @__PURE__ */ React.createElement(ContentPanel, {
     main: /* @__PURE__ */ React.createElement(MainPanel, {
@@ -236,7 +234,8 @@ let navigationObj = {
       menusInitOpen: [true],
       headerControls: [],
       displaySettings: false,
-      waitForMenuSuppression: true
+      waitForMenuSuppression: true,
+      footer: {height: 250, open: false, component: "MathInputKeyboard"}
     },
     endExam: {
       pageName: "endExam",
@@ -257,7 +256,8 @@ let navigationObj = {
       menusTitles: ["Credit Achieved", "Time Remaining"],
       menusInitOpen: [true, true],
       headerControls: ["AssignmentBreadCrumb", "AssignmentNewAttempt"],
-      waitForMenuSuppression: true
+      waitForMenuSuppression: true,
+      footer: {height: 250, open: false, component: "MathInputKeyboard"}
     },
     courseChooser: {
       pageName: "Course",
@@ -334,14 +334,15 @@ let navigationObj = {
       pageName: "Course",
       menuPanelCap: "EditorInfoCap",
       currentMainPanel: "EditorViewer",
-      currentMenus: ["VersionHistory", "Variant", "AssignmentSettingsMenu"],
-      menusTitles: ["Version History", "Variant", "Assignment Settings"],
+      currentMenus: ["VersionHistory", "Variant", "AssignmentSettingsMenu", "SupportingFilesMenu"],
+      menusTitles: ["Version History", "Variant", "Assignment Settings", "Supporting Files"],
       menusInitOpen: [false, false, false],
       supportPanelOptions: ["DoenetMLEditor"],
       supportPanelTitles: ["DoenetML Editor"],
       supportPanelIndex: 0,
       headerControls: ["EditorBreadCrumb", "ViewerUpdateButton"],
-      onLeave: "EditorLeave"
+      onLeave: "EditorLeave",
+      footer: {height: 250, open: false, component: "MathInputKeyboard"}
     },
     collection: {
       currentMainPanel: "CollectionEditor",
@@ -527,10 +528,18 @@ function RootController(props) {
   let isSuppressMenuChange = !arraysEqual(suppressMenus, lastSuppressMenu.current);
   lastSuppressMenu.current = suppressMenus;
   if (isSuppressMenuChange && suppressMenus !== null) {
-    nextMenusAndPanels = {...navigationObj[recoilPageToolView.page][recoilPageToolView.tool]};
-    nextMenusAndPanels.currentMenus = [...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].currentMenus];
-    nextMenusAndPanels.menusTitles = [...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusTitles];
-    nextMenusAndPanels.menusInitOpen = [...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusInitOpen];
+    nextMenusAndPanels = {
+      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool]
+    };
+    nextMenusAndPanels.currentMenus = [
+      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].currentMenus
+    ];
+    nextMenusAndPanels.menusTitles = [
+      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusTitles
+    ];
+    nextMenusAndPanels.menusInitOpen = [
+      ...navigationObj[recoilPageToolView.page][recoilPageToolView.tool].menusInitOpen
+    ];
     if (suppressMenus.length > 0) {
       for (let suppressMenu of suppressMenus) {
         for (let [i, menu] of Object.entries(nextMenusAndPanels.currentMenus)) {
@@ -552,7 +561,6 @@ function RootController(props) {
     if (nextPageToolView.page === "") {
       nextPageToolView.page = "home";
       const url = window.location.origin + window.location.pathname + "#home";
-      ;
       window.history.replaceState("", "", url);
     }
     let searchParamObj = Object.fromEntries(new URLSearchParams(location.search));
@@ -568,7 +576,10 @@ function RootController(props) {
       if (backPageToolView.current.page === "init") {
         backPageToolView.current.page = "home";
       }
-      let pageToolViewParams = {...backPageToolView.current, params: backParams.current};
+      let pageToolViewParams = {
+        ...backPageToolView.current,
+        params: backParams.current
+      };
       setRecoilPageToolView(pageToolViewParams);
       return null;
     }
@@ -598,7 +609,9 @@ function RootController(props) {
     nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
   } else if (lastPageToolView.current.view !== nextPageToolView.view) {
     isViewChange = true;
-    nextMenusAndPanels = {...navigationObj[nextPageToolView.page][nextPageToolView.tool]};
+    nextMenusAndPanels = {
+      ...navigationObj[nextPageToolView.page][nextPageToolView.tool]
+    };
   }
   let searchObj = {};
   if (isURLChange) {
@@ -610,7 +623,10 @@ function RootController(props) {
   }
   if (isPageChange || isToolChange) {
     if (leaveComponentName.current) {
-      setOnLeaveStr((was) => ({str: leaveComponentName.current, updateNum: was.updateNum + 1}));
+      setOnLeaveStr((was) => ({
+        str: leaveComponentName.current,
+        updateNum: was.updateNum + 1
+      }));
     }
     leaveComponentName.current = null;
     if (nextMenusAndPanels && nextMenusAndPanels.onLeave) {

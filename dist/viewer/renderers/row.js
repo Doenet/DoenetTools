@@ -1,27 +1,26 @@
 import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class Row extends DoenetRenderer {
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    let props = {style: {}};
-    if (this.doenetSvData.valign !== null) {
-      props.style.verticalAlign = this.doenetSvData.valign;
-    }
-    if (this.doenetSvData.left !== "none") {
-      props.style.borderLeftStyle = "solid";
-      if (this.doenetSvData.left === "minor") {
-        props.style.borderLeftWidth = "thin";
-      } else if (this.doenetSvData.left === "medium") {
-        props.style.borderLeftWidth = "medium";
-      } else {
-        props.style.borderLeftWidth = "thick";
-      }
-    }
-    return /* @__PURE__ */ React.createElement("tr", {
-      id: this.componentName,
-      ...props
-    }, this.children);
+import useDoenetRender from "./useDoenetRenderer.js";
+export default function Row(props) {
+  let {name, SVs, children} = useDoenetRender(props);
+  if (SVs.hidden) {
+    return null;
   }
+  let style = {};
+  if (SVs.valign !== null) {
+    style.verticalAlign = SVs.valign;
+  }
+  if (SVs.left !== "none") {
+    style.borderLeftStyle = "solid";
+    if (SVs.left === "minor") {
+      style.borderLeftWidth = "thin";
+    } else if (SVs.left === "medium") {
+      style.borderLeftWidth = "medium";
+    } else {
+      style.borderLeftWidth = "thick";
+    }
+  }
+  return /* @__PURE__ */ React.createElement("tr", {
+    id: name,
+    style
+  }, children);
 }

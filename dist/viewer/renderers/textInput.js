@@ -1,89 +1,98 @@
-import React from "../../_snowpack/pkg/react.js";
-import ReactDOM from "../../_snowpack/pkg/react-dom.js";
-import DoenetRenderer from "./DoenetRenderer.js";
+import React, {useRef, useState} from "../../_snowpack/pkg/react.js";
+import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {sizeToCSS} from "./utils/css.js";
-export default class TextInput extends DoenetRenderer {
-  constructor(props) {
-    super(props);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.handleBlur = this.handleBlur.bind(this);
-    this.handleFocus = this.handleFocus.bind(this);
-    this.onChangeHandler = this.onChangeHandler.bind(this);
-    this.currentValue = this.doenetSvData.value;
-    this.valueToRevertTo = this.doenetSvData.value;
+export default function TextInput(props) {
+  let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction} = useDoenetRender(props);
+  TextInput.baseStateVariable = "immediateValue";
+  const [rendererValue, setRendererValue] = useState(SVs.immediateValue);
+  let valueToRevertTo = useRef(SVs.immediateValue);
+  let focused = useRef(null);
+  let immediateValueWhenSetState = useRef(null);
+  if (!ignoreUpdate && immediateValueWhenSetState.current !== SVs.immediateValue) {
+    setRendererValue(SVs.immediateValue);
+    immediateValueWhenSetState.current = SVs.immediateValue;
+    valueToRevertTo.current = SVs.immediateValue;
+  } else {
+    immediateValueWhenSetState.current = null;
   }
-  static initializeChildrenOnConstruction = false;
-  updateValidationState() {
-    this.validationState = "unvalidated";
-    if (this.doenetSvData.valueHasBeenValidated || this.doenetSvData.numberOfAttemptsLeft < 1) {
-      if (this.doenetSvData.creditAchieved === 1) {
-        this.validationState = "correct";
-      } else if (this.doenetSvData.creditAchieved === 0) {
-        this.validationState = "incorrect";
-      } else {
-        this.validationState = "partialcorrect";
-      }
+  let validationState = "unvalidated";
+  if (SVs.valueHasBeenValidated) {
+    if (SVs.creditAchieved === 1) {
+      validationState = "correct";
+    } else if (SVs.creditAchieved === 0) {
+      validationState = "incorrect";
+    } else {
+      validationState = "partialcorrect";
     }
   }
-  async handleKeyPress(e) {
+  function handleKeyPress(e) {
     if (e.key === "Enter") {
-      this.valueToRevertTo = this.doenetSvData.value;
-      if (this.doenetSvData.value !== this.doenetSvData.immediateValue) {
-        await this.actions.updateValue();
-      }
-      if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
-        await this.actions.submitAnswer();
-      }
-      this.forceUpdate();
-    }
-  }
-  async handleKeyDown(e) {
-    if (e.key === "Escape") {
-      await this.actions.updateImmediateValue({
-        text: this.valueToRevertTo
+      valueToRevertTo.current = rendererValue;
+      callAction({
+        action: actions.updateValue,
+        baseVariableValue: rendererValue
       });
-      this.forceUpdate();
+      if (SVs.includeCheckWork && validationState === "unvalidated") {
+        callAction({
+          action: actions.submitAnswer
+        });
+      }
     }
   }
-  handleFocus(e) {
-    this.focused = true;
-    this.forceUpdate();
-  }
-  async handleBlur(e) {
-    this.focused = false;
-    this.valueToRevertTo = this.doenetSvData.immediateValue;
-    if (this.doenetSvData.immediateValue !== this.doenetSvData.value) {
-      await this.actions.updateValue();
+  function handleKeyDown(e) {
+    if (e.key === "Escape") {
+      let oldValue = valueToRevertTo.current;
+      if (oldValue !== rendererValue) {
+        setRendererValue(oldValue);
+        immediateValueWhenSetState.current = SVs.immediateValue;
+        callAction({
+          action: actions.updateImmediateValue,
+          args: {
+            text: oldValue
+          },
+          baseVariableValue: oldValue
+        });
+      }
     }
-    this.forceUpdate();
   }
-  async onChangeHandler(e) {
-    this.currentValue = e.target.value;
-    await this.actions.updateImmediateValue({
-      text: e.target.value
+  function handleFocus(e) {
+    focused.current = true;
+  }
+  function handleBlur(e) {
+    focused.current = false;
+    valueToRevertTo.current = rendererValue;
+    callAction({
+      action: actions.updateValue,
+      baseVariableValue: rendererValue
     });
-    this.forceUpdate();
   }
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
+  function onChangeHandler(e) {
+    let newValue = e.target.value;
+    if (newValue !== rendererValue) {
+      setRendererValue(newValue);
+      immediateValueWhenSetState.current = SVs.immediateValue;
+      callAction({
+        action: actions.updateImmediateValue,
+        args: {
+          text: newValue
+        },
+        baseVariableValue: newValue
+      });
     }
-    this.updateValidationState();
-    let disabled = this.doenetSvData.disabled;
-    const inputKey = this.componentName + "_input";
-    let surroundingBorderColor = "#efefef";
-    if (this.focused) {
-      surroundingBorderColor = "#82a5ff";
-    }
-    if (this.doenetSvData.immediateValue !== this.currentValue) {
-      console.log(`immediateValue: ${this.doenetSvData.immediateValue}`);
-      console.log(`currentValue: ${this.currentValue}`);
-      this.currentValue = this.doenetSvData.immediateValue;
-      this.valueToRevertTo = this.doenetSvData.immediateValue;
-    }
+  }
+  if (SVs.hidden) {
+    return null;
+  }
+  let disabled = SVs.disabled;
+  const inputKey = name + "_input";
+  let surroundingBorderColor = "#efefef";
+  if (focused.current) {
+    surroundingBorderColor = "#82a5ff";
+  }
+  let checkWorkButton = null;
+  if (SVs.includeCheckWork) {
     let checkWorkStyle = {
       position: "relative",
       width: "30px",
@@ -96,134 +105,120 @@ export default class TextInput extends DoenetRenderer {
       top: "3px",
       padding: "2px"
     };
-    let checkWorkButton = null;
-    if (this.doenetSvData.includeCheckWork) {
-      if (this.validationState === "unvalidated") {
-        if (disabled) {
-          checkWorkStyle.backgroundColor = "rgb(200,200,200)";
-        } else {
-          checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
-        }
-        checkWorkButton = /* @__PURE__ */ React.createElement("button", {
-          id: this.componentName + "_submit",
-          tabIndex: "0",
-          disabled,
-          ref: (c) => {
-            this.target = c && ReactDOM.findDOMNode(c);
-          },
-          style: checkWorkStyle,
-          onClick: this.actions.submitAnswer,
-          onKeyPress: (e) => {
-            if (e.key === "Enter") {
-              this.actions.submitAnswer();
-            }
-          }
-        }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-          icon: faLevelDownAlt,
-          transform: {rotate: 90}
-        }));
+    if (validationState === "unvalidated") {
+      if (disabled) {
+        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
       } else {
-        if (this.doenetSvData.showCorrectness) {
-          if (this.validationState === "correct") {
-            checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-            checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-              id: this.componentName + "_correct",
-              style: checkWorkStyle,
-              ref: (c) => {
-                this.target = c && ReactDOM.findDOMNode(c);
-              }
-            }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-              icon: faCheck
-            }));
-          } else if (this.validationState === "partialcorrect") {
-            let percent = Math.round(this.doenetSvData.creditAchieved * 100);
-            let partialCreditContents = `${percent} %`;
-            checkWorkStyle.width = "50px";
-            checkWorkStyle.backgroundColor = "#efab34";
-            checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-              id: this.componentName + "_partial",
-              style: checkWorkStyle,
-              ref: (c) => {
-                this.target = c && ReactDOM.findDOMNode(c);
-              }
-            }, partialCreditContents);
-          } else {
-            checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
-            checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-              id: this.componentName + "_incorrect",
-              style: checkWorkStyle,
-              ref: (c) => {
-                this.target = c && ReactDOM.findDOMNode(c);
-              }
-            }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-              icon: faTimes
-            }));
+        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+      }
+      checkWorkButton = /* @__PURE__ */ React.createElement("button", {
+        id: name + "_submit",
+        tabIndex: "0",
+        disabled,
+        style: checkWorkStyle,
+        onClick: () => callAction({
+          action: actions.submitAnswer
+        }),
+        onKeyPress: (e) => {
+          if (e.key === "Enter") {
+            callAction({
+              action: actions.submitAnswer
+            });
           }
-        } else {
-          checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        }
+      }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+        icon: faLevelDownAlt,
+        transform: {rotate: 90}
+      }));
+    } else {
+      if (SVs.showCorrectness) {
+        if (validationState === "correct") {
+          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
           checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: this.componentName + "_saved",
-            style: checkWorkStyle,
-            ref: (c) => {
-              this.target = c && ReactDOM.findDOMNode(c);
-            }
+            id: name + "_correct",
+            style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-            icon: faCloud
+            icon: faCheck
+          }));
+        } else if (validationState === "partialcorrect") {
+          let percent = Math.round(SVs.creditAchieved * 100);
+          let partialCreditContents = `${percent} %`;
+          checkWorkStyle.width = "50px";
+          checkWorkStyle.backgroundColor = "#efab34";
+          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
+            id: name + "_partial",
+            style: checkWorkStyle
+          }, partialCreditContents);
+        } else {
+          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
+            id: name + "_incorrect",
+            style: checkWorkStyle
+          }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+            icon: faTimes
           }));
         }
-      }
-      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
-        checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
-      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
-        checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", this.doenetSvData.numberOfAttemptsLeft, ")"));
+      } else {
+        checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkButton = /* @__PURE__ */ React.createElement("span", {
+          id: name + "_saved",
+          style: checkWorkStyle
+        }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+          icon: faCloud
+        }));
       }
     }
-    let input;
-    if (this.doenetSvData.expanded) {
-      input = /* @__PURE__ */ React.createElement("textarea", {
-        key: inputKey,
-        id: inputKey,
-        value: this.currentValue,
-        disabled,
-        onChange: this.onChangeHandler,
-        onKeyPress: this.handleKeyPress,
-        onKeyDown: this.handleKeyDown,
-        onBlur: this.handleBlur,
-        onFocus: this.handleFocus,
-        style: {
-          width: sizeToCSS(this.doenetSvData.width),
-          height: sizeToCSS(this.doenetSvData.height),
-          fontSize: "14px",
-          borderWidth: "1px",
-          padding: "4px"
-        }
-      });
-    } else {
-      input = /* @__PURE__ */ React.createElement("input", {
-        key: inputKey,
-        id: inputKey,
-        value: this.currentValue,
-        disabled,
-        onChange: this.onChangeHandler,
-        onKeyPress: this.handleKeyPress,
-        onKeyDown: this.handleKeyDown,
-        onBlur: this.handleBlur,
-        onFocus: this.handleFocus,
-        style: {
-          width: `${this.doenetSvData.size * 10}px`,
-          height: "22px",
-          fontSize: "14px",
-          borderWidth: "1px",
-          borderColor: surroundingBorderColor,
-          padding: "4px"
-        }
-      });
+    if (SVs.numberOfAttemptsLeft < 0) {
+      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
+      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", SVs.numberOfAttemptsLeft, ")"));
     }
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), /* @__PURE__ */ React.createElement("span", {
-      className: "textInputSurroundingBox",
-      id: this.componentName
-    }, input, checkWorkButton));
   }
+  let input;
+  if (SVs.expanded) {
+    input = /* @__PURE__ */ React.createElement("textarea", {
+      key: inputKey,
+      id: inputKey,
+      value: rendererValue,
+      disabled,
+      onChange: onChangeHandler,
+      onKeyPress: handleKeyPress,
+      onKeyDown: handleKeyDown,
+      onBlur: handleBlur,
+      onFocus: handleFocus,
+      style: {
+        width: sizeToCSS(SVs.width),
+        height: sizeToCSS(SVs.height),
+        fontSize: "14px",
+        borderWidth: "1px",
+        padding: "4px"
+      }
+    });
+  } else {
+    input = /* @__PURE__ */ React.createElement("input", {
+      key: inputKey,
+      id: inputKey,
+      value: rendererValue,
+      disabled,
+      onChange: onChangeHandler,
+      onKeyPress: handleKeyPress,
+      onKeyDown: handleKeyDown,
+      onBlur: handleBlur,
+      onFocus: handleFocus,
+      style: {
+        width: `${SVs.size * 10}px`,
+        height: "22px",
+        fontSize: "14px",
+        borderWidth: "1px",
+        borderColor: surroundingBorderColor,
+        padding: "4px"
+      }
+    });
+  }
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), /* @__PURE__ */ React.createElement("span", {
+    className: "textInputSurroundingBox",
+    id: name
+  }, input, checkWorkButton));
 }

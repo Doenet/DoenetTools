@@ -11,6 +11,7 @@ const Label = styled.div`
 `;
 export default function DateTime(props) {
   const [value, setValue] = useState(props.value);
+  const [lastValid, setLastValid] = useState(props.value);
   const inputRef = useRef(null);
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
@@ -18,6 +19,7 @@ export default function DateTime(props) {
   borderColor = props.disabled ? "2px solid #e2e2e2" : borderColor;
   let cursorStyle = props.disabled ? "not-allowed" : "auto";
   useEffect(() => {
+    setLastValid(props.value);
     setValue(props.value);
   }, [props]);
   useEffect(() => {
@@ -35,7 +37,6 @@ export default function DateTime(props) {
   }
   placeholder = props.placeholder ? props.placeholder : placeholder;
   let inputProps = {
-    disabled: props.disabled === true ? true : false,
     placeholder
   };
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
@@ -61,10 +62,26 @@ export default function DateTime(props) {
         }
         if (e.key === "Enter") {
           closeCalendar();
+          e.target.blur();
         }
       }
     }));
   };
+  if (props.disabled === true) {
+    return /* @__PURE__ */ React.createElement("input", {
+      ref: inputRef,
+      onClick: props.disabledOnClick,
+      value: props.disabledText,
+      style: {
+        cursor: "not-allowed",
+        color: "#545454",
+        height: "18px",
+        width: "177px",
+        border: "2px solid #e2e2e2",
+        borderRadius: "5px"
+      }
+    });
+  }
   return /* @__PURE__ */ React.createElement(Datetime, {
     renderInput,
     value,
@@ -81,9 +98,15 @@ export default function DateTime(props) {
       }
     },
     onClose: (_) => {
+      let valid = typeof value !== "string";
+      if (valid) {
+        setLastValid(value);
+      } else {
+        setValue(lastValid);
+      }
       if (props.onBlur) {
         props.onBlur({
-          valid: typeof value !== "string",
+          valid,
           value
         });
       }
