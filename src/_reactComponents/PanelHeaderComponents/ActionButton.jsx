@@ -13,6 +13,10 @@ const Button = styled.button`
   padding: ${props => props.theme.padding};
   cursor: pointer;
   font-size: 12px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+  }
 `
 
 Button.defaultProps = {
