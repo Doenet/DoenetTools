@@ -16,7 +16,7 @@ const Button = styled.button`
 
   &:hover {
     background-color: var(--lightBlue);
-  }
+  };
 `
 
 Button.defaultProps = {

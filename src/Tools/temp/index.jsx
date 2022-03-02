@@ -4,7 +4,8 @@ import {doenetMLToSerializedComponents} from  '../../Core/utils/serializedStateP
 import {parseAndCompile} from '../../Parser/parser'
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
-import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
+import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton.jsx';
+import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.jsx';
 
 
 // serializeFunctions.expandDoenetMLsToFullSerializedComponents({
@@ -21,7 +22,7 @@ import CollapseSection from '../../_reactComponents/PanelHeaderComponents/Collap
 
 
 ReactDOM.render(
-  <CollapseSection></CollapseSection>,
+  <ActionButtonGroup><ActionButton/><ActionButton/></ActionButtonGroup>,
   document.getElementById('root'),
 );
 
