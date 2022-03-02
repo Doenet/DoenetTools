@@ -183,6 +183,7 @@ export class MatrixInput extends Input {
           variableName: "prefill"
         }
       }),
+      set: convertValueToMathExpression,
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.bindValueTo) {
           return {
@@ -231,13 +232,14 @@ export class MatrixInput extends Input {
           variableName: "valueOriginal"
         }
       }),
-      definition: function ({ dependencyValues, changes }) {
+      set: convertValueToMathExpression,
+      definition: function ({ dependencyValues, changes, justUpdatedForNewComponent }) {
         // console.log(`definition of immediateValueOriginal`)
         // console.log(dependencyValues)
         // console.log(changes);
         // console.log(dependencyValues.valueOriginal.toString())
 
-        if (changes.valueOriginal) {
+        if (changes.valueOriginal && !justUpdatedForNewComponent) {
           // only update to valueOriginal when it changes
           // (otherwise, let its essential value change)
           return {
@@ -2496,6 +2498,7 @@ export default class MatrixComponentInput extends BaseComponent {
         hasEssential: true,
         shadowVariable: true,
         defaultValue: null,
+        set: convertValueToMathExpression,
       }],
       returnDependencies: () => ({
         // include immediateValue for inverse definition

@@ -156,8 +156,8 @@ export function parseAndCompile(inText){
     if(!tc.firstChild()){
         return out;
     }
-    console.log("intext",inText)
-    console.log("showCursor",showCursor(tc));
+    // console.log("intext",inText)
+    // console.log("showCursor",showCursor(tc));
 
     let first = compileTopLevel(tc)
     if(first !== null && first !== undefined){

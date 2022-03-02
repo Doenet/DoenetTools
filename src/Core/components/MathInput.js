@@ -1,6 +1,6 @@
 import Input from './abstract/Input';
 import me from 'math-expressions';
-import { getFromText, getFromLatex, roundForDisplay, stripLatex, normalizeLatexString, } from '../utils/math';
+import { getFromText, getFromLatex, roundForDisplay, stripLatex, normalizeLatexString, convertValueToMathExpression, } from '../utils/math';
 import { deepCompare } from '../utils/deepFunctions';
 
 export default class MathInput extends Input {
@@ -121,6 +121,7 @@ export default class MathInput extends Input {
           variableName: "prefill"
         }
       }),
+      set: convertValueToMathExpression,
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.bindValueTo) {
           return {
@@ -176,13 +177,14 @@ export default class MathInput extends Input {
           variableName: "value"
         }
       }),
-      definition: function ({ dependencyValues, changes }) {
+      set: convertValueToMathExpression,
+      definition: function ({ dependencyValues, changes, justUpdatedForNewComponent }) {
         // console.log(`definition of immediateValue`)
         // console.log(dependencyValues)
         // console.log(changes);
-        // console.log(dependencyValues.value.toString())
+        // console.log(`justUpdatedForNewComponent: ${justUpdatedForNewComponent}`)
 
-        if (changes.value) {
+        if (changes.value && !justUpdatedForNewComponent) {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
@@ -246,6 +248,7 @@ export default class MathInput extends Input {
           variableName: "displaySmallAsZero"
         },
       }),
+      set: convertValueToMathExpression,
       definition: function ({ dependencyValues, usedDefault }) {
         // round any decimal numbers to the significant digits
         // determined by displaydigits or displaydecimals
@@ -290,6 +293,7 @@ export default class MathInput extends Input {
         hasEssential: true,
         shadowVariable: true,
         defaultValue: null,
+        set: convertValueToMathExpression,
       }],
       returnDependencies: () => ({
         // include immediateValue for inverse definition
@@ -303,15 +307,15 @@ export default class MathInput extends Input {
         },
 
       }),
-      definition({ dependencyValues, essentialValues }) {
+      definition({ dependencyValues, essentialValues, justUpdatedForNewComponent }) {
 
-        // console.log(`definition of raw value for ${componentName}`)
-        // console.log(dependencyValues, essentialValues)
+        // console.log(`definition of raw value`)
+        // console.log(deepClone(dependencyValues), deepClone(essentialValues))
 
         // use deepCompare of trees rather than equalsViaSyntax
         // so even tiny numerical differences that within double precision are detected
         if (essentialValues.rawRendererValue === undefined
-          || !deepCompare(essentialValues.lastValueForDisplay.tree, dependencyValues.valueForDisplay.tree)
+          || !(justUpdatedForNewComponent || deepCompare(essentialValues.lastValueForDisplay.tree, dependencyValues.valueForDisplay.tree))
         ) {
           let rawRendererValue = stripLatex(dependencyValues.valueForDisplay.toLatex());
           if (rawRendererValue === "\uff3f") {
