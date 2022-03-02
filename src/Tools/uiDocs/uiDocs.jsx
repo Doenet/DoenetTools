@@ -22,6 +22,7 @@ import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownM
 import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx';
 import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/ColorImagePicker.jsx';
 import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
+import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
 
 // === HOW TO ADD TO UI DOCS ===
@@ -328,6 +329,47 @@ export default function attempt() {
           propCode: { disabled },
           description: 'Makes button not able to be used.',
         },
+      ],
+    },
+    {
+      name: 'CollapseSection',
+      id: 'collapsesection',
+      code: CollapseSection,
+      codePreview: '<CollapseSection/>',
+      req_props: null,
+      req_children: null,
+      use: 'Displays additional text when the header is clicked.',
+      props: [
+        {
+          name: 'Width - Menu Panel',
+          propPreview: '<CollapseSection width="menu" />',
+          propCode: { width: 'menu' },
+          description: 'Sets width to fill menu panel width',
+        },
+        {
+          name: 'Title',
+          propPreview: '<CollapseSection title="Look Here!"/>',
+          propCode: { title: 'Look Here!' },
+          description: 'Changes the title',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<CollapseSection label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Disabled',
+          propPreview: '<CollapseSection disabled />',
+          propCode: { disabled },
+          description: 'Makes collapse section not able to be used',
+        },
+        {
+          name: 'Aria Label',
+            propPreview: '<CollapseSection ariaLabel="Collapse Section"/>',
+            propCode: { ariaLabel: 'Collapse Section' },
+            description: 'Adds aria label to component'
+        }
       ],
     },
     {
