@@ -45,12 +45,15 @@ export default class CodeViewer extends BlockComponent {
 
       let renderDoenetML = {
         componentType: "renderDoenetML",
-        attributes: {
+      };
+
+      if (componentAttributes.codeSource) {
+        renderDoenetML.attributes = {
           codeSource: {
             primitive: componentAttributes.codeSource
           }
         }
-      };
+      }
 
       if (componentAttributes.renderedName) {
         renderDoenetML.props = { name: componentAttributes.renderedName }

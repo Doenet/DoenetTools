@@ -346,7 +346,10 @@ export default function Increment(props) {
   // console.log('props.disabled', props.disabled);
 
   return (
-    <div className="incrementcontainer" style={{ width: 'fit-content' }}>
+    <div
+      className="incrementcontainer"
+      style={{ width: 'fit-content', ...props.style }}
+    >
       {props.vertical && props.label ? <Label>{props.label}</Label> : null}
       <Container
         ref={containerRef}

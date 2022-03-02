@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
 import testCodeDoenetML from './testCode.doenet';
-import core from '../../Core/Core';
 
 function Test() {
   // console.log("===Test")
@@ -216,11 +215,6 @@ function Test() {
     </div>
   }
 
-  let coreProp = core;
-  if (bundledCore) {
-    coreProp = null;
-  }
-
 
 
   return (
@@ -248,8 +242,8 @@ function Test() {
         }}
         attemptNumber={attemptNumber}
         requestedVariant={requestedVariant.current}
-        core={coreProp}
-        doenetId="doenetId"
+        unbundledCore={!bundledCore}
+        doenetId="doenetIdFromTest"
       // collaborate={true}
       // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
       // functionsSuppliedByChild = {this.functionsSuppliedByChild}

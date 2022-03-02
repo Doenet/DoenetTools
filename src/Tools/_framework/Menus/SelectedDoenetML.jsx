@@ -1,4 +1,8 @@
-import { faCode } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCode,
+  faCalendarPlus,
+  faCalendarTimes,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
@@ -52,6 +56,7 @@ import {
 import { useToast, toastType } from '@Toast';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import CalendarToggle from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
+import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 
 export const selectedVersionAtom = atom({
   key: 'selectedVersionAtom',
@@ -538,7 +543,10 @@ export function AssignmentSettings({ role, doenetId }) {
               e.preventDefault();
             }}
           >
-            <CalendarToggle
+            <Checkbox
+              checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
+              uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
+              style={{ margin: '2px' }}
               checked={assignedDate !== null && assignedDate !== undefined}
               onClick={(e) => {
                 let valueDescription = 'None';
@@ -562,6 +570,7 @@ export function AssignmentSettings({ role, doenetId }) {
             />
 
             <DateTime
+              style={{ marginTop: '2px' }}
               disabled={assignedDate === null || assignedDate === undefined}
               value={assignedDate ? new Date(assignedDate) : null}
               disabledText="No Assigned Day"
@@ -615,7 +624,10 @@ export function AssignmentSettings({ role, doenetId }) {
               e.preventDefault();
             }}
           >
-            <CalendarToggle
+            <Checkbox
+              checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
+              uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
+              style={{ margin: '2px' }}
               checked={dueDate !== null && dueDate !== undefined}
               onClick={(e) => {
                 let valueDescription = 'None';
@@ -640,6 +652,7 @@ export function AssignmentSettings({ role, doenetId }) {
             />
 
             <DateTime
+              style={{ marginTop: '2px' }}
               disabled={dueDate === null || dueDate === undefined}
               value={dueDate ? new Date(dueDate) : null}
               onBlur={({ valid, value }) => {
@@ -687,123 +700,133 @@ export function AssignmentSettings({ role, doenetId }) {
       <div>
         <label>
           Time Limit
-          <Switch
-            onChange={(e) => {
-              let valueDescription = 'Not Limited';
-              let value = null;
-              if (e.currentTarget.checked) {
-                valueDescription = '60 Minutes';
-                value = 60;
-              }
-              setTimeLimit(value);
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'timeLimit',
-                value,
-                description: 'Time Limit ',
-                valueDescription,
-              });
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={timeLimit !== null}
-          ></Switch>
-        </label>
-      </div>
-      {timeLimit !== null ? (
-        <div style={{ width: 'fit-content' }}>
-          Time Limit in Minutes
-          <Increment
-            value={timeLimit}
-            min={0}
-            onBlur={(newValue) => {
-              if (aInfo.timeLimit !== timeLimit) {
-                let timelimitlocal = null;
-                if (timeLimit < 0 || timeLimit === '' || isNaN(timeLimit)) {
-                  setTimeLimit(0);
-                  timelimitlocal = 0;
-                } else {
-                  timelimitlocal = parseInt(timeLimit);
-                  setTimeLimit(parseInt(timeLimit));
+          >
+            <Checkbox
+              style={{ margin: '2px' }}
+              checked={timeLimit !== null}
+              onClick={(e) => {
+                let valueDescription = 'Not Limited';
+                let value = null;
+                if (timeLimit === null) {
+                  valueDescription = '60 Minutes';
+                  value = 60;
                 }
-                let valueDescription = `${timelimitlocal} Minutes`;
-
+                setTimeLimit(value);
                 updateAssignment({
                   doenetId,
                   keyToUpdate: 'timeLimit',
-                  value: timelimitlocal,
-                  description: 'Time Limit',
+                  value,
+                  description: 'Time Limit ',
                   valueDescription,
                 });
-              }
-            }}
-            onChange={(newValue) => setTimeLimit(newValue)}
-          />
-        </div>
-      ) : null}
+              }}
+            />
+            <Increment
+              style={{ marginTop: '2px' }}
+              disabled={timeLimit === null}
+              value={timeLimit}
+              min={0}
+              onBlur={(newValue) => {
+                if (aInfo.timeLimit !== timeLimit) {
+                  let timelimitlocal = null;
+                  if (timeLimit < 0 || timeLimit === '' || isNaN(timeLimit)) {
+                    setTimeLimit(0);
+                    timelimitlocal = 0;
+                  } else {
+                    timelimitlocal = parseInt(timeLimit);
+                    setTimeLimit(parseInt(timeLimit));
+                  }
+                  let valueDescription = `${timelimitlocal} Minutes`;
+
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'timeLimit',
+                    value: timelimitlocal,
+                    description: 'Time Limit',
+                    valueDescription,
+                  });
+                }
+              }}
+              onChange={(newValue) => setTimeLimit(newValue)}
+            />
+          </div>
+        </label>
+      </div>
 
       {/* <div>aInfo = {aInfo?.limitAttempts ? 'true' : 'false'}</div>
 <div>limitAttempts = {limitAttempts ? 'true' : 'false'}</div> */}
       <div>
         <label>
-          Attempts Limit
-          <Switch
-            name="limitAttempts"
-            onChange={(e) => {
-              let valueDescription = 'Not Limited';
-              let value = null;
-              if (e.currentTarget.checked) {
-                valueDescription = '1';
-                value = 1;
-              }
-              setLimitAttempts(value);
-              setNumberOfAttemptsAllowed(value);
-
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'numberOfAttemptsAllowed',
-                value,
-                description: 'Attempts Allowed ',
-                valueDescription,
-              });
+          Attempts
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={limitAttempts !== null}
-          ></Switch>
-        </label>
-      </div>
-      {limitAttempts !== null ? (
-        <div>
-          Number of Attempts Allowed
-          <Increment
-            value={numberOfAttemptsAllowed}
-            min={0}
-            onBlur={() => {
-              if (aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed) {
-                let numberOfAttemptsAllowedLocal = null;
-                if (
-                  numberOfAttemptsAllowed < 0 ||
-                  numberOfAttemptsAllowed === '' ||
-                  isNaN(numberOfAttemptsAllowed)
-                ) {
-                  setNumberOfAttemptsAllowed(0);
-                  numberOfAttemptsAllowedLocal = 0;
-                } else {
-                  numberOfAttemptsAllowedLocal = parseInt(
-                    numberOfAttemptsAllowed,
-                  );
-                  setNumberOfAttemptsAllowed(parseInt(numberOfAttemptsAllowed));
+          >
+            <Checkbox
+              style={{ margin: '2px' }}
+              checked={limitAttempts !== null}
+              onClick={(e) => {
+                let valueDescription = 'Not Limited';
+                let value = null;
+                if (limitAttempts === null) {
+                  valueDescription = '1';
+                  value = 1;
                 }
-
+                setLimitAttempts(value);
+                setNumberOfAttemptsAllowed(value);
                 updateAssignment({
                   doenetId,
                   keyToUpdate: 'numberOfAttemptsAllowed',
-                  value: numberOfAttemptsAllowedLocal,
-                  description: 'Attempts Allowed',
+                  value,
+                  description: 'Attempts Allowed ',
+                  valueDescription,
                 });
-              }
-            }}
-            onChange={(newValue) => setNumberOfAttemptsAllowed(newValue)}
-          />
-        </div>
-      ) : null}
+              }}
+            />
+            <Increment
+              style={{ marginTop: '2px' }}
+              disabled={limitAttempts === null}
+              value={numberOfAttemptsAllowed}
+              min={0}
+              onBlur={() => {
+                if (aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed) {
+                  let numberOfAttemptsAllowedLocal = null;
+                  if (
+                    numberOfAttemptsAllowed < 0 ||
+                    numberOfAttemptsAllowed === '' ||
+                    isNaN(numberOfAttemptsAllowed)
+                  ) {
+                    setNumberOfAttemptsAllowed(0);
+                    numberOfAttemptsAllowedLocal = 0;
+                  } else {
+                    numberOfAttemptsAllowedLocal = parseInt(
+                      numberOfAttemptsAllowed,
+                    );
+                    setNumberOfAttemptsAllowed(
+                      parseInt(numberOfAttemptsAllowed),
+                    );
+                  }
+
+                  updateAssignment({
+                    doenetId,
+                    keyToUpdate: 'numberOfAttemptsAllowed',
+                    value: numberOfAttemptsAllowedLocal,
+                    description: 'Attempts Allowed',
+                  });
+                }
+              }}
+              onChange={(newValue) => setNumberOfAttemptsAllowed(newValue)}
+            />
+          </div>
+        </label>
+      </div>
       <div>
         <label>
           Attempt Aggregation
@@ -901,193 +924,265 @@ export function AssignmentSettings({ role, doenetId }) {
 
       <div>
         <label>
-          Individualize
-          <Switch
-            name="individualize"
-            onChange={(e) => {
-              let valueDescription = 'False';
-              if (e.currentTarget.checked) {
-                valueDescription = 'True';
-              }
-              setIndividualize(e.currentTarget.checked);
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'individualize',
-                value: e.currentTarget.checked,
-                description: 'Individualize',
-                valueDescription,
-              });
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={individualize}
-          ></Switch>
+          >
+            <Checkbox
+              style={{ margin: '2px' }}
+              checked={individualize}
+              onClick={(e) => {
+                let valueDescription = 'False';
+                let value = false;
+                if (!individualize) {
+                  valueDescription = 'True';
+                  value = true;
+                }
+                setIndividualize(value);
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'individualize',
+                  value: value,
+                  description: 'Individualize',
+                  valueDescription,
+                });
+              }}
+            />
+            Individualize
+          </div>
         </label>
       </div>
 
       <div>
         <label>
-          Show Solution
-          <Switch
-            name="showSolution"
-            onChange={(e) => {
-              let valueDescription = 'False';
-              if (e.currentTarget.checked) {
-                valueDescription = 'True';
-              }
-              setShowSolution(e.currentTarget.checked);
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'showSolution',
-                value: e.currentTarget.checked,
-                description: 'Show Solution',
-                valueDescription,
-              });
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={showSolution}
-          ></Switch>
+          >
+            <Checkbox
+              style={{ margin: '2px' }}
+              checked={showSolution}
+              onClick={(e) => {
+                let valueDescription = 'False';
+                let value = false;
+                if (!showSolution) {
+                  valueDescription = 'True';
+                  value = true;
+                }
+                setShowSolution(value);
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'showSolution',
+                  value: value,
+                  description: 'Show Solution',
+                  valueDescription,
+                });
+              }}
+            />
+            Show Solution
+          </div>
         </label>
       </div>
 
       <div>
         <label>
-          Show Solution In Gradebook
-          <Switch
-            name="showSolutionInGradebook"
-            onChange={(e) => {
-              let valueDescription = 'False';
-              if (e.currentTarget.checked) {
-                valueDescription = 'True';
-              }
-              setShowSolutionInGradebook(e.currentTarget.checked);
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'showSolutionInGradebook',
-                value: e.currentTarget.checked,
-                description: 'Show Solution In Gradebook',
-                valueDescription,
-              });
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={showSolutionInGradebook}
-          ></Switch>
+          >
+            <Checkbox
+              style={{ margin: '2px' }}
+              checked={showSolutionInGradebook}
+              onClick={(e) => {
+                let valueDescription = 'False';
+                let value = false;
+                if (!showSolutionInGradebook) {
+                  valueDescription = 'True';
+                  value = true;
+                }
+                setShowSolutionInGradebook(value);
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'showSolutionInGradebook',
+                  value: value,
+                  description: 'Show Solution In Gradebook',
+                  valueDescription,
+                });
+              }}
+            />
+            Show Solution In Gradebook
+          </div>
         </label>
       </div>
 
       <div>
         <label>
-          Show Feedback
-          <Switch
-            name="showFeedback"
-            onChange={(e) => {
-              let valueDescription = 'False';
-              if (e.currentTarget.checked) {
-                valueDescription = 'True';
-              }
-              setShowFeedback(e.currentTarget.checked);
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'showFeedback',
-                value: e.currentTarget.checked,
-                description: 'Show Feedback',
-                valueDescription,
-              });
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={showFeedback}
-          ></Switch>
+          >
+            <Checkbox
+              style={{ margin: '2px' }}
+              checked={showFeedback}
+              onClick={(e) => {
+                let valueDescription = 'False';
+                let value = false;
+                if (!showFeedback) {
+                  valueDescription = 'True';
+                  value = true;
+                }
+                setShowFeedback(value);
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'showFeedback',
+                  value: value,
+                  description: 'Show Feedback',
+                  valueDescription,
+                });
+              }}
+            />
+            Show Feedback
+          </div>
         </label>
       </div>
 
       <div>
         <label>
-          Show Hints
-          <Switch
-            name="showHints"
-            onChange={(e) => {
-              let valueDescription = 'False';
-              if (e.currentTarget.checked) {
-                valueDescription = 'True';
-              }
-              setShowHints(e.currentTarget.checked);
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'showHints',
-                value: e.currentTarget.checked,
-                description: 'Show Hints',
-                valueDescription,
-              });
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={showHints}
-          ></Switch>
+          >
+            <Checkbox
+              style={{ margin: '2px' }}
+              checked={showHints}
+              onClick={(e) => {
+                let valueDescription = 'False';
+                let value = false;
+                if (!showHints) {
+                  valueDescription = 'True';
+                  value = true;
+                }
+                setShowHints(value);
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'showHints',
+                  value: value,
+                  description: 'Show Hints',
+                  valueDescription,
+                });
+              }}
+            />
+            Show Hints
+          </div>
         </label>
       </div>
 
       <div>
         <label>
-          Show Correctness
-          <Switch
-            name="showCorrectness"
-            onChange={(e) => {
-              let valueDescription = 'False';
-              if (e.currentTarget.checked) {
-                valueDescription = 'True';
-              }
-              setShowCorrectness(e.currentTarget.checked);
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'showCorrectness',
-                value: e.currentTarget.checked,
-                description: 'Show Correctness',
-                valueDescription,
-              });
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={showCorrectness}
-          ></Switch>
+          >
+            <Checkbox
+              style={{ margin: '2px' }}
+              checked={showCorrectness}
+              onClick={(e) => {
+                let valueDescription = 'False';
+                let value = false;
+                if (!showCorrectness) {
+                  valueDescription = 'True';
+                  value = true;
+                }
+                setShowCorrectness(value);
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'showCorrectness',
+                  value: value,
+                  description: 'Show Correctness',
+                  valueDescription,
+                });
+              }}
+            />
+            Show Correctness
+          </div>
         </label>
       </div>
 
       <div>
         <label>
-          Show Credit Achieved Menu
-          <Switch
-            name="showCreditAchievedMenu"
-            onChange={(e) => {
-              let valueDescription = 'False';
-              if (e.currentTarget.checked) {
-                valueDescription = 'True';
-              }
-              setShowCreditAchievedMenu(e.currentTarget.checked);
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'showCreditAchievedMenu',
-                value: e.currentTarget.checked,
-                description: 'Show Credit Achieved Menu',
-                valueDescription,
-              });
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={showCreditAchievedMenu}
-          ></Switch>
+          >
+            <Checkbox
+              style={{ margin: '2px' }}
+              checked={showCreditAchievedMenu}
+              onClick={(e) => {
+                let valueDescription = 'False';
+                let value = false;
+                if (!showCreditAchievedMenu) {
+                  valueDescription = 'True';
+                  value = true;
+                }
+                setShowCreditAchievedMenu(value);
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'showCreditAchievedMenu',
+                  value: value,
+                  description: 'Show Credit Achieved Menu',
+                  valueDescription,
+                });
+              }}
+            />
+            Show Credit Achieved Menu
+          </div>
         </label>
       </div>
 
       <div>
         <label>
-          Proctor Makes Available
-          <Switch
-            name="proctorMakesAvailable"
-            onChange={(e) => {
-              let valueDescription = 'False';
-              if (e.currentTarget.checked) {
-                valueDescription = 'True';
-              }
-              setProctorMakesAvailable(e.currentTarget.checked);
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'proctorMakesAvailable',
-                value: e.currentTarget.checked,
-                description: 'Proctor Makes Available',
-                valueDescription,
-              });
+          <div
+            style={{ display: 'flex' }}
+            onClick={(e) => {
+              e.preventDefault();
             }}
-            checked={proctorMakesAvailable}
-          ></Switch>
+          >
+            <Checkbox
+              style={{ margin: '2px' }}
+              checked={proctorMakesAvailable}
+              onClick={(e) => {
+                let valueDescription = 'False';
+                let value = false;
+                if (!proctorMakesAvailable) {
+                  valueDescription = 'True';
+                  value = true;
+                }
+                setProctorMakesAvailable(value);
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'proctorMakesAvailable',
+                  value: value,
+                  description: 'Proctor Makes Available',
+                  valueDescription,
+                });
+              }}
+            />
+            Proctor Makes Available
+          </div>
         </label>
       </div>
 
@@ -1095,12 +1190,15 @@ export function AssignmentSettings({ role, doenetId }) {
         <label>
           Pin Assignment
           <div
-            style={{ display: 'flex' }}
+            style={{ display: 'flex', flexFlow: 'row wrap' }}
             onClick={(e) => {
               e.preventDefault();
             }}
           >
-            <CalendarToggle
+            <Checkbox
+              checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
+              uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
+              style={{ margin: '2px' }}
               checked={
                 pinnedUntilDate !== null && pinnedUntilDate !== undefined
               }
@@ -1130,113 +1228,75 @@ export function AssignmentSettings({ role, doenetId }) {
                 });
               }}
             />
-            {pinnedAfterDate !== null && pinnedAfterDate !== undefined ? (
-              <DateTime
-                value={pinnedAfterDate ? new Date(pinnedAfterDate) : null}
-                onBlur={({ valid, value }) => {
-                  if (valid) {
-                    try {
-                      value = value.toDate();
-                    } catch (e) {
-                      // console.log('value not moment');
-                    }
-                    if (
-                      new Date(DateToDateString(value)).getTime() !==
-                      new Date(pinnedAfterDate).getTime()
-                    ) {
-                      setPinnedAfterDate(DateToDateString(value));
-                      updateAssignment({
-                        doenetId,
-                        keyToUpdate: 'pinnedAfterDate',
-                        value: DateToDateString(value),
-                        description: 'Pinned After Date',
-                      });
-                    }
-                  } else {
-                    addToast('Invalid Pin After Date');
-                  }
-                }}
-              />
-            ) : (
-              <input
-                onClick={(e) => {
-                  let valueDescription = 'None';
-                  let value = null;
-                  let secondValue = null;
+            <DateTime
+              style={{ marginTop: '2px' }}
+              disabled={
+                pinnedAfterDate === null || pinnedAfterDate === undefined
+              }
+              disabledText="No Pinned After Date"
+              disabledOnClick={(e) => {
+                let valueDescription = 'None';
+                let value = null;
+                let secondValue = null;
 
+                if (pinnedAfterDate === null || pinnedAfterDate === undefined) {
+                  valueDescription = 'Now to Next Year';
+                  let today = new Date();
+                  let nextYear = new Date();
+                  nextYear.setDate(nextYear.getDate() + 365);
+                  value = DateToDateString(today);
+                  secondValue = DateToDateString(nextYear);
+                }
+                setPinnedAfterDate(value);
+                setPinnedUntilDate(secondValue);
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'pinnedAfterDate',
+                  value,
+                  description: 'Pinned Dates ',
+                  valueDescription,
+                  secondKeyToUpdate: 'pinnedUntilDate',
+                  secondValue,
+                });
+              }}
+              value={pinnedAfterDate ? new Date(pinnedAfterDate) : null}
+              onBlur={({ valid, value }) => {
+                if (valid) {
+                  try {
+                    value = value.toDate();
+                  } catch (e) {
+                    // console.log('value not moment');
+                  }
                   if (
-                    pinnedAfterDate === null ||
-                    pinnedAfterDate === undefined
+                    new Date(DateToDateString(value)).getTime() !==
+                    new Date(pinnedAfterDate).getTime()
                   ) {
-                    valueDescription = 'Now to Next Year';
-                    let today = new Date();
-                    let nextYear = new Date();
-                    nextYear.setDate(nextYear.getDate() + 365);
-                    value = DateToDateString(today);
-                    secondValue = DateToDateString(nextYear);
+                    setPinnedAfterDate(DateToDateString(value));
+                    updateAssignment({
+                      doenetId,
+                      keyToUpdate: 'pinnedAfterDate',
+                      value: DateToDateString(value),
+                      description: 'Pinned After Date',
+                    });
                   }
-                  setPinnedAfterDate(value);
-                  setPinnedUntilDate(secondValue);
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'pinnedAfterDate',
-                    value,
-                    description: 'Pinned Dates ',
-                    valueDescription,
-                    secondKeyToUpdate: 'pinnedUntilDate',
-                    secondValue,
-                  });
-                }}
-                value="No Pin After Date"
-                // disabled
-                style={{
-                  cursor: 'not-allowed',
-                  color: '#545454',
-                  height: '18px',
-                  width: '177px',
-                  border: '2px solid #e2e2e2',
-                  borderRadius: '5px',
-                }}
-              />
-            )}
-          </div>
-          <div
-            style={{ marginLeft: '28px' }}
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
-            {pinnedUntilDate !== null && pinnedUntilDate !== undefined ? (
+                } else {
+                  addToast('Invalid Pin After Date');
+                }
+              }}
+            />
+            <div
+              style={{ marginLeft: '33px' }}
+              onClick={(e) => {
+                e.preventDefault();
+              }}
+            >
               <DateTime
-                value={pinnedUntilDate ? new Date(pinnedUntilDate) : null}
-                onBlur={({ valid, value }) => {
-                  if (valid) {
-                    try {
-                      value = value.toDate();
-                    } catch (e) {
-                      // console.log('value not moment');
-                    }
-                    if (
-                      new Date(DateToDateString(value)).getTime() !==
-                      new Date(pinnedUntilDate).getTime()
-                    ) {
-                      setPinnedUntilDate(DateToDateString(value));
-
-                      updateAssignment({
-                        doenetId,
-                        keyToUpdate: 'pinnedUntilDate',
-                        value: DateToDateString(value),
-                        description: 'Pinned Until Date',
-                      });
-                    }
-                  } else {
-                    addToast('Invalid Pin Until Date');
-                  }
-                }}
-              />
-            ) : (
-              <input
-                onClick={(e) => {
+                style={{ marginTop: '2px' }}
+                disabled={
+                  pinnedUntilDate === null || pinnedUntilDate === undefined
+                }
+                disabledText="No Pinned Until Date"
+                disabledOnClick={(e) => {
                   let valueDescription = 'None';
                   let value = null;
                   let secondValue = null;
@@ -1264,18 +1324,33 @@ export function AssignmentSettings({ role, doenetId }) {
                     secondValue,
                   });
                 }}
-                value="No Pin Until Date"
-                // disabled
-                style={{
-                  cursor: 'not-allowed',
-                  color: '#545454',
-                  height: '18px',
-                  width: '177px',
-                  border: '2px solid #e2e2e2',
-                  borderRadius: '5px',
+                value={pinnedUntilDate ? new Date(pinnedUntilDate) : null}
+                onBlur={({ valid, value }) => {
+                  if (valid) {
+                    try {
+                      value = value.toDate();
+                    } catch (e) {
+                      // console.log('value not moment');
+                    }
+                    if (
+                      new Date(DateToDateString(value)).getTime() !==
+                      new Date(pinnedUntilDate).getTime()
+                    ) {
+                      setPinnedUntilDate(DateToDateString(value));
+
+                      updateAssignment({
+                        doenetId,
+                        keyToUpdate: 'pinnedUntilDate',
+                        value: DateToDateString(value),
+                        description: 'Pinned Until Date',
+                      });
+                    }
+                  } else {
+                    addToast('Invalid Pin Until Date');
+                  }
                 }}
               />
-            )}
+            </div>
           </div>
         </label>
       </div>

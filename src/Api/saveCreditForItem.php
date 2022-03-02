@@ -21,7 +21,7 @@ $contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $credit = mysqli_real_escape_string($conn,$_POST["credit"]);
 $itemNumber = mysqli_real_escape_string($conn,$_POST["itemNumber"]);
-$stateVariables =  mysqli_real_escape_string($conn,$_POST["stateVariables"]);
+$componentsSubmitted =  mysqli_real_escape_string($conn,$_POST["componentsSubmitted"]);
 
 //TODO: check if attempt is older than given attempt
 
@@ -43,9 +43,9 @@ $message = 'Internal Error: missing contentId';
 }elseif ($itemNumber == ""){
   $success = FALSE;
   $message = 'Internal Error: missing itemNumber';
-}elseif ($stateVariables == ""){
+}elseif ($componentsSubmitted == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing stateVariables';
+  $message = 'Internal Error: missing componentsSubmitted';
 }elseif ($userId == ""){
   if ($examUserId == ""){
     $success = FALSE;
@@ -262,9 +262,9 @@ if ($result->num_rows < 1){
 //Specifically we want to store the credit of that actual submission
 $sql = "
 INSERT INTO user_assignment_attempt_item_submission
-(doenetId,contentId,userId,attemptNumber,itemNumber,submissionNumber,stateVariables,credit,submittedDate,valid)
+(doenetId,contentId,userId,attemptNumber,itemNumber,submissionNumber,componentsSubmitted,credit,submittedDate,valid)
 VALUES
-('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$stateVariables','$credit',NOW(),'$valid')
+('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$componentsSubmitted','$credit',NOW(),'$valid')
 ";
 
 $result = $conn->query($sql);

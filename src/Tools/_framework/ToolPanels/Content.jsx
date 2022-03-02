@@ -96,7 +96,7 @@ export default function Content(props){
           showHints: true,
           allowLoadPageState: true,
           allowSavePageState: true,
-          allowLocalPageState: false, //Still working out localStorage kinks
+          allowLocalPageState: true,
           allowSaveSubmissions: true,
           allowSaveEvents: true
         }}
