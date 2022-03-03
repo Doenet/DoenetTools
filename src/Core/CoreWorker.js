@@ -297,28 +297,37 @@ async function saveLoadedLocalStateToDatabase({ CID, doenetId, attemptNumber, lo
     data.saveId
   )
 
+
   if (data.stateOverwritten) {
-    let newLocalInfo = {
-      coreState: JSON.parse(data.coreState, serializedComponentsReviver),
-      rendererState: JSON.parse(data.rendererState, serializedComponentsReviver),
-      coreInfo: JSON.parse(data.coreInfo, serializedComponentsReviver),
-      saveId: data.saveId,
-    }
 
-    idb_set(
-      `${data.CID}|${doenetId}|${data.attemptNumber}`,
-      newLocalInfo
-    );
+    if (CID !== data.CID || attemptNumber !== Number(data.attemptNumber)
+      || pageStateToBeSavedToDatabase.coreInfo !== data.coreInfo
+      || pageStateToBeSavedToDatabase.coreState !== data.coreState
+      || pageStateToBeSavedToDatabase.rendererState !== data.rendererState
+    ) {
 
-    return {
-      changedOnDevice: data.device,
-      newLocalInfo,
-      newCID: data.CID,
-      newAttemptNumber: data.attemptNumber,
+      let newLocalInfo = {
+        coreState: JSON.parse(data.coreState, serializedComponentsReviver),
+        rendererState: JSON.parse(data.rendererState, serializedComponentsReviver),
+        coreInfo: JSON.parse(data.coreInfo, serializedComponentsReviver),
+        saveId: data.saveId,
+      }
+
+      idb_set(
+        `${data.CID}|${doenetId}|${data.attemptNumber}`,
+        newLocalInfo
+      );
+
+      return {
+        changedOnDevice: data.device,
+        newLocalInfo,
+        newCID: data.CID,
+        newAttemptNumber: data.attemptNumber,
+      }
     }
-  } else {
-    return { localInfo, CID, attemptNumber };
   }
+
+  return { localInfo, CID, attemptNumber };
 
 
 }
