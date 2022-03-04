@@ -89,6 +89,7 @@ export default function ToolRoot() {
     supportPanelTitles: [],
     supportPanelIndex: 0,
     hasNoMenuPanel: false,
+    hasNoHeaderPanel: false,
     headerControls: [],
     displaySettings: true,
     footer: null,
@@ -249,9 +250,7 @@ export default function ToolRoot() {
     openMenuButton = false;
   }
 
-
   let footer = null;
-
 
   if (toolRootMenusAndPanels.footer) {
     let footerKey = `footer`;
@@ -265,9 +264,12 @@ export default function ToolRoot() {
           key={footerKey}
           fallback={<LoadingFallback>loading...</LoadingFallback>}
         >
-          {React.createElement(LazyFooterObj[toolRootMenusAndPanels.footer.component], {
-            key: { footerKey },
-          })}
+          {React.createElement(
+            LazyFooterObj[toolRootMenusAndPanels.footer.component],
+            {
+              key: { footerKey },
+            },
+          )}
         </Suspense>
       </FooterPanel>
     );
@@ -286,10 +288,12 @@ export default function ToolRoot() {
               setMenusOpen={setMenusOpen}
               openMenuButton={openMenuButton}
               displaySettings={toolRootMenusAndPanels.displaySettings}
+              hasNoHeaderPanel={toolRootMenusAndPanels.hasNoHeaderPanel}
             >
               {mainPanel}
             </MainPanel>
           }
+          hasNoHeaderPanel={toolRootMenusAndPanels.hasNoHeaderPanel}
           support={supportPanel}
         />
         {footer}
@@ -352,7 +356,7 @@ let navigationObj = {
       headerControls: [],
       displaySettings: false,
       waitForMenuSuppression: true,
-      footer:{height:250,open:false,component:"MathInputKeyboard"}
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
     endExam: {
       pageName: 'endExam',
@@ -374,7 +378,7 @@ let navigationObj = {
       menusInitOpen: [true, true],
       headerControls: ['AssignmentBreadCrumb', 'AssignmentNewAttempt'],
       waitForMenuSuppression: true,
-      footer:{height:250,open:false,component:"MathInputKeyboard"}
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
     courseChooser: {
       //allCourses
@@ -467,15 +471,25 @@ let navigationObj = {
       pageName: 'Course',
       menuPanelCap: 'EditorInfoCap',
       currentMainPanel: 'EditorViewer',
-      currentMenus: ['VersionHistory', 'Variant', 'AssignmentSettingsMenu','SupportingFilesMenu'],
-      menusTitles: ['Version History', 'Variant', 'Assignment Settings','Supporting Files'],
+      currentMenus: [
+        'VersionHistory',
+        'Variant',
+        'AssignmentSettingsMenu',
+        'SupportingFilesMenu',
+      ],
+      menusTitles: [
+        'Version History',
+        'Variant',
+        'Assignment Settings',
+        'Supporting Files',
+      ],
       menusInitOpen: [false, false, false],
       supportPanelOptions: ['DoenetMLEditor'],
       supportPanelTitles: ['DoenetML Editor'],
       supportPanelIndex: 0,
       headerControls: ['EditorBreadCrumb', 'ViewerUpdateButton'],
       onLeave: 'EditorLeave',
-      footer:{height:250,open:false,component:"MathInputKeyboard"}
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
     collection: {
       currentMainPanel: 'CollectionEditor',
@@ -525,6 +539,7 @@ let navigationObj = {
       supportPanelTitles: [],
       supportPanelIndex: 0,
       hasNoMenuPanel: true,
+      hasNoHeaderPanel: true,
       displaySettings: false,
     },
   },
