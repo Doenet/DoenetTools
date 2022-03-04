@@ -14,8 +14,8 @@ const Wrapper = styled.div`
   grid-area: contentPanel;
   display: grid;
   grid-template:
-    'mainControls handle supportControls' ${({ $hasRespCont }) =>
-      $hasRespCont ? 40 : 0}px
+    'mainControls handle supportControls' ${(props) =>
+      props.hasNoHeaderPanel === true ? 0 : 40}px
     'mainPanel handle supportPanel' 1fr
     / ${({ $proportion }) => `${$proportion}fr auto ${1 - $proportion}fr`};
   overflow: hidden;
@@ -32,7 +32,7 @@ const DragHandle = styled.div`
   color: hsl(0, 0%, 99%);
   padding: 0;
   cursor: ew-resize;
-  background-color: #1A5A99;
+  background-color: #1a5a99;
   width: 8px;
   box-sizing: border-box;
 `;
@@ -44,7 +44,7 @@ export const panelsInfoAtom = atom({
 
 const panelPropotion = selector({
   key: 'panelPropotion',
-    get: ({ get }) => {
+  get: ({ get }) => {
     const info = get(panelsInfoAtom);
     return info.isActive ? info.propotion : 1;
   },
@@ -55,27 +55,28 @@ const calcInfo = (num) =>
 
 export const useSupportDividerController = () => {
   const supportController = useRecoilCallback(
-    ({ set }) => (newIsActive, newProportion) => {
-      set(panelsInfoAtom, (oldInfo) => ({
-        isActive:
-          newProportion === 1 ? false : newIsActive ?? !oldInfo.isActive,
-        propotion:
-          (newProportion ?? 1) === 1
-            ? oldInfo.propotion
-            : calcInfo(newProportion),
-      }));
-    },
+    ({ set }) =>
+      (newIsActive, newProportion) => {
+        set(panelsInfoAtom, (oldInfo) => ({
+          isActive:
+            newProportion === 1 ? false : newIsActive ?? !oldInfo.isActive,
+          propotion:
+            (newProportion ?? 1) === 1
+              ? oldInfo.propotion
+              : calcInfo(newProportion),
+        }));
+      },
     [],
   );
   return supportController;
 };
 
 export const supportPanelHandleLeft = atom({
-  key:"supportPanelHandleLeft",
+  key: 'supportPanelHandleLeft',
   default: null,
-})
+});
 
-export default function ContentPanel({ main, support }) {
+export default function ContentPanel({ main, support, hasNoHeaderPanel }) {
   const wrapperRef = useRef();
   // const [hasRespCont, setHasRespCont] = useState(true);
   const hasRespCont = true;
@@ -95,26 +96,25 @@ export default function ContentPanel({ main, support }) {
 
   useEffect(() => {
     // wrapperRef.current.style.gridTemplate = null;
-    setDivider(!support?.props?.hide)
+    setDivider(!support?.props?.hide);
   }, [support?.props?.hide]);
 
-  function onWindowResize(){
-    setHandleLeft(dragHandleRef.current?.getBoundingClientRect()?.left)
+  function onWindowResize() {
+    setHandleLeft(dragHandleRef.current?.getBoundingClientRect()?.left);
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     window.onresize = onWindowResize;
-    return ()=>{
+    return () => {
       window.onresize = null;
-    }
-  },[])
-
+    };
+  }, []);
 
   //Needed to update after the component is mounted
   //So we are fine with the warning
   useLayoutEffect(() => {
-    setHandleLeft(dragHandleRef.current?.getBoundingClientRect()?.left)
-  })
+    setHandleLeft(dragHandleRef.current?.getBoundingClientRect()?.left);
+  });
   // useEffect(() => {
   //   setHasRespCont(
   //     (support?.props.responsiveControls || main?.props.responsiveControls) ??
@@ -162,7 +162,7 @@ export default function ContentPanel({ main, support }) {
       }
     }
   };
- 
+
   return (
     <Wrapper
       onMouseUp={onMouseUp}
@@ -170,6 +170,7 @@ export default function ContentPanel({ main, support }) {
       onMouseLeave={onMouseUp}
       ref={wrapperRef}
       // onClick={clearDriveSelections}
+      hasNoHeaderPanel={hasNoHeaderPanel}
       $hasRespCont={hasRespCont}
       $proportion={panelProportion}
     >
