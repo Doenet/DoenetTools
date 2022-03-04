@@ -8110,13 +8110,14 @@ export default class Core {
         // console.log(">>>>resp",resp.data)
       })
       .catch(e => {
-        postMessage({
-          messageType: "sendToast",
-          args: {
-            message: `Error saving event: ${e.message}`,
-            toastType: toastType.ERROR
-          }
-        })
+        console.error(`Error saving event: ${e.message}`);
+        // postMessage({
+        //   messageType: "sendToast",
+        //   args: {
+        //     message: `Error saving event: ${e.message}`,
+        //     toastType: toastType.ERROR
+        //   }
+        // })
       });
 
 
@@ -9163,7 +9164,8 @@ export default class Core {
     this.saveStateToDBTimerId = setTimeout(() => {
       this.saveStateToDBTimerId = null;
       this.saveChangesToDatabase();
-    }, 60000);
+    }, 10000);
+    // }, 60000);
 
 
     // TODO: find out how to test if not online
@@ -9179,13 +9181,16 @@ export default class Core {
 
     let resp;
 
+    let coreStateToSave = this.pageStateToBeSavedToDatabase.coreState;
+    let rendererStateToSave = this.pageStateToBeSavedToDatabase.rendererState;
+
     try {
       resp = await axios.post('/api/savePageState.php', this.pageStateToBeSavedToDatabase);
     } catch (e) {
       postMessage({
         messageType: "sendToast",
         args: {
-          message: "Error synchronizing data.  Changes not saved.",
+          message: "Error synchronizing data.  Changes not saved to the server.",
           toastType: toastType.ERROR
         }
       });
@@ -9198,7 +9203,7 @@ export default class Core {
       postMessage({
         messageType: "sendToast",
         args: {
-          message: `Error synchronizing data.  Changes not saved.  Are you connected to the internet?`,
+          message: `Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`,
           toastType: toastType.ERROR
         }
       })
@@ -9228,26 +9233,34 @@ export default class Core {
     }
 
     if (data.stateOverwritten) {
-      if (this.flags.allowLocalPageState) {
-        idb_set(
-          `${data.CID}|${this.doenetId}|${data.attemptNumber}`,
-          {
-            coreState: JSON.parse(data.coreState, serializeFunctions.serializedComponentsReviver),
-            rendererState: JSON.parse(data.rendererState, serializeFunctions.serializedComponentsReviver),
-            coreInfo: JSON.parse(data.coreInfo, serializeFunctions.serializedComponentsReviver),
-            saveId: data.saveId,
-          }
-        )
-      }
 
-      postMessage({
-        messageType: "resetCore",
-        args: {
-          changedOnDevice: data.device,
-          newCID: data.CID,
-          newAttemptNumber: Number(data.attemptNumber),
+      if (this.CID !== data.CID || this.attemptNumber !== Number(data.attemptNumber
+        || this.coreInfoString !== data.coreInfo
+        || coreStateToSave !== data.coreState
+        || rendererStateToSave !== data.rendererStateToSave
+      )) {
+
+        if (this.flags.allowLocalPageState) {
+          idb_set(
+            `${data.CID}|${this.doenetId}|${data.attemptNumber}`,
+            {
+              coreState: JSON.parse(data.coreState, serializeFunctions.serializedComponentsReviver),
+              rendererState: JSON.parse(data.rendererState, serializeFunctions.serializedComponentsReviver),
+              coreInfo: JSON.parse(data.coreInfo, serializeFunctions.serializedComponentsReviver),
+              saveId: data.saveId,
+            }
+          )
         }
-      })
+
+        postMessage({
+          messageType: "resetCore",
+          args: {
+            changedOnDevice: data.device,
+            newCID: data.CID,
+            newAttemptNumber: Number(data.attemptNumber),
+          }
+        })
+      }
 
 
     }
