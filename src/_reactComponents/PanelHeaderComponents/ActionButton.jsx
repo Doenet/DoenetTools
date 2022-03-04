@@ -4,33 +4,41 @@ import styled, { ThemeProvider, css } from "styled-components";
 const Button = styled.button`
   margin: ${props => props.theme.margin};
   height: 24px;
-  border-style: solid;
+  /* border-style: solid;
   border-color: black;
-  border-width: 2px;
-  color: black;
-  background-color: #FFF;
+  border-width: 2px; */
+  border: ${props => props.theme.border};
+  /* color: black; */
+  color: white;
+  /* background-color: #FFF; */
+  background-color: ${props => props.alert ? 'var(--mainRed)' : 'var(--mainBlue)'};
+  /* border: 0.25px solid white; */
   border-radius: ${props => props.theme.borderRadius};
   padding: ${props => props.theme.padding};
   cursor: pointer;
   font-size: 12px;
 
   &:hover {
-    background-color: var(--lightBlue);
+    color: black;
+    /* background-color: var(--lightBlue); */
+    background-color: ${props => props.alert ? '#eab8b8' : 'var(--lightBlue)'};
   };
 `
 
 Button.defaultProps = {
   theme: {
-    margin: "0px 4px 0px 4px",
-    borderRadius: "5px",
+    margin: '0px 4px 0px 4px',
+    borderRadius: '5px',
     padding: '0px 10px 0px 10px',
+    border: 'none'
   }
 }
 
 const Label = styled.p`
-  font-size: 12px;
+  font-size: 14px;
   display: ${props => props.labelVisible};
   margin-right: 5px;
+  margin-left: 4px;
   margin-bottom: ${props => props.align == 'flex' ? 'none' : '2px'};
 `
 const Container = styled.div`
@@ -40,6 +48,7 @@ const Container = styled.div`
 `
 
 export default function ActionButton(props) {
+  const alert = props.alert ? props.alert : null;
   //Assume small
   var container = {};
   var align = 'flex';
@@ -55,13 +64,12 @@ export default function ActionButton(props) {
       }
     }
   }
-  const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
+  const labelVisible = props.label ? 'static' : 'none';
   var label = '';
   if (props.label) {
     label = props.label;
     if (props.vertical){
       align = 'static';
-      console.log('vertical')
     }
   }
   var icon = '';
@@ -93,14 +101,11 @@ export default function ActionButton(props) {
   if (props.num === 'last_vert') {
     actionButton.borderRadius = '0px 0px 5px 5px'
   }
-  
-  if (props.alert) {
-    actionButton.border = '2px solid #C1292E';
-  }
 
   if (props.disabled) {
-    actionButton.border = '2px solid #e2e2e2';
-    // actionButton.color = '#e2e2e2';
+    // actionButton.border = '2px solid #e2e2e2';
+    actionButton.backgroundColor = '#e2e2e2';
+    actionButton.color = 'black';
     actionButton.cursor = 'not-allowed';
   }
   function handleClick(e) {
@@ -110,7 +115,7 @@ export default function ActionButton(props) {
         <>
             <Container style={container} align={align}>
               <Label labelVisible={labelVisible} align={align}>{label}</Label>
-              <Button id="actionButton" style={actionButton} onClick={(e) => { handleClick(e) }}>{icon}{' '}{actionButton.value}</Button>
+              <Button id="actionButton" style={actionButton} alert={alert} onClick={(e) => { handleClick(e) }}>{icon}{' '}{actionButton.value}</Button>
             </Container>
             
         </>
