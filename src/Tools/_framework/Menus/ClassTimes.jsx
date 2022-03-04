@@ -10,6 +10,8 @@ import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/Dropdo
 // import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
 import axios from 'axios';
 import { searchParamAtomFamily } from '../NewToolRoot';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const TimeEntry = ({parentValue,valueCallback=()=>{}})=>{
   let [time,setTime] = useState(parentValue);
@@ -174,7 +176,7 @@ export default function ClassTimes(){
       updateClassTime({index,newClassTime})
     }}
     /></td>
-      <td  style={{width:"40px"}} rowSpan="2"><Button value='x' alert onClick={()=>{deleteClassTime({index})}} /> </td>
+      <td  style={{width:"40px"}} rowSpan="2"><Button icon={<FontAwesomeIcon icon={faTimes}/>} alert onClick={()=>{deleteClassTime({index})}} /> </td>
       </tr>)
       timesJSX.push(<tr>
         <td style={{width:"190px",textAlign:"center"}} ><TimeEntry parentValue={timeObj.startTime} valueCallback={(value)=>{
