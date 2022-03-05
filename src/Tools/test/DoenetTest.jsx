@@ -1,16 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
+import ActivityViewer from '../../Viewer/ActivityViewer.jsx';
 import testCodeDoenetML from './testCode.doenet';
+import testActivityDefinition from './testActivityDefinition.json';
 
 function Test() {
   // console.log("===Test")
 
   const [doenetML,setDoenetML] = useState(null);
+  const [activityDefinition,setActivityDefinition] = useState(null);
 
-  //New DoenetViewer when code changes
+  //New ActivityViewer when code changes
   useEffect(() => {
     setDoenetML(testCodeDoenetML);
   }, [testCodeDoenetML]);
+  useEffect(() => {
+    setActivityDefinition(testActivityDefinition);
+  }, [testActivityDefinition]);
 
   const defaultTestSettings = {
     updateNumber:0,
@@ -59,19 +64,8 @@ function Test() {
 
 
 
-  // //For Cypress Test Use
-  // window.onmessage = (e) => {
-  //   if (e.data.doenetML !== undefined) {
-  //     //Only if defined
-  //     if (e.data.requestedVariant) {
-  //       requestedVariant.current = e.data.requestedVariant;
-  //     }
-  //     setDoenetML(e.data.doenetML);
-  //   }
-  // };
-
   //Don't construct core until we have the doenetML defined
-  if (doenetML === null) {
+  if (doenetML === null && activityDefinition === null) {
     return null;
   }
 
@@ -224,10 +218,12 @@ function Test() {
            </h3>
         {controls}
       </div>
-      <DoenetViewer
-        key={"doenetviewer"+updateNumber}
-        doenetML={doenetML}
-        // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
+      <ActivityViewer
+        key={"activityViewer"+updateNumber}
+        // doenetML={doenetML}
+        activityDefinition={activityDefinition}
+        // CID={"bafkreidadc4brxaywzls6o7tknnmvktsrmzd7h367225gypopz3g7vlg7q"}
+        updatePageDataOnContentChange={true}
         flags={{
           showCorrectness,
           readOnly,

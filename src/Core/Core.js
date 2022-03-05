@@ -13,7 +13,7 @@ import { DependencyHandler } from './Dependencies';
 import { preprocessMathInverseDefinition } from './utils/math';
 import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 import { nanoid } from 'nanoid';
-import { CIDFromDoenetML } from './utils/cid';
+import { CIDFromText } from './utils/cid';
 import { removeFunctionsMathExpressionClass } from './CoreWorker';
 import createComponentInfoObjects from './utils/componentInfoObjects';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
@@ -24,21 +24,22 @@ import axios from 'axios';
 // componentClass to string: componentClass.componentType
 
 export default class Core {
-  constructor({ doenetML, doenetId, attemptNumber,
+  constructor({ doenetML, doenetId, pageId, attemptNumber,
     serverSaveId,
     requestedVariant, requestedVariantIndex,
     flags = {},
     stateVariableChanges = {},
-    coreId, noCIDSpecified }) {
+    coreId, updatePageDataOnContentChange }) {
     // console.time('core');
 
 
     this.coreId = coreId;
     this.doenetId = doenetId;
+    this.pageId = pageId;
     this.attemptNumber = attemptNumber;
 
     this.serverSaveId = serverSaveId;
-    this.noCIDSpecified = noCIDSpecified;
+    this.updatePageDataOnContentChange = updatePageDataOnContentChange;
 
     this.numerics = new Numerics();
     // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
@@ -129,7 +130,7 @@ export default class Core {
       }
     }
 
-    CIDFromDoenetML(doenetML)
+    CIDFromText(doenetML)
       .then(CID =>
         serializeFunctions.expandDoenetMLsToFullSerializedComponents({
           CIDs: [CID],
@@ -309,6 +310,7 @@ export default class Core {
         let resp = await axios.post('/api/initAssignmentAttempt.php', {
           doenetId: this.doenetId,
           weights: await this.scoredItemWeights,
+          pageId: this.pageId,
           attemptNumber: this.attemptNumber,
           contentId: this.CID,
           requestedVariantIndex: this.requestedVariantIndex,
@@ -8096,6 +8098,7 @@ export default class Core {
 
     const payload = {
       doenetId: this.doenetId,
+      pageId: this.pageId,
       attemptNumber: this.attemptNumber,
       verb: event.verb,
       object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
@@ -9113,7 +9116,7 @@ export default class Core {
 
     if (this.flags.allowLocalPageState) {
       idb_set(
-        `${this.CID}|${this.doenetId}|${this.attemptNumber}`,
+        `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.CID}`,
         {
           coreState: this.cumulativeStateVariableChanges,
           rendererState: this.rendererState,
@@ -9133,11 +9136,12 @@ export default class Core {
       coreInfo: this.coreInfoString,
       coreState: JSON.stringify(this.cumulativeStateVariableChanges, serializeFunctions.serializedComponentsReplacer),
       rendererState: JSON.stringify(this.rendererState, serializeFunctions.serializedComponentsReplacer),
+      pageId: this.pageId,
       attemptNumber: this.attemptNumber,
       doenetId: this.doenetId,
       saveId,
       serverSaveId: this.serverSaveId,
-      updateTableOnContentChange: this.noCIDSpecified,
+      updatePageDataOnContentChange: this.updatePageDataOnContentChange,
     }
 
     // mark presence of changes
@@ -9227,7 +9231,7 @@ export default class Core {
 
     if (this.flags.allowLocalPageState) {
       idb_set(
-        `${this.CID}|${this.doenetId}|${this.attemptNumber}ServerSaveId`,
+        `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.CID}|ServerSaveId`,
         data.saveId
       )
     }
@@ -9242,7 +9246,7 @@ export default class Core {
 
         if (this.flags.allowLocalPageState) {
           idb_set(
-            `${data.CID}|${this.doenetId}|${data.attemptNumber}`,
+            `${this.doenetId}|${this.pageId}|${data.attemptNumber}|${data.CID}`,
             {
               coreState: JSON.parse(data.coreState, serializeFunctions.serializedComponentsReviver),
               rendererState: JSON.parse(data.rendererState, serializeFunctions.serializedComponentsReviver),
@@ -9280,6 +9284,7 @@ export default class Core {
       const payload = {
         doenetId: this.doenetId,
         contentId: this.CID,
+        pageId: this.pageId,
         attemptNumber: this.attemptNumber,
         credit: itemsWithCreditAchieved[itemNumber].itemCreditAchieved,
         itemNumber,
@@ -9526,6 +9531,7 @@ export default class Core {
       const resp = await axios.post('/api/reportSolutionViewed.php', {
         doenetId: this.doenetId,
         itemNumber,
+        pageId: this.pageId,
         attemptNumber: this.attemptNumber,
       });
 

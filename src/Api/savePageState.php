@@ -17,15 +17,16 @@ $device = $jwtArray["deviceName"];
 $_POST = json_decode(file_get_contents("php://input"), true);
 $doenetId = mysqli_real_escape_string($conn, $_POST["doenetId"]);
 $CID = mysqli_real_escape_string($conn, $_POST["CID"]);
+$pageId = mysqli_real_escape_string($conn, $_POST["pageId"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_POST["attemptNumber"]);
 $coreInfo = mysqli_real_escape_string($conn, $_POST["coreInfo"]);
 $coreState = mysqli_real_escape_string($conn, $_POST["coreState"]);
 $rendererState = mysqli_real_escape_string($conn, $_POST["rendererState"]);
 $saveId = mysqli_real_escape_string($conn, $_POST["saveId"]);
 $serverSaveId = mysqli_real_escape_string($conn, $_POST["serverSaveId"]);
-$updateTableOnContentChange = mysqli_real_escape_string(
+$updatePageDataOnContentChange = mysqli_real_escape_string(
     $conn,
-    $_POST["updateTableOnContentChange"]
+    $_POST["updatePageDataOnContentChange"]
 );
 
 $success = true;
@@ -36,6 +37,9 @@ if ($doenetId == "") {
 } elseif ($CID == "") {
     $success = false;
     $message = "Internal Error: missing CID";
+} elseif ($pageId == "") {
+    $success = false;
+    $message = "Internal Error: missing pageId";
 } elseif ($attemptNumber == "") {
     $success = false;
     $message = "Internal Error: missing attemptNumber";
@@ -85,6 +89,7 @@ if ($success) {
             timestamp = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
             WHERE userId='$userId'
             AND doenetId='$doenetId'
+            AND pageId='$pageId'
             AND attemptNumber='$attemptNumber'
             AND CID = '$CID'
             AND saveId = '$serverSaveId'
@@ -104,8 +109,8 @@ if ($success) {
         // attempt to insert a rows in page_state
 
         $sql = "INSERT INTO page_state
-            (userId,doenetId,CID,attemptNumber,deviceName,saveId,coreInfo,coreState,rendererState,timestamp)
-            VALUES ('$userId','$doenetId','$CID','$attemptNumber','$device','$saveId','$coreInfo','$coreState','$rendererState',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
+            (userId,doenetId,CID,pageId,attemptNumber,deviceName,saveId,coreInfo,coreState,rendererState,timestamp)
+            VALUES ('$userId','$doenetId','$CID','$pageId','$attemptNumber','$device','$saveId','$coreInfo','$coreState','$rendererState',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
         ";
 
         $conn->query($sql);
@@ -118,11 +123,11 @@ if ($success) {
 
             if ($attemptNumber > 1) {
                 $sql = "UPDATE page_state SET
-                saveId = NULL
-                WHERE userId='$userId'
-                AND doenetId='$doenetId'
-                AND attemptNumber < '$attemptNumber'
-                ";
+                    saveId = NULL
+                    WHERE userId='$userId'
+                    AND doenetId='$doenetId'
+                    AND attemptNumber < '$attemptNumber'
+                    ";
 
                 $conn->query($sql);
             }
@@ -132,7 +137,7 @@ if ($success) {
 
             $modifiedDBRecord = false;
 
-            if ($updateTableOnContentChange == "1") {
+            if ($updatePageDataOnContentChange == "1") {
                 // if the CID changed,
                 // then update the table rather than getting information from the table
 
@@ -140,6 +145,7 @@ if ($success) {
                     FROM page_state
                     WHERE userId='$userId'
                     AND doenetId='$doenetId'
+                    AND pageId = '$pageId'
                     AND attemptNumber = '$attemptNumber'
                     ";
 
@@ -159,6 +165,7 @@ if ($success) {
                             timestamp = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
                             WHERE userId='$userId'
                             AND doenetId='$doenetId'
+                            AND pageId='$pageId'
                             AND attemptNumber='$attemptNumber'
                             ";
 
@@ -180,10 +187,11 @@ if ($success) {
 
                 $stateOverwritten = true;
 
-                $sql = "SELECT CID, attemptNumber, saveId, deviceName, coreInfo, coreState, rendererState
+                $sql = "SELECT CID, pageId, attemptNumber, saveId, deviceName, coreInfo, coreState, rendererState
                     FROM page_state
                     WHERE userId = '$userId'
                     AND doenetId = '$doenetId'
+                    AND pageId = '$pageId'
                     AND attemptNumber = (SELECT MAX(attemptNumber) FROM page_state WHERE userId = '$userId' AND doenetId = '$doenetId')
                     ";
 

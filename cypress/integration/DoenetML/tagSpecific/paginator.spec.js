@@ -2289,7 +2289,7 @@ describe('Paginator Tag Tests', function () {
     <paginator name="pgn">
       <select numberToSelect="2" assignNames="((problem1)) ((problem2))">
         <option>
-          <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" />
+          <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" />
         </option>
         <option>
           <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" componentType="problem" />
@@ -2304,7 +2304,7 @@ describe('Paginator Tag Tests', function () {
     <text>a</text>
     <paginatorControls paginatorTname="pgn" name="pcontrols" />
     <paginator name="pgn">
-      <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem1" />
+      <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem1" />
       <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" componentType="problem" assignNames="problem2" />
     </paginator>
     
@@ -2316,7 +2316,7 @@ describe('Paginator Tag Tests', function () {
     <paginatorControls paginatorTname="pgn" name="pcontrols" />
     <paginator name="pgn">
       <copy uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" componentType="problem" assignNames="problem1" />
-      <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem2" />
+      <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem2" />
     </paginator>
     
     <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>

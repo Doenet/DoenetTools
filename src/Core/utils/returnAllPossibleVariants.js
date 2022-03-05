@@ -1,13 +1,13 @@
 import { numberToLetters } from './sequence.js';
 import * as serializeFunctions from './serializedStateProcessing.js';
 import createComponentInfoObjects from './componentInfoObjects.js';
-import { retrieveDoenetMLForCID } from './retrieveDoenetML.js';
+import { retrieveTextFileForCID } from './retrieveTextFile.js';
 
 export async function returnAllPossibleVariants({
   CID, flags = {}
 }) {
 
-  let doenetML = await retrieveDoenetMLForCID(CID);
+  let doenetML = await retrieveTextFileForCID(CID, "doenet");
 
   let { fullSerializedComponents } = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
     contentIds: [CID],

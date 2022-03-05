@@ -15,6 +15,7 @@ $examDoenetId = $jwtArray["doenetId"];
 // $device = $jwtArray['deviceName'];
 
 $CID = mysqli_real_escape_string($conn, $_REQUEST["CID"]);
+$pageId = mysqli_real_escape_string($conn, $_REQUEST["pageId"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_REQUEST["attemptNumber"]);
 $doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
 $requestedVariantIndex = mysqli_real_escape_string(
@@ -33,6 +34,9 @@ $message = "";
 if ($CID == "") {
     $success = false;
     $message = "Internal Error: missing CID";
+} elseif ($pageId == "") {
+    $success = false;
+    $message = "Internal Error: missing pageId";
 } elseif ($attemptNumber == "") {
     $success = false;
     $message = "Internal Error: missing attemptNumber";
@@ -85,6 +89,7 @@ if ($success) {
             WHERE userId = '$effectiveUserId'
             AND doenetId = '$doenetId'
             AND CID = '$CID'
+            AND pageId='$pageId'
             AND attemptNumber='$attemptNumber'
             ";
 
