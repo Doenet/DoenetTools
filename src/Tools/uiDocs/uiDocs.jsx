@@ -382,6 +382,12 @@ export default function attempt() {
       use: 'Allows user to pick date and time',
       props: [
         {
+          name: 'Width',
+          propPreview: '<DateTime width="300px" />',
+          propCode: { width: '300px' },
+          description: 'Sets width to fill menu panel width',
+        },
+        {
           name: 'Value',
           propPreview: '<DateTime value={new Date("09/23/2000")}/>',
           propCode: { value: new Date('09/23/2000') },

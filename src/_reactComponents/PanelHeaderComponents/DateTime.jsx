@@ -22,6 +22,7 @@ export default function DateTime(props) {
   let borderColor = props.alert ? '2px solid #C1292E' : '2px solid black';
   borderColor = props.disabled ? '2px solid #e2e2e2' : borderColor;
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
+  let width = props.width ? props.width : '182px';
 
   useEffect(() => {
     //todo try lastValid update
@@ -57,13 +58,13 @@ export default function DateTime(props) {
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
     //console.log('propRI', propsRI);
     return (
-      <div style={{ width: 'fit-content' }}>
+      <div>
         {props.label ? (
           <Label vertical={props.vertical}>{props.label}</Label>
         ) : null}
         <input
           {...propsRI}
-          style={{ border: borderColor, cursor: cursorStyle, ...props.style }}
+          style={{ border: borderColor, cursor: cursorStyle, width: width, ...props.style }}
           ref={inputRef}
           onChange={(e) => {
             // console.log(e.target.selectionStart, e.target.selectionEnd);
@@ -98,7 +99,7 @@ export default function DateTime(props) {
   //   props.value,
   // );
 
-  if (props.disabled === true) {
+  if (props.disabled) {
     return (
       <input
         ref={inputRef}
@@ -110,7 +111,7 @@ export default function DateTime(props) {
           color: '#545454',
           height: '18px',
           width: '177px',
-          border: '2px solid black',
+          border: '2px solid var(--mainGray)',
           borderRadius: '5px',
           ...props.style,
         }}

@@ -7,7 +7,7 @@ import {
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { classTimesAtom } from '../Widgets/Next7Days';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
-// import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
+import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
 import axios from 'axios';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -176,14 +176,14 @@ export default function ClassTimes(){
       updateClassTime({index,newClassTime})
     }}
     /></td>
-      <td  style={{width:"40px"}} rowSpan="2"><Button icon={<FontAwesomeIcon icon={faTimes}/>} alert onClick={()=>{deleteClassTime({index})}} /> </td>
+      <Button icon={<FontAwesomeIcon icon={faTimes}/>} alert onClick={()=>{deleteClassTime({index})}} />
       </tr>)
       timesJSX.push(<tr>
-        <td style={{width:"190px",textAlign:"center"}} ><TimeEntry parentValue={timeObj.startTime} valueCallback={(value)=>{
+        <td style={{width:"190px", display: "flex", alignItems: "center"}}><DateTime datePicker={false} width="60px" parentValue={timeObj.startTime} valueCallback={(value)=>{
            let newClassTime = {...timeObj}
            newClassTime.startTime = value;
          updateClassTime({index,newClassTime})
-        }}/> - <TimeEntry parentValue={timeObj.endTime} valueCallback={(value)=>{
+        }}/> - <DateTime datePicker={false} width="60px" parentValue={timeObj.endTime} valueCallback={(value)=>{
           let newClassTime = {...timeObj}
           newClassTime.endTime = value;
         updateClassTime({index,newClassTime})
