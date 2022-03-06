@@ -31,7 +31,7 @@ export default function Table(props) {
       title = SVs.title;
     }
 
-    if (!SVs.suppressTableNameInCaption) {
+    if (!SVs.suppressTableNameInTitle) {
       let tableName = <strong>{SVs.tableName}</strong>
       if (title) {
         title = <>{tableName}: {title}</>

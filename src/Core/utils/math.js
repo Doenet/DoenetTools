@@ -103,11 +103,12 @@ export function findFiniteNumericalValue(value) {
 
 
 export function convertValueToMathExpression(value) {
-  if (value === undefined || value === null) {
-    return me.fromAst('\uFF3F');  // long underscore
-  } else if (value instanceof me.class) {
+  if (value instanceof me.class) {
     return value;
   } else if (typeof value === "number" || typeof value === "string") {
+    // let value be math-expression based on value
+    return me.fromAst(value);
+  } else if (Array.isArray(value)) {
     // let value be math-expression based on value
     return me.fromAst(value);
   } else {

@@ -79,7 +79,7 @@ const DriveCardWrapper = (props) => {
   const [ref, { width }] = useMeasure();
 
   let showCards = [];
-  if (types[0] === 'course') {
+  if (types[0] === 'course' && width !== 0) {
     showCards = driveInfo;
   }
 
@@ -101,11 +101,11 @@ const DriveCardWrapper = (props) => {
     return [heights, driveCardItems];
   }, [columns, showCards, width]);
 
-  console.log('>>> driveInfo', driveInfo);
+  console.log('>>> driveInfo', driveCardItems);
 
   const transitions = useTransition(driveCardItems, {
     key: (item) => item.driveId,
-    from: ({ opacity: 0}),
+    from: ({x, y, width, height}) => ({ opacity: 0, x, y, width, height}), // Drive cards fade onto the screen when the page loads
     enter: ({ opacity: 1 }),
     update: ({ x, y, width, height }) => ({ x, y, width, height }),
     leave: { height: 0, opacity: 0 },

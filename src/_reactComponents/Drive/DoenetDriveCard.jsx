@@ -58,6 +58,8 @@ const DriveCard = (props) => {
 
 /* reduces the top margin on the h2, bottom on the p, and leaves a 0.5rem gap between the two */
 
+/* reduces the top margin on the h2, bottom on the p, and leaves a 0.5rem gap between the two */
+
   return (
     <DriveCardContainer data-cy="driveCard" url={imageURL} color={props.color}>
       <Image url={imageURL} color={props.color} />
