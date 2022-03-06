@@ -6,13 +6,20 @@ import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { prng_alea } from 'esm-seedrandom';
 import Button from '../_reactComponents/PanelHeaderComponents/Button';
 import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
+import axios from 'axios';
+import { get as idb_get, set as idb_set } from 'idb-keyval';
+import { CIDFromText } from '../Core/utils/cid';
+import { useToast, toastType } from '@Toast';
+import { nanoid } from 'nanoid';
 
 let rngClass = prng_alea;
 
 export default function ActivityViewer(props) {
+  const toast = useToast();
 
   const [errMsg, setErrMsg] = useState(null);
 
+  const [CIDFromProps, setCIDFromProps] = useState(null);
   const [activityDefinitionFromProps, setActivityDefinitionFromProps] = useState(null);
   const [CID, setCID] = useState(null);
   const [activityDefinition, setActivityDefinition] = useState(null);
@@ -23,12 +30,11 @@ export default function ActivityViewer(props) {
 
   const [stage, setStage] = useState('initial');
 
+  const [activityContentChanged, setActivityContentChanged] = useState(false);
+
   const [order, setOrder] = useState(null);
 
   const [flags, setFlags] = useState(props.flags);
-
-  const [seed, setSeed] = useState(null);
-  const rng = useRef(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [nPages, setNPages] = useState(1);
@@ -36,16 +42,23 @@ export default function ActivityViewer(props) {
   const [variantsByPage, setVariantsByPage] = useState(null);
 
 
+  const serverSaveId = useRef(null);
+
+  const activityStateToBeSavedToDatabase = useRef(null);
+  const changesToBeSaved = useRef(false);
+  const saveStateToDBTimerId = useRef(null);
+  const activityInfo = useRef(null);
+  const activityInfoString = useRef(null);
 
   useEffect(() => {
 
     let newFlags = { ...props.flags };
     if (props.userId) {
-      newFlags.allowLocalPageState = false;
-      newFlags.allowSavePageState = false;
-    } else if (newFlags.allowSavePageState) {
-      // allowSavePageState implies allowLoadPageState
-      newFlags.allowLoadPageState = true;
+      newFlags.allowLocalState = false;
+      newFlags.allowSaveState = false;
+    } else if (newFlags.allowSaveState) {
+      // allowSaveState implies allowLoadState
+      newFlags.allowLoadState = true;
     }
 
     setFlags(newFlags);
@@ -53,37 +66,490 @@ export default function ActivityViewer(props) {
   }, [props.userId, props.flags]);
 
 
-  async function getVariantsByPage() {
+  function calculateCIDDefinition() {
 
-    let promises = [];
+    if (activityDefinitionFromProps) {
+      if (CIDFromProps) {
+        // check to see if activityDefinition matches CID
+        CIDFromText(JSON.stringify(activityDefinitionFromProps))
+          .then(calcCID => {
+            if (calcCID === CIDFromProps) {
+              setActivityDefinition(activityDefinitionFromProps);
+              setCID(CIDFromProps);
+              setStage('continue');
+            } else {
+              if (props.setIsInErrorState) {
+                props.setIsInErrorState(true)
+              }
+              setErrMsg(`activity definition did not match specified CID: ${CIDFromProps}`);
+            }
+          })
+      } else {
+        // if have activityDefinition and no CID, then calculate CID
+        CIDFromText(JSON.stringify(activityDefinitionFromProps))
+          .then(CID => {
+            setActivityDefinition(activityDefinitionFromProps);
+            setCID(CID);
+            setStage('continue');
+          })
+      }
+    } else {
+      // if don't have activityDefinition, then retrieve activityDefinition from CID
 
-    for (let page of order) {
-      promises.push(returnAllPossibleVariants({
-        CID: page.CID, flags
-      }));
+      retrieveTextFileForCID(CIDFromProps, "json")
+        .then(retrievedActivityDefinition => {
+          setActivityDefinition(retrievedActivityDefinition);
+          setCID(CIDFromProps);
+          setStage('continue');
+        })
+        .catch(e => {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true)
+          }
+          setErrMsg(`activity definition not found for CID: ${CIDFromProps}`);
+        })
     }
-
-    let allPossibleVariantsByPage = await Promise.all(promises);
-
-    console.log('allPossibleVariantsByPage', allPossibleVariantsByPage);
-    console.log('rng', rng)
-
-    let chosenVariants = [];
-
-    for (let possibleVariants of allPossibleVariantsByPage) {
-      let nVariants = possibleVariants.allPossibleVariants.length;
-
-      let variantIndex = Math.floor(rng.current() * nVariants) + 1;
-
-      chosenVariants.push(variantIndex);
-
-    }
-
-    setVariantsByPage(chosenVariants);
-    setStage("continue");
 
   }
 
+  async function loadState() {
+
+    let loadedState = false;
+
+    if (props.flags.allowLocalState) {
+
+      let localInfo;
+
+      try {
+        localInfo = await idb_get(`${props.doenetId}|${attemptNumber}|${CID}`);
+      } catch (e) {
+        // ignore error
+      }
+
+      if (localInfo) {
+
+        if (props.flags.allowSaveState) {
+          // attempt to save local info to database,
+          // reseting data to that from database if it has changed since last save
+
+          let result = await saveLoadedLocalStateToDatabase(localInfo);
+
+          if (result.changedOnDevice) {
+            if (result.newCID !== CID || Number(result.newAttemptNumber) !== attemptNumber) {
+              resetActivity({
+                changedOnDevice: result.changedOnDevice,
+                newCID: result.newCID,
+                newAttemptNumber: Number(result.newAttemptNumber),
+              })
+              return;
+            }
+
+            // if just the localInfo changed, use that instead
+            localInfo = result.newLocalInfo;
+            console.log(`sending toast: Reverted page to state saved on device ${result.changedOnDevice}`)
+            toast(`Reverted page to state saved on device ${result.changedOnDevice}`, toastType.ERROR)
+
+          }
+
+        }
+
+        serverSaveId.current = localInfo.saveId;
+
+        // activityState is just currentPage
+        setCurrentPage(localInfo.activityState.currentPage);
+
+        // activityInfo is CIDOrder and variantsByPage
+        let newActivityInfo = localInfo.activityInfo;
+        setNPages(newActivityInfo.CIDOrder.length);
+        setOrder(newActivityInfo.CIDOrder);
+        setVariantsByPage(newActivityInfo.variantsByPage);
+        activityInfo.current = newActivityInfo;
+        activityInfoString.current = JSON.stringify(activityInfo.current);
+
+
+        loadedState = true;
+
+      }
+    }
+
+    if (!loadedState) {
+      // if didn't load core state from local storage, try to load from database
+
+      // even if allowLoadState is false,
+      // still call loadPageState, in which case it will only retrieve the initial page state
+
+
+      const payload = {
+        params: {
+          CID,
+          attemptNumber,
+          doenetId: props.doenetId,
+          userId: props.userId,
+          allowLoadState: props.flags.allowLoadState,
+        }
+      }
+
+      try {
+        let resp = await axios.get('/api/loadActivityState.php', payload);
+
+        if (!resp.data.success) {
+          if (props.flags.allowLoadState) {
+            if (props.setIsInErrorState) {
+              props.setIsInErrorState(true)
+            }
+            setErrMsg(`Error loading activity state: ${resp.data.message}`);
+            return;
+          } else {
+            // ignore this error if didn't allow loading of page state
+
+          }
+
+        }
+
+        if (resp.data.loadedState) {
+
+          let newActivityInfo = JSON.parse(resp.data.newActivityInfo);
+          let activityState = JSON.parse(resp.data.activityState);
+
+          // activityState is just currentPage
+          setCurrentPage(activityState.currentPage);
+
+          // activityInfo is CIDOrder and variantsByPage
+          setNPages(newActivityInfo.CIDOrder.length);
+          setOrder(newActivityInfo.CIDOrder);
+          setVariantsByPage(newActivityInfo.variantsByPage);
+
+          activityInfo.current = newActivityInfo;
+          activityInfoString.current = JSON.stringify(activityInfo.current);
+
+        } else {
+
+          // get initial state and info
+
+          // state at page 1
+          setCurrentPage(1);
+
+          let results = await calculateOrderAndVariants();
+          setNPages(results.order.length);
+          setOrder(results.order);
+          setVariantsByPage(results.variantsByPage);
+
+          activityInfo.current = results.activityInfo;
+          activityInfoString.current = JSON.stringify(activityInfo.current);
+
+        }
+
+
+      } catch (e) {
+
+        if (props.flags.allowLoadState) {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true)
+          }
+          setErrMsg(`Error loading activity state: ${e.message}`);
+          return;
+        } else {
+          // ignore this error if didn't allow loading of page state
+
+        }
+
+
+      }
+
+    }
+
+    setStage('continue');
+
+  }
+
+  async function saveLoadedLocalStateToDatabase(localInfo) {
+
+    let serverSaveId = await idb_get(`${props.doenetId}|${attemptNumber}|${CID}|ServerSaveId`);
+
+    let activityStateToBeSavedToDatabase = {
+      CID,
+      activityInfo: JSON.stringify(localInfo.activityInfo),
+      activityState: JSON.stringify(localInfo.activityState),
+      attemptNumber,
+      doenetId: props.doenetId,
+      saveId: localInfo.saveId,
+      serverSaveId,
+      updateDataOnContentChange: props.updateDataOnContentChange,
+    }
+
+    let resp;
+
+    try {
+      resp = await axios.post('/api/saveActivityState.php', activityStateToBeSavedToDatabase);
+    } catch (e) {
+      // since this is initial load, don't show error message
+      return { localInfo, CID, attemptNumber };
+    }
+
+    console.log('result from saving activity to db', resp.data)
+
+    let data = resp.data;
+
+    if (!data.success) {
+      // since this is initial load, don't show error message
+      return { localInfo, CID, attemptNumber };
+    }
+
+    idb_set(
+      `${props.doenetId}|${attemptNumber}|${CID}|ServerSaveId`,
+      data.saveId
+    )
+
+
+    if (data.stateOverwritten) {
+
+      if (CID !== data.CID || attemptNumber !== Number(data.attemptNumber)
+        || activityStateToBeSavedToDatabase.activityInfo !== data.activityInfo
+        || activityStateToBeSavedToDatabase.activityState !== data.activityState
+      ) {
+
+        let newLocalInfo = {
+          activityState: JSON.parse(data.activityState),
+          activityInfo: JSON.parse(data.activityInfo),
+          saveId: data.saveId,
+        }
+
+        idb_set(
+          `${props.doenetId}|${data.attemptNumber}|${data.CID}`,
+          newLocalInfo
+        );
+
+        return {
+          changedOnDevice: data.device,
+          newLocalInfo,
+          newCID: data.CID,
+          newAttemptNumber: data.attemptNumber,
+        }
+      }
+    }
+
+    return { localInfo, CID, attemptNumber };
+
+  }
+
+  async function calculateOrderAndVariants() {
+
+    let seed = determineVariantSeed(activityDefinition, requestedVariantIndex);
+    let rng = new rngClass(seed);
+
+    let orderResult = determineOrder(activityDefinition.order, rng);
+
+    if (!orderResult.success) {
+
+      if (props.setIsInErrorState) {
+        props.setIsInErrorState(true)
+      }
+      setErrMsg(orderResult.message);
+      return null;
+    }
+
+
+    let originalOrder = orderResult.pages;
+
+    console.time('getContent');
+
+    let promises = [];
+
+    for (let page of originalOrder) {
+      promises.push(returnAllPossibleVariants({
+        CID: page.CID, doenetML: page.doenetML, flags
+      }));
+    }
+
+    let variantsResult;
+
+    try {
+      variantsResult = await Promise.all(promises);
+    } catch (e) {
+      if (props.setIsInErrorState) {
+        props.setIsInErrorState(true)
+      }
+      setErrMsg(`Error retrieving content for activity`);
+      return;
+    }
+
+    console.timeEnd('getContent');
+
+    let chosenVariants = [];
+
+    let newOrder = [];
+    for (let [ind, possibleVariants] of variantsResult.entries()) {
+      let nVariants = possibleVariants.allPossibleVariants.length;
+
+      let variantIndex = Math.floor(rng() * nVariants) + 1;
+
+      chosenVariants.push(variantIndex);
+
+      // if looked up doenetML to determine possible variants
+      // record that doenetML in the order so don't have to load it again
+      // Also, add CID if it isn't there
+      let page = originalOrder[ind];
+      if (page.doenetML === undefined) {
+        page = { ...page };
+        page.doenetML = possibleVariants.doenetML;
+      } else if (!page.CID) {
+        page = { ...page };
+        page.CID = possibleVariants.CID;
+      }
+      newOrder.push(page);
+
+    }
+
+    let CIDOrder = newOrder.map(x => ({ CID: x.CID }))
+    let activityInfo = { CIDOrder, variantsByPage: chosenVariants };
+
+    return { order: newOrder, variantsByPage: chosenVariants, activityInfo };
+
+  }
+
+  async function saveState() {
+
+    if (!props.flags.allowSaveState && !props.flags.allowLocalState) {
+      return;
+    }
+
+    let saveId = nanoid();
+
+    if (props.flags.allowLocalState) {
+      idb_set(
+        `${props.doenetId}|${attemptNumber}|${CID}`,
+        {
+          activityInfo: activityInfo.current,
+          activityState: { currentPage },
+          saveId,
+        }
+      )
+    }
+
+    if (!props.flags.allowSaveState) {
+      return;
+    }
+
+
+    activityStateToBeSavedToDatabase.current = {
+      CID: CID,
+      activityInfo: activityInfoString.current,
+      activityState: JSON.stringify({ currentPage }),
+      attemptNumber: attemptNumber,
+      doenetId: props.doenetId,
+      saveId,
+      serverSaveId: serverSaveId.current,
+      updateDataOnContentChange: props.updateDataOnContentChange,
+    }
+
+    // mark presence of changes
+    // so that next call to saveChangesToDatabase will save changes
+    changesToBeSaved.current = true;
+
+    // if not currently in throttle, save changes to database
+    saveChangesToDatabase();
+
+
+  }
+
+  async function saveChangesToDatabase() {
+    // throttle save to database at 60 seconds
+
+    if (saveStateToDBTimerId.current !== null || !changesToBeSaved.current) {
+      return;
+    }
+
+
+    changesToBeSaved.current = false;
+
+    // check for changes again after 60 seconds
+    saveStateToDBTimerId.current = setTimeout(() => {
+      saveStateToDBTimerId.current = null;
+      saveChangesToDatabase();
+    }, 10000);
+    // }, 60000);
+
+
+    // TODO: find out how to test if not online
+    // and send this toast if not online:
+
+    // postMessage({
+    //   messageType: "sendToast",
+    //   args: {
+    //     message: "You're not connected to the internet. Changes are not saved. ",
+    //     toastType: toastType.ERROR
+    //   }
+    // })
+
+    let resp;
+
+    let activityStateToSave = activityStateToBeSavedToDatabase.current.activityState;
+
+    try {
+      resp = await axios.post('/api/saveActivityState.php', activityStateToBeSavedToDatabase.current);
+    } catch (e) {
+      console.log(`sending toast: Error synchronizing data.  Changes not saved to the server.`)
+      toast("Error synchronizing data.  Changes not saved to the server.", toastType.ERROR)
+      return;
+    }
+
+    console.log('result from saving activity to database:', resp.data);
+
+    if (resp.status === null) {
+      console.log(`sending toast: Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`)
+      toast("Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?", toastType.ERROR)
+      return;
+    }
+
+    let data = resp.data;
+
+    if (!data.success) {
+      console.log(`sending toast: ${data.message}`)
+      toast(data.message, toastType.ERROR)
+      return;
+    }
+
+    serverSaveId.current = data.saveId;
+
+    if (props.flags.allowLocalState) {
+      idb_set(
+        `${props.doenetId}|${attemptNumber}|${CID}|ServerSaveId`,
+        data.saveId
+      )
+    }
+
+    if (data.stateOverwritten) {
+
+      if (CID !== data.CID || attemptNumber !== Number(data.attemptNumber)
+        || activityInfoString.current !== data.activityInfo
+        || activityStateToSave !== data.activityState
+      ) {
+
+        if (props.flags.allowLocalState) {
+          idb_set(
+            `${props.doenetId}|${data.attemptNumber}|${data.CID}`,
+            {
+              activityState: JSON.parse(data.activityState),
+              activityInfo: JSON.parse(data.activityInfo),
+              saveId: data.saveId,
+            }
+          )
+        }
+
+        if (props.setIsInErrorState) {
+          props.setIsInErrorState(true)
+        }
+        setErrMsg('how do we reset activity?')
+
+      }
+
+
+    }
+
+    // TODO: send message so that UI can show changes have been synchronized
+
+    // console.log(">>>>recordContentInteraction data",data)
+  }
 
 
   if (errMsg !== null) {
@@ -98,11 +564,10 @@ export default function ActivityViewer(props) {
     setActivityDefinitionFromProps(props.activityDefinition);
     changedState = true;
   }
-  if (CID !== props.CID) {
-    setCID(props.CID);
+  if (CIDFromProps !== props.CID) {
+    setCIDFromProps(props.CID);
     changedState = true;
   }
-
 
   //If no attemptNumber prop then set to 1
   let propAttemptNumber = props.attemptNumber;
@@ -127,52 +592,29 @@ export default function ActivityViewer(props) {
     changedState = true;
   }
 
-  // return null so that don't need to make a special case of props and state
-  // but can use state from now on
+  // Next time through will recalculate, after state variables are set
   if (changedState) {
-    setStage('regenerateDef')
+    setStage('recalcParams')
+    setActivityContentChanged(true);
     return null;
   }
 
-  if (stage === "waiting") {
+
+  if (stage === 'wait') {
+    return null;
+  }
+
+  if (stage == 'recalcParams') {
+    setStage('wait');
+    calculateCIDDefinition();
     return null;
   }
 
   // at this point, we have 
-  // attemptNumber, requestedVariantIndex, CID, activityDefinitionFromProps
+  // attemptNumber, requestedVariantIndex, CID, activityDefinition
 
-  if (stage === "regenerateDef") {
-    setStage("waiting");
-    // regenerate activityDefinition and CID from activityDefinitionFromProps and/or CID
-    if (activityDefinitionFromProps) {
-      // if have actual activity definition, then ignore CID
-      // (since stringifying JSON may not result is same text as used for the CID)
-      setActivityDefinition(activityDefinitionFromProps);
-      setOrder(null);
-      setStage("continue");
-    } else if (CID) {
-      setActivityDefinition(null);
-      retrieveTextFileForCID(CID, "json").then(activityDefinitionString => {
-        setActivityDefinition(JSON.parse(activityDefinitionString));
-        setOrder(null);
-        setStage("continue");
-      })
-    } else {
 
-      if (props.setIsInErrorState) {
-        props.setIsInErrorState(true)
-      }
-      setErrMsg("Must specify CID or activity definition");
-    }
-
-    return null;
-  }
-
-  if (!activityDefinition) {
-    return null;
-  }
-
-  if (activityDefinition.type.toLowerCase() !== "activity") {
+  if (activityDefinition?.type?.toLowerCase() !== "activity") {
     if (props.setIsInErrorState) {
       props.setIsInErrorState(true)
     }
@@ -180,58 +622,27 @@ export default function ActivityViewer(props) {
     return null;
   }
 
-  console.log(order)
+  if (activityContentChanged) {
+    setActivityContentChanged(false);
 
-  if (order === null) {
-    let seed = determineVariantSeed(activityDefinition, requestedVariantIndex);
-    setSeed(determineVariantSeed(activityDefinition, requestedVariantIndex));
-    rng.current = new rngClass(seed);
+    setStage("wait");
 
-    console.log('rng', rng.current)
-
-    let orderResult = determineOrder(activityDefinition.order, rng.current);
-
-    console.log(orderResult)
-
-    if (!orderResult.success) {
-
-      if (props.setIsInErrorState) {
-        props.setIsInErrorState(true)
-      }
-      setErrMsg(orderResult.message);
-      return null;
-    }
-
-    let pages = orderResult.pages;
-    setOrder(pages);
-    setNPages(pages.length);
-    setVariantsByPage(null);
+    loadState();
 
     return null;
 
   }
 
 
-  if (variantsByPage === null) {
-    setStage("waiting");
-
-    getVariantsByPage();
-
-    return null;
-
-  }
-
-
+  saveState();
 
   let title = <h1>{activityDefinition.title}</h1>
-
 
 
   let pages = [];
 
   for (let [ind, page] of order.entries()) {
 
-    console.log(`requestedVariant for page ${ind+1}: ${variantsByPage[ind]}`)
     pages.push(
       <div key={`page${ind}`}>
         <h2>Page {ind + 1}</h2>
@@ -239,6 +650,7 @@ export default function ActivityViewer(props) {
         <PageViewer
           doenetId={props.doenetId}
           CID={page.CID}
+          doenetML={page.doenetML}
           pageId={(ind + 1).toString()}
           pageIsActive={ind + 1 === currentPage}
           attemptNumber={attemptNumber}
@@ -247,7 +659,7 @@ export default function ActivityViewer(props) {
           unbundledCore={props.unbundledCore}
           updateCreditAchievedCallback={props.updateCreditAchievedCallback}
           setIsInErrorState={props.setIsInErrorState}
-          updatePageDataOnContentChange={props.updatePageDataOnContentChange}
+          updateDataOnContentChange={props.updateDataOnContentChange}
         />
 
       </div>
@@ -291,8 +703,6 @@ function determineVariantSeed(activityDefinition, requestedVariantIndex) {
   }
 
   let selectedSeed = seeds[requestedVariantIndex - 1];
-
-  console.log(`selectedSeed: ${selectedSeed}`);
 
 
   return selectedSeed;

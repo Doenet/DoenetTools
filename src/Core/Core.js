@@ -29,7 +29,7 @@ export default class Core {
     requestedVariant, requestedVariantIndex,
     flags = {},
     stateVariableChanges = {},
-    coreId, updatePageDataOnContentChange }) {
+    coreId, updateDataOnContentChange }) {
     // console.time('core');
 
 
@@ -39,7 +39,7 @@ export default class Core {
     this.attemptNumber = attemptNumber;
 
     this.serverSaveId = serverSaveId;
-    this.updatePageDataOnContentChange = updatePageDataOnContentChange;
+    this.updateDataOnContentChange = updateDataOnContentChange;
 
     this.numerics = new Numerics();
     // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
@@ -9108,13 +9108,13 @@ export default class Core {
 
   async saveState() {
 
-    if (!this.flags.allowSavePageState && !this.flags.allowLocalPageState) {
+    if (!this.flags.allowSaveState && !this.flags.allowLocalState) {
       return;
     }
 
     let saveId = nanoid();
 
-    if (this.flags.allowLocalPageState) {
+    if (this.flags.allowLocalState) {
       idb_set(
         `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.CID}`,
         {
@@ -9126,7 +9126,7 @@ export default class Core {
       )
     }
 
-    if (!this.flags.allowSavePageState) {
+    if (!this.flags.allowSaveState) {
       return;
     }
 
@@ -9141,7 +9141,7 @@ export default class Core {
       doenetId: this.doenetId,
       saveId,
       serverSaveId: this.serverSaveId,
-      updatePageDataOnContentChange: this.updatePageDataOnContentChange,
+      updateDataOnContentChange: this.updateDataOnContentChange,
     }
 
     // mark presence of changes
@@ -9229,7 +9229,7 @@ export default class Core {
 
     this.serverSaveId = data.saveId;
 
-    if (this.flags.allowLocalPageState) {
+    if (this.flags.allowLocalState) {
       idb_set(
         `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.CID}|ServerSaveId`,
         data.saveId
@@ -9238,13 +9238,13 @@ export default class Core {
 
     if (data.stateOverwritten) {
 
-      if (this.CID !== data.CID || this.attemptNumber !== Number(data.attemptNumber
+      if (this.CID !== data.CID || this.attemptNumber !== Number(data.attemptNumber)
         || this.coreInfoString !== data.coreInfo
         || coreStateToSave !== data.coreState
         || rendererStateToSave !== data.rendererStateToSave
-      )) {
+      ) {
 
-        if (this.flags.allowLocalPageState) {
+        if (this.flags.allowLocalState) {
           idb_set(
             `${this.doenetId}|${this.pageId}|${data.attemptNumber}|${data.CID}`,
             {
@@ -9257,7 +9257,7 @@ export default class Core {
         }
 
         postMessage({
-          messageType: "resetCore",
+          messageType: "resetPage",
           args: {
             changedOnDevice: data.device,
             newCID: data.CID,

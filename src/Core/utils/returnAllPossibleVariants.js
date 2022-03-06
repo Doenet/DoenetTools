@@ -2,12 +2,17 @@ import { numberToLetters } from './sequence.js';
 import * as serializeFunctions from './serializedStateProcessing.js';
 import createComponentInfoObjects from './componentInfoObjects.js';
 import { retrieveTextFileForCID } from './retrieveTextFile.js';
+import { CIDFromText } from './cid.js';
 
 export async function returnAllPossibleVariants({
-  CID, flags = {}
+  CID, doenetML, flags = {}
 }) {
 
-  let doenetML = await retrieveTextFileForCID(CID, "doenet");
+  if (doenetML === undefined) {
+    doenetML = await retrieveTextFileForCID(CID, "doenet");
+  } else if (!CID) {
+    CID = await CIDFromText(doenetML);
+  }
 
   let { fullSerializedComponents } = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
     contentIds: [CID],
@@ -81,7 +86,7 @@ export async function returnAllPossibleVariants({
 
   }
 
-  return { allPossibleVariants };
+  return { allPossibleVariants, doenetML, CID };
 }
 
 

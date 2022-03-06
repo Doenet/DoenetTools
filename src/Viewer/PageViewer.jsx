@@ -17,11 +17,11 @@ const rendererUpdatesToIgnore = atomFamily({
 })
 
 // Two notes about props.flags of PageViewer
-// 1. In Core, flags.allowSavePageState implies flags.allowLoadPageState
+// 1. In Core, flags.allowSaveState implies flags.allowLoadState
 // Rationale: saving state will result in loading a new state if another device changed it,
-// so having allowLoadPageState false in that case would lead to inconsistent behavior
+// so having allowLoadState false in that case would lead to inconsistent behavior
 // 2. In Core, if props.userId is defined, both 
-// flags.allowLocalPageState and flags.allowSavePageState are set to false
+// flags.allowLocalState and flags.allowSaveState are set to false
 
 
 export default function PageViewer(props) {
@@ -102,8 +102,6 @@ export default function PageViewer(props) {
   const [doenetML, setDoenetML] = useState(null);
 
 
-  const [coreId, setCoreId] = useState(null);
-
   const [pageId, setPageId] = useState(null);
   const [attemptNumber, setAttemptNumber] = useState(null);
   const [requestedVariantIndex, setRequestedVariantIndex] = useState(null);
@@ -120,6 +118,8 @@ export default function PageViewer(props) {
   const rendererClasses = useRef({});
   const coreInfo = useRef(null);
   const coreCreated = useRef(false);
+  const coreId = useRef(null);
+
   const resolveAllStateVariables = useRef(null);
   const actionsBeforeCoreCreated = useRef([]);
 
@@ -168,24 +168,31 @@ export default function PageViewer(props) {
   }, [coreWorker.current]);
 
 
-  window.returnAllStateVariables = function () {
-    coreWorker.current.postMessage({
-      messageType: "returnAllStateVariables"
-    })
+  useEffect(() => {
 
-    return new Promise((resolve, reject) => {
-      resolveAllStateVariables.current = resolve;
-    })
+    if (pageId !== null) {
+      window["returnAllStateVariables" + pageId] = function () {
+        coreWorker.current.postMessage({
+          messageType: "returnAllStateVariables"
+        })
 
-  }
+        return new Promise((resolve, reject) => {
+          resolveAllStateVariables.current = resolve;
+        })
+
+      }
+
+      window["callAction" + pageId] = function ({ actionName, componentName, args }) {
+        callAction({
+          action: { actionName, componentName },
+          args
+        })
+      }
+
+    }
 
 
-  window.callAction = function ({ actionName, componentName, args }) {
-    callAction({
-      action: { actionName, componentName },
-      args
-    })
-  }
+  }, [pageId])
 
 
   function callAction({ action, args, baseVariableValue, name, rendererType }) {
@@ -194,7 +201,7 @@ export default function PageViewer(props) {
       if (baseVariableValue !== undefined && name) {
         let actionId = nanoid();
         updateRendererUpdatesToIgnore({
-          coreId,
+          coreId: coreId.current,
           componentName: name,
           baseVariableValue,
           actionId
@@ -227,7 +234,7 @@ export default function PageViewer(props) {
     if (args.rendererState) {
       for (let componentName in args.rendererState) {
         updateRendererSVsWithRecoil({
-          coreId,
+          coreId: coreId.current,
           componentName,
           stateValues: args.rendererState[componentName].stateValues,
           childrenInstructions: args.rendererState[componentName].childrenInstructions,
@@ -263,11 +270,11 @@ export default function PageViewer(props) {
 
       setDocumentRenderer(React.createElement(documentRendererClass,
         {
-          key: coreId + documentComponentInstructions.componentName,
+          key: coreId.current + documentComponentInstructions.componentName,
           componentInstructions: documentComponentInstructions,
           rendererClasses: newRendererClasses,
           flags: props.flags,
-          coreId,
+          coreId: coreId.current,
           callAction,
         }
       ));
@@ -287,7 +294,7 @@ export default function PageViewer(props) {
         ) {
 
           updateRendererSVsWithRecoil({
-            coreId,
+            coreId: coreId.current,
             componentName,
             stateValues,
             childrenInstructions,
@@ -312,6 +319,7 @@ export default function PageViewer(props) {
       if (props.setIsInErrorState) {
         props.setIsInErrorState(true)
       }
+      console.log(`CID: ${CID}, newCID ${newCID}`)
       setErrMsg("Have not implemented handling change in page content from other device.  Please reload page");
     } else if (newAttemptNumber !== attemptNumber) {
       if (props.setIsInErrorState) {
@@ -321,8 +329,7 @@ export default function PageViewer(props) {
     } else {
       // TODO: are there cases where will get an infinite loop here?
 
-      let newCoreId = nanoid();
-      setCoreId(newCoreId);
+      coreId.current = nanoid();
       setPageContentChanged(true);
     }
 
@@ -337,7 +344,7 @@ export default function PageViewer(props) {
         // check to see if doenetML matches CID
         CIDFromText(doenetMLFromProps)
           .then(calcCID => {
-            if (calcCID === CID) {
+            if (calcCID === CIDFromProps) {
               setDoenetML(doenetMLFromProps);
               setCID(CIDFromProps);
               setStage('continue');
@@ -380,7 +387,7 @@ export default function PageViewer(props) {
 
     let loadedCoreState = false;
 
-    if (props.flags.allowLocalPageState) {
+    if (props.flags.allowLocalState) {
 
       let localInfo;
 
@@ -392,7 +399,7 @@ export default function PageViewer(props) {
 
       if (localInfo) {
 
-        if (props.flags.allowSavePageState) {
+        if (props.flags.allowSaveState) {
           // attempt to save local info to database,
           // reseting data to that from database if it has changed since last save
 
@@ -400,8 +407,6 @@ export default function PageViewer(props) {
 
           if (result.changedOnDevice) {
             if (result.newCID !== CID || Number(result.newAttemptNumber) !== attemptNumber) {
-              // can't handle changes in CID or attemptNumber locally,
-              // so send message and quit
               resetPage({
                 changedOnDevice: result.changedOnDevice,
                 newCID: result.newCID,
@@ -412,6 +417,7 @@ export default function PageViewer(props) {
 
             // if just the localInfo changed, use that instead
             localInfo = result.newLocalInfo;
+            console.log(`sending toast: Reverted page to state saved on device ${result.changedOnDevice}`)
             toast(`Reverted page to state saved on device ${result.changedOnDevice}`, toastType.ERROR)
 
           }
@@ -439,7 +445,7 @@ export default function PageViewer(props) {
     if (!loadedCoreState) {
       // if didn't load core state from local storage, try to load from database
 
-      // even if allowLoadPageState is false,
+      // even if allowLoadState is false,
       // still call loadPageState, in which case it will only retrieve the initial page state
 
 
@@ -451,7 +457,7 @@ export default function PageViewer(props) {
           doenetId: props.doenetId,
           userId: props.userId,
           requestedVariantIndex,
-          allowLoadPageState: props.flags.allowLoadPageState,
+          allowLoadState: props.flags.allowLoadState,
         }
       }
 
@@ -459,7 +465,7 @@ export default function PageViewer(props) {
         let resp = await axios.get('/api/loadPageState.php', payload);
 
         if (!resp.data.success) {
-          if (props.flags.allowLoadPageState) {
+          if (props.flags.allowLoadState) {
             if (props.setIsInErrorState) {
               props.setIsInErrorState(true)
             }
@@ -491,7 +497,7 @@ export default function PageViewer(props) {
 
       } catch (e) {
 
-        if (props.flags.allowLoadPageState) {
+        if (props.flags.allowLoadState) {
           if (props.setIsInErrorState) {
             props.setIsInErrorState(true)
           }
@@ -525,7 +531,7 @@ export default function PageViewer(props) {
       doenetId: props.doenetId,
       saveId: localInfo.saveId,
       serverSaveId,
-      updatePageDataOnContentChange: props.updatePageDataOnContentChange,
+      updateDataOnContentChange: props.updateDataOnContentChange,
     }
 
     let resp;
@@ -643,9 +649,8 @@ export default function PageViewer(props) {
   // Next time through will recalculate, after state variables are set
   if (changedState) {
     setStage('recalcParams')
+    coreId.current = nanoid();
     setPageContentChanged(true);
-    let newCoreId = nanoid();
-    setCoreId(newCoreId);
     return null;
   }
 
@@ -680,7 +685,7 @@ export default function PageViewer(props) {
     coreWorker.current.postMessage({
       messageType: "createCore",
       args: {
-        coreId,
+        coreId: coreId.current,
         userId: props.userId,
         doenetML,
         CID,
@@ -689,7 +694,7 @@ export default function PageViewer(props) {
         requestedVariantIndex,
         pageId,
         attemptNumber,
-        updatePageDataOnContentChange: props.updatePageDataOnContentChange,
+        updateDataOnContentChange: props.updateDataOnContentChange,
         serverSaveId: initialCoreData.serverSaveId,
         requestedVariant: initialCoreData.requestedVariant,
         stateVariableChanges: initialCoreData.coreState

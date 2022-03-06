@@ -1102,7 +1102,7 @@ export default class Answer extends InlineComponent {
         }
 
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, justUpdatedForNewComponent, componentName }) {
 
         if (dependencyValues.disableAfterCorrect && dependencyValues.hasBeenCorrect) {
           return {
@@ -1113,8 +1113,7 @@ export default class Answer extends InlineComponent {
         let foundChange = dependencyValues.creditAchievedDependenciesAtSubmit
           !== dependencyValues.currentCreditAchievedDependencies;
 
-
-        if (foundChange) {
+        if (foundChange && !justUpdatedForNewComponent) {
           return {
             setValue: { justSubmitted: false },
             setEssentialValue: { justSubmitted: false },

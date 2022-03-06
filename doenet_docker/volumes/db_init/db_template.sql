@@ -565,6 +565,8 @@ CREATE TABLE `activity_state` (
   `attemptNumber` int(11) DEFAULT NULL,
   `saveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `CID` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `activityInfo` mediumtext COLLATE utf8_unicode_ci,
   `activityState` mediumtext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`),
