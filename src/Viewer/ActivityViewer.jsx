@@ -65,6 +65,35 @@ export default function ActivityViewer(props) {
 
   }, [props.userId, props.flags]);
 
+  function resetActivity({ changedOnDevice, newCID, newAttemptNumber }) {
+    console.log('resetActivity', changedOnDevice, newCID, newAttemptNumber);
+
+
+    if (props.setIsInErrorState) {
+      props.setIsInErrorState(true)
+    }
+    setErrMsg('how do we reset activity?')
+
+    // toast(`Reverted page to state saved on device ${changedOnDevice}`, toastType.ERROR);
+
+    // if (CID && newCID !== CID) {
+    //   if (props.setIsInErrorState) {
+    //     props.setIsInErrorState(true)
+    //   }
+    //   console.log(`CID: ${CID}, newCID ${newCID}`)
+    //   setErrMsg("Have not implemented handling change in activity content from other device.  Please reload page");
+    // } else if (newAttemptNumber !== attemptNumber) {
+    //   if (props.setIsInErrorState) {
+    //     props.setIsInErrorState(true)
+    //   }
+    //   setErrMsg("Have not implemented handling creating new attempt from other device.  Please reload page");
+    // } else {
+    //   // What here?
+    // }
+
+
+  }
+
 
   function calculateCIDDefinition() {
 
@@ -158,10 +187,10 @@ export default function ActivityViewer(props) {
         // activityState is just currentPage
         setCurrentPage(localInfo.activityState.currentPage);
 
-        // activityInfo is CIDOrder and variantsByPage
+        // activityInfo is orderWithCIDs and variantsByPage
         let newActivityInfo = localInfo.activityInfo;
-        setNPages(newActivityInfo.CIDOrder.length);
-        setOrder(newActivityInfo.CIDOrder);
+        setNPages(newActivityInfo.orderWithCIDs.length);
+        setOrder(newActivityInfo.orderWithCIDs);
         setVariantsByPage(newActivityInfo.variantsByPage);
         activityInfo.current = newActivityInfo;
         activityInfoString.current = JSON.stringify(activityInfo.current);
@@ -214,9 +243,9 @@ export default function ActivityViewer(props) {
           // activityState is just currentPage
           setCurrentPage(activityState.currentPage);
 
-          // activityInfo is CIDOrder and variantsByPage
-          setNPages(newActivityInfo.CIDOrder.length);
-          setOrder(newActivityInfo.CIDOrder);
+          // activityInfo is orderWithCIDs and variantsByPage
+          setNPages(newActivityInfo.orderWithCIDs.length);
+          setOrder(newActivityInfo.orderWithCIDs);
           setVariantsByPage(newActivityInfo.variantsByPage);
 
           activityInfo.current = newActivityInfo;
@@ -230,6 +259,13 @@ export default function ActivityViewer(props) {
           setCurrentPage(1);
 
           let results = await calculateOrderAndVariants();
+          if(!results.success) {
+            if (props.setIsInErrorState) {
+              props.setIsInErrorState(true)
+            }
+            setErrMsg(`Error loading activity state: ${results.message}`);
+            return;
+          }
           setNPages(results.order.length);
           setOrder(results.order);
           setVariantsByPage(results.variantsByPage);
@@ -340,12 +376,7 @@ export default function ActivityViewer(props) {
     let orderResult = determineOrder(activityDefinition.order, rng);
 
     if (!orderResult.success) {
-
-      if (props.setIsInErrorState) {
-        props.setIsInErrorState(true)
-      }
-      setErrMsg(orderResult.message);
-      return null;
+      return orderResult;
     }
 
 
@@ -366,11 +397,8 @@ export default function ActivityViewer(props) {
     try {
       variantsResult = await Promise.all(promises);
     } catch (e) {
-      if (props.setIsInErrorState) {
-        props.setIsInErrorState(true)
-      }
-      setErrMsg(`Error retrieving content for activity`);
-      return;
+      console.log(e);
+      return { success: false, message: `Error retrieving content for activity. ${e.message}` };
     }
 
     console.timeEnd('getContent');
@@ -400,10 +428,17 @@ export default function ActivityViewer(props) {
 
     }
 
-    let CIDOrder = newOrder.map(x => ({ CID: x.CID }))
-    let activityInfo = { CIDOrder, variantsByPage: chosenVariants };
+    let orderWithCIDs = [...originalOrder];
+    newOrder.forEach((v, i) => orderWithCIDs[i].CID = v.CID);
 
-    return { order: newOrder, variantsByPage: chosenVariants, activityInfo };
+    let activityInfo = { orderWithCIDs, variantsByPage: chosenVariants };
+
+    return {
+      success: true,
+      order: newOrder,
+      variantsByPage: chosenVariants,
+      activityInfo
+    };
 
   }
 
@@ -536,10 +571,13 @@ export default function ActivityViewer(props) {
           )
         }
 
-        if (props.setIsInErrorState) {
-          props.setIsInErrorState(true)
-        }
-        setErrMsg('how do we reset activity?')
+
+
+        resetActivity({
+          changedOnDevice: data.device,
+          newCID: data.CID,
+          newAttemptNumber: Number(data.attemptNumber),
+        })
 
       }
 

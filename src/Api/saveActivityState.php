@@ -22,9 +22,9 @@ $activityInfo = mysqli_real_escape_string($conn, $_POST["activityInfo"]);
 $activityState = mysqli_real_escape_string($conn, $_POST["activityState"]);
 $saveId = mysqli_real_escape_string($conn, $_POST["saveId"]);
 $serverSaveId = mysqli_real_escape_string($conn, $_POST["serverSaveId"]);
-$updateActivityDataOnContentChange = mysqli_real_escape_string(
+$updateDataOnContentChange = mysqli_real_escape_string(
     $conn,
-    $_POST["updateActivityDataOnContentChange"]
+    $_POST["updateDataOnContentChange"]
 );
 
 $success = true;
@@ -124,7 +124,7 @@ if ($success) {
 
             $modifiedDBRecord = false;
 
-            if ($updateActivityDataOnContentChange == "1") {
+            if ($updateDataOnContentChange == "1") {
                 // if the CID changed,
                 // then update the table rather than getting information from the table
 
@@ -147,7 +147,7 @@ if ($success) {
                             activityInfo = '$activityInfo',
                             activityState = '$activityState',
                             saveId = '$saveId',
-                            deviceName = '$device',
+                            deviceName = '$device'
                             WHERE userId='$userId'
                             AND doenetId='$doenetId'
                             AND attemptNumber='$attemptNumber'
