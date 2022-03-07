@@ -10,6 +10,7 @@ import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { CIDFromText } from '../Core/utils/cid';
 import { retrieveTextFileForCID } from '../Core/utils/retrieveTextFile';
 import axios from 'axios';
+import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
 
 const rendererUpdatesToIgnore = atomFamily({
   key: 'rendererUpdatesToIgnore',
@@ -112,7 +113,7 @@ export default function PageViewer(props) {
 
   const [documentRenderer, setDocumentRenderer] = useState(null);
 
-  const [initialCoreData, setInitialCoreData] = useState({});
+  const initialCoreData = useRef({});
 
 
   const rendererClasses = useRef({});
@@ -126,6 +127,9 @@ export default function PageViewer(props) {
   const coreWorker = useRef(
     new Worker(props.unbundledCore ? 'core/CoreWorker.js' : 'viewer/core.js', { type: 'module' })
   );
+
+  const [saveStatesWorker, setSaveStatesWorker] = useState(null);
+
 
   useEffect(() => {
 
@@ -383,9 +387,9 @@ export default function PageViewer(props) {
 
   }
 
-  async function loadStateAndInitializeRenderers() {
+  async function loadStateAndInitialize() {
 
-    let loadedCoreState = false;
+    let loadedState = false;
 
     if (props.flags.allowLocalState) {
 
@@ -431,19 +435,19 @@ export default function PageViewer(props) {
         });
 
 
-        setInitialCoreData({
+        initialCoreData.current = ({
           coreState: localInfo.coreState,
           serverSaveId: localInfo.saveId,
           requestedVariant: JSON.parse(localInfo.coreInfo.generatedVariantString, serializedComponentsReviver)
         });
 
-        loadedCoreState = true;
+        loadedState = true;
 
       }
     }
 
-    if (!loadedCoreState) {
-      // if didn't load core state from local storage, try to load from database
+    if (!loadedState) {
+      // if didn't load state from local storage, try to load from database
 
       // even if allowLoadState is false,
       // still call loadPageState, in which case it will only retrieve the initial page state
@@ -487,7 +491,7 @@ export default function PageViewer(props) {
             coreInfo,
           });
 
-          setInitialCoreData({
+          initialCoreData.current = ({
             coreState: JSON.parse(resp.data.coreState, serializedComponentsReviver),
             serverSaveId: resp.data.saveId,
             requestedVariant: JSON.parse(coreInfo.generatedVariantString, serializedComponentsReviver)
@@ -513,7 +517,7 @@ export default function PageViewer(props) {
 
     }
 
-    setStage('readyToCreateCore');
+    startCore();
 
   }
 
@@ -591,6 +595,84 @@ export default function PageViewer(props) {
 
   }
 
+  function startCore() {
+
+    console.log(`send message to create core ${pageId}`)
+
+    coreWorker.current.postMessage({
+      messageType: "createCore",
+      args: {
+        coreId: coreId.current,
+        userId: props.userId,
+        doenetML,
+        CID,
+        doenetId: props.doenetId,
+        flags: props.flags,
+        requestedVariantIndex,
+        pageId,
+        attemptNumber,
+        updateDataOnContentChange: props.updateDataOnContentChange,
+        serverSaveId: initialCoreData.current.serverSaveId,
+        requestedVariant: initialCoreData.current.requestedVariant,
+        stateVariableChanges: initialCoreData.current.coreState ? initialCoreData.current.coreState : undefined
+      }
+    });
+
+    setStage('waitingOnCore');
+
+    for (let actionArgs of actionsBeforeCoreCreated.current) {
+      coreWorker.current.postMessage({
+        messageType: "requestAction",
+        args: actionArgs
+      });
+    }
+  }
+
+  async function saveInitialRendererStates() {
+
+    let nVariants;
+
+    try {
+      let result = await returnAllPossibleVariants({ doenetId: props.doenetId, CID, flags: props.flags });
+      nVariants = result.allPossibleVariants.length;
+    } catch (e) {
+      let message = `Could not save initial renderer state: ${e.message}`;
+      console.log(`Sending toast: ${message}`);
+      toast(message, toastType.ERROR);
+      return;
+    }
+
+    let sWorker = new Worker('core/utils/initialState.js', { type: 'module' });
+
+    console.log(`Generating initial renderer states for ${nVariants} variants`);
+
+    sWorker.postMessage({
+      messageType: "saveInitialRendererStates",
+      args: {
+        doenetId: props.doenetId,
+        CID,
+        doenetML,
+        flags: props.flags,
+        nVariants
+      }
+    })
+
+    sWorker.onmessage = function (e) {
+      if (e.data.messageType === "finished") {
+        sWorker.terminate();
+        setSaveStatesWorker(null);
+      }
+    }
+
+    setSaveStatesWorker(sWorker);
+  }
+
+  function cancelSaveInitialRendererStates() {
+    saveStatesWorker.terminate();
+    setSaveStatesWorker(null);
+  }
+
+
   if (errMsg !== null) {
     let errorIcon = <span style={{ fontSize: "1em", color: "#C1292E" }}><FontAwesomeIcon icon={faExclamationCircle} /></span>
     return <div style={{ fontSize: "1.3em", marginLeft: "20px", marginTop: "20px" }}>{errorIcon} {errMsg}</div>
@@ -664,7 +746,7 @@ export default function PageViewer(props) {
     return null;
   }
 
-  if (pageContentChanged) {
+  if (pageContentChanged && props.pageIsActive) {
 
     setPageContentChanged(false);
 
@@ -672,42 +754,17 @@ export default function PageViewer(props) {
     setDocumentRenderer(null);
     coreCreated.current = false;
 
-    loadStateAndInitializeRenderers();
+    setStage("wait");
+
+    loadStateAndInitialize();
 
     return null;
 
   }
 
   if (stage === 'readyToCreateCore' && props.pageIsActive) {
+    startCore();
 
-    console.log(`send message to create core ${pageId}`)
-
-    coreWorker.current.postMessage({
-      messageType: "createCore",
-      args: {
-        coreId: coreId.current,
-        userId: props.userId,
-        doenetML,
-        CID,
-        doenetId: props.doenetId,
-        flags: props.flags,
-        requestedVariantIndex,
-        pageId,
-        attemptNumber,
-        updateDataOnContentChange: props.updateDataOnContentChange,
-        serverSaveId: initialCoreData.serverSaveId,
-        requestedVariant: initialCoreData.requestedVariant,
-        stateVariableChanges: initialCoreData.coreState
-      }
-    });
-    setStage('waitingOnCore');
-
-    for (let actionArgs of actionsBeforeCoreCreated.current) {
-      coreWorker.current.postMessage({
-        messageType: "requestAction",
-        args: actionArgs
-      });
-    }
   } else if (stage === 'waitingOnCore' && !props.pageIsActive) {
     // we've moved off this page, but core is still being initialized
     // kill the core worker and create a new one
@@ -724,10 +781,31 @@ export default function PageViewer(props) {
 
   }
 
+  if (!props.pageIsActive) {
+    return null;
+  }
+
+  let savesStateButton;
+  if (saveStatesWorker) {
+    savesStateButton = <button onClick={() => cancelSaveInitialRendererStates()}>Cancel saving initial renderer states</button>
+  } else {
+    savesStateButton = <button onClick={() => saveInitialRendererStates()}>Save initial renderer states</button>
+  }
+
+  let noCoreWarning = null;
+  let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
+  if (!coreCreated.current) {
+    noCoreWarning = <p>Waiting for core to be created....</p>
+    pageStyle.backgroundColor = "#F0F0F0";
+  }
+
   //Spacing around the whole doenetML document
   return <>
-    <p>For page {pageId}, have renderer: {Boolean(documentRenderer).toString()}, isActive: {props.pageIsActive.toString()}, coreCreated: {coreCreated.current.toString()}</p>
-    <div style={{ maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" }}>
+    <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
+      {noCoreWarning}
+      <p>{savesStateButton}</p>
+    </div>
+    <div style={pageStyle}>
       {documentRenderer}
     </div>
   </>;

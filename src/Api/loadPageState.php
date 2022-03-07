@@ -108,7 +108,7 @@ if ($success) {
         }
     }
 
-    if ($sucess && !$loadedState) {
+    if ($success && !$loadedState) {
         // no saved page state (or flag set to now allow loading page state),
         // look up initial renderer state
 
@@ -126,6 +126,7 @@ if ($success) {
             $coreState = null;
             $rendererState = $row["rendererState"];
             $coreInfo = $row["coreInfo"];
+            $loadedState = true;
         } else {
             // value missing from initial_renderer_state
             // will need to initialize core to determine rendererState

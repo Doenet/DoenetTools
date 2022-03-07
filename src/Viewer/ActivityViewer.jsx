@@ -49,6 +49,7 @@ export default function ActivityViewer(props) {
   const saveStateToDBTimerId = useRef(null);
   const activityInfo = useRef(null);
   const activityInfoString = useRef(null);
+  const pageAtPreviousSave = useRef(null);
 
   useEffect(() => {
 
@@ -237,7 +238,7 @@ export default function ActivityViewer(props) {
 
         if (resp.data.loadedState) {
 
-          let newActivityInfo = JSON.parse(resp.data.newActivityInfo);
+          let newActivityInfo = JSON.parse(resp.data.activityInfo);
           let activityState = JSON.parse(resp.data.activityState);
 
           // activityState is just currentPage
@@ -293,6 +294,8 @@ export default function ActivityViewer(props) {
       }
 
     }
+
+    pageAtPreviousSave.current = currentPage;
 
     setStage('continue');
 
@@ -447,6 +450,14 @@ export default function ActivityViewer(props) {
     if (!props.flags.allowSaveState && !props.flags.allowLocalState) {
       return;
     }
+
+
+    if(currentPage === pageAtPreviousSave.current) {
+      // no change to be saved
+      return;
+    }
+
+    pageAtPreviousSave.current = currentPage;
 
     let saveId = nanoid();
 
@@ -683,8 +694,6 @@ export default function ActivityViewer(props) {
 
     pages.push(
       <div key={`page${ind}`}>
-        <h2>Page {ind + 1}</h2>
-
         <PageViewer
           doenetId={props.doenetId}
           CID={page.CID}
