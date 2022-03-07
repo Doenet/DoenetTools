@@ -41,18 +41,22 @@ export async function saveInitialRendererStates({ doenetML, CID, doenetId, nVari
 
       if (!resp.data.success) {
         console.error(`Couldn't save initial renderer state: ${resp.data.message}`);
+        postMessage({ messageType: "finished" });
         return;
       }
 
-      if(resp.data.message) {
+      if (resp.data.message) {
         console.log(`Initial renderer state not saved: ${resp.data.message}`);
       }
 
     } catch (e) {
       console.error(`Couldn't save initial renderer state: ${e.message}`)
+      postMessage({ messageType: "finished" });
       return;
     }
   }
+
+  postMessage({ messageType: "finished" });
 
 }
 

@@ -694,8 +694,6 @@ export default function ActivityViewer(props) {
 
     pages.push(
       <div key={`page${ind}`}>
-        <h2>Page {ind + 1}</h2>
-
         <PageViewer
           doenetId={props.doenetId}
           CID={page.CID}
