@@ -15,13 +15,8 @@ $examDoenetId = $jwtArray["doenetId"];
 // $device = $jwtArray['deviceName'];
 
 $CID = mysqli_real_escape_string($conn, $_REQUEST["CID"]);
-$pageId = mysqli_real_escape_string($conn, $_REQUEST["pageId"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_REQUEST["attemptNumber"]);
 $doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
-$requestedVariantIndex = mysqli_real_escape_string(
-    $conn,
-    $_REQUEST["requestedVariantIndex"]
-);
 $allowLoadState = mysqli_real_escape_string(
     $conn,
     $_REQUEST["allowLoadState"]
@@ -34,18 +29,12 @@ $message = "";
 if ($CID == "") {
     $success = false;
     $message = "Internal Error: missing CID";
-} elseif ($pageId == "") {
-    $success = false;
-    $message = "Internal Error: missing pageId";
 } elseif ($attemptNumber == "") {
     $success = false;
     $message = "Internal Error: missing attemptNumber";
 } elseif ($doenetId == "") {
     $success = false;
     $message = "Internal Error: missing doenetId";
-} elseif ($requestedVariantIndex == "") {
-    $success = false;
-    $message = "Internal Error: missing requestedVariantIndex";
 } elseif ($allowLoadState == "") {
     $success = false;
     $message = "Internal Error: missing allowLoadState";
@@ -84,12 +73,11 @@ if ($success) {
     $loadedState = false;
 
     if ($allowLoadState == "true") {
-        $sql = "SELECT saveId, coreInfo, coreState, rendererState
-            FROM page_state
+        $sql = "SELECT saveId, activityInfo, activityState
+            FROM activity_state
             WHERE userId = '$effectiveUserId'
             AND doenetId = '$doenetId'
             AND CID = '$CID'
-            AND pageId='$pageId'
             AND attemptNumber='$attemptNumber'
             ";
 
@@ -98,9 +86,8 @@ if ($success) {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
 
-            $coreState = $row["coreState"];
-            $rendererState = $row["rendererState"];
-            $coreInfo = $row["coreInfo"];
+            $activityInfo = $row["activityInfo"];
+            $activityState = $row["activityState"];
             $saveId = $row["saveId"];
             $loadedState = true;
 
@@ -108,40 +95,14 @@ if ($success) {
         }
     }
 
-    if ($sucess && !$loadedState) {
-        // no saved page state (or flag set to now allow loading page state),
-        // look up initial renderer state
 
-        $sql = "SELECT rendererState, coreInfo
-            FROM initial_renderer_state
-            WHERE CID = '$CID'
-            AND variantIndex = '$requestedVariantIndex'
-            ";
-
-        $result = $conn->query($sql);
-
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-
-            $coreState = null;
-            $rendererState = $row["rendererState"];
-            $coreInfo = $row["coreInfo"];
-        } else {
-            // value missing from initial_renderer_state
-            // will need to initialize core to determine rendererState
-            $coreState = null;
-            $rendererState = null;
-            $coreInfo = null;
-        }
-    }
 }
 
 $response_arr = [
     "success" => $success,
     "loadedState" => $loadedState,
-    "coreState" => $coreState,
-    "rendererState" => $rendererState,
-    "coreInfo" => $coreInfo,
+    "activityInfo" => $activityInfo,
+    "activityState" => $activityState,
     "saveId" => $saveId,
     "message" => $message,
 ];

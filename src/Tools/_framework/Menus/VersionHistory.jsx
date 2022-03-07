@@ -26,7 +26,7 @@ import { useToast, toastType } from '@Toast';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
 import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
 import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
-import { CIDFromDoenetML } from '../../../Core/utils/cid';
+import { CIDFromText } from '../../../Core/utils/cid';
 
 export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",
@@ -165,7 +165,7 @@ console.log(">>>===VersionHistory")
 
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const timestamp = buildTimestamp();
-    const contentId = await CIDFromDoenetML(doenetML);
+    const contentId = await CIDFromText(doenetML);
     const versionId = nanoid();
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
     let newVersions = {...oldVersions};
@@ -215,7 +215,7 @@ console.log(">>>===VersionHistory")
 
       const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
       const timestamp = DateToUTCDateString(new Date());
-      const contentId = await CIDFromDoenetML(doenetML);
+      const contentId = await CIDFromText(doenetML);
       const versionId = nanoid();
 
       const { data } = await axios.post("/api/releaseDraft.php",{
@@ -300,7 +300,7 @@ console.log(">>>===VersionHistory")
       if (wasDraftSelected){
         //we left the draft and it needs to be saved
         const newDraftDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-        const newDraftContentId = await CIDFromDoenetML(newDraftDoenetML);
+        const newDraftContentId = await CIDFromText(newDraftDoenetML);
         if (newDraftContentId !== oldDraftContentId){
 
           //Save new draft

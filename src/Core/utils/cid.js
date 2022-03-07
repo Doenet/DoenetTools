@@ -1,10 +1,10 @@
 import base32 from 'hi-base32';
 
 
-export async function CIDFromDoenetML(doenetML) {
+export async function CIDFromText(text) {
 
   let encoder = new TextEncoder();
-  let data = encoder.encode(doenetML);
+  let data = encoder.encode(text);
 
   return await CIDFromArrayBuffer(data);
 

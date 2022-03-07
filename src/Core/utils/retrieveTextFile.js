@@ -1,11 +1,11 @@
-import { CIDFromDoenetML } from "./cid";
+import { CIDFromText } from "./cid";
 
-export function retrieveDoenetMLForCID(CID) {
+export function retrieveTextFileForCID(CID, ext = "doenet") {
 
   return new Promise((resolve, reject) => {
 
     // immediately start trying to retrieve from IPFS
-    let resultIPFS = retrieveDoenetMLFromIPFS(CID);
+    let resultIPFS = retrieveTextFileFromIPFS(CID);
 
     let promiseIPFS = resultIPFS.promise;
     let controllerIPFS = resultIPFS.controller;
@@ -43,7 +43,7 @@ export function retrieveDoenetMLForCID(CID) {
 
       // if the timer wasn't cleared then IPFS has not yet retrieved
       // so start retrieving from the server
-      let resultServer = retrieveDoenetMLFromServer(CID);
+      let resultServer = retrieveTextFileFromServer(CID, ext);
 
       let promiseServer = resultServer.promise;
       controllerServer = resultServer.controller;
@@ -80,7 +80,7 @@ export function retrieveDoenetMLForCID(CID) {
 }
 
 
-function retrieveDoenetMLFromIPFS(CID) {
+function retrieveTextFileFromIPFS(CID) {
 
   let controller = new AbortController();
   let signal = controller.signal;
@@ -92,7 +92,7 @@ function retrieveDoenetMLFromIPFS(CID) {
       if (response.ok) {
         let doenetML = await response.text();
 
-        let CIDRetrieved = await CIDFromDoenetML(doenetML);
+        let CIDRetrieved = await CIDFromText(doenetML);
 
         if (CIDRetrieved === CID) {
           return doenetML;
@@ -117,7 +117,7 @@ function retrieveDoenetMLFromIPFS(CID) {
 }
 
 
-function retrieveDoenetMLFromServer(CID) {
+function retrieveTextFileFromServer(CID, ext) {
 
 
   let controller = new AbortController();
@@ -126,16 +126,17 @@ function retrieveDoenetMLFromServer(CID) {
 
   let retrieveFromServer = async function () {
     try {
-      let response = await fetch(`/media/${CID}.doenet`, { signal });
+      let response = await fetch(`/media/${CID}.${ext}`, { signal });
 
       if (response.ok) {
         let doenetML = await response.text();
 
-        let CIDRetrieved = await CIDFromDoenetML(doenetML);
+        let CIDRetrieved = await CIDFromText(doenetML);
 
         if (CIDRetrieved === CID) {
           return doenetML;
         } else {
+          console.warn(`CID mismatch, ${CID}, ${CIDRetrieved}`)
           return Promise.reject(new Error("CID mismatch"));
         }
       } else {

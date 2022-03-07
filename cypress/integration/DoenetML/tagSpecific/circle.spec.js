@@ -7015,7 +7015,7 @@ describe('Circle Tag Tests', function () {
     });
 
     cy.get('#testRunner_toggleControls').click();
-    cy.get('#testRunner_allowLocalPageState').click()
+    cy.get('#testRunner_allowLocalState').click()
     cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 

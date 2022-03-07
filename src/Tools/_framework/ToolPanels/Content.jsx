@@ -94,9 +94,9 @@ export default function Content(props){
           solutionDisplayMode: solutionDisplayMode,
           showFeedback: true,
           showHints: true,
-          allowLoadPageState: true,
-          allowSavePageState: true,
-          allowLocalPageState: true,
+          allowLoadState: true,
+          allowSaveState: true,
+          allowLocalState: true,
           allowSaveSubmissions: true,
           allowSaveEvents: true
         }}

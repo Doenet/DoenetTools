@@ -528,6 +528,7 @@ CREATE TABLE `page_state` (
   `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `CID` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `pageId` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `attemptNumber` int(11) DEFAULT NULL,
   `saveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `coreInfo` mediumtext COLLATE utf8_unicode_ci,
@@ -535,7 +536,7 @@ CREATE TABLE `page_state` (
   `rendererState` mediumtext COLLATE utf8_unicode_ci,
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `userId-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`),
+  UNIQUE KEY `userId-doenetId-pageId-attemptNumber` (`userId`,`doenetId`,`pageId`,`attemptNumber`),
   KEY `saveId` (`saveId`),
   KEY `CID` (`CID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -548,6 +549,39 @@ CREATE TABLE `page_state` (
 LOCK TABLES `page_state` WRITE;
 /*!40000 ALTER TABLE `page_state` DISABLE KEYS */;
 /*!40000 ALTER TABLE `page_state` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `activity_state`
+--
+
+DROP TABLE IF EXISTS `activity_state`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `activity_state` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `attemptNumber` int(11) DEFAULT NULL,
+  `saveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `CID` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `activityInfo` mediumtext COLLATE utf8_unicode_ci,
+  `activityState` mediumtext COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `userId-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`),
+  KEY `saveId` (`saveId`),
+  KEY `CID` (`CID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `activity_state`
+--
+
+LOCK TABLES `activity_state` WRITE;
+/*!40000 ALTER TABLE `activity_state` DISABLE KEYS */;
+/*!40000 ALTER TABLE `activity_state` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
