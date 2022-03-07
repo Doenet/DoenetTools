@@ -793,8 +793,10 @@ export default function PageViewer(props) {
   }
 
   let noCoreWarning = null;
+  let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
   if (!coreCreated.current) {
     noCoreWarning = <p>Waiting for core to be created....</p>
+    pageStyle.backgroundColor = "#F0F0F0";
   }
 
   //Spacing around the whole doenetML document
@@ -803,7 +805,7 @@ export default function PageViewer(props) {
       {noCoreWarning}
       <p>{savesStateButton}</p>
     </div>
-    <div style={{ maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" }}>
+    <div style={pageStyle}>
       {documentRenderer}
     </div>
   </>;
