@@ -2,9 +2,16 @@ import React from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const Container = styled.div`
-  display: ${(props) => props.vertical ? 'static' : 'flex'};
+  display: ${(props) => props.vertical || props.verticalLabel ? 'static' : 'flex'};
   // margin: 2px 0px 2px 0px
- ;
+`;
+
+const Label = styled.p`
+  font-size: 14px;
+  display: ${props => props.labelVisible};
+  margin-right: 5px;
+  margin-left: 4px;
+  margin-bottom: ${props => props.align == 'flex' ? 'none' : '2px'};
 `;
 
 const actionGroup = {
@@ -38,8 +45,19 @@ const ActionButtonGroup = (props) => {
       .concat(React.cloneElement(elem[elem.length - 1], {num: last_prop}));
   };
 
+  const labelVisible = props.label ? 'static' : 'none';
+  var label = '';
+  var align = 'flex';
+  if (props.label) {
+    label = props.label;
+    if (props.verticalLabel) {
+      align = 'static'; // isn't working
+    };
+  };
+
   return (
-    <Container vertical={props.vertical}>
+    <Container vertical={props.vertical} align={align}>
+      <Label labelVisible={labelVisible} align={align}>{label}</Label>
       <ThemeProvider theme={props.vertical ? verticalActionGroup : actionGroup}>{elem}</ThemeProvider>
     </Container>
   )
