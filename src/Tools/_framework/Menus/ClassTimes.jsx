@@ -178,18 +178,19 @@ export default function ClassTimes(){
     /></td>
       <Button icon={<FontAwesomeIcon icon={faTimes}/>} alert onClick={()=>{deleteClassTime({index})}} />
       </tr>)
-      timesJSX.push(<tr>
-        <td style={{width:"190px", display: "flex", alignItems: "center"}}><DateTime datePicker={false} width="60px" parentValue={timeObj.startTime} valueCallback={(value)=>{
+      timesJSX.push(<div><tr>
+        <td style={{width:"190px", display: "flex", alignItems: "center", marginLeft: '2px'}}><DateTime datePicker={false} width="58px" parentValue={timeObj.startTime} valueCallback={(value)=>{
            let newClassTime = {...timeObj}
            newClassTime.startTime = value;
          updateClassTime({index,newClassTime})
-        }}/> - <DateTime datePicker={false} width="60px" parentValue={timeObj.endTime} valueCallback={(value)=>{
+        }}/> - <DateTime datePicker={false} width="58px" parentValue={timeObj.endTime} valueCallback={(value)=>{
           let newClassTime = {...timeObj}
           newClassTime.endTime = value;
         updateClassTime({index,newClassTime})
         }}/></td>
-        </tr>)
-
+        </tr>
+        <div style={{margin: "10px"}}></div>
+        </div>)
   }
 
   
