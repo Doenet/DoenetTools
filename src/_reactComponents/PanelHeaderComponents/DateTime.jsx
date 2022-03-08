@@ -23,6 +23,10 @@ export default function DateTime(props) {
   borderColor = props.disabled ? '2px solid #e2e2e2' : borderColor;
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
   let width = props.width ? props.width : '182px';
+  
+  // if (props.menuPanelMargin) {
+  //   this.style.setProperty("--menuPanelMargin", "-36px");
+  // }
 
   useEffect(() => {
     //todo try lastValid update
@@ -75,6 +79,13 @@ export default function DateTime(props) {
           onClick={(e) => {
             //console.log('clicked');
             propsRI.onClick(e);
+            if (props.menuPanelMargin) {
+              e.target.style.setProperty("--menuPanelMargin", "-36px");
+              // e.target.style.setProperty("--menuPanelMargin", "-36px");
+            }
+            // console.log(e.target);
+            // console.log(props.menuPanelMargin);
+            // console.log(document.getElementsByClassName("rdtPicker"));
           }}
           onKeyDown={(e) => {
             if (props.onKeyDown) {
