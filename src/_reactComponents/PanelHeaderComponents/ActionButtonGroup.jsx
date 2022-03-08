@@ -2,8 +2,13 @@ import React from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const Container = styled.div`
-  display: ${(props) => props.vertical || props.verticalLabel ? 'static' : 'flex'};
+  display: ${(props) => props.vertical ? 'static' : 'flex'};
   // margin: 2px 0px 2px 0px
+`;
+
+const LabelContainer = styled.div`
+  display: ${props => props.align};
+  align-items: ${props => props.alignItems};
 `;
 
 const Label = styled.p`
@@ -48,6 +53,8 @@ const ActionButtonGroup = (props) => {
   const labelVisible = props.label ? 'static' : 'none';
   var label = '';
   var align = 'flex';
+  var alignItems = 'none';
+
   if (props.label) {
     label = props.label;
     if (props.verticalLabel) {
@@ -56,8 +63,10 @@ const ActionButtonGroup = (props) => {
   };
 
   return (
-    <Container vertical={props.vertical} align={align}>
-      <Label labelVisible={labelVisible} align={align}>{label}</Label>
+    <Container vertical={props.vertical}>
+      <LabelContainer align={align} alignItems={alignItems}>
+        <Label labelVisible={labelVisible} align={align}>{label}</Label>
+      </LabelContainer>
       <ThemeProvider theme={props.vertical ? verticalActionGroup : actionGroup}>{elem}</ThemeProvider>
     </Container>
   )
