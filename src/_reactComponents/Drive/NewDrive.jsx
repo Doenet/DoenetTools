@@ -1793,6 +1793,9 @@ export const clearDriveAndItemSelections = selector({
       set(drivecardSelectedNodesAtom, []);
     }
   },
+  get: () => {
+    
+  }
 });
 
 //key: driveInstanceId
