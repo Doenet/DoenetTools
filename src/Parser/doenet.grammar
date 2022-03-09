@@ -86,7 +86,7 @@ doubleQuoteAttributeValue { "\"" (attributeContentDoubleQuote | Macro)* "\"" }
 
   Is { "=" }
 
-  Text { ("< " | ![<$])+  }
+  Text { ("< " | "<=" | ![<$])+  }
 
   ws { std.whitespace+ }
 
