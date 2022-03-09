@@ -5,18 +5,20 @@ const Container = styled.div`
   display: ${(props) => props.vertical ? 'static' : 'flex'};
   // margin: 2px 0px 2px 0px
  ;
-`
+`;
 
 const actionGroup = {
-  margin: "0px -2px 0px -2px",
+  margin: '0px -2px 0px -2px',
   borderRadius: '0',
   padding: '0px 12px 0px 10px',
+  border: '1px solid lightGray' // Adds a light border around each button in the group
 };
 
 const verticalActionGroup = {
-  margin: "-2px 4px -2px 4px",
+  margin: '-2px 4px -2px 4px',
   borderRadius: '0',
-  padding: '0px 10px 0px 10px'
+  padding: '0px 10px 0px 10px',
+  border: '1px solid lightGray'
 }; 
 
 const ActionButtonGroup = (props) => {
@@ -34,7 +36,8 @@ const ActionButtonGroup = (props) => {
     elem = [React.cloneElement(elem[0], {num: first_prop})]
       .concat(elem.slice(1,-1))
       .concat(React.cloneElement(elem[elem.length - 1], {num: last_prop}));
-  }
+  };
+
   return (
     <Container vertical={props.vertical}>
       <ThemeProvider theme={props.vertical ? verticalActionGroup : actionGroup}>{elem}</ThemeProvider>
