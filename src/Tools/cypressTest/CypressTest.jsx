@@ -81,11 +81,6 @@ function Test() {
     }
   };
 
-  //Don't construct core until we have the doenetML or activityDefinition defined
-  if (doenetML === null && activityDefinition === null) {
-    return null;
-  }
-
   let controls = null;
   let buttonText = 'show';
   if (controlsVisible) {
@@ -282,7 +277,6 @@ function Test() {
     />
   }
 
-  console.log(viewer);
 
   return (
     <>

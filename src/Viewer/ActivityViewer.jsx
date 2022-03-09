@@ -764,7 +764,9 @@ export default function ActivityViewer(props) {
     setStage("wait");
 
     loadState().then(results => {
-      initializeUserAssignmentTables(results.newItemWeights);
+      if (results) {
+        initializeUserAssignmentTables(results.newItemWeights);
+      }
     })
 
     return null;
