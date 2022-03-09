@@ -366,7 +366,7 @@ export const specificAttemptData = selectorFamily({
     get: (params) => ({get}) => {
         let data = get(specificAttemptDataQuerry(params))
         //console.log("debug data: ", data.assignmentAttempted);
-        let doenetML = get(doenetMLQuerry(data.contentId))
+        let doenetML = get(doenetMLQuerry(data.cid))
         let specificAttempt = {
             assignmentAttempted: data.assignmentAttempted,
             stateVariables: data.stateVariables,
@@ -388,9 +388,9 @@ const doenetMLQuerry = atomFamily({
     key: "doenetMLQuerry",
     default: selectorFamily({
         key:"doenetMLQuerry/Default",
-        get: (contentId) => async () => {
+        get: (cid) => async () => {
             try {
-                const server = await axios.get(`/media/${contentId}.doenet`);
+                const server = await axios.get(`/media/${cid}.doenet`);
                 return server.data;
               } catch (err) {
                 //TODO: Handle 404

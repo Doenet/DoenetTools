@@ -80,12 +80,12 @@ export default function SelectedDoenetML() {
       async ({ label, doenetId, parentFolderId, driveId }) => {
         const versionId = nanoid();
         const timestamp = DateToUTCDateString(new Date());
-        //Get contentId of draft
+        //Get cid of draft
         let itemHistory = await snapshot.getPromise(itemHistoryAtom(doenetId));
-        const contentId = itemHistory.draft.contentId;
+        const cid = itemHistory.draft.cid;
 
         //Get doenetML
-        let doenetML = await snapshot.getPromise(fileByContentId(contentId));
+        let doenetML = await snapshot.getPromise(fileByContentId(cid));
 
         const { data } = await axios.post('/api/releaseDraft.php', {
           doenetId,
@@ -119,7 +119,7 @@ export default function SelectedDoenetML() {
             isReleased: '1',
             isDraft: '0',
             isNamed: '1',
-            contentId,
+            cid,
           };
           newNamed.unshift(newVersion);
 

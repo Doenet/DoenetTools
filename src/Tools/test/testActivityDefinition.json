@@ -4,22 +4,31 @@
   "title": "My activity",
   "order": {
     "type": "order",
-    "behavior": "select",
-    "numberToSelect": 4,
-    "withReplacement": true,
+    "behavior": "sequence",
     "content": [
       {
         "type": "page",
-        "CID": "bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu"
+        "doenetId": "abc",
+        "doenetML": "<graph><point/></graph>"
       },
       {
         "type": "page",
-        "CID": "bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti"
+        "cid": "bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu"
       },
       {
         "type": "page",
-        "CID": "bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i"
+        "cid": "bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti"
+      },
+      {
+        "type": "page",
+        "cid": "bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i"
       }
     ]
-  }
+  },
+  "variantControl": {
+    "nVariants": 10,
+    "seeds": [1, 10, 111, 134, 42, 14, 948, 3028, 482, 382]
+  },
+  "itemWeights": [0, 1, 0.5, 3],
+  "shuffleItemWeights": false
 }

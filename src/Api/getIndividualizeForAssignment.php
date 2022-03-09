@@ -3,7 +3,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Credentials: true");
-//header('Content-Type: application/json');
+header("Content-Type: application/json");
 
 include "db_connection.php";
 
@@ -16,10 +16,10 @@ $examDoenetId = array_key_exists("doenetId", $jwtArray)
     ? $jwtArray["doenetId"]
     : "";
 
-$doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
-
 $success = true;
 $message = "";
+
+$doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
 
 if ($doenetId == "") {
     $success = false;
@@ -36,33 +36,33 @@ if ($doenetId == "") {
     }
 }
 
-$variants = [];
-$attemptNumbers = [];
-
 if ($success) {
-    $sql = "SELECT attemptNumber,
-        variantIndex
-        FROM activity_state
-        WHERE userId='$userId'
-        AND doenetId='$doenetId'
-        ORDER BY attemptNumber ASC";
+
+    $sql = "SELECT individualize
+		FROM assignment
+		WHERE doenetId = '$doenetId'
+	";
 
     $result = $conn->query($sql);
-    while ($row = $result->fetch_assoc()) {
-        array_push($variants, $row["variantIndex"]);
-        array_push($attemptNumbers, $row["attemptNumber"]);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $individualize = $row["individualize"];
+    } else {
+        $success = false;
+        $message = "Could not find assignment";
     }
+
 }
 
 $response_arr = [
     "success" => $success,
-    "attemptNumbers" => $attemptNumbers,
-    "variants" => $variants,
     "message" => $message,
+    "individualize" => $individualize,
 ];
 
 http_response_code(200);
 
+// make it json format
 echo json_encode($response_arr);
 
 $conn->close();

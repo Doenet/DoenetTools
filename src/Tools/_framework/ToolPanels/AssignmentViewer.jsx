@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import DoenetViewer from '../../../Viewer/DoenetViewer';
+import ActivityViewer from '../../../Viewer/ActivityViewer';
 import { serializedComponentsReviver } from '../../../Core/utils/serializedStateProcessing';
 import {
   useRecoilValue,
@@ -7,16 +7,18 @@ import {
   atomFamily,
   useRecoilCallback,
   useSetRecoilState,
+  useRecoilValueLoadable,
   // useRecoilState,
   // useSetRecoilState,
 } from 'recoil';
 import {
   searchParamAtomFamily,
   pageToolViewAtom,
+  suppressMenusAtom,
+  profileAtom,
 } from '../NewToolRoot';
 import {
   itemHistoryAtom,
-  fileByContentId,
   // variantInfoAtom,
   // variantPanelAtom,
 } from '../ToolHandlers/CourseToolHandler';
@@ -24,7 +26,8 @@ import {
 import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants.js';
 import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';
-import { suppressMenusAtom } from '../NewToolRoot';
+import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
+import { prng_alea } from 'esm-seedrandom';
 
 export const currentAttemptNumber = atom({
   key: 'currentAttemptNumber',
@@ -42,15 +45,11 @@ export const creditAchievedAtom = atom({
   },
 });
 
-function randomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+
 
 //Randomly pick next variant
 //If all were picked then start random picks over
-function pushRandomVariantOfRemaining({ previous, from }) {
+function pushRandomVariantOfRemaining({ previous, from, individualize, userId, doenetId, attemptNumber }) {
   let usersVariantAttempts = [...previous];
   let possible = [];
   let numRemaining = previous.length % from.length;
@@ -64,13 +63,34 @@ function pushRandomVariantOfRemaining({ previous, from }) {
       possible.push(variant);
     }
   }
-  const nextVariant = possible[randomInt(0, possible.length - 1)];
+
+  // seed random number generator with doenetId, attemptNumber, and (if individualize) userId
+  // so that it will be consistent
+
+  let seed = doenetId + "|" + attemptNumber;
+  if (individualize) {
+    seed += "|" + userId;
+  }
+  console.log(`seed: ${seed}`);
+
+  let rng = new prng_alea(seed);
+
+
+  function randomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  const ind = Math.floor(rng() * possible.length);
+
+  const nextVariant = possible[ind];
   usersVariantAttempts.push(nextVariant);
   return usersVariantAttempts;
 }
 
 export default function AssignmentViewer() {
-  // console.log(">>>===AssignmentViewer")
+  console.log(">>>===AssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState('Initializing');
@@ -78,21 +98,29 @@ export default function AssignmentViewer() {
   const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
   const [
     {
-      requestedVariant,
+      requestedVariantIndex,
       attemptNumber,
       showCorrectness,
       showFeedback,
       showHints,
-      CID,
+      cid,
       doenetId,
       solutionDisplayMode,
     },
     setLoad,
   ] = useState({});
   let startedInitOfDoenetId = useRef(null);
-  let storedAllPossibleVariants = useRef([]);
+  let allPossibleVariants = useRef([]);
+  let userId = useRef(null);
+  let individualize = useRef(null);
 
-  // console.log(`storedAllPossibleVariants -${storedAllPossibleVariants}-`)
+  // console.log(`allPossibleVariants -${allPossibleVariants}-`)
+
+
+  const loadProfile = useRecoilValueLoadable(profileAtom);
+  userId.current = loadProfile.contents.userId;
+
+
 
   const initializeValues = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -101,9 +129,6 @@ export default function AssignmentViewer() {
         if (startedInitOfDoenetId.current === doenetId) {
           return;
         }
-        const isCollection = await snapshot.getPromise(
-          searchParamAtomFamily('isCollection'),
-        );
         startedInitOfDoenetId.current = doenetId;
 
         const {
@@ -153,64 +178,35 @@ export default function AssignmentViewer() {
         }
         //TODO: test if assignment should be shown here
 
-        let contentId = null;
-        let isAssigned = false;
-        let assignedVariant = null;
-        if (isCollection) {
-          try {
-            const { data } = await axios.get(
-              '/api/getAssignedCollectionData.php',
-              { params: { doenetId } },
-            );
-            contentId = data.contentId;
-            isAssigned = data.isAssigned;
-            assignedVariant = JSON.parse(
-              data.assignedVariant,
-              serializedComponentsReviver,
-            );
-          } catch (error) {
-            console.error(error);
-          }
-        } else {
-          //First try to find if they have a previously assigned contentId
-          //for the current attempt
+        let cid = null;
 
-          const { data } = await axios.get(
-            `/api/getContentIdFromAssignmentAttempt.php`,
-            { params: { doenetId } },
-          );
+        //First try to find if they have a previously assigned cid
+        //for the current attempt
 
-          if (data.foundAttempt) {
-            contentId = data.contentId;
-            isAssigned = true;
-          } else {
-            //If this is the first attempt then give them the
-            //currently released
+        let resp = await axios.get(
+          `/api/getCidForAssignment.php`,
+          { params: { doenetId } },
+        );
 
-            const versionHistory = await snapshot.getPromise(
-              itemHistoryAtom(doenetId),
-            );
-            //Find Assigned ContentId
-            //Use isReleased as isAssigned for now
-            //TODO: refactor isReleased to isAssigned
-
-            //Set contentId and isAssigned
-            for (let version of versionHistory.named) {
-              if (version.isReleased === '1') {
-                isAssigned = true;
-                contentId = version.contentId;
-                break;
-              }
-            }
-          }
-        }
-
-        // console.log('>>>>initializeValues contentId', contentId);
-        if (!isAssigned) {
+        if (!resp.data.success) {
+          setStage('Problem');
+          setMessage(`Error loading assignment: ${resp.data.message}`);
+          return;
+        } else if (!resp.data.cid) {
           setStage('Problem');
           setMessage('Assignment is not assigned.');
           return;
+        } else {
+          cid = resp.data.cid;
         }
+
+        console.log(`retrieved cid: ${cid}`);
+
+
+        // Hard code cid for testing!!!!!!
+        // cid = 'bafkreidr6ny65lb5s23nyxhd3hx7xrghflzmpr2cyeru6mgctrgyha7i4m';
+
+
 
         // TODO: add a flag to enable the below feature
         // where a assignment is not available until the assigned date
@@ -232,155 +228,191 @@ export default function AssignmentViewer() {
         // }
 
         //Find allPossibleVariants
-        returnAllPossibleVariants({
-          CID: contentId,
-        }).then(isCollection ? setCollectionVariant : setVariantsFromDoenetML);
+        try {
+          allPossibleVariants.current = await returnAllPossibleActivityVariants({ cid });
+        } catch (e) {
+          setStage('Problem');
+          setMessage(`Could not load assignment: ${e.message}`);
+          return;
+        }
 
-        async function setVariantsFromDoenetML({ allPossibleVariants }) {
-          storedAllPossibleVariants.current = allPossibleVariants;
-          //Find attemptNumber
-          const { data } = await axios.get('/api/loadTakenVariants.php', {
+        //Find attemptNumber
+        resp = await axios.get('/api/loadTakenVariants.php', {
+          params: { doenetId },
+        });
+
+        if (!resp.data.success) {
+          setStage('Problem');
+          if (resp.data.message) {
+            setMessage(`Could not load assignment: ${resp.data.message}`);
+          } else {
+            setMessage(`Could not load assignment: ${resp.data}`);
+          }
+          return;
+        }
+
+        let usersVariantAttempts = [];
+
+        for (let variant of resp.data.variants) {
+          usersVariantAttempts.push(Number(variant));
+        }
+
+        let attemptNumber = Math.max(...resp.data.attemptNumbers);
+        let needNewVariant = false;
+
+        if (attemptNumber < 1) {
+          attemptNumber = 1;
+          needNewVariant = true;
+        } else if (!resp.data.variants[resp.data.variants.length - 1]) {
+          //Starting a proctored exam so we need a variant
+          needNewVariant = true;
+        }
+
+        set(currentAttemptNumber, attemptNumber);
+
+        if (needNewVariant) {
+
+          // determine if should individualize
+
+          // TODO: do we cache this somewhere so don't hit the database so many times?
+
+          resp = await axios.get('/api/getIndividualizeForAssignment.php', {
             params: { doenetId },
           });
 
-          let usersVariantAttempts = [];
-
-          for (let variant of data.variants) {
-            let obj = JSON.parse(variant, serializedComponentsReviver);
-            if (obj) {
-              usersVariantAttempts.push(obj.name);
+          if (!resp.data.success) {
+            setStage('Problem');
+            if (resp.data.message) {
+              setMessage(`Could not load assignment: ${resp.data.message}`);
+            } else {
+              setMessage(`Could not load assignment: ${resp.data}`);
             }
+            return;
           }
 
-          let attemptNumber = Math.max(...data.attemptNumbers);
-          let needNewVariant = false;
+          individualize.current = resp.data.individualize === '1';
 
-          if (attemptNumber < 1) {
-            attemptNumber = 1;
-            needNewVariant = true;
-          } else if (!data.variants[data.variants.length - 1]) {
-            //Starting a proctored exam so we need a variant
-            needNewVariant = true;
-          }
 
-          set(currentAttemptNumber, attemptNumber);
-
-          if (needNewVariant) {
-            //Find requestedVariant
-            usersVariantAttempts = pushRandomVariantOfRemaining({
-              previous: [...usersVariantAttempts],
-              from: allPossibleVariants,
-            });
-          }
-          let requestedVariant = {
-            name: usersVariantAttempts[usersVariantAttempts.length - 1],
-          };
-
-          setLoad({
-            requestedVariant,
-            attemptNumber,
-            showCorrectness,
-            showFeedback,
-            showHints,
-            CID: contentId,
+          //Find requestedVariant
+          usersVariantAttempts = pushRandomVariantOfRemaining({
+            previous: [...usersVariantAttempts],
+            from: allPossibleVariants.current,
+            individualize: individualize.current,
+            userId: userId.current,
             doenetId,
-            solutionDisplayMode,
-          });
-          setStage('Ready');
-        }
-        async function setCollectionVariant() {
-          //TODO: no more attemtps?
-          const { data } = await axios.get('/api/loadTakenVariants.php', {
-            params: { doenetId },
-          });
-          let numberOfCompletedAttempts = data.attemptNumbers.length - 1;
-          if (numberOfCompletedAttempts === -1) {
-            numberOfCompletedAttempts = 0;
-          }
-          let attemptNumber = numberOfCompletedAttempts + 1;
-          set(currentAttemptNumber, attemptNumber);
-          setLoad({
-            requestedVariant: assignedVariant,
             attemptNumber,
-            showCorrectness,
-            showFeedback,
-            showHints,
-            CID: contentId,
-            doenetId,
-            solutionDisplayMode,
           });
-          setStage('Ready');
         }
+        let requestedVariantIndex = usersVariantAttempts[usersVariantAttempts.length - 1];
+
+        console.log(`requestedVariantIndex: ${requestedVariantIndex}`)
+
+        setLoad({
+          requestedVariantIndex,
+          attemptNumber,
+          showCorrectness,
+          showFeedback,
+          showHints,
+          cid,
+          doenetId,
+          solutionDisplayMode,
+        });
+
+        setStage('Ready');
+
       },
     [],
   );
 
   const updateAttemptNumberAndRequestedVariant = useRecoilCallback(
     ({ snapshot }) =>
-      async (newAttemptNumber) => {
-        //TODO: Exit properly if we are a collection
-        const isCollection = await snapshot.getPromise(
-          searchParamAtomFamily('isCollection'),
+      async (newAttemptNumber, doenetId) => {
+
+
+
+        //Check if cid has changed
+
+        let cid = null;
+
+        //First try to find if they have a previously assigned cid
+        //for the current attempt
+
+        let resp = await axios.get(
+          `/api/getCidForAssignment.php`,
+          { params: { doenetId } },
         );
 
-        if (isCollection) {
-          console.error('How did you get here?');
-          // return; //Would cause an infinite loop!
+        if (!resp.data.success) {
+          setStage('Problem');
+          setMessage(`Error loading assignment: ${resp.data.message}`);
+          return;
+        } else if (!resp.data.cid) {
+          setStage('Problem');
+          setMessage('Assignment is not assigned.');
+          return;
+        } else {
+          cid = resp.data.cid;
         }
 
-        let doenetId = await snapshot.getPromise(
-          searchParamAtomFamily('doenetId'),
-        );
+        console.log(`retrieved cid: ${cid}`);
 
-        //Check if contentId has changed (if not a collection)
-        const versionHistory = await snapshot.getPromise(
-          itemHistoryAtom(doenetId),
-        );
-        // console.log(">>>>versionHistory",versionHistory)
-
-        //Find Assigned ContentId
-        //Use isReleased as isAssigned for now
-        //TODO: refactor isReleased to isAssigned
-        let contentId = null;
-        //Set contentId and isAssigned
-        for (let version of versionHistory.named) {
-          if (version.isReleased === '1') {
-            contentId = version.contentId;
-            break;
-          }
-        }
-        //TESTING set contentId to null
-        // console.log(">>>>updateAttemptNumberAndRequestedVariant contentId",contentId)
 
         const { data } = await axios.get('/api/loadTakenVariants.php', {
           params: { doenetId },
         });
+        
+        if (!data.success) {
+          setStage('Problem');
+          if (data.message) {
+            setMessage(`Could not load assignment: ${data.message}`);
+          } else {
+            setMessage(`Could not load assignment: ${data}`);
+          }
+          return;
+        }
+
+        if(individualize.current === null) {
+          resp = await axios.get('/api/getIndividualizeForAssignment.php', {
+            params: { doenetId },
+          });
+
+          if (!resp.data.success) {
+            setStage('Problem');
+            if (resp.data.message) {
+              setMessage(`Could not load assignment: ${resp.data.message}`);
+            } else {
+              setMessage(`Could not load assignment: ${resp.data}`);
+            }
+            return;
+          }
+
+          individualize.current = resp.data.individualize === '1';
+
+        }
+
         let usersVariantAttempts = [];
 
         for (let variant of data.variants) {
-          let obj = JSON.parse(variant, serializedComponentsReviver);
-          if (obj) {
-            usersVariantAttempts.push(obj.name);
-          }
+          usersVariantAttempts.push(Number(variant));
         }
 
         //Find requestedVariant
         usersVariantAttempts = pushRandomVariantOfRemaining({
           previous: [...usersVariantAttempts],
-          from: storedAllPossibleVariants.current,
+          from: allPossibleVariants.current,
+          individualize: individualize.current,
+          userId: userId.current,
+          doenetId,
+          attemptNumber: newAttemptNumber,
         });
 
-        // name: usersVariantAttempts[newAttemptNumber - 1],
-
-        let newRequestedVariant = {
-          name: usersVariantAttempts[usersVariantAttempts.length - 1],
-        };
+        let newRequestedVariantIndex = usersVariantAttempts[usersVariantAttempts.length - 1];
 
         setLoad((was) => {
           let newObj = { ...was };
           newObj.attemptNumber = newAttemptNumber;
-          newObj.requestedVariant = newRequestedVariant;
-          newObj.CID = contentId;
+          newObj.requestedVariantIndex = newRequestedVariantIndex;
+          newObj.cid = cid;
           return newObj;
         });
       },
@@ -422,15 +454,15 @@ export default function AssignmentViewer() {
   } else if (stage === 'Problem') {
     return <h1>{message}</h1>;
   } else if (recoilAttemptNumber > attemptNumber) {
-    updateAttemptNumberAndRequestedVariant(recoilAttemptNumber);
+    updateAttemptNumberAndRequestedVariant(recoilAttemptNumber, recoilDoenetId);
     return null;
   }
 
   return (
     <>
-      <DoenetViewer
-        key={`doenetviewer${doenetId}`}
-        CID={CID}
+      <ActivityViewer
+        key={`activityViewer${doenetId}`}
+        cid={cid}
         doenetId={doenetId}
         flags={{
           showCorrectness,
@@ -446,10 +478,30 @@ export default function AssignmentViewer() {
           allowSaveEvents: true,
         }}
         attemptNumber={attemptNumber}
-        requestedVariant={requestedVariant}
+        requestedVariantIndex={requestedVariantIndex}
         updateCreditAchievedCallback={updateCreditAchieved}
-        // generatedVariantCallback={variantCallback}
+      // generatedVariantCallback={variantCallback}
       />
     </>
   );
+}
+
+
+
+
+async function returnAllPossibleActivityVariants({ cid }) {
+  let activityDefinition = JSON.parse(await retrieveTextFileForCid(cid, "json"));
+
+  let nVariants = 100;
+  if (activityDefinition.variantControl) {
+    nVariants = activityDefinition.variantControl.nVariants;
+    if (!(Number.isInteger(nVariants) && nVariants >= 1)) {
+      nVariants = 100;
+    }
+  }
+
+  let variantIndices = [...Array(nVariants).keys()].map(i => i + 1);
+
+  return variantIndices;
+
 }

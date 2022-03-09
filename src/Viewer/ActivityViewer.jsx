@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { retrieveTextFileForCID } from '../Core/utils/retrieveTextFile';
+import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
 import PageViewer from './PageViewer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
@@ -8,7 +8,7 @@ import Button from '../_reactComponents/PanelHeaderComponents/Button';
 import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
 import axios from 'axios';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
-import { CIDFromText } from '../Core/utils/cid';
+import { cidFromText } from '../Core/utils/cid';
 import { useToast, toastType } from '@Toast';
 import { nanoid } from 'nanoid';
 
@@ -19,14 +19,15 @@ export default function ActivityViewer(props) {
 
   const [errMsg, setErrMsg] = useState(null);
 
-  const [CIDFromProps, setCIDFromProps] = useState(null);
+  const [cidFromProps, setCidFromProps] = useState(null);
   const [activityDefinitionFromProps, setActivityDefinitionFromProps] = useState(null);
-  const [CID, setCID] = useState(null);
+  const [cid, setCid] = useState(null);
   const [activityDefinition, setActivityDefinition] = useState(null);
 
   const [attemptNumber, setAttemptNumber] = useState(null);
 
   const [requestedVariantIndex, setRequestedVariantIndex] = useState(null);
+  const [variantIndex, setVariantIndex] = useState(null);
 
   const [stage, setStage] = useState('initial');
 
@@ -39,7 +40,8 @@ export default function ActivityViewer(props) {
   const [currentPage, setCurrentPage] = useState(1);
   const [nPages, setNPages] = useState(1);
 
-  const [variantsByPage, setVariantsByPage] = useState(null);
+  const [variantsByItem, setVariantsByItem] = useState(null);
+  const [itemWeights, setItemWeights] = useState(null);
 
 
   const serverSaveId = useRef(null);
@@ -66,8 +68,8 @@ export default function ActivityViewer(props) {
 
   }, [props.userId, props.flags]);
 
-  function resetActivity({ changedOnDevice, newCID, newAttemptNumber }) {
-    console.log('resetActivity', changedOnDevice, newCID, newAttemptNumber);
+  function resetActivity({ changedOnDevice, newCid, newAttemptNumber }) {
+    console.log('resetActivity', changedOnDevice, newCid, newAttemptNumber);
 
 
     if (props.setIsInErrorState) {
@@ -77,11 +79,11 @@ export default function ActivityViewer(props) {
 
     // toast(`Reverted page to state saved on device ${changedOnDevice}`, toastType.ERROR);
 
-    // if (CID && newCID !== CID) {
+    // if (cid && newCid !== cid) {
     //   if (props.setIsInErrorState) {
     //     props.setIsInErrorState(true)
     //   }
-    //   console.log(`CID: ${CID}, newCID ${newCID}`)
+    //   console.log(`cid: ${cid}, newCid ${newCid}`)
     //   setErrMsg("Have not implemented handling change in activity content from other device.  Please reload page");
     // } else if (newAttemptNumber !== attemptNumber) {
     //   if (props.setIsInErrorState) {
@@ -96,47 +98,54 @@ export default function ActivityViewer(props) {
   }
 
 
-  function calculateCIDDefinition() {
+  function calculateCidDefinition() {
 
     if (activityDefinitionFromProps) {
-      if (CIDFromProps) {
-        // check to see if activityDefinition matches CID
-        CIDFromText(JSON.stringify(activityDefinitionFromProps))
-          .then(calcCID => {
-            if (calcCID === CIDFromProps) {
+      if (cidFromProps) {
+        // check to see if activityDefinition matches cid
+        cidFromText(JSON.stringify(activityDefinitionFromProps))
+          .then(calcCid => {
+            if (calcCid === cidFromProps) {
               setActivityDefinition(activityDefinitionFromProps);
-              setCID(CIDFromProps);
+              setCid(cidFromProps);
               setStage('continue');
             } else {
               if (props.setIsInErrorState) {
                 props.setIsInErrorState(true)
               }
-              setErrMsg(`activity definition did not match specified CID: ${CIDFromProps}`);
+              setErrMsg(`activity definition did not match specified cid: ${cidFromProps}`);
             }
           })
       } else {
-        // if have activityDefinition and no CID, then calculate CID
-        CIDFromText(JSON.stringify(activityDefinitionFromProps))
-          .then(CID => {
+        // if have activityDefinition and no cid, then calculate cid
+        cidFromText(JSON.stringify(activityDefinitionFromProps))
+          .then(cid => {
             setActivityDefinition(activityDefinitionFromProps);
-            setCID(CID);
+            setCid(cid);
             setStage('continue');
           })
       }
     } else {
-      // if don't have activityDefinition, then retrieve activityDefinition from CID
+      // if don't have activityDefinition, then retrieve activityDefinition from cid
 
-      retrieveTextFileForCID(CIDFromProps, "json")
+      retrieveTextFileForCid(cidFromProps, "json")
         .then(retrievedActivityDefinition => {
-          setActivityDefinition(retrievedActivityDefinition);
-          setCID(CIDFromProps);
+          try {
+            setActivityDefinition(JSON.parse(retrievedActivityDefinition));
+          } catch (e) {
+            if (props.setIsInErrorState) {
+              props.setIsInErrorState(true)
+            }
+            setErrMsg("Invalid JSON activity definition");
+          }
+          setCid(cidFromProps);
           setStage('continue');
         })
         .catch(e => {
           if (props.setIsInErrorState) {
             props.setIsInErrorState(true)
           }
-          setErrMsg(`activity definition not found for CID: ${CIDFromProps}`);
+          setErrMsg(`activity definition not found for cid: ${cidFromProps}`);
         })
     }
 
@@ -145,13 +154,15 @@ export default function ActivityViewer(props) {
   async function loadState() {
 
     let loadedState = false;
+    let newItemWeights;
+    let newCurrentPage;
 
     if (props.flags.allowLocalState) {
 
       let localInfo;
 
       try {
-        localInfo = await idb_get(`${props.doenetId}|${attemptNumber}|${CID}`);
+        localInfo = await idb_get(`${props.doenetId}|${attemptNumber}|${cid}`);
       } catch (e) {
         // ignore error
       }
@@ -165,10 +176,10 @@ export default function ActivityViewer(props) {
           let result = await saveLoadedLocalStateToDatabase(localInfo);
 
           if (result.changedOnDevice) {
-            if (result.newCID !== CID || Number(result.newAttemptNumber) !== attemptNumber) {
+            if (result.newCid !== cid || Number(result.newAttemptNumber) !== attemptNumber) {
               resetActivity({
                 changedOnDevice: result.changedOnDevice,
-                newCID: result.newCID,
+                newCid: result.newCid,
                 newAttemptNumber: Number(result.newAttemptNumber),
               })
               return;
@@ -186,13 +197,19 @@ export default function ActivityViewer(props) {
         serverSaveId.current = localInfo.saveId;
 
         // activityState is just currentPage
-        setCurrentPage(localInfo.activityState.currentPage);
+        newCurrentPage = localInfo.activityState.currentPage
+        setCurrentPage(newCurrentPage);
 
-        // activityInfo is orderWithCIDs and variantsByPage
+        // activityInfo is orderWithCids and variantsByItem
         let newActivityInfo = localInfo.activityInfo;
-        setNPages(newActivityInfo.orderWithCIDs.length);
-        setOrder(newActivityInfo.orderWithCIDs);
-        setVariantsByPage(newActivityInfo.variantsByPage);
+        setVariantIndex(localInfo.variantIndex);
+        setNPages(newActivityInfo.orderWithCids.length);
+        setOrder(newActivityInfo.orderWithCids);
+        setVariantsByItem(newActivityInfo.variantsByItem);
+        setItemWeights(newActivityInfo.itemWeights);
+        newItemWeights = newActivityInfo.itemWeights;
+
+
         activityInfo.current = newActivityInfo;
         activityInfoString.current = JSON.stringify(activityInfo.current);
 
@@ -211,7 +228,7 @@ export default function ActivityViewer(props) {
 
       const payload = {
         params: {
-          CID,
+          cid,
           attemptNumber,
           doenetId: props.doenetId,
           userId: props.userId,
@@ -242,12 +259,17 @@ export default function ActivityViewer(props) {
           let activityState = JSON.parse(resp.data.activityState);
 
           // activityState is just currentPage
-          setCurrentPage(activityState.currentPage);
+          newCurrentPage = activityState.currentPage;
+          setCurrentPage(newCurrentPage);
 
-          // activityInfo is orderWithCIDs and variantsByPage
-          setNPages(newActivityInfo.orderWithCIDs.length);
-          setOrder(newActivityInfo.orderWithCIDs);
-          setVariantsByPage(newActivityInfo.variantsByPage);
+          // activityInfo is orderWithCids and variantsByItem
+          setVariantIndex(resp.data.variantIndex);
+          setNPages(newActivityInfo.orderWithCids.length);
+          setOrder(newActivityInfo.orderWithCids);
+          setVariantsByItem(newActivityInfo.variantsByItem);
+          setItemWeights(newActivityInfo.itemWeights);
+          newItemWeights = newActivityInfo.itemWeights;
+
 
           activityInfo.current = newActivityInfo;
           activityInfoString.current = JSON.stringify(activityInfo.current);
@@ -257,19 +279,23 @@ export default function ActivityViewer(props) {
           // get initial state and info
 
           // state at page 1
+          newCurrentPage = 1;
           setCurrentPage(1);
 
           let results = await calculateOrderAndVariants();
-          if(!results.success) {
+          if (!results.success) {
             if (props.setIsInErrorState) {
               props.setIsInErrorState(true)
             }
             setErrMsg(`Error loading activity state: ${results.message}`);
             return;
           }
+          setVariantIndex(results.variantIndex);
           setNPages(results.order.length);
           setOrder(results.order);
-          setVariantsByPage(results.variantsByPage);
+          setVariantsByItem(results.variantsByItem);
+          setItemWeights(results.itemWeights);
+          newItemWeights = results.itemWeights;
 
           activityInfo.current = results.activityInfo;
           activityInfoString.current = JSON.stringify(activityInfo.current);
@@ -295,20 +321,22 @@ export default function ActivityViewer(props) {
 
     }
 
-    pageAtPreviousSave.current = currentPage;
+    pageAtPreviousSave.current = newCurrentPage;
 
-    setStage('continue');
+
+    return { newItemWeights };
 
   }
 
   async function saveLoadedLocalStateToDatabase(localInfo) {
 
-    let serverSaveId = await idb_get(`${props.doenetId}|${attemptNumber}|${CID}|ServerSaveId`);
+    let serverSaveId = await idb_get(`${props.doenetId}|${attemptNumber}|${cid}|ServerSaveId`);
 
     let activityStateToBeSavedToDatabase = {
-      CID,
+      cid,
       activityInfo: JSON.stringify(localInfo.activityInfo),
       activityState: JSON.stringify(localInfo.activityState),
+      variantIndex: localInfo.variantIndex,
       attemptNumber,
       doenetId: props.doenetId,
       saveId: localInfo.saveId,
@@ -322,7 +350,7 @@ export default function ActivityViewer(props) {
       resp = await axios.post('/api/saveActivityState.php', activityStateToBeSavedToDatabase);
     } catch (e) {
       // since this is initial load, don't show error message
-      return { localInfo, CID, attemptNumber };
+      return { localInfo, cid, attemptNumber };
     }
 
     console.log('result from saving activity to db', resp.data)
@@ -331,50 +359,46 @@ export default function ActivityViewer(props) {
 
     if (!data.success) {
       // since this is initial load, don't show error message
-      return { localInfo, CID, attemptNumber };
+      return { localInfo, cid, attemptNumber };
     }
 
     idb_set(
-      `${props.doenetId}|${attemptNumber}|${CID}|ServerSaveId`,
+      `${props.doenetId}|${attemptNumber}|${cid}|ServerSaveId`,
       data.saveId
     )
 
 
     if (data.stateOverwritten) {
 
-      if (CID !== data.CID || attemptNumber !== Number(data.attemptNumber)
-        || activityStateToBeSavedToDatabase.activityInfo !== data.activityInfo
-        || activityStateToBeSavedToDatabase.activityState !== data.activityState
-      ) {
+      let newLocalInfo = {
+        activityState: JSON.parse(data.activityState),
+        activityInfo: JSON.parse(data.activityInfo),
+        saveId: data.saveId,
+        variantIndex: data.variantIndex,
+      }
 
-        let newLocalInfo = {
-          activityState: JSON.parse(data.activityState),
-          activityInfo: JSON.parse(data.activityInfo),
-          saveId: data.saveId,
-        }
+      idb_set(
+        `${props.doenetId}|${data.attemptNumber}|${data.cid}`,
+        newLocalInfo
+      );
 
-        idb_set(
-          `${props.doenetId}|${data.attemptNumber}|${data.CID}`,
-          newLocalInfo
-        );
-
-        return {
-          changedOnDevice: data.device,
-          newLocalInfo,
-          newCID: data.CID,
-          newAttemptNumber: data.attemptNumber,
-        }
+      return {
+        changedOnDevice: data.device,
+        newLocalInfo,
+        newCid: data.cid,
+        newAttemptNumber: data.attemptNumber,
       }
     }
 
-    return { localInfo, CID, attemptNumber };
+    return { localInfo, cid, attemptNumber };
 
   }
 
   async function calculateOrderAndVariants() {
 
-    let seed = determineVariantSeed(activityDefinition, requestedVariantIndex);
-    let rng = new rngClass(seed);
+    let variantSeed = determineVariantSeed(activityDefinition, requestedVariantIndex);
+
+    let rng = new rngClass(variantSeed.seed);
 
     let orderResult = determineOrder(activityDefinition.order, rng);
 
@@ -385,13 +409,34 @@ export default function ActivityViewer(props) {
 
     let originalOrder = orderResult.pages;
 
+
+    let itemWeights = activityDefinition.itemWeights || [];
+
+    if (!Array.isArray(itemWeights) || !itemWeights.every(x => x >= 0)) {
+      return { success: false, message: "Invalid itemWeights" };
+    }
+
+    let nPages = originalOrder.length;
+
+    itemWeights = itemWeights.slice(0, nPages);
+
+    if (itemWeights.length < nPages) {
+      itemWeights.push(...Array(nPages - itemWeights.length).fill(1));
+    }
+
+    // normalize itemWeights to sum to 1
+    let totalWeight = itemWeights.reduce((a, c) => a + c);
+    if (totalWeight > 0) {
+      itemWeights = itemWeights.map(x => x / totalWeight);
+    }
+
     console.time('getContent');
 
     let promises = [];
 
     for (let page of originalOrder) {
       promises.push(returnAllPossibleVariants({
-        CID: page.CID, doenetML: page.doenetML, flags
+        cid: page.cid, doenetML: page.doenetML, flags
       }));
     }
 
@@ -400,7 +445,6 @@ export default function ActivityViewer(props) {
     try {
       variantsResult = await Promise.all(promises);
     } catch (e) {
-      console.log(e);
       return { success: false, message: `Error retrieving content for activity. ${e.message}` };
     }
 
@@ -418,28 +462,34 @@ export default function ActivityViewer(props) {
 
       // if looked up doenetML to determine possible variants
       // record that doenetML in the order so don't have to load it again
-      // Also, add CID if it isn't there
+      // Also, add cid if it isn't there
       let page = originalOrder[ind];
       if (page.doenetML === undefined) {
         page = { ...page };
         page.doenetML = possibleVariants.doenetML;
-      } else if (!page.CID) {
+      } else if (!page.cid) {
         page = { ...page };
-        page.CID = possibleVariants.CID;
+        page.cid = possibleVariants.cid;
       }
       newOrder.push(page);
 
     }
 
-    let orderWithCIDs = [...originalOrder];
-    newOrder.forEach((v, i) => orderWithCIDs[i].CID = v.CID);
+    let orderWithCids = [...originalOrder];
+    newOrder.forEach((v, i) => orderWithCids[i].cid = v.cid);
 
-    let activityInfo = { orderWithCIDs, variantsByPage: chosenVariants };
+    let activityInfo = {
+      orderWithCids,
+      variantsByItem: chosenVariants,
+      itemWeights
+    };
 
     return {
       success: true,
       order: newOrder,
-      variantsByPage: chosenVariants,
+      itemWeights,
+      variantsByItem: chosenVariants,
+      variantIndex: variantSeed.variantIndex,
       activityInfo
     };
 
@@ -452,7 +502,7 @@ export default function ActivityViewer(props) {
     }
 
 
-    if(currentPage === pageAtPreviousSave.current) {
+    if (currentPage === pageAtPreviousSave.current) {
       // no change to be saved
       return;
     }
@@ -463,11 +513,12 @@ export default function ActivityViewer(props) {
 
     if (props.flags.allowLocalState) {
       idb_set(
-        `${props.doenetId}|${attemptNumber}|${CID}`,
+        `${props.doenetId}|${attemptNumber}|${cid}`,
         {
           activityInfo: activityInfo.current,
           activityState: { currentPage },
           saveId,
+          variantIndex,
         }
       )
     }
@@ -478,9 +529,10 @@ export default function ActivityViewer(props) {
 
 
     activityStateToBeSavedToDatabase.current = {
-      CID: CID,
+      cid: cid,
       activityInfo: activityInfoString.current,
       activityState: JSON.stringify({ currentPage }),
+      variantIndex,
       attemptNumber: attemptNumber,
       doenetId: props.doenetId,
       saveId,
@@ -559,21 +611,21 @@ export default function ActivityViewer(props) {
 
     if (props.flags.allowLocalState) {
       idb_set(
-        `${props.doenetId}|${attemptNumber}|${CID}|ServerSaveId`,
+        `${props.doenetId}|${attemptNumber}|${cid}|ServerSaveId`,
         data.saveId
       )
     }
 
     if (data.stateOverwritten) {
 
-      if (CID !== data.CID || attemptNumber !== Number(data.attemptNumber)
+      if (cid !== data.cid || attemptNumber !== Number(data.attemptNumber)
         || activityInfoString.current !== data.activityInfo
         || activityStateToSave !== data.activityState
       ) {
 
         if (props.flags.allowLocalState) {
           idb_set(
-            `${props.doenetId}|${data.attemptNumber}|${data.CID}`,
+            `${props.doenetId}|${data.attemptNumber}|${data.cid}`,
             {
               activityState: JSON.parse(data.activityState),
               activityInfo: JSON.parse(data.activityInfo),
@@ -586,7 +638,7 @@ export default function ActivityViewer(props) {
 
         resetActivity({
           changedOnDevice: data.device,
-          newCID: data.CID,
+          newCid: data.cid,
           newAttemptNumber: Number(data.attemptNumber),
         })
 
@@ -598,6 +650,41 @@ export default function ActivityViewer(props) {
     // TODO: send message so that UI can show changes have been synchronized
 
     // console.log(">>>>recordContentInteraction data",data)
+  }
+
+  async function initializeUserAssignmentTables(newItemWeights) {
+
+    //Initialize user_assignment tables
+    if (flags.allowSaveSubmissions) {
+
+      // if an item weight is set to zero, then it is not considered an item
+      // in the assignments table
+      // and it will not affect the resulting score
+      let weights = newItemWeights.filter(x => x);
+
+      try {
+        let resp = await axios.post('/api/initAssignmentAttempt.php', {
+          doenetId: props.doenetId,
+          weights,
+          attemptNumber,
+        });
+
+
+        if (resp.status === null) {
+          toast(`Could not initialize assignment tables.  Are you connected to the internet?`, toastType.ERROR);
+        } else if (!resp.data.success) {
+          toast(`Could not initialize assignment tables: ${resp.data.message}.`, toastType.ERROR);
+        }
+
+      } catch (e) {
+        toast(`Could not initialize assignment tables: ${e.message}.`, toastType.ERROR);
+
+      }
+
+    }
+
+    setStage('continue');
+
   }
 
 
@@ -613,8 +700,8 @@ export default function ActivityViewer(props) {
     setActivityDefinitionFromProps(props.activityDefinition);
     changedState = true;
   }
-  if (CIDFromProps !== props.CID) {
-    setCIDFromProps(props.CID);
+  if (cidFromProps !== props.cid) {
+    setCidFromProps(props.cid);
     changedState = true;
   }
 
@@ -630,7 +717,7 @@ export default function ActivityViewer(props) {
   }
 
   // attemptNumber is used for requestedVariantIndex if not specified
-  let adjustedRequestedVariantIndex = props.requestedVariant?.index;
+  let adjustedRequestedVariantIndex = props.requestedVariantIndex;
   if (adjustedRequestedVariantIndex === undefined) {
     adjustedRequestedVariantIndex = propAttemptNumber;
   }
@@ -655,19 +742,19 @@ export default function ActivityViewer(props) {
 
   if (stage == 'recalcParams') {
     setStage('wait');
-    calculateCIDDefinition();
+    calculateCidDefinition();
     return null;
   }
 
   // at this point, we have 
-  // attemptNumber, requestedVariantIndex, CID, activityDefinition
+  // attemptNumber, requestedVariantIndex, cid, activityDefinition
 
 
   if (activityDefinition?.type?.toLowerCase() !== "activity") {
     if (props.setIsInErrorState) {
       props.setIsInErrorState(true)
     }
-    setErrMsg("Invalid activity definition");
+    setErrMsg("Invalid activity definition: type is not activity");
     return null;
   }
 
@@ -676,7 +763,9 @@ export default function ActivityViewer(props) {
 
     setStage("wait");
 
-    loadState();
+    loadState().then(results => {
+      initializeUserAssignmentTables(results.newItemWeights);
+    })
 
     return null;
 
@@ -690,19 +779,29 @@ export default function ActivityViewer(props) {
 
   let pages = [];
 
+  let lastItemNumber = 0;
+
   for (let [ind, page] of order.entries()) {
+    let itemNumber;
+    if (itemWeights[ind] > 0) {
+      lastItemNumber++;
+      itemNumber = lastItemNumber;
+    } else {
+      itemNumber = 0;
+    }
 
     pages.push(
       <div key={`page${ind}`}>
         <PageViewer
           doenetId={props.doenetId}
-          CID={page.CID}
+          cid={page.cid}
           doenetML={page.doenetML}
           pageId={(ind + 1).toString()}
           pageIsActive={ind + 1 === currentPage}
+          itemNumber={itemNumber}
           attemptNumber={attemptNumber}
           flags={flags}
-          requestedVariant={{ index: variantsByPage[ind] }}
+          requestedVariant={{ index: variantsByItem[ind] }}
           unbundledCore={props.unbundledCore}
           updateCreditAchievedCallback={props.updateCreditAchievedCallback}
           setIsInErrorState={props.setIsInErrorState}
@@ -737,6 +836,8 @@ function determineVariantSeed(activityDefinition, requestedVariantIndex) {
     }
   }
 
+  let variantIndex = (requestedVariantIndex - 1) % nVariants + 1;
+
   if (seeds.length >= nVariants) {
     seeds = seeds.slice(0, nVariants)
   } else {
@@ -749,10 +850,10 @@ function determineVariantSeed(activityDefinition, requestedVariantIndex) {
     }
   }
 
-  let selectedSeed = seeds[requestedVariantIndex - 1];
+  let selectedSeed = seeds[variantIndex - 1];
 
 
-  return selectedSeed;
+  return { selectedSeed, variantIndex };
 
 }
 

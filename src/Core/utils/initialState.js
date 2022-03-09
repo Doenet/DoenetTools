@@ -1,6 +1,6 @@
 import axios from "axios";
-import { CIDFromText } from "./cid";
-import { retrieveTextFileForCID } from "./retrieveTextFile";
+import { cidFromText } from "./cid";
+import { retrieveTextFileForCid } from "./retrieveTextFile";
 import { serializedComponentsReplacer } from "./serializedStateProcessing";
 
 onmessage = function (e) {
@@ -12,26 +12,26 @@ onmessage = function (e) {
   }
 }
 
-export async function saveInitialRendererStates({ doenetML, CID, doenetId, nVariants, flags = {} }) {
+export async function saveInitialRendererStates({ doenetML, cid, doenetId, nVariants, flags = {} }) {
 
   if (doenetML === undefined) {
-    doenetML = await retrieveTextFileForCID(CID, "doenet");
+    doenetML = await retrieveTextFileForCid(cid, "doenet");
   } else {
-    let CIDcalc = await CIDFromText(doenetML);
-    if (!CID) {
-      CID = CIDcalc;
-    } else if (CID !== CIDcalc) {
-      throw Error(`CID mismatch: ${CID}, ${CIDcalc}`)
+    let cidCalc = await cidFromText(doenetML);
+    if (!cid) {
+      cid = cidCalc;
+    } else if (cid !== cidCalc) {
+      throw Error(`cid mismatch: ${cid}, ${cidCalc}`)
     }
   }
 
 
   for (let variantIndex = 1; variantIndex <= nVariants; variantIndex++) {
-    let { coreInfo, rendererState } = await calculateInitialRendererState({ doenetML, CID, doenetId, requestedVariantIndex: variantIndex, flags });
+    let { coreInfo, rendererState } = await calculateInitialRendererState({ doenetML, cid, doenetId, requestedVariantIndex: variantIndex, flags });
     console.log(`generated initial renderer state for variant ${variantIndex} of ${nVariants}`);
 
     let payload = {
-      doenetId, CID, variantIndex,
+      doenetId, cid, variantIndex,
       rendererState: JSON.stringify(rendererState, serializedComponentsReplacer),
       coreInfo: JSON.stringify(coreInfo, serializedComponentsReplacer)
     }
@@ -60,7 +60,7 @@ export async function saveInitialRendererStates({ doenetML, CID, doenetId, nVari
 
 }
 
-function calculateInitialRendererState({ doenetML, CID, doenetId, requestedVariantIndex, flags = {} }) {
+function calculateInitialRendererState({ doenetML, cid, doenetId, requestedVariantIndex, flags = {} }) {
 
   let coreWorker = new Worker('../../viewer/core.js', { type: 'module' });
 
@@ -68,7 +68,7 @@ function calculateInitialRendererState({ doenetML, CID, doenetId, requestedVaria
     messageType: "createCore",
     args: {
       doenetML,
-      CID,
+      cid,
       doenetId,
       requestedVariantIndex,
       flags

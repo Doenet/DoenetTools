@@ -535,23 +535,23 @@ export const folderDictionaryFilterSelector = selectorFamily({
       // filter = 'All' handled already without any prop(filter)
       if (filter === 'Released Only') {
         let newDefaultOrder = [];
-        for (let contentId of fD.contentIds.defaultOrder) {
+        for (let cid of fD.contentIds.defaultOrder) {
           if (
-            fD.contentsDictionary[contentId].isReleased === '1' ||
-            fD.contentsDictionary[contentId].itemType === 'Folder'
+            fD.contentsDictionary[cid].isReleased === '1' ||
+            fD.contentsDictionary[cid].itemType === 'Folder'
           ) {
-            newDefaultOrder.push(contentId);
+            newDefaultOrder.push(cid);
           }
         }
         fDreturn.contentIds.defaultOrder = newDefaultOrder;
       } else if (filter === 'Assigned Only') {
         let newDefaultOrder = [];
-        for (let contentId of fD.contentIds.defaultOrder) {
+        for (let cid of fD.contentIds.defaultOrder) {
           if (
-            fD.contentsDictionary[contentId].isAssigned === '1' ||
-            fD.contentsDictionary[contentId].itemType === 'Folder'
+            fD.contentsDictionary[cid].isAssigned === '1' ||
+            fD.contentsDictionary[cid].itemType === 'Folder'
           ) {
-            newDefaultOrder.push(contentId);
+            newDefaultOrder.push(cid);
           }
         }
         fDreturn.contentIds.defaultOrder = newDefaultOrder;

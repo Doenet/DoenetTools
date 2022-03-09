@@ -7,8 +7,8 @@ import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { rendererState } from './renderers/useDoenetRenderer';
 import { atomFamily, useRecoilCallback } from 'recoil';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
-import { CIDFromText } from '../Core/utils/cid';
-import { retrieveTextFileForCID } from '../Core/utils/retrieveTextFile';
+import { cidFromText } from '../Core/utils/cid';
+import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
 import axios from 'axios';
 import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
 
@@ -97,9 +97,9 @@ export default function PageViewer(props) {
 
   const [errMsg, setErrMsg] = useState(null);
 
-  const [CIDFromProps, setCIDFromProps] = useState(null);
+  const [cidFromProps, setCidFromProps] = useState(null);
   const [doenetMLFromProps, setDoenetMLFromProps] = useState(null);
-  const [CID, setCID] = useState(null);
+  const [cid, setCid] = useState(null);
   const [doenetML, setDoenetML] = useState(null);
 
 
@@ -314,16 +314,16 @@ export default function PageViewer(props) {
   }
 
 
-  function resetPage({ changedOnDevice, newCID, newAttemptNumber }) {
-    console.log('resetPage', changedOnDevice, newCID, newAttemptNumber);
+  function resetPage({ changedOnDevice, newCid, newAttemptNumber }) {
+    console.log('resetPage', changedOnDevice, newCid, newAttemptNumber);
 
     toast(`Reverted page to state saved on device ${changedOnDevice}`, toastType.ERROR);
 
-    if (CID && newCID !== CID) {
+    if (cid && newCid !== cid) {
       if (props.setIsInErrorState) {
         props.setIsInErrorState(true)
       }
-      console.log(`CID: ${CID}, newCID ${newCID}`)
+      console.log(`cid: ${cid}, newCid ${newCid}`)
       setErrMsg("Have not implemented handling change in page content from other device.  Please reload page");
     } else if (newAttemptNumber !== attemptNumber) {
       if (props.setIsInErrorState) {
@@ -340,48 +340,48 @@ export default function PageViewer(props) {
 
   }
 
-  function calculateCIDDoenetML() {
+  function calculateCidDoenetML() {
 
     // compare with undefined as doenetML could be empty string
     if (doenetMLFromProps !== undefined) {
-      if (CIDFromProps) {
-        // check to see if doenetML matches CID
-        CIDFromText(doenetMLFromProps)
-          .then(calcCID => {
-            if (calcCID === CIDFromProps) {
+      if (cidFromProps) {
+        // check to see if doenetML matches cid
+        cidFromText(doenetMLFromProps)
+          .then(calcCid => {
+            if (calcCid === cidFromProps) {
               setDoenetML(doenetMLFromProps);
-              setCID(CIDFromProps);
+              setCid(cidFromProps);
               setStage('continue');
             } else {
               if (props.setIsInErrorState) {
                 props.setIsInErrorState(true)
               }
-              setErrMsg(`doenetML did not match specified CID: ${CIDFromProps}`);
+              setErrMsg(`doenetML did not match specified cid: ${cidFromProps}`);
             }
           })
       } else {
-        // if have doenetML and no CID, then calculate CID
-        CIDFromText(doenetMLFromProps)
-          .then(CID => {
+        // if have doenetML and no cid, then calculate cid
+        cidFromText(doenetMLFromProps)
+          .then(cid => {
             setDoenetML(doenetMLFromProps);
-            setCID(CID);
+            setCid(cid);
             setStage('continue');
           })
       }
     } else {
-      // if don't have doenetML, then retrieve doenetML from CID
+      // if don't have doenetML, then retrieve doenetML from cid
 
-      retrieveTextFileForCID(CIDFromProps, "doenet")
+      retrieveTextFileForCid(cidFromProps, "doenet")
         .then(retrievedDoenetML => {
           setDoenetML(retrievedDoenetML);
-          setCID(CIDFromProps);
+          setCid(cidFromProps);
           setStage('continue');
         })
         .catch(e => {
           if (props.setIsInErrorState) {
             props.setIsInErrorState(true)
           }
-          setErrMsg(`doenetML not found for CID: ${CIDFromProps}`);
+          setErrMsg(`doenetML not found for cid: ${cidFromProps}`);
         })
     }
 
@@ -396,7 +396,7 @@ export default function PageViewer(props) {
       let localInfo;
 
       try {
-        localInfo = await idb_get(`${props.doenetId}|${pageId}|${attemptNumber}|${CID}`);
+        localInfo = await idb_get(`${props.doenetId}|${pageId}|${attemptNumber}|${cid}`);
       } catch (e) {
         // ignore error
       }
@@ -410,10 +410,10 @@ export default function PageViewer(props) {
           let result = await saveLoadedLocalStateToDatabase(localInfo);
 
           if (result.changedOnDevice) {
-            if (result.newCID !== CID || Number(result.newAttemptNumber) !== attemptNumber) {
+            if (result.newCid !== cid || Number(result.newAttemptNumber) !== attemptNumber) {
               resetPage({
                 changedOnDevice: result.changedOnDevice,
-                newCID: result.newCID,
+                newCid: result.newCid,
                 newAttemptNumber: Number(result.newAttemptNumber),
               })
               return;
@@ -455,7 +455,7 @@ export default function PageViewer(props) {
 
       const payload = {
         params: {
-          CID,
+          cid,
           pageId,
           attemptNumber,
           doenetId: props.doenetId,
@@ -523,10 +523,10 @@ export default function PageViewer(props) {
 
   async function saveLoadedLocalStateToDatabase(localInfo) {
 
-    let serverSaveId = await idb_get(`${props.doenetId}|${pageId}|${attemptNumber}|${CID}|ServerSaveId`);
+    let serverSaveId = await idb_get(`${props.doenetId}|${pageId}|${attemptNumber}|${cid}|ServerSaveId`);
 
     let pageStateToBeSavedToDatabase = {
-      CID,
+      cid,
       coreInfo: JSON.stringify(localInfo.coreInfo, serializedComponentsReplacer),
       coreState: JSON.stringify(localInfo.coreState, serializedComponentsReplacer),
       rendererState: JSON.stringify(localInfo.rendererState, serializedComponentsReplacer),
@@ -544,7 +544,7 @@ export default function PageViewer(props) {
       resp = await axios.post('/api/savePageState.php', pageStateToBeSavedToDatabase);
     } catch (e) {
       // since this is initial load, don't show error message
-      return { localInfo, CID, attemptNumber };
+      return { localInfo, cid, attemptNumber };
     }
 
     console.log('result from saving to db', resp.data)
@@ -553,45 +553,38 @@ export default function PageViewer(props) {
 
     if (!data.success) {
       // since this is initial load, don't show error message
-      return { localInfo, CID, attemptNumber };
+      return { localInfo, cid, attemptNumber };
     }
 
     idb_set(
-      `${props.doenetId}|${pageId}|${attemptNumber}|${CID}|ServerSaveId`,
+      `${props.doenetId}|${pageId}|${attemptNumber}|${cid}|ServerSaveId`,
       data.saveId
     )
 
 
     if (data.stateOverwritten) {
 
-      if (CID !== data.CID || attemptNumber !== Number(data.attemptNumber)
-        || pageStateToBeSavedToDatabase.coreInfo !== data.coreInfo
-        || pageStateToBeSavedToDatabase.coreState !== data.coreState
-        || pageStateToBeSavedToDatabase.rendererState !== data.rendererState
-      ) {
+      let newLocalInfo = {
+        coreState: JSON.parse(data.coreState, serializedComponentsReviver),
+        rendererState: JSON.parse(data.rendererState, serializedComponentsReviver),
+        coreInfo: JSON.parse(data.coreInfo, serializedComponentsReviver),
+        saveId: data.saveId,
+      }
 
-        let newLocalInfo = {
-          coreState: JSON.parse(data.coreState, serializedComponentsReviver),
-          rendererState: JSON.parse(data.rendererState, serializedComponentsReviver),
-          coreInfo: JSON.parse(data.coreInfo, serializedComponentsReviver),
-          saveId: data.saveId,
-        }
+      idb_set(
+        `${props.doenetId}|${pageId}|${data.attemptNumber}|${data.cid}`,
+        newLocalInfo
+      );
 
-        idb_set(
-          `${props.doenetId}|${pageId}|${data.attemptNumber}|${data.CID}`,
-          newLocalInfo
-        );
-
-        return {
-          changedOnDevice: data.device,
-          newLocalInfo,
-          newCID: data.CID,
-          newAttemptNumber: data.attemptNumber,
-        }
+      return {
+        changedOnDevice: data.device,
+        newLocalInfo,
+        newCid: data.cid,
+        newAttemptNumber: data.attemptNumber,
       }
     }
 
-    return { localInfo, CID, attemptNumber };
+    return { localInfo, cid, attemptNumber };
 
   }
 
@@ -605,12 +598,13 @@ export default function PageViewer(props) {
         coreId: coreId.current,
         userId: props.userId,
         doenetML,
-        CID,
+        cid,
         doenetId: props.doenetId,
         flags: props.flags,
         requestedVariantIndex,
         pageId,
         attemptNumber,
+        itemNumber: props.itemNumber,
         updateDataOnContentChange: props.updateDataOnContentChange,
         serverSaveId: initialCoreData.current.serverSaveId,
         requestedVariant: initialCoreData.current.requestedVariant,
@@ -633,7 +627,7 @@ export default function PageViewer(props) {
     let nVariants;
 
     try {
-      let result = await returnAllPossibleVariants({ doenetId: props.doenetId, CID, flags: props.flags });
+      let result = await returnAllPossibleVariants({ doenetId: props.doenetId, cid, flags: props.flags });
       nVariants = result.allPossibleVariants.length;
     } catch (e) {
       let message = `Could not save initial renderer state: ${e.message}`;
@@ -650,7 +644,7 @@ export default function PageViewer(props) {
       messageType: "saveInitialRendererStates",
       args: {
         doenetId: props.doenetId,
-        CID,
+        cid,
         doenetML,
         flags: props.flags,
         nVariants
@@ -680,7 +674,7 @@ export default function PageViewer(props) {
 
 
 
-  // first, if CIDFromProps or doenetMLFromProps don't match props
+  // first, if cidFromProps or doenetMLFromProps don't match props
   // set state to props and record that that need a new core
 
   let changedState = false;
@@ -689,8 +683,8 @@ export default function PageViewer(props) {
     setDoenetMLFromProps(props.doenetML);
     changedState = true;
   }
-  if (CIDFromProps !== props.CID) {
-    setCIDFromProps(props.CID);
+  if (cidFromProps !== props.cid) {
+    setCidFromProps(props.cid);
     changedState = true;
   }
 
@@ -742,7 +736,7 @@ export default function PageViewer(props) {
 
   if (stage == 'recalcParams') {
     setStage('wait');
-    calculateCIDDoenetML();
+    calculateCidDoenetML();
     return null;
   }
 
@@ -785,11 +779,11 @@ export default function PageViewer(props) {
     return null;
   }
 
-  let savesStateButton;
+  let saveStatesButton;
   if (saveStatesWorker) {
-    savesStateButton = <button onClick={() => cancelSaveInitialRendererStates()}>Cancel saving initial renderer states</button>
+    saveStatesButton = <button onClick={() => cancelSaveInitialRendererStates()}>Cancel saving initial renderer states</button>
   } else {
-    savesStateButton = <button onClick={() => saveInitialRendererStates()}>Save initial renderer states</button>
+    saveStatesButton = <button onClick={() => saveInitialRendererStates()}>Save initial renderer states</button>
   }
 
   let noCoreWarning = null;
@@ -803,7 +797,7 @@ export default function PageViewer(props) {
   return <>
     <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
       {noCoreWarning}
-      <p>{savesStateButton}</p>
+      <p>{saveStatesButton}</p>
     </div>
     <div style={pageStyle}>
       {documentRenderer}

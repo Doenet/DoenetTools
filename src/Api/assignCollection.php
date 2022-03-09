@@ -89,20 +89,20 @@ if ($allowed) {
                 FROM user_assignment
                 WHERE userId = '$studentsUserId'
                 AND doenetId = '$entry->doenetId'
-                AND contentId = '$entry->entryContentId'
+                AND cid = '$entry->entryContentId'
                 ";
                 $result = $conn->query($sql);
 
                 if ($result->num_rows < 1) {
                     $sql = "INSERT INTO user_assignment
-                    (doenetId,contentId,userId)
+                    (doenetId,cid,userId)
                     VALUES
                     ('$entry->doenetId','$entry->entryContentId','$studentsUserId')
                     ";
 
                     $result = $conn->query($sql);
                 }
-                $sql = "SELECT contentId
+                $sql = "SELECT cid
                 FROM user_assignment_attempt
                 WHERE userId = '$studentsUserId'
                 AND doenetId = '$entry->doenetId'
@@ -110,20 +110,20 @@ if ($allowed) {
                 ";
                 $result = $conn->query($sql);
                 $row = $result->fetch_assoc();
-                $db_contentId = $row['contentId'];
+                $db_contentId = $row['cid'];
 
                 $sql = "SELECT began
                 FROM user_assignment_attempt
                 WHERE userId = '$studentsUserId'
                 AND doenetId = '$entry->doenetId'
-                AND contentId = '$entry->entryContentId'
+                AND cid = '$entry->entryContentId'
                 AND attemptNumber = '$attemptNumber'
                 ";
                 $result = $conn->query($sql);
 
                 if ($result->num_rows < 1) {
                     $sql = "INSERT INTO user_assignment_attempt
-                    (doenetId,contentId,userId,attemptNumber,assignedVariant)
+                    (doenetId,cid,userId,attemptNumber,assignedVariant)
                     VALUES
                     ('$entry->doenetId','$entry->entryContentId','$studentsUserId','1','$entry->entryVariant')
                     ";
@@ -140,7 +140,7 @@ if ($allowed) {
     http_response_code(200);
 }
 
-//     $contentId = mysqli_real_escape_string($conn, $_POST['contentId']);
+//     $cid = mysqli_real_escape_string($conn, $_POST['cid']);
 //     $attemptNumber = mysqli_real_escape_string($conn, $_POST['attemptNumber']);
 //     $requestedVariant = mysqli_real_escape_string(
 //         $conn,
@@ -154,7 +154,7 @@ if ($allowed) {
 //         FROM  user_assignment_attempt_item
 //         WHERE userId = '$userId'
 //         AND doenetId = '$doenetId'
-//         AND contentId = '$contentId'
+//         AND cid = '$cid'
 //         AND attemptNumber = '$attemptNumber'
 // ";
 
@@ -176,9 +176,9 @@ if ($allowed) {
 //             }
 
 //             $sql = "INSERT INTO user_assignment_attempt_item
-//     (userId,doenetId,contentId,attemptNumber,itemNumber,weight,generatedVariant)
+//     (userId,doenetId,cid,attemptNumber,itemNumber,weight,generatedVariant)
 //     values
-//     ('$userId','$doenetId','$contentId','$attemptNumber','$itemNumber','$weight','$itemVariant')
+//     ('$userId','$doenetId','$cid','$attemptNumber','$itemNumber','$weight','$itemVariant')
 //     ";
 //             $result = $conn->query($sql);
 //         }
