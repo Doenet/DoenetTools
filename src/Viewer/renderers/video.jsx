@@ -8,8 +8,6 @@ import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import cssesc from 'cssesc';
 
-import DoenetRenderer from './DoenetRenderer';
-
 
 export default function Video(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props);

@@ -5,8 +5,7 @@ import { deepClone } from './deepFunctions';
 import { breakEmbeddedStringByCommas } from '../components/commonsugar/breakstrings';
 import { parseAndCompile } from '../../Parser/parser';
 import subsets from './subset-of-reals';
-import axios from 'axios';
-import { retrieveDoenetMLForCID } from './retrieveDoenetML';
+import { retrieveTextFileForCID } from './retrieveTextFile';
 
 export function scrapeOffAllDoumentRelated(serializedComponents) {
 
@@ -236,7 +235,7 @@ function CIDsToDoenetMLs(CIDs) {
   let newCIDs = CIDs;
 
   for (let CID of CIDs) {
-    promises.push(retrieveDoenetMLForCID(CID));
+    promises.push(retrieveTextFileForCID(CID, "doenet"));
   }
 
   return Promise.all(promises).then((newDoenetMLs) => {

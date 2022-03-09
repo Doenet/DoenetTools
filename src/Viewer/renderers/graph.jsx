@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef, createContext } from 'react';
-import DoenetRenderer from './DoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import useDoenetRender from './useDoenetRenderer';
 

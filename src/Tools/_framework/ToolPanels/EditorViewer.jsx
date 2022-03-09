@@ -147,9 +147,9 @@ export default function EditorViewer(){
       solutionDisplayMode: solutionDisplayMode,
       showFeedback: true,
       showHints: true,
-      allowLoadPageState: false,
-      allowSavePageState: false,
-      allowLocalPageState: false,
+      allowLoadState: false,
+      allowSaveState: false,
+      allowLocalState: false,
       allowSaveSubmissions: false,
       allowSaveEvents: false
     }}

@@ -1,0 +1,25 @@
+{
+  "type": "activity",
+  "version": "0.0.1alpha",
+  "title": "My activity",
+  "order": {
+    "type": "order",
+    "behavior": "select",
+    "numberToSelect": 4,
+    "withReplacement": true,
+    "content": [
+      {
+        "type": "page",
+        "CID": "bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu"
+      },
+      {
+        "type": "page",
+        "CID": "bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti"
+      },
+      {
+        "type": "page",
+        "CID": "bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i"
+      }
+    ]
+  }
+}

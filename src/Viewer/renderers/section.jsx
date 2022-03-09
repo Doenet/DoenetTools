@@ -1,5 +1,4 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons';

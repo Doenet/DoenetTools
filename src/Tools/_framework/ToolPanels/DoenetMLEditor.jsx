@@ -15,7 +15,7 @@ import CodeMirror from '../CodeMirror';
 import { itemHistoryAtom, fileByContentId } from '../ToolHandlers/CourseToolHandler';
 import axios from "axios";
 import { nanoid } from 'nanoid';
-import { CIDFromDoenetML } from '../../../Core/utils/cid';
+import { CIDFromText } from '../../../Core/utils/cid';
 
 export const editorSaveTimestamp = atom({
   key:"",
@@ -57,7 +57,7 @@ export default function DoenetMLEditor(props){
       const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
       let newDraft = {...oldVersions.draft};
   
-      const contentId = await CIDFromDoenetML(doenetML);
+      const contentId = await CIDFromText(doenetML);
   
       newDraft.contentId = contentId;
       newDraft.timestamp = buildTimestamp();
@@ -95,7 +95,7 @@ export default function DoenetMLEditor(props){
 
   const autoSave = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-    const contentId = await CIDFromDoenetML(doenetML);
+    const contentId = await CIDFromText(doenetML);
     const timestamp = buildTimestamp();
     const versionId = nanoid();
 
