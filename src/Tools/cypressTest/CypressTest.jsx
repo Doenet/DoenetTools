@@ -22,9 +22,9 @@ function Test() {
     showFeedback:true,
     showHints:true,
     bundledCore:false,
-    allowLoadPageState:false,
-    allowSavePageState:false,
-    allowLocalPageState:false,
+    allowLoadState:false,
+    allowSaveState:false,
+    allowLocalState:false,
     allowSaveSubmissions:false,
     allowSaveEvents:false,
   }
@@ -44,9 +44,9 @@ function Test() {
   const [showHints, setShowHints] = useState(testSettings.showHints);
 
   const [bundledCore, setBundledCore] = useState(testSettings.bundledCore);
-  const [allowLoadPageState, setAllowLoadPageState] = useState(testSettings.allowLoadPageState);
-  const [allowSavePageState, setAllowSavePageState] = useState(testSettings.allowSavePageState);
-  const [allowLocalPageState, setAllowLocalPageState] = useState(testSettings.allowLocalPageState);
+  const [allowLoadState, setAllowLoadState] = useState(testSettings.allowLoadState);
+  const [allowSaveState, setAllowSaveState] = useState(testSettings.allowSaveState);
+  const [allowLocalState, setAllowLocalState] = useState(testSettings.allowLocalState);
   const [allowSaveSubmissions, setAllowSaveSubmissions] = useState(testSettings.allowSaveSubmissions);
   const [allowSaveEvents, setAllowSaveEvents] = useState(testSettings.allowSaveEvents);
   const [_, setRefresh] = useState(0);
@@ -148,33 +148,33 @@ function Test() {
       </div>
      <hr />
       <div>
-        <label> <input id="testRunner_allowLoadPageState" type='checkbox' checked={allowLoadPageState} onChange={
+        <label> <input id="testRunner_allowLoadState" type='checkbox' checked={allowLoadState} onChange={
           () => {
-            testSettings.allowLoadPageState = !testSettings.allowLoadPageState;
+            testSettings.allowLoadState = !testSettings.allowLoadState;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
-            setAllowLoadPageState(was => !was)
+            setAllowLoadState(was => !was)
             setUpdateNumber(was => was+1)
 
           }
         } />Allow Load Page State</label>
       </div>
       <div>
-        <label> <input id="testRunner_allowSavePageState" type='checkbox' checked={allowSavePageState} onChange={
+        <label> <input id="testRunner_allowSaveState" type='checkbox' checked={allowSaveState} onChange={
           () => {
-            testSettings.allowSavePageState = !testSettings.allowSavePageState;
+            testSettings.allowSaveState = !testSettings.allowSaveState;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
-            setAllowSavePageState(was => !was)
+            setAllowSaveState(was => !was)
             setUpdateNumber(was => was+1)
 
           }
         } />Allow Save Page State</label>
       </div>
       <div>
-        <label> <input id="testRunner_allowLocalPageState" type='checkbox' checked={allowLocalPageState} onChange={
+        <label> <input id="testRunner_allowLocalState" type='checkbox' checked={allowLocalState} onChange={
           () => {
-            testSettings.allowLocalPageState = !testSettings.allowLocalPageState;
+            testSettings.allowLocalState = !testSettings.allowLocalState;
             localStorage.setItem("test settings",JSON.stringify(testSettings))
-            setAllowLocalPageState(was => !was)
+            setAllowLocalState(was => !was)
             setUpdateNumber(was => was+1)
 
           }
@@ -232,7 +232,7 @@ function Test() {
       <DoenetViewer
         key={"doenetviewer"+updateNumber}
         doenetML={doenetML}
-        // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
+        // cid={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
         flags={{
           showCorrectness,
           readOnly,
@@ -241,9 +241,9 @@ function Test() {
           showHints,
         }}
         attemptNumber={attemptNumber}
-        allowLoadPageState={allowLoadPageState}
-        allowSavePageState={allowSavePageState}
-        allowLocalPageState={allowLocalPageState}
+        allowLoadState={allowLoadState}
+        allowSaveState={allowSaveState}
+        allowLocalState={allowLocalState}
         allowSaveSubmissions={allowSaveSubmissions}
         allowSaveEvents={allowSaveEvents}
         requestedVariant={requestedVariant.current}

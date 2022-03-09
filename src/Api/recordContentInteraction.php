@@ -17,7 +17,7 @@ $device = $jwtArray['deviceName'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
-$contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
+$cid =  mysqli_real_escape_string($conn,$_POST["cid"]);
 $stateVariables =  mysqli_real_escape_string($conn,$_POST["stateVariables"]);
 $variant =  mysqli_real_escape_string($conn,$_POST["variant"]);
 $attemptNumber =  mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
@@ -28,9 +28,9 @@ $message = "";
 if ($doenetId == ""){
 $success = FALSE;
 $message = 'Internal Error: missing doenetId';
-}elseif ($contentId == ""){
+}elseif ($cid == ""){
 $success = FALSE;
-$message = 'Internal Error: missing contentId';
+$message = 'Internal Error: missing cid';
 }elseif ($stateVariables == ""){
 $success = FALSE;
 $message = 'Internal Error: missing stateVariables';
@@ -70,7 +70,7 @@ if ($result->num_rows > 0) {
   $sql = "
   UPDATE content_interactions
   SET deviceName = '$device', 
-  contentId = '$contentId', 
+  cid = '$cid', 
   stateVariables = '$stateVariables',
   variant = '$variant',
   timestamp = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
@@ -81,8 +81,8 @@ if ($result->num_rows > 0) {
 
 }else{
 
-  $sql = "INSERT INTO content_interactions (userId,deviceName,doenetId,contentId,stateVariables,variant,attemptNumber,timestamp)
-  VALUES ('$userId','$device','$doenetId','$contentId','$stateVariables','$variant','$attemptNumber',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
+  $sql = "INSERT INTO content_interactions (userId,deviceName,doenetId,cid,stateVariables,variant,attemptNumber,timestamp)
+  VALUES ('$userId','$device','$doenetId','$cid','$stateVariables','$variant','$attemptNumber',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
 
 }
 $result = $conn->query($sql);

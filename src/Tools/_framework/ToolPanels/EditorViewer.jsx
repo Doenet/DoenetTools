@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import DoenetViewer from '../../../Viewer/DoenetViewer';
+import PageViewer from '../../../Viewer/PageViewer';
 import { 
   useRecoilValue, 
   atom,
@@ -63,8 +63,8 @@ export default function EditorViewer(){
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
-    const contentId = versionHistory.draft.contentId;
-    let response = await snapshot.getPromise(fileByContentId(contentId));
+    const cid = versionHistory.draft.cid;
+    let response = await snapshot.getPromise(fileByContentId(cid));
     if (typeof response === "object"){
       response = response.data;
     }
@@ -131,15 +131,14 @@ export default function EditorViewer(){
 
 
 
-  // console.log(`>>>>Show DoenetViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
+  console.log(`>>>>Show PageViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
   // console.log(`>>>> refreshNumber -${refreshNumber}-`)
   // console.log(`>>>> attemptNumber -${attemptNumber}-`)
-  // console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
+  // console.log('>>>PageViewer Read Only:',!isCurrentDraft)
   // console.log('>>>>variantInfo.requestedVariant',variantInfo.requestedVariant)
 
-  return <MemoDoenetViewer
-  // return <DoenetViewer
-    key={`doenetviewer${refreshNumber}`}
+  return <PageViewer
+    key={`pageViewer${refreshNumber}`}
     doenetML={viewerDoenetML}
     flags={{
       showCorrectness: true,
@@ -157,14 +156,8 @@ export default function EditorViewer(){
     generatedVariantCallback={variantCallback} //TODO:Replace
     requestedVariant={variantInfo.requestedVariant}
     setIsInErrorState={setIsInErrorState}
+    pageIsActive={true}
     /> 
 }
 
-const MemoDoenetViewer = React.memo(DoenetViewer,(prev,next)=>{
-  //Only refresh if doenetML or variant changes
-  if (prev.doenetML !== next.doenetML){ return false;}
-  if (prev.requestedVariant?.name !== next.requestedVariant?.name){ return false;}
-  if (prev.requestedVariant?.index !== next.requestedVariant?.index){ return false;}
-  return true;
-});
 

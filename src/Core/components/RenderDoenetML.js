@@ -210,7 +210,7 @@ export default class RenderDoenetML extends CompositeComponent {
 
     try {
       let expandResult = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
-        CIDs: [], doenetMLs: [doenetML],
+        cids: [], doenetMLs: [doenetML],
         componentInfoObjects,
         flags,
       });

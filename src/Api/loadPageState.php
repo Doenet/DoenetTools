@@ -14,7 +14,7 @@ $examDoenetId = $jwtArray["doenetId"];
 
 // $device = $jwtArray['deviceName'];
 
-$CID = mysqli_real_escape_string($conn, $_REQUEST["CID"]);
+$cid = mysqli_real_escape_string($conn, $_REQUEST["cid"]);
 $pageId = mysqli_real_escape_string($conn, $_REQUEST["pageId"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_REQUEST["attemptNumber"]);
 $doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
@@ -31,9 +31,9 @@ $paramUserId = mysqli_real_escape_string($conn, $_REQUEST["userId"]);
 
 $success = true;
 $message = "";
-if ($CID == "") {
+if ($cid == "") {
     $success = false;
-    $message = "Internal Error: missing CID";
+    $message = "Internal Error: missing cid";
 } elseif ($pageId == "") {
     $success = false;
     $message = "Internal Error: missing pageId";
@@ -88,7 +88,7 @@ if ($success) {
             FROM page_state
             WHERE userId = '$effectiveUserId'
             AND doenetId = '$doenetId'
-            AND CID = '$CID'
+            AND cid = '$cid'
             AND pageId='$pageId'
             AND attemptNumber='$attemptNumber'
             ";
@@ -104,7 +104,7 @@ if ($success) {
             $saveId = $row["saveId"];
             $loadedState = true;
 
-            // TODO: check if instructor changed CID
+            // TODO: check if instructor changed cid
         }
     }
 
@@ -114,7 +114,7 @@ if ($success) {
 
         $sql = "SELECT rendererState, coreInfo
             FROM initial_renderer_state
-            WHERE CID = '$CID'
+            WHERE cid = '$cid'
             AND variantIndex = '$requestedVariantIndex'
             ";
 

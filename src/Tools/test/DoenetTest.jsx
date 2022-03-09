@@ -259,7 +259,7 @@ function Test() {
         key={"activityViewer" + updateNumber}
         // doenetML={doenetML}
         activityDefinition={resultingActivityDefinition}
-        // CID={"bafkreidadc4brxaywzls6o7tknnmvktsrmzd7h367225gypopz3g7vlg7q"}
+        // cid={"bafkreigruw4fxnisjul3oer255qd5mqxaqmbp7j2rywmkzoyg7wfoxzduq"}
         updateDataOnContentChange={true}
         flags={{
           showCorrectness,

@@ -15,7 +15,7 @@ $examDoenetId = array_key_exists("doenetId",$jwtArray) ? $jwtArray['doenetId'] :
 
 $device = $jwtArray['deviceName'];
 
-$contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
+$cid = mysqli_real_escape_string($conn,$_REQUEST["cid"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_REQUEST["attemptNumber"]);
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 $paramUserId = mysqli_real_escape_string($conn,$_REQUEST["userId"]);
@@ -23,9 +23,9 @@ $pageStateSource = mysqli_real_escape_string($conn,$_REQUEST["pageStateSource"])
 
 $success = TRUE;
 $message = "";
-if ($contentId == ""){
+if ($cid == ""){
 $success = FALSE;
-$message = 'Internal Error: missing contentId';
+$message = 'Internal Error: missing cid';
 }elseif ($attemptNumber == ""){
 $success = FALSE;
 $message = 'Internal Error: missing attemptNumber';
@@ -77,7 +77,7 @@ if ($pageStateSource == "submissions"){
   LEFT JOIN user_assignment_attempt AS a
   ON a.userId = s.userId AND a.doenetId = s.doenetId AND a.attemptNumber = s.attemptNumber
   WHERE s.userId='$effectiveUserId'
-  AND s.contentId='$contentId'
+  AND s.cid='$cid'
   AND s.attemptNumber='$attemptNumber'
   AND s.doenetId='$doenetId'
   ORDER BY s.submittedDate DESC, s.id DESC
@@ -87,7 +87,7 @@ if ($pageStateSource == "submissions"){
   $sql = "SELECT stateVariables, variant
   FROM content_interactions
   WHERE userId='$effectiveUserId'
-  AND contentId='$contentId'
+  AND cid='$cid'
   AND attemptNumber='$attemptNumber'
   AND doenetId='$doenetId'
   ORDER BY timestamp DESC, id DESC

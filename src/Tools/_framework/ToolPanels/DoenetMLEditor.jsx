@@ -15,7 +15,7 @@ import CodeMirror from '../CodeMirror';
 import { itemHistoryAtom, fileByContentId } from '../ToolHandlers/CourseToolHandler';
 import axios from "axios";
 import { nanoid } from 'nanoid';
-import { CIDFromText } from '../../../Core/utils/cid';
+import { cidFromText } from '../../../Core/utils/cid';
 
 export const editorSaveTimestamp = atom({
   key:"",
@@ -57,21 +57,21 @@ export default function DoenetMLEditor(props){
       const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
       let newDraft = {...oldVersions.draft};
   
-      const contentId = await CIDFromText(doenetML);
+      const cid = await cidFromText(doenetML);
   
-      newDraft.contentId = contentId;
+      newDraft.cid = cid;
       newDraft.timestamp = buildTimestamp();
   
       set(itemHistoryAtom(doenetId),(was)=>{
         let asyncDraft = {...was.draft}
-        asyncDraft.contentId = contentId;
+        asyncDraft.cid = cid;
         asyncDraft.timestamp = newDraft.timestamp;
         let asyncReplacement = {...was}
         asyncReplacement.draft = asyncDraft;
         return asyncReplacement})
-      set(fileByContentId(contentId),doenetML)
+      set(fileByContentId(cid),doenetML)
       //Save in localStorage
-      // localStorage.setItem(contentId,doenetML)
+      // localStorage.setItem(cid,doenetML)
   
       let newDBVersion = {...newDraft,
         doenetML,
@@ -95,12 +95,12 @@ export default function DoenetMLEditor(props){
 
   const autoSave = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-    const contentId = await CIDFromText(doenetML);
+    const cid = await cidFromText(doenetML);
     const timestamp = buildTimestamp();
     const versionId = nanoid();
 
     let newVersion = {
-      contentId,
+      cid,
       versionId,
       timestamp,
       isDraft:'0',
@@ -119,7 +119,7 @@ export default function DoenetMLEditor(props){
           return newVersions
         })
 
-      set(fileByContentId(contentId),doenetML);
+      set(fileByContentId(cid),doenetML);
   
     try {
       const resp = await axios.post("/api/saveNewVersion.php",newDBVersion)

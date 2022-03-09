@@ -294,7 +294,7 @@ export default class Copy extends CompositeComponent {
       },
     };
 
-    stateVariableDefinitions.CID = {
+    stateVariableDefinitions.cid = {
       additionalStateVariablesDefined: ["doenetId"],
       returnDependencies: () => ({
         uri: {
@@ -307,31 +307,31 @@ export default class Copy extends CompositeComponent {
           dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            setValue: { CID: null, doenetId: null }
+            setValue: { cid: null, doenetId: null }
           }
         }
 
-        let CID = null, doenetId = null;
+        let cid = null, doenetId = null;
 
-        let result = dependencyValues.uri.match(/[:&]CID=([^&]+)/i);
+        let result = dependencyValues.uri.match(/[:&]cid=([^&]+)/i);
         if (result) {
-          CID = result[1];
+          cid = result[1];
         }
         result = dependencyValues.uri.match(/[:&]doenetid=([^&]+)/i);
         if (result) {
           doenetId = result[1];
         }
 
-        return { setValue: { CID, doenetId } };
+        return { setValue: { cid, doenetId } };
       },
     };
 
 
-    stateVariableDefinitions.serializedComponentsForCID = {
+    stateVariableDefinitions.serializedComponentsForCid = {
       returnDependencies: () => ({
-        CID: {
+        cid: {
           dependencyType: "stateVariable",
-          variableName: "CID"
+          variableName: "cid"
         },
         externalContentChild: {
           dependencyType: "child",
@@ -340,30 +340,30 @@ export default class Copy extends CompositeComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.CID) {
+        if (!dependencyValues.cid) {
           return {
-            setValue: { serializedComponentsForCID: null }
+            setValue: { serializedComponentsForCid: null }
           }
         }
         let externalContentChild = dependencyValues.externalContentChild[0];
         if (!externalContentChild) {
           return {
-            setValue: { serializedComponentsForCID: null }
+            setValue: { serializedComponentsForCid: null }
           }
         }
         let childrenOfContent = externalContentChild.stateValues.serializedChildren;
-        let serializedComponentsForCID = {
+        let serializedComponentsForCid = {
           componentType: "externalContent",
           state: { rendered: true },
           children: childrenOfContent,
           originalName: externalContentChild.componentName,
         }
         if (externalContentChild.stateValues.newNamespace) {
-          serializedComponentsForCID.attributes = { newNamespace: { primitive: true } }
+          serializedComponentsForCid.attributes = { newNamespace: { primitive: true } }
         }
         return {
           setValue: {
-            serializedComponentsForCID
+            serializedComponentsForCid
           }
         }
       }
@@ -661,9 +661,9 @@ export default class Copy extends CompositeComponent {
           dependencyType: "attributePrimitive",
           attributeName: "link"
         },
-        serializedComponentsForCID: {
+        serializedComponentsForCid: {
           dependencyType: "stateVariable",
-          variableName: "serializedComponentsForCID",
+          variableName: "serializedComponentsForCid",
         },
         replacementSourceIdentities: {
           dependencyType: "stateVariable",
@@ -673,7 +673,7 @@ export default class Copy extends CompositeComponent {
       definition({ dependencyValues, componentInfoObjects }) {
         let link;
         if (dependencyValues.linkAttr === null) {
-          if (dependencyValues.serializedComponentsForCID ||
+          if (dependencyValues.serializedComponentsForCid ||
             dependencyValues.replacementSourceIdentities &&
             dependencyValues.replacementSourceIdentities.some(x =>
               componentInfoObjects.isInheritedComponentType({
@@ -714,9 +714,9 @@ export default class Copy extends CompositeComponent {
           //   dependencyType: "stateVariable",
           //   variableName: "replacementSources",
           // },
-          serializedComponentsForCID: {
+          serializedComponentsForCid: {
             dependencyType: "stateVariable",
-            variableName: "serializedComponentsForCID",
+            variableName: "serializedComponentsForCid",
           },
           link: {
             dependencyType: "stateVariable",
@@ -909,11 +909,6 @@ export default class Copy extends CompositeComponent {
     workspace.sourceNames = [];
     workspace.uniqueIdentifiersUsedBySource = {};
 
-    // if (component.state.CIDChild !== undefined) {
-    //   if (!component.state.serializedComponentsForCID) {
-    //     return { replacements: [] };
-    //   }
-    // }
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
@@ -921,12 +916,12 @@ export default class Copy extends CompositeComponent {
 
     let assignNames = await component.stateValues.effectiveAssignNames;
 
-    let serializedComponentsForCID = await component.stateValues.serializedComponentsForCID;
+    let serializedComponentsForCid = await component.stateValues.serializedComponentsForCid;
 
-    if (serializedComponentsForCID) {
+    if (serializedComponentsForCid) {
       // Note: any attributes (other than hide) specified on copy are ignored
       // when have serialized components from uri
-      let replacements = [deepClone(serializedComponentsForCID)];
+      let replacements = [deepClone(serializedComponentsForCid)];
 
       if (replacements[0].children) {
         serializeFunctions.restrictTNamesToNamespace({
@@ -1466,8 +1461,8 @@ export default class Copy extends CompositeComponent {
 
     // console.log("Calculating replacement changes for " + component.componentName);
 
-    // if copying a CID, no changes
-    if (await component.stateValues.serializedComponentsForCID) {
+    // if copying a cid, no changes
+    if (await component.stateValues.serializedComponentsForCid) {
       return [];
     }
 
