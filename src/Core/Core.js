@@ -3294,7 +3294,8 @@ export default class Core {
           return result;
 
         };
-        stateDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
+        stateDef.excludeDependencyValuesInInverseDefinition = true;
+        stateDef.inverseDefinition = function ({ desiredStateVariableValues }) {
 
           return {
             success: true,
@@ -5365,10 +5366,15 @@ export default class Core {
   }
 
 
-  async getStateVariableDefinitionArguments({ component, stateVariable }) {
+  async getStateVariableDefinitionArguments({ component, stateVariable, excludeDependencyValues }) {
     // console.log(`get state variable dependencies of ${component.componentName}, ${stateVariable}`)
 
-    let args = await this.dependencies.getStateVariableDependencyValues({ component, stateVariable });
+    let args;
+    if (excludeDependencyValues) {
+      args = {};
+    } else {
+      args = await this.dependencies.getStateVariableDependencyValues({ component, stateVariable });
+    }
 
     args.componentName = component.componentName;
 
@@ -8444,7 +8450,10 @@ export default class Core {
     }
 
 
-    let inverseDefinitionArgs = await this.getStateVariableDefinitionArguments({ component, stateVariable });
+    let inverseDefinitionArgs = await this.getStateVariableDefinitionArguments({
+      component, stateVariable,
+      excludeDependencyValues: stateVarObj.excludeDependencyValuesInInverseDefinition
+    });
     inverseDefinitionArgs.componentInfoObjects = this.componentInfoObjects;
     inverseDefinitionArgs.initialChange = initialChange;
     inverseDefinitionArgs.stateValues = component.stateValues;

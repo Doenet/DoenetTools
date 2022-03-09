@@ -3479,13 +3479,13 @@ class RecursiveDependencyValuesDependency extends Dependency {
         for (let vName of result.components[componentName].variableNames) {
           if (component.state[vName]?.hasEssential) {
             essentialVarNames.push(vName)
-          } else if(component.state[vName]?.isArrayEntry) {
-            if(component.state[component.state[vName].arrayStateVariable].hasEssential) {
+          } else if (component.state[vName]?.isArrayEntry) {
+            if (component.state[component.state[vName].arrayStateVariable].hasEssential) {
               essentialVarNames.push(vName);
             }
           }
         }
-        if(essentialVarNames.length > 0) {
+        if (essentialVarNames.length > 0) {
           downstreamComponentNames.push(componentName)
           downstreamComponentTypes.push(result.components[componentName].componentType);
           this.originalDownstreamVariableNamesByComponent.push(essentialVarNames);
