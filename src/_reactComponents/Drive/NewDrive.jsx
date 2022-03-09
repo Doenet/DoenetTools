@@ -321,7 +321,7 @@ export default function Drive(props) {
 
   const isNav = false;
   const [driveId, parentFolderId, itemId, type] = props.path.split(':');
-  const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
+  const drivesAvailable = useRecoilValueLoadable(fetchCoursesQuery);
   const { driveIdsAndLabels } = drivesAvailable.getValue();
   const [numColumns, setNumColumns] = useState(1);
   const setDriveInstanceId = useSetRecoilState(
@@ -779,13 +779,14 @@ export function DriveHeader({
   );
 }
 
-export const fetchDrivesQuery = atom({
-  key: 'fetchDrivesQuery',
+export const fetchCoursesQuery = atom({
+  key: 'fetchCoursesQuery',
   default: selector({
-    key: 'fetchDrivesQuery/Default',
+    key: 'fetchCoursesQuery/Default',
     get: async () => {
-      const { data } = await axios.get(`/api/loadAvailableDrives.php`);
-      return data;
+      const { data:oldData } = await axios.get(`/api/loadAvailableDrives.php`);
+      console.log("oldData",oldData);
+      return oldData;
     },
   }),
 });
@@ -793,11 +794,11 @@ export const fetchDrivesQuery = atom({
 export const fetchDrivesSelector = selector({
   key: 'fetchDrivesSelector',
   get: ({ get }) => {
-    return get(fetchDrivesQuery);
+    return get(fetchCoursesQuery);
   },
   set: ({ get, set }, labelTypeDriveIdColorImage) => {
     // console.log(labelTypeDriveIdColorImage);
-    let driveData = get(fetchDrivesQuery);
+    let driveData = get(fetchCoursesQuery);
     // let selectedDrives = get(selectedDriveInformation);
     let newDriveData = { ...driveData };
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
@@ -879,7 +880,7 @@ export const fetchDrivesSelector = selector({
         type: 'content',
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
 
       const payload = { params };
       axios.get('/api/addDrive.php', payload)
@@ -895,7 +896,7 @@ export const fetchDrivesSelector = selector({
         subType: 'Administrator',
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
 
       const payload = { params };
       axios.get('/api/addDrive.php', payload);
@@ -911,7 +912,7 @@ export const fetchDrivesSelector = selector({
         }
       }
       //Set drive
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       //Save to db
       const payload = { params };
       axios.get('/api/updateDrive.php', payload);
@@ -928,7 +929,7 @@ export const fetchDrivesSelector = selector({
         }
       }
       //Set drive
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       //Save to db
       const payload = { params };
       axios.get('/api/updateDrive.php', payload);
@@ -945,7 +946,7 @@ export const fetchDrivesSelector = selector({
         }
       }
       //Set drive
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       //Save to db
       const payload = { params };
       axios.get('/api/updateDrive.php', payload);
@@ -966,7 +967,7 @@ export const fetchDrivesSelector = selector({
       }
 
       //Set drive
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       //Save to db
       const payload = { params };
       axios.get('/api/updateDrive.php', payload);

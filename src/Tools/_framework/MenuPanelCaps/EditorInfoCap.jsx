@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { folderDictionary, fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { folderDictionary, fetchCoursesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
 // import { ClipboardLinkButtons } from '../ToolHandlers/CourseToolHandler';
 
@@ -8,7 +8,7 @@ export default function EditorInfoCap(){
   let path = useRecoilValue(searchParamAtomFamily('path'));
   let [driveId,folderId,doenetId] = path.split(':');
   let folderInfo = useRecoilValue(folderDictionary({driveId,folderId}))
-  const driveInfo = useRecoilValue(fetchDrivesQuery)
+  const driveInfo = useRecoilValue(fetchCoursesQuery)
 
   const docInfo = folderInfo.contentsDictionary[doenetId]
   if (!docInfo){ return null;}

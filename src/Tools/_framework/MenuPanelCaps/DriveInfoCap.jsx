@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { fetchCoursesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
@@ -11,7 +11,7 @@ export default function DriveInfoCap(){
   if (!driveId){
     driveId = path.split(':')[0]
   }
-  const driveInfo = useRecoilValue(fetchDrivesQuery)
+  const driveInfo = useRecoilValue(fetchCoursesQuery)
   let roles;
   let image;
   let color;

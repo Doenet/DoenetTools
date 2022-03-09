@@ -7,7 +7,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useRecoilCallback } from 'recoil';
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { fetchCoursesQuery } from '../../../_reactComponents/Drive/NewDrive';
 
 
 const CreateCourse = (props) =>{
@@ -41,7 +41,7 @@ const CreateCourse = (props) =>{
 
     result.then((resp) => {
       if (resp.data.success){
-        set(fetchDrivesQuery,(oldDrivesInfo)=>{
+        set(fetchCoursesQuery,(oldDrivesInfo)=>{
           let newDrivesInfo = {...oldDrivesInfo}
           newDrivesInfo.driveIdsAndLabels = [newDrive,...oldDrivesInfo.driveIdsAndLabels]
           return newDrivesInfo

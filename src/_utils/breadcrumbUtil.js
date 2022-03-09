@@ -2,7 +2,7 @@ import { faTh } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { selectorFamily, useRecoilCallback, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
-import { fetchDrivesQuery, loadDriveInfoQuery, folderDictionary } from '../_reactComponents/Drive/NewDrive';
+import { fetchCoursesQuery, loadDriveInfoQuery, folderDictionary } from '../_reactComponents/Drive/NewDrive';
 import { effectiveRoleAtom } from '../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { studentData, assignmentData } from '../Tools/_framework/ToolPanels/Gradebook';
 
@@ -22,7 +22,7 @@ export function useCourseChooserCrumb(){
 export function useDashboardCrumb(driveId){
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const drives = useRecoilValue(fetchDrivesQuery);
+  const drives = useRecoilValue(fetchCoursesQuery);
 
   let label;
 

@@ -8,7 +8,7 @@ import {
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 // import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
-import { fetchDrivesQuery } from '../Drive/NewDrive';
+import { fetchCoursesQuery } from '../Drive/NewDrive';
 import DropdownMenu from './DropdownMenu';
 
 export const effectiveRoleAtom = atom({
@@ -50,7 +50,7 @@ export function RoleDropdown() {
         //If driveId then test if intructor is available
         // const path = await snapshot.getPromise(searchParamAtomFamily('path'));
         if (driveId !== '') {
-          const driveInfo = await snapshot.getPromise(fetchDrivesQuery);
+          const driveInfo = await snapshot.getPromise(fetchCoursesQuery);
 
           for (let drive of driveInfo.driveIdsAndLabels) {
             if (drive.driveId === driveId) {

@@ -12,7 +12,8 @@ import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import { pageToolViewAtom } from '../NewToolRoot';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
-import { clearDriveAndItemSelections, fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { clearDriveAndItemSelections } from '../../../_reactComponents/Drive/NewDrive';
+import { fetchCoursesQueryOld ,fetchCoursesQuery } from '../../../_reactComponents/Course/CourseActions';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import useMedia from './useMedia';
 import './driveCardsStyle.css';
@@ -20,7 +21,8 @@ import './driveCardsStyle.css';
 export default function DriveCardsNew(props) {
   console.log('>>>===DriveCards');
 
-  const driveInfo = useRecoilValueLoadable(fetchDrivesQuery);
+  const driveInfo = useRecoilValueLoadable(fetchCoursesQueryOld);
+  console.log("old driveInfo",driveInfo)
 
   let driveIdsAndLabelsInfo = '';
 
