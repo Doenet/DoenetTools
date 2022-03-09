@@ -3,7 +3,6 @@ import styled, { ThemeProvider } from 'styled-components';
 
 const Container = styled.div`
   display: ${(props) => props.vertical ? 'static' : 'flex'};
-  // margin: 2px 0px 2px 0px
 `;
 
 const LabelContainer = styled.div`
@@ -15,7 +14,6 @@ const Label = styled.p`
   font-size: 14px;
   display: ${props => props.labelVisible};
   margin-right: 5px;
-  margin-left: 4px;
   margin-bottom: ${props => props.align == 'flex' ? 'none' : '2px'};
 `;
 
@@ -53,7 +51,7 @@ const ActionButtonGroup = (props) => {
   const labelVisible = props.label ? 'static' : 'none';
   var label = '';
   var align = 'flex';
-  var alignItems = 'none';
+  var alignItems = 'center';
 
   if (props.label) {
     label = props.label;
@@ -63,14 +61,16 @@ const ActionButtonGroup = (props) => {
   };
 
   return (
-    <Container vertical={props.vertical}>
-      <LabelContainer align={align} alignItems={alignItems}>
-        <Label labelVisible={labelVisible} align={align}>{label}</Label>
-      </LabelContainer>
-      <ThemeProvider theme={props.vertical ? verticalActionGroup : actionGroup}>{elem}</ThemeProvider>
-    </Container>
+    <>
+    <LabelContainer align={align} alignItems={alignItems}>
+      <Label labelVisible={labelVisible} align={align}>{label}</Label>
+      <Container vertical={props.vertical}>
+        <ThemeProvider theme={props.vertical ? verticalActionGroup : actionGroup}>{elem}</ThemeProvider>
+      </Container>
+    </LabelContainer>
+    </>
   )
-}
+};
 
 export default ActionButtonGroup;
 
