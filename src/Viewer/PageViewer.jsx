@@ -564,30 +564,23 @@ export default function PageViewer(props) {
 
     if (data.stateOverwritten) {
 
-      if (cid !== data.cid || attemptNumber !== Number(data.attemptNumber)
-        || pageStateToBeSavedToDatabase.coreInfo !== data.coreInfo
-        || pageStateToBeSavedToDatabase.coreState !== data.coreState
-        || pageStateToBeSavedToDatabase.rendererState !== data.rendererState
-      ) {
+      let newLocalInfo = {
+        coreState: JSON.parse(data.coreState, serializedComponentsReviver),
+        rendererState: JSON.parse(data.rendererState, serializedComponentsReviver),
+        coreInfo: JSON.parse(data.coreInfo, serializedComponentsReviver),
+        saveId: data.saveId,
+      }
 
-        let newLocalInfo = {
-          coreState: JSON.parse(data.coreState, serializedComponentsReviver),
-          rendererState: JSON.parse(data.rendererState, serializedComponentsReviver),
-          coreInfo: JSON.parse(data.coreInfo, serializedComponentsReviver),
-          saveId: data.saveId,
-        }
+      idb_set(
+        `${props.doenetId}|${pageId}|${data.attemptNumber}|${data.cid}`,
+        newLocalInfo
+      );
 
-        idb_set(
-          `${props.doenetId}|${pageId}|${data.attemptNumber}|${data.cid}`,
-          newLocalInfo
-        );
-
-        return {
-          changedOnDevice: data.device,
-          newLocalInfo,
-          newCid: data.cid,
-          newAttemptNumber: data.attemptNumber,
-        }
+      return {
+        changedOnDevice: data.device,
+        newLocalInfo,
+        newCid: data.cid,
+        newAttemptNumber: data.attemptNumber,
       }
     }
 
@@ -786,11 +779,11 @@ export default function PageViewer(props) {
     return null;
   }
 
-  let savesStateButton;
+  let saveStatesButton;
   if (saveStatesWorker) {
-    savesStateButton = <button onClick={() => cancelSaveInitialRendererStates()}>Cancel saving initial renderer states</button>
+    saveStatesButton = <button onClick={() => cancelSaveInitialRendererStates()}>Cancel saving initial renderer states</button>
   } else {
-    savesStateButton = <button onClick={() => saveInitialRendererStates()}>Save initial renderer states</button>
+    saveStatesButton = <button onClick={() => saveInitialRendererStates()}>Save initial renderer states</button>
   }
 
   let noCoreWarning = null;
@@ -804,7 +797,7 @@ export default function PageViewer(props) {
   return <>
     <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
       {noCoreWarning}
-      <p>{savesStateButton}</p>
+      <p>{saveStatesButton}</p>
     </div>
     <div style={pageStyle}>
       {documentRenderer}

@@ -155,6 +155,7 @@ export default function ActivityViewer(props) {
 
     let loadedState = false;
     let newItemWeights;
+    let newCurrentPage;
 
     if (props.flags.allowLocalState) {
 
@@ -196,7 +197,8 @@ export default function ActivityViewer(props) {
         serverSaveId.current = localInfo.saveId;
 
         // activityState is just currentPage
-        setCurrentPage(localInfo.activityState.currentPage);
+        newCurrentPage = localInfo.activityState.currentPage
+        setCurrentPage(newCurrentPage);
 
         // activityInfo is orderWithCids and variantsByItem
         let newActivityInfo = localInfo.activityInfo;
@@ -257,7 +259,8 @@ export default function ActivityViewer(props) {
           let activityState = JSON.parse(resp.data.activityState);
 
           // activityState is just currentPage
-          setCurrentPage(activityState.currentPage);
+          newCurrentPage = activityState.currentPage;
+          setCurrentPage(newCurrentPage);
 
           // activityInfo is orderWithCids and variantsByItem
           setVariantIndex(resp.data.variantIndex);
@@ -276,6 +279,7 @@ export default function ActivityViewer(props) {
           // get initial state and info
 
           // state at page 1
+          newCurrentPage = 1;
           setCurrentPage(1);
 
           let results = await calculateOrderAndVariants();
@@ -317,7 +321,7 @@ export default function ActivityViewer(props) {
 
     }
 
-    pageAtPreviousSave.current = currentPage;
+    pageAtPreviousSave.current = newCurrentPage;
 
 
     return { newItemWeights };
@@ -366,29 +370,23 @@ export default function ActivityViewer(props) {
 
     if (data.stateOverwritten) {
 
-      if (cid !== data.cid || attemptNumber !== Number(data.attemptNumber)
-        || activityStateToBeSavedToDatabase.activityInfo !== data.activityInfo
-        || activityStateToBeSavedToDatabase.activityState !== data.activityState
-      ) {
+      let newLocalInfo = {
+        activityState: JSON.parse(data.activityState),
+        activityInfo: JSON.parse(data.activityInfo),
+        saveId: data.saveId,
+        variantIndex: data.variantIndex,
+      }
 
-        let newLocalInfo = {
-          activityState: JSON.parse(data.activityState),
-          activityInfo: JSON.parse(data.activityInfo),
-          saveId: data.saveId,
-          variantIndex: data.variantIndex,
-        }
+      idb_set(
+        `${props.doenetId}|${data.attemptNumber}|${data.cid}`,
+        newLocalInfo
+      );
 
-        idb_set(
-          `${props.doenetId}|${data.attemptNumber}|${data.cid}`,
-          newLocalInfo
-        );
-
-        return {
-          changedOnDevice: data.device,
-          newLocalInfo,
-          newCid: data.cid,
-          newAttemptNumber: data.attemptNumber,
-        }
+      return {
+        changedOnDevice: data.device,
+        newLocalInfo,
+        newCid: data.cid,
+        newAttemptNumber: data.attemptNumber,
       }
     }
 

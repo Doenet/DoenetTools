@@ -254,6 +254,8 @@ export default class Core {
       .map(x => JSON.stringify(x, serializeFunctions.serializedComponentsReplacer));
 
     // Note: coreInfo is fixed even though this.rendererTypesInDocument could change
+    // Note 2: both canonical variant strings and original rendererTypesInDocument
+    // could differ depending on the initial state
     this.coreInfo = {
       generatedVariantString: this.canonicalGeneratedVariantString,
       allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
