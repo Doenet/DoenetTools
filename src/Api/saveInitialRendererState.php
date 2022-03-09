@@ -12,7 +12,7 @@ $userId = $jwtArray["userId"];
 
 $_POST = json_decode(file_get_contents("php://input"), true);
 $doenetId = mysqli_real_escape_string($conn, $_POST["doenetId"]);
-$CID = mysqli_real_escape_string($conn, $_POST["CID"]);
+$cid = mysqli_real_escape_string($conn, $_POST["cid"]);
 $coreInfo = mysqli_real_escape_string($conn, $_POST["coreInfo"]);
 $rendererState = mysqli_real_escape_string($conn, $_POST["rendererState"]);
 $variantIndex = mysqli_real_escape_string($conn, $_POST["variantIndex"]);
@@ -22,9 +22,9 @@ $message = "";
 if ($doenetId == "") {
     $success = false;
     $message = "Internal Error: missing doenetId";
-} elseif ($CID == "") {
+} elseif ($cid == "") {
     $success = false;
-    $message = "Internal Error: missing CID";
+    $message = "Internal Error: missing cid";
 } elseif ($coreInfo == "") {
     $success = false;
     $message = "Internal Error: missing coreInfo";
@@ -69,8 +69,8 @@ if ($doenetId == "") {
 
 if ($success) {
     $sql = "INSERT INTO initial_renderer_state
-        (CID, variantIndex, rendererState, coreInfo) 
-        VALUES ('$CID', '$variantIndex', '$rendererState', '$coreInfo')
+        (cid, variantIndex, rendererState, coreInfo) 
+        VALUES ('$cid', '$variantIndex', '$rendererState', '$coreInfo')
         ";
 
     $conn->query($sql);

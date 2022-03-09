@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { retrieveMediaForCID } from '../../Core/utils/retrieveMedia';
+import { retrieveMediaForCid } from '../../Core/utils/retrieveMedia';
 import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 
@@ -9,7 +9,7 @@ export default function Image(props) {
 
   useEffect(()=>{
     if (SVs.cid){
-        retrieveMediaForCID(SVs.cid,SVs.mimeType).then(result => {
+        retrieveMediaForCid(SVs.cid,SVs.mimeType).then(result => {
         // console.log('retrieved media')
         // console.log(result)
         setUrl(result.mediaURL);

@@ -16,8 +16,9 @@ $device = $jwtArray["deviceName"];
 
 $_POST = json_decode(file_get_contents("php://input"), true);
 $doenetId = mysqli_real_escape_string($conn, $_POST["doenetId"]);
-$CID = mysqli_real_escape_string($conn, $_POST["CID"]);
+$cid = mysqli_real_escape_string($conn, $_POST["cid"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_POST["attemptNumber"]);
+$variantIndex = mysqli_real_escape_string($conn, $_POST["variantIndex"]);
 $activityInfo = mysqli_real_escape_string($conn, $_POST["activityInfo"]);
 $activityState = mysqli_real_escape_string($conn, $_POST["activityState"]);
 $saveId = mysqli_real_escape_string($conn, $_POST["saveId"]);
@@ -32,12 +33,15 @@ $message = "";
 if ($doenetId == "") {
     $success = false;
     $message = "Internal Error: missing doenetId";
-} elseif ($CID == "") {
+} elseif ($cid == "") {
     $success = false;
-    $message = "Internal Error: missing CID";
+    $message = "Internal Error: missing cid";
 } elseif ($attemptNumber == "") {
     $success = false;
     $message = "Internal Error: missing attemptNumber";
+} elseif ($variantIndex == "") {
+    $success = false;
+    $message = "Internal Error: missing variantIndex";
 } elseif ($activityInfo == "") {
     $success = false;
     $message = "Internal Error: missing activityInfo";
@@ -62,8 +66,8 @@ if ($doenetId == "") {
     }
 }
 
-// TODO: check if CID of assignment has changed,
-// if so, include {CIDchanged: true} in response
+// TODO: check if cid of assignment has changed,
+// if so, include {cidChanged: true} in response
 // in order to alert the user
 
 $stateOverwritten = false;
@@ -78,7 +82,7 @@ if ($success) {
             WHERE userId='$userId'
             AND doenetId='$doenetId'
             AND attemptNumber='$attemptNumber'
-            AND CID = '$CID'
+            AND cid = '$cid'
             AND saveId = '$serverSaveId'
             ";
 
@@ -96,8 +100,8 @@ if ($success) {
         // attempt to insert a rows in activity_state
 
         $sql = "INSERT INTO activity_state
-            (userId,doenetId,CID,attemptNumber,deviceName,saveId,activityInfo,activityState)
-            VALUES ('$userId','$doenetId','$CID','$attemptNumber','$device','$saveId','$activityInfo','$activityState')
+            (userId,doenetId,cid,attemptNumber,deviceName,saveId,variantIndex,activityInfo,activityState)
+            VALUES ('$userId','$doenetId','$cid','$attemptNumber','$device','$saveId','$variantIndex','$activityInfo','$activityState')
         ";
 
         $conn->query($sql);
@@ -125,10 +129,10 @@ if ($success) {
             $modifiedDBRecord = false;
 
             if ($updateDataOnContentChange == "1") {
-                // if the CID changed,
+                // if the cid changed,
                 // then update the table rather than getting information from the table
 
-                $sql = "SELECT CID
+                $sql = "SELECT cid
                     FROM activity_state
                     WHERE userId='$userId'
                     AND doenetId='$doenetId'
@@ -139,11 +143,12 @@ if ($success) {
 
                 if ($result->num_rows > 0) {
                     $row = $result->fetch_assoc();
-                    if ($row["CID"] != $CID) {
+                    if ($row["cid"] != $cid) {
                         // update the matching row in activity_state
-                        // to match current CID and state
+                        // to match current cid and state
                         $sql = "UPDATE activity_state SET
-                            CID = '$CID',
+                            cid = '$cid',
+                            variantIndex = '$variantIndex',
                             activityInfo = '$activityInfo',
                             activityState = '$activityState',
                             saveId = '$saveId',
@@ -171,7 +176,7 @@ if ($success) {
 
                 $stateOverwritten = true;
 
-                $sql = "SELECT CID, attemptNumber, saveId, deviceName, activityInfo, activityState
+                $sql = "SELECT cid, attemptNumber, saveId, deviceName, variantIndex, activityInfo, activityState
                     FROM activity_state
                     WHERE userId = '$userId'
                     AND doenetId = '$doenetId'
@@ -183,10 +188,11 @@ if ($success) {
                 if ($result->num_rows > 0) {
                     $row = $result->fetch_assoc();
 
-                    $newCID = $row["CID"];
+                    $newCid = $row["cid"];
                     $newAttemptNumber = $row["attemptNumber"];
                     $saveId = $row["saveId"];
                     $newDevice = $row["deviceName"];
+                    $newVariantIndex = $row["variantIndex"];
                     $newActivityInfo = $row["activityInfo"];
                     $newActivityState = $row["activityState"];
                 } else {
@@ -203,8 +209,9 @@ $response_arr = [
     "success" => $success,
     "saveId" => $saveId,
     "stateOverwritten" => $stateOverwritten,
-    "CID" => $newCID,
+    "cid" => $newCid,
     "attemptNumber" => $newAttemptNumber,
+    "variantIndex" => $newVariantIndex,
     "activityInfo" => $newActivityInfo,
     "activityState" => $newActivityState,
     "device" => $newDevice,

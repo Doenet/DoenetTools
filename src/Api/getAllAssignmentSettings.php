@@ -13,7 +13,7 @@ $userId = $jwtArray['userId'];
 
 // $assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
 $doenetId =  mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
-// $contentId =  mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
+// $cid =  mysqli_real_escape_string($conn,$_REQUEST["cid"]);
 // $versionId =  mysqli_real_escape_string($conn,$_REQUEST["versionId"]);
 
 // $assignment_arr = array();

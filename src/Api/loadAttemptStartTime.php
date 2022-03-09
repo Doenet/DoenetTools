@@ -17,6 +17,7 @@ $examDoenetId = array_key_exists("doenetId", $jwtArray)
     : "";
 
 $doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
+$attemptNumber = mysqli_real_escape_string($conn, $_REQUEST["attemptNumber"]);
 
 $success = true;
 $message = "";
@@ -24,6 +25,9 @@ $message = "";
 if ($doenetId == "") {
     $success = false;
     $message = "Internal Error: missing doenetId";
+} elseif ($attemptNumber == "") {
+    $success = false;
+    $message = "Internal Error: missing attemptNumber";
 } elseif ($userId == "") {
     if ($examUserId == "") {
         $success = false;
@@ -36,28 +40,39 @@ if ($doenetId == "") {
     }
 }
 
-$variants = [];
-$attemptNumbers = [];
 
 if ($success) {
-    $sql = "SELECT attemptNumber,
-        variantIndex
-        FROM activity_state
-        WHERE userId='$userId'
-        AND doenetId='$doenetId'
-        ORDER BY attemptNumber ASC";
+    $sql = "
+        SELECT e.timeLimitMultiplier AS timeLimitMultiplier
+        FROM enrollment AS e
+        LEFT JOIN drive_content AS dc
+        ON e.driveId = dc.driveId
+        WHERE dc.doenetId='$doenetId'
+        AND e.userId = '$userId'";
 
     $result = $conn->query($sql);
-    while ($row = $result->fetch_assoc()) {
-        array_push($variants, $row["variantIndex"]);
-        array_push($attemptNumbers, $row["attemptNumber"]);
+    $row = $result->fetch_assoc();
+    $timeLimitMultiplier = $row["timeLimitMultiplier"];
+    if (!$timeLimitMultiplier) {
+        $timeLimitMultiplier = "1";
     }
+
+    $sql = "SELECT began
+        FROM user_assignment_attempt
+        WHERE userId='$userId'
+        AND doenetId='$doenetId'
+        AND attemptNUmber='$attemptNumber'
+        ";
+
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+    $attemptStart = $row["began"];
 }
 
 $response_arr = [
     "success" => $success,
-    "attemptNumbers" => $attemptNumbers,
-    "variants" => $variants,
+    "attemptStart" => $attemptStart,
+    "timeLimitMultiplier" => $timeLimitMultiplier,
     "message" => $message,
 ];
 

@@ -16,7 +16,7 @@ $device = $jwtArray["deviceName"];
 
 $_POST = json_decode(file_get_contents("php://input"), true);
 $doenetId = mysqli_real_escape_string($conn, $_POST["doenetId"]);
-$CID = mysqli_real_escape_string($conn, $_POST["CID"]);
+$cid = mysqli_real_escape_string($conn, $_POST["cid"]);
 $pageId = mysqli_real_escape_string($conn, $_POST["pageId"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_POST["attemptNumber"]);
 $coreInfo = mysqli_real_escape_string($conn, $_POST["coreInfo"]);
@@ -34,9 +34,9 @@ $message = "";
 if ($doenetId == "") {
     $success = false;
     $message = "Internal Error: missing doenetId";
-} elseif ($CID == "") {
+} elseif ($cid == "") {
     $success = false;
-    $message = "Internal Error: missing CID";
+    $message = "Internal Error: missing cid";
 } elseif ($pageId == "") {
     $success = false;
     $message = "Internal Error: missing pageId";
@@ -70,11 +70,10 @@ if ($doenetId == "") {
     }
 }
 
-// TODO: check if CID of assignment has changed,
-// if so, include {CIDchanged: true} in response
+// TODO: check if cid of assignment has changed,
+// if so, include {cidChanged: true} in response
 // in order to alert the user
 
-// TODO: do we need to save a timestamp?
 
 $stateOverwritten = false;
 $savedState = false;
@@ -85,13 +84,12 @@ if ($success) {
             coreState = '$coreState',
             rendererState = '$rendererState',
             saveId = '$saveId',
-            deviceName = '$device',
-            timestamp = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+            deviceName = '$device'
             WHERE userId='$userId'
             AND doenetId='$doenetId'
             AND pageId='$pageId'
             AND attemptNumber='$attemptNumber'
-            AND CID = '$CID'
+            AND cid = '$cid'
             AND saveId = '$serverSaveId'
             ";
 
@@ -109,8 +107,8 @@ if ($success) {
         // attempt to insert a rows in page_state
 
         $sql = "INSERT INTO page_state
-            (userId,doenetId,CID,pageId,attemptNumber,deviceName,saveId,coreInfo,coreState,rendererState,timestamp)
-            VALUES ('$userId','$doenetId','$CID','$pageId','$attemptNumber','$device','$saveId','$coreInfo','$coreState','$rendererState',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
+            (userId,doenetId,cid,pageId,attemptNumber,deviceName,saveId,coreInfo,coreState,rendererState)
+            VALUES ('$userId','$doenetId','$cid','$pageId','$attemptNumber','$device','$saveId','$coreInfo','$coreState','$rendererState')
         ";
 
         $conn->query($sql);
@@ -138,10 +136,10 @@ if ($success) {
             $modifiedDBRecord = false;
 
             if ($updateDataOnContentChange == "1") {
-                // if the CID changed,
+                // if the cid changed,
                 // then update the table rather than getting information from the table
 
-                $sql = "SELECT CID
+                $sql = "SELECT cid
                     FROM page_state
                     WHERE userId='$userId'
                     AND doenetId='$doenetId'
@@ -153,17 +151,16 @@ if ($success) {
 
                 if ($result->num_rows > 0) {
                     $row = $result->fetch_assoc();
-                    if ($row["CID"] != $CID) {
+                    if ($row["cid"] != $cid) {
                         // update the matching row in page_state
-                        // to match current CID and state
+                        // to match current cid and state
                         $sql = "UPDATE page_state SET
-                            CID = '$CID',
+                            cid = '$cid',
                             coreInfo = '$coreInfo',
                             coreState = '$coreState',
                             rendererState = '$rendererState',
                             saveId = '$saveId',
-                            deviceName = '$device',
-                            timestamp = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+                            deviceName = '$device'
                             WHERE userId='$userId'
                             AND doenetId='$doenetId'
                             AND pageId='$pageId'
@@ -188,7 +185,7 @@ if ($success) {
 
                 $stateOverwritten = true;
 
-                $sql = "SELECT CID, pageId, attemptNumber, saveId, deviceName, coreInfo, coreState, rendererState
+                $sql = "SELECT cid, pageId, attemptNumber, saveId, deviceName, coreInfo, coreState, rendererState
                     FROM page_state
                     WHERE userId = '$userId'
                     AND doenetId = '$doenetId'
@@ -201,7 +198,7 @@ if ($success) {
                 if ($result->num_rows > 0) {
                     $row = $result->fetch_assoc();
 
-                    $newCID = $row["CID"];
+                    $newCid = $row["cid"];
                     $newAttemptNumber = $row["attemptNumber"];
                     $saveId = $row["saveId"];
                     $newDevice = $row["deviceName"];
@@ -222,7 +219,7 @@ $response_arr = [
     "success" => $success,
     "saveId" => $saveId,
     "stateOverwritten" => $stateOverwritten,
-    "CID" => $newCID,
+    "cid" => $newCid,
     "attemptNumber" => $newAttemptNumber,
     "coreInfo" => $newCoreInfo,
     "coreState" => $newCoreState,

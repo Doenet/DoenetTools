@@ -1,11 +1,5 @@
 import Core from './Core';
-import { CIDFromText } from './utils/cid';
 import me from 'math-expressions';
-import { retrieveTextFileForCID } from './utils/retrieveTextFile';
-import { get as idb_get, set as idb_set } from 'idb-keyval';
-import { serializedComponentsReplacer, serializedComponentsReviver } from './utils/serializedStateProcessing';
-import axios from 'axios';
-import { toastType } from '@Toast';
 
 let core;
 

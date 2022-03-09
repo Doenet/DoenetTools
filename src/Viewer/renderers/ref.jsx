@@ -16,8 +16,8 @@ export default function Ref(props) {
     let url = "";
     let target = "_blank";
     let haveValidTarget = false;
-    if (SVs.contentId) {
-      url = `https://www.doenet.org/#/content/?contentId=${SVs.contentId}`;
+    if (SVs.cid) {
+      url = `https://www.doenet.org/#/content/?cid=${SVs.cid}`;
       haveValidTarget = true;
     } else if (SVs.doenetId) {
       url = `https://www.doenet.org/#/course?tool=assignment&doenetId=${SVs.doenetId}`;

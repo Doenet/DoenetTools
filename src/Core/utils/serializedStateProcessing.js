@@ -5,7 +5,7 @@ import { deepClone } from './deepFunctions';
 import { breakEmbeddedStringByCommas } from '../components/commonsugar/breakstrings';
 import { parseAndCompile } from '../../Parser/parser';
 import subsets from './subset-of-reals';
-import { retrieveTextFileForCID } from './retrieveTextFile';
+import { retrieveTextFileForCid } from './retrieveTextFile';
 
 export function scrapeOffAllDoumentRelated(serializedComponents) {
 
@@ -132,12 +132,12 @@ function findNextTag(text) {
 }
 
 export async function expandDoenetMLsToFullSerializedComponents({
-  CIDs, doenetMLs,
+  cids, doenetMLs,
   componentInfoObjects, flags,
 }) {
 
   let arrayOfSerializedComponents = [];
-  let CIDComponents = {};
+  let cidComponents = {};
 
   for (let doenetML of doenetMLs) {
 
@@ -164,35 +164,35 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
     let newContentComponents = findContentCopies({ serializedComponents });
 
-    for (let CID in newContentComponents.CIDComponents) {
-      if (CIDComponents[CID] === undefined) {
-        CIDComponents[CID] = []
+    for (let cid in newContentComponents.cidComponents) {
+      if (cidComponents[cid] === undefined) {
+        cidComponents[cid] = []
       }
-      CIDComponents[CID].push(...newContentComponents.CIDComponents[CID])
+      cidComponents[cid].push(...newContentComponents.cidComponents[cid])
     }
   }
 
-  let CIDList = Object.keys(CIDComponents);
-  if (CIDList.length > 0) {
-    // found copies with CIDs
-    // so look up those CIDs
+  let cidList = Object.keys(cidComponents);
+  if (cidList.length > 0) {
+    // found copies with cids
+    // so look up those cids
     // convert to doenetMLs, and recurse on those doenetMLs
 
-    let { newDoenetMLs, newCIDs } = await CIDsToDoenetMLs(CIDList);
+    let { newDoenetMLs, newCids } = await CidsToDoenetMLs(cidList);
 
-    // check to see if got the CIDs requested
-    for (let [ind, CID] of CIDList.entries()) {
-      if (newCIDs[ind] && newCIDs[ind].substring(0, CID.length) !== CID) {
-        return Promise.reject(new Error(`Requested CID ${CID} but got back ${newCIDs[ind]}!`));
+    // check to see if got the cids requested
+    for (let [ind, cid] of cidList.entries()) {
+      if (newCids[ind] && newCids[ind].substring(0, cid.length) !== cid) {
+        return Promise.reject(new Error(`Requested cid ${cid} but got back ${newCids[ind]}!`));
       }
     }
 
-    let expectedN = CIDList.length;
+    let expectedN = cidList.length;
     for (let ind = 0; ind < expectedN; ind++) {
-      let CID = newCIDs[ind];
-      if (!CID) {
+      let cid = newCids[ind];
+      if (!cid) {
         // wasn't able to retrieve content
-        console.warn(`Unable to retrieve content with CID = ${CIDList[ind]}`)
+        console.warn(`Unable to retrieve content with cid = ${cidList[ind]}`)
         newDoenetMLs[ind] = "";
       }
     }
@@ -200,20 +200,20 @@ export async function expandDoenetMLsToFullSerializedComponents({
     // recurse to additional doenetMLs
     let { fullSerializedComponents } = await expandDoenetMLsToFullSerializedComponents({
       doenetMLs: newDoenetMLs,
-      CIDs: newCIDs,
+      cids: newCids,
       componentInfoObjects, flags,
     });
 
-    for (let [ind, CID] of CIDList.entries()) {
-      let serializedComponentsForCID = fullSerializedComponents[ind];
+    for (let [ind, cid] of cidList.entries()) {
+      let serializedComponentsForCid = fullSerializedComponents[ind];
 
-      for (let originalCopyWithUri of CIDComponents[CID]) {
+      for (let originalCopyWithUri of cidComponents[cid]) {
         if (originalCopyWithUri.children === undefined) {
           originalCopyWithUri.children = [];
         }
         originalCopyWithUri.children.push({
           componentType: "externalContent",
-          children: JSON.parse(JSON.stringify(serializedComponentsForCID)),
+          children: JSON.parse(JSON.stringify(serializedComponentsForCid)),
           attributes: { newNamespace: { primitive: true } },
           doenetAttributes: { createUniqueName: true }
         });
@@ -224,32 +224,32 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
 
   return {
-    CIDs,
+    cids,
     fullSerializedComponents: arrayOfSerializedComponents,
   };
 
 }
 
-function CIDsToDoenetMLs(CIDs) {
+function CidsToDoenetMLs(cids) {
   let promises = [];
-  let newCIDs = CIDs;
+  let newCids = cids;
 
-  for (let CID of CIDs) {
-    promises.push(retrieveTextFileForCID(CID, "doenet"));
+  for (let cid of cids) {
+    promises.push(retrieveTextFileForCid(cid, "doenet"));
   }
 
   return Promise.all(promises).then((newDoenetMLs) => {
 
-    // console.log({ newDoenetMLs, newCIDs })
-    return Promise.resolve({ newDoenetMLs, newCIDs });
+    // console.log({ newDoenetMLs, newCids })
+    return Promise.resolve({ newDoenetMLs, newCids });
 
   }).catch(err => {
 
     let message;
-    if (newCIDs.length === 1) {
-      message = `Could not retrieve CID ${newCIDs[0]}`
+    if (newCids.length === 1) {
+      message = `Could not retrieve cid ${newCids[0]}`
     } else {
-      message = `Could not retrieve CIDs ${newCIDs.join(',')}`
+      message = `Could not retrieve cids ${newCids.join(',')}`
     }
 
     message += ": " + err.message;
@@ -404,7 +404,7 @@ export function removeBlankStringChildren(serializedComponents, componentInfoObj
 
 export function findContentCopies({ serializedComponents }) {
 
-  let CIDComponents = {};
+  let cidComponents = {};
   for (let serializedComponent of serializedComponents) {
     if (serializedComponent.componentType === "copy") {
       if (serializedComponent.attributes && serializedComponent.attributes.uri) {
@@ -412,13 +412,13 @@ export function findContentCopies({ serializedComponents }) {
 
         if (uri && uri.substring(0, 7).toLowerCase() === "doenet:") {
 
-          let result = uri.match(/[:&]CID=([^&]+)/i);
+          let result = uri.match(/[:&]cid=([^&]+)/i);
           if (result) {
-            let CID = result[1];
-            if (CIDComponents[CID] === undefined) {
-              CIDComponents[CID] = [];
+            let cid = result[1];
+            if (cidComponents[cid] === undefined) {
+              cidComponents[cid] = [];
             }
-            CIDComponents[CID].push(serializedComponent);
+            cidComponents[cid].push(serializedComponent);
           }
 
         }
@@ -427,17 +427,17 @@ export function findContentCopies({ serializedComponents }) {
       if (serializedComponent.children !== undefined) {
         let results = findContentCopies({ serializedComponents: serializedComponent.children })
 
-        // append results on to CIDComponents
-        for (let CID in results.CIDComponents) {
-          if (CIDComponents[CID] === undefined) {
-            CIDComponents[CID] = [];
+        // append results on to cidComponents
+        for (let cid in results.cidComponents) {
+          if (cidComponents[cid] === undefined) {
+            cidComponents[cid] = [];
           }
-          CIDComponents[CID].push(...results.CIDComponents[CID]);
+          cidComponents[cid].push(...results.cidComponents[cid]);
         }
       }
     }
   }
-  return { CIDComponents };
+  return { cidComponents };
 }
 
 export function addDocumentIfItsMissing(serializedComponents) {

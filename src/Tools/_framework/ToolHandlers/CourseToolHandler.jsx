@@ -60,14 +60,14 @@ export const fileByContentId = atomFamily({
   key:"fileByContentId",
   default: selectorFamily({
     key:"fileByContentId/Default",
-    get:(contentId)=> async ()=>{
-      if (!contentId){
+    get:(cid)=> async ()=>{
+      if (!cid){
         return "";
       }
-      // const local = localStorage.getItem(contentId);
+      // const local = localStorage.getItem(cid);
       // if (local){ return local}
       try {
-        const server = await axios.get(`/media/${contentId}.doenet`); 
+        const server = await axios.get(`/media/${cid}.doenet`); 
         return server.data;
       } catch (error) {
         //TODO: Handle 404
@@ -168,14 +168,14 @@ export function ClipboardLinkButtons(props){
   const addToast = useToast();
   let link = `http://localhost/#/content?doenetId=${props.doenetId}`
 
-  if (props.contentId){
-    link = `http://localhost/#/content?contentId=${props.contentId}`
+  if (props.cid){
+    link = `http://localhost/#/content?cid=${props.cid}`
   }
 
 
   let linkData = []
-  if(props.contentId) {
-    linkData.push(`contentId=${props.contentId}`);
+  if(props.cid) {
+    linkData.push(`cid=${props.cid}`);
   }
   if(props.doenetId) {
     linkData.push(`doenetId=${props.doenetId}`);
@@ -183,13 +183,13 @@ export function ClipboardLinkButtons(props){
   let embedLink = `<copy uri="doenet:${linkData.join('&')}" />`
 
 
-  // if (!props.contentId){
-  //   console.error("Component only handles contentId at this point")
+  // if (!props.cid){
+  //   console.error("Component only handles cid at this point")
   //   return null;
   // }
   
 
-  // const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
+  // const link = `http://${window.location.host}/content/#/?cid=${props.cid}`
   return <div> 
     <ButtonGroup>
   <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>

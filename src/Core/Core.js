@@ -13,7 +13,7 @@ import { DependencyHandler } from './Dependencies';
 import { preprocessMathInverseDefinition } from './utils/math';
 import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 import { nanoid } from 'nanoid';
-import { CIDFromText } from './utils/cid';
+import { cidFromText } from './utils/cid';
 import { removeFunctionsMathExpressionClass } from './CoreWorker';
 import createComponentInfoObjects from './utils/componentInfoObjects';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
@@ -24,7 +24,7 @@ import axios from 'axios';
 // componentClass to string: componentClass.componentType
 
 export default class Core {
-  constructor({ doenetML, doenetId, pageId, attemptNumber,
+  constructor({ doenetML, doenetId, pageId, attemptNumber, itemNumber,
     serverSaveId,
     requestedVariant, requestedVariantIndex,
     flags = {},
@@ -37,6 +37,7 @@ export default class Core {
     this.doenetId = doenetId;
     this.pageId = pageId;
     this.attemptNumber = attemptNumber;
+    this.itemNumber = itemNumber;
 
     this.serverSaveId = serverSaveId;
     this.updateDataOnContentChange = updateDataOnContentChange;
@@ -130,10 +131,10 @@ export default class Core {
       }
     }
 
-    CIDFromText(doenetML)
-      .then(CID =>
+    cidFromText(doenetML)
+      .then(cid =>
         serializeFunctions.expandDoenetMLsToFullSerializedComponents({
-          CIDs: [CID],
+          cids: [cid],
           doenetMLs: [doenetML],
           componentInfoObjects: this.componentInfoObjects,
           flags: this.flags,
@@ -143,11 +144,11 @@ export default class Core {
 
 
   async finishCoreConstruction({
-    CIDs,
+    cids,
     fullSerializedComponents,
   }) {
 
-    this.CID = CIDs[0];
+    this.cid = cids[0];
 
     let serializedComponents = fullSerializedComponents[0];
 
@@ -163,7 +164,7 @@ export default class Core {
 
 
     this.documentName = serializedComponents[0].componentName;
-    serializedComponents[0].doenetAttributes.CID = this.CID;
+    serializedComponents[0].doenetAttributes.cid = this.cid;
 
     this._components = {};
     this.componentsToRender = {};
@@ -253,6 +254,8 @@ export default class Core {
       .map(x => JSON.stringify(x, serializeFunctions.serializedComponentsReplacer));
 
     // Note: coreInfo is fixed even though this.rendererTypesInDocument could change
+    // Note 2: both canonical variant strings and original rendererTypesInDocument
+    // could differ depending on the initial state
     this.coreInfo = {
       generatedVariantString: this.canonicalGeneratedVariantString,
       allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
@@ -263,8 +266,6 @@ export default class Core {
     this.coreInfoString = JSON.stringify(this.coreInfo, serializeFunctions.serializedComponentsReplacer);
 
     this.messageViewerReady()
-
-    this.initializeUserAssignmentTables();
 
     this.requestRecordEvent({
       verb: "experienced",
@@ -292,67 +293,6 @@ export default class Core {
     postMessage({
       messageType: "coreCreated"
     });
-
-  }
-
-  async initializeUserAssignmentTables() {
-
-    //Initialize user_assignment tables
-    if (this.flags.allowSaveSubmissions) {
-
-      // //TODO: Do we need this? or does the catch handle it?
-      // if (!navigator.onLine) {
-      //   toast("You're not connected to the internet. ", toastType.ERROR)
-      // }
-
-
-      try {
-        let resp = await axios.post('/api/initAssignmentAttempt.php', {
-          doenetId: this.doenetId,
-          weights: await this.scoredItemWeights,
-          pageId: this.pageId,
-          attemptNumber: this.attemptNumber,
-          contentId: this.CID,
-          requestedVariantIndex: this.requestedVariantIndex,
-          generatedVariant: this.canonicalGeneratedVariantString,
-          itemVariantInfo: this.canonicalItemVariantStrings,
-        });
-
-
-        if (resp.status === null) {
-          postMessage({
-            messageType: "sendToast",
-            args: {
-              message: `Could not initialize assignment tables.  Are you connected to the internet?`,
-              toastType: toastType.ERROR
-            }
-          })
-        } else if (!resp.data.success) {
-          postMessage({
-            messageType: "sendToast",
-            args: {
-              message: `Could not initialize assignment tables: ${data.message}`,
-              toastType: toastType.ERROR
-            }
-          })
-
-        }
-
-      } catch (e) {
-
-        postMessage({
-          messageType: "sendToast",
-          args: {
-            message: `Could not initialize assignment tables: ${e.message}`,
-            toastType: toastType.ERROR
-          }
-        })
-
-
-      }
-
-    }
-
 
   }
 
@@ -7963,38 +7903,44 @@ export default class Core {
 
     if (recordItemSubmissions.length > 0) {
 
-      let itemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
-      let itemsWithCreditAchieved = {};
+      let subitemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
 
       if (event) {
         if (!event.context) {
           event.context = {};
         }
-        if (!event.context.itemCreditAchieved) {
-          event.context.itemCreditAchieved = {};
+        if (!event.context.subitemCreditAchieved) {
+          event.context.subitemCreditAchieved = {};
         }
-        event.context.documentCreditAchieved = await this.document.stateValues.creditAchieved;
-      }
-      let itemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
-      for (let itemNumber of itemsSubmitted) {
-        itemsWithCreditAchieved[itemNumber] = { itemCreditAchieved: itemCreditAchieved[itemNumber - 1] };
-        let componentsSubmitted = itemsWithCreditAchieved[itemNumber].componentsSubmitted = [];
-
-        for (let itemSubmission of recordItemSubmissions.filter(x => x.itemNumber === itemNumber)) {
-          componentsSubmitted.push({
-            componentName: itemSubmission.submittedComponent,
-            response: itemSubmission.response,
-            responseText: itemSubmission.responseText,
-            creditAchieved: itemSubmission.creditAchieved
-          });
-        }
-
-        if (event) {
-          event.context.itemCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1]
-        }
+        event.context.itemCreditAchieved = await this.document.stateValues.creditAchieved;
       }
 
-      this.saveSubmissions(itemsWithCreditAchieved)
+      let itemCreditAchieved = await this.document.stateValues.creditAchieved;
+      let subitemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
+
+      let componentsSubmitted = [];
+      for (let itemSubmission of recordItemSubmissions) {
+        componentsSubmitted.push({
+          componentName: itemSubmission.submittedComponent,
+          response: itemSubmission.response,
+          responseText: itemSubmission.responseText,
+          creditAchieved: itemSubmission.creditAchieved,
+          subitemNumber: itemSubmission.itemNumber
+        });
+      }
+
+      if (event) {
+        for (let subitemNumber of subitemsSubmitted) {
+          event.context.subitemCreditAchieved[subitemNumber] = subitemCreditAchieved[subitemNumber - 1]
+        }
+      }
+
+      // if itemNumber is zero, it means this document wasn't given any weight,
+      // so don't record the submission to the attempt tables
+      // (the event will still get recorded)
+      if (this.itemNumber > 0) {
+        this.saveSubmissions({ itemCreditAchieved, componentsSubmitted });
+      }
 
     }
 
@@ -9116,7 +9062,7 @@ export default class Core {
 
     if (this.flags.allowLocalState) {
       idb_set(
-        `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.CID}`,
+        `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.cid}`,
         {
           coreState: this.cumulativeStateVariableChanges,
           rendererState: this.rendererState,
@@ -9132,7 +9078,7 @@ export default class Core {
 
 
     this.pageStateToBeSavedToDatabase = {
-      CID: this.CID,
+      cid: this.cid,
       coreInfo: this.coreInfoString,
       coreState: JSON.stringify(this.cumulativeStateVariableChanges, serializeFunctions.serializedComponentsReplacer),
       rendererState: JSON.stringify(this.rendererState, serializeFunctions.serializedComponentsReplacer),
@@ -9231,14 +9177,14 @@ export default class Core {
 
     if (this.flags.allowLocalState) {
       idb_set(
-        `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.CID}|ServerSaveId`,
+        `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.cid}|ServerSaveId`,
         data.saveId
       )
     }
 
     if (data.stateOverwritten) {
 
-      if (this.CID !== data.CID || this.attemptNumber !== Number(data.attemptNumber)
+      if (this.cid !== data.cid || this.attemptNumber !== Number(data.attemptNumber)
         || this.coreInfoString !== data.coreInfo
         || coreStateToSave !== data.coreState
         || rendererStateToSave !== data.rendererStateToSave
@@ -9246,7 +9192,7 @@ export default class Core {
 
         if (this.flags.allowLocalState) {
           idb_set(
-            `${this.doenetId}|${this.pageId}|${data.attemptNumber}|${data.CID}`,
+            `${this.doenetId}|${this.pageId}|${data.attemptNumber}|${data.cid}`,
             {
               coreState: JSON.parse(data.coreState, serializeFunctions.serializedComponentsReviver),
               rendererState: JSON.parse(data.rendererState, serializeFunctions.serializedComponentsReviver),
@@ -9260,7 +9206,7 @@ export default class Core {
           messageType: "resetPage",
           args: {
             changedOnDevice: data.device,
-            newCID: data.CID,
+            newCid: data.cid,
             newAttemptNumber: Number(data.attemptNumber),
           }
         })
@@ -9274,111 +9220,109 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions(itemsWithCreditAchieved) {
+  saveSubmissions({ itemCreditAchieved, componentsSubmitted }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
 
-    for (let itemNumber in itemsWithCreditAchieved) {
 
-      const payload = {
-        doenetId: this.doenetId,
-        contentId: this.CID,
-        pageId: this.pageId,
-        attemptNumber: this.attemptNumber,
-        credit: itemsWithCreditAchieved[itemNumber].itemCreditAchieved,
-        itemNumber,
-        componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(itemsWithCreditAchieved[itemNumber].componentsSubmitted, serializeFunctions.serializedComponentsReplacer))
-      }
+    const payload = {
+      doenetId: this.doenetId,
+      attemptNumber: this.attemptNumber,
+      credit: itemCreditAchieved,
+      itemNumber: this.itemNumber,
+      componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted, serializeFunctions.serializedComponentsReplacer))
+    }
 
-      axios.post('/api/saveCreditForItem.php', payload)
-        .then(resp => {
-          // console.log('>>>>saveCreditForItem resp', resp.data);
+    console.log('payload for save credit for item', payload);
 
-          if (resp.status === null) {
-            postMessage({
-              messageType: "sendToast",
-              args: {
-                message: `Credit not saved due to error.  Are you connected to the internet?`,
-                toastType: toastType.ERROR
-              }
-            })
-          } else if (!resp.data.success) {
-            postMessage({
-              messageType: "sendToast",
-              args: {
-                message: `Credit not saved due to error: ${resp.data.message}`,
-                toastType: toastType.ERROR
-              }
-            })
-          } else {
+    axios.post('/api/saveCreditForItem.php', payload)
+      .then(resp => {
+        console.log('>>>>saveCreditForItem resp', resp.data);
 
-            let data = resp.data;
-
-            postMessage({
-              messageType: "updateCreditAchieved",
-              args: data
-            })
-
-            //TODO: need type warning (red but doesn't hang around)
-            if (data.viewedSolution) {
-              postMessage({
-                messageType: "sendToast",
-                args: {
-                  message: 'No credit awarded since solution was viewed.',
-                  toastType: toastType.INFO
-                }
-              })
-            }
-            if (data.timeExpired) {
-              postMessage({
-                messageType: "sendToast",
-                args: {
-                  message: 'No credit awarded since the time allowed has expired.',
-                  toastType: toastType.INFO
-                }
-              })
-            }
-            if (data.pastDueDate) {
-              postMessage({
-                messageType: "sendToast",
-                args: {
-                  message: 'No credit awarded since the due date has passed.',
-                  toastType: toastType.INFO
-                }
-              })
-            }
-            if (data.exceededAttemptsAllowed) {
-              postMessage({
-                messageType: "sendToast",
-                args: {
-                  message: 'No credit awarded since no more attempts are allowed.',
-                  toastType: toastType.INFO
-                }
-              })
-            }
-            if (data.databaseError) {
-              postMessage({
-                messageType: "sendToast",
-                args: {
-                  message: 'Credit not saved due to database error.',
-                  toastType: toastType.ERROR
-                }
-              })
-            }
-          }
-        })
-        .catch(e => {
+        if (resp.status === null) {
           postMessage({
             messageType: "sendToast",
             args: {
-              message: `Credit not saved due to error: ${e.message}`,
+              message: `Credit not saved due to error.  Are you connected to the internet?`,
               toastType: toastType.ERROR
             }
           })
-        })
+        } else if (!resp.data.success) {
+          postMessage({
+            messageType: "sendToast",
+            args: {
+              message: `Credit not saved due to error: ${resp.data.message}`,
+              toastType: toastType.ERROR
+            }
+          })
+        } else {
 
-    }
+          let data = resp.data;
+
+          postMessage({
+            messageType: "updateCreditAchieved",
+            args: data
+          })
+
+          //TODO: need type warning (red but doesn't hang around)
+          if (data.viewedSolution) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since solution was viewed.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.timeExpired) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since the time allowed has expired.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.pastDueDate) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since the due date has passed.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.exceededAttemptsAllowed) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since no more attempts are allowed.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.databaseError) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'Credit not saved due to database error.',
+                toastType: toastType.ERROR
+              }
+            })
+          }
+        }
+      })
+      .catch(e => {
+        postMessage({
+          messageType: "sendToast",
+          args: {
+            message: `Credit not saved due to error: ${e.message}`,
+            toastType: toastType.ERROR
+          }
+        })
+      })
+
 
 
   }

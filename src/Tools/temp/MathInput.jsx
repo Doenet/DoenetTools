@@ -235,7 +235,7 @@ function Test() {
       <DoenetViewer
         key={"doenetviewer"+updateNumber}
         doenetML={doenetML}
-        // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
+        // cid={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
         flags={{
           showCorrectness,
           readOnly,

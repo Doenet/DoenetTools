@@ -154,7 +154,7 @@ export default function useSockets(nsp) {
           individualize: true,
           isAssigned: '0',
           isPublished: '0',
-          contentId:
+          cid:
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
           multipleAttempts: true, //TODO: is this ignored? should we delete it?
           numberOfAttemptsAllowed: '1',
@@ -180,7 +180,7 @@ export default function useSockets(nsp) {
           individualize: true,
           isAssigned: '0',
           isPublished: '0',
-          contentId:
+          cid:
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
           multipleAttempts: false,
           numberOfAttemptsAllowed: '1',
@@ -197,6 +197,7 @@ export default function useSockets(nsp) {
       }
       try {
         const resp = await axios.post('/api/addItem.php', payload);
+        console.log('resp from add item', resp)
         if (resp.data.success) {
           acceptAddItem(payload);
         } else {
@@ -818,11 +819,11 @@ export default function useSockets(nsp) {
         folderDictionary({ driveId: item.driveId, folderId: item.itemId }),
       );
       globalContentIds[newItemId] = [];
-      for (let contentId of contentIds[sortOptions.DEFAULT]) {
+      for (let cid of contentIds[sortOptions.DEFAULT]) {
         let subItem = {
           ...item,
           parentFolderId: item.itemId,
-          itemId: contentId,
+          itemId: cid,
         };
         let result = await cloneItem({
           snapshot,
@@ -850,7 +851,7 @@ export default function useSockets(nsp) {
       title: item.label,
       doenetId: item.doenetId,
       // doenetId: nanoid(),
-      contentId: item.contentId,
+      cid: item.cid,
       versionId: item.versionId,
       timestamp,
       isDraft: '0',
