@@ -9106,6 +9106,9 @@ export default class Core {
     // if not currently in throttle, save changes to database
     this.saveChangesToDatabase();
 
+    postMessage({
+      messageType: "savedState"
+    })
 
   }
 

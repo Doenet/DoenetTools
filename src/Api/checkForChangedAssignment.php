@@ -21,14 +21,14 @@ $message = "";
 $cidChanged = false;
 
 $doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
-$latestAttemptOverrides = mysqli_real_escape_string(
-    $conn,
-    $_REQUEST["latestAttemptOverrides"]
-);
+$currentCid = mysqli_real_escape_string($conn, $_REQUEST["currentCid"]);
 
 if ($doenetId == "") {
     $success = false;
     $message = "Internal Error: missing doenetId";
+} elseif ($currentCid == "") {
+    $success = false;
+    $message = "Internal Error: missing currentCid";
 } elseif ($userId == "") {
     if ($examUserId == "") {
         $success = false;
@@ -75,35 +75,15 @@ if ($success) {
         }
     }
 
-    if ($latestAttemptOverrides == "true") {
-        // the cid from the latest attempt overrides the instructor-provided cid
-        // from the assignment/content tables
-        $sql = "SELECT cid
-            FROM activity_state
-            WHERE userId = '$userId'
-            AND doenetId = '$doenetId'
-            AND attemptNumber = (SELECT MAX(attemptNumber) FROM user_assignment_attempt WHERE userId='$userId' AND doenetId='$doenetId')
-            ";
-
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-
-            $newCid = $cid;
-            $cid = $row["cid"];
-
-            if($newCid && $newCid != $cid) {
-                // the instructor must have changed the cid since this attempt was started
-                $cidChanged = true;
-            }
-        }
+    if ($cid && $cid != $currentCid) {
+        // the instructor must have changed the cid since this attempt was started
+        $cidChanged = true;
     }
 }
 
 $response_arr = [
     "success" => $success,
     "message" => $message,
-    "cid" => $cid,
     "cidChanged" => $cidChanged,
 ];
 

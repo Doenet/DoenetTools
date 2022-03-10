@@ -116,6 +116,7 @@ export default function AssignmentViewer() {
       cid,
       doenetId,
       solutionDisplayMode,
+      cidChanged,
     },
     setLoad,
   ] = useState({});
@@ -190,12 +191,14 @@ export default function AssignmentViewer() {
 
         let cid = null;
 
-        //First try to find if they have a previously assigned cid
-        //for the current attempt
 
+        // determine cid
+        // the cid from the latest attempt takes precedence over assigned cid
+        // If assigned cid differs from latest attempt cid,
+        // set cidChanged=true
         let resp = await axios.get(
           `/api/getCidForAssignment.php`,
-          { params: { doenetId } },
+          { params: { doenetId, latestAttemptOverrides: true } },
         );
 
         if (!resp.data.success) {
@@ -212,10 +215,12 @@ export default function AssignmentViewer() {
 
         console.log(`retrieved cid: ${cid}`);
 
+        let cidChanged = resp.data.cidChanged;
+
 
         // Hard code cid for testing!!!!!!
         // cid = 'bafkreidr6ny65lb5s23nyxhd3hx7xrghflzmpr2cyeru6mgctrgyha7i4m';
-
+        // bafkreifvkdnaoeqqn2aumwk4wvjlflnuo3ar7wd44giklfylzxkyfqs5km
 
 
         // TODO: add a flag to enable the below feature
@@ -325,6 +330,7 @@ export default function AssignmentViewer() {
           cid,
           doenetId,
           solutionDisplayMode,
+          cidChanged,
         });
 
         setStage('Ready');
@@ -340,12 +346,12 @@ export default function AssignmentViewer() {
 
     let cid = null;
 
-    //First try to find if they have a previously assigned cid
-    //for the current attempt
+    // since this is a new attempt,
+    // get assigned cid, ignoring cid from latest attempt
 
     let resp = await axios.get(
       `/api/getCidForAssignment.php`,
-      { params: { doenetId } },
+      { params: { doenetId, latestAttemptOverrides: false } },
     );
 
     if (!resp.data.success) {
@@ -418,6 +424,7 @@ export default function AssignmentViewer() {
       newObj.attemptNumber = newAttemptNumber;
       newObj.requestedVariantIndex = newRequestedVariantIndex;
       newObj.cid = cid;
+      newObj.cidChanged = false;
       return newObj;
     });
   }
@@ -468,6 +475,7 @@ export default function AssignmentViewer() {
         key={`activityViewer${doenetId}`}
         cid={cid}
         doenetId={doenetId}
+        cidChanged={cidChanged}
         flags={{
           showCorrectness,
           readOnly: false,
