@@ -9140,9 +9140,6 @@ export default class Core {
 
     let resp;
 
-    let coreStateToSave = this.pageStateToBeSavedToDatabase.coreState;
-    let rendererStateToSave = this.pageStateToBeSavedToDatabase.rendererState;
-
     try {
       resp = await axios.post('/api/savePageState.php', this.pageStateToBeSavedToDatabase);
     } catch (e) {
@@ -9193,11 +9190,9 @@ export default class Core {
 
     if (data.stateOverwritten) {
 
-      if (this.cid !== data.cid || this.attemptNumber !== Number(data.attemptNumber)
-        || this.coreInfoString !== data.coreInfo
-        || coreStateToSave !== data.coreState
-        || rendererStateToSave !== data.rendererStateToSave
-      ) {
+      // if a new attempt number was generated or the cid didn't change,
+      // then we reset the page to the new state
+      if (this.attemptNumber !== Number(data.attemptNumber) || this.cid === data.cid) {
 
         if (this.flags.allowLocalState) {
           idb_set(
@@ -9219,6 +9214,16 @@ export default class Core {
             newAttemptNumber: Number(data.attemptNumber),
           }
         })
+      } else {
+        // if the cid changed without the attemptNumber changing, something went wrong
+        postMessage({
+          messageType: "inErrorState",
+          args: {
+            errMsg: "Content changed unexpectedly!"
+          }
+        })
+
+
       }
 
 

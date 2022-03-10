@@ -72,10 +72,28 @@ export default function ActivityViewer(props) {
     console.log('resetActivity', changedOnDevice, newCid, newAttemptNumber);
 
 
-    if (props.setIsInErrorState) {
-      props.setIsInErrorState(true)
+    if(newAttemptNumber !== attemptNumber) {
+      if(props.updateAttemptNumber) {
+        toast(`Reverted activity as attempt number changed on other device`, toastType.ERROR);
+        props.updateAttemptNumber(newAttemptNumber);
+      } else {
+        // what do we do in this case?
+        if (props.setIsInErrorState) {
+          props.setIsInErrorState(true)
+        }
+        setErrMsg('how to reset attempt number when not given updateAttemptNumber function?')
+    
+      }
+    } else if(newCid !== cid) {
+      if (props.setIsInErrorState) {
+        props.setIsInErrorState(true)
+      }
+      setErrMsg("Content changed unexpectedly!");
+    } else {
+    // since, at least for now, only activity state is page number,
+    // we ignore the change 
+
     }
-    setErrMsg('how do we reset activity?')
 
     // toast(`Reverted page to state saved on device ${changedOnDevice}`, toastType.ERROR);
 
@@ -176,19 +194,25 @@ export default function ActivityViewer(props) {
           let result = await saveLoadedLocalStateToDatabase(localInfo);
 
           if (result.changedOnDevice) {
-            if (result.newCid !== cid || Number(result.newAttemptNumber) !== attemptNumber) {
+            if (Number(result.newAttemptNumber) !== attemptNumber) {
               resetActivity({
                 changedOnDevice: result.changedOnDevice,
                 newCid: result.newCid,
                 newAttemptNumber: Number(result.newAttemptNumber),
               })
               return;
+            } else if (result.newCid !== cid) {
+              // if cid changes for the same attempt number, then something went wrong
+              if (props.setIsInErrorState) {
+                props.setIsInErrorState(true)
+              }
+              setErrMsg(`content changed unexpectedly!`);
             }
 
             // if just the localInfo changed, use that instead
             localInfo = result.newLocalInfo;
-            console.log(`sending toast: Reverted page to state saved on device ${result.changedOnDevice}`)
-            toast(`Reverted page to state saved on device ${result.changedOnDevice}`, toastType.ERROR)
+
+            // no need to send toast, as state is just page number
 
           }
 
@@ -581,7 +605,6 @@ export default function ActivityViewer(props) {
 
     let resp;
 
-    let activityStateToSave = activityStateToBeSavedToDatabase.current.activityState;
 
     try {
       resp = await axios.post('/api/saveActivityState.php', activityStateToBeSavedToDatabase.current);
@@ -618,10 +641,9 @@ export default function ActivityViewer(props) {
 
     if (data.stateOverwritten) {
 
-      if (cid !== data.cid || attemptNumber !== Number(data.attemptNumber)
-        || activityInfoString.current !== data.activityInfo
-        || activityStateToSave !== data.activityState
-      ) {
+      // if a new attempt number was generated,
+      // then we reset the activity to the new state
+      if (attemptNumber !== Number(data.attemptNumber)) {
 
         if (props.flags.allowLocalState) {
           idb_set(
@@ -630,19 +652,29 @@ export default function ActivityViewer(props) {
               activityState: JSON.parse(data.activityState),
               activityInfo: JSON.parse(data.activityInfo),
               saveId: data.saveId,
+              variantIndex: data.variantIndex
             }
           )
+
+          resetActivity({
+            changedOnDevice: data.device,
+            newCid: data.cid,
+            newAttemptNumber: Number(data.attemptNumber),
+          })
+
         }
+      } else if(cid !== data.cid) {
 
-
-
-        resetActivity({
-          changedOnDevice: data.device,
-          newCid: data.cid,
-          newAttemptNumber: Number(data.attemptNumber),
-        })
-
+        // if the cid changed without the attemptNumber changing, something went wrong
+        if (props.setIsInErrorState) {
+          props.setIsInErrorState(true)
+        }
+        setErrMsg("Content changed unexpectedly!");
+        return;
       }
+
+      // if only the activity state changed,
+      // just ignore it as it is only changing the page and we can leave it at the old page
 
 
     }
@@ -807,6 +839,7 @@ export default function ActivityViewer(props) {
           unbundledCore={props.unbundledCore}
           updateCreditAchievedCallback={props.updateCreditAchievedCallback}
           setIsInErrorState={props.setIsInErrorState}
+          updateAttemptNumber={props.updateAttemptNumber}
           updateDataOnContentChange={props.updateDataOnContentChange}
         />
 
