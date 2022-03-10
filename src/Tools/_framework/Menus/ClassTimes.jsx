@@ -205,6 +205,6 @@ export default function ClassTimes(){
   return <>
   {/* <DateTime datePicker={false} width="50px" /> */}
   {classTimesTable}
-    <Button width="10px" icon={<FontAwesomeIcon icon={faPlus}/>} style={{margin: "auto"}} onClick={()=>addClassTime()}/>
+    <Button icon={<FontAwesomeIcon icon={faPlus}/>} style={{margin: "auto"}} onClick={()=>addClassTime()}/>
   </>
 }
