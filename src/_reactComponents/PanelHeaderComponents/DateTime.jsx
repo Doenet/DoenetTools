@@ -84,7 +84,7 @@ export default function DateTime(props) {
               // e.target.style.setProperty("--menuPanelMargin", "-36px");
             }
             // console.log(e.target);
-            // console.log(props.menuPanelMargin);
+            console.log(e.target.style.getPropertyValue("--menuPanelMargin"));
             // console.log(document.getElementsByClassName("rdtPicker"));
           }}
           onKeyDown={(e) => {

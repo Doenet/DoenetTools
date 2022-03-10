@@ -11,7 +11,7 @@ import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
 import axios from 'axios';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const TimeEntry = ({parentValue,valueCallback=()=>{}})=>{
   let [time,setTime] = useState(parentValue);
@@ -77,6 +77,7 @@ function sortClassTimes(classTimesArray){
 
 export default function ClassTimes(){
   const timesObj = useRecoilValue(classTimesAtom);
+  // var --menuPanelMargin = "0px";
 
   const addClassTime = useRecoilCallback(({set,snapshot})=> async ()=>{
 
@@ -204,6 +205,6 @@ export default function ClassTimes(){
   return <>
   {/* <DateTime datePicker={false} width="50px" /> */}
   {classTimesTable}
-    <Button width='menu' value='Add' onClick={()=>addClassTime()}/>
+    <Button width="10px" icon={<FontAwesomeIcon icon={faPlus}/>} style={{margin: "auto"}} onClick={()=>addClassTime()}/>
   </>
 }
