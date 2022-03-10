@@ -52,7 +52,7 @@ if ($success) {
             ('$doenetId','$userId')
             ";
 
-    $result = $conn->query($sql);
+    $conn->query($sql);
 
     $sql = "SELECT 
             began,
@@ -61,7 +61,7 @@ if ($success) {
             AND doenetId = '$doenetId'
             AND attemptNumber = '$attemptNumber'
             ";
-    $result = $conn->query($sql);
+    $conn->query($sql);
 
     if ($result->num_rows < 1) {
         $sql = "INSERT INTO user_assignment_attempt
@@ -70,7 +70,28 @@ if ($success) {
                 ('$doenetId','$userId','$attemptNumber',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
                 ";
 
-        $result = $conn->query($sql);
+        $conn->query($sql);
+
+        // also clear saveId from page_state and activity state
+        // so other devices know that there has been an new attempt number
+
+        $sql = "UPDATE activity_state SET
+            saveId = NULL
+            WHERE userId='$userId'
+            AND doenetId='$doenetId'
+            AND attemptNumber < '$attemptNumber'
+            ";
+
+        $conn->query($sql);
+
+        $sql = "UPDATE page_state SET
+            saveId = NULL
+            WHERE userId='$userId'
+            AND doenetId='$doenetId'
+            AND attemptNumber < '$attemptNumber'
+            ";
+
+        $conn->query($sql);
     } else {
         $row = $result->fetch_assoc();
         $began = $row["began"];
@@ -78,14 +99,13 @@ if ($success) {
         // update start time only if null
         // (which would happen only for proctored exams)
         if ($began == null) {
-            $sql = "
-                UPDATE user_assignment_attempt
+            $sql = "UPDATE user_assignment_attempt
                 SET began=CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
                 WHERE userId = '$userId'
                 AND doenetId = '$doenetId'
                 AND attemptNumber = '$attemptNumber'
                 ";
-            $result = $conn->query($sql);
+            $conn->query($sql);
         }
     }
 
