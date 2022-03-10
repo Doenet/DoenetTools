@@ -316,8 +316,8 @@ export const dragStateAtom = atom({
 
 // const dragShadowId = 'dragShadow';
 
-export default function Drive(props) {
-  // console.log("=== Drive")
+export default function CourseNavigator(props) {
+  console.log("=== CourseNavigator")
 
   const isNav = false;
   const [driveId, parentFolderId, itemId, type] = props.path.split(':');

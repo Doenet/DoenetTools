@@ -1,35 +1,31 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { fetchCoursesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import {  coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 export default function DriveInfoCap(){
   let path = useRecoilValue(searchParamAtomFamily('path'));
-  let driveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  let courseId = useRecoilValue(searchParamAtomFamily('driveId'));
 
-  if (!driveId){
-    driveId = path.split(':')[0]
+  if (!courseId){
+    courseId = path.split(':')[0]
   }
-  const driveInfo = useRecoilValue(fetchCoursesQuery)
-  let roles;
-  let image;
-  let color;
-  let label = "";
- for (let info of driveInfo.driveIdsAndLabels){
-   if (info.driveId === driveId){
-     roles = [...info.role];
-     color = info.color;
-     image = info.image;
-     label = info.label;
-     break;
-   }
- }
 
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+
+if (!course){
+  return null;
+}
+
+let roles = [...course.roleLabels];
+let color = course.color;
+let image = course.image;
+let label = course.label;
  
  if (image != 'none'){
   image = 'url(/media/drive_pictures/' + image + ')';
-  console.log('there is an image??');
+  // console.log('there is an image??');
  }
  if (color != 'none'){
   color = '#' + color;

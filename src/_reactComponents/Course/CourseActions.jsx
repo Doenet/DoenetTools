@@ -26,6 +26,17 @@ export const coursePermissionsAndSettings = atom({
   ],
 })
 
+export const coursePermissionsAndSettingsByCourseId = atomFamily({
+  key: 'coursePermissionsAndSettingsByCourseId',
+  default: selectorFamily({
+    key:"coursePermissionsAndSettingsByCourseId/Default",
+    get: (courseId) => ({get}) => {
+      let allpermissionsAndSettings = get(coursePermissionsAndSettings);
+      return allpermissionsAndSettings.filter((value)=>value.courseId == courseId)[0]
+    }
+  })
+})
+
 export const useCreateCourse = () => {
     const createCourse = useRecoilCallback(
     ({ set }) =>

@@ -242,7 +242,7 @@ const CourseCardWrapper = (props) => {
         style={{ height: Math.max(...heights) }}
       >
         {transitions((style, item, t, index) => {
-          console.log('');
+          // console.log('');
           let isSelected = getSelectedCard(item);
           return (
             <a.div style={style} >
@@ -261,13 +261,12 @@ const CourseCardWrapper = (props) => {
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setDrivecardSelection([]); //TODO: on leave instead
                   setPageToolView({
                     page: 'course',
                     tool: 'dashboard',
                     view: '',
                     params: {
-                      path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`,
+                      path: `${item.courseId}:${item.courseId}:${item.courseId}:Drive`,
                     },
                   });
                 }}>
