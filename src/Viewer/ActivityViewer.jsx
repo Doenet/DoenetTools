@@ -43,6 +43,7 @@ export default function ActivityViewer(props) {
   const [variantsByItem, setVariantsByItem] = useState(null);
   const [itemWeights, setItemWeights] = useState(null);
 
+  const [cidChanged, setCidChanged] = useState(props.cidChanged);
 
   const serverSaveId = useRef(null);
 
@@ -72,8 +73,8 @@ export default function ActivityViewer(props) {
     console.log('resetActivity', changedOnDevice, newCid, newAttemptNumber);
 
 
-    if(newAttemptNumber !== attemptNumber) {
-      if(props.updateAttemptNumber) {
+    if (newAttemptNumber !== attemptNumber) {
+      if (props.updateAttemptNumber) {
         toast(`Reverted activity as attempt number changed on other device`, toastType.ERROR);
         props.updateAttemptNumber(newAttemptNumber);
       } else {
@@ -82,16 +83,16 @@ export default function ActivityViewer(props) {
           props.setIsInErrorState(true)
         }
         setErrMsg('how to reset attempt number when not given updateAttemptNumber function?')
-    
+
       }
-    } else if(newCid !== cid) {
+    } else if (newCid !== cid) {
       if (props.setIsInErrorState) {
         props.setIsInErrorState(true)
       }
       setErrMsg("Content changed unexpectedly!");
     } else {
-    // since, at least for now, only activity state is page number,
-    // we ignore the change 
+      // since, at least for now, only activity state is page number,
+      // we ignore the change 
 
     }
 
@@ -345,8 +346,6 @@ export default function ActivityViewer(props) {
 
     }
 
-    pageAtPreviousSave.current = newCurrentPage;
-
 
     return { newItemWeights };
 
@@ -526,8 +525,8 @@ export default function ActivityViewer(props) {
     }
 
 
-    if (currentPage === pageAtPreviousSave.current) {
-      // no change to be saved
+    if (stage != "saving" || currentPage === pageAtPreviousSave.current) {
+      // haven't got a save event from page or no change to be saved
       return;
     }
 
@@ -663,7 +662,7 @@ export default function ActivityViewer(props) {
           })
 
         }
-      } else if(cid !== data.cid) {
+      } else if (cid !== data.cid) {
 
         // if the cid changed without the attemptNumber changing, something went wrong
         if (props.setIsInErrorState) {
@@ -681,7 +680,6 @@ export default function ActivityViewer(props) {
 
     // TODO: send message so that UI can show changes have been synchronized
 
-    // console.log(">>>>recordContentInteraction data",data)
   }
 
   async function initializeUserAssignmentTables(newItemWeights) {
@@ -716,6 +714,32 @@ export default function ActivityViewer(props) {
     }
 
     setStage('continue');
+
+  }
+
+  async function receivedSaveFromPage() {
+    // activity state isn't saved until a first save from a page
+    setStage("saving");
+
+    // check if cid changed
+    try {
+      let resp = await axios.get('/api/checkForChangedAssignment.php', {
+        params: {
+          currentCid: cid,
+          doenetId: props.doenetId
+        }
+      });
+
+      console.log({
+        currentCid: cid,
+        doenetId: props.doenetId
+      })
+
+      setCidChanged(resp.data.cidChanged === true);
+
+    } catch (e) {
+      // ignore any errors
+    }
 
   }
 
@@ -840,6 +864,7 @@ export default function ActivityViewer(props) {
           updateCreditAchievedCallback={props.updateCreditAchievedCallback}
           setIsInErrorState={props.setIsInErrorState}
           updateAttemptNumber={props.updateAttemptNumber}
+          saveStateCallback={receivedSaveFromPage}
           updateDataOnContentChange={props.updateDataOnContentChange}
         />
 
@@ -847,7 +872,15 @@ export default function ActivityViewer(props) {
     )
   }
 
+  let cidChangedAlert = null;
+  if (cidChanged) {
+    cidChangedAlert = <div>
+      <Button onClick={() => alert("Hey, content changed")} value={"content changed"} />
+    </div>
+  }
+
   return <div style={{ marginBottom: "200px" }}>
+    {cidChangedAlert}
     <Button id={"prev_button"} onClick={() => setCurrentPage((was) => Math.max(1, was - 1))} value={"Previous page"} />
     <Button id={"next_button"} onClick={() => setCurrentPage((was) => Math.min(nPages, was + 1))} value={"Next page"} />
     <p>Current page: {currentPage}</p>

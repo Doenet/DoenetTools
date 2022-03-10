@@ -154,6 +154,8 @@ export default function PageViewer(props) {
         }
       } else if (e.data.messageType === "updateCreditAchieved") {
         props.updateCreditAchievedCallback?.(e.data.args);
+      } else if (e.data.messageType === "savedState") {
+        props.saveStateCallback?.();
       } else if (e.data.messageType === "sendToast") {
         console.log(`Sending toast message: ${e.data.args.message}`);
         toast(e.data.args.message, e.data.args.toastType)
