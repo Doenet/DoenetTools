@@ -6,7 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
-
+include "permissionsAndSettingsFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -54,12 +54,18 @@ $result = $conn->query($sql);
 
 }
 
+$permissionsAndSettings = [];
+
+if ($success){
+  $permissionsAndSettings = getpermissionsAndSettings($conn,$userId);
+}
+
 
 $response_arr = array(
   "success"=>$success,
   "message"=>$message,
   "courseId"=>$courseId,
-  "course_pic"=>$course_pic
+  "permissionsAndSettings"=>$permissionsAndSettings,
   );
 
 

@@ -14,14 +14,14 @@ import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import { pageToolViewAtom } from '../NewToolRoot';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
 import { clearDriveAndItemSelections } from '../../../_reactComponents/Drive/NewDrive';
-import { fetchCoursesQueryOld , coursePermissionsAndSettings } from '../../../_reactComponents/Course/CourseActions';
+import { coursePermissionsAndSettings } from '../../../_reactComponents/Course/CourseActions';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import useMedia from './useMedia';
 import './driveCardsStyle.css';
 import CourseChooserLeave from '../EnterLeave/CourseChooserLeave';
 
 export default function DriveCardsNew(props) {
-  console.log('>>>===DriveCards');
+  console.log('>>>===CourseCards');
 
   const courses = useRecoilValue(coursePermissionsAndSettings);
 

@@ -29,7 +29,7 @@ export default function SelectedCourse() {
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
 
-  console.log("selection",selection)
+  // console.log("selection",selection)
 
   if (selection.length === 1 && selection[0]?.roleLabels[0] === 'Owner') {
     return (
