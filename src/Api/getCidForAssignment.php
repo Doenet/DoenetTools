@@ -43,10 +43,12 @@ if ($doenetId == "") {
 
 if ($success) {
     $cid = null;
+    $doenetIdForCid = $doenetId;
+    $isDoenetIdOverridden = false;
 
-    // first check if there is an cidOverride in user_assignment
+    // first check if there is an doenetIdOverride in user_assignment
 
-    $sql = "SELECT cidOverride
+    $sql = "SELECT doenetIdOverride
         FROM user_assignment
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
@@ -55,23 +57,28 @@ if ($success) {
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $cid = $row["cidOverride"];
+        $doenetIdOverride = $row["doenetIdOverride"];
+        if ($doenetIdOverride != null) {
+            $doenetIdForCid = $doenetIdOverride;
+            $isDoenetIdOverridden = true;
+        }
     }
 
-    // get cid from course_content if didn't override
-    // as long as it is assigned and globally assigned
-    if ($cid == null) {
-        $sql = "SELECT cid, isAssigned, isGloballyAssigned
-            FROM course_content
-            WHERE doenetId = '$doenetId'
-            ";
+    // get cid from course_content
+    // if didn't override doenetId, then use it only as long as it is assigned and globally assigned
+    $sql = "SELECT cid, isAssigned, isGloballyAssigned
+        FROM course_content
+        WHERE doenetId = '$doenetIdForCid'
+        ";
 
-        $result = $conn->query($sql);
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            if ($row["isAssigned"] && $row["isGloballyAssigned"]) {
-                $cid = $row["cid"];
-            }
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        if (
+            $isDoenetIdOverridden ||
+            ($row["isAssigned"] && $row["isGloballyAssigned"])
+        ) {
+            $cid = $row["cid"];
         }
     }
 
@@ -92,7 +99,7 @@ if ($success) {
             $newCid = $cid;
             $cid = $row["cid"];
 
-            if($newCid && $newCid != $cid) {
+            if ($newCid && $newCid != $cid) {
                 // the instructor must have changed the cid since this attempt was started
                 $cidChanged = true;
             }
