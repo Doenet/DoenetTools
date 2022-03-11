@@ -1258,38 +1258,51 @@ var mergeConfig = function mergeConfig(config1, config2) {
   return config;
 };
 
-const name = "axios";
-const version = "0.21.4";
-const description = "Promise based HTTP client for the browser and node.js";
-const main = "index.js";
-const scripts = {
-  test: "grunt test",
-  start: "node ./sandbox/server.js",
-  build: "NODE_ENV=production grunt build",
-  preversion: "npm test",
-  version: "npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json",
-  postversion: "git push && git push --tags",
-  examples: "node ./examples/server.js",
-  coveralls: "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
-  fix: "eslint --fix lib/**/*.js"
+const _from = "axios@^0.21.4";
+const _id = "axios@0.21.4";
+const _inBundle = false;
+const _integrity = "sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==";
+const _location = "/axios";
+const _phantomChildren = {
 };
-const repository = {
-  type: "git",
-  url: "https://github.com/axios/axios.git"
+const _requested = {
+  type: "range",
+  registry: true,
+  raw: "axios@^0.21.4",
+  name: "axios",
+  escapedName: "axios",
+  rawSpec: "^0.21.4",
+  saveSpec: null,
+  fetchSpec: "^0.21.4"
 };
-const keywords = [
-  "xhr",
-  "http",
-  "ajax",
-  "promise",
-  "node"
+const _requiredBy = [
+  "/"
 ];
-const author = "Matt Zabriskie";
-const license = "MIT";
+const _resolved = "https://registry.npmjs.org/axios/-/axios-0.21.4.tgz";
+const _shasum = "c67b90dc0568e5c1cf2b0b858c43ba28e2eda575";
+const _spec = "axios@^0.21.4";
+const _where = "/home/node/workspace";
+const author = {
+  name: "Matt Zabriskie"
+};
+const browser = {
+  "./lib/adapters/http.js": "./lib/adapters/xhr.js"
+};
 const bugs = {
   url: "https://github.com/axios/axios/issues"
 };
-const homepage = "https://axios-http.com";
+const bundleDependencies = false;
+const bundlesize = [
+  {
+    path: "./dist/axios.min.js",
+    threshold: "5kB"
+  }
+];
+const dependencies = {
+  "follow-redirects": "^1.14.0"
+};
+const deprecated = false;
+const description = "Promise based HTTP client for the browser and node.js";
 const devDependencies = {
   coveralls: "^3.0.0",
   "es6-promise": "^4.2.4",
@@ -1325,40 +1338,69 @@ const devDependencies = {
   webpack: "^4.44.2",
   "webpack-dev-server": "^3.11.0"
 };
-const browser = {
-  "./lib/adapters/http.js": "./lib/adapters/xhr.js"
-};
+const homepage = "https://axios-http.com";
 const jsdelivr = "dist/axios.min.js";
-const unpkg = "dist/axios.min.js";
-const typings = "./index.d.ts";
-const dependencies = {
-  "follow-redirects": "^1.14.0"
-};
-const bundlesize = [
-  {
-    path: "./dist/axios.min.js",
-    threshold: "5kB"
-  }
+const keywords = [
+  "xhr",
+  "http",
+  "ajax",
+  "promise",
+  "node"
 ];
+const license = "MIT";
+const main = "index.js";
+const name = "axios";
+const repository = {
+  type: "git",
+  url: "git+https://github.com/axios/axios.git"
+};
+const scripts = {
+  build: "NODE_ENV=production grunt build",
+  coveralls: "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+  examples: "node ./examples/server.js",
+  fix: "eslint --fix lib/**/*.js",
+  postversion: "git push && git push --tags",
+  preversion: "npm test",
+  start: "node ./sandbox/server.js",
+  test: "grunt test",
+  version: "npm run build && grunt version && git add -A dist && git add CHANGELOG.md bower.json package.json"
+};
+const typings = "./index.d.ts";
+const unpkg = "dist/axios.min.js";
+const version = "0.21.4";
 var pkg = {
-  name: name,
-  version: version,
-  description: description,
-  main: main,
-  scripts: scripts,
-  repository: repository,
-  keywords: keywords,
+  _from: _from,
+  _id: _id,
+  _inBundle: _inBundle,
+  _integrity: _integrity,
+  _location: _location,
+  _phantomChildren: _phantomChildren,
+  _requested: _requested,
+  _requiredBy: _requiredBy,
+  _resolved: _resolved,
+  _shasum: _shasum,
+  _spec: _spec,
+  _where: _where,
   author: author,
-  license: license,
-  bugs: bugs,
-  homepage: homepage,
-  devDependencies: devDependencies,
   browser: browser,
-  jsdelivr: jsdelivr,
-  unpkg: unpkg,
-  typings: typings,
+  bugs: bugs,
+  bundleDependencies: bundleDependencies,
+  bundlesize: bundlesize,
   dependencies: dependencies,
-  bundlesize: bundlesize
+  deprecated: deprecated,
+  description: description,
+  devDependencies: devDependencies,
+  homepage: homepage,
+  jsdelivr: jsdelivr,
+  keywords: keywords,
+  license: license,
+  main: main,
+  name: name,
+  repository: repository,
+  scripts: scripts,
+  typings: typings,
+  unpkg: unpkg,
+  version: version
 };
 
 var validators = {};
