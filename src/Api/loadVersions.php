@@ -21,8 +21,8 @@ if ($doenetId == ""){
     $success = FALSE;
     $message = 'Internal Error: missing doenetId';
 }elseif ($userId == ""){
-        $success = FALSE;
-        $message = "No access - Need to sign in";
+        // $success = FALSE;
+        // $message = "No access - Need to sign in";
     // if ($examUserId == ""){
     //     $success = FALSE;
     //     $message = "No access - Need to sign in";
@@ -34,20 +34,20 @@ if ($doenetId == ""){
     // }
 }
 
-if ($success){
-    $sql = "
-    SELECT canViewDrive
-    FROM drive_user
-    WHERE userId = '$userId'
-    AND driveId = '$driveId'
-    ";
-    $result = $conn->query($sql); 
-    $row = $result->fetch_assoc();
-    if ($row['canViewDrive'] == '0'){
-      $success = FALSE;
-      $message = "You need need permission to view versions";
-    }
-}
+// if ($success){
+//     $sql = "
+//     SELECT canViewDrive
+//     FROM drive_user
+//     WHERE userId = '$userId'
+//     AND driveId = '$driveId'
+//     ";
+//     $result = $conn->query($sql); 
+//     $row = $result->fetch_assoc();
+//     if ($row['canViewDrive'] == '0'){
+//       $success = FALSE;
+//       $message = "You need need permission to view versions";
+//     }
+// }
 
 
 if ($success){
