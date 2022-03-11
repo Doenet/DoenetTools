@@ -133,6 +133,8 @@ export default function ToolRoot(){
     CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
+    GuestDoenetMLEditor:lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
+    GuestEditorViewer:lazy(() => import('./ToolPanels/GuestEditorViewer')),
     
   }).current;
 
@@ -274,8 +276,20 @@ let navigationObj = {
       supportPanelTitles:[],
       supportPanelIndex:0,
       hasNoMenuPanel: true,
-    }
+    },
+    edit:{
+      pageName:"GuestEditor",
+      currentMainPanel:"GuestEditorViewer",
+      currentMenus:["Variant"], 
+      menusTitles:["Variant"],
+      menusInitOpen:[],
+      supportPanelOptions:["GuestDoenetMLEditor"],
+      supportPanelTitles:["DoenetML Editor"],
+      supportPanelIndex:0,
+      headerControls: ["ViewerUpdateButton",],
+    },
   },
+  
   exam:{
     default:{
       defaultTool:'chooseLearner'

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import {
   useRecoilValue,
@@ -7,9 +7,10 @@ import {
 } from 'recoil';
 
 import DoenetViewer from '../../../Viewer/DoenetViewer';
-import { 
-  itemHistoryAtom, 
- } from '../ToolHandlers/CourseToolHandler';
+import {
+  itemHistoryAtom,
+} from '../ToolHandlers/CourseToolHandler';
+import axios from 'axios';
 
 const contentIdAtom = atom({
   key:"contentIdAtom",
@@ -23,8 +24,9 @@ export default function Content(props){
   const paramVariantIndex = useRecoilValue(searchParamAtomFamily('variantIndex')) 
   const paramVariantName = useRecoilValue(searchParamAtomFamily('variantName')) 
   const recoilContentId = useRecoilValue(contentIdAtom);
+  const [doenetML, setDoenetML] = useState(null);
 
-  const loadRecoilContentId = useRecoilCallback(({set,snapshot})=> async ({doenetId,assignment=false})=>{
+  const loadRecoilContentId = useRecoilCallback(({ set, snapshot }) => async ({ doenetId, assignment = false }) => {
     const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
     let contentId = null;
     if (assignment){
@@ -43,6 +45,10 @@ export default function Content(props){
       }
     }
     
+    //Load the doenetML from the server
+    let resp = await axios.get(`/media/${contentId}.doenet`);
+    setDoenetML(resp.data);
+
     set(contentIdAtom,contentId)
   })
 
@@ -86,8 +92,8 @@ export default function Content(props){
   return <div style={props.style}>
     <DoenetViewer
         key={'doenetviewer'}
-        // doenetML={doenetML} ???parameter
-        contentId={contentId}
+        doenetML={doenetML}
+        // contentId={contentId}
         flags={{
           showCorrectness: true,
           readOnly: false,
@@ -97,11 +103,11 @@ export default function Content(props){
         }}
         attemptNumber={attemptNumber}
         doenetId={doenetId}
-        allowLoadPageState={true}
-        allowSavePageState={true}
-        allowLocalPageState={true}
-        allowSaveSubmissions={true}
-        allowSaveEvents={true}
+        allowLoadPageState={false}
+        allowSavePageState={false}
+        allowLocalPageState={false}
+        allowSaveSubmissions={false}
+        allowSaveEvents={false}
         requestedVariant={requestedVariant}
       />
   </div>
