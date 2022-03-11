@@ -28,7 +28,10 @@ export default function SelectedCourse() {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
-  if (selection.length === 1 && selection[0]?.role[0] === 'Owner') {
+
+  // console.log("selection",selection)
+
+  if (selection.length === 1 && selection[0]?.roleLabels[0] === 'Owner') {
     return (
       <>
         <DriveInfoPanel
@@ -40,7 +43,7 @@ export default function SelectedCourse() {
         />
       </>
     );
-  } else if (selection[0]?.role[0] === 'Student') {
+  } else if (selection[0]?.roleLabels[0] === 'Student') {
     let dIcon = <FontAwesomeIcon icon={faChalkboard} />;
 
     return (
@@ -50,7 +53,7 @@ export default function SelectedCourse() {
         </h2>
       </>
     );
-  } else if (selection.length > 1 && selection[0].role[0] === 'Owner') {
+  } else if (selection.length > 1 && selection[0].roleLabels[0] === 'Owner') {
     return (
       <>
         <h2> {selection.length} Courses Selected</h2>
@@ -84,7 +87,7 @@ export default function SelectedCourse() {
        
       </>
     );
-  } else if(selection.length === 1 && selection[0]?.role[0] === 'Administrator'){
+  } else if(selection.length === 1 && selection[0]?.roleLabels[0] === 'Administrator'){
     return (
       <>
         <DriveInfoPanel
@@ -122,362 +125,364 @@ const DriveInfoPanel = function (props) {
   const [panelDriveLabel, setPanelDriveLabel] = useState(props.label);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
   const driveId = props.driveId;
-  const [driveUsers, setDriveUsers] = useRecoilStateLoadable(
-    fetchDriveUsers(driveId),
-  );
+  // const [driveUsers, setDriveUsers] = useRecoilStateLoadable(
+  //   fetchDriveUsers(driveId),
+  // );
   // const [selectedUserId, setSelectedUserId] = useState('');
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
   const addToast = useToast();
 
-  if (driveUsers.state === 'loading') {
-    return null;
-  }
-  if (driveUsers.state === 'hasError') {
-    console.error(driveUsers.contents);
-    return null;
-  }
+  return <p>{props.label}</p>;
 
-  let isOwner = false;
-  if (driveUsers?.contents?.usersRole === 'Owner') {
-    isOwner = true;
-  }
-  let dIcon = <FontAwesomeIcon icon={faChalkboard} />;
+  // if (driveUsers.state === 'loading') {
+  //   return null;
+  // }
+  // if (driveUsers.state === 'hasError') {
+  //   console.error(driveUsers.contents);
+  //   return null;
+  // }
 
-  let addOwners = null;
+  // let isOwner = false;
+  // if (driveUsers?.contents?.usersRole === 'Owner') {
+  //   isOwner = true;
+  // }
+  // let dIcon = <FontAwesomeIcon icon={faChalkboard} />;
 
-  addOwners = (
-    <NewUser driveId={driveId} type="Add Owner" setDriveUsers={setDriveUsers} />
-  );
+  // let addOwners = null;
 
-  let addAdmins = null;
+  // addOwners = (
+  //   <NewUser driveId={driveId} type="Add Owner" setDriveUsers={setDriveUsers} />
+  // );
 
-  addAdmins = (
-    <NewUser driveId={driveId} type="Add Admin" setDriveUsers={setDriveUsers} />
-  );
+  // let addAdmins = null;
 
-  let selectedOwner = [];
-  let selectedAdmin = [];
+  // addAdmins = (
+  //   <NewUser driveId={driveId} type="Add Admin" setDriveUsers={setDriveUsers} />
+  // );
 
-  let deleteCourseButton = null;
-  if (isOwner) {
-    deleteCourseButton = (
-      <ButtonGroup vertical>
-        <Button
-          width="menu"
-          value="Delete Course"
-          alert
-          onClick={() => {
-            // alert("Delete Drive")
-            setDrivesInfo({
-              color: props.color,
-              label: driveLabel,
-              image: props.image,
-              newDriveId: [props.driveId],
-              type: 'delete drive',
-            });
-            setDrivecardSelection([]);
-          }}
-        />
-      </ButtonGroup>
-    );
-  }
-  const selectedOwnerFn = (userId, e) => {
-    selectedOwner = [];
-    for (let selectedOwnerObj of e.target.selectedOptions) {
-      for (let owner of driveUsers?.contents?.owners) {
-        if (owner.userId === selectedOwnerObj.value) {
-          selectedOwner.push(owner);
-        }
-      }
-    }
-  };
-  const selectedAdminFn = (userId, e) => {
-    selectedAdmin = [];
-    for (let selectedAdminObj of e.target.selectedOptions) {
-      for (let admin of driveUsers?.contents?.admins) {
-        if (admin.userId === selectedAdminObj.value) {
-          selectedAdmin.push(admin);
-        }
-      }
-    }
-  };
-  // let star = <FontAwesomeIcon icon={faUserCircle} />;
+  // let selectedOwner = [];
+  // let selectedAdmin = [];
 
-  const UserOption = (props) => (
-    <>
-      <option value={props.userId}>
-        {props.screenName} {props.email}
-      </option>
-    </>
-  );
-  let ownersList =
-    driveUsers?.contents?.owners.length > 0 ? (
-      <select
-        multiple
-        onChange={(e) => {
-          selectedOwnerFn(e.target.value, e);
-        }}
-      >
-        {driveUsers?.contents?.owners.map((item, i) => {
-          return (
-            <UserOption
-              userId={item.userId}
-              screenName={item.screenName}
-              email={item.email}
-            />
-          );
-        })}
-      </select>
-    ) : (
-      ''
-    );
-  let ownerPerms = (
-    <ButtonGroup vertical>
-      <Button
-        width="menu"
-        data-doenet-removebutton={selectedOwner}
-        value="Demote to Admin"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setDriveUsers({
-            driveId: driveId,
-            type: 'To Admin',
-            userId: selectedOwner,
-            userRole: 'owner',
-          });
-        }}
-      />
-      <Button
-        width="menu"
-        data-doenet-removebutton={selectedOwner}
-        value="Remove"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setDriveUsers({
-            driveId: driveId,
-            type: 'Remove User',
-            userId: selectedOwner,
-            userRole: 'owner',
-          });
-        }}
-      />
-    </ButtonGroup>
-  );
-  let adminsList =
-    driveUsers?.contents?.admins.length > 0 ? (
-      <select
-        multiple
-        onChange={(e) => {
-          selectedAdminFn(e.target.value, e);
-        }}
-      >
-        {driveUsers?.contents?.admins.map((item, i) => {
-          return <option value={item.userId}>{item.email}</option>;
-        })}
-      </select>
-    ) : (
-      ''
-    );
-  let adminPerms = (
-    <ButtonGroup vertical>
-      <Button
-        width="menu"
-        data-doenet-removebutton={selectedAdmin}
-        value="Promote to Owner"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setDriveUsers({
-            driveId: driveId,
-            type: 'To Owner',
-            userId: selectedAdmin,
-            userRole: 'admin',
-          });
-        }}
-      />
-      <Button
-        width="menu"
-        data-doenet-removebutton={selectedAdmin}
-        value="Remove"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setDriveUsers({
-            driveId: driveId,
-            type: 'Remove User',
-            userId: selectedAdmin,
-            userRole: 'admin',
-          });
-        }}
-      />
-    </ButtonGroup>
-  );
-  // console.log("image", props.image);
-  return (
-    <>
-      <h2 data-cy="infoPanelItemLabel">
-        {dIcon} {panelDriveLabel}
-      </h2>
-      {props.role == 'Administrator' ? <>{addAdmins}  {adminsList}</> : 
-      <>
-      <Textfield 
-        label="Label" 
-        vertical
-        width="menu"
-        value={driveLabel}
-          onChange={(e) => setDriveLabel(e.target.value)}
-          onKeyDown={(e) => {
-            let effectiveDriveLabel = driveLabel;
-            if (driveLabel === ''){
-              effectiveDriveLabel = 'Untitled';
-              setDriveLabel(effectiveDriveLabel)
-              addToast("Label for the course can't be blank.");
-            }
-            if (e.keyCode === 13) {
-              setPanelDriveLabel(effectiveDriveLabel);
-              setDrivesInfo({
-                color: props.color,
-                label: effectiveDriveLabel,
-                image: props.image,
-                newDriveId: props.driveId,
-                type: 'update drive label',
-              });
-              // console.log(effectiveDriveLabel);
-            }
+  // let deleteCourseButton = null;
+  // if (isOwner) {
+  //   deleteCourseButton = (
+  //     <ButtonGroup vertical>
+  //       <Button
+  //         width="menu"
+  //         value="Delete Course"
+  //         alert
+  //         onClick={() => {
+  //           // alert("Delete Drive")
+  //           setDrivesInfo({
+  //             color: props.color,
+  //             label: driveLabel,
+  //             image: props.image,
+  //             newDriveId: [props.driveId],
+  //             type: 'delete drive',
+  //           });
+  //           setDrivecardSelection([]);
+  //         }}
+  //       />
+  //     </ButtonGroup>
+  //   );
+  // }
+  // const selectedOwnerFn = (userId, e) => {
+  //   selectedOwner = [];
+  //   for (let selectedOwnerObj of e.target.selectedOptions) {
+  //     for (let owner of driveUsers?.contents?.owners) {
+  //       if (owner.userId === selectedOwnerObj.value) {
+  //         selectedOwner.push(owner);
+  //       }
+  //     }
+  //   }
+  // };
+  // const selectedAdminFn = (userId, e) => {
+  //   selectedAdmin = [];
+  //   for (let selectedAdminObj of e.target.selectedOptions) {
+  //     for (let admin of driveUsers?.contents?.admins) {
+  //       if (admin.userId === selectedAdminObj.value) {
+  //         selectedAdmin.push(admin);
+  //       }
+  //     }
+  //   }
+  // };
+  // // let star = <FontAwesomeIcon icon={faUserCircle} />;
+
+  // const UserOption = (props) => (
+  //   <>
+  //     <option value={props.userId}>
+  //       {props.screenName} {props.email}
+  //     </option>
+  //   </>
+  // );
+  // let ownersList =
+  //   driveUsers?.contents?.owners.length > 0 ? (
+  //     <select
+  //       multiple
+  //       onChange={(e) => {
+  //         selectedOwnerFn(e.target.value, e);
+  //       }}
+  //     >
+  //       {driveUsers?.contents?.owners.map((item, i) => {
+  //         return (
+  //           <UserOption
+  //             userId={item.userId}
+  //             screenName={item.screenName}
+  //             email={item.email}
+  //           />
+  //         );
+  //       })}
+  //     </select>
+  //   ) : (
+  //     ''
+  //   );
+  // let ownerPerms = (
+  //   <ButtonGroup vertical>
+  //     <Button
+  //       width="menu"
+  //       data-doenet-removebutton={selectedOwner}
+  //       value="Demote to Admin"
+  //       onClick={(e) => {
+  //         e.preventDefault();
+  //         e.stopPropagation();
+  //         setDriveUsers({
+  //           driveId: driveId,
+  //           type: 'To Admin',
+  //           userId: selectedOwner,
+  //           userRole: 'owner',
+  //         });
+  //       }}
+  //     />
+  //     <Button
+  //       width="menu"
+  //       data-doenet-removebutton={selectedOwner}
+  //       value="Remove"
+  //       onClick={(e) => {
+  //         e.preventDefault();
+  //         e.stopPropagation();
+  //         setDriveUsers({
+  //           driveId: driveId,
+  //           type: 'Remove User',
+  //           userId: selectedOwner,
+  //           userRole: 'owner',
+  //         });
+  //       }}
+  //     />
+  //   </ButtonGroup>
+  // );
+  // let adminsList =
+  //   driveUsers?.contents?.admins.length > 0 ? (
+  //     <select
+  //       multiple
+  //       onChange={(e) => {
+  //         selectedAdminFn(e.target.value, e);
+  //       }}
+  //     >
+  //       {driveUsers?.contents?.admins.map((item, i) => {
+  //         return <option value={item.userId}>{item.email}</option>;
+  //       })}
+  //     </select>
+  //   ) : (
+  //     ''
+  //   );
+  // let adminPerms = (
+  //   <ButtonGroup vertical>
+  //     <Button
+  //       width="menu"
+  //       data-doenet-removebutton={selectedAdmin}
+  //       value="Promote to Owner"
+  //       onClick={(e) => {
+  //         e.preventDefault();
+  //         e.stopPropagation();
+  //         setDriveUsers({
+  //           driveId: driveId,
+  //           type: 'To Owner',
+  //           userId: selectedAdmin,
+  //           userRole: 'admin',
+  //         });
+  //       }}
+  //     />
+  //     <Button
+  //       width="menu"
+  //       data-doenet-removebutton={selectedAdmin}
+  //       value="Remove"
+  //       onClick={(e) => {
+  //         e.preventDefault();
+  //         e.stopPropagation();
+  //         setDriveUsers({
+  //           driveId: driveId,
+  //           type: 'Remove User',
+  //           userId: selectedAdmin,
+  //           userRole: 'admin',
+  //         });
+  //       }}
+  //     />
+  //   </ButtonGroup>
+  // );
+  // // console.log("image", props.image);
+  // return (
+  //   <>
+  //     <h2 data-cy="infoPanelItemLabel">
+  //       {dIcon} {panelDriveLabel}
+  //     </h2>
+  //     {props.role == 'Administrator' ? <>{addAdmins}  {adminsList}</> : 
+  //     <>
+  //     <Textfield 
+  //       label="Label" 
+  //       vertical
+  //       width="menu"
+  //       value={driveLabel}
+  //         onChange={(e) => setDriveLabel(e.target.value)}
+  //         onKeyDown={(e) => {
+  //           let effectiveDriveLabel = driveLabel;
+  //           if (driveLabel === ''){
+  //             effectiveDriveLabel = 'Untitled';
+  //             setDriveLabel(effectiveDriveLabel)
+  //             addToast("Label for the course can't be blank.");
+  //           }
+  //           if (e.keyCode === 13) {
+  //             setPanelDriveLabel(effectiveDriveLabel);
+  //             setDrivesInfo({
+  //               color: props.color,
+  //               label: effectiveDriveLabel,
+  //               image: props.image,
+  //               newDriveId: props.driveId,
+  //               type: 'update drive label',
+  //             });
+  //             // console.log(effectiveDriveLabel);
+  //           }
             
-          }}
-          onBlur={() => {
-            let effectiveDriveLabel = driveLabel;
-            if (driveLabel === ''){
-              effectiveDriveLabel = 'Untitled';
-              setDriveLabel(effectiveDriveLabel)
-              addToast("Label for the course can't be blank.");
-            }
+  //         }}
+  //         onBlur={() => {
+  //           let effectiveDriveLabel = driveLabel;
+  //           if (driveLabel === ''){
+  //             effectiveDriveLabel = 'Untitled';
+  //             setDriveLabel(effectiveDriveLabel)
+  //             addToast("Label for the course can't be blank.");
+  //           }
            
-              setPanelDriveLabel(effectiveDriveLabel);
-              setDrivesInfo({
-                color: props.color,
-                label: effectiveDriveLabel,
-                image: props.image,
-                newDriveId: props.driveId,
-                type: 'update drive label',
-              });
+  //             setPanelDriveLabel(effectiveDriveLabel);
+  //             setDrivesInfo({
+  //               color: props.color,
+  //               label: effectiveDriveLabel,
+  //               image: props.image,
+  //               newDriveId: props.driveId,
+  //               type: 'update drive label',
+  //             });
             
             
-          }}
-        />
-      {/* <label>
-        Label {' '}
-        <input
-          type="text"
-          value={driveLabel}
-          onChange={(e) => setDriveLabel(e.target.value)}
-          onKeyDown={(e) => {
-            let effectiveDriveLabel = driveLabel;
-            if (driveLabel === ''){
-              effectiveDriveLabel = 'Untitled';
-              setDriveLabel(effectiveDriveLabel)
-              addToast("Label for the course can't be blank.");
-            }
-            if (e.keyCode === 13) {
-              setPanelDriveLabel(effectiveDriveLabel);
-              setDrivesInfo({
-                color: props.color,
-                label: effectiveDriveLabel,
-                image: props.image,
-                newDriveId: props.driveId,
-                type: 'update drive label',
-              });
-            }
+  //         }}
+  //       />
+  //     {/* <label>
+  //       Label {' '}
+  //       <input
+  //         type="text"
+  //         value={driveLabel}
+  //         onChange={(e) => setDriveLabel(e.target.value)}
+  //         onKeyDown={(e) => {
+  //           let effectiveDriveLabel = driveLabel;
+  //           if (driveLabel === ''){
+  //             effectiveDriveLabel = 'Untitled';
+  //             setDriveLabel(effectiveDriveLabel)
+  //             addToast("Label for the course can't be blank.");
+  //           }
+  //           if (e.keyCode === 13) {
+  //             setPanelDriveLabel(effectiveDriveLabel);
+  //             setDrivesInfo({
+  //               color: props.color,
+  //               label: effectiveDriveLabel,
+  //               image: props.image,
+  //               newDriveId: props.driveId,
+  //               type: 'update drive label',
+  //             });
+  //           }
             
-          }}
-          onBlur={() => {
-            let effectiveDriveLabel = driveLabel;
-            if (driveLabel === ''){
-              effectiveDriveLabel = 'Untitled';
-              setDriveLabel(effectiveDriveLabel)
-              addToast("Label for the course can't be blank.");
-            }
+  //         }}
+  //         onBlur={() => {
+  //           let effectiveDriveLabel = driveLabel;
+  //           if (driveLabel === ''){
+  //             effectiveDriveLabel = 'Untitled';
+  //             setDriveLabel(effectiveDriveLabel)
+  //             addToast("Label for the course can't be blank.");
+  //           }
            
-              setPanelDriveLabel(effectiveDriveLabel);
-              setDrivesInfo({
-                color: props.color,
-                label: effectiveDriveLabel,
-                image: props.image,
-                newDriveId: props.driveId,
-                type: 'update drive label',
-              });
+  //             setPanelDriveLabel(effectiveDriveLabel);
+  //             setDrivesInfo({
+  //               color: props.color,
+  //               label: effectiveDriveLabel,
+  //               image: props.image,
+  //               newDriveId: props.driveId,
+  //               type: 'update drive label',
+  //             });
             
             
-          }}
-        />
-      </label> */}
-      <br />
-      <CoursePassword driveId={props.driveId} />
-      <br />
-      {/* <label>
-        Image (soon) */}
-        <ColorImagePicker 
-          initialImage={props.image}
-          initialColor={props.color}
-          // callback={(image) => {
-          //   console.log(image);}}
-          imageCallback={(newImage) => {
-            setDrivesInfo({
-              color: "none",
-              label: props.label,
-              image: newImage,
-              newDriveId: props.driveId,
-              type: 'update drive image',
-            });
-            // console.log(newImage);
-          }}
-          colorCallback={(newColor) => {
-            setDrivesInfo({
-              image: "none",
-              color: newColor,
-              label: props.label,
-              newDriveId: props.driveId,
-              type: 'update drive color',
-            });
-            // console.log("What is the color??", newColor);
-          }}
-        />
-        {/* <DoenetDriveCardMenu
-          key={`colorMenu${props.driveId}`}
-          colors={driveColors}
-          initialValue={props.color}
-          callback={(color) => {
-            setDrivesInfo({
-              color,
-              label: driveLabel,
-              image: props.image,
-              newDriveId: props.driveId,
-              type: 'update drive color',
-            });
-          }}
-        /> */}
-      {/* </label> */}
+  //         }}
+  //       />
+  //     </label> */}
+  //     <br />
+  //     <CoursePassword driveId={props.driveId} />
+  //     <br />
+  //     {/* <label>
+  //       Image (soon) */}
+  //       <ColorImagePicker 
+  //         initialImage={props.image}
+  //         initialColor={props.color}
+  //         // callback={(image) => {
+  //         //   console.log(image);}}
+  //         imageCallback={(newImage) => {
+  //           setDrivesInfo({
+  //             color: "none",
+  //             label: props.label,
+  //             image: newImage,
+  //             newDriveId: props.driveId,
+  //             type: 'update drive image',
+  //           });
+  //           // console.log(newImage);
+  //         }}
+  //         colorCallback={(newColor) => {
+  //           setDrivesInfo({
+  //             image: "none",
+  //             color: newColor,
+  //             label: props.label,
+  //             newDriveId: props.driveId,
+  //             type: 'update drive color',
+  //           });
+  //           // console.log("What is the color??", newColor);
+  //         }}
+  //       />
+  //       {/* <DoenetDriveCardMenu
+  //         key={`colorMenu${props.driveId}`}
+  //         colors={driveColors}
+  //         initialValue={props.color}
+  //         callback={(color) => {
+  //           setDrivesInfo({
+  //             color,
+  //             label: driveLabel,
+  //             image: props.image,
+  //             newDriveId: props.driveId,
+  //             type: 'update drive color',
+  //           });
+  //         }}
+  //       /> */}
+  //     {/* </label> */}
 
-      <br />
-      {addOwners}
-      {ownersList}
-      <br />
-      {ownerPerms}
-      <br />
-      {addAdmins}
-      <br />
-      {adminsList}
-      {adminPerms}
+  //     <br />
+  //     {addOwners}
+  //     {ownersList}
+  //     <br />
+  //     {ownerPerms}
+  //     <br />
+  //     {addAdmins}
+  //     <br />
+  //     {adminsList}
+  //     {adminPerms}
 
-      {deleteCourseButton}
-      </>
-        }
+  //     {deleteCourseButton}
+  //     </>
+  //       }
 
-    </>
-  );
+  //   </>
+  // );
 };
 
 function NewUser(props) {

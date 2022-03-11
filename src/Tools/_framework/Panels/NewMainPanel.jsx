@@ -51,7 +51,7 @@ export default function MainPanel({
   displaySettings,
   hasNoHeaderPanel,
 }) {
-  console.log('>>>===main panel');
+  // console.log('>>>===main panel');
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   const mpOnClick = useRecoilCallback(({ set, snapshot }) => async () => {

@@ -201,7 +201,7 @@ const LoadingFallback = styled.div`
 `;
 
 export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, displayProfile }) {
-console.log(">>>===MenuPanel", hide)
+// console.log(">>>===MenuPanel", hide)
 // console.log(">>>menuPanelCap",menuPanelCap)
 // console.log(">>>currentMenus",currentMenus)
 
@@ -278,7 +278,7 @@ console.log(">>>===MenuPanel", hide)
 
   //Show menus
   for (let [i,type] of Object.entries(currentMenus)){
-    console.log(">>>menu",type)
+    // console.log(">>>menu",type)
     const mKey = `${type}`;
     const title = menusTitles[i]
     let isOpen = initOpen[i]

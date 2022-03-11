@@ -1,10 +1,11 @@
 import { faTh } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
-import { selectorFamily, useRecoilCallback, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+// import { useEffect, useState } from 'react';
+import { selectorFamily, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
-import { fetchDrivesQuery, loadDriveInfoQuery, folderDictionary } from '../_reactComponents/Drive/NewDrive';
+import { fetchCoursesQuery, folderDictionary } from '../_reactComponents/Drive/NewDrive';
 import { effectiveRoleAtom } from '../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { studentData, assignmentData } from '../Tools/_framework/ToolPanels/Gradebook';
+import { coursePermissionsAndSettingsByCourseId } from '../_reactComponents/Course/CourseActions';
 
 export function useCourseChooserCrumb(){
 
@@ -19,22 +20,15 @@ export function useCourseChooserCrumb(){
   }}
 }
 
-export function useDashboardCrumb(driveId){
+export function useDashboardCrumb(courseId){
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const drives = useRecoilValue(fetchDrivesQuery);
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  let label;
-
-  for (let driveIdLabel of drives.driveIdsAndLabels){
-    if (driveIdLabel.driveId == driveId){
-      label = driveIdLabel.label;
-      break;
-    }
-  }
+  let label = course.label;
 
   let params = {
-    path: `${driveId}:${driveId}:${driveId}:Drive`,
+    path: `${courseId}:${courseId}:${courseId}:Drive`,
   }
 
   return {label, onClick:()=>{

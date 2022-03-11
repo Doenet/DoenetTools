@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { folderDictionary, fetchDrivesQuery, loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
+import { folderDictionary, fetchCoursesQuery, loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import axios from 'axios';
 import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
@@ -33,7 +33,7 @@ export default function AssignmentInfoCap(){
    
 
   },[doenetId])
-  const driveInfo = useRecoilValue(fetchDrivesQuery)
+  const driveInfo = useRecoilValue(fetchCoursesQuery)
 
   let contentLabel = '';
 
