@@ -221,7 +221,7 @@ console.log("this.itemVariantInfo",this.itemVariantInfo)
 
       axios.post('/api/initAssignmentAttempt.php', {
         doenetId: this.props.doenetId,
-        weights: this.core.scoredItemWeights,
+        weights: await this.core.scoredItemWeights,
         attemptNumber: this.attemptNumber,
         contentId: this.contentId,
         requestedVariant: JSON.stringify(this.requestedVariant, serializedComponentsReplacer),
