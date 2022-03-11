@@ -62,9 +62,10 @@ export default function GradeDownload() {
           break;
         }
       }
+      let studentName = `${students[userId].firstName} ${students[userId].lastName}`.replaceAll('"', '""');
       studentInfo[userId] = {
         courseTotal: 0,
-        csv: `${students[userId].firstName} ${students[userId].lastName},${email},${studentId},${section},${withdrew},`
+        csv: `"${studentName}",${email},${studentId},${section},${withdrew},`
       };
     }
     let courseTotalPossiblePoints = 0;

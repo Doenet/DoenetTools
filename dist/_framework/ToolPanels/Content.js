@@ -1,4 +1,4 @@
-import React from "../../_snowpack/pkg/react.js";
+import React, {useState} from "../../_snowpack/pkg/react.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {
   useRecoilValue,
@@ -9,6 +9,7 @@ import DoenetViewer from "../../viewer/DoenetViewer.js";
 import {
   itemHistoryAtom
 } from "../ToolHandlers/CourseToolHandler.js";
+import axios from "../../_snowpack/pkg/axios.js";
 const contentIdAtom = atom({
   key: "contentIdAtom",
   default: null
@@ -19,6 +20,7 @@ export default function Content(props) {
   const paramVariantIndex = useRecoilValue(searchParamAtomFamily("variantIndex"));
   const paramVariantName = useRecoilValue(searchParamAtomFamily("variantName"));
   const recoilContentId = useRecoilValue(contentIdAtom);
+  const [doenetML, setDoenetML] = useState(null);
   const loadRecoilContentId = useRecoilCallback(({set, snapshot}) => async ({doenetId: doenetId2, assignment = false}) => {
     const versionHistory = await snapshot.getPromise(itemHistoryAtom(doenetId2));
     let contentId2 = null;
@@ -37,6 +39,8 @@ export default function Content(props) {
         }
       }
     }
+    let resp = await axios.get(`/media/${contentId2}.doenet`);
+    setDoenetML(resp.data);
     set(contentIdAtom, contentId2);
   });
   let contentId = null;
@@ -68,7 +72,7 @@ export default function Content(props) {
     style: props.style
   }, /* @__PURE__ */ React.createElement(DoenetViewer, {
     key: "doenetviewer",
-    contentId,
+    doenetML,
     flags: {
       showCorrectness: true,
       readOnly: false,
@@ -78,11 +82,11 @@ export default function Content(props) {
     },
     attemptNumber,
     doenetId,
-    allowLoadPageState: true,
-    allowSavePageState: true,
-    allowLocalPageState: true,
-    allowSaveSubmissions: true,
-    allowSaveEvents: true,
+    allowLoadPageState: false,
+    allowSavePageState: false,
+    allowLocalPageState: false,
+    allowSaveSubmissions: false,
+    allowSaveEvents: false,
     requestedVariant
   }));
 }
