@@ -50,31 +50,57 @@ export const useCreateCourse = () => {
   return { createCourse };
 }
 
-// const itemInfoByDoenetId = atomFamily({
-//   key: 'itemDataByDoenetId',
-//   default: null,
-//   effects: (doenetId) => [
-//     ({ setSelf, onSet, trigger }) => {
-//       if (trigger === 'get') {
-//         console.log("get itemInfoByDoenetId",doenetId);
-//         // try {
-//         //   const { data } = axios.get('/api/loadCourseOrderData', {
-//         //     params: { courseId },
-//         //   });
-//         //   //sort
-//         //   let sorted = [];
-//         //   let lookup = {};
-//         //   setSelf({ completeOrder: sorted, orderingDataLookup: lookup });
-//         // } catch (e) {}
-//       }
-//       // onSet((newObj, was) => {
-//       //   console.log('newObj',newObj)
-//       //   console.log('was',was)
+const itemInfoByDoenetId = atomFamily({
+  key: 'itemDataByDoenetId',
+  default: null,
+  effects: (doenetId) => [
+    ({ setSelf, onSet, trigger }) => {
+      if (trigger === 'get') {
+        console.log("get itemInfoByDoenetId",doenetId);
+        // try {
+        //   const { data } = axios.get('/api/loadCourseOrderData', {
+        //     params: { courseId },
+        //   });
+        //   //sort
+        //   let sorted = [];
+        //   let lookup = {};
+        //   setSelf({ completeOrder: sorted, orderingDataLookup: lookup });
+        // } catch (e) {}
+      }
+      // onSet((newObj, was) => {
+      //   console.log('newObj',newObj)
+      //   console.log('was',was)
 
-//       // });
-//     },
-//   ],
-// });
+      // });
+    },
+  ],
+});
+
+export const courseOrderDataByCourseId = atomFamily({
+  key: 'courseOrderDataByCourseId',
+  default: { completeOrder: [], orderingDataLookup: {} },
+  effects: (courseId) => [
+    ({ setSelf, onSet, trigger }) => {
+      if (trigger === 'get') {
+        console.log("GET courseOrderDataByCourseId");
+        // try {
+        //   const { data } = axios.get('/api/loadCourseItems.php', {
+        //     params: { courseId },
+        //   });
+        //   //sort
+        //   let sorted = [];
+        //   let lookup = {};
+        //   setSelf({ completeOrder: sorted, orderingDataLookup: lookup });
+        // } catch (e) {}
+      }
+
+      onSet(({ completeOrder: newOrder }, was) => {
+        // console.log("courseOrderDataByCourseId",newOrder);
+        //TODO: create orderingDataLookup
+      });
+    },
+  ],
+});
 
 // // type ItemType = 'Activity' | 'Section' | 'Page';
 
@@ -103,7 +129,7 @@ export const useCreateCourse = () => {
 //             console.log("activityData",activityData)
 //             newDoenetId = activityData.doenetId;
 //             set(itemInfoByDoenetId(activityData.doenetId), activityData.itemEntered);
-//             set(courseOrderDataByCourseId(courseId), {completeOrder:activityData.order})
+//             // set(courseOrderDataByCourseId(courseId), {completeOrder:activityData.order})
 //             break;
 //             case 'Page':
 //             // set(itemInfoByDoenetId(newDoenetId), {
@@ -135,7 +161,7 @@ export const useCreateCourse = () => {
 //             console.log("sectionData",sectionData)
 //             newDoenetId = sectionData.doenetId;
 //             set(itemInfoByDoenetId(sectionData.doenetId), sectionData.itemEntered);
-//             set(courseOrderDataByCourseId(courseId), {completeOrder:sectionData.order})
+//             // set(courseOrderDataByCourseId(courseId), {completeOrder:sectionData.order})
 //             break;
 //         }
 //         return newDoenetId;

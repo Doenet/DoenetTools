@@ -21,9 +21,9 @@ export default function AddDriveItems() {
             type: itemType.DOENETML,
           })
         }
-        value="Add DoenetML"
+        value="Add Activity"
       >
-        Add DoenetML
+        Add Activity
       </Button>
       <Button
         width="menu"
@@ -33,7 +33,7 @@ export default function AddDriveItems() {
             type: itemType.COLLECTION,
           })
         }
-        value="Add Collection"
+        value="Add Bank"
       />
       <Button
         width="menu"
@@ -43,9 +43,9 @@ export default function AddDriveItems() {
             type: itemType.FOLDER,
           })
         }
-        value="Add Folder"
+        value="Add Section"
       >
-        Add Folder
+        Add Section
       </Button>
       
     </ButtonGroup>

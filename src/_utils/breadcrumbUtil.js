@@ -25,7 +25,7 @@ export function useDashboardCrumb(courseId){
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  let label = course.label;
+  let label = course?.label;
 
   let params = {
     path: `${courseId}:${courseId}:${courseId}:Drive`,
