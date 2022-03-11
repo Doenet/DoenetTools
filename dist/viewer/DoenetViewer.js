@@ -87,10 +87,11 @@ class DoenetViewerChild extends Component {
       this.setState({errMsg: e.message});
     }
   }
-  coreReady(core) {
+  async coreReady(core) {
     this.core = core;
-    this.generatedVariant = core.document.stateValues.generatedVariantInfo;
-    this.itemVariantInfo = core.document.stateValues.itemVariantInfo;
+    this.generatedVariant = await core.document.stateValues.generatedVariantInfo;
+    this.itemVariantInfo = await core.document.stateValues.itemVariantInfo;
+    console.log("this.itemVariantInfo", this.itemVariantInfo);
     this.allPossibleVariants = [...core.document.sharedParameters.allPossibleVariants];
     if (this.props.generatedVariantCallback) {
       this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);

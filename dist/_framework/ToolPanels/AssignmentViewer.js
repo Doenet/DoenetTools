@@ -160,9 +160,8 @@ export default function AssignmentViewer() {
     }
     doenetML2 = response;
     returnAllPossibleVariants({
-      doenetML: doenetML2,
-      callback: isCollection ? setCollectionVariant : setVariantsFromDoenetML
-    });
+      doenetML: doenetML2
+    }).then(isCollection ? setCollectionVariant : setVariantsFromDoenetML);
     async function setVariantsFromDoenetML({allPossibleVariants}) {
       storedAllPossibleVariants.current = allPossibleVariants;
       const {data} = await axios.get("/api/loadTakenVariants.php", {
