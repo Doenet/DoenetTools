@@ -107,7 +107,9 @@ export default function ToolRoot() {
     Enrollment: lazy(() => import("./ToolPanels/Enrollment.js")),
     CollectionEditor: lazy(() => import("./ToolPanels/CollectionEditor.js")),
     ChooseLearnerPanel: lazy(() => import("./ToolPanels/ChooseLearnerPanel.js")),
-    EndExamPanel: lazy(() => import("./ToolPanels/EndExamPanel.js"))
+    EndExamPanel: lazy(() => import("./ToolPanels/EndExamPanel.js")),
+    GuestDoenetMLEditor: lazy(() => import("./ToolPanels/GuestDoenetMLEditor.js")),
+    GuestEditorViewer: lazy(() => import("./ToolPanels/GuestEditorViewer.js"))
   }).current;
   const LazyControlObj = useRef({
     BackButton: lazy(() => import("./HeaderControls/BackButton.js")),
@@ -216,6 +218,17 @@ let navigationObj = {
       supportPanelTitles: [],
       supportPanelIndex: 0,
       hasNoMenuPanel: true
+    },
+    edit: {
+      pageName: "GuestEditor",
+      currentMainPanel: "GuestEditorViewer",
+      currentMenus: ["Variant"],
+      menusTitles: ["Variant"],
+      menusInitOpen: [],
+      supportPanelOptions: ["GuestDoenetMLEditor"],
+      supportPanelTitles: ["DoenetML Editor"],
+      supportPanelIndex: 0,
+      headerControls: ["ViewerUpdateButton"]
     }
   },
   exam: {
