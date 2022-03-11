@@ -225,6 +225,7 @@ class DoenetViewerChild extends Component {
         stateVariables: changeString
       };
       axios.post("/api/saveCreditForItem.php", payload2).then((resp) => {
+        console.log(">>>>saveCreditForItem resp", resp.data);
         if (!resp.data.success) {
           this.props.toast(resp.data.message, toastType.ERROR);
         }
