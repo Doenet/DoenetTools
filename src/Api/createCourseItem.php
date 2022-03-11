@@ -74,13 +74,13 @@ parentDoenetId,
 label,
 creationDate,
 isDeleted,
-isReleased,
 isAssigned,
 isPublic,
 CAST(jsonDefinition as CHAR) AS json
 FROM course_content
 WHERE doenetId = '$doenetId'
 ";
+echo $sql;
 $result = $conn->query($sql); 
 $row = $result->fetch_assoc();
 
@@ -91,7 +91,6 @@ $itemEntered = array(
   "label"=>$row['label'],
   "creationDate"=>$row['creationDate'],
   "isDeleted"=>$row['isDeleted'],
-  "isReleased"=>$row['isReleased'],
   "isAssigned"=>$row['isAssigned'],
   "isPublic"=>$row['isPublic'],
 );

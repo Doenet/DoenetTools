@@ -104,69 +104,53 @@ export const courseOrderDataByCourseId = atomFamily({
 
 // // type ItemType = 'Activity' | 'Section' | 'Page';
 
-// export const useCourse = (courseId) => {
-//   // const visableOrder = useRecoilValue(visableOrderByDriveId(driveId));
+export const useCourse = (courseId) => {
+  // const visableOrder = useRecoilValue(visableOrderByDriveId(driveId));
 
-//   const create = useRecoilCallback(
-//     ({ set }) =>
-//       async ({
-//         previousDoenetId,
-//         itemType,
-//         placeInFolderFlag = false,
-//       }) => {
-//         let newDoenetId;
-//         //Get selection information to know previous doenetId by order
-//         switch (itemType) {
-//           case 'Activity':
-//             let { data:activityData } = await axios.get('/api/createCourseItem.php', {
-//               params: {
-//                 previousDoenetId,
-//                 courseId,
-//                 itemType,
-//                 placeInFolderFlag,
-//               },
-//             });
-//             console.log("activityData",activityData)
-//             newDoenetId = activityData.doenetId;
-//             set(itemInfoByDoenetId(activityData.doenetId), activityData.itemEntered);
-//             // set(courseOrderDataByCourseId(courseId), {completeOrder:activityData.order})
-//             break;
-//             case 'Page':
-//             // set(itemInfoByDoenetId(newDoenetId), {
-//             //   label,
-//             //   itemType,
-//             //   assigmentSettings: { dueDate: 'none' }, //TODO: add default settings
-//             //   contentId: '',
-//             //   versions: [],
-//             // });
-//             break;
-//             case 'Bank':
-//             // set(itemInfoByDoenetId(newDoenetId), {
-//             //   label,
-//             //   itemType,
-//             //   assigmentSettings: { dueDate: 'none' }, //TODO: add default settings
-//             //   contentId: '',
-//             //   versions: [],
-//             // });
-//             break;
-//           case 'Section':
-//             let { data:sectionData } = await axios.get('/api/createCourseItem.php', {
-//               params: {
-//                 previousDoenetId,
-//                 courseId,
-//                 itemType,
-//                 placeInFolderFlag,
-//               },
-//             });
-//             console.log("sectionData",sectionData)
-//             newDoenetId = sectionData.doenetId;
-//             set(itemInfoByDoenetId(sectionData.doenetId), sectionData.itemEntered);
-//             // set(courseOrderDataByCourseId(courseId), {completeOrder:sectionData.order})
-//             break;
-//         }
-//         return newDoenetId;
-//       },
-//   );
+  const create = useRecoilCallback(
+    ({ set }) =>
+      async ({
+        previousDoenetId,
+        itemType,
+        placeInFolderFlag = false,
+      }) => {
+        let newDoenetId;
+        //Get selection information to know previous doenetId by order
+        if (itemType == 'Activity') {
+            let { data } = await axios.get('/api/createCourseItem.php', {
+              params: {
+                previousDoenetId,
+                courseId,
+                itemType,
+                placeInFolderFlag,
+              },
+            });
+            console.log("activityData",data)
+            newDoenetId = data.doenetId;
+            set(itemInfoByDoenetId(data.doenetId), data.itemEntered);
+            // set(courseOrderDataByCourseId(courseId), {completeOrder:activityData.order})
+          }else if (itemType == 'Page') {
+            console.log("page")
+          }else if (itemType == 'Bank') {
+            console.log("Bank")
+          }else if (itemType == 'Section') {
+  
+            let { data } = await axios.get('/api/createCourseItem.php', {
+              params: {
+                previousDoenetId,
+                courseId,
+                itemType,
+                placeInFolderFlag,
+              },
+            });
+            console.log("sectionData",data)
+            newDoenetId = data.doenetId;
+            set(itemInfoByDoenetId(data.doenetId), data.itemEntered);
+            // set(courseOrderDataByCourseId(courseId), {completeOrder:sectionData.order})
+        }
+        return newDoenetId;
+      },
+  );
 
-//   return { create };
-// };
+  return { create };
+};

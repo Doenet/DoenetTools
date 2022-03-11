@@ -2,24 +2,23 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import useSockets, { itemType } from '../../../_reactComponents/Sockets';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import { useCourse } from '../../../_reactComponents/Course/CourseActions';
 
 export default function AddDriveItems() {
-  const [driveId, parentFolderId] = useRecoilValue(
+  const [courseId, parentFolderId] = useRecoilValue(
     searchParamAtomFamily('path'),
   ).split(':');
-  const { addItem } = useSockets('drive');
+  let { create } = useCourse(courseId);
+  //TODO: add selection information
+
   return (
     <ButtonGroup vertical>
       <Button
         width="menu"
         onClick={() =>
-          addItem({
-            driveIdFolderId: { driveId, folderId: parentFolderId },
-            type: itemType.DOENETML,
-          })
+          console.log("Add Activity")
         }
         value="Add Activity"
       >
@@ -28,20 +27,15 @@ export default function AddDriveItems() {
       <Button
         width="menu"
         onClick={() =>
-          addItem({
-            driveIdFolderId: { driveId, folderId: parentFolderId },
-            type: itemType.COLLECTION,
-          })
+          console.log("Add Bank")
         }
         value="Add Bank"
       />
       <Button
         width="menu"
         onClick={() =>
-          addItem({
-            driveIdFolderId: { driveId, folderId: parentFolderId },
-            type: itemType.FOLDER,
-          })
+          create({itemType:"Section",previousDoenetId:"testid",placeInFolderFlag:false})
+
         }
         value="Add Section"
       >
