@@ -846,7 +846,7 @@ export default function attempt() {
         },
         {
           name: 'Disabled',
-          propPreview: '<Increment disabled />',
+          propPreview: '<SearchBar disabled />',
           propCode: { disabled },
           description: 'Makes button not able to be used.',
         },
