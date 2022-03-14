@@ -8,6 +8,7 @@ import {
   useRecoilCallback,
   useSetRecoilState,
   useRecoilValueLoadable,
+  useRecoilState,
   // useRecoilState,
   // useSetRecoilState,
 } from 'recoil';
@@ -49,17 +50,34 @@ export const creditAchievedAtom = atom({
 
 //Randomly pick next variant
 //If all were picked then start random picks over
-function pushRandomVariantOfRemaining({ previous, from, individualize, userId, doenetId, attemptNumber }) {
-  let usersVariantAttempts = [...previous];
-  let possible = [];
-  let numRemaining = previous.length % from.length;
+function generateNewVariant({ previousVariants, allPossibleVariants, individualize, userId, doenetId, attemptNumber }) {
 
-  let latestSetOfWas = [];
+  let possible = [];
+  let numRemaining = (attemptNumber - 1) % allPossibleVariants.length;
+
+  let mostRecentPreviousVariants = [];
+
   if (numRemaining > 0) {
-    latestSetOfWas = previous.slice(-numRemaining);
+    for (let aNum = attemptNumber - numRemaining; aNum < attemptNumber; aNum++) {
+      if (previousVariants[aNum - 1]) {
+        mostRecentPreviousVariants.push(previousVariants[aNum - 1])
+      } else {
+        // variant number was never saved, so generate it first
+        let oldVariant = generateNewVariant({
+          previousVariants: previousVariants.slice(0, aNum - 1),
+          allPossibleVariants, individualize, userId, doenetId,
+          attemptNumber: aNum
+        });
+        previousVariants[aNum - 1] = oldVariant;
+        mostRecentPreviousVariants.push(oldVariant);
+
+      }
+
+    }
   }
-  for (let variant of from) {
-    if (!latestSetOfWas.includes(variant)) {
+
+  for (let variant of allPossibleVariants) {
+    if (!mostRecentPreviousVariants.includes(variant)) {
       possible.push(variant);
     }
   }
@@ -71,22 +89,14 @@ function pushRandomVariantOfRemaining({ previous, from, individualize, userId, d
   if (individualize) {
     seed += "|" + userId;
   }
-  console.log(`seed: ${seed}`);
 
   let rng = new prng_alea(seed);
-
-
-  function randomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
 
   const ind = Math.floor(rng() * possible.length);
 
   const nextVariant = possible[ind];
-  usersVariantAttempts.push(nextVariant);
-  return usersVariantAttempts;
+
+  return nextVariant;
 }
 
 export default function AssignmentViewer() {
@@ -95,7 +105,7 @@ export default function AssignmentViewer() {
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState('Initializing');
   let [message, setMessage] = useState('');
-  const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
+  const [recoilAttemptNumber, setRecoilAttemptNumber] = useRecoilState(currentAttemptNumber);
   const [
     {
       requestedVariantIndex,
@@ -106,6 +116,7 @@ export default function AssignmentViewer() {
       cid,
       doenetId,
       solutionDisplayMode,
+      cidChanged,
     },
     setLoad,
   ] = useState({});
@@ -180,12 +191,14 @@ export default function AssignmentViewer() {
 
         let cid = null;
 
-        //First try to find if they have a previously assigned cid
-        //for the current attempt
 
+        // determine cid
+        // the cid from the latest attempt takes precedence over assigned cid
+        // If assigned cid differs from latest attempt cid,
+        // set cidChanged=true
         let resp = await axios.get(
           `/api/getCidForAssignment.php`,
-          { params: { doenetId } },
+          { params: { doenetId, latestAttemptOverrides: true } },
         );
 
         if (!resp.data.success) {
@@ -202,10 +215,12 @@ export default function AssignmentViewer() {
 
         console.log(`retrieved cid: ${cid}`);
 
+        let cidChanged = resp.data.cidChanged;
+
 
         // Hard code cid for testing!!!!!!
         // cid = 'bafkreidr6ny65lb5s23nyxhd3hx7xrghflzmpr2cyeru6mgctrgyha7i4m';
-
+        // bafkreifvkdnaoeqqn2aumwk4wvjlflnuo3ar7wd44giklfylzxkyfqs5km
 
 
         // TODO: add a flag to enable the below feature
@@ -251,20 +266,17 @@ export default function AssignmentViewer() {
           return;
         }
 
-        let usersVariantAttempts = [];
+        let usersVariantAttempts = resp.data.variants.map(Number)
 
-        for (let variant of resp.data.variants) {
-          usersVariantAttempts.push(Number(variant));
-        }
-
-        let attemptNumber = Math.max(...resp.data.attemptNumbers);
+        let attemptNumber = Math.max(...resp.data.attemptNumbers.map(Number));
         let needNewVariant = false;
 
         if (attemptNumber < 1) {
           attemptNumber = 1;
           needNewVariant = true;
-        } else if (!resp.data.variants[resp.data.variants.length - 1]) {
-          //Starting a proctored exam so we need a variant
+        } else if (resp.data.variants[resp.data.variants.length - 1] === null) {
+          // have not yet saved the variant to the database
+          // (either a proctored exam or student loaded but did not interact with new attempt)
           needNewVariant = true;
         }
 
@@ -292,17 +304,19 @@ export default function AssignmentViewer() {
 
           individualize.current = resp.data.individualize === '1';
 
+          usersVariantAttempts = usersVariantAttempts.slice(0, attemptNumber - 1);
 
           //Find requestedVariant
-          usersVariantAttempts = pushRandomVariantOfRemaining({
-            previous: [...usersVariantAttempts],
-            from: allPossibleVariants.current,
+          usersVariantAttempts.push(generateNewVariant({
+            previousVariants: usersVariantAttempts,
+            allPossibleVariants: allPossibleVariants.current,
             individualize: individualize.current,
             userId: userId.current,
             doenetId,
             attemptNumber,
-          });
+          }));
         }
+
         let requestedVariantIndex = usersVariantAttempts[usersVariantAttempts.length - 1];
 
         console.log(`requestedVariantIndex: ${requestedVariantIndex}`)
@@ -316,6 +330,7 @@ export default function AssignmentViewer() {
           cid,
           doenetId,
           solutionDisplayMode,
+          cidChanged,
         });
 
         setStage('Ready');
@@ -324,100 +339,95 @@ export default function AssignmentViewer() {
     [],
   );
 
-  const updateAttemptNumberAndRequestedVariant = useRecoilCallback(
-    ({ snapshot }) =>
-      async (newAttemptNumber, doenetId) => {
+  async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId) {
 
 
+    //Check if cid has changed
 
-        //Check if cid has changed
+    let cid = null;
 
-        let cid = null;
+    // since this is a new attempt,
+    // get assigned cid, ignoring cid from latest attempt
 
-        //First try to find if they have a previously assigned cid
-        //for the current attempt
+    let resp = await axios.get(
+      `/api/getCidForAssignment.php`,
+      { params: { doenetId, latestAttemptOverrides: false } },
+    );
 
-        let resp = await axios.get(
-          `/api/getCidForAssignment.php`,
-          { params: { doenetId } },
-        );
+    if (!resp.data.success) {
+      setStage('Problem');
+      setMessage(`Error loading assignment: ${resp.data.message}`);
+      return;
+    } else if (!resp.data.cid) {
+      setStage('Problem');
+      setMessage('Assignment is not assigned.');
+      return;
+    } else {
+      cid = resp.data.cid;
+    }
 
-        if (!resp.data.success) {
-          setStage('Problem');
-          setMessage(`Error loading assignment: ${resp.data.message}`);
-          return;
-        } else if (!resp.data.cid) {
-          setStage('Problem');
-          setMessage('Assignment is not assigned.');
-          return;
+    console.log(`retrieved cid: ${cid}`);
+
+
+    const { data } = await axios.get('/api/loadTakenVariants.php', {
+      params: { doenetId },
+    });
+
+    if (!data.success) {
+      setStage('Problem');
+      if (data.message) {
+        setMessage(`Could not load assignment: ${data.message}`);
+      } else {
+        setMessage(`Could not load assignment: ${data}`);
+      }
+      return;
+    }
+
+    let usersVariantAttempts = data.variants.map(Number).slice(0, newAttemptNumber - 1);
+
+    if (individualize.current === null) {
+      resp = await axios.get('/api/getIndividualizeForAssignment.php', {
+        params: { doenetId },
+      });
+
+      if (!resp.data.success) {
+        setStage('Problem');
+        if (resp.data.message) {
+          setMessage(`Could not load assignment: ${resp.data.message}`);
         } else {
-          cid = resp.data.cid;
+          setMessage(`Could not load assignment: ${resp.data}`);
         }
+        return;
+      }
 
-        console.log(`retrieved cid: ${cid}`);
+      individualize.current = resp.data.individualize === '1';
+
+    }
 
 
-        const { data } = await axios.get('/api/loadTakenVariants.php', {
-          params: { doenetId },
-        });
-        
-        if (!data.success) {
-          setStage('Problem');
-          if (data.message) {
-            setMessage(`Could not load assignment: ${data.message}`);
-          } else {
-            setMessage(`Could not load assignment: ${data}`);
-          }
-          return;
-        }
 
-        if(individualize.current === null) {
-          resp = await axios.get('/api/getIndividualizeForAssignment.php', {
-            params: { doenetId },
-          });
+    //Find requestedVariant
+    usersVariantAttempts.push(generateNewVariant({
+      previousVariants: usersVariantAttempts,
+      allPossibleVariants: allPossibleVariants.current,
+      individualize: individualize.current,
+      userId: userId.current,
+      doenetId,
+      attemptNumber: newAttemptNumber,
+    }));
 
-          if (!resp.data.success) {
-            setStage('Problem');
-            if (resp.data.message) {
-              setMessage(`Could not load assignment: ${resp.data.message}`);
-            } else {
-              setMessage(`Could not load assignment: ${resp.data}`);
-            }
-            return;
-          }
+    let newRequestedVariantIndex = usersVariantAttempts[usersVariantAttempts.length - 1];
 
-          individualize.current = resp.data.individualize === '1';
 
-        }
-
-        let usersVariantAttempts = [];
-
-        for (let variant of data.variants) {
-          usersVariantAttempts.push(Number(variant));
-        }
-
-        //Find requestedVariant
-        usersVariantAttempts = pushRandomVariantOfRemaining({
-          previous: [...usersVariantAttempts],
-          from: allPossibleVariants.current,
-          individualize: individualize.current,
-          userId: userId.current,
-          doenetId,
-          attemptNumber: newAttemptNumber,
-        });
-
-        let newRequestedVariantIndex = usersVariantAttempts[usersVariantAttempts.length - 1];
-
-        setLoad((was) => {
-          let newObj = { ...was };
-          newObj.attemptNumber = newAttemptNumber;
-          newObj.requestedVariantIndex = newRequestedVariantIndex;
-          newObj.cid = cid;
-          return newObj;
-        });
-      },
-    [],
-  );
+    setLoad((was) => {
+      let newObj = { ...was };
+      newObj.attemptNumber = newAttemptNumber;
+      newObj.requestedVariantIndex = newRequestedVariantIndex;
+      newObj.cid = cid;
+      newObj.cidChanged = false;
+      return newObj;
+    });
+  }
 
   const updateCreditAchieved = useRecoilCallback(
     ({ set }) =>
@@ -436,6 +446,7 @@ export default function AssignmentViewer() {
         });
       },
   );
+
 
   // console.log(`>>>>stage -${stage}-`);
 
@@ -464,6 +475,7 @@ export default function AssignmentViewer() {
         key={`activityViewer${doenetId}`}
         cid={cid}
         doenetId={doenetId}
+        cidChanged={cidChanged}
         flags={{
           showCorrectness,
           readOnly: false,
@@ -480,6 +492,7 @@ export default function AssignmentViewer() {
         attemptNumber={attemptNumber}
         requestedVariantIndex={requestedVariantIndex}
         updateCreditAchievedCallback={updateCreditAchieved}
+        updateAttemptNumber={setRecoilAttemptNumber}
       // generatedVariantCallback={variantCallback}
       />
     </>

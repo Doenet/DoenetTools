@@ -46,7 +46,6 @@ import {
  */
 import '../../_utils/util.css';
 
-
 export default function CourseNavigator(props) {
   console.log("=== CourseNavigator")
 

@@ -307,13 +307,13 @@ export default class MathInput extends Input {
         },
 
       }),
-      definition({ dependencyValues, essentialValues, justUpdatedForNewComponent }) {
+      definition({ dependencyValues, essentialValues, justUpdatedForNewComponent, componentName }) {
 
-        // console.log(`definition of raw value`)
-        // console.log(deepClone(dependencyValues), deepClone(essentialValues))
+        // console.log(`definition of raw value for ${componentName}`)
+        // console.log(JSON.parse(JSON.stringify(dependencyValues)), JSON.parse(JSON.stringify(essentialValues)))
 
         // use deepCompare of trees rather than equalsViaSyntax
-        // so even tiny numerical differences that within double precision are detected
+        // so even tiny numerical differences that are within double precision are detected
         if (essentialValues.rawRendererValue === undefined
           || !(justUpdatedForNewComponent || deepCompare(essentialValues.lastValueForDisplay.tree, dependencyValues.valueForDisplay.tree))
         ) {
@@ -341,7 +341,7 @@ export default class MathInput extends Input {
         }
 
       },
-      async inverseDefinition({ desiredStateVariableValues, stateValues, essentialValues }) {
+      async inverseDefinition({ desiredStateVariableValues, stateValues, essentialValues, componentName }) {
 
         // console.log(`inverse definition of rawRenderer value for ${componentName}`, desiredStateVariableValues, essentialValues)
 
@@ -399,12 +399,12 @@ export default class MathInput extends Input {
               treatAsInitialChange: true, // so does not change value
             })
           }
-        } else {
-          // since desired value was not a string, it must be a math-expression
+        } else if (desiredStateVariableValues.rawRendererValue instanceof me.class) {
+          // When desired rawRendererValue is a math-expression
           // always update lastValueForDisplay
-          // update rawRendererValue 
-          // if desired expression is different from math-expression obtained from current raw value
-          // do not update immediate value
+          // Update rawRendererValue if desired expression is different 
+          // from math-expression obtained from current raw value
+          // Do not update immediate value
 
           instructions.push({
             setEssentialValue: "lastValueForDisplay",
@@ -430,6 +430,14 @@ export default class MathInput extends Input {
           }
 
 
+        } else if (desiredStateVariableValues.lastValueForDisplay instanceof me.class) {
+          // if desired value for lastValueForDisplay is a math,
+          // then only update lastValueForDisplay and not rawRendererValue
+
+          instructions.push({
+            setEssentialValue: "lastValueForDisplay",
+            value: desiredStateVariableValues.lastValueForDisplay
+          })
         }
 
         return {
@@ -469,7 +477,6 @@ export default class MathInput extends Input {
   }
 
   async updateValue({ actionId }) {
-
     if (!await this.stateValues.disabled) {
       let immediateValue = await this.stateValues.immediateValue;
 
@@ -485,8 +492,6 @@ export default class MathInput extends Input {
         // in case value ended up being a different value than requested
         // we set immediate value to whatever was the result
         // (hence the need to execute update first)
-        // Also, this makes sure immediateValue is saved to the database,
-        // since in updateImmediateValue, immediateValue is not saved to database
         {
           updateType: "executeUpdate"
         },
@@ -505,14 +510,16 @@ export default class MathInput extends Input {
             valueOfStateVariable: "valueForDisplay",
           })
         } else {
-          // set raw renderer value to save it to the database,
-          // as it might not have been saved
-          // given that updateRawValue is transient
+          // since have invalid math,
+          // don't update rawRendererValue,
+          // but only update lastValueForDisplay to keep it in sync
+          // (lastValueForDisplay is also update if set rawRenderValue to math
+          // as above)
           updateInstructions.push({
             updateType: "updateValue",
             componentName: this.componentName,
-            stateVariable: "rawRendererValue",
-            valueOfStateVariable: "rawRendererValue",
+            stateVariable: "lastValueForDisplay",
+            valueOfStateVariable: "valueForDisplay",
           })
         }
 
@@ -545,18 +552,6 @@ export default class MathInput extends Input {
           componentName: this.componentName,
         });
 
-      } else {
-        // set raw renderer value to save it to the database,
-        // as it might not have been saved
-        // given that updateRawValue is transient
-        await this.coreFunctions.performUpdate({
-          updateInstructions: [{
-            updateType: "updateValue",
-            componentName: this.componentName,
-            stateVariable: "rawRendererValue",
-            valueOfStateVariable: "rawRendererValue",
-          }]
-        })
       }
 
     }

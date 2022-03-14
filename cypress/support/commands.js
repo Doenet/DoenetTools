@@ -23,3 +23,14 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("clearIndexedDB", () => {
+  return new Promise((resolve, reject) => {
+    const request = window.indexedDB.deleteDatabase("keyval-store");
+
+    request.addEventListener('success', resolve);
+    request.addEventListener('blocked', resolve);
+    request.addEventListener('error', reject);
+
+  })
+});

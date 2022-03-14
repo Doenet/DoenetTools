@@ -154,6 +154,8 @@ export default function PageViewer(props) {
         }
       } else if (e.data.messageType === "updateCreditAchieved") {
         props.updateCreditAchievedCallback?.(e.data.args);
+      } else if (e.data.messageType === "savedState") {
+        props.saveStateCallback?.();
       } else if (e.data.messageType === "sendToast") {
         console.log(`Sending toast message: ${e.data.args.message}`);
         toast(e.data.args.message, e.data.args.toastType)
@@ -317,21 +319,22 @@ export default function PageViewer(props) {
   function resetPage({ changedOnDevice, newCid, newAttemptNumber }) {
     console.log('resetPage', changedOnDevice, newCid, newAttemptNumber);
 
-    toast(`Reverted page to state saved on device ${changedOnDevice}`, toastType.ERROR);
 
-    if (cid && newCid !== cid) {
-      if (props.setIsInErrorState) {
-        props.setIsInErrorState(true)
+    if (newAttemptNumber !== attemptNumber) {
+      toast(`Reverted activity as attempt number changed on other device`, toastType.ERROR);
+      if (props.updateAttemptNumber) {
+        props.updateAttemptNumber(newAttemptNumber);
+      } else {
+        // what do we do in this case?
+        if (props.setIsInErrorState) {
+          props.setIsInErrorState(true)
+        }
+        setErrMsg('how to reset attempt number when not given updateAttemptNumber function?')
+
       }
-      console.log(`cid: ${cid}, newCid ${newCid}`)
-      setErrMsg("Have not implemented handling change in page content from other device.  Please reload page");
-    } else if (newAttemptNumber !== attemptNumber) {
-      if (props.setIsInErrorState) {
-        props.setIsInErrorState(true)
-      }
-      setErrMsg("Have not implemented handling creating new attempt from other device.  Please reload page");
     } else {
       // TODO: are there cases where will get an infinite loop here?
+      toast(`Reverted page to state saved on device ${changedOnDevice}`, toastType.ERROR);
 
       coreId.current = nanoid();
       setPageContentChanged(true);
@@ -410,13 +413,19 @@ export default function PageViewer(props) {
           let result = await saveLoadedLocalStateToDatabase(localInfo);
 
           if (result.changedOnDevice) {
-            if (result.newCid !== cid || Number(result.newAttemptNumber) !== attemptNumber) {
+            if (Number(result.newAttemptNumber) !== attemptNumber) {
               resetPage({
                 changedOnDevice: result.changedOnDevice,
                 newCid: result.newCid,
                 newAttemptNumber: Number(result.newAttemptNumber),
               })
               return;
+            } else if (result.newCid !== cid) {
+              // if cid changes for the same attempt number, then something went wrong
+              if (props.setIsInErrorState) {
+                props.setIsInErrorState(true)
+              }
+              setErrMsg(`content changed unexpectedly!`);
             }
 
             // if just the localInfo changed, use that instead

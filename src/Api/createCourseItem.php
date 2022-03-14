@@ -80,7 +80,6 @@ CAST(jsonDefinition as CHAR) AS json
 FROM course_content
 WHERE doenetId = '$doenetId'
 ";
-echo $sql;
 $result = $conn->query($sql); 
 $row = $result->fetch_assoc();
 

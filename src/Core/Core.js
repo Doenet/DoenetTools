@@ -3294,7 +3294,8 @@ export default class Core {
           return result;
 
         };
-        stateDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
+        stateDef.excludeDependencyValuesInInverseDefinition = true;
+        stateDef.inverseDefinition = function ({ desiredStateVariableValues }) {
 
           return {
             success: true,
@@ -5365,10 +5366,15 @@ export default class Core {
   }
 
 
-  async getStateVariableDefinitionArguments({ component, stateVariable }) {
+  async getStateVariableDefinitionArguments({ component, stateVariable, excludeDependencyValues }) {
     // console.log(`get state variable dependencies of ${component.componentName}, ${stateVariable}`)
 
-    let args = await this.dependencies.getStateVariableDependencyValues({ component, stateVariable });
+    let args;
+    if (excludeDependencyValues) {
+      args = {};
+    } else {
+      args = await this.dependencies.getStateVariableDependencyValues({ component, stateVariable });
+    }
 
     args.componentName = component.componentName;
 
@@ -8444,7 +8450,10 @@ export default class Core {
     }
 
 
-    let inverseDefinitionArgs = await this.getStateVariableDefinitionArguments({ component, stateVariable });
+    let inverseDefinitionArgs = await this.getStateVariableDefinitionArguments({
+      component, stateVariable,
+      excludeDependencyValues: stateVarObj.excludeDependencyValuesInInverseDefinition
+    });
     inverseDefinitionArgs.componentInfoObjects = this.componentInfoObjects;
     inverseDefinitionArgs.initialChange = initialChange;
     inverseDefinitionArgs.stateValues = component.stateValues;
@@ -9097,6 +9106,9 @@ export default class Core {
     // if not currently in throttle, save changes to database
     this.saveChangesToDatabase();
 
+    postMessage({
+      messageType: "savedState"
+    })
 
   }
 
@@ -9130,9 +9142,6 @@ export default class Core {
     // })
 
     let resp;
-
-    let coreStateToSave = this.pageStateToBeSavedToDatabase.coreState;
-    let rendererStateToSave = this.pageStateToBeSavedToDatabase.rendererState;
 
     try {
       resp = await axios.post('/api/savePageState.php', this.pageStateToBeSavedToDatabase);
@@ -9184,11 +9193,9 @@ export default class Core {
 
     if (data.stateOverwritten) {
 
-      if (this.cid !== data.cid || this.attemptNumber !== Number(data.attemptNumber)
-        || this.coreInfoString !== data.coreInfo
-        || coreStateToSave !== data.coreState
-        || rendererStateToSave !== data.rendererStateToSave
-      ) {
+      // if a new attempt number was generated or the cid didn't change,
+      // then we reset the page to the new state
+      if (this.attemptNumber !== Number(data.attemptNumber) || this.cid === data.cid) {
 
         if (this.flags.allowLocalState) {
           idb_set(
@@ -9210,6 +9217,16 @@ export default class Core {
             newAttemptNumber: Number(data.attemptNumber),
           }
         })
+      } else {
+        // if the cid changed without the attemptNumber changing, something went wrong
+        postMessage({
+          messageType: "inErrorState",
+          args: {
+            errMsg: "Content changed unexpectedly!"
+          }
+        })
+
+
       }
 
 

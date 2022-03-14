@@ -40,12 +40,14 @@ $variants = [];
 $attemptNumbers = [];
 
 if ($success) {
-    $sql = "SELECT attemptNumber,
-        variantIndex
-        FROM activity_state
-        WHERE userId='$userId'
-        AND doenetId='$doenetId'
-        ORDER BY attemptNumber ASC";
+    $sql = "SELECT uaa.attemptNumber as attemptNumber,
+        a.variantIndex as variantIndex
+        FROM user_assignment_attempt as uaa
+        LEFT JOIN activity_state as a
+        ON uaa.doenetId = a.doenetId AND uaa.userId=a.userId AND uaa.attemptNumber=a.attemptNumber
+        WHERE uaa.userId='$userId'
+        AND uaa.doenetId='$doenetId'
+        ORDER BY uaa.attemptNumber ASC";
 
     $result = $conn->query($sql);
     while ($row = $result->fetch_assoc()) {

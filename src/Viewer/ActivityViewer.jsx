@@ -43,6 +43,7 @@ export default function ActivityViewer(props) {
   const [variantsByItem, setVariantsByItem] = useState(null);
   const [itemWeights, setItemWeights] = useState(null);
 
+  const [cidChanged, setCidChanged] = useState(props.cidChanged);
 
   const serverSaveId = useRef(null);
 
@@ -72,10 +73,28 @@ export default function ActivityViewer(props) {
     console.log('resetActivity', changedOnDevice, newCid, newAttemptNumber);
 
 
-    if (props.setIsInErrorState) {
-      props.setIsInErrorState(true)
+    if (newAttemptNumber !== attemptNumber) {
+      if (props.updateAttemptNumber) {
+        toast(`Reverted activity as attempt number changed on other device`, toastType.ERROR);
+        props.updateAttemptNumber(newAttemptNumber);
+      } else {
+        // what do we do in this case?
+        if (props.setIsInErrorState) {
+          props.setIsInErrorState(true)
+        }
+        setErrMsg('how to reset attempt number when not given updateAttemptNumber function?')
+
+      }
+    } else if (newCid !== cid) {
+      if (props.setIsInErrorState) {
+        props.setIsInErrorState(true)
+      }
+      setErrMsg("Content changed unexpectedly!");
+    } else {
+      // since, at least for now, only activity state is page number,
+      // we ignore the change 
+
     }
-    setErrMsg('how do we reset activity?')
 
     // toast(`Reverted page to state saved on device ${changedOnDevice}`, toastType.ERROR);
 
@@ -176,19 +195,25 @@ export default function ActivityViewer(props) {
           let result = await saveLoadedLocalStateToDatabase(localInfo);
 
           if (result.changedOnDevice) {
-            if (result.newCid !== cid || Number(result.newAttemptNumber) !== attemptNumber) {
+            if (Number(result.newAttemptNumber) !== attemptNumber) {
               resetActivity({
                 changedOnDevice: result.changedOnDevice,
                 newCid: result.newCid,
                 newAttemptNumber: Number(result.newAttemptNumber),
               })
               return;
+            } else if (result.newCid !== cid) {
+              // if cid changes for the same attempt number, then something went wrong
+              if (props.setIsInErrorState) {
+                props.setIsInErrorState(true)
+              }
+              setErrMsg(`content changed unexpectedly!`);
             }
 
             // if just the localInfo changed, use that instead
             localInfo = result.newLocalInfo;
-            console.log(`sending toast: Reverted page to state saved on device ${result.changedOnDevice}`)
-            toast(`Reverted page to state saved on device ${result.changedOnDevice}`, toastType.ERROR)
+
+            // no need to send toast, as state is just page number
 
           }
 
@@ -320,8 +345,6 @@ export default function ActivityViewer(props) {
       }
 
     }
-
-    pageAtPreviousSave.current = newCurrentPage;
 
 
     return { newItemWeights };
@@ -502,8 +525,8 @@ export default function ActivityViewer(props) {
     }
 
 
-    if (currentPage === pageAtPreviousSave.current) {
-      // no change to be saved
+    if (stage != "saving" || currentPage === pageAtPreviousSave.current) {
+      // haven't got a save event from page or no change to be saved
       return;
     }
 
@@ -581,7 +604,6 @@ export default function ActivityViewer(props) {
 
     let resp;
 
-    let activityStateToSave = activityStateToBeSavedToDatabase.current.activityState;
 
     try {
       resp = await axios.post('/api/saveActivityState.php', activityStateToBeSavedToDatabase.current);
@@ -618,10 +640,9 @@ export default function ActivityViewer(props) {
 
     if (data.stateOverwritten) {
 
-      if (cid !== data.cid || attemptNumber !== Number(data.attemptNumber)
-        || activityInfoString.current !== data.activityInfo
-        || activityStateToSave !== data.activityState
-      ) {
+      // if a new attempt number was generated,
+      // then we reset the activity to the new state
+      if (attemptNumber !== Number(data.attemptNumber)) {
 
         if (props.flags.allowLocalState) {
           idb_set(
@@ -630,26 +651,35 @@ export default function ActivityViewer(props) {
               activityState: JSON.parse(data.activityState),
               activityInfo: JSON.parse(data.activityInfo),
               saveId: data.saveId,
+              variantIndex: data.variantIndex
             }
           )
+
+          resetActivity({
+            changedOnDevice: data.device,
+            newCid: data.cid,
+            newAttemptNumber: Number(data.attemptNumber),
+          })
+
         }
+      } else if (cid !== data.cid) {
 
-
-
-        resetActivity({
-          changedOnDevice: data.device,
-          newCid: data.cid,
-          newAttemptNumber: Number(data.attemptNumber),
-        })
-
+        // if the cid changed without the attemptNumber changing, something went wrong
+        if (props.setIsInErrorState) {
+          props.setIsInErrorState(true)
+        }
+        setErrMsg("Content changed unexpectedly!");
+        return;
       }
+
+      // if only the activity state changed,
+      // just ignore it as it is only changing the page and we can leave it at the old page
 
 
     }
 
     // TODO: send message so that UI can show changes have been synchronized
 
-    // console.log(">>>>recordContentInteraction data",data)
   }
 
   async function initializeUserAssignmentTables(newItemWeights) {
@@ -684,6 +714,32 @@ export default function ActivityViewer(props) {
     }
 
     setStage('continue');
+
+  }
+
+  async function receivedSaveFromPage() {
+    // activity state isn't saved until a first save from a page
+    setStage("saving");
+
+    // check if cid changed
+    try {
+      let resp = await axios.get('/api/checkForChangedAssignment.php', {
+        params: {
+          currentCid: cid,
+          doenetId: props.doenetId
+        }
+      });
+
+      console.log({
+        currentCid: cid,
+        doenetId: props.doenetId
+      })
+
+      setCidChanged(resp.data.cidChanged === true);
+
+    } catch (e) {
+      // ignore any errors
+    }
 
   }
 
@@ -764,7 +820,9 @@ export default function ActivityViewer(props) {
     setStage("wait");
 
     loadState().then(results => {
-      initializeUserAssignmentTables(results.newItemWeights);
+      if (results) {
+        initializeUserAssignmentTables(results.newItemWeights);
+      }
     })
 
     return null;
@@ -805,6 +863,8 @@ export default function ActivityViewer(props) {
           unbundledCore={props.unbundledCore}
           updateCreditAchievedCallback={props.updateCreditAchievedCallback}
           setIsInErrorState={props.setIsInErrorState}
+          updateAttemptNumber={props.updateAttemptNumber}
+          saveStateCallback={receivedSaveFromPage}
           updateDataOnContentChange={props.updateDataOnContentChange}
         />
 
@@ -812,7 +872,15 @@ export default function ActivityViewer(props) {
     )
   }
 
+  let cidChangedAlert = null;
+  if (cidChanged) {
+    cidChangedAlert = <div>
+      <Button onClick={() => alert("Hey, content changed")} value={"content changed"} />
+    </div>
+  }
+
   return <div style={{ marginBottom: "200px" }}>
+    {cidChangedAlert}
     <Button id={"prev_button"} onClick={() => setCurrentPage((was) => Math.max(1, was - 1))} value={"Previous page"} />
     <Button id={"next_button"} onClick={() => setCurrentPage((was) => Math.min(nPages, was + 1))} value={"Next page"} />
     <p>Current page: {currentPage}</p>
