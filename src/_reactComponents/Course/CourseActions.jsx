@@ -12,6 +12,31 @@ import {
 // import { useToast, toastType } from '../_framework/Toast';
 
 
+export const allCourseItemsByCourseId = atomFamily({
+  key: 'allCourseItemsByCourseId',
+  default: selectorFamily({
+    key:"allCourseItemsByCourseId/Default",
+    get: (courseId) => async () => {
+      const { data } = await axios.get('/api/getCourseItems.php',{params:{courseId}})
+      // console.log("data",data)
+      //TODO: handle fail
+      return data.items;
+    }
+  })
+})
+
+export const authorCourseItemOrderByCourseId = atomFamily({
+  key: 'allCourseItemsByCourseIdByCourseId',
+  default: selectorFamily({
+    key:"allCourseItemsByCourseId/Default",
+    get: (courseId) => async ({get}) => {
+      let allItems = get(allCourseItemsByCourseId(courseId));
+      let doenetIds = allItems.map((item)=>item.doenetId);
+      return doenetIds;
+    }
+  })
+})
+
 export const coursePermissionsAndSettings = atom({
   key: 'coursePermissionsAndSettings',
   default: [],

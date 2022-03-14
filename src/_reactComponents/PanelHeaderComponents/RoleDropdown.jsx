@@ -50,9 +50,8 @@ export function RoleDropdown() {
         //If driveId then test if intructor is available
         // const path = await snapshot.getPromise(searchParamAtomFamily('path'));
         if (driveId !== '') {
-          let { roleLabels } = await snapshot.getPromise(coursePermissionsAndSettingsByCourseId(driveId));
-
-          if (roleLabels[0] == 'Student'){
+          let permissionsAndSettings = await snapshot.getPromise(coursePermissionsAndSettingsByCourseId(driveId));
+          if (permissionsAndSettings?.roleLabels?.[0] == 'Student'){
             role = 'student';
           }
         }
