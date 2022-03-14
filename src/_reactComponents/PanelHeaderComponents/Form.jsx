@@ -120,7 +120,7 @@ export default function Form(props) {
     placeholder = props.placeholder;
   };
 
-  var label = "";
+  var label = '';
   if (props.label) {
     label = props.label;
   };
@@ -180,8 +180,9 @@ export default function Form(props) {
   };
 
   return (
-    <Container>
+    <Container align={align}>
       <Label labelVisible={labelVisible} align={align}>{label}</Label>
+      <>
         <FormInput
           id="textarea"
           value={text}
@@ -212,6 +213,7 @@ export default function Form(props) {
         >
           {props.submitButton ? props.submitButton : 'Submit'}
         </SubmitButton>
+      </>
     </Container>
   );
 };
