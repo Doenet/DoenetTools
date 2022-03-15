@@ -52,7 +52,7 @@ const SubmitButton = styled.button `
 
   &:hover {
     color: black;
-    background-color: ${props => props.alert ? 'var(--lightRed)' : (props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)')};
+    background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
 `;
 
