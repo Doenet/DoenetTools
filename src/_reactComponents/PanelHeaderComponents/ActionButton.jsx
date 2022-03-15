@@ -21,7 +21,7 @@ const Button = styled.button`
 Button.defaultProps = {
   theme: {
     margin: '0px 4px 0px 4px',
-    borderRadius: '5px',
+    borderRadius: 'var(--mainBorderRadius)',
     padding: '0px 10px 0px 10px',
     border: 'none'
   }
@@ -31,7 +31,6 @@ const Label = styled.p`
   font-size: 14px;
   display: ${props => props.labelVisible};
   margin-right: 5px;
-  margin-left: 4px;
   margin-bottom: ${props => props.align == 'flex' ? 'none' : '2px'};
 `;
 
@@ -52,7 +51,7 @@ export default function ActionButton(props) {
 
   if (props.width) {
     if (props.width === 'menu') {
-      actionButton.width = '235px';
+      actionButton.width = '216px'; // Clara, is this ok?
       if (props.label) {
         container.width = '235px';
         actionButton.width = '100%';
