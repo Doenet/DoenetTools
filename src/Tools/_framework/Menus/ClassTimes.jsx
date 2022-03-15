@@ -184,7 +184,7 @@ export default function ClassTimes(){
            let newClassTime = {...timeObj}
            newClassTime.startTime = value;
          updateClassTime({index,newClassTime})
-        }}/> - <DateTime datePicker={false} width="82px" menuPanelMargin={true} parentValue={timeObj.endTime} valueCallback={(value)=>{
+        }}/> - <DateTime datePicker={false} width="82px" style="--menuPanelMargin: -36px;" parentValue={timeObj.endTime} valueCallback={(value)=>{
           let newClassTime = {...timeObj}
           newClassTime.endTime = value;
         updateClassTime({index,newClassTime})

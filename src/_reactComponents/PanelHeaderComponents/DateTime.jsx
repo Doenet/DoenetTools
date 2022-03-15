@@ -19,8 +19,8 @@ export default function DateTime(props) {
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
 
-  let borderColor = props.alert ? '2px solid #C1292E' : '2px solid black';
-  borderColor = props.disabled ? '2px solid #e2e2e2' : borderColor;
+  let borderColor = props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)';
+  borderColor = props.disabled ? '2px solid var(--mainGray)' : borderColor;
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
   let width = props.width ? props.width : '182px';
   
@@ -123,7 +123,7 @@ export default function DateTime(props) {
           height: '18px',
           width: '177px',
           border: '2px solid var(--mainGray)',
-          borderRadius: '5px',
+          borderRadius: 'var(--mainBorderRadius)',
           ...props.style,
         }}
       />

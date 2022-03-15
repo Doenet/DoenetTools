@@ -9,17 +9,17 @@ html {
 }
 
 .form-control {
-  border: 2px solid black;
-  border-radius: 5px;
+  border: var(--mainBorder);
+  border-radius: var(--mainBorderRadius);
   height: 18px;
   width: 177px;
 }
 
 .rdtPicker td.rdtActive,
 .rdtPicker td.rdtActive:hover {
-  background-color: #1a5a99;
+  background-color: var(--mainBlue);
 }
 
 .rdtPicker td.rdtToday:before {
-  border-bottom: 7px solid #1a5a99;
+  border-bottom: 7px solid var(--mainBlue);
 }
