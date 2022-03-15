@@ -39,7 +39,7 @@ import {
   useRecoilValue,
 } from 'recoil';
 
-import { allCourseItemsByCourseId, authorCourseItemOrderByCourseId, coursePermissionsAndSettingsByCourseId } from '../../_reactComponents/Course/CourseActions';
+import { authorCourseItemOrderByCourseId, coursePermissionsAndSettingsByCourseId, useInitCourseItems } from '../../_reactComponents/Course/CourseActions';
 
 /**
  * Internal dependencies
@@ -51,6 +51,7 @@ export default function CourseNavigator(props) {
   console.log("=== CourseNavigator")
   const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
   let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  useInitCourseItems(courseId);
 
   if (!coursePermissionsAndSettings){
     return null;
@@ -67,6 +68,7 @@ export default function CourseNavigator(props) {
 
 function AuthorCourseNavigation({courseId}){
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseId(courseId));
+  console.log("authorItemOrder",authorItemOrder)
   let items = [];
   for (let doenetId of authorItemOrder){
     items.push(<Item key={`itemcomponent${doenetId}`} doenetId={doenetId} />)
@@ -75,6 +77,7 @@ function AuthorCourseNavigation({courseId}){
 }
 
 function Item({doenetId}){
+
   return <p>{doenetId}</p>
   // let data = useRecoilValue(itemInfoByDoenetId(doenetId))
   // console.log("itemInfo",data)

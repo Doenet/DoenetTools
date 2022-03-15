@@ -1,5 +1,6 @@
 
 import axios from 'axios';
+import { useEffect } from 'react';
 import { 
   atom,
   // AtomEffect,
@@ -12,30 +13,76 @@ import {
 // import { useToast, toastType } from '../_framework/Toast';
 
 
-export const allCourseItemsByCourseId = atomFamily({
-  key: 'allCourseItemsByCourseId',
-  default: selectorFamily({
-    key:"allCourseItemsByCourseId/Default",
-    get: (courseId) => async () => {
-      const { data } = await axios.get('/api/getCourseItems.php',{params:{courseId}})
-      // console.log("data",data)
-      //TODO: handle fail
-      return data.items;
+export function useInitCourseItems(courseId){
+
+  const getDataAndSetRecoil = useRecoilCallback(({set})=> async (courseId)=>{
+    const { data } = await axios.get('/api/getCourseItems.php',{params:{courseId}})
+    let doenetIds = data.items.map((item)=>item.doenetId);
+    set(authorCourseItemOrderByCourseId(courseId),doenetIds);
+    data.items.map((item)=>{
+      set(authorItemByCourseIdAndDoenetId({courseId,doenetId:item.doenetId}),item);
+    })
+  },[])
+
+  useEffect(()=>{
+    if(courseId){
+      getDataAndSetRecoil(courseId);
     }
-  })
-})
+  },[getDataAndSetRecoil,courseId])
+}
+
 
 export const authorCourseItemOrderByCourseId = atomFamily({
   key: 'allCourseItemsByCourseIdByCourseId',
-  default: selectorFamily({
-    key:"allCourseItemsByCourseId/Default",
-    get: (courseId) => async ({get}) => {
-      let allItems = get(allCourseItemsByCourseId(courseId));
-      let doenetIds = allItems.map((item)=>item.doenetId);
-      return doenetIds;
-    }
-  })
+  default: [],
+  // effects: (doenetId) => [
+  //   ({ setSelf, onSet, trigger }) => {
+  //     if (trigger === 'get') {
+  //       console.log("get itemInfoByDoenetId",doenetId);
+  //       // try {
+  //       //   const { data } = axios.get('/api/loadCourseOrderData', {
+  //       //     params: { courseId },
+  //       //   });
+  //       //   //sort
+  //       //   let sorted = [];
+  //       //   let lookup = {};
+  //       //   setSelf({ completeOrder: sorted, orderingDataLookup: lookup });
+  //       // } catch (e) {}
+  //     }
+  //     // onSet((newObj, was) => {
+  //     //   console.log('newObj',newObj)
+  //     //   console.log('was',was)
+
+  //     // });
+  //   },
+  // ],
 })
+
+export const authorItemByCourseIdAndDoenetId = atomFamily({
+  key: 'authorItemByCourseIdAndDoenetId',
+  default: {},
+  // effects: (doenetId) => [
+  //   ({ setSelf, onSet, trigger }) => {
+  //     if (trigger === 'get') {
+  //       console.log("get itemInfoByDoenetId",doenetId);
+  //       // try {
+  //       //   const { data } = axios.get('/api/loadCourseOrderData', {
+  //       //     params: { courseId },
+  //       //   });
+  //       //   //sort
+  //       //   let sorted = [];
+  //       //   let lookup = {};
+  //       //   setSelf({ completeOrder: sorted, orderingDataLookup: lookup });
+  //       // } catch (e) {}
+  //     }
+  //     // onSet((newObj, was) => {
+  //     //   console.log('newObj',newObj)
+  //     //   console.log('was',was)
+
+  //     // });
+  //   },
+  // ],
+});
 
 export const coursePermissionsAndSettings = atom({
   key: 'coursePermissionsAndSettings',
@@ -75,31 +122,7 @@ export const useCreateCourse = () => {
   return { createCourse };
 }
 
-const itemInfoByDoenetId = atomFamily({
-  key: 'itemDataByDoenetId',
-  default: null,
-  effects: (doenetId) => [
-    ({ setSelf, onSet, trigger }) => {
-      if (trigger === 'get') {
-        console.log("get itemInfoByDoenetId",doenetId);
-        // try {
-        //   const { data } = axios.get('/api/loadCourseOrderData', {
-        //     params: { courseId },
-        //   });
-        //   //sort
-        //   let sorted = [];
-        //   let lookup = {};
-        //   setSelf({ completeOrder: sorted, orderingDataLookup: lookup });
-        // } catch (e) {}
-      }
-      // onSet((newObj, was) => {
-      //   console.log('newObj',newObj)
-      //   console.log('was',was)
 
-      // });
-    },
-  ],
-});
 
 export const courseOrderDataByCourseId = atomFamily({
   key: 'courseOrderDataByCourseId',
@@ -179,3 +202,6 @@ export const useCourse = (courseId) => {
 
   return { create };
 };
+
+
+ 
