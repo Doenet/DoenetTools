@@ -77,8 +77,6 @@ function sortClassTimes(classTimesArray){
 
 export default function ClassTimes(){
   const timesObj = useRecoilValue(classTimesAtom);
-  // var --menuPanelMargin = "0px";
-
   const addClassTime = useRecoilCallback(({set,snapshot})=> async ()=>{
 
     let was = await snapshot.getPromise(classTimesAtom);
@@ -179,22 +177,29 @@ export default function ClassTimes(){
     /></td>
       <Button icon={<FontAwesomeIcon icon={faTimes}/>} alert onClick={()=>{deleteClassTime({index})}} />
       </tr>)
-      timesJSX.push(<div><tr>
-        <td style={{width:"190px", display: "flex", alignItems: "center", marginLeft: '2px'}}><DateTime datePicker={false} width="82px" menuPanelMargin={false} parentValue={timeObj.startTime} valueCallback={(value)=>{
-           let newClassTime = {...timeObj}
-           newClassTime.startTime = value;
-         updateClassTime({index,newClassTime})
-        }}/> - <DateTime datePicker={false} width="82px" style="--menuPanelMargin: -36px;" parentValue={timeObj.endTime} valueCallback={(value)=>{
-          let newClassTime = {...timeObj}
-          newClassTime.endTime = value;
-        updateClassTime({index,newClassTime})
-        }}/></td>
+      timesJSX.push(<div>
+        <tr style={{width:"190px", display: "flex", alignItems: "center"}}>
+          <td><DateTime datePicker={false} width="74px" parentValue={timeObj.startTime} 
+            valueCallback={(value)=>{
+              let newClassTime = {...timeObj}
+              newClassTime.startTime = value;
+              updateClassTime({index,newClassTime})}}
+            />
+          </td> 
+          <td style={{marginLeft: "6px", marginRight: "6px"}}>-</td>
+          {/* In the menu panel, the right-side time picker's dropdown is shifted with --menuPanelMargin so that it's not cut off */}
+          <td style={{["--menuPanelMargin"]: '-62px'}}><DateTime datePicker={false} width="74px" parentValue={timeObj.endTime} 
+            valueCallback={(value)=>{
+              let newClassTime = {...timeObj}
+              newClassTime.endTime = value;
+              updateClassTime({index,newClassTime})}}
+            />
+          </td>
         </tr>
         <div style={{margin: "10px"}}></div>
         </div>)
   }
 
-  
   let classTimesTable = <div>No times set.</div>
   
   if (timesJSX.length > 0){
@@ -203,7 +208,6 @@ export default function ClassTimes(){
   </table>
   }
   return <>
-  {/* <DateTime datePicker={false} width="50px" /> */}
   {classTimesTable}
     <Button icon={<FontAwesomeIcon icon={faPlus}/>} style={{margin: "auto"}} onClick={()=>addClassTime()}/>
   </>

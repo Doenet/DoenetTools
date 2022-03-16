@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
 import styled from 'styled-components';
@@ -12,7 +12,6 @@ const Label = styled.div`
 `;
 
 export default function DateTime(props) {
-  //console.log('props', props);
   const [value, setValue] = useState(props.value);
   const [lastValid, setLastValid] = useState(props.value);
   const inputRef = useRef(null);
@@ -24,9 +23,6 @@ export default function DateTime(props) {
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
   let width = props.width ? props.width : '182px';
   
-  // if (props.menuPanelMargin) {
-  //   this.style.setProperty("--menuPanelMargin", "-36px");
-  // }
 
   useEffect(() => {
     //todo try lastValid update
@@ -35,7 +31,6 @@ export default function DateTime(props) {
   }, [props]);
 
   useEffect(() => {
-    // console.log('triggered', cursorStart, cursorEnd);
     inputRef.current.selectionStart = cursorStart;
     inputRef.current.selectionEnd = cursorEnd;
   });
@@ -60,7 +55,6 @@ export default function DateTime(props) {
   };
 
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
-    //console.log('propRI', propsRI);
     return (
       <div>
         {props.label ? (
@@ -71,21 +65,12 @@ export default function DateTime(props) {
           style={{ border: borderColor, cursor: cursorStyle, width: width, ...props.style }}
           ref={inputRef}
           onChange={(e) => {
-            // console.log(e.target.selectionStart, e.target.selectionEnd);
             setCursorStart(e.target.selectionStart);
             setCursorEnd(e.target.selectionEnd);
             propsRI.onChange(e);
           }}
           onClick={(e) => {
-            //console.log('clicked');
             propsRI.onClick(e);
-            if (props.menuPanelMargin) {
-              e.target.style.setProperty("--menuPanelMargin", "-36px");
-              // e.target.style.setProperty("--menuPanelMargin", "-36px");
-            }
-            // console.log(e.target);
-            console.log(e.target.style.getPropertyValue("--menuPanelMargin"));
-            // console.log(document.getElementsByClassName("rdtPicker"));
           }}
           onKeyDown={(e) => {
             if (props.onKeyDown) {
@@ -100,15 +85,6 @@ export default function DateTime(props) {
       </div>
     );
   };
-
-  // console.log(
-  //   'placeholder',
-  //   placeholder,
-  //   'value: ',
-  //   value,
-  //   ' props.value: ',
-  //   props.value,
-  // );
 
   if (props.disabled) {
     return (
@@ -144,7 +120,6 @@ export default function DateTime(props) {
       }
       inputProps={inputProps}
       onChange={(dateObjectOrString) => {
-        // console.log('onChange', typeof dateObjectOrString, dateObjectOrString);
         setValue(dateObjectOrString);
         if (props.onChange) {
           props.onChange({
@@ -154,7 +129,6 @@ export default function DateTime(props) {
         }
       }}
       onClose={(_) => {
-        //console.log('onBlur', dateObjectOrString.toDate());
         let valid = typeof value !== 'string';
         if (valid) {
           setLastValid(value);

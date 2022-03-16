@@ -1,11 +1,7 @@
-html {
-  --menuPanelMargin: 0px;
-}
-
 .rdtPicker {
   min-width: 0px;
   width: 175px;
-  margin-left: var(--menuPanelMargin);
+  margin-left: var(--menuPanelMargin, 0px);
 }
 
 .form-control {
