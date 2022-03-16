@@ -39,7 +39,12 @@ import {
   useRecoilValue,
 } from 'recoil';
 
-import { authorCourseItemOrderByCourseId, coursePermissionsAndSettingsByCourseId, useInitCourseItems } from '../../_reactComponents/Course/CourseActions';
+import { 
+  authorCourseItemOrderByCourseId, 
+  authorItemByDoenetId,
+  coursePermissionsAndSettingsByCourseId, 
+  useInitCourseItems 
+} from '../../_reactComponents/Course/CourseActions';
 
 /**
  * Internal dependencies
@@ -47,7 +52,7 @@ import { authorCourseItemOrderByCourseId, coursePermissionsAndSettingsByCourseId
 import '../../_utils/util.css';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 
-export default function CourseNavigator(props) {
+export default function CourseNavigator() {
   console.log("=== CourseNavigator")
   const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
   let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
@@ -68,30 +73,53 @@ export default function CourseNavigator(props) {
 
 function AuthorCourseNavigation({courseId}){
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseId(courseId));
-  console.log("authorItemOrder",authorItemOrder)
+
   let items = [];
-  for (let doenetId of authorItemOrder){
-    items.push(<Item key={`itemcomponent${doenetId}`} doenetId={doenetId} />)
-  }
+  authorItemOrder.map((doenetId)=>
+    items.push(<Item key={`itemcomponent${doenetId}`} doenetId={doenetId} courseId={courseId} />)
+  )
+    
   return <>{items}</>
 }
 
-function Item({doenetId}){
+function Item({doenetId,courseId}){
+  let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  // console.log("itemInfo",itemInfo)
 
-  return <p>{doenetId}</p>
-  // let data = useRecoilValue(itemInfoByDoenetId(doenetId))
-  // console.log("itemInfo",data)
-  // if (data.type == 'Section'){
-  //   return <Section key={`Item${doenetId}`} doenetId={doenetId} itemInfo={data} />
-  // }
-  // return <div key={`Item${doenetId}`}>{data.type} {data.label} {doenetId}</div>
+
+  if (itemInfo.type == 'section'){
+    return <Section key={`Item${doenetId}`} doenetId={doenetId} courseId={courseId} itemInfo={itemInfo} />
+  }else if (itemInfo.type == 'bank'){
+    return <Bank key={`Item${doenetId}`} doenetId={doenetId} courseId={courseId} itemInfo={itemInfo} />
+  }else if (itemInfo.type == 'activity'){
+    return <Activity key={`Item${doenetId}`} doenetId={doenetId} courseId={courseId} itemInfo={itemInfo} />
+  }
+  return <div key={`Item${doenetId}`}>{itemInfo.type} {itemInfo.label} {doenetId}</div>
 }
 
-function Section({doenetId,itemInfo}){
+function Section({doenetId,courseId,itemInfo}){
 
   let toggle = <button>is closed</button>
   if (itemInfo.isOpen){
     <button>is open</button>
   }
   return <div key={`Section${doenetId}`}>{toggle} Section {itemInfo.label} {doenetId}</div>
+}
+
+function Bank({doenetId,courseId,itemInfo}){
+
+  let toggle = <button>is closed</button>
+  if (itemInfo.isOpen){
+    <button>is open</button>
+  }
+  return <div key={`Bank${doenetId}`}>{toggle} Bank {itemInfo.label} {doenetId}</div>
+}
+
+function Activity({doenetId,courseId,itemInfo}){
+
+  let toggle = <button>is closed</button>
+  if (itemInfo.isOpen){
+    <button>is open</button>
+  }
+  return <div key={`Activity${doenetId}`}>{toggle} Activity {itemInfo.label} {doenetId}</div>
 }

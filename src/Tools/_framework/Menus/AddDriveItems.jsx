@@ -18,7 +18,7 @@ export default function AddDriveItems() {
       <Button
         width="menu"
         onClick={() =>
-          console.log("Add Activity")
+          create({itemType:"activity",previousDoenetId:"testid",placeInFolderFlag:false})
         }
         value="Add Activity"
       >
@@ -27,14 +27,14 @@ export default function AddDriveItems() {
       <Button
         width="menu"
         onClick={() =>
-          console.log("Add Bank")
+          create({itemType:"bank",previousDoenetId:"testid",placeInFolderFlag:false})
         }
         value="Add Bank"
       />
       <Button
         width="menu"
         onClick={() =>
-          create({itemType:"Section",previousDoenetId:"testid",placeInFolderFlag:false})
+          create({itemType:"section",previousDoenetId:"testid",placeInFolderFlag:false})
 
         }
         value="Add Section"

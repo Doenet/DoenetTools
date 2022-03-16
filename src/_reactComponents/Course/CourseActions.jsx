@@ -10,6 +10,7 @@ import {
   // useRecoilRefresher_UNSTABLE,
   useRecoilValue,
 } from 'recoil';
+// import { useToast } from '../../Tools/_framework/Toast';
 // import { useToast, toastType } from '../_framework/Toast';
 
 
@@ -17,10 +18,11 @@ export function useInitCourseItems(courseId){
 
   const getDataAndSetRecoil = useRecoilCallback(({set})=> async (courseId)=>{
     const { data } = await axios.get('/api/getCourseItems.php',{params:{courseId}})
+    console.log("data",data)
     let doenetIds = data.items.map((item)=>item.doenetId);
     set(authorCourseItemOrderByCourseId(courseId),doenetIds);
     data.items.map((item)=>{
-      set(authorItemByCourseIdAndDoenetId({courseId,doenetId:item.doenetId}),item);
+      set(authorItemByDoenetId(item.doenetId),item);
     })
   },[])
 
@@ -30,7 +32,6 @@ export function useInitCourseItems(courseId){
     }
   },[getDataAndSetRecoil,courseId])
 }
-
 
 export const authorCourseItemOrderByCourseId = atomFamily({
   key: 'allCourseItemsByCourseIdByCourseId',
@@ -58,8 +59,8 @@ export const authorCourseItemOrderByCourseId = atomFamily({
   // ],
 })
 
-export const authorItemByCourseIdAndDoenetId = atomFamily({
-  key: 'authorItemByCourseIdAndDoenetId',
+export const authorItemByDoenetId = atomFamily({
+  key: 'authorItemByDoenetId',
   default: {},
   // effects: (doenetId) => [
   //   ({ setSelf, onSet, trigger }) => {
@@ -122,8 +123,6 @@ export const useCreateCourse = () => {
   return { createCourse };
 }
 
-
-
 export const courseOrderDataByCourseId = atomFamily({
   key: 'courseOrderDataByCourseId',
   default: { completeOrder: [], orderingDataLookup: {} },
@@ -156,15 +155,22 @@ export const useCourse = (courseId) => {
   // const visableOrder = useRecoilValue(visableOrderByDriveId(driveId));
 
   const create = useRecoilCallback(
-    ({ set }) =>
+    ({ set, snapshot }) =>
       async ({
         previousDoenetId,
         itemType,
         placeInFolderFlag = false,
       }) => {
         let newDoenetId;
+        let coursePermissionsAndSettings = await snapshot.getPromise(coursePermissionsAndSettingsByCourseId(courseId));
+        if (coursePermissionsAndSettings.canEditContent != '1'){
+          //TODO: set up toast message here
+          return null;
+        }
         //Get selection information to know previous doenetId by order
-        if (itemType == 'Activity') {
+        if (itemType == 'activity') {
+          console.log("Activity")
+
             let { data } = await axios.get('/api/createCourseItem.php', {
               params: {
                 previousDoenetId,
@@ -175,13 +181,24 @@ export const useCourse = (courseId) => {
             });
             console.log("activityData",data)
             newDoenetId = data.doenetId;
-            set(itemInfoByDoenetId(data.doenetId), data.itemEntered);
-            // set(courseOrderDataByCourseId(courseId), {completeOrder:activityData.order})
-          }else if (itemType == 'Page') {
-            console.log("page")
-          }else if (itemType == 'Bank') {
-            console.log("Bank")
-          }else if (itemType == 'Section') {
+            set(authorItemByDoenetId(data.doenetId), data.itemEntered);
+            set(authorCourseItemOrderByCourseId(courseId), data.order)
+          }else if (itemType == 'bank') {
+
+            let { data } = await axios.get('/api/createCourseItem.php', {
+              params: {
+                previousDoenetId,
+                courseId,
+                itemType,
+                placeInFolderFlag,
+              },
+            });
+            console.log("bankData",data)
+            newDoenetId = data.doenetId;
+            set(authorItemByDoenetId(data.doenetId), data.itemEntered);
+            set(authorCourseItemOrderByCourseId(courseId), data.order)
+            console.log("bank")
+          }else if (itemType == 'section') {
   
             let { data } = await axios.get('/api/createCourseItem.php', {
               params: {
@@ -191,11 +208,13 @@ export const useCourse = (courseId) => {
                 placeInFolderFlag,
               },
             });
-            console.log("sectionData",data)
+            // console.log("sectionData",data)
             newDoenetId = data.doenetId;
-            set(itemInfoByDoenetId(data.doenetId), data.itemEntered);
-            // set(courseOrderDataByCourseId(courseId), {completeOrder:sectionData.order})
-        }
+            set(authorItemByDoenetId(data.doenetId), data.itemEntered);
+            set(authorCourseItemOrderByCourseId(courseId), data.order)
+          }else if (itemType == 'page') {
+            console.log("page")
+          }
         return newDoenetId;
       },
   );

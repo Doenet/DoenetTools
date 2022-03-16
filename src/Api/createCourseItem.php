@@ -33,12 +33,12 @@ $jsonDefinition = null;
 $sortOrder = 'a'; //replace with position function
 
 //Defaults for each item type
-if ($itemType == 'Section'){
-  $jsonDefinition = '{"type":"Section","isIncludedInStudentNavigation":true}';
-}else if($itemType == 'Activity'){
-  $jsonDefinition = '{"type":"Activity"}';
-}else if($itemType == 'Bank'){
-  $jsonDefinition = '{"type":"Bank"}';
+if ($itemType == 'section'){
+  $jsonDefinition = '{"type":"section","isIncludedInStudentNavigation":true}';
+}else if($itemType == 'activity'){
+  $jsonDefinition = '{ "type":"activity","order": {"type":"order", "behavior":"sequence","content":[{"type":"page", "label":"Page 1","draftCid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku", "versions":[]}]}, "files":[]}';
+}else if($itemType == 'bank'){
+  $jsonDefinition = '{"type":"bank"}';
 }else{
   $success = FALSE;
   $message = "Not able to make type $itemType";
