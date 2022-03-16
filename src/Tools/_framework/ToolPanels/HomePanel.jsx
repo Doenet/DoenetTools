@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom'
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import styled from 'styled-components';
-import './homepage.css' ;
+import './homepage.css';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 
@@ -64,8 +64,8 @@ const SectionText = styled.div`
   display: inline-block;
   margin-left:3em;
   margin-right:3em;`;
-  
-const ParagraphTags = styled.p`
+
+const Paragraph = styled.p`
   text-align: left;
    display: block;
     margin-block-start: 1em;
@@ -87,7 +87,7 @@ const Footer = styled.div`
   text-align: center;
 `;
 
-export default function HomePage(props){
+export default function HomePage(props) {
   // console.log(">>>===HomePage")
   let history = useHistory();
 
@@ -97,129 +97,153 @@ export default function HomePage(props){
     isSignedIn = true;
   }
 
-  return <div style = {props.style}>
-        <DoenetLogo>
-          <DoenetImage src={'/media/Doenet_Logo_Frontpage.png'} />
-        </DoenetLogo>
-        <CloudColorSection>
-          <SectionText>
-            <Headings>The Distributed Open Education Network</Headings>
-            <h4 style={{ marginTop: '0px' }}>
-              The free and open data-driven educational technology platform
-            </h4>
-            {isSignedIn ? <div style={{display: "flex", justifyContent: "center"}}><Button size = "medium"  onClick={()=>history.push('/course')} value = "Go to Course" /></div> : <div style={{display: "flex", justifyContent: "center"}}><Button onClick={()=>history.push('/SignIn')} size = "medium" value = "Sign In" /></div>}
-            <ParagraphTags>
-              The Distributed Open Education Network (Doenet) is, at its core, a
-              mechanism for measuring and sharing student interactions with web
-              pages and storing anonymized data in an open distributed data
-              warehouse. The Doenet platform will include tools for authoring
-              interactive educational content, conducting educational research
-              using the content, and discovering the most effective content
-              based on the research results.{' '}
-            </ParagraphTags>
+  return <div style={props.style}>
+    <DoenetLogo>
+      <DoenetImage src={'/media/Doenet_Logo_Frontpage.png'} />
+    </DoenetLogo>
+    <CloudColorSection>
+      <SectionText>
+        <Headings>The Distributed Open Education Network</Headings>
+        <h4 style={{ marginTop: '0px' }}>
+          The free and open data-driven educational technology platform
+        </h4>
+        {isSignedIn ? <div style={{ display: "flex", justifyContent: "center" }}><Button size="medium" onClick={() => history.push('/course')} value="Go to Course" /></div> : <div style={{ display: "flex", justifyContent: "center" }}><Button onClick={() => history.push('/SignIn')} size="medium" value="Sign In" /></div>}
+        <Paragraph>
+          The Distributed Open Education Network (Doenet) is an open data-driven educational technology platform designed to measure and share student interactions with web pages.
+          Anonymized and aggregated data will be stored in an open distributed data warehouse
+          to facilitate studies on content effectiveness.
+          The Doenet platform includes tools for authoring
+          interactive educational content and conducting educational research
+          using the content.  Our ultimate goal is to provide research-based tools to help
+          instructors and learners discover the most effective content.
+        </Paragraph>
 
-            <ParagraphTags>
-              The Doenet platform is just getting started. We are excited to
-              introduce early versions of two projects: DoenetML, a markup
-              language for authoring interactive online activities, and
-              DoenetAPI, a library for connecting web pages to the Doenet data
-              layer, enabling tracking of student data across web pages and
-              multiuser interactives.
-            </ParagraphTags>
+        <Paragraph>
+          Although we are still the early stages, we are excited to
+          introduce Doenet and illustrate the richly interactive activities
+          that one can author with it.
 
-            <ParagraphTags>
-              For more background and information on the Doenet project, see{' '}
-              <a
-                style={{ color: '#6d4445' }}
-                href="https://www.mathvalues.org/masterblog/reimagining-online-mathematics"
-              >
-                this MAA DUE Point article
-              </a>
-              
-            </ParagraphTags>
-          </SectionText>
+        </Paragraph>
 
-        </CloudColorSection>
+        <Paragraph>
+          For more background and information on the Doenet project, see{' '}
+          <a
+            style={{ color: '#6d4445' }}
+            href="https://www.mathvalues.org/masterblog/reimagining-online-mathematics"
+          >
+            this MAA DUE Point article
+          </a>
 
-        <LightBlueColorSection>
-          <SectionText>
-            <Headings className="section-headline">Introducing DoenetML</Headings>
-            <ParagraphTags>
-              The markup language DoenetML allows you to build richly
-              interactive activities by focusing on the meaning of the elements
-              you wish to create. Based on{' '}
-              <a href="http://pretextbook.org">PreTeXt</a>, DoenetML looks
-              similar to HTML, with descriptive tags such as{' '}
-              <code>&lt;point&gt;</code>, <code>&lt;intersection&gt;</code>, and{' '}
-              <code>&lt;answer&gt;</code>.
-            </ParagraphTags>
+        </Paragraph>
+      </SectionText>
 
-            <ParagraphTags>
-              We expect to release examples of DoenetML soon.
-            </ParagraphTags>
-          </SectionText>
-        </LightBlueColorSection>
-        <CloudColorSection>
-          <SectionText>
-            <Headings className="section-headline">Timeline</Headings>
-            <ParagraphTags>
-              In Fall 2020, we piloted Doenet in a small number of courses. We
-              used Doenet for both content delivery and learning experiments and
-              performed analysis on the effectiveness of the materials.
-            </ParagraphTags>
-            <ParagraphTags>
-              We will expand the use of Doenet to include more courses at the
-              University of Minnesota, Ohio State University and Ithaca College.
-              Starting in Fall 2021, we expect Doenet to be available to
-              instructors at other institutions on a limited basis.
-            </ParagraphTags>
-          </SectionText>
-        </CloudColorSection>
-        <Footer>
-          <SectionText>
-          <div>
-            <h4 style={{ marginBottom: '0px' }}>Contact us</h4>
-            <div style={{ marginBottom: '40px' }}>
-              <a href="mailto:info@doenet.org">info@doenet.org</a>
-            </div>
-            <p>
-              <a
-                rel="license"
-                href="http://creativecommons.org/licenses/by/4.0/"
-              >
-                <img
-                  alt="Creative Commons License"
-                  style={{ borderWidth: 0 }}
-                  src="https://i.creativecommons.org/l/by/4.0/88x31.png"
-                />
-              </a>
-              <br />
-              This work is licensed under a{' '}
-              <a
-                rel="license"
-                href="http://creativecommons.org/licenses/by/4.0/"
-              >
-                Creative Commons Attribution 4.0 International License
-              </a>
-              .
-            </p>
-            <p>
-              Doenet is a collaborative project involving the University of
-              Minnesota, the Ohio State University, and Ithaca College, with
-              support from the National Science Foundation (DUE-1915294,
-              DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions
-              or recommendations expressed in this material are those of the
-              author(s) and do not necessarily reflect the views of the National
-              Science Foundation.{' '}
-            </p>
+    </CloudColorSection>
+
+    <LightBlueColorSection>
+      <SectionText>
+        <Headings className="section-headline">Introducing DoenetML</Headings>
+        <Paragraph>
+          DoenetML is the markup language we've created to let you focus
+          on the meaning of the elements you wish to create.
+          Based on{' '}
+          <a href="http://pretextbook.org">PreTeXt</a>, DoenetML looks
+          similar to HTML, with descriptive tags such as{' '}
+          <code>&lt;point&gt;</code>, <code>&lt;intersection&gt;</code>, and{' '}
+          <code>&lt;answer&gt;</code>.
+        </Paragraph>
+
+        <Paragraph>
+          Here are some pages to introduce some features of Doenet.
+
+          <ul>
+            <li><a href="https://www.doenet.org/#/content?tool=edit&doenetId=Kd6YdYYnxOEDNSkmkWXtd">Introductory problems</a></li>
+            <li><a href="https://www.doenet.org/#/content?tool=edit&doenetId=UdDWyNkqfF21O6Ew-Qh4O">Basic answer forms</a></li>
+            <li><a href="https://www.doenet.org/#/content?tool=edit&doenetId=ggPgUC4_DS06CUgPiuOcS">Advanced answer forms</a></li>
+          </ul>
+        </Paragraph>
+        <Paragraph>
+          Gallery of DoenetML pages.
+          <ul>
+            <li><a href="https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD">Exploring an anteater dynamical system</a></li>
+            <li><a href="https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq">Sketching the derivative of a Gaussian</a></li>
+            <li><a href="https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3">Average rate of change, squirrel and owl</a></li>
+          </ul>
+        </Paragraph>
+
+
+      </SectionText>
+    </LightBlueColorSection>
+    <CloudColorSection>
+      <SectionText>
+        <Headings className="section-headline">Workshop on developing learning experiments in Doenet</Headings>
+        <Paragraph>
+          Interested in learning how to create and implement online learning experiments using Doenet?  Apply to attend our <a href="https://ima.umn.edu/2021-2022/SW5.23-26.22#">workshop</a> for a hands-on introduction to authoring and running experiments, led
+          by the developers of Doenet.  Designed for instructors of college STEM courses, the workshop will be held from May 23 - May 26, 2022, at the University of Minnesota.
+        </Paragraph>
+        <Paragraph>
+          For more information and apply to the workshop, see the <a href="https://ima.umn.edu/2021-2022/SW5.23-26.22#">workshop site</a>.
+        </Paragraph>
+      </SectionText>
+    </CloudColorSection>
+    <LightBlueColorSection>
+      <SectionText>
+        <Headings className="section-headline">Timeline</Headings>
+        <Paragraph>
+          Doenet was conceived in 2018 and began as a partnership of the
+          University of Minnesota, Ohio State University and Ithaca College.  We piloted Doenet content in 2020 and ran our first courses with Doenet in 2021.  We have
+          used Doenet for both content delivery and assessment, incorporating learning experiments in order to
+          perform analyses on the effectiveness of the materials.
+        </Paragraph>
+        <Paragraph>
+          In 2022, we are beginning to expand the availability of Doenet beyond the original partner institutions.
+        </Paragraph>
+      </SectionText>
+    </LightBlueColorSection>
+    <Footer>
+      <SectionText>
+        <div>
+          <h4 style={{ marginBottom: '0px' }}>Contact us</h4>
+          <div style={{ marginBottom: '40px' }}>
+            <a href="mailto:info@doenet.org">info@doenet.org</a>
           </div>
-          </SectionText>       
-        </Footer>
-  {/* {isSignedIn ?  */}
-  {/* <div><button onClick={()=>history.push('/course')}>Go To Course</button></div> */}
-  {/* : */}
-  {/* <div><button onClick={goToSignIn}>Sign In</button></div>  */}
-  {/* } */}
-  
+          <p>
+            <a
+              rel="license"
+              href="http://creativecommons.org/licenses/by/4.0/"
+            >
+              <img
+                alt="Creative Commons License"
+                style={{ borderWidth: 0 }}
+                src="https://i.creativecommons.org/l/by/4.0/88x31.png"
+              />
+            </a>
+            <br />
+            This work is licensed under a{' '}
+            <a
+              rel="license"
+              href="http://creativecommons.org/licenses/by/4.0/"
+            >
+              Creative Commons Attribution 4.0 International License
+            </a>
+            .
+          </p>
+          <p>
+            Doenet is a collaborative project involving the University of
+            Minnesota, the Ohio State University, and Ithaca College, with
+            support from the National Science Foundation (DUE-1915294,
+            DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions
+            or recommendations expressed in this material are those of the
+            author(s) and do not necessarily reflect the views of the National
+            Science Foundation.{' '}
+          </p>
+        </div>
+      </SectionText>
+    </Footer>
+    {/* {isSignedIn ?  */}
+    {/* <div><button onClick={()=>history.push('/course')}>Go To Course</button></div> */}
+    {/* : */}
+    {/* <div><button onClick={goToSignIn}>Sign In</button></div>  */}
+    {/* } */}
+
   </div>
 }
