@@ -56,7 +56,7 @@ const ActionButtonGroup = (props) => {
   if (props.label) {
     label = props.label;
     if (props.verticalLabel) {
-      align = 'static'; // isn't working
+      align = 'static';
     };
   };
 
