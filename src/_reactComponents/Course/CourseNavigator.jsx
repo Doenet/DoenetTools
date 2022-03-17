@@ -39,6 +39,7 @@ import {
   useRecoilStateLoadable,
   useRecoilState,
   useRecoilValue,
+  useRecoilCallback,
 } from 'recoil';
 
 import { 
@@ -95,7 +96,7 @@ function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisi
   
   let items = [];
   authorItemOrder.map((doenetId)=>
-    items.push(<Item key={`itemcomponent${doenetId}`} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns}  numberOfVisibleColumns={numberOfVisibleColumns}/>)
+    items.push(<Item key={`itemcomponent${doenetId}`} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} />)
   )
     
   return <>
@@ -132,23 +133,54 @@ function Bank({doenetId,itemInfo,numberOfVisibleColumns}){
 }
 
 function Activity({doenetId,itemInfo,numberOfVisibleColumns}){
-//Order icon faFileExport
-  return <>
- <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} />
- <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={itemInfo.label} doenetId={doenetId} indentLevel={1} />
- <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={doenetId} indentLevel={1} numbered={1} />
- <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={doenetId} indentLevel={1} numbered={2} />
-  </>
+
+  let temporaryId = '123';
+//TODO: Update this logic based on itemInfo structure
+  if (itemInfo.isOpen){
+    return <>
+    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} />
+    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} hasToggle={true} isOpen={true}/>
+    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={1} />
+    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={2} hasToggle={true} isOpen={false}/>
+    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={3} />
+     </>
+  }else{
+    return <>
+    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen}/>
+     </>
+  }
+
+  
 }
 
 
 
-//indentLevel,singleClickHandler,doubleClickHandler,isContainer,toggleContainerHandler,columnsJSX=[]
-function Row({doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered}){
-  // let toggle = <button>is closed</button>
-  // if (itemInfo.isOpen){
-  //   <button>is open</button>
-  // }
+//singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
+function Row({doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
+
+
+  let openCloseIndicator = null;
+  let toggleOpenClosed = useRecoilCallback(({set})=>()=>{
+    console.log("HERE",doenetId)
+    set(authorItemByDoenetId(doenetId),(was)=>{
+      let newObj = {...was};
+      newObj.isOpen = !newObj.isOpen;
+      return newObj;
+    })
+
+  },[doenetId])
+
+if (hasToggle){
+   openCloseIndicator = isOpen ? (
+      <span data-cy="folderToggleCloseIcon" >
+        <FontAwesomeIcon icon={faChevronDown} />
+      </span>
+    ) : (
+      <span data-cy="folderToggleOpenIcon">
+        <FontAwesomeIcon icon={faChevronRight} />
+      </span>
+    );
+}
 
   let bgcolor = '#ffffff';
   if (isSelected){
@@ -188,22 +220,27 @@ function Row({doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indent
         marginBottom: '8px',
       }}
     >
-      <p style={{ display: 'inline', margin: '0px' }}>
+      <p style={{ display: 'inline', margin: '0px' }} 
+      onClick={ ()=>{
+        if (hasToggle){
+        toggleOpenClosed();
+      }}} >
        { numbered ?  <svg style={{verticalAlign:'middle'}} width="22" height="22" viewBox="0 0 22 22">
       <circle cx="11"
               cy="11"
               r="12"
               stroke="white"
-              stroke-width="2"
+              strokeWidth="2"
               fill="#1A5A99"/>
-      <text font-size="14"
+      <text fontSize="14"
             fill="white"
-            font-family="Verdana"
-            text-anchor="middle"
-            alignment-baseline="baseline"
+            fontFamily="Verdana"
+            textAnchor="middle"
+            alignmentBaseline="baseline"
             x="11"
             y="16">{numbered}</text>
   </svg>: null }
+        {openCloseIndicator}
         <span style={{marginLeft:'8px'}} data-cy="rowIcon">
           <FontAwesomeIcon icon={icon} />
         </span>

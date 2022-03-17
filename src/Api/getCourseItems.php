@@ -77,9 +77,9 @@ if ($result->num_rows > 0) {
 				// var_dump($json);
 				$item = array_merge($json,$item);
 				
-				if ($item['contentType'] == 'Section'){
-					$item['isOpen'] = false;
-				}
+
+				$item['isOpen'] = false;
+
 				array_push($items,$item);
 			}
 		}
