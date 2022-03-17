@@ -22,7 +22,7 @@ import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/Acti
 
 
 ReactDOM.render(
-  <ActionButtonGroup vertical><ActionButton alert/><ActionButton alert/></ActionButtonGroup>,
+  <ActionButtonGroup vertical label="What:" verticalLabel><ActionButton alert/><ActionButton alert/></ActionButtonGroup>,
   document.getElementById('root'),
 );
 

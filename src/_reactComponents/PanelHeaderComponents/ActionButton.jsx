@@ -21,7 +21,7 @@ const Button = styled.button`
 Button.defaultProps = {
   theme: {
     margin: '0px 4px 0px 4px',
-    borderRadius: '5px',
+    borderRadius: 'var(--mainBorderRadius)',
     padding: '0px 10px 0px 10px',
     border: 'none'
   }
@@ -52,7 +52,9 @@ export default function ActionButton(props) {
 
   if (props.width) {
     if (props.width === 'menu') {
-      actionButton.width = '235px';
+      // Makes the action button group the correct width in the menu panel
+      // Does not work when 235px due to the LabelContainer div in ActionButtonGroup
+      actionButton.width = '216px';
       if (props.label) {
         container.width = '235px';
         actionButton.width = '100%';
@@ -118,4 +120,4 @@ export default function ActionButton(props) {
       </Container>        
     </>
   )
-}
+};
