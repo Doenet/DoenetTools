@@ -66,6 +66,7 @@ const List = styled.ul`
 export default function attempt() {
   const font = () => {};
   const vertical = () => {};
+  const verticalLabel = () => {};
   const disabled = () => {};
   const absolute = () => {};
   const left = () => {};
@@ -119,7 +120,7 @@ export default function attempt() {
         },
         {
           name: 'Vertical Label',
-          propPreview: '<ActionButton label="What: vertical"/>',
+          propPreview: '<ActionButton label="What: " vertical/>',
           propCode: { label: 'What: ', vertical },
           description: 'Adds label to componenet on top',
         },
@@ -171,6 +172,18 @@ export default function attempt() {
           propPreview: '<ActionButtonGroup vertical />',
           propCode: { vertical },
           description: 'Aligns buttons vertically',
+        },
+        {
+          name: 'Label',
+          propPreview: '<ActionButtonGroup label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to button',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<ActionButtonGroup label="What: " verticalLabel/>',
+          propCode: { label: 'What: ', verticalLabel },
+          description: 'Adds label to componenet on top',
         },
       ],
     },
@@ -381,6 +394,12 @@ export default function attempt() {
       req_children: null,
       use: 'Allows user to pick date and time',
       props: [
+        {
+          name: 'Width',
+          propPreview: '<DateTime width="300px" />',
+          propCode: { width: '300px' },
+          description: 'Sets width to fill menu panel width',
+        },
         {
           name: 'Value',
           propPreview: '<DateTime value={new Date("09/23/2000")}/>',

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
 import styled from 'styled-components';
@@ -12,16 +12,17 @@ const Label = styled.div`
 `;
 
 export default function DateTime(props) {
-  //console.log('props', props);
   const [value, setValue] = useState(props.value);
   const [lastValid, setLastValid] = useState(props.value);
   const inputRef = useRef(null);
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
 
-  let borderColor = props.alert ? '2px solid #C1292E' : '2px solid black';
-  borderColor = props.disabled ? '2px solid #e2e2e2' : borderColor;
+  let borderColor = props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)';
+  borderColor = props.disabled ? '2px solid var(--mainGray)' : borderColor;
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
+  let width = props.width ? props.width : '182px';
+  
 
   useEffect(() => {
     //todo try lastValid update
@@ -30,7 +31,6 @@ export default function DateTime(props) {
   }, [props]);
 
   useEffect(() => {
-    // console.log('triggered', cursorStart, cursorEnd);
     inputRef.current.selectionStart = cursorStart;
     inputRef.current.selectionEnd = cursorEnd;
   });
@@ -55,24 +55,21 @@ export default function DateTime(props) {
   };
 
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
-    //console.log('propRI', propsRI);
     return (
-      <div style={{ width: 'fit-content' }}>
+      <div>
         {props.label ? (
           <Label vertical={props.vertical}>{props.label}</Label>
         ) : null}
         <input
           {...propsRI}
-          style={{ border: borderColor, cursor: cursorStyle, ...props.style }}
+          style={{ border: borderColor, cursor: cursorStyle, width: width, ...props.style }}
           ref={inputRef}
           onChange={(e) => {
-            // console.log(e.target.selectionStart, e.target.selectionEnd);
             setCursorStart(e.target.selectionStart);
             setCursorEnd(e.target.selectionEnd);
             propsRI.onChange(e);
           }}
           onClick={(e) => {
-            //console.log('clicked');
             propsRI.onClick(e);
           }}
           onKeyDown={(e) => {
@@ -89,16 +86,7 @@ export default function DateTime(props) {
     );
   };
 
-  // console.log(
-  //   'placeholder',
-  //   placeholder,
-  //   'value: ',
-  //   value,
-  //   ' props.value: ',
-  //   props.value,
-  // );
-
-  if (props.disabled === true) {
+  if (props.disabled) {
     return (
       <input
         ref={inputRef}
@@ -110,8 +98,8 @@ export default function DateTime(props) {
           color: '#545454',
           height: '18px',
           width: '177px',
-          border: '2px solid black',
-          borderRadius: '5px',
+          border: '2px solid var(--mainGray)',
+          borderRadius: 'var(--mainBorderRadius)',
           ...props.style,
         }}
       />
@@ -132,7 +120,6 @@ export default function DateTime(props) {
       }
       inputProps={inputProps}
       onChange={(dateObjectOrString) => {
-        // console.log('onChange', typeof dateObjectOrString, dateObjectOrString);
         setValue(dateObjectOrString);
         if (props.onChange) {
           props.onChange({
@@ -142,7 +129,6 @@ export default function DateTime(props) {
         }
       }}
       onClose={(_) => {
-        //console.log('onBlur', dateObjectOrString.toDate());
         let valid = typeof value !== 'string';
         if (valid) {
           setLastValid(value);
