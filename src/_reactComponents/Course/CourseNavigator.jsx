@@ -14,17 +14,19 @@ import Measure from 'react-measure';
 import {
   // faLink,
   faCode,
-  faFolder,
+  faFileCode,
+  faFileExport,
+  faLayerGroup,
+  faFolderTree,
   faChevronRight,
   faChevronDown,
   // faUsersSlash,
   // faUsers,
   faCheck,
   // faUserEdit,
-  faBookOpen,
-  faChalkboard,
   // faLayerGroup,
 } from '@fortawesome/free-solid-svg-icons';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { Link } from 'react-router-dom';
 import {
@@ -121,23 +123,28 @@ function Item({doenetId,numberOfVisibleColumns}){
 
 function Section({doenetId,itemInfo,numberOfVisibleColumns}){
 
-  return <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={doenetId} />
+  return <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} />
 }
 
 function Bank({doenetId,itemInfo,numberOfVisibleColumns}){
 
-  return <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={doenetId} />
+  return <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faLayerGroup} label={itemInfo.label} doenetId={doenetId} />
 }
 
 function Activity({doenetId,itemInfo,numberOfVisibleColumns}){
-
-  return <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={doenetId} />
+//Order icon faFileExport
+  return <>
+ <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} />
+ <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={itemInfo.label} doenetId={doenetId} indentLevel={1} />
+ <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={doenetId} indentLevel={1} numbered={1} />
+ <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={doenetId} indentLevel={1} numbered={2} />
+  </>
 }
 
 
 
 //indentLevel,singleClickHandler,doubleClickHandler,isContainer,toggleContainerHandler,columnsJSX=[]
-function Row({doenetId,numberOfVisibleColumns,icon,label,isSelected=false}){
+function Row({doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered}){
   // let toggle = <button>is closed</button>
   // if (itemInfo.isOpen){
   //   <button>is open</button>
@@ -151,7 +158,7 @@ function Row({doenetId,numberOfVisibleColumns,icon,label,isSelected=false}){
   } 
 
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
-  
+  const indentPx = 25;
 
   let activityJSX = (
     <div 
@@ -162,7 +169,7 @@ function Row({doenetId,numberOfVisibleColumns,icon,label,isSelected=false}){
     className="noselect nooutline"
     style={{
       cursor: 'pointer',
-      padding: '8px',
+      padding: '0px',
       border: '0px',
       borderBottom: '2px solid black',
       backgroundColor: bgcolor,
@@ -172,18 +179,35 @@ function Row({doenetId,numberOfVisibleColumns,icon,label,isSelected=false}){
     >
     <div
       style={{
-        // marginLeft: `${props.indentLevel * indentPx}px`,
+        marginLeft: `${indentLevel * indentPx}px`,
         display: 'grid',
         gridTemplateColumns: columnsCSS,
         gridTemplateRows: '1fr',
         alignContent: 'center',
+        marginTop: '8px',
+        marginBottom: '8px',
       }}
     >
       <p style={{ display: 'inline', margin: '0px' }}>
-        <span data-cy="rowIcon">
+       { numbered ?  <svg style={{verticalAlign:'middle'}} width="22" height="22" viewBox="0 0 22 22">
+      <circle cx="11"
+              cy="11"
+              r="12"
+              stroke="white"
+              stroke-width="2"
+              fill="#1A5A99"/>
+      <text font-size="14"
+            fill="white"
+            font-family="Verdana"
+            text-anchor="middle"
+            alignment-baseline="baseline"
+            x="11"
+            y="16">{numbered}</text>
+  </svg>: null }
+        <span style={{marginLeft:'8px'}} data-cy="rowIcon">
           <FontAwesomeIcon icon={icon} />
         </span>
-        <span data-cy="rowLabel">{label} </span>
+        <span style={{marginLeft:'4px'}} data-cy="rowLabel">{label} </span>
       </p>
       </div>
     </div>
