@@ -63,10 +63,14 @@ const Label = styled.p `
 `;
 
 const Container = styled.div `
-  display: ${props => props.align};
+  /* display: ${props => props.align}; */
   width: 235px;
   align-items: center;
 `;
+
+// const LabelContainer = styled.div `
+//   display: ${props => props.align};
+// `;
 
 export default function Form(props) {
     const [text, setText] = useState(props.value ? props.value : "");
