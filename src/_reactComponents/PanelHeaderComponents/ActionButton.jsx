@@ -31,6 +31,7 @@ const Label = styled.p`
   font-size: 14px;
   display: ${props => props.labelVisible};
   margin-right: 5px;
+  margin-left: 4px;
   margin-bottom: ${props => props.align == 'flex' ? 'none' : '2px'};
 `;
 
