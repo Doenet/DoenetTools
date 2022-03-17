@@ -2154,8 +2154,8 @@ export const DoenetML = React.memo(function DoenetML(props) {
 
   let doenetMLJSX = (
     <div
+    data-doenet-driveinstanceid={props.driveInstanceId}
       role="button"
-      data-doenet-driveinstanceid={props.driveInstanceId}
       data-cy="driveItem"
       tabIndex={0}
       className="noselect nooutline"

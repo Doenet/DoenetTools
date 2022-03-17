@@ -34,11 +34,12 @@ $sortOrder = 'a'; //replace with position function
 
 //Defaults for each item type
 if ($itemType == 'section'){
-  $jsonDefinition = '{"type":"section","isIncludedInStudentNavigation":true}';
+  $jsonDefinition = '{"isIncludedInStudentNavigation":true}';
 }else if($itemType == 'activity'){
-  $jsonDefinition = '{ "type":"activity","order": {"type":"order", "behavior":"sequence","content":[{"type":"page", "label":"Page 1","draftCid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku", "versions":[]}]}, "files":[]}';
+  //TODO: make a doenetId for the blank page
+  $jsonDefinition = '{"order": {"type":"order", "behavior":"sequence","content":[{"type":"page", "label":"Page 1","draftCid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku", "versions":[]}]}, "files":[]}';
 }else if($itemType == 'bank'){
-  $jsonDefinition = '{"type":"bank"}';
+  $jsonDefinition = '{}';
 }else{
   $success = FALSE;
   $message = "Not able to make type $itemType";
@@ -70,6 +71,7 @@ $result = $conn->query($sql);
 $sql = "
 SELECT 
 doenetId,
+contentType,
 parentDoenetId,
 label,
 creationDate,
@@ -86,6 +88,7 @@ $row = $result->fetch_assoc();
 
 $itemEntered = array(
   "doenetId"=>$row['doenetId'],
+  "contentType"=>$row['contentType'],
   "parentDoenetId"=>$row['parentDoenetId'],
   "label"=>$row['label'],
   "creationDate"=>$row['creationDate'],
@@ -98,9 +101,9 @@ $json = json_decode($row['json'],true);
 // var_dump($json);
 $itemEntered = array_merge($json,$itemEntered);
 
-if ($itemType == 'Section'){
-  $itemEntered['isOpen'] = false;
-}
+
+$itemEntered['isOpen'] = false;
+
 
 //Get new order
 $sql = "
