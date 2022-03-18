@@ -38,7 +38,7 @@ describe('Vector Tag Tests', function () {
     cy.get(`#${cesc(displacementInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables[vectorName].stateValues.tail).eqls([tailx, taily]);
       expect(stateVariables[vectorName].stateValues.head).eqls([headx, heady]);
       expect(stateVariables[vectorName].stateValues.displacement).eqls([displacementx, displacementy]);
@@ -102,7 +102,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -127,7 +127,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -145,7 +145,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -172,7 +172,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -241,7 +241,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -266,7 +266,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -284,7 +284,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -311,7 +311,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -382,7 +382,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -407,7 +407,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -425,7 +425,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -452,7 +452,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -521,7 +521,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -546,7 +546,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -564,7 +564,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -591,7 +591,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -659,7 +659,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -684,7 +684,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -702,7 +702,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -729,7 +729,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -798,7 +798,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -823,7 +823,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -841,7 +841,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -868,7 +868,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -937,7 +937,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -962,7 +962,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -980,7 +980,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -1007,7 +1007,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -1076,7 +1076,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -1101,7 +1101,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -1119,7 +1119,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -1146,7 +1146,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -1215,7 +1215,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -1240,7 +1240,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -1258,7 +1258,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -1285,7 +1285,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -1353,7 +1353,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -1378,7 +1378,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -1396,7 +1396,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -1423,7 +1423,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -1492,7 +1492,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -1517,7 +1517,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -1535,7 +1535,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -1562,7 +1562,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -1631,7 +1631,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -1656,7 +1656,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -1674,7 +1674,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -1701,7 +1701,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -1770,7 +1770,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -1795,7 +1795,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -1813,7 +1813,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -1840,7 +1840,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -1910,7 +1910,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -1935,7 +1935,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -1953,7 +1953,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -1980,7 +1980,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -2048,7 +2048,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -2073,7 +2073,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -2091,7 +2091,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -2118,7 +2118,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -2186,7 +2186,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -2211,7 +2211,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -2229,7 +2229,7 @@ describe('Vector Tag Tests', function () {
       tailx = -3;
       taily = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -2256,7 +2256,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -2326,7 +2326,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -2351,7 +2351,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -2369,7 +2369,7 @@ describe('Vector Tag Tests', function () {
       tailx = -3;
       taily = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -2396,7 +2396,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -2466,7 +2466,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -2491,7 +2491,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -2509,7 +2509,7 @@ describe('Vector Tag Tests', function () {
       tailx = -3;
       taily = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -2536,7 +2536,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -2605,7 +2605,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -2630,7 +2630,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -2648,7 +2648,7 @@ describe('Vector Tag Tests', function () {
       tailx = -3;
       taily = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -2675,7 +2675,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -2743,7 +2743,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -2768,7 +2768,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -2786,7 +2786,7 @@ describe('Vector Tag Tests', function () {
       tailx = -3;
       taily = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -2813,7 +2813,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -2881,7 +2881,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -2906,7 +2906,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -2924,7 +2924,7 @@ describe('Vector Tag Tests', function () {
       tailx = -3;
       taily = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -2951,7 +2951,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -3019,7 +3019,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -3044,7 +3044,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -3062,7 +3062,7 @@ describe('Vector Tag Tests', function () {
       tailx = -3;
       taily = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -3089,7 +3089,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -3157,7 +3157,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -3178,7 +3178,7 @@ describe('Vector Tag Tests', function () {
       headx = -5;
       heady = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -3196,7 +3196,7 @@ describe('Vector Tag Tests', function () {
       tailx = -3;
       taily = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -3222,7 +3222,7 @@ describe('Vector Tag Tests', function () {
       let displacementheadx = displacementTailShiftx + displacementx;
       let displacementheady = displacementTailShifty + displacementy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -3290,7 +3290,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -3311,7 +3311,7 @@ describe('Vector Tag Tests', function () {
       headx = -5;
       heady = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -3329,7 +3329,7 @@ describe('Vector Tag Tests', function () {
       tailx = -3;
       taily = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -3355,7 +3355,7 @@ describe('Vector Tag Tests', function () {
       let displacementheadx = displacementTailShiftx + displacementx;
       let displacementheady = displacementTailShifty + displacementy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -3423,7 +3423,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -3448,7 +3448,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -3466,7 +3466,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -3493,7 +3493,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -3549,7 +3549,7 @@ describe('Vector Tag Tests', function () {
     cy.log("initial state")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let v1tx = -1;
       let v1ty = 2;
       let v1hx = -2;
@@ -3586,7 +3586,7 @@ describe('Vector Tag Tests', function () {
       let v1hx = 4;
       let v1hy = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g1/vector1",
         args: {
@@ -3607,7 +3607,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/vector1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of vector1s) {
           expect(stateVariables[name].stateValues.tail).eqls([v1tx, v1ty]);
@@ -3632,7 +3632,7 @@ describe('Vector Tag Tests', function () {
       let v1hx = -2;
       let v1hy = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g2/vector1",
         args: {
@@ -3652,7 +3652,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get('#\\/vector1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of vector1s) {
           expect(stateVariables[name].stateValues.tail).eqls([v1tx, v1ty]);
@@ -3677,7 +3677,7 @@ describe('Vector Tag Tests', function () {
       let v1hx = 6;
       let v1hy = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g3/vector1",
         args: {
@@ -3697,7 +3697,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/vector1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of vector1s) {
           expect(stateVariables[name].stateValues.tail).eqls([v1tx, v1ty]);
@@ -3722,7 +3722,7 @@ describe('Vector Tag Tests', function () {
       let v2hx = 3;
       let v2hy = 5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g1/vector2",
         args: {
@@ -3743,7 +3743,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/vector2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of vector1s) {
           expect(stateVariables[name].stateValues.tail).eqls([v1tx, v1ty]);
@@ -3768,7 +3768,7 @@ describe('Vector Tag Tests', function () {
       let v2hx = 1;
       let v2hy = -7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g2/vector2",
         args: {
@@ -3789,7 +3789,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/vector2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of vector1s) {
           expect(stateVariables[name].stateValues.tail).eqls([v1tx, v1ty]);
@@ -3808,14 +3808,14 @@ describe('Vector Tag Tests', function () {
 
     cy.log('move vector8')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let v2tx = -3;
       let v2ty = -6;
       let v2hx = 5;
       let v2hy = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g3/vector2",
         args: {
@@ -3836,7 +3836,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/vector2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of vector1s) {
           expect(stateVariables[name].stateValues.tail).eqls([v1tx, v1ty]);
@@ -3861,7 +3861,7 @@ describe('Vector Tag Tests', function () {
       let v3hx = -1;
       let v3hy = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g1/vector3",
         args: {
@@ -3882,7 +3882,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/vector3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of vector1s) {
           expect(stateVariables[name].stateValues.tail).eqls([v1tx, v1ty]);
@@ -3907,7 +3907,7 @@ describe('Vector Tag Tests', function () {
       let v3hx = -7;
       let v3hy = -2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g2/vector3",
         args: {
@@ -3928,7 +3928,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/vector3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of vector1s) {
           expect(stateVariables[name].stateValues.tail).eqls([v1tx, v1ty]);
@@ -3953,7 +3953,7 @@ describe('Vector Tag Tests', function () {
       let v3hx = 5;
       let v3hy = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g3/vector3",
         args: {
@@ -3975,7 +3975,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/vector3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of vector1s) {
           expect(stateVariables[name].stateValues.tail).eqls([v1tx, v1ty]);
@@ -4029,7 +4029,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log("initial state")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let vector_tx = 0;
       let vector_ty = 0;
       let vector_hx = 1;
@@ -4070,7 +4070,7 @@ describe('Vector Tag Tests', function () {
           let vector_hx = hxs[i];
           let vector_hy = hys[i];
 
-          win.callAction({
+          win.callAction1({
             actionName: "moveVector",
             componentName: vectors[i],
             args: {
@@ -4089,7 +4089,7 @@ describe('Vector Tag Tests', function () {
           cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(displacement_x)},${nInDOM(displacement_y)})`)
 
           cy.window().then(async (win) => {
-            let stateVariables = await win.returnAllStateVariables();
+            let stateVariables = await win.returnAllStateVariables1();
             for (let name of vectors) {
               expect(stateVariables[name].stateValues.tail).eqls([vector_tx, vector_ty]);
               expect(stateVariables[name].stateValues.head).eqls([vector_hx, vector_hy]);
@@ -4133,7 +4133,7 @@ describe('Vector Tag Tests', function () {
           let vector_hy = vector_ty + displacement_y;
 
 
-          win.callAction({
+          win.callAction1({
             actionName: "moveVector",
             componentName: displacements[i],
             args: {
@@ -4146,7 +4146,7 @@ describe('Vector Tag Tests', function () {
           cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(displacement_x)},${nInDOM(displacement_y)})`)
 
           cy.window().then(async (win) => {
-            let stateVariables = await win.returnAllStateVariables();
+            let stateVariables = await win.returnAllStateVariables1();
 
             for (let name of vectors) {
               expect(stateVariables[name].stateValues.tail).eqls([vector_tx, vector_ty]);
@@ -4191,7 +4191,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log('check initial values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([1, 2]);
       expect(stateVariables['/_vector1'].stateValues.head).eqls([3, 4]);
       expect(stateVariables['/_point3'].stateValues.xs[0]).eq(1);
@@ -4200,7 +4200,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log('move vector to 45 degrees')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/_vector1',
         args: {
@@ -4214,7 +4214,7 @@ describe('Vector Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([-4, 4]);
       expect(stateVariables['/_vector1'].stateValues.head).eqls([4, -4]);
@@ -4240,7 +4240,7 @@ describe('Vector Tag Tests', function () {
       let yorig = 1;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -4259,7 +4259,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
       })
@@ -4270,7 +4270,7 @@ describe('Vector Tag Tests', function () {
       let xorig = 9;
       let yorig = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -4288,7 +4288,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
@@ -4301,7 +4301,7 @@ describe('Vector Tag Tests', function () {
       let yorig = 7;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -4319,7 +4319,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
@@ -4355,7 +4355,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log('check initial values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([1, 2]);
       expect(stateVariables['/_vector1'].stateValues.head).eqls([3, 4]);
       expect(stateVariables['/_point3'].stateValues.xs[0]).eq(-5);
@@ -4364,7 +4364,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log('move vector to 45 degrees')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/_vector1',
         args: {
@@ -4377,7 +4377,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(8)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([-4, 4]);
       expect(stateVariables['/_vector1'].stateValues.head).eqls([4, -4]);
       expect(stateVariables['/_point3'].stateValues.xs[0]).eq(-5)
@@ -4389,7 +4389,7 @@ describe('Vector Tag Tests', function () {
       let xorig = 3.3;
       let yorig = -3.6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -4408,7 +4408,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
@@ -4420,7 +4420,7 @@ describe('Vector Tag Tests', function () {
       let xorig = 4.3;
       let yorig = -4.6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -4429,7 +4429,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(4.3)},${nInDOM(-4.6)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(4.3, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(-4.6, 1E-12);
@@ -4441,7 +4441,7 @@ describe('Vector Tag Tests', function () {
       let xorig = -2.4;
       let yorig = 2.8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -4459,7 +4459,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 10) / 10)},${nInDOM(Math.round(p5y * 10) / 10)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
@@ -4471,7 +4471,7 @@ describe('Vector Tag Tests', function () {
       let xorig = -4.2;
       let yorig = 4.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -4490,7 +4490,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
@@ -4502,7 +4502,7 @@ describe('Vector Tag Tests', function () {
       let xorig = -4.4;
       let yorig = 4.5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -4511,7 +4511,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(-4.4)},${nInDOM(4.5)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(-4.4, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(4.5, 1E-12);
@@ -4542,7 +4542,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log(`point on vector, close to origin`);
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = stateVariables['/P'].stateValues.xs[0];
       let y = stateVariables['/P'].stateValues.xs[1];
 
@@ -4554,7 +4554,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log(`move point`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -100, y: 0.05 }
@@ -4565,7 +4565,7 @@ describe('Vector Tag Tests', function () {
 
     cy.window().then(async (win) => {
 
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = stateVariables['/P'].stateValues.xs[0];
       let y = stateVariables['/P'].stateValues.xs[1];
       expect(y).lessThan(0.05);
@@ -4575,7 +4575,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log(`move point past end`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -100, y: 0.1 }
@@ -4585,7 +4585,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/Pa .mjx-mrow').should('contain.text', `0.05`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = stateVariables['/P'].stateValues.xs[0];
       let y = stateVariables['/P'].stateValues.xs[1];
       expect(y).eq(0.05);
@@ -4617,7 +4617,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log('check initial values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/original'].stateValues.tail).eqls([0, 0]);
       expect(stateVariables['/original'].stateValues.head).eqls([1, 3]);
       expect(stateVariables['/multiplied'].stateValues.tail).eqls([0, 0]);
@@ -4626,7 +4626,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log('move original vector')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/original',
         args: {
@@ -4638,7 +4638,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/o2 .mjx-mrow').should('contain.text', `(${nInDOM(-5)},${nInDOM(1)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/original'].stateValues.tail).eqls([0, 0]);
       expect(stateVariables['/original'].stateValues.head).eqls([-5, 1]);
       expect(stateVariables['/multiplied'].stateValues.tail).eqls([0, 0]);
@@ -4647,7 +4647,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log('move multiplied vector')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/multiplied',
         args: {
@@ -4659,7 +4659,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(6)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/original'].stateValues.tail).eqls([0, 0]);
       expect(stateVariables['/original'].stateValues.head).eqls([3, -4]);
       expect(stateVariables['/multiplied'].stateValues.tail).eqls([0, 0]);
@@ -4672,7 +4672,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(-9)},${nInDOM(12)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/original'].stateValues.tail).eqls([0, 0]);
       expect(stateVariables['/original'].stateValues.head).eqls([3, -4]);
       expect(stateVariables['/multiplied'].stateValues.tail).eqls([0, 0]);
@@ -4681,7 +4681,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log('move multiplied vector again')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/multiplied',
         args: {
@@ -4693,7 +4693,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(-6)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/original'].stateValues.tail).eqls([0, 0]);
       expect(stateVariables['/original'].stateValues.head).eqls([2, 1]);
       expect(stateVariables['/multiplied'].stateValues.tail).eqls([0, 0]);
@@ -4734,7 +4734,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log('check initial values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/u'].stateValues.tail).eqls([...uTail]);
       expect(stateVariables['/u'].stateValues.head).eqls([...uHead]);
@@ -4752,7 +4752,7 @@ describe('Vector Tag Tests', function () {
       vTail = [-3, 2];
       uHead = vTail;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v',
         args: {
@@ -4769,7 +4769,7 @@ describe('Vector Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/u'].stateValues.tail).eqls([...uTail]);
         expect(stateVariables['/u'].stateValues.head).eqls([...uHead]);
@@ -4789,7 +4789,7 @@ describe('Vector Tag Tests', function () {
       uHead = [7, 1];
       vTail = uHead;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/u',
         args: {
@@ -4807,7 +4807,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/u2 .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/u'].stateValues.tail).eqls([...uTail]);
         expect(stateVariables['/u'].stateValues.head).eqls([...uHead]);
         expect(stateVariables['/u'].stateValues.displacement).eqls([...u]);
@@ -4825,7 +4825,7 @@ describe('Vector Tag Tests', function () {
 
       uTail = [3, 4];
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/u',
         args: {
@@ -4841,7 +4841,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/u2 .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/u'].stateValues.tail).eqls([...uTail]);
         expect(stateVariables['/u'].stateValues.head).eqls([...uHead]);
@@ -4860,7 +4860,7 @@ describe('Vector Tag Tests', function () {
 
       wTail = [-1, 7];
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/w',
         args: {
@@ -4876,7 +4876,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/u2 .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/u'].stateValues.tail).eqls([...uTail]);
         expect(stateVariables['/u'].stateValues.head).eqls([...uHead]);
@@ -4895,7 +4895,7 @@ describe('Vector Tag Tests', function () {
 
       wHead = [-5, -4];
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/w',
         args: {
@@ -4911,7 +4911,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/w2 .mjx-mrow').should('contain.text', `(${nInDOM(w[0])},${nInDOM(w[1])})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/u'].stateValues.tail).eqls([...uTail]);
         expect(stateVariables['/u'].stateValues.head).eqls([...uHead]);
@@ -4930,7 +4930,7 @@ describe('Vector Tag Tests', function () {
 
       vHead = [4, -7];
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v',
         args: {
@@ -4946,7 +4946,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/w2 .mjx-mrow').should('contain.text', `(${nInDOM(w[0])},${nInDOM(w[1])})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/u'].stateValues.tail).eqls([...uTail]);
         expect(stateVariables['/u'].stateValues.head).eqls([...uHead]);
@@ -4996,7 +4996,7 @@ describe('Vector Tag Tests', function () {
     let v = [vHead[0] - vTail[0], vHead[1] - vTail[1], vHead[2] - vTail[2]];
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/u'].stateValues.tail).eqls([...uTail]);
       expect(stateVariables['/u'].stateValues.head).eqls([...uHead]);
@@ -5046,7 +5046,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log("initial positions")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
       expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5071,7 +5071,7 @@ describe('Vector Tag Tests', function () {
 
       let hx = 3, hy = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v1',
         args: {
@@ -5085,7 +5085,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5111,7 +5111,7 @@ describe('Vector Tag Tests', function () {
 
       let tx = -2, ty = -1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v1',
         args: {
@@ -5127,7 +5127,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5152,7 +5152,7 @@ describe('Vector Tag Tests', function () {
 
       let hx = 4, hy = 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v2',
         args: {
@@ -5167,7 +5167,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5191,7 +5191,7 @@ describe('Vector Tag Tests', function () {
     cy.window().then(async (win) => {
       let tx = 5, ty = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v2',
         args: {
@@ -5207,7 +5207,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5233,7 +5233,7 @@ describe('Vector Tag Tests', function () {
 
       let hx = -6, hy = 3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v3',
         args: {
@@ -5247,7 +5247,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5273,7 +5273,7 @@ describe('Vector Tag Tests', function () {
 
       let tx = -1, ty = 4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v3',
         args: {
@@ -5289,7 +5289,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5315,7 +5315,7 @@ describe('Vector Tag Tests', function () {
 
       let hx = 6, hy = -2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v4',
         args: {
@@ -5329,7 +5329,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5355,7 +5355,7 @@ describe('Vector Tag Tests', function () {
 
       let tx = 7, ty = 2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v4',
         args: {
@@ -5371,7 +5371,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5434,7 +5434,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log("initial positions")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
       expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5458,7 +5458,7 @@ describe('Vector Tag Tests', function () {
     cy.window().then(async (win) => {
 
       let hx = 3, hy = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v1',
         args: {
@@ -5472,7 +5472,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5497,7 +5497,7 @@ describe('Vector Tag Tests', function () {
     cy.window().then(async (win) => {
 
       let tx = -2, ty = -1;
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v1',
         args: {
@@ -5514,7 +5514,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5539,7 +5539,7 @@ describe('Vector Tag Tests', function () {
     cy.window().then(async (win) => {
 
       let hx = 4, hy = 1;
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v2',
         args: {
@@ -5553,7 +5553,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5578,7 +5578,7 @@ describe('Vector Tag Tests', function () {
     cy.window().then(async (win) => {
 
       let tx = 5, ty = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v2',
         args: {
@@ -5595,7 +5595,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5620,7 +5620,7 @@ describe('Vector Tag Tests', function () {
     cy.window().then(async (win) => {
 
       let hx = -6, hy = 3;
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v3',
         args: {
@@ -5635,7 +5635,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5660,7 +5660,7 @@ describe('Vector Tag Tests', function () {
     cy.window().then(async (win) => {
 
       let tx = -1, ty = 4;
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v3',
         args: {
@@ -5677,7 +5677,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5702,7 +5702,7 @@ describe('Vector Tag Tests', function () {
     cy.window().then(async (win) => {
 
       let hx = 6, hy = -2;
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v4',
         args: {
@@ -5717,7 +5717,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5742,7 +5742,7 @@ describe('Vector Tag Tests', function () {
     cy.window().then(async (win) => {
 
       let tx = 7, ty = 2;
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v4',
         args: {
@@ -5758,7 +5758,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v1'].stateValues.tail).eqls([t1x, t1y]);
         expect(stateVariables['/v1'].stateValues.head).eqls([t1x + x, t1y + y]);
@@ -5804,7 +5804,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log("initial positions")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/v'].stateValues.tail).eqls([tx, ty]);
       expect(stateVariables['/v'].stateValues.head).eqls([hx, hy]);
@@ -5821,7 +5821,7 @@ describe('Vector Tag Tests', function () {
 
       tx = 3, ty = -1, hx = -4, hy = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/v',
         args: {
@@ -5832,7 +5832,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v'].stateValues.tail).eqls([tx, ty]);
         expect(stateVariables['/v'].stateValues.head).eqls([hx, hy]);
@@ -5850,7 +5850,7 @@ describe('Vector Tag Tests', function () {
 
       hx = 2, hy = 9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/vh",
         args: { x: hx, y: hy }
@@ -5859,7 +5859,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v'].stateValues.tail).eqls([tx, ty]);
         expect(stateVariables['/v'].stateValues.head).eqls([hx, hy]);
@@ -5878,7 +5878,7 @@ describe('Vector Tag Tests', function () {
 
       tx = -3, ty = 10;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/vt",
         args: { x: tx, y: ty }
@@ -5887,7 +5887,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v'].stateValues.tail).eqls([tx, ty]);
         expect(stateVariables['/v'].stateValues.head).eqls([hx, hy]);
@@ -5903,11 +5903,11 @@ describe('Vector Tag Tests', function () {
 
     cy.log("move combined point")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       hx = -6, ty = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/c",
         args: { x: hx, y: ty }
@@ -5916,7 +5916,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v'].stateValues.tail).eqls([tx, ty]);
         expect(stateVariables['/v'].stateValues.head).eqls([hx, hy]);
@@ -6068,7 +6068,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log("Initial configuration")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
       expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -6189,32 +6189,32 @@ describe('Vector Tag Tests', function () {
       tvhd = [-1, -6];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vt',
         args: { tailcoords: tvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vh',
         args: { tailcoords: tvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vd',
         args: { tailcoords: tvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vth',
         args: { tailcoords: tvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vtd',
         args: { tailcoords: tvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vhd',
         args: { tailcoords: tvhd }
@@ -6231,7 +6231,7 @@ describe('Vector Tag Tests', function () {
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -6353,32 +6353,32 @@ describe('Vector Tag Tests', function () {
       hvhd = [-4, 8];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vt',
         args: { headcoords: hvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vh',
         args: { headcoords: hvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vd',
         args: { headcoords: hvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vth',
         args: { headcoords: hvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vtd',
         args: { headcoords: hvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vhd',
         args: { headcoords: hvhd }
@@ -6396,7 +6396,7 @@ describe('Vector Tag Tests', function () {
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -6515,17 +6515,17 @@ describe('Vector Tag Tests', function () {
       tvtd = [-1, 5];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tvt",
         args: { x: tvt[0], y: tvt[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tvth",
         args: { x: tvth[0], y: tvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tvtd",
         args: { x: tvtd[0], y: tvtd[1] }
@@ -6541,7 +6541,7 @@ describe('Vector Tag Tests', function () {
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
@@ -6604,17 +6604,17 @@ describe('Vector Tag Tests', function () {
       hvth = [-8, -3];
       hvhd = [7, -6];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hvh",
         args: { x: hvh[0], y: hvh[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hvth",
         args: { x: hvth[0], y: hvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hvhd",
         args: { x: hvhd[0], y: hvhd[1] }
@@ -6630,7 +6630,7 @@ describe('Vector Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
         expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
@@ -6693,17 +6693,17 @@ describe('Vector Tag Tests', function () {
       dvtd = [-6, 8];
       dvhd = [3, -7];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/dvd",
         args: { x: dvd[0], y: dvd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/dvtd",
         args: { x: dvtd[0], y: dvtd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/dvhd",
         args: { x: dvhd[0], y: dvhd[1] }
@@ -6720,7 +6720,7 @@ describe('Vector Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
         expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
@@ -6788,32 +6788,32 @@ describe('Vector Tag Tests', function () {
       tvhd = [-3, 4];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvt",
         args: { x: tvt[0], y: tvt[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvh",
         args: { x: tvh[0], y: tvh[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvd",
         args: { x: tvd[0], y: tvd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvth",
         args: { x: tvth[0], y: tvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvtd",
         args: { x: tvtd[0], y: tvtd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvhd",
         args: { x: tvhd[0], y: tvhd[1] }
@@ -6835,7 +6835,7 @@ describe('Vector Tag Tests', function () {
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -6947,7 +6947,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log("move head of each vector through copied point")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       hvt = [-1, -3];
       hvh = [7, -6];
@@ -6957,32 +6957,32 @@ describe('Vector Tag Tests', function () {
       hvhd = [-4, 4];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvt",
         args: { x: hvt[0], y: hvt[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvh",
         args: { x: hvh[0], y: hvh[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvd",
         args: { x: hvd[0], y: hvd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvth",
         args: { x: hvth[0], y: hvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvtd",
         args: { x: hvtd[0], y: hvtd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvhd",
         args: { x: hvhd[0], y: hvhd[1] }
@@ -7002,7 +7002,7 @@ describe('Vector Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -7122,32 +7122,32 @@ describe('Vector Tag Tests', function () {
       dvtd = [9, -8];
       dvhd = [1, 2];
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvt',
         args: { headcoords: dvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvh',
         args: { headcoords: dvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvd',
         args: { headcoords: dvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvth',
         args: { headcoords: dvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvtd',
         args: { headcoords: dvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvhd',
         args: { headcoords: dvhd }
@@ -7166,7 +7166,7 @@ describe('Vector Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -7287,32 +7287,32 @@ describe('Vector Tag Tests', function () {
       tvtd = [-4, -8];
       tvhd = [-1, 6];
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vt2',
         args: { tailcoords: tvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vh2',
         args: { tailcoords: tvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vd2',
         args: { tailcoords: tvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vth2',
         args: { tailcoords: tvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vtd2',
         args: { tailcoords: tvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vhd2',
         args: { tailcoords: tvhd }
@@ -7330,7 +7330,7 @@ describe('Vector Tag Tests', function () {
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -7451,32 +7451,32 @@ describe('Vector Tag Tests', function () {
       hvhd = [-8, -4];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vt2',
         args: { headcoords: hvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vh2',
         args: { headcoords: hvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vd2',
         args: { headcoords: hvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vth2',
         args: { headcoords: hvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vtd2',
         args: { headcoords: hvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/vhd2',
         args: { headcoords: hvhd }
@@ -7494,7 +7494,7 @@ describe('Vector Tag Tests', function () {
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -7615,32 +7615,32 @@ describe('Vector Tag Tests', function () {
       tvhd = [-6, 6];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvt2",
         args: { x: tvt[0], y: tvt[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvh2",
         args: { x: tvh[0], y: tvh[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvd2",
         args: { x: tvd[0], y: tvd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvth2",
         args: { x: tvth[0], y: tvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvtd2",
         args: { x: tvtd[0], y: tvtd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvhd2",
         args: { x: tvhd[0], y: tvhd[1] }
@@ -7662,7 +7662,7 @@ describe('Vector Tag Tests', function () {
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -7783,32 +7783,32 @@ describe('Vector Tag Tests', function () {
       hvhd = [-1, 5];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvt2",
         args: { x: hvt[0], y: hvt[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvh2",
         args: { x: hvh[0], y: hvh[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvd2",
         args: { x: hvd[0], y: hvd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvth2",
         args: { x: hvth[0], y: hvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvtd2",
         args: { x: hvtd[0], y: hvtd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvhd2",
         args: { x: hvhd[0], y: hvhd[1] }
@@ -7828,7 +7828,7 @@ describe('Vector Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -7949,32 +7949,32 @@ describe('Vector Tag Tests', function () {
       dvhd = [-5, 3];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvt2',
         args: { headcoords: dvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvh2',
         args: { headcoords: dvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvd2',
         args: { headcoords: dvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvth2',
         args: { headcoords: dvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvtd2',
         args: { headcoords: dvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvhd2',
         args: { headcoords: dvhd }
@@ -7993,7 +7993,7 @@ describe('Vector Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -8126,14 +8126,14 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([2, 3]);
       expect(stateVariables['/_math1'].stateValues.value).eqls(["vector", 2, 3]);
     })
 
     cy.log("move vector head");
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/_vector1',
         args: { headcoords: [9, 7] }
@@ -8142,7 +8142,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(8,5)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([8, 5]);
       expect(stateVariables['/_math1'].stateValues.value).eqls(["vector", 8, 5]);
     })
@@ -8154,7 +8154,7 @@ describe('Vector Tag Tests', function () {
 
     cy.log("move vector tail");
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/_vector1',
         args: { tailcoords: [-2, 6] }
@@ -8163,7 +8163,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(11,1)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([11, 1]);
       expect(stateVariables['/_math1'].stateValues.value).eqls(["vector", 11, 1]);
     })
@@ -8202,7 +8202,7 @@ describe('Vector Tag Tests', function () {
     let x3 = -1, y3 = 4;
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
       expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
       expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
@@ -8218,7 +8218,7 @@ describe('Vector Tag Tests', function () {
       x2 = 7;
       y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v1h",
         args: { x: x2, y: y2 }
@@ -8228,7 +8228,7 @@ describe('Vector Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
         expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
         expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
@@ -8244,7 +8244,7 @@ describe('Vector Tag Tests', function () {
       x1 = -1;
       y1 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v1t",
         args: { x: x1, y: y1 }
@@ -8254,7 +8254,7 @@ describe('Vector Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
         expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
         expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
@@ -8270,7 +8270,7 @@ describe('Vector Tag Tests', function () {
       x3 = 9;
       y3 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v2t",
         args: { x: x3, y: y3 }
@@ -8279,7 +8279,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v2t').should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
         expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
         expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
@@ -8294,7 +8294,7 @@ describe('Vector Tag Tests', function () {
 
       x2 = 3;
       y2 = 2;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v2h",
         args: { x: x2, y: y2 }
@@ -8303,7 +8303,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v2h').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
         expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
         expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
@@ -8318,7 +8318,7 @@ describe('Vector Tag Tests', function () {
 
       x1 = -5;
       y1 = 8;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v3h",
         args: { x: x1, y: y1 }
@@ -8327,7 +8327,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v3h').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
         expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
         expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
@@ -8343,7 +8343,7 @@ describe('Vector Tag Tests', function () {
       x3 = 0;
       y3 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v3t",
         args: { x: x3, y: y3 }
@@ -8352,7 +8352,7 @@ describe('Vector Tag Tests', function () {
       cy.get('#\\/v3t').should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
         expect(stateVariables['/_vector1'].stateValues.head).eqls([x2, y2]);
         expect(stateVariables['/_vector2'].stateValues.tail).eqls([x3, y3]);
@@ -8404,7 +8404,7 @@ describe('Vector Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([3, b]);
       expect(stateVariables['/_vector1'].stateValues.head).eqls([a, 4]);
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([dx, dy]);
@@ -8439,7 +8439,7 @@ describe('Vector Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([3, b2]);
       expect(stateVariables['/_vector1'].stateValues.head).eqls([a2, 4]);
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([dx2, dy2]);
@@ -8464,7 +8464,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let tailx = 4;
       let taily = 1;
       let headx = -4;
@@ -8488,7 +8488,7 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/_vector1',
         args: { tailcoords: [tailx, taily] }
@@ -8497,7 +8497,7 @@ describe('Vector Tag Tests', function () {
       cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
         expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
         expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
@@ -8523,7 +8523,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let tailx = 4;
       let taily = 1;
       let headx = -4;
@@ -8547,7 +8547,7 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/_vector1',
         args: { headcoords: [headx, heady] }
@@ -8556,7 +8556,7 @@ describe('Vector Tag Tests', function () {
       cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
         expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
         expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
@@ -8582,7 +8582,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let tailx = 0;
       let taily = 0;
       let headx = -8;
@@ -8606,7 +8606,7 @@ describe('Vector Tag Tests', function () {
       let displacementx = headx - tailx;
       let displacementy = heady - taily;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/_vector1',
         args: { tailcoords: [tailx, taily] }
@@ -8615,7 +8615,7 @@ describe('Vector Tag Tests', function () {
       cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
         expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
         expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
@@ -8676,7 +8676,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -8701,7 +8701,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -8719,7 +8719,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -8746,7 +8746,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -8814,7 +8814,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -8839,7 +8839,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -8857,7 +8857,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -8884,7 +8884,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -8952,7 +8952,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -8977,7 +8977,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -8995,7 +8995,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -9022,7 +9022,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -9090,7 +9090,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -9115,7 +9115,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -9133,7 +9133,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -9160,7 +9160,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -9228,7 +9228,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -9253,7 +9253,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -9271,7 +9271,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -9298,7 +9298,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -9366,7 +9366,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -9391,7 +9391,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -9409,7 +9409,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -9436,7 +9436,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -9504,7 +9504,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -9529,7 +9529,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -9547,7 +9547,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -9574,7 +9574,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -9642,7 +9642,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -9667,7 +9667,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -9685,7 +9685,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -9712,7 +9712,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -9780,7 +9780,7 @@ describe('Vector Tag Tests', function () {
       heady += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/_vector1",
         args: {
@@ -9805,7 +9805,7 @@ describe('Vector Tag Tests', function () {
       taily += moveY;
       heady += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tail",
         args: { x: tailx, y: taily }
@@ -9823,7 +9823,7 @@ describe('Vector Tag Tests', function () {
       headx = -3;
       heady = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/head",
         args: { x: headx, y: heady }
@@ -9850,7 +9850,7 @@ describe('Vector Tag Tests', function () {
       let displacementheady = displacementTailShifty + displacementy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/displacement",
         args: {
@@ -9899,7 +9899,7 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_vector1"].stateValues.head).eqls([1])
       expect(stateVariables["/_vector1"].stateValues.tail).eqls([0])
       expect(stateVariables["/_vector1"].stateValues.displacement).eqls([1])
@@ -9953,7 +9953,7 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/v1"].stateValues.head).eqls([3, 4])
       expect(stateVariables["/v1"].stateValues.tail).eqls([3, 4])
       expect(stateVariables["/v1"].stateValues.displacement).eqls([0, 0])
@@ -9981,7 +9981,7 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v1",
         args: { headcoords: [1, 2] }
@@ -9990,7 +9990,7 @@ describe('Vector Tag Tests', function () {
       cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v1"].stateValues.head).eqls([1, 2])
         expect(stateVariables["/v1"].stateValues.tail).eqls([1, 2])
         expect(stateVariables["/v1"].stateValues.displacement).eqls([0, 0])
@@ -9998,7 +9998,7 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v1",
         args: { tailcoords: [-4, 5] }
@@ -10006,7 +10006,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v1"].stateValues.head).eqls([-4, 5])
         expect(stateVariables["/v1"].stateValues.tail).eqls([-4, 5])
         expect(stateVariables["/v1"].stateValues.displacement).eqls([0, 0])
@@ -10014,7 +10014,7 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v3",
         args: { headcoords: [1, 2] }
@@ -10022,7 +10022,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v3"].stateValues.head).eqls([1, 2])
         expect(stateVariables["/v3"].stateValues.tail).eqls([1, 2])
         expect(stateVariables["/v3"].stateValues.displacement).eqls([0, 0])
@@ -10030,7 +10030,7 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v3",
         args: { tailcoords: [-4, 5] }
@@ -10038,7 +10038,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v3"].stateValues.head).eqls([-4, 5])
         expect(stateVariables["/v3"].stateValues.tail).eqls([-4, 5])
         expect(stateVariables["/v3"].stateValues.displacement).eqls([0, 0])
@@ -10047,7 +10047,7 @@ describe('Vector Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v2",
         args: { headcoords: [1, 2] }
@@ -10055,7 +10055,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v2"].stateValues.head).eqls([1, 2])
         expect(stateVariables["/v2"].stateValues.tail).eqls([0, 0])
         expect(stateVariables["/v2"].stateValues.displacement).eqls([1, 2])
@@ -10063,7 +10063,7 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v2",
         args: { tailcoords: [5, 7] }
@@ -10071,7 +10071,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v2"].stateValues.head).eqls([-4, -5])
         expect(stateVariables["/v2"].stateValues.tail).eqls([0, 0])
         expect(stateVariables["/v2"].stateValues.displacement).eqls([-4, -5])
@@ -10079,14 +10079,14 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v5",
         args: { headcoords: [1, 2] }
       })
       cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v5"].stateValues.head).eqls([1, 2])
         expect(stateVariables["/v5"].stateValues.tail).eqls([0, 0])
         expect(stateVariables["/v5"].stateValues.displacement).eqls([1, 2])
@@ -10094,14 +10094,14 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v5",
         args: { tailcoords: [5, 7] }
       })
       cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v5"].stateValues.head).eqls([-4, -5])
         expect(stateVariables["/v5"].stateValues.tail).eqls([0, 0])
         expect(stateVariables["/v5"].stateValues.displacement).eqls([-4, -5])
@@ -10110,14 +10110,14 @@ describe('Vector Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v4",
         args: { headcoords: [-1, 1] }
       })
       cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v4"].stateValues.head).eqls([-8, -6])
         expect(stateVariables["/v4"].stateValues.tail).eqls([-4, -3])
         expect(stateVariables["/v4"].stateValues.displacement).eqls([-4, -3])
@@ -10126,7 +10126,7 @@ describe('Vector Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v4",
         args: { tailcoords: [-10, -2] }
@@ -10137,7 +10137,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v4"].stateValues.head).eqls([4, -8])
         expect(stateVariables["/v4"].stateValues.tail).eqls([2, -4])
         expect(stateVariables["/v4"].stateValues.displacement).eqls([2, -4])
@@ -10145,7 +10145,7 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v6",
         args: { headcoords: [-1, 1] }
@@ -10153,7 +10153,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v6"].stateValues.head).eqls([-8, -6])
         expect(stateVariables["/v6"].stateValues.tail).eqls([-4, -3])
         expect(stateVariables["/v6"].stateValues.displacement).eqls([-4, -3])
@@ -10161,7 +10161,7 @@ describe('Vector Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/v6",
         args: { tailcoords: [-10, -2] }
@@ -10172,7 +10172,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v6"].stateValues.head).eqls([4, -8])
         expect(stateVariables["/v6"].stateValues.tail).eqls([2, -4])
         expect(stateVariables["/v6"].stateValues.displacement).eqls([2, -4])
@@ -10242,7 +10242,7 @@ describe('Vector Tag Tests', function () {
     let displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       for (let i = 0; i < 7; i++) {
         for (let j = 0; j < 2; j++) {
@@ -10265,7 +10265,7 @@ describe('Vector Tag Tests', function () {
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g0/v0",
         args: { tailcoords: tails[0] }
@@ -10273,7 +10273,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v0t .mjx-mrow").should('contain.text', `(${nInDOM(tails[0][0])},${nInDOM(tails[0][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10296,7 +10296,7 @@ describe('Vector Tag Tests', function () {
       heads[3] = [tails[3][0] + displacements[0][0], tails[3][1] + displacements[0][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g1/v0",
         args: { headcoords: heads[0] }
@@ -10304,7 +10304,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v0h .mjx-mrow").should('contain.text', `(${nInDOM(heads[0][0])},${nInDOM(heads[0][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10325,7 +10325,7 @@ describe('Vector Tag Tests', function () {
 
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g0/v1",
         args: { headcoords: heads[1] }
@@ -10333,7 +10333,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(heads[1][0])},${nInDOM(heads[1][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10357,7 +10357,7 @@ describe('Vector Tag Tests', function () {
       heads[5] = [tails[5][0] + displacements[5][0], tails[5][1] + displacements[5][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g1/v1",
         args: { tailcoords: tails[1] }
@@ -10365,7 +10365,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v1t .mjx-mrow").should('contain.text', `(${nInDOM(tails[1][0])},${nInDOM(tails[1][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10386,7 +10386,7 @@ describe('Vector Tag Tests', function () {
 
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g0/v2",
         args: { tailcoords: tails[2] }
@@ -10394,7 +10394,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v2t .mjx-mrow").should('contain.text', `(${nInDOM(tails[2][0])},${nInDOM(tails[2][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10415,7 +10415,7 @@ describe('Vector Tag Tests', function () {
 
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g1/v2",
         args: { headcoords: heads[2] }
@@ -10423,7 +10423,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(heads[2][0])},${nInDOM(heads[2][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10446,7 +10446,7 @@ describe('Vector Tag Tests', function () {
       heads[0] = [tails[0][0] + displacements[3][0], tails[0][1] + displacements[3][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g0/v3",
         args: { headcoords: heads[3] }
@@ -10454,7 +10454,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(heads[3][0])},${nInDOM(heads[3][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10478,7 +10478,7 @@ describe('Vector Tag Tests', function () {
       heads[0] = [tails[0][0] + displacements[3][0], tails[0][1] + displacements[3][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g1/v3",
         args: { tailcoords: tails[3] }
@@ -10486,7 +10486,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v3t .mjx-mrow").should('contain.text', `(${nInDOM(tails[3][0])},${nInDOM(tails[3][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10509,7 +10509,7 @@ describe('Vector Tag Tests', function () {
 
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g0/v4",
         args: { tailcoords: tails[4] }
@@ -10517,7 +10517,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v4t .mjx-mrow").should('contain.text', `(${nInDOM(tails[4][0])},${nInDOM(tails[4][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10539,7 +10539,7 @@ describe('Vector Tag Tests', function () {
 
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g1/v4",
         args: { headcoords: heads[4] }
@@ -10547,7 +10547,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(heads[4][0])},${nInDOM(heads[4][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10570,7 +10570,7 @@ describe('Vector Tag Tests', function () {
       tails[6] = [heads[6][0] - displacements[5][0], heads[6][1] - displacements[5][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g0/v5",
         args: { headcoords: heads[5] }
@@ -10578,7 +10578,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(heads[5][0])},${nInDOM(heads[5][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10604,7 +10604,7 @@ describe('Vector Tag Tests', function () {
       tails[6] = [heads[6][0] - displacements[5][0], heads[6][1] - displacements[5][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g1/v5",
         args: { tailcoords: tails[5] }
@@ -10612,7 +10612,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v5t .mjx-mrow").should('contain.text', `(${nInDOM(tails[5][0])},${nInDOM(tails[5][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10636,7 +10636,7 @@ describe('Vector Tag Tests', function () {
       heads[5] = [tails[5][0] + displacements[6][0], tails[5][1] + displacements[6][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g0/v6",
         args: { tailcoords: tails[6] }
@@ -10644,7 +10644,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v6t .mjx-mrow").should('contain.text', `(${nInDOM(tails[6][0])},${nInDOM(tails[6][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -10668,7 +10668,7 @@ describe('Vector Tag Tests', function () {
       heads[5] = [tails[5][0] + displacements[6][0], tails[5][1] + displacements[6][1]]
       displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/g1/v6",
         args: { headcoords: heads[6] }
@@ -10676,7 +10676,7 @@ describe('Vector Tag Tests', function () {
 
       cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(heads[6][0])},${nInDOM(heads[6][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {

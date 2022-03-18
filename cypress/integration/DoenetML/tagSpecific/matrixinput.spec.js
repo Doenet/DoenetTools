@@ -39,7 +39,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", '＿']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -65,7 +65,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[a]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAstA = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'a']]]
       let matrixAstBlank = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", '＿']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAstA);
@@ -92,7 +92,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[a]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'a']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -123,7 +123,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[a＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'a'], ["tuple", '＿']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -155,7 +155,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ab]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'a'], ["tuple", '＿']]]
       let matrixAstB = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'a'], ["tuple", 'b']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAstB);
@@ -188,7 +188,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ab]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'a'], ["tuple", 'b']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -232,7 +232,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[a＿b＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'a', '＿'], ["tuple", 'b', '＿']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -276,7 +276,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[acbd]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'a', 'c'], ["tuple", 'b', '＿']]]
       let matrixAstD = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'a', 'c'], ["tuple", 'b', 'd']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAstD);
@@ -321,7 +321,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[acbd]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'a', 'c'], ["tuple", 'b', 'd']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -353,7 +353,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ac]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'a', 'c']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -386,7 +386,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ae]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'a', 'e']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -412,7 +412,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[a]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'a']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -437,7 +437,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[f]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'f']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -482,7 +482,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[febd]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'f', 'e'], ["tuple", 'b', 'd']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -529,7 +529,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ghij]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'g', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(matrixAst);
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -569,7 +569,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[abcd]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'a', 'b'], ["tuple", 'c', 'd']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -589,7 +589,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ac]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'a'], ["tuple", 'c']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -610,7 +610,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[zc]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'z'], ["tuple", 'c']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -636,7 +636,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[zbcd]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'z', 'b'], ["tuple", 'c', 'd']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -666,7 +666,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -699,7 +699,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -733,7 +733,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -757,7 +757,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -776,7 +776,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -825,7 +825,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -860,7 +860,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 0, 0], ["tuple"]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -884,7 +884,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[a]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'a']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -907,7 +907,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -933,7 +933,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ec]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'c']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -959,7 +959,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ef]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -991,7 +991,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ebfd]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'b'], ["tuple", 'f', 'd']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1024,7 +1024,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1063,7 +1063,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1103,7 +1103,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1129,7 +1129,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1154,7 +1154,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1204,7 +1204,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1236,7 +1236,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ab]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'a'], ["tuple", 'b']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1253,7 +1253,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[a]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'a']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1270,7 +1270,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1290,7 +1290,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[eb]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'b']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1311,7 +1311,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ef]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1337,7 +1337,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e＿f＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', '＿'], ["tuple", 'f', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1364,7 +1364,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1397,7 +1397,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1431,7 +1431,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1453,7 +1453,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1472,7 +1472,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1521,7 +1521,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1556,7 +1556,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 0, 0], ["tuple"]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1580,7 +1580,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[a]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'a']]]
       console.log(stateVariables['/mi1'].stateValues.value)
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -1604,7 +1604,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1630,7 +1630,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[eb]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'b']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1656,7 +1656,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ef]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1688,7 +1688,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e＿f＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', '＿'], ["tuple", 'f', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1721,7 +1721,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1760,7 +1760,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1800,7 +1800,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1826,7 +1826,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1851,7 +1851,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1901,7 +1901,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1933,7 +1933,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ab]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'a', 'b']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1951,7 +1951,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[a]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'a']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1969,7 +1969,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -1990,7 +1990,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[eb]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'e', 'b']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2016,7 +2016,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[eb＿＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'b'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2044,7 +2044,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2077,7 +2077,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2111,7 +2111,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2135,7 +2135,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2154,7 +2154,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2203,7 +2203,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2238,7 +2238,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 0, 0], ["tuple"]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2262,7 +2262,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[a]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'a']]]
       console.log(stateVariables['/mi1'].stateValues.value)
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -2286,7 +2286,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2312,7 +2312,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2338,7 +2338,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ef]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2370,7 +2370,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ebf＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'b'], ["tuple", 'f', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2403,7 +2403,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2442,7 +2442,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2482,7 +2482,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2508,7 +2508,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2533,7 +2533,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2583,7 +2583,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2618,7 +2618,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 0, 0], ["tuple"]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2642,7 +2642,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[a]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'a']]]
       console.log(stateVariables['/mi1'].stateValues.value)
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -2666,7 +2666,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2692,7 +2692,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[e＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2718,7 +2718,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ef]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2750,7 +2750,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[ebf＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'b'], ["tuple", 'f', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2783,7 +2783,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2822,7 +2822,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2862,7 +2862,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2888,7 +2888,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2913,7 +2913,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -2963,7 +2963,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m1").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3011,7 +3011,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[abcd]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'a', 'b'], ["tuple", 'c', 'd']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3048,7 +3048,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3089,7 +3089,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3131,7 +3131,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3159,7 +3159,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3186,7 +3186,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3238,7 +3238,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3289,7 +3289,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[abcd]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'a', 'b'], ["tuple", 'c', 'd']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3323,7 +3323,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ebcd]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'b'], ["tuple", 'c', 'd']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3352,7 +3352,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eb]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'e', 'b']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3384,7 +3384,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eb]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'e', 'b']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3427,7 +3427,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ab]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let vectorAst = ["tuple", "a", "b"]
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'a'], ["tuple", 'b']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -3457,7 +3457,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ef]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f']]]
       let vectorAst = ["tuple", "e", "f"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -3489,7 +3489,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣ef＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f'], ["tuple", '＿']]]
       let vectorAst = ["tuple", "e", "f", "＿"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -3522,7 +3522,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣efz⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f'], ["tuple", 'z']]]
       let vectorAst = ["tuple", "e", "f", "z"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -3552,7 +3552,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ef]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f']]]
       let vectorAst = ["tuple", "e", "f"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -3588,7 +3588,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢\n⎢\n⎢\n⎢⎣efz＿⎤⎥\n⎥\n⎥\n⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 4, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f'], ["tuple", 'z'], ["tuple", '＿']]]
       let vectorAst = ["tuple", "e", "f", "z", "＿"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -3625,7 +3625,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢\n⎢\n⎢\n⎢⎣ef＿y⎤⎥\n⎥\n⎥\n⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 4, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f'], ["tuple", '＿'], ["tuple", 'y']]]
       let vectorAst = ["tuple", "e", "f", "＿", "y"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -3654,7 +3654,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ef]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f']]]
       let vectorAst = ["tuple", "e", "f"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -3690,7 +3690,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[e＿f＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', '＿'], ["tuple", 'f', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3725,7 +3725,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3766,7 +3766,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3808,7 +3808,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3836,7 +3836,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3863,7 +3863,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3915,7 +3915,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -3963,7 +3963,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣abc⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let vectorAst = ["tuple", "a", "b", "c"]
       let matrixAst = ["matrix", ["tuple", 3, 1], ["tuple", ["tuple", 'a'], ["tuple", 'b'], ["tuple", 'c']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -3996,7 +3996,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣efc⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f'], ["tuple", 'c']]]
       let vectorAst = ["tuple", "e", "f", "c"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4034,7 +4034,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣efc⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f'], ["tuple", 'c']]]
       let vectorAst = ["tuple", "e", "f", "c"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4064,7 +4064,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ef]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 1], ["tuple", ["tuple", 'e'], ["tuple", 'f']]]
       let vectorAst = ["tuple", "e", "f"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4099,7 +4099,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[e＿f＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', '＿'], ["tuple", 'f', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -4142,7 +4142,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ab]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let vectorAst = ["^", ["tuple", "a", "b"], "T"];
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'a', 'b']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4172,7 +4172,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'e', 'g']]]
       let vectorAst = ["^", ["tuple", "e", "g"], "T"];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4204,7 +4204,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 3], ["tuple", ["tuple", 'e', 'g', '＿']]]
       let vectorAst = ["^", ["tuple", "e", "g", "＿"], "T"];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4236,7 +4236,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[egz]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 3], ["tuple", ["tuple", 'e', 'g', 'z']]]
       let vectorAst = ["^", ["tuple", "e", "g", "z"], "T"];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4266,7 +4266,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'e', 'g']]]
       let vectorAst = ["^", ["tuple", "e", "g"], "T"];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4302,7 +4302,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[egz＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 4], ["tuple", ["tuple", 'e', 'g', 'z', '＿']]]
       let vectorAst = ["^", ["tuple", "e", "g", "z", "＿"], "T"];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4339,7 +4339,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg＿y]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 4], ["tuple", ["tuple", 'e', 'g', '＿', 'y']]]
       let vectorAst = ["^", ["tuple", "e", "g", "＿", "y"], "T"];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4369,7 +4369,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'e', 'g']]]
       let vectorAst = ["^", ["tuple", "e", "g"], "T"];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4405,7 +4405,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg＿＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -4440,7 +4440,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -4481,7 +4481,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -4523,7 +4523,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -4551,7 +4551,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -4578,7 +4578,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -4629,7 +4629,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -4672,7 +4672,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ab]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let vectorAst = ["prime", ["tuple", "a", "b"]];
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'a', 'b']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4702,7 +4702,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'e', 'g']]]
       let vectorAst = ["prime", ["tuple", "e", "g"]];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4734,7 +4734,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 3], ["tuple", ["tuple", 'e', 'g', '＿']]]
       let vectorAst = ["prime", ["tuple", "e", "g", "＿"]];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4766,7 +4766,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[egz]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 3], ["tuple", ["tuple", 'e', 'g', 'z']]]
       let vectorAst = ["prime", ["tuple", "e", "g", "z"]];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4796,7 +4796,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'e', 'g']]]
       let vectorAst = ["prime", ["tuple", "e", "g"]];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4832,7 +4832,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[egz＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 4], ["tuple", ["tuple", 'e', 'g', 'z', '＿']]]
       let vectorAst = ["prime", ["tuple", "e", "g", "z", "＿"]];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4869,7 +4869,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg＿y]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 4], ["tuple", ["tuple", 'e', 'g', '＿', 'y']]]
       let vectorAst = ["prime", ["tuple", "e", "g", "＿", "y"]];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4899,7 +4899,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'e', 'g']]]
       let vectorAst = ["prime", ["tuple", "e", "g"]];
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -4935,7 +4935,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[eg＿＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -4970,7 +4970,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[egfh]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -5011,7 +5011,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfh＿＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -5053,7 +5053,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣egfhij⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 2], ["tuple", ["tuple", 'e', 'g'], ["tuple", 'f', 'h'], ["tuple", 'i', 'j']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -5081,7 +5081,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'e']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -5108,7 +5108,7 @@ describe('MatrixInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", 'k']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -5159,7 +5159,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣kg＿fh＿ij＿⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 'k', 'g', '＿'], ["tuple", 'f', 'h', '＿'], ["tuple", 'i', 'j', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -5207,7 +5207,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[abc]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let vectorAst = ["^", ["tuple", "a", "b", "c"], "T"]
       let matrixAst = ["matrix", ["tuple", 1, 3], ["tuple", ["tuple", 'a', 'b', 'c']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -5240,7 +5240,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[efc]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 3], ["tuple", ["tuple", 'e', 'f', 'c']]]
       let vectorAst = ["^", ["tuple", "e", "f", "c"], "T"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -5279,7 +5279,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[efc]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 3], ["tuple", ["tuple", 'e', 'f', 'c']]]
       let vectorAst = ["^", ["tuple", "e", "f", "c"], "T"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -5309,7 +5309,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ef]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 1, 2], ["tuple", ["tuple", 'e', 'f']]]
       let vectorAst = ["^", ["tuple", "e", "f"], "T"]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
@@ -5345,7 +5345,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[ef＿＿]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 'e', 'f'], ["tuple", '＿', '＿']]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst);
       expect(stateVariables['/m1'].stateValues.value).eqls(matrixAst);
@@ -5392,7 +5392,7 @@ describe('MatrixInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/varWithNum'].stateValues.value).eq("x2");
       expect(stateVariables['/varWithNum2'].stateValues.value).eqls(
         ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", "x2"]]]);
@@ -5430,7 +5430,7 @@ describe('MatrixInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/varWithNum'].stateValues.value).eqls(
         ["matrix", ["tuple", 1, 1], ["tuple", ["tuple", "xu9j"]]]);
       expect(stateVariables['/varWithNum2'].stateValues.value).eqls(
@@ -5528,7 +5528,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣000030000⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst1 = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 0, 0, '＿'], ["tuple", 0, 3, '＿'], ["tuple", '＿', '＿', '＿']]]
       let matrixAst2 = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 0, 0, 0], ["tuple", 0, 3, 0], ["tuple", 0, 0, 0]]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst1);
@@ -5622,7 +5622,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣000003000000⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst1 = ["matrix", ["tuple", 3, 4], ["tuple", ["tuple", 0, 0, '＿', '＿'], ["tuple", 0, 3, '＿', '＿'], ["tuple", '＿', '＿', '＿', '＿']]]
       let matrixAst2 = ["matrix", ["tuple", 3, 4], ["tuple", ["tuple", 0, 0, 0, 0], ["tuple", 0, 3, 0, 0], ["tuple", 0, 0, 0, 0]]]
       expect(stateVariables['/mi1'].stateValues.value).eqls(matrixAst1);
@@ -5685,7 +5685,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '[0003]')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst1 = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 0, 0], ["tuple", 0, 3]]]
       let matrixAst2 = ["matrix", ["tuple", 2, 2], ["tuple", ["tuple", 0, 0], ["tuple", 0, 3]]]
       expect(stateVariables['/sparse1'].stateValues.value).eqls(matrixAst1);
@@ -5769,7 +5769,7 @@ describe('MatrixInput Tag Tests', function () {
     cy.get("#\\/m2").find('.mjx-mrow').eq(0).should('have.text', '⎡⎢⎣000030000⎤⎥⎦')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let matrixAst1 = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 0, 0, '＿'], ["tuple", 0, 3, '＿'], ["tuple", '＿', '＿', '＿']]]
       let matrixAst2 = ["matrix", ["tuple", 3, 3], ["tuple", ["tuple", 0, 0, 0], ["tuple", 0, 3, 0], ["tuple", 0, 0, 0]]]
       expect(stateVariables['/sparse1'].stateValues.value).eqls(matrixAst1);

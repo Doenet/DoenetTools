@@ -40,7 +40,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let choices, choiceOrder;
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...stateVariables['/_choiceinput1'].stateValues.choiceOrder];
       expect(choices.length).eq(4);
@@ -78,7 +78,7 @@ describe('ChoiceInput Tag Tests', function () {
 
       cy.window().then(async (win) => {
 
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
         expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
         // expect(stateVariables['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
@@ -120,7 +120,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let choices, choiceOrder;
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...stateVariables['/_choiceinput1'].stateValues.choiceOrder];
       expect(choices.length).eq(4);
@@ -158,7 +158,7 @@ describe('ChoiceInput Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(await stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
         expect(await stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
         // expect(stateVariables['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
@@ -199,7 +199,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let choices;
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
       expect(choices).eqls(originalChoices);
       expect(await stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
@@ -227,7 +227,7 @@ describe('ChoiceInput Tag Tests', function () {
 
       cy.window().then(async (win) => {
 
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(await stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
         expect(await stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
         // expect(stateVariables['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([i + 1])
@@ -284,7 +284,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let choices;
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       choices = [...stateVariables['/ci1'].stateValues.choiceTexts];
       expect(choices.length).eq(6);
       expect(originalChoices.includes(choices[0])).eq(true);
@@ -342,7 +342,7 @@ describe('ChoiceInput Tag Tests', function () {
 
         cy.window().then(async (win) => {
 
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/ci1'].stateValues.selectedValues).eqls([choices[i]])
           expect(stateVariables['/ci1'].stateValues.selectedIndices).eqls([i + 1])
           expect(stateVariables['/ci2'].stateValues.selectedValues).eqls([choices[i]])
@@ -367,7 +367,7 @@ describe('ChoiceInput Tag Tests', function () {
 
         cy.window().then(async (win) => {
 
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/ci1'].stateValues.selectedValues).eqls([choices[i]])
           expect(stateVariables['/ci1'].stateValues.selectedIndices).eqls([i + 1])
           expect(stateVariables['/ci2'].stateValues.selectedValues).eqls([choices[i]])
@@ -393,7 +393,7 @@ describe('ChoiceInput Tag Tests', function () {
 
         cy.window().then(async (win) => {
 
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/ci1'].stateValues.selectedValues).eqls([choices[i]])
           expect(stateVariables['/ci1'].stateValues.selectedIndices).eqls([i + 1])
           expect(stateVariables['/ci2'].stateValues.selectedValues).eqls([choices[i]])
@@ -419,7 +419,7 @@ describe('ChoiceInput Tag Tests', function () {
 
         cy.window().then(async (win) => {
 
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/ci1'].stateValues.selectedValues).eqls([choices[i]])
           expect(stateVariables['/ci1'].stateValues.selectedIndices).eqls([i + 1])
           expect(stateVariables['/ci2'].stateValues.selectedValues).eqls([choices[i]])
@@ -477,7 +477,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let choices;
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       choices = [...stateVariables['/ci1'].stateValues.choiceTexts];
       expect(choices.length).eq(4);
       expect(originalChoices.includes(choices[0])).eq(true);
@@ -515,7 +515,7 @@ describe('ChoiceInput Tag Tests', function () {
 
         cy.window().then(async (win) => {
 
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/ci1'].stateValues.selectedValues).eqls([choices[i]])
           expect(stateVariables['/ci1'].stateValues.selectedIndices).eqls([i + 1])
           expect(stateVariables['/ci2'].stateValues.selectedValues).eqls([choices[i]])
@@ -536,7 +536,7 @@ describe('ChoiceInput Tag Tests', function () {
 
         cy.window().then(async (win) => {
 
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/ci1'].stateValues.selectedValues).eqls([choices[i]])
           expect(stateVariables['/ci1'].stateValues.selectedIndices).eqls([i + 1])
           expect(stateVariables['/ci2'].stateValues.selectedValues).eqls([choices[i]])
@@ -582,7 +582,7 @@ describe('ChoiceInput Tag Tests', function () {
     let originalChoices = ["caT", "  dog ", "Monkey"]
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let choiceOrder = stateVariables["/ci1"].stateValues.choiceOrder;
       let choices = choiceOrder.map(x => originalChoices[x - 1]);
@@ -622,7 +622,7 @@ describe('ChoiceInput Tag Tests', function () {
         cy.get('#\\/_textinput1_input').should('have.value', inputText)
 
         cy.window().then(async (win) => {
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/ci1'].stateValues.selectedValues).eqls(choiceArray)
           expect(stateVariables['/ci1'].stateValues.selectedIndices).eqls(indexArray)
           expect(stateVariables['/ci2'].stateValues.selectedValues).eqls(choiceArray)
@@ -729,7 +729,7 @@ describe('ChoiceInput Tag Tests', function () {
     let originalChoices = ["caT", "  dog ", "Monkey"]
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let choiceOrder = stateVariables["/ci1"].stateValues.choiceOrder;
       let choices = choiceOrder.map(x => originalChoices[x - 1]);
@@ -757,7 +757,7 @@ describe('ChoiceInput Tag Tests', function () {
         cy.get('#\\/_textinput1_input').should('have.value', inputText)
 
         cy.window().then(async (win) => {
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/ci1'].stateValues.selectedValues).eqls(selectedChoices)
           expect(stateVariables['/ci1'].stateValues.selectedIndices).eqls(selectedIndices)
           expect(stateVariables['/ci2'].stateValues.selectedValues).eqls(selectedChoices)
@@ -959,7 +959,7 @@ describe('ChoiceInput Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       cy.get('#\\/c1_choice2_input').should('be.checked')
 
@@ -1017,7 +1017,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let choices, choiceOrder;
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...stateVariables['/_choiceinput1'].stateValues.choiceOrder];
       expect(choices.length).eq(4);
@@ -1059,7 +1059,7 @@ describe('ChoiceInput Tag Tests', function () {
 
           cy.window().then(async (win) => {
 
-            let stateVariables = await win.returnAllStateVariables();
+            let stateVariables = await win.returnAllStateVariables1();
             expect(await stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
             expect(await stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
             expect(await stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
@@ -1104,7 +1104,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let choices, choiceOrder;
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...stateVariables['/_choiceinput1'].stateValues.choiceOrder];
       expect(choices.length).eq(4);
@@ -1145,7 +1145,7 @@ describe('ChoiceInput Tag Tests', function () {
 
           cy.window().then(async (win) => {
 
-            let stateVariables = await win.returnAllStateVariables();
+            let stateVariables = await win.returnAllStateVariables1();
             expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
             expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
             expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
@@ -1188,7 +1188,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let choices;
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
       expect(choices).eqls(originalChoices);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
@@ -1216,7 +1216,7 @@ describe('ChoiceInput Tag Tests', function () {
 
           cy.window().then(async (win) => {
 
-            let stateVariables = await win.returnAllStateVariables();
+            let stateVariables = await win.returnAllStateVariables1();
             expect(await stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
             expect(await stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
             expect(await stateVariables['/_choice1'].stateValues.selected).eq(i === 0);
@@ -1259,7 +1259,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let choices;
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
       expect(choices).eqls(originalChoices);
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
@@ -1287,7 +1287,7 @@ describe('ChoiceInput Tag Tests', function () {
 
           cy.window().then(async (win) => {
 
-            let stateVariables = await win.returnAllStateVariables();
+            let stateVariables = await win.returnAllStateVariables1();
             expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
             expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
             expect(stateVariables['/_choice1'].stateValues.selected).eq(i === 0);
@@ -1329,7 +1329,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let choices, choiceOrder;
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...stateVariables['/_choiceinput1'].stateValues.choiceOrder];
       expect(choices.length).eq(4);
@@ -1366,7 +1366,7 @@ describe('ChoiceInput Tag Tests', function () {
 
       cy.window().then(async (win) => {
 
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(0, i + 1))
         expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(i + 1).keys()].map(x => x + 1))
         expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) <= i);
@@ -1389,7 +1389,7 @@ describe('ChoiceInput Tag Tests', function () {
 
       cy.window().then(async (win) => {
 
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i + 1))
         expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(3 - i).keys()].map(x => x + 2 + i))
         expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) > i);
@@ -1411,7 +1411,7 @@ describe('ChoiceInput Tag Tests', function () {
 
       cy.window().then(async (win) => {
 
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i))
         expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(4 - i).keys()].map(x => x + 1 + i))
         expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) >= i);
@@ -1452,7 +1452,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     let choices, choiceOrder;
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       choices = [...stateVariables['/_choiceinput1'].stateValues.choiceTexts];
       choiceOrder = [...stateVariables['/_choiceinput1'].stateValues.choiceOrder];
       expect(choices.length).eq(4);
@@ -1494,7 +1494,7 @@ describe('ChoiceInput Tag Tests', function () {
 
       cy.window().then(async (win) => {
 
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(0, i + 1))
         expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(i + 1).keys()].map(x => x + 1))
         expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) <= i);
@@ -1530,7 +1530,7 @@ describe('ChoiceInput Tag Tests', function () {
 
         cy.window().then(async (win) => {
 
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i + 1))
           expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(3 - i).keys()].map(x => x + 2 + i))
           expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) > i);
@@ -1558,7 +1558,7 @@ describe('ChoiceInput Tag Tests', function () {
 
       cy.window().then(async (win) => {
 
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i))
         expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(4 - i).keys()].map(x => x + 1 + i))
         expect(stateVariables['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) >= i);

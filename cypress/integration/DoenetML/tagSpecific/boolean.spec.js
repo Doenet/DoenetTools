@@ -102,7 +102,7 @@ describe('Boolean Tag Tests', function () {
     }
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       for (let i = 1; i <= nTrues; i++) {
         expect(stateVariables[`/t${i}`].stateValues.value).to.be.true
       }

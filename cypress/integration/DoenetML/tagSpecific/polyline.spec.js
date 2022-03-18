@@ -37,7 +37,7 @@ async function testPolylineCopiedTwice({ vertices,
 
 
   cy.window().then(async (win) => {
-    let stateVariables = await win.returnAllStateVariables();
+    let stateVariables = await win.returnAllStateVariables1();
     expect(stateVariables[graph1Name + polylineName].stateValues.nVertices).eqls(vertices.length);
     expect(stateVariables[graph2Name + polylineName].stateValues.nVertices).eqls(vertices.length);
     expect(stateVariables[graph3Name + polylineName].stateValues.nVertices).eqls(vertices.length);
@@ -105,7 +105,7 @@ describe('Polyline Tag Tests', function () {
 
       vertices[1] = [4, 7]
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g1/pg",
         args: {
@@ -129,7 +129,7 @@ describe('Polyline Tag Tests', function () {
         vertices[i][1] = vertices[i][1] + moveY;
       }
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g2/pg",
         args: {
@@ -146,7 +146,7 @@ describe('Polyline Tag Tests', function () {
 
       vertices[2] = [-9, -8]
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g3/pg",
         args: {
@@ -188,7 +188,7 @@ describe('Polyline Tag Tests', function () {
 
       vertices[1] = [4, 7]
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g1/pg",
         args: {
@@ -212,7 +212,7 @@ describe('Polyline Tag Tests', function () {
         vertices[i][1] = vertices[i][1] + moveY;
       }
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g2/pg",
         args: {
@@ -229,7 +229,7 @@ describe('Polyline Tag Tests', function () {
 
       vertices[2] = [-9, -8]
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g3/pg",
         args: {
@@ -425,12 +425,12 @@ describe('Polyline Tag Tests', function () {
     cy.log("can't move points")
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/mp1",
         args: { x: 9, y: -8 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/mp9",
         args: { x: -8, y: 4 }
@@ -453,7 +453,7 @@ describe('Polyline Tag Tests', function () {
 
       let vertices2 = vertices.map(v => [v[0] + moveX, v[1] + moveY]);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g1/pg",
         args: {
@@ -475,7 +475,7 @@ describe('Polyline Tag Tests', function () {
 
       let vertices2 = vertices.map(v => [v[0] + moveX, v[1] + moveY]);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g2/pg",
         args: {
@@ -498,7 +498,7 @@ describe('Polyline Tag Tests', function () {
 
       let vertices2 = vertices.map(v => [v[0] + moveX, v[1] + moveY]);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g3/pg",
         args: {
@@ -556,12 +556,12 @@ describe('Polyline Tag Tests', function () {
       vertices[0] = [9, -8];
       vertices[8] = [-8, 4];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/mp1",
         args: { x: vertices[0][0], y: vertices[0][1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/mp9",
         args: { x: vertices[8][0], y: vertices[8][1] }
@@ -583,7 +583,7 @@ describe('Polyline Tag Tests', function () {
         vertices[i][1] += moveY;
       }
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g1/pg",
         args: {
@@ -606,7 +606,7 @@ describe('Polyline Tag Tests', function () {
         vertices[i][1] += moveY;
       }
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g2/pg",
         args: {
@@ -630,7 +630,7 @@ describe('Polyline Tag Tests', function () {
         vertices[i][1] += moveY;
       }
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g2/pg",
         args: {
@@ -670,7 +670,7 @@ describe('Polyline Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let ps = [[-3, -1], [1, 2], [3, 4], [6, -2]];
 
       for (let i = 0; i < 4; i++) {
@@ -686,7 +686,7 @@ describe('Polyline Tag Tests', function () {
       let ps = [[-5, 3], [-2, 7], [0, -8], [9, -6]];
 
       for (let i = 0; i < 4; i++) {
-        win.callAction({
+        win.callAction1({
           actionName: "movePoint",
           componentName: `/v${i + 1}`,
           args: { x: ps[i][0], y: ps[i][1] }
@@ -696,7 +696,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/v4b .mjx-mrow').should('contain.text', `(${nInDOM(ps[3][0])},${nInDOM(ps[3][1])})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         for (let i = 0; i < 4; i++) {
           expect((await stateVariables[`/v${i + 1}`].stateValues.xs)[0]).eq(ps[i][0]);
           expect((await stateVariables[`/v${i + 1}a`].stateValues.xs)[0]).eq(ps[i][0]);
@@ -712,7 +712,7 @@ describe('Polyline Tag Tests', function () {
       let ps = [[-7, -1], [-3, 5], [2, 4], [6, 0]];
 
       for (let i = 0; i < 4; i++) {
-        win.callAction({
+        win.callAction1({
           actionName: "movePoint",
           componentName: `/v${i + 1}a`,
           args: { x: ps[i][0], y: ps[i][1] }
@@ -722,7 +722,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/v4b .mjx-mrow').should('contain.text', `(${nInDOM(ps[3][0])},${nInDOM(ps[3][1])})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         for (let i = 0; i < 4; i++) {
           expect((await stateVariables[`/v${i + 1}`].stateValues.xs)[0]).eq(ps[i][0]);
           expect((await stateVariables[`/v${i + 1}a`].stateValues.xs)[0]).eq(ps[i][0]);
@@ -770,7 +770,7 @@ describe('Polyline Tag Tests', function () {
         vertices[i][1] += moveY;
       }
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g1/pg",
         args: {
@@ -794,7 +794,7 @@ describe('Polyline Tag Tests', function () {
         vertices[i][1] += moveY;
       }
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g2/pg",
         args: {
@@ -818,7 +818,7 @@ describe('Polyline Tag Tests', function () {
         vertices[i][1] += moveY;
       }
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/g3/pg",
         args: {
@@ -876,7 +876,7 @@ describe('Polyline Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_polyline1"].stateValues.nVertices).eqls(vertices.length);
         expect(stateVariables["/_polyline2"].stateValues.nVertices).eqls(vertices.length);
 
@@ -913,7 +913,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       vertices = [[1, -1], [-3, 2], [-1, 7], [6, 3]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -929,7 +929,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       let vertices2 = [[-3, 4], [1, 0], [9, 6], [2, -1]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline2",
         args: {
@@ -978,7 +978,7 @@ describe('Polyline Tag Tests', function () {
     let C = [-5, 6];
     let D = [A[0] + C[0] - B[0], A[1] + C[1] - B[1]];
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect((await stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
       expect((await stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
       expect((await stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
@@ -990,7 +990,7 @@ describe('Polyline Tag Tests', function () {
       A = [-4, -1];
       D = [A[0] + C[0] - B[0], A[1] + C[1] - B[1]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/parallelogram",
         args: {
@@ -1001,7 +1001,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
@@ -1014,7 +1014,7 @@ describe('Polyline Tag Tests', function () {
       B = [8, 9];
       D = [A[0] + C[0] - B[0], A[1] + C[1] - B[1]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/parallelogram",
         args: {
@@ -1025,7 +1025,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p2 .mjx-mrow').should("contain.text", `(${nInDOM(B[0])},${nInDOM(B[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
@@ -1038,7 +1038,7 @@ describe('Polyline Tag Tests', function () {
       C = [-3, 7];
       D = [A[0] + C[0] - B[0], A[1] + C[1] - B[1]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/parallelogram",
         args: {
@@ -1049,7 +1049,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p3 .mjx-mrow').should("contain.text", `(${nInDOM(C[0])},${nInDOM(C[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
@@ -1062,7 +1062,7 @@ describe('Polyline Tag Tests', function () {
       D = [7, 0];
       B = [A[0] + C[0] - D[0], A[1] + C[1] - D[1]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/parallelogram",
         args: {
@@ -1073,7 +1073,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p4 .mjx-mrow').should("contain.text", `(${nInDOM(D[0])},${nInDOM(D[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
@@ -1115,7 +1115,7 @@ describe('Polyline Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_polyline1"].stateValues.nVertices).eqls(vertices.length);
         expect(stateVariables["/_polyline2"].stateValues.nVertices).eqls(vertices.length);
 
@@ -1149,7 +1149,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       vertices = [[7, 2], [1, -3], [2, 9], [-4, -3]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1165,7 +1165,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       let vertices2 = [[-1, 9], [5, 7], [-8, 1], [-7, 6]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline2",
         args: {
@@ -1203,7 +1203,7 @@ describe('Polyline Tag Tests', function () {
     let C = [-5, 6];
     let D = [C[0] + B[0] - A[0], C[1] + B[1] - A[1]];
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
       expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
       expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1215,7 +1215,7 @@ describe('Polyline Tag Tests', function () {
       A = [-4, -1];
       D = [C[0] + B[0] - A[0], C[1] + B[1] - A[1]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1226,7 +1226,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1239,7 +1239,7 @@ describe('Polyline Tag Tests', function () {
       B = [8, 9];
       D = [C[0] + B[0] - A[0], C[1] + B[1] - A[1]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1250,7 +1250,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p2 .mjx-mrow').should("contain.text", `(${nInDOM(B[0])},${nInDOM(B[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1263,7 +1263,7 @@ describe('Polyline Tag Tests', function () {
       C = [-3, 7];
       D = [C[0] + B[0] - A[0], C[1] + B[1] - A[1]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1274,7 +1274,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p3 .mjx-mrow').should("contain.text", `(${nInDOM(C[0])},${nInDOM(C[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1287,7 +1287,7 @@ describe('Polyline Tag Tests', function () {
       D = [7, 0];
       A = [C[0] + B[0] - D[0], C[1] + B[1] - D[1]];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1298,7 +1298,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p4 .mjx-mrow').should("contain.text", `(${nInDOM(D[0])},${nInDOM(D[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1325,7 +1325,7 @@ describe('Polyline Tag Tests', function () {
     let B = [3, 4];
     let C = [-5, 6];
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_polyline1'].stateValues.nVertices).eq(4)
       expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
       expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
@@ -1337,7 +1337,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       A = [-4, -1];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1348,7 +1348,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1360,7 +1360,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       B = [8, 9];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1371,7 +1371,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p2 .mjx-mrow').should("contain.text", `(${nInDOM(B[0])},${nInDOM(B[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1383,7 +1383,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       C = [-3, 7];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1394,7 +1394,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p3 .mjx-mrow').should("contain.text", `(${nInDOM(C[0])},${nInDOM(C[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1405,7 +1405,7 @@ describe('Polyline Tag Tests', function () {
     cy.log('move fourth vertex')
     cy.window().then(async (win) => {
       A = [7, 0];
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1416,7 +1416,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p4 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1444,7 +1444,7 @@ describe('Polyline Tag Tests', function () {
     let B = [3, 4];
     let C = [-5, 6];
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_polyline1'].stateValues.nVertices).eq(4)
       expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
       expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
@@ -1456,7 +1456,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       A = [-4, -1];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1467,7 +1467,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1479,7 +1479,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       B = [8, 9];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1490,7 +1490,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p2 .mjx-mrow').should("contain.text", `(${nInDOM(B[0])},${nInDOM(B[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1502,7 +1502,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       C = [-3, 7];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1513,7 +1513,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p3 .mjx-mrow').should("contain.text", `(${nInDOM(C[0])},${nInDOM(C[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1525,7 +1525,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       A = [7, 0];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1536,7 +1536,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p4 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1565,7 +1565,7 @@ describe('Polyline Tag Tests', function () {
     let C = [-5, 6];
     let D = [A[0] + 1, 2];
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
       expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
       expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1578,7 +1578,7 @@ describe('Polyline Tag Tests', function () {
       A = [-4, -1];
       D[0] = A[0] + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1589,7 +1589,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1602,7 +1602,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       B = [8, 9];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1613,7 +1613,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p2 .mjx-mrow').should("contain.text", `(${nInDOM(B[0])},${nInDOM(B[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1626,7 +1626,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       C = [-3, 7];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1637,7 +1637,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p3 .mjx-mrow').should("contain.text", `(${nInDOM(C[0])},${nInDOM(C[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1651,7 +1651,7 @@ describe('Polyline Tag Tests', function () {
       A = [7, 0];
       D[0] = A[0] + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1662,7 +1662,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p4 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1676,7 +1676,7 @@ describe('Polyline Tag Tests', function () {
       D = [-5, 9];
       A[0] = D[0] - 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -1687,7 +1687,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p5 .mjx-mrow').should("contain.text", `(${nInDOM(D[0])},${nInDOM(D[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/_polyline1'].stateValues.vertices)[2]).eqls(C);
@@ -1720,7 +1720,7 @@ describe('Polyline Tag Tests', function () {
     let F = [3, 1];
     let G = [5, 0];
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
       expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
       expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -1737,7 +1737,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       A = [-4, -9];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -1748,7 +1748,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -1766,7 +1766,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       B = [8, 9];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -1777,7 +1777,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p2 .mjx-mrow').should("contain.text", `(${nInDOM(B[0])},${nInDOM(B[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -1795,7 +1795,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       C = [-3, 7];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -1806,7 +1806,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p3 .mjx-mrow').should("contain.text", `(${nInDOM(C[0])},${nInDOM(C[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -1824,7 +1824,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       A = [7, 0];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -1835,7 +1835,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p4 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -1853,7 +1853,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       D = [-9, 1];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -1864,7 +1864,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p5 .mjx-mrow').should("contain.text", `(${nInDOM(D[0])},${nInDOM(D[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -1882,7 +1882,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       E = [-3, 6];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -1893,7 +1893,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p6 .mjx-mrow').should("contain.text", `(${nInDOM(E[0])},${nInDOM(E[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -1911,7 +1911,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       A = [2, -4];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -1922,7 +1922,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p7 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -1940,7 +1940,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       F = [6, 7];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -1951,7 +1951,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p8 .mjx-mrow').should("contain.text", `(${nInDOM(F[0])},${nInDOM(F[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -1969,7 +1969,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       G = [1, -8];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -1980,7 +1980,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p9 .mjx-mrow').should("contain.text", `(${nInDOM(G[0])},${nInDOM(G[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -1998,7 +1998,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       A = [-6, 10];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -2009,7 +2009,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p10 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2049,7 +2049,7 @@ describe('Polyline Tag Tests', function () {
     let A2 = [A[0] + 2, A[1] + 2];
     let A3 = [A[0] + 3, A[1] + 3];
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
       expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
       expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2069,7 +2069,7 @@ describe('Polyline Tag Tests', function () {
       A2 = [A[0] + 2, A[1] + 2];
       A3 = [A[0] + 3, A[1] + 3];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -2080,7 +2080,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A3[0])},${nInDOM(A3[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2098,7 +2098,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       B = [8, 9];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -2109,7 +2109,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p2 .mjx-mrow').should("contain.text", `(${nInDOM(B[0])},${nInDOM(B[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2127,7 +2127,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       C = [-3, 7];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -2138,7 +2138,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p3 .mjx-mrow').should("contain.text", `(${nInDOM(C[0])},${nInDOM(C[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2159,7 +2159,7 @@ describe('Polyline Tag Tests', function () {
       A2 = [A[0] + 2, A[1] + 2];
       A3 = [A[0] + 3, A[1] + 3];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -2170,7 +2170,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p4 .mjx-mrow').should("contain.text", `(${nInDOM(A2[0])},${nInDOM(A2[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2188,7 +2188,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       D = [-9, 1];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -2199,7 +2199,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p5 .mjx-mrow').should("contain.text", `(${nInDOM(D[0])},${nInDOM(D[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2217,7 +2217,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       E = [-3, 6];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -2228,7 +2228,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p6 .mjx-mrow').should("contain.text", `(${nInDOM(E[0])},${nInDOM(E[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2249,7 +2249,7 @@ describe('Polyline Tag Tests', function () {
       A2 = [A[0] + 2, A[1] + 2];
       A3 = [A[0] + 3, A[1] + 3];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -2260,7 +2260,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p7 .mjx-mrow').should("contain.text", `(${nInDOM(A1[0])},${nInDOM(A1[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2278,7 +2278,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       F = [6, 7];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -2289,7 +2289,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p8 .mjx-mrow').should("contain.text", `(${nInDOM(F[0])},${nInDOM(F[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2307,7 +2307,7 @@ describe('Polyline Tag Tests', function () {
     cy.window().then(async (win) => {
       G = [1, -8];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -2318,7 +2318,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p9 .mjx-mrow').should("contain.text", `(${nInDOM(G[0])},${nInDOM(G[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2339,7 +2339,7 @@ describe('Polyline Tag Tests', function () {
       A2 = [A[0] + 2, A[1] + 2];
       A3 = [A[0] + 3, A[1] + 3];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/P",
         args: {
@@ -2350,7 +2350,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p10 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
         expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
         expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
@@ -2390,7 +2390,7 @@ describe('Polyline Tag Tests', function () {
 
     cy.log('point originally not attracted')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', 7, 8]);
     })
 
@@ -2401,7 +2401,7 @@ describe('Polyline Tag Tests', function () {
       let mseg1 = (y2 - y1) / (x2 - x1);
       let y = mseg1 * (x - x1) + y1 + 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2410,7 +2410,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(1.14`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
@@ -2427,7 +2427,7 @@ describe('Polyline Tag Tests', function () {
       let mseg2 = (y2 - y3) / (x2 - x3);
       let y = mseg2 * (x - x2) + y2 + 0.4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2436,7 +2436,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(3.12`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2451,7 +2451,7 @@ describe('Polyline Tag Tests', function () {
       let mseg3 = (y1 - y3) / (x1 - x3);
       let y = mseg3 * (x - x3) + y3 + 0.2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2460,7 +2460,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(4,`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2476,7 +2476,7 @@ describe('Polyline Tag Tests', function () {
       let x = x1 + 0.2;
       let y = y1 + 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2485,7 +2485,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(3,5)`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2501,7 +2501,7 @@ describe('Polyline Tag Tests', function () {
       let mseg1 = (y2 - y1) / (x2 - x1);
       let y = mseg1 * (x - x1) + y1 + 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2510,7 +2510,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(4,`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2525,7 +2525,7 @@ describe('Polyline Tag Tests', function () {
       let mseg1 = (y2 - y1) / (x2 - x1);
       let y = mseg1 * (x - x1) + y1 - 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2534,7 +2534,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(${nInDOM(-5)},`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2550,7 +2550,7 @@ describe('Polyline Tag Tests', function () {
       let x = x2 - 0.2;
       let y = y2 - 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2559,7 +2559,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(${nInDOM(-4)},`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2576,7 +2576,7 @@ describe('Polyline Tag Tests', function () {
       let mseg2 = (y2 - y3) / (x2 - x3);
       let y = mseg2 * (x - x2) + y2 + 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2585,7 +2585,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(6,`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2600,7 +2600,7 @@ describe('Polyline Tag Tests', function () {
       let mseg2 = (y2 - y3) / (x2 - x3);
       let y = mseg2 * (x - x2) + y2 - 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2609,7 +2609,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(${nInDOM(-5)},`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2633,7 +2633,7 @@ describe('Polyline Tag Tests', function () {
       y2 += moveY;
       y3 += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -2644,7 +2644,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/v1 .mjx-mrow').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2664,7 +2664,7 @@ describe('Polyline Tag Tests', function () {
       x2 += moveX;
       y2 += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -2675,7 +2675,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/v2 .mjx-mrow').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
@@ -2712,7 +2712,7 @@ describe('Polyline Tag Tests', function () {
 
     cy.log('point originally constrained')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', x1, y1]);
     })
 
@@ -2723,7 +2723,7 @@ describe('Polyline Tag Tests', function () {
       let mseg1 = (y2 - y1) / (x2 - x1);
       let y = mseg1 * (x - x1) + y1 + 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2732,7 +2732,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(1.14`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
@@ -2749,7 +2749,7 @@ describe('Polyline Tag Tests', function () {
       let mseg2 = (y2 - y3) / (x2 - x3);
       let y = mseg2 * (x - x2) + y2 + 0.4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2758,7 +2758,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(3.12`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2773,7 +2773,7 @@ describe('Polyline Tag Tests', function () {
       let mseg3 = (y1 - y3) / (x1 - x3);
       let y = mseg3 * (x - x3) + y3 + 0.2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2782,7 +2782,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(2.93`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
         let mseg1 = (y2 - y1) / (x2 - x1);
@@ -2797,7 +2797,7 @@ describe('Polyline Tag Tests', function () {
       let x = x1 + 0.2;
       let y = y1 + 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2806,7 +2806,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(3,5)`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2822,7 +2822,7 @@ describe('Polyline Tag Tests', function () {
       let mseg1 = (y2 - y1) / (x2 - x1);
       let y = mseg1 * (x - x1) + y1 + 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2831,7 +2831,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2846,7 +2846,7 @@ describe('Polyline Tag Tests', function () {
       let mseg1 = (y2 - y1) / (x2 - x1);
       let y = mseg1 * (x - x1) + y1 - 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2855,7 +2855,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2871,7 +2871,7 @@ describe('Polyline Tag Tests', function () {
       let x = x2 - 0.2;
       let y = y2 - 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2880,7 +2880,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2897,7 +2897,7 @@ describe('Polyline Tag Tests', function () {
       let mseg2 = (y2 - y3) / (x2 - x3);
       let y = mseg2 * (x - x2) + y2 + 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2906,7 +2906,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2921,7 +2921,7 @@ describe('Polyline Tag Tests', function () {
       let mseg2 = (y2 - y3) / (x2 - x3);
       let y = mseg2 * (x - x2) + y2 - 0.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/_point1`,
         args: { x, y }
@@ -2930,7 +2930,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2953,7 +2953,7 @@ describe('Polyline Tag Tests', function () {
       y2 += moveY;
       y3 += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -2964,7 +2964,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/v1 .mjx-mrow').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
 
@@ -2984,7 +2984,7 @@ describe('Polyline Tag Tests', function () {
       x2 += moveX;
       y2 += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/_polyline1",
         args: {
@@ -2995,7 +2995,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/v2 .mjx-mrow').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let px = stateVariables['/_point1'].stateValues.xs[0];
         let py = stateVariables['/_point1'].stateValues.xs[1];
@@ -3031,7 +3031,7 @@ describe('Polyline Tag Tests', function () {
 
     cy.log('point originally on segment 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let mseg3 = (y4 - y3) / (x4 - x3);
 
@@ -3047,7 +3047,7 @@ describe('Polyline Tag Tests', function () {
 
       let mseg1 = (y2 - y1) / (x2 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/A`,
         args: { x: -20, y: 0.02 }
@@ -3056,7 +3056,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/A2 .mjx-mrow').should('contain.text', `(${nInDOM(-45.)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/A'].stateValues.xs[0];
         let py = stateVariables['/A'].stateValues.xs[1];
 
@@ -3070,7 +3070,7 @@ describe('Polyline Tag Tests', function () {
 
       let mseg2 = (y2 - y3) / (x2 - x3);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/A`,
         args: { x: 0, y: 0.04 }
@@ -3079,7 +3079,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/A2 .mjx-mrow').should('contain.text', `(${nInDOM(2.3)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/A'].stateValues.xs[0];
         let py = stateVariables['/A'].stateValues.xs[1];
 
@@ -3093,7 +3093,7 @@ describe('Polyline Tag Tests', function () {
 
       let mseg3 = (y4 - y3) / (x4 - x3);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: `/A`,
         args: { x: -10, y: 0.02 }
@@ -3102,7 +3102,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/A2 .mjx-mrow').should('contain.text', `(${nInDOM(16.)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let px = stateVariables['/A'].stateValues.xs[0];
         let py = stateVariables['/A'].stateValues.xs[1];
 
@@ -3127,7 +3127,7 @@ describe('Polyline Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect((await stateVariables['/p'].stateValues.vertices)[0]).eqls([1, 3]);
       expect((await stateVariables['/p'].stateValues.vertices)[1]).eqls([5, 7]);
       expect((await stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);
@@ -3138,7 +3138,7 @@ describe('Polyline Tag Tests', function () {
     cy.log('cannot move vertices')
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/p",
         args: {
@@ -3152,7 +3152,7 @@ describe('Polyline Tag Tests', function () {
       cy.get('#\\/t').should('have.text', 'wait')
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect((await stateVariables['/p'].stateValues.vertices)[0]).eqls([1, 3]);
         expect((await stateVariables['/p'].stateValues.vertices)[1]).eqls([5, 7]);
         expect((await stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);

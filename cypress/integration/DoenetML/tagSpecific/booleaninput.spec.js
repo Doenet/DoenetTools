@@ -36,7 +36,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(false);
       expect(stateVariables["/v1"].stateValues.value).eq(false);
       expect(stateVariables["/v2"].stateValues.value).eq(false);
@@ -52,7 +52,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(true);
       expect(stateVariables["/v1"].stateValues.value).eq(true);
       expect(stateVariables["/v2"].stateValues.value).eq(true);
@@ -67,7 +67,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(false);
       expect(stateVariables["/v1"].stateValues.value).eq(false);
       expect(stateVariables["/v2"].stateValues.value).eq(false);
@@ -95,7 +95,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
       expect(stateVariables['/v1'].stateValues.value).eq(true);
     });
@@ -108,7 +108,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
       expect(stateVariables['/v1'].stateValues.value).eq(false);
     });
@@ -121,7 +121,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
       expect(stateVariables['/v1'].stateValues.value).eq(true);
     });
@@ -149,7 +149,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get("#\\/v1").should('have.text', "true");
     cy.get("#\\/v2").should('have.text', "false");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(true);
       expect(stateVariables['/bi1a'].stateValues.value).eq(true);
       expect(stateVariables['/bi2'].stateValues.value).eq(false);
@@ -164,7 +164,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get("#\\/v1").should('have.text', "false");
     cy.get("#\\/v2").should('have.text', "false");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(false);
       expect(stateVariables['/bi1a'].stateValues.value).eq(false);
       expect(stateVariables['/bi2'].stateValues.value).eq(false);
@@ -177,7 +177,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get("#\\/v1").should('have.text', "true");
     cy.get("#\\/v2").should('have.text', "false");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(true);
       expect(stateVariables['/bi1a'].stateValues.value).eq(true);
       expect(stateVariables['/bi2'].stateValues.value).eq(false);
@@ -191,7 +191,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get("#\\/v1").should('have.text', "true");
     cy.get("#\\/v2").should('have.text', "true");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(true);
       expect(stateVariables['/bi1a'].stateValues.value).eq(true);
       expect(stateVariables['/bi2'].stateValues.value).eq(true);
@@ -222,7 +222,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get("#\\/b3").should('have.text', 'true');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
       expect(stateVariables['/_boolean1'].stateValues.value).eq(true);
       expect(stateVariables['/b2'].stateValues.value).eq(true);
@@ -240,7 +240,7 @@ describe('BooleanInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
       expect(stateVariables['/_boolean1'].stateValues.value).eq(false);
       expect(stateVariables['/b2'].stateValues.value).eq(false);
@@ -284,7 +284,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', `false`);
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
       expect(stateVariables['/_boolean1'].stateValues.value).eq(false);
     });
@@ -297,7 +297,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', `false`);
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
       expect(stateVariables['/_boolean1'].stateValues.value).eq(false);
     });
