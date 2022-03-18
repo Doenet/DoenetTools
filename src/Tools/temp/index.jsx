@@ -4,9 +4,7 @@ import {doenetMLToSerializedComponents} from  '../../Core/utils/serializedStateP
 import {parseAndCompile} from '../../Parser/parser'
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
-import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton.jsx';
-import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.jsx';
-
+import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems';
 
 // serializeFunctions.expandDoenetMLsToFullSerializedComponents({
 //     contentIds: [],
@@ -20,9 +18,25 @@ import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/Acti
 //     contentIdsToDoenetMLs
 // })
 
+var options = [];
+options.push(<option value="Keagan">Keagan</option>);
+options.push(<option value="Keagan">Keagan</option>);
+options.push(<option value="Keagan">Keagan</option>);
+options.push(<option value="Keagan">Keagan</option>);
+options.push(<option value="Keagan">Keagan</option>);
+options.push(<option value="Keagan">Keagan</option>);
+options.push(<option value="Keagan">Keagan</option>);
+options.push(<option value="Keagan">Keagan</option>);
+options.push(<option value="Keagan">Keagan</option>);
+
 
 ReactDOM.render(
-  <ActionButtonGroup vertical label="What:" verticalLabel><ActionButton alert/><ActionButton alert/></ActionButtonGroup>,
+  <RelatedItems 
+    width="menu" 
+    size="8"
+    option={options}
+  >
+  </RelatedItems>,
   document.getElementById('root'),
 );
 

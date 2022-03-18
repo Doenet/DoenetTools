@@ -24,6 +24,8 @@ import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/Color
 import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
+import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems.jsx';
+
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -792,6 +794,77 @@ export default function attempt() {
             propCode: { ariaLabel: 'Progress Bar', progress: 0.4 },
             description: 'Adds aria label to component'
         }
+      ],
+    },
+    {
+      name: 'RelatedItems',
+      id: 'relateditems',
+      code: RelatedItems,
+      codePreview: '<RelatedItemsf/>',
+      req_props: null,
+      req_children: null,
+      use: 'Currently used to track version history.',
+      props: [
+        {
+          name: 'Width - Menu Panel',
+          propPreview: '<RelatedItems width="menu" />',
+          propCode: { width: 'menu' },
+          description: 'Sets width to fill menu panel width',
+        },
+        {
+          name: 'Label',
+          propPreview: '<RelatedItems label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to componenet',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<RelatedItems label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Aria Label',
+            propPreview: '<RelatedItems ariaLabel="Related Items"/>',
+            propCode: { ariaLabel: 'Related Items' },
+            description: 'Adds aria label to component'
+        },
+        {
+          name: 'onChange',
+          propPreview: '<RelatedItems onChange={(data) => console.log(data)} />',
+          propCode: {onChange: (data) => console.log(data)},
+          description: 'Function called when data changes'
+        },
+        {
+          name: 'onClick',
+          propPreview: '<RelatedItems onClick={() => console.log("clicked")} />',
+          propCode: {onClick: () => console.log("clicked")},
+          description: 'Function called when form button is clicked'
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<RelatedItems onBlur={(e) => console.log(e.target.value)} />',
+          propCode: {onBlur: (e) => console.log(e.target.value)},
+          description: 'Function called when component blurs'
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<RelatedItems onKeyDown={(e) => console.log(e.key)} />',
+          propCode: {onKeyDown: (e) => console.log(e.key)},
+          description: 'Function called when key hit with focus on component'
+        },
+        {
+          name: 'Alert',
+          propPreview: '<RelatedItems alert/>',
+          propCode: {alert},
+          description: 'Changes to alert mode (border is red)'
+        },
+        {
+          name: 'Disabled',
+          propPreview: '<RelatedItems disabled />',
+          propCode: {disabled},
+          description: 'Makes component not able to be used'
+        },
       ],
     },
     {

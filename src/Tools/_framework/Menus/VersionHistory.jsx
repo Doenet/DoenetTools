@@ -15,6 +15,7 @@ import {
   viewerDoenetMLAtom,
 } from '../ToolPanels/EditorViewer';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
 import { 
   buildTimestamp, 
   ClipboardLinkButtons, 
@@ -27,6 +28,7 @@ import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
 import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
 import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
 import { CIDFromDoenetML } from '../../../Core/utils/cid';
+import { update } from '@react-spring/web';
 
 export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",
@@ -389,30 +391,40 @@ if (initializedDoenetId !== doenetId){
   }
      
   return <>
-     <div style={{padding:"6px 0px 6px 0px"}}>   
-    <select 
-    size='2' 
-    style={{width:'230px'}}
-    onChange={(e)=>{setSelectedVersionId({doenetId,versionId:e.target.value,isCurrentDraft:true})}}>
-    {/* <option value={version.versionId} selected={selected}>{released} {version.title}</option> */}
-    <option value={versionHistory.contents.draft.versionId} selected={currentDraftSelected}>Current Draft</option>
-  </select>
-  </div>
-  <div style={{margin:"0px 0px 6px 0px"}}>
-    <Button disabled={!currentDraftSelected} width="menu" value="Save Version" onClick={()=>saveVersion(doenetId)} />
+    <div style={{padding:"6px 0px 6px 0px"}}>   
+      <RelatedItems
+        size='2' 
+        // style={{width:'230px'}}
+        width="menu"
+        onChange={(e)=>{setSelectedVersionId({doenetId,versionId:e.target.value,isCurrentDraft:true})}}
+        options={<option value={versionHistory.contents.draft.versionId} selected={currentDraftSelected}>Current Draft</option>}
+      >
+        {/* <option value={version.versionId} selected={selected}>{released} {version.title}</option> */}
+        {/* <option value={versionHistory.contents.draft.versionId} selected={currentDraftSelected}>Current Draft</option> */}
+      </RelatedItems>
+    </div>
+    <div style={{margin:"0px 0px 6px 0px"}}>
+      <Button disabled={!currentDraftSelected} width="menu" value="Save Version" onClick={()=>saveVersion(doenetId)} />
     </div>
     <div style={{margin:"6px 0px 6px 0px"}}>
-    <Button disabled={!currentDraftSelected} width="menu" value="Release Current" onClick={()=> {
-      saveAndReleaseCurrent({doenetId,driveId,folderId,itemId});
-    }}/>
+      <Button disabled={!currentDraftSelected} 
+        width="menu" 
+        value="Release Current" 
+        onClick={()=> {
+          saveAndReleaseCurrent({doenetId,driveId,folderId,itemId});
+        }}
+      />
     </div>
     <div>History</div>
-  <select 
-    size='8' 
-    style={{width:'230px'}}
-    onChange={(e)=>{setSelectedVersionId({doenetId,versionId:e.target.value,isCurrentDraft:false})}}>
-    {options}
-  </select>
+    <RelatedItems
+      size='8' 
+      // style={{width:'230px'}}
+      width="menu"
+      onChange={(e)=>{setSelectedVersionId({doenetId,versionId:e.target.value,isCurrentDraft:false})}}
+      options={options}
+    >
+      {/* {options} */}
+    </RelatedItems>
   <div>Name: {version?.title}</div>
   <ClipboardLinkButtons disabled={currentDraftSelected} contentId={version?.contentId} doenetId={doenetId} />
         <div><RenameVersionControl key={version?.versionId} disabled={currentDraftSelected} doenetId={doenetId} title={version?.title} versionId={version?.versionId} /></div>
