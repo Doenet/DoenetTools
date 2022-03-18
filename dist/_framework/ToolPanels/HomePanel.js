@@ -4,6 +4,8 @@ import Cookies from "../../_snowpack/pkg/js-cookie.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import "./homepage.css.proxy.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
+import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {pageToolViewAtom} from "../NewToolRoot.js";
 const Headings = styled.h1`
   line-height: 1.1em;
 `;
@@ -48,7 +50,7 @@ const SectionText = styled.div`
   display: inline-block;
   margin-left:3em;
   margin-right:3em;`;
-const ParagraphTags = styled.p`
+const Paragraph = styled.p`
   text-align: left;
    display: block;
     margin-block-start: 1em;
@@ -70,6 +72,7 @@ const Footer = styled.div`
 `;
 export default function HomePage(props) {
   let history = useHistory();
+  const navigate = useSetRecoilState(pageToolViewAtom);
   const jwt = Cookies.get();
   let isSignedIn = false;
   if (Object.keys(jwt).includes("JWT_JS")) {
@@ -93,16 +96,96 @@ export default function HomePage(props) {
     onClick: () => history.push("/SignIn"),
     size: "medium",
     value: "Sign In"
-  })), /* @__PURE__ */ React.createElement(ParagraphTags, null, "The Distributed Open Education Network (Doenet) is, at its core, a mechanism for measuring and sharing student interactions with web pages and storing anonymized data in an open distributed data warehouse. The Doenet platform will include tools for authoring interactive educational content, conducting educational research using the content, and discovering the most effective content based on the research results.", " "), /* @__PURE__ */ React.createElement(ParagraphTags, null, "The Doenet platform is just getting started. We are excited to introduce early versions of two projects: DoenetML, a markup language for authoring interactive online activities, and DoenetAPI, a library for connecting web pages to the Doenet data layer, enabling tracking of student data across web pages and multiuser interactives."), /* @__PURE__ */ React.createElement(ParagraphTags, null, "For more background and information on the Doenet project, see", " ", /* @__PURE__ */ React.createElement("a", {
+  })), /* @__PURE__ */ React.createElement(Paragraph, null, "The Distributed Open Education Network (Doenet) is an open data-driven educational technology platform designed to measure and share student interactions with web pages. Anonymized and aggregated data will be stored in an open distributed data warehouse to facilitate studies on content effectiveness. The Doenet platform includes tools for authoring interactive educational content and conducting educational research using the content.  Our ultimate goal is to provide research-based tools to help instructors and learners discover the most effective content."), /* @__PURE__ */ React.createElement(Paragraph, null, "Although we are still in the early stages, we are excited to introduce Doenet and illustrate the richly interactive activities that one can author with it."), /* @__PURE__ */ React.createElement(Paragraph, null, "For more background and information on the Doenet project, see", " ", /* @__PURE__ */ React.createElement("a", {
     style: {color: "#6d4445"},
     href: "https://www.mathvalues.org/masterblog/reimagining-online-mathematics"
   }, "this MAA DUE Point article")))), /* @__PURE__ */ React.createElement(LightBlueColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
     className: "section-headline"
-  }, "Introducing DoenetML"), /* @__PURE__ */ React.createElement(ParagraphTags, null, "The markup language DoenetML allows you to build richly interactive activities by focusing on the meaning of the elements you wish to create. Based on", " ", /* @__PURE__ */ React.createElement("a", {
+  }, "Introducing DoenetML"), /* @__PURE__ */ React.createElement(Paragraph, null, "DoenetML is the markup language we've created to let you focus on the meaning of the elements you wish to create. Based on", " ", /* @__PURE__ */ React.createElement("a", {
     href: "http://pretextbook.org"
-  }, "PreTeXt"), ", DoenetML looks similar to HTML, with descriptive tags such as", " ", /* @__PURE__ */ React.createElement("code", null, "<point>"), ", ", /* @__PURE__ */ React.createElement("code", null, "<intersection>"), ", and", " ", /* @__PURE__ */ React.createElement("code", null, "<answer>"), "."), /* @__PURE__ */ React.createElement(ParagraphTags, null, "We expect to release examples of DoenetML soon."))), /* @__PURE__ */ React.createElement(CloudColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
+  }, "PreTeXt"), ", DoenetML looks similar to HTML, with descriptive tags such as", " ", /* @__PURE__ */ React.createElement("code", null, "<point>"), ", ", /* @__PURE__ */ React.createElement("code", null, "<intersection>"), ", and", " ", /* @__PURE__ */ React.createElement("code", null, "<answer>"), "."), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex", justifyContent: "center"}
+  }, /* @__PURE__ */ React.createElement("h4", {
+    style: {marginTop: "0px"}
+  }, "Explore what you can create with DoenetML...")), /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex", justifyContent: "space-evenly"}
+  }, /* @__PURE__ */ React.createElement(DoenetImage, {
+    src: "/media/profile_pictures/RandomlyGeneratedGraph.jpg",
+    width: "175"
+  }), /* @__PURE__ */ React.createElement(DoenetImage, {
+    src: "/media/profile_pictures/Cobwebbing.jpg",
+    width: "175"
+  }), /* @__PURE__ */ React.createElement(DoenetImage, {
+    src: "/media/profile_pictures/DynamicContentInteractions.jpg",
+    width: "175"
+  }), /* @__PURE__ */ React.createElement(DoenetImage, {
+    src: "/media/profile_pictures/BasicAnswerValidation.jpg",
+    width: "175"
+  })), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex", justifyContent: "space-evenly"}
+  }, /* @__PURE__ */ React.createElement("button", {
+    type: "button"
+  }, /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=qyPDhmvsuwjwNGM9OPy3Q"
+  }, "Randomly-Generated Graphs")), /* @__PURE__ */ React.createElement("button", {
+    type: "button"
+  }, /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=T-cgqOlqTxAJbicaXqtKg"
+  }, "Hands-On Exploratory Activities")), /* @__PURE__ */ React.createElement("button", {
+    type: "button"
+  }, /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=JXTxrd8XXjfEy9GuFPcy6",
+    width: "50"
+  }, "Dynamic Content Interactions")), /* @__PURE__ */ React.createElement("button", {
+    type: "button"
+  }, /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=UdDWyNkqfF21O6Ew-Qh4O",
+    width: "40"
+  }, "Basics of Answer Validation"))))), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex", justifyContent: "center"}
+  }, /* @__PURE__ */ React.createElement("h4", {
+    style: {marginTop: "0px"}
+  }, "DoenetML Gallery: More Examples from Course Pages"))), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex", justifyContent: "space-evenly"}
+  }, /* @__PURE__ */ React.createElement(DoenetImage, {
+    src: "/media/profile_pictures/AnteaterDynamicalSystem.jpg",
+    width: "175"
+  }), /* @__PURE__ */ React.createElement(DoenetImage, {
+    src: "/media/profile_pictures/SketchGaussianCurve.jpg",
+    width: "175"
+  }), /* @__PURE__ */ React.createElement(DoenetImage, {
+    src: "/media/profile_pictures/AverageRateOfChange.jpg",
+    width: "175"
+  }), /* @__PURE__ */ React.createElement(DoenetImage, {
+    src: "/media/profile_pictures/RiemannSums.jpg",
+    width: "175"
+  })), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex", justifyContent: "space-evenly"}
+  }, /* @__PURE__ */ React.createElement("button", {
+    type: "button"
+  }, /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD"
+  }, "Exploring an anteater dynamical system")), /* @__PURE__ */ React.createElement("button", {
+    type: "button"
+  }, /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq"
+  }, "Sketching the derivative of a Gaussian")), /* @__PURE__ */ React.createElement("button", {
+    type: "button"
+  }, /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3"
+  }, "Average rate of change, squirrel and owl")), /* @__PURE__ */ React.createElement("button", {
+    type: "button"
+  }, /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6"
+  }, "Sketching Riemann Sums"))))))), /* @__PURE__ */ React.createElement(CloudColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
     className: "section-headline"
-  }, "Timeline"), /* @__PURE__ */ React.createElement(ParagraphTags, null, "In Fall 2020, we piloted Doenet in a small number of courses. We used Doenet for both content delivery and learning experiments and performed analysis on the effectiveness of the materials."), /* @__PURE__ */ React.createElement(ParagraphTags, null, "We will expand the use of Doenet to include more courses at the University of Minnesota, Ohio State University and Ithaca College. Starting in Fall 2021, we expect Doenet to be available to instructors at other institutions on a limited basis."))), /* @__PURE__ */ React.createElement(Footer, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", {
+  }, "Workshop on developing learning experiments in Doenet"), /* @__PURE__ */ React.createElement(Paragraph, null, "Interested in learning how to create and implement online learning experiments using Doenet?  Apply to attend our ", /* @__PURE__ */ React.createElement("a", {
+    href: "https://ima.umn.edu/2021-2022/SW5.23-26.22"
+  }, "workshop"), " for a hands-on introduction to authoring and running experiments, led by the developers of Doenet.  Designed for instructors of college STEM courses, the workshop will be held from May 23 - May 26, 2022, at the University of Minnesota."), /* @__PURE__ */ React.createElement(Paragraph, null, "For more information and to apply to the workshop, see the ", /* @__PURE__ */ React.createElement("a", {
+    href: "https://ima.umn.edu/2021-2022/SW5.23-26.22"
+  }, "workshop site"), "."))), /* @__PURE__ */ React.createElement(LightBlueColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
+    className: "section-headline"
+  }, "Timeline"), /* @__PURE__ */ React.createElement(Paragraph, null, "Doenet was conceived in 2018 and began as a partnership of the University of Minnesota, Ohio State University and Ithaca College.  We piloted Doenet content in 2020 and ran our first courses with Doenet in 2021.  We have used Doenet for both content delivery and assessment, incorporating learning experiments in order to perform analyses on the effectiveness of the materials."), /* @__PURE__ */ React.createElement(Paragraph, null, "In 2022, we are beginning to expand the availability of Doenet beyond the original partner institutions."))), /* @__PURE__ */ React.createElement(Footer, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", {
     style: {marginBottom: "0px"}
   }, "Contact us"), /* @__PURE__ */ React.createElement("div", {
     style: {marginBottom: "40px"}
