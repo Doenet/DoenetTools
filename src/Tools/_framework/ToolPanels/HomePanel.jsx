@@ -179,13 +179,13 @@ export default function HomePage(props) {
 
           </div>
           <Paragraph>
-            <div style={{ display: "flex", justifyContent: "space-evenly", padding: "100" }}>
+            {/*<div style={{ display: "flex", justifyContent: "space-evenly", padding: "100" }}>
               <Button onClick={() => navigate({ tool: "edit", params: { doenetID: "qyPDhmvsuwjwNGM9OPy3Q" }, page: "content" })} size="medium" value="Randomly-Generated Graphs" />
               <Button onClick={() => history.push('/content?tool=edit&doenetId=T-cgqOlqTxAJbicaXqtKg')} size="medium" value="Hands-On Exploratory Activities" />
               <Button onClick={() => history.push('/content?tool=edit&doenetId=JXTxrd8XXjfEy9GuFPcy6')} size="medium" value="Dynamic Content Interactions" />
               <Button onClick={() => history.push('/content?tool=edit&doenetId=UdDWyNkqfF21O6Ew-Qh4O')} size="medium" value="Basics of Answer Validation" />
-            </div>
-            {/*<div style={{ display: "flex", justifyContent: "space-evenly" }}>
+            </div>*/}
+            <div style={{ display: "flex", justifyContent: "space-evenly" }}>
               <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=qyPDhmvsuwjwNGM9OPy3Q">Randomly-Generated Graphs</a>
               </button>
               <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=T-cgqOlqTxAJbicaXqtKg">Hands-On Exploratory Activities</a>
@@ -194,7 +194,7 @@ export default function HomePage(props) {
               </button>
               <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=UdDWyNkqfF21O6Ew-Qh4O" width="40">Basics of Answer Validation</a>
               </button>
-        </div>*/}
+            </div>
           </Paragraph>
 
         </Paragraph>
@@ -216,18 +216,18 @@ export default function HomePage(props) {
             {/*filler image use src={'/media/sample_pictures/RiemannSums.jpg'}}*/}
           </div>
           <Paragraph>
-            <div style={{ display: "flex", justifyContent: "space-evenly", padding: "100" }}>
-              <Button onClick={() => history.push('/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD')} size="medium" value="Exploring an Anteater Dynamical System" />
+
+            {/* <Button onClick={() => history.push('/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD')} size="medium" value="Exploring an Anteater Dynamical System" />
               <Button onClick={() => history.push('/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq')} size="medium" value="Sketching the Derivative of a Gaussian" />
               <Button onClick={() => history.push('/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3')} size="medium" value="Average Rate of Change, Squirrel and Owl" />
-              <Button onClick={() => history.push('/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6')} size="medium" value="Average Rate of Change, Squirrel and Owl" />
+              <Button onClick={() => history.push('/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6')} size="medium" value="Average Rate of Change, Squirrel and Owl" /> */}
+
+            <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD">Exploring an anteater dynamical system</a></button>
+              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq">Sketching the derivative of a Gaussian</a></button>
+              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3">Average rate of change, squirrel and owl</a></button>
+              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6">Sketching Riemann Sums</a></button>
             </div>
-            {/*<div style={{ display: "flex", justifyContent: "center" }}>
-            <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD">Exploring an anteater dynamical system</a></button>
-            <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq">Sketching the derivative of a Gaussian</a></button>
-            <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3">Average rate of change, squirrel and owl</a></button>
-            <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6">Sketching Riemann Sums</a></button>
-      </div>*/}
           </Paragraph>
         </Paragraph>
 

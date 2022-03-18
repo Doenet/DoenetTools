@@ -37,7 +37,7 @@ export default function Variant(props) {
     style: props.style
   }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Variant Index ", /* @__PURE__ */ React.createElement("input", {
     type: "text",
-    value: variantPanel.index,
+    value: variantPanel?.index ?? "0",
     onKeyDown: (e) => {
       if (e.key === "Enter") {
         updateVariantInfoAtom("Index");
@@ -52,7 +52,7 @@ export default function Variant(props) {
       });
     }
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Variant Name", /* @__PURE__ */ React.createElement("select", {
-    value: variantPanel.name,
+    value: variantPanel?.name ?? "a",
     onChange: (e) => {
       setVariantInfo((was) => {
         let newObj = {...was};
