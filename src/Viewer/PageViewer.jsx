@@ -130,6 +130,8 @@ export default function PageViewer(props) {
 
   const [saveStatesWorker, setSaveStatesWorker] = useState(null);
 
+  const preventMoreAnimations = useRef(false);
+  const animationInfo = useRef({});
 
   useEffect(() => {
 
@@ -142,6 +144,10 @@ export default function PageViewer(props) {
         } else {
           updateRenderers(e.data.args)
         }
+      } else if (e.data.messageType === "requestAnimationFrame") {
+        requestAnimationFrame(e.data.args);
+      } else if (e.data.messageType === "cancelAnimationFrame") {
+        cancelAnimationFrame(e.data.args);
       } else if (e.data.messageType === "coreCreated") {
         coreCreated.current = true;
         setStage('coreCreated');
@@ -199,6 +205,17 @@ export default function PageViewer(props) {
 
 
   }, [pageId])
+
+
+  useEffect(() => {
+    return () => {
+      preventMoreAnimations.current = true;
+      for (let id in animationInfo.current) {
+        cancelAnimationFrame(id);
+      }
+      animationInfo.current = {};
+    }
+  }, []);
 
 
   function callAction({ action, args, baseVariableValue, name, rendererType }) {
@@ -674,6 +691,54 @@ export default function PageViewer(props) {
     saveStatesWorker.terminate();
     setSaveStatesWorker(null);
   }
+
+  function requestAnimationFrame({ action, actionArgs, delay, animationId }) {
+    if (!preventMoreAnimations.current) {
+
+      // create new animationId
+
+      if (delay) {
+        // set a time out to call actual request animation frame after a delay
+        let timeoutId = window.setTimeout(
+          () => _requestAnimationFrame({ action, actionArgs, animationId }),
+          delay);
+        animationInfo.current[animationId] = { timeoutId };
+      } else {
+        // call actual request animation frame right away
+        animationInfo.current[animationId] = {};
+        _requestAnimationFrame({ action, actionArgs, animationId });
+      }
+    }
+  }
+
+  function _requestAnimationFrame({ action, actionArgs, animationId }) {
+
+    let animationFrameID = window.requestAnimationFrame(() => callAction({
+      action,
+      args: actionArgs
+    }))
+
+    let animationInfoObj = animationInfo.current[animationId];
+    delete animationInfoObj.timeoutId;
+    animationInfoObj.animationFrameID = animationFrameID;
+  }
+
+
+  async function cancelAnimationFrame(animationId) {
+
+    let animationInfoObj = animationInfo.current[animationId];
+    let timeoutId = animationInfoObj.timeoutId;
+    if (timeoutId !== undefined) {
+      window.clearTimeout(timeoutId);
+    }
+    let animationFrameID = animationInfoObj.animationFrameID;
+    if (animationFrameID !== undefined) {
+      window.cancelAnimationFrame(animationFrameID);
+    }
+    delete animationInfo.current[animationId];
+
+  }
+
 
 
   if (errMsg !== null) {

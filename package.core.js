@@ -26,7 +26,7 @@ require('esbuild').build({
   // define: {
   //   global:"window",
   // },
-  external: ['math-expressions','@Toast', 'axios'],
+  external: ['math-expressions','@Toast', 'axios', 'idb-keyval', 'hi-base32', '@lezer'],
   plugins: [processEnv],
   outfile: 'src/Viewer/core.js',
 }).catch(() => process.exit(1))
