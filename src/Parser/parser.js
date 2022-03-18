@@ -78,10 +78,6 @@ export function parseAndCompile(inText){
                 } else if (cursor.name === "CloseTag") {
                     // Will always be the matching tag (and the last tag in the list)
                     break;
-                } else if (cursor.name === "Macro"){
-                    //add the macro to the children, ignoring the dollar sign in the name.
-                    element.children.push(inText.substring(cursor.from,cursor.to))
-                    // element.children.push({componentType: "macro", macroName : inText.substring(cursor.from+1,cursor.to)});
                 } else if (cursor.name === "Comment") {
                     //ignore comments
                     continue;
@@ -139,8 +135,6 @@ export function parseAndCompile(inText){
         } else if (tc.node.name === "Comment") {
             //I miss result types
             return null;
-        } else if (tc.node.name === "Macro") {
-            return inText.substring(tc.from,tc.to)
         } else if(tc.node.name === "Text"){
             //TODO probably don't need to trim anymore?
             let txt = inText.substring(tc.node.from,tc.node.to);
