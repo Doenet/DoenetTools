@@ -103,7 +103,7 @@ $itemEntered = array_merge($json,$itemEntered);
 
 
 $itemEntered['isOpen'] = false;
-
+$item['isSelected'] = false;
 
 //Get new order
 $sql = "

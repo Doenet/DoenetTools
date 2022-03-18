@@ -79,6 +79,7 @@ if ($result->num_rows > 0) {
 				
 
 				$item['isOpen'] = false;
+				$item['isSelected'] = false;
 
 				array_push($items,$item);
 			}

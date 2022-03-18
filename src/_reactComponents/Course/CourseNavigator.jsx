@@ -2,14 +2,15 @@
  * External dependencies
  */
 import React, {
-  useContext,
-  useRef,
-  useEffect,
-  Suspense,
+  // useContext,
+  // useRef,
+  // useEffect,
+  // Suspense,
   useCallback,
+  useEffect,
   useState,
 } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import Measure from 'react-measure';
 import {
   // faLink,
@@ -22,7 +23,7 @@ import {
   faChevronDown,
   // faUsersSlash,
   // faUsers,
-  faCheck,
+  // faCheck,
   // faUserEdit,
   // faLayerGroup,
 } from '@fortawesome/free-solid-svg-icons';
@@ -30,23 +31,25 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { Link } from 'react-router-dom';
 import {
-  atom,
-  atomFamily,
-  selector,
-  selectorFamily,
-  useSetRecoilState,
-  useRecoilValueLoadable,
-  useRecoilStateLoadable,
-  useRecoilState,
+  // atom,
+  // atomFamily,
+  // selector,
+  // selectorFamily,
+  // useSetRecoilState,
+  // useRecoilValueLoadable,
+  // useRecoilStateLoadable,
+  // useRecoilState,
   useRecoilValue,
   useRecoilCallback,
+  useSetRecoilState,
 } from 'recoil';
 
 import { 
   authorCourseItemOrderByCourseId, 
   authorItemByDoenetId,
   coursePermissionsAndSettingsByCourseId, 
-  useInitCourseItems 
+  useInitCourseItems,
+  selectedCourseItems
 } from '../../_reactComponents/Course/CourseActions';
 
 /**
@@ -54,6 +57,8 @@ import {
  */
 import '../../_utils/util.css';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
+import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';  
+import { set } from 'lodash';
 
 export default function CourseNavigator() {
   console.log("=== CourseNavigator")
@@ -61,7 +66,29 @@ export default function CourseNavigator() {
   let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
+  let setMainPanelClick = useSetRecoilState(mainPanelClickAtom);
   // const addToast = useToast();
+
+  let clearSelections = useRecoilCallback(({snapshot,set})=> async ()=>{
+    const selectedItems = await snapshot.getPromise(selectedCourseItems);
+    set(selectedCourseItems,[]);
+    for (let deselectId of selectedItems){
+      set(authorItemByDoenetId(deselectId),(was)=>{
+          let newObj = {...was};
+          newObj.isSelected = false;
+          return newObj;
+        })
+    }
+ 
+  })
+
+  useEffect(()=>{
+    setMainPanelClick((was)=>{
+      let newObj = [...was];
+      newObj.push(clearSelections)
+      return newObj;
+    })
+  },[])
 
 
   if (!coursePermissionsAndSettings){
@@ -96,7 +123,7 @@ function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisi
   
   let items = [];
   authorItemOrder.map((doenetId)=>
-    items.push(<Item key={`itemcomponent${doenetId}`} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} />)
+    items.push(<Item key={`itemcomponent${doenetId}`} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} />)
   )
     
   return <>
@@ -105,48 +132,49 @@ function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisi
   </>
 }
 
-function Item({doenetId,numberOfVisibleColumns}){
+function Item({courseId,doenetId,numberOfVisibleColumns}){
   let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
   // console.log("itemInfo",itemInfo)
 
 
   if (itemInfo.contentType == 'section'){
-    return <Section key={`Item${doenetId}`} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} />
+    return <Section key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} />
   }else if (itemInfo.contentType == 'bank'){
-    return <Bank key={`Item${doenetId}`} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} />
+    return <Bank key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} />
   }else if (itemInfo.contentType == 'activity'){
-    return <Activity key={`Item${doenetId}`} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} />
+    return <Activity key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} />
   }
   // console.log("ERROR",itemInfo)
   // return <div key={`Item${doenetId}`}>ERROR: No Row Type {itemInfo.contentType}</div>
   return null;
 }
 
-function Section({doenetId,itemInfo,numberOfVisibleColumns}){
-
-  return <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} />
+function Section({courseId,doenetId,itemInfo,numberOfVisibleColumns}){
+ 
+  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} />
 }
 
-function Bank({doenetId,itemInfo,numberOfVisibleColumns}){
+function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns}){
 
-  return <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faLayerGroup} label={itemInfo.label} doenetId={doenetId} />
+  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faLayerGroup} label={itemInfo.label} doenetId={doenetId}  isSelected={itemInfo.isSelected} />
 }
 
-function Activity({doenetId,itemInfo,numberOfVisibleColumns}){
+function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns}){
 
   let temporaryId = '123';
 //TODO: Update this logic based on itemInfo structure
+//TODO: Only numbered if order is sequential
   if (itemInfo.isOpen){
     return <>
-    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} />
-    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} hasToggle={true} isOpen={true}/>
-    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={1} />
-    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={2} hasToggle={true} isOpen={false}/>
-    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={3} />
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen}  isSelected={itemInfo.isSelected}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} hasToggle={true} isOpen={true}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={1} />
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={2} hasToggle={true} isOpen={false}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={3} />
      </>
   }else{
     return <>
-    <Row numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen}  isSelected={itemInfo.isSelected}/>
      </>
   }
 
@@ -156,12 +184,11 @@ function Activity({doenetId,itemInfo,numberOfVisibleColumns}){
 
 
 //singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
-function Row({doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
+function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
 
 
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set})=>()=>{
-    console.log("HERE",doenetId)
     set(authorItemByDoenetId(doenetId),(was)=>{
       let newObj = {...was};
       newObj.isOpen = !newObj.isOpen;
@@ -182,12 +209,120 @@ if (hasToggle){
     );
 }
 
+//TODO: HANDLE WHAT HAS TO MOVE TOGETHER AND DON'T ALLOW SELECTING SETS OF ITEMS WHICH DON'T MAKE SENSE TO MOVE TOGETHER
+//Selection is based on course items and Recoil
+//Always append to the end of the array so we know the last selected item
+let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=>{
+  e.preventDefault();
+  e.stopPropagation();
+  let selectedItems = await snapshot.getPromise(selectedCourseItems);
+
+  if (selectedItems.length == 0){
+  //No items selected so select this item
+  set(selectedCourseItems,[doenetId]);
+  set(authorItemByDoenetId(doenetId),(was)=>{
+    let newObj = {...was};
+    newObj.isSelected = true;
+    return newObj;
+  })
+
+  }else if (selectedItems.length == 1 && selectedItems[0] == doenetId){
+    if(e.metaKey){
+      //If cmd then clear all selections to remove
+      set(selectedCourseItems,[]);
+      set(authorItemByDoenetId(doenetId),(was)=>{
+        let newObj = {...was};
+        newObj.isSelected = false;
+        return newObj;
+      })
+    }
+      //Selecting this item again so don't do anything
+      return;
+  }else{
+    if (e.shiftKey){
+      //Shift Click
+      //Select all items from the last one selected to this one
+      const allItems = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
+      let lastSelectedDoenetId = selectedItems[selectedItems.length -1];
+      let indexOfLastSelected = allItems.indexOf(lastSelectedDoenetId);
+      let indexOfClick = allItems.indexOf(doenetId);
+      let itemsToSelect = allItems.slice(Math.min(indexOfLastSelected,indexOfClick),(Math.max(indexOfLastSelected,indexOfClick)+1))
+      //Need to reverse when the new last item won't be at the end
+      if (indexOfLastSelected > indexOfClick){
+        itemsToSelect.reverse();
+      }
+      let newSelectedItems = [...selectedItems];
+      for (let newDoenetId of itemsToSelect){
+        if (!selectedItems.includes(newDoenetId)){
+          newSelectedItems.push(newDoenetId);
+          set(authorItemByDoenetId(newDoenetId),(was)=>{
+            let newObj = {...was};
+            newObj.isSelected = true;
+            return newObj;
+          })
+        }
+      }
+      set(selectedCourseItems,newSelectedItems);
+    }else if(e.metaKey){
+      //Command Click means toggle the one item selected or not
+      let itemWasSelected = selectedItems.includes(doenetId);
+      if (itemWasSelected){
+        let newSelectedItems = selectedItems.filter((testId)=>{return testId != doenetId});
+        set(selectedCourseItems,newSelectedItems);
+        set(authorItemByDoenetId(doenetId),(was)=>{
+          let newObj = {...was};
+          newObj.isSelected = false;
+          return newObj;
+        })
+
+      }else{
+        //Add this item to the selected items
+        set(selectedCourseItems,[...selectedItems,doenetId]);
+        set(authorItemByDoenetId(doenetId),(was)=>{
+          let newObj = {...was};
+          newObj.isSelected = true;
+          return newObj;
+        })
+      }
+    }else{
+
+      //No Shift or Command Click
+      //Only select this option and remove the others
+      set(selectedCourseItems,[doenetId]);
+      set(authorItemByDoenetId(doenetId),(was)=>{
+                let newObj = {...was};
+                newObj.isSelected = true;
+                return newObj;
+              })
+      for (let doenetIdToUnselect of selectedItems){
+        if (doenetId != doenetIdToUnselect){ //Leave the selected on selected
+          set(authorItemByDoenetId(doenetIdToUnselect),(was)=>{
+            let newObj = {...was};
+            newObj.isSelected = false;
+            return newObj;
+          })
+        }
+      }
+    }
+  }
+
+},[doenetId,courseId])
+
   let bgcolor = '#ffffff';
   if (isSelected){
     // bgcolor = '#e2e2e2'; //grey
     bgcolor = 'hsl(209,54%,82%)';
 
   } 
+
+  //Used to open editor or assignment
+  let handleDoubleClick = useRecoilCallback(({set})=>(e)=>{
+    console.log("Double CLICK!",doenetId)
+    e.preventDefault();
+    e.stopPropagation();
+    //TODO: use item type and role to determine what to update
+  
+  },[doenetId])
 
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
   const indentPx = 25;
@@ -201,12 +336,18 @@ if (hasToggle){
     className="noselect nooutline"
     style={{
       cursor: 'pointer',
-      padding: '0px',
+      padding: '8px',
       border: '0px',
       borderBottom: '2px solid black',
       backgroundColor: bgcolor,
       width: 'auto',
       // marginLeft: marginSize,
+    }}
+    onClick={(e)=>{
+      handleSingleSelectionClick(e);
+    }}
+    onDoubleClick={(e)=>{
+      handleDoubleClick(e);
     }}
     >
     <div
@@ -216,8 +357,8 @@ if (hasToggle){
         gridTemplateColumns: columnsCSS,
         gridTemplateRows: '1fr',
         alignContent: 'center',
-        marginTop: '8px',
-        marginBottom: '8px',
+        // marginTop: '8px',
+        // marginBottom: '8px',
       }}
     >
       <p style={{ display: 'inline', margin: '0px' }} 

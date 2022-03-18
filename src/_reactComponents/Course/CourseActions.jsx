@@ -149,6 +149,11 @@ export const courseOrderDataByCourseId = atomFamily({
   ],
 });
 
+export const selectedCourseItems = atom({
+    key:"selectedCourseItems",
+    default:[],
+})
+
 // // type ItemType = 'Activity' | 'Section' | 'Page';
 
 export const useCourse = (courseId) => {
