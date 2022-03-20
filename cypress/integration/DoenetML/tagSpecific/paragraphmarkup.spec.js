@@ -9,7 +9,7 @@ describe('Paragraph Markup Tag Tests', function () {
 
 
   it('em', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <em>This is italics</em>
@@ -22,7 +22,7 @@ describe('Paragraph Markup Tag Tests', function () {
   })
 
   it('alert', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <alert>This is bold</alert>
@@ -35,7 +35,7 @@ describe('Paragraph Markup Tag Tests', function () {
   })
 
   it('q', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><q>Double quoted</q></p>
@@ -48,7 +48,7 @@ describe('Paragraph Markup Tag Tests', function () {
   })
 
   it('sq', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><sq>Single quoted</sq></p>
@@ -61,7 +61,7 @@ describe('Paragraph Markup Tag Tests', function () {
   })
 
   it('c', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <c>Code!</c>
@@ -74,7 +74,7 @@ describe('Paragraph Markup Tag Tests', function () {
   })
 
   it('term', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <term>Homogeneous</term>

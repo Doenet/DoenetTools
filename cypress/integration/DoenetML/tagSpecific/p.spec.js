@@ -9,7 +9,7 @@ describe('P Tag Tests', function () {
 
 
   it('two paragraphs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p>Hello, paragraph 1</p>
@@ -24,7 +24,7 @@ describe('P Tag Tests', function () {
   })
 
   it('paragraph with math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -41,7 +41,7 @@ describe('P Tag Tests', function () {
   })
 
   it('spaces preserved between tags', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>

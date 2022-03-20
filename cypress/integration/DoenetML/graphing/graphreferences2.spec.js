@@ -61,7 +61,7 @@ describe('Graph Reference Test 2', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       // let originalVectors = [0, 2, 6]
       // let displacementsA = [1, 4];
@@ -75,31 +75,31 @@ describe('Graph Reference Test 2', function () {
       // let pointShift = 6;
       // let nShifts = 6;
 
-      let graph1 = components["/graph1"];
-      let graph2 = components["/graph2"];
-      let graph3 = components["/graph3"];
-      let graph4 = components["/graph4"];
-      let graph5 = components['/graph5'].replacements[0];
-      let graph6 = components['/graph6'].replacements[0];
-      let graph7 = components['/graph7'].replacements[0];
-      let graph8 = components['/graph8'].replacements[0];
-      let graph9 = components['/graph9'].replacements[0];
-      let graph10 = components['/graph10'].replacements[0];
-      let graph11 = components['/graph11'].replacements[0];
-      let graph12 = components['/graph12'].replacements[0];
+      let graph1 = stateVariables["/graph1"];
+      let graph2 = stateVariables["/graph2"];
+      let graph3 = stateVariables["/graph3"];
+      let graph4 = stateVariables["/graph4"];
+      let graph5 = stateVariables['/graph5'].replacements[0];
+      let graph6 = stateVariables['/graph6'].replacements[0];
+      let graph7 = stateVariables['/graph7'].replacements[0];
+      let graph8 = stateVariables['/graph8'].replacements[0];
+      let graph9 = stateVariables['/graph9'].replacements[0];
+      let graph10 = stateVariables['/graph10'].replacements[0];
+      let graph11 = stateVariables['/graph11'].replacements[0];
+      let graph12 = stateVariables['/graph12'].replacements[0];
 
-      let graph1A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[0];
-      let graph2A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[1];
-      let graph3A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[2];
-      let graph4A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[3];
-      let graph5A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[0];
-      let graph6A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[1];
-      let graph7A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[2];
-      let graph8A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[3];
-      let graph9A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[0];
-      let graph10A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[1];
-      let graph11A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[2];
-      let graph12A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[3];
+      let graph1A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[0];
+      let graph2A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[1];
+      let graph3A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[2];
+      let graph4A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[3];
+      let graph5A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[0];
+      let graph6A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[1];
+      let graph7A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[2];
+      let graph8A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[3];
+      let graph9A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[0];
+      let graph10A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[1];
+      let graph11A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[2];
+      let graph12A = stateVariables['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[3];
 
       let vectors = [
         graph1.activeChildren[0],
@@ -206,7 +206,7 @@ describe('Graph Reference Test 2', function () {
 
       cy.log(`check original configuration`);
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let ov_t = [3, 5];
         let ov_h = [-4, 2];
@@ -254,7 +254,7 @@ describe('Graph Reference Test 2', function () {
 
       cy.log(`move an original vector`);
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let ov_t = [-1, 7];
         let ov_h = [0, -2];
@@ -307,7 +307,7 @@ describe('Graph Reference Test 2', function () {
 
       cy.log(`move displacementA vector`);
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let d1_t = [2, 5];
         let d1_h = [7, 1];
@@ -361,7 +361,7 @@ describe('Graph Reference Test 2', function () {
 
       cy.log(`move displacementB vector`);
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let d2_t = [-2, 3];
         let d2_h = [5, -5];
@@ -415,7 +415,7 @@ describe('Graph Reference Test 2', function () {
 
       cy.log(`move displacementC vector`);
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let d3_t = [9, 8];
         let d3_h = [7, 4];

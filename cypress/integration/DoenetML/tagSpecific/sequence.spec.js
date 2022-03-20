@@ -16,7 +16,7 @@ describe('Sequence Tag Tests', function () {
   })
 
   it('number sequence, no parameters', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -27,9 +27,9 @@ describe('Sequence Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(10);
       for (let i = 0; i < 10; i++) {
         expect(children[i].stateValues.value).eq(i + 1);
@@ -38,7 +38,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, just from', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -48,9 +48,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(10);
       for (let i = 0; i < 10; i++) {
         expect(children[i].stateValues.value).eq(i - 4);
@@ -59,7 +59,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, just to', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -69,9 +69,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(3);
       for (let i = 0; i < 3; i++) {
         expect(children[i].stateValues.value).eq(3 + i - 2);
@@ -80,7 +80,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, just step', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -90,9 +90,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(10);
       for (let i = 0; i < 10; i++) {
         expect(children[i].stateValues.value).eq(1 + i * (-2));
@@ -101,7 +101,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, just length', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -111,9 +111,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(children[i].stateValues.value).eq(1 + i);
@@ -122,7 +122,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, from and to', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -132,9 +132,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       for (let i = 0; i < 8; i++) {
         expect(children[i].stateValues.value).eq(-3 + i);
@@ -143,7 +143,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, from and to, not matching', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -153,9 +153,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       for (let i = 0; i < 8; i++) {
         expect(children[i].stateValues.value).eq(-3 + i);
@@ -164,7 +164,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, from and to, adjust for round-off error', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -174,9 +174,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       for (let i = 0; i < 8; i++) {
         expect(children[i].stateValues.value).eq(i + 1);
@@ -185,7 +185,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('math sequence, from and to, adjust for round-off error', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -195,9 +195,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       for (let i = 0; i < 8; i++) {
         expect(children[i].stateValues.value.tree).eq(i + 1);
@@ -206,7 +206,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, from and step', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -216,9 +216,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(10);
       for (let i = 0; i < 10; i++) {
         expect(children[i].stateValues.value).eq(2 + i * (-4));
@@ -227,7 +227,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, from and length', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -237,9 +237,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(3);
       for (let i = 0; i < 3; i++) {
         expect(children[i].stateValues.value).eq(11 + i);
@@ -248,7 +248,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, to and step', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -258,9 +258,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(7);
       for (let i = 0; i < 7; i++) {
         expect(children[i].stateValues.value).eq(21 + 3 * (i - 6));
@@ -269,7 +269,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, to and step, adjust for round-off error', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -279,9 +279,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(Math.abs(children[i].stateValues.value - (1 + i * 0.1))).lessThan(1E-14)
@@ -290,7 +290,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('math sequence, to and step, adjust for round-off error', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -300,9 +300,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(Math.abs(children[i].stateValues.value.tree - (1 + i * 0.1))).lessThan(1E-14)
@@ -311,7 +311,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, to and length', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -321,9 +321,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(4);
       for (let i = 0; i < 4; i++) {
         expect(children[i].stateValues.value).eq(-8 + (i - 3));
@@ -332,7 +332,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, step and length', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -342,9 +342,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(6);
       for (let i = 0; i < 6; i++) {
         expect(children[i].stateValues.value).eq(1 + 5 * i);
@@ -353,7 +353,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, from, to, and step', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -363,9 +363,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(4);
       for (let i = 0; i < 4; i++) {
         expect(children[i].stateValues.value).eq(9 - 2 * i);
@@ -374,7 +374,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, from, to, and step, adjust for round-off errors', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -386,9 +386,9 @@ describe('Sequence Tag Tests', function () {
 
     let sequence = [0.2, 0.3, 0.4, 0.5]
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(4);
       for (let i = 0; i < 4; i++) {
         expect(Math.abs(children[i].stateValues.value - sequence[i])).lessThan(1E-14);
@@ -397,7 +397,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('math sequence, from, to, and step, adjust for round-off errors', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -409,9 +409,9 @@ describe('Sequence Tag Tests', function () {
 
     let sequence = [0.2, 0.3, 0.4, 0.5]
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(4);
       for (let i = 0; i < 4; i++) {
         expect(Math.abs(children[i].stateValues.value.tree - sequence[i])).lessThan(1E-14);
@@ -420,7 +420,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, from, to, and length', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -430,9 +430,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(6);
       for (let i = 0; i < 6; i++) {
         expect(children[i].stateValues.value).eq(-5 + 2 * i);
@@ -441,7 +441,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, from, step, and length', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -451,9 +451,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(children[i].stateValues.value).eq(8 - 2 * i);
@@ -462,7 +462,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, to, step, and length', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -472,9 +472,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(children[i].stateValues.value).eq(8 - 2 * (i - 4));
@@ -483,7 +483,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('letters sequence, lowercase', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -493,9 +493,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(5);
       expect(children[0].stateValues.value).eq('c');
       expect(children[1].stateValues.value).eq('f');
@@ -506,7 +506,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('letters sequence, uppercase', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -516,9 +516,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(5);
       expect(children[0].stateValues.value).eq('Y');
       expect(children[1].stateValues.value).eq('U');
@@ -529,7 +529,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('letters sequence, multicharacter', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -539,9 +539,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(4);
       expect(children[0].stateValues.value).eq('az');
       expect(children[1].stateValues.value).eq('bc');
@@ -551,7 +551,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('letters sequence, stays valid', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -561,9 +561,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(6);
       expect(children[0].stateValues.value).eq('b');
       expect(children[1].stateValues.value).eq('e');
@@ -575,7 +575,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('letters sequence, no parameters', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -585,9 +585,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(10);
       expect(children[0].stateValues.value).eq('a');
       expect(children[1].stateValues.value).eq('b');
@@ -603,7 +603,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('math sequence, calculate step', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -613,9 +613,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(4);
       expect(children[0].stateValues.value.tree).eqls(['*', 3, 'x']);
       expect(children[1].stateValues.value.tree).eqls(['+', ['*', 2, 'x'], 'y']);
@@ -625,7 +625,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, excludes', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -637,9 +637,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -653,9 +653,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 7")
     cy.get('#\\/exclude2 textarea').type(`{end}{backspace}7{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -669,9 +669,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 6 twice")
     cy.get('#\\/exclude2 textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -685,9 +685,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 12")
     cy.get('#\\/exclude2 textarea').type(`{end}{backspace}12{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -702,9 +702,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 3")
     cy.get('#\\/exclude2 textarea').type(`{end}{backspace}{backspace}3{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -719,9 +719,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("don't exclude anything else")
     cy.get('#\\/exclude2 textarea').type(`{end}{backspace}{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -736,7 +736,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, excludes, adjust for round-off errors', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -749,9 +749,9 @@ describe('Sequence Tag Tests', function () {
 
     let sequence = [0.1, 0.2, 0.4, 0.5, 0.8];
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(Math.abs(children[i].stateValues.value - sequence[i])).lessThan(1E-14);
@@ -762,7 +762,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('letters sequence, excludes', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -774,9 +774,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -790,9 +790,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude i")
     cy.get('#\\/e_input').clear().type(`i{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -806,9 +806,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude f twice")
     cy.get('#\\/e_input').clear().type(`f{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -822,9 +822,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude l")
     cy.get('#\\/e_input').clear().type(`l{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -839,9 +839,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude C")
     cy.get('#\\/e_input').clear().type(`C{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -856,9 +856,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("don't exclude anything else")
     cy.get('#\\/e_input').clear().type(`{enter}`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -873,7 +873,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('math sequence, excludes', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -887,9 +887,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -903,9 +903,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 9x")
     cy.get('#\\/e textarea').type(`{end}{backspace}9x{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -919,9 +919,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 6x twice")
     cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}6x{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -935,9 +935,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 12x")
     cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}12x{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -952,9 +952,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 3x")
     cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}{backspace}3x{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -969,9 +969,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("don't exclude anything else")
     cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -986,7 +986,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('math sequence, excludes, adjust for round-off errors', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -999,9 +999,9 @@ describe('Sequence Tag Tests', function () {
 
     let sequence = [0.1, 0.2, 0.4, 0.5, 0.8];
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(Math.abs(children[i].stateValues.value.tree - sequence[i])).lessThan(1E-14);
@@ -1013,7 +1013,7 @@ describe('Sequence Tag Tests', function () {
 
 
   it('sequence of decimals rounds on display', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1024,9 +1024,9 @@ describe('Sequence Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.log("Round when displaying to show 10ths correctly")
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_sequence1'].replacements;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_sequence1'].replacements;
 
       for (let i = 0; i < 11; i++) {
         cy.get(cesc('#' + replacements[i].componentName)).invoke('text').then((text) => {
@@ -1036,9 +1036,9 @@ describe('Sequence Tag Tests', function () {
     });
 
     cy.log("Don't round internaly")
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_sequence1'].replacements;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_sequence1'].replacements;
 
       for (let i = 0; i < 11; i++) {
         expect(replacements[i].stateValues.value).eq(0.1 * i);
@@ -1047,7 +1047,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('sequence with number operators ', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1067,18 +1067,18 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_sequence1'].replacements;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_sequence1'].replacements;
       for (let i = 0; i < 9; i++) {
         cy.get(cesc('#' + replacements[i].componentName)).invoke('text').then((text) => {
           expect(text.trim()).equal((i + 5).toString());
         })
       }
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_sequence1'].replacements;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_sequence1'].replacements;
       for (let i = 0; i < 9; i++) {
         expect(replacements[i].stateValues.value).eq(i + 5);
       }
@@ -1086,7 +1086,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('initially invalid to', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1098,32 +1098,32 @@ describe('Sequence Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.log('sequence starts off invalid')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_sequence1'].stateValues.validSequence).eq(false);
-      expect(components['/_sequence1'].replacements.length).eq(0);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_sequence1'].stateValues.validSequence).eq(false);
+      expect(stateVariables['/_sequence1'].replacements.length).eq(0);
 
     })
 
     cy.get('#\\/n textarea').type("2{enter}", { force: true });
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let number1 = components['/_sequence1'].replacements[0];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let number1 = stateVariables['/_sequence1'].replacements[0];
       let number1Name = number1.componentName;
       let number1Anchor = cesc('#' + number1Name);
 
       cy.get(number1Anchor).should('have.text', '2')
 
-      cy.window().then((win) => {
-        expect(components['/_sequence1'].stateValues.validSequence).eq(true);
-        expect(components['/_sequence1'].replacements.length).eq(1);
+      cy.window().then(async (win) => {
+        expect(stateVariables['/_sequence1'].stateValues.validSequence).eq(true);
+        expect(stateVariables['/_sequence1'].replacements.length).eq(1);
       })
     })
   })
 
   it('number sequence, excluding every 3 plus another', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1138,7 +1138,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, excluding from different sources', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1154,7 +1154,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('sequences hide dynamically', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1220,7 +1220,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('sequence fixed by default', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1268,7 +1268,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('can override fixed property', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1335,7 +1335,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, from and to using strings with operators', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1345,9 +1345,9 @@ describe('Sequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(8);
       for (let i = 0; i < 8; i++) {
         expect(children[i].stateValues.value).eq(-3 + i);
@@ -1356,7 +1356,7 @@ describe('Sequence Tag Tests', function () {
   });
 
   it('number sequence, excludes with operators from macros', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1373,9 +1373,9 @@ describe('Sequence Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', nums.join(', '))
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let children = components['/_aslist1'].activeChildren;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let children = stateVariables['/_aslist1'].activeChildren;
       expect(children.length).eq(nums.length);
       for (let [ind, child] of children.entries()) {
         expect(child.stateValues.value).eq(nums[ind]);

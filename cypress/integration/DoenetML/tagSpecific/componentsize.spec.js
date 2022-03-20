@@ -33,7 +33,7 @@ describe('Component Size Tag Tests', function () {
     ]
 
     for (let [ind, widthString] of widthStrings.entries()) {
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
     <document name="doc">
@@ -88,10 +88,10 @@ describe('Component Size Tag Tests', function () {
 
       cy.get('#\\/absExtract').should('have.text', isAbsolutes[ind].toString());
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/ae'].stateValues.width.size).closeTo(sizes[ind], 1E-6)
-        expect(components['/ae'].stateValues.width.isAbsolute).eq(isAbsolutes[ind])
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/ae'].stateValues.width.size).closeTo(sizes[ind], 1E-6)
+        expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(isAbsolutes[ind])
 
       })
 
@@ -101,7 +101,7 @@ describe('Component Size Tag Tests', function () {
   })
 
   it('changing absolute width of image', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 
@@ -128,10 +128,10 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/wExtract').should('have.text', '500');
     cy.get('#\\/absExtract').should('have.text', "true");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(500, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(500, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
     })
 
     cy.log(`changed prescribed width`)
@@ -147,10 +147,10 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/wExtract').should('have.text', '312');
     cy.get('#\\/absExtract').should('have.text', "true");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(312, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(312, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
     })
 
 
@@ -167,16 +167,16 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/wExtract').should('have.text', '476');
     cy.get('#\\/absExtract').should('have.text', "true");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(476, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(476, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
     })
 
   })
 
   it('changing relative width of image', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 <document name="doc">
@@ -209,10 +209,10 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/wExtract').should('have.text', '50');
     cy.get('#\\/absExtract').should('have.text', "false");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(50, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(false)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(50, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(false)
     })
 
     cy.log(`changed prescribed width`)
@@ -233,10 +233,10 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/wExtract').should('have.text', '31');
     cy.get('#\\/absExtract').should('have.text', "false");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(31, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(false)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(31, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(false)
     })
 
 
@@ -258,16 +258,16 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/wExtract').should('have.text', '76');
     cy.get('#\\/absExtract').should('have.text', "false");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(76, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(false)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(76, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(false)
     })
 
   })
 
   it('height of image depends on width', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 <p><mathinput name="wPrescribed" prefill="500" /></p>
@@ -286,12 +286,12 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/w').should('have.text', '500px');
     cy.get('#\\/h').should('have.text', '250px');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(500, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
-      expect(components['/ae'].stateValues.height.size).closeTo(250, 1E-6)
-      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(500, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(stateVariables['/ae'].stateValues.height.size).closeTo(250, 1E-6)
+      expect(stateVariables['/ae'].stateValues.height.isAbsolute).eq(true)
     })
 
     cy.log(`changed prescribed width`)
@@ -303,12 +303,12 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/w').should('have.text', '312px');
     cy.get('#\\/h').should('have.text', '156px');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(312, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
-      expect(components['/ae'].stateValues.height.size).closeTo(156, 1E-6)
-      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(312, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(stateVariables['/ae'].stateValues.height.size).closeTo(156, 1E-6)
+      expect(stateVariables['/ae'].stateValues.height.isAbsolute).eq(true)
     })
 
     cy.log(`changed width from inverse direction`)
@@ -320,12 +320,12 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/w').should('have.text', '476px');
     cy.get('#\\/h').should('have.text', '238px');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(476, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
-      expect(components['/ae'].stateValues.height.size).closeTo(238, 1E-6)
-      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(476, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(stateVariables['/ae'].stateValues.height.size).closeTo(238, 1E-6)
+      expect(stateVariables['/ae'].stateValues.height.isAbsolute).eq(true)
     })
 
     cy.log(`changed height from inverse direction`)
@@ -337,12 +337,12 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/w').should('have.text', '642px');
     cy.get('#\\/h').should('have.text', '321px');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(642, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
-      expect(components['/ae'].stateValues.height.size).closeTo(321, 1E-6)
-      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(642, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(stateVariables['/ae'].stateValues.height.size).closeTo(321, 1E-6)
+      expect(stateVariables['/ae'].stateValues.height.isAbsolute).eq(true)
     })
 
   })

@@ -31,8 +31,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(0, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -59,8 +59,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -86,8 +86,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -113,8 +113,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -140,8 +140,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(3)).closeTo(2 + 1, 1E-12);
       expect(f(6)).closeTo(2 + 4, 1E-12);
@@ -167,8 +167,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(3)).closeTo(2 + 1 * 5, 1E-12);
       expect(f(6)).closeTo(2 + 4 * 5, 1E-12);
@@ -194,8 +194,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(1)).closeTo(3 - 1, 1E-12);
       expect(f(2)).closeTo(3 - 4, 1E-12);
@@ -221,8 +221,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(3)).closeTo(3 - 1, 1E-12);
       expect(f(6)).closeTo(3 - 4, 1E-12);
@@ -248,8 +248,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(3)).closeTo(3 - 1 * 5, 1E-12);
       expect(f(6)).closeTo(3 - 4 * 5, 1E-12);
@@ -275,8 +275,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(4, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -300,8 +300,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(4, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -325,8 +325,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(4 - 3, 1E-12);
       expect(f(1)).closeTo(1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -350,8 +350,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(-4 - 3, 1E-12);
       expect(f(1)).closeTo(-1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -375,8 +375,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -406,8 +406,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -437,8 +437,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -468,8 +468,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(0, 1E-12);
       expect(f(0.5)).closeTo(-1, 1E-12);
@@ -499,8 +499,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(2, 1E-12);
       expect(f(0.5)).closeTo(1, 1E-12);
@@ -530,8 +530,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(-2, 1E-12);
       expect(f(0.5)).closeTo(-1, 1E-12);
@@ -561,8 +561,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(2, 1E-12);
@@ -592,8 +592,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(5, 1E-12);
@@ -623,8 +623,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(5, 1E-12);
@@ -654,8 +654,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(-3)).closeTo(0, 1E-12);
       expect(f(-2 + 4 / 3)).closeTo(0, 1E-12);
@@ -683,8 +683,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(-3)).closeTo(0, 1E-12);
       expect(f(0)).closeTo(0, 1E-12);
@@ -709,8 +709,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(4, 1E-12);
       expect(f(-2 + 4 / 3)).closeTo(4, 1E-12);
@@ -738,8 +738,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(4, 1E-12);
       expect(f(0)).closeTo(4, 1E-12);
@@ -764,8 +764,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(2, 1E-12);
       expect(f(0)).closeTo(1, 1E-12);
@@ -795,8 +795,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(3)).closeTo(-2, 1E-12);
       expect(f(5)).closeTo(-2, 1E-12);
 
@@ -804,7 +804,7 @@ describe('Function Tag Tests', function () {
       expect(f(4)).closeTo(-3, 1E-12);
       expect(f(6)).closeTo(-3, 1E-12);
 
-      let g = (await components['/_function2'].stateValues.fs)[0];
+      let g = (stateVariables['/_function2'].stateValues.fs)[0];
       expect(g(3)).closeTo(2, 1E-12);
       expect(g(5)).closeTo(-2, 1E-12);
 
@@ -832,8 +832,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/f'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/f'].stateValues.fs)[0];
       expect(f(2)).closeTo(3, 1E-12);
       expect(f(4)).closeTo(4, 1E-12);
 
@@ -841,7 +841,7 @@ describe('Function Tag Tests', function () {
       expect(f(3)).closeTo(3.5, 1E-12);
       expect(f(5)).closeTo(3, 1E-12);
 
-      let g = (await components['/g'].stateValues.fs)[0];
+      let g = (stateVariables['/g'].stateValues.fs)[0];
       expect(g(0)).closeTo(4, 1E-12);
       expect(g(2)).closeTo(3, 1E-12);
 
@@ -849,7 +849,7 @@ describe('Function Tag Tests', function () {
       expect(g(1)).closeTo(3.5, 1E-12);
       expect(g(3)).closeTo(4, 1E-12);
 
-      let h = (await components['/h'].stateValues.fs)[0];
+      let h = (stateVariables['/h'].stateValues.fs)[0];
       expect(h(4)).closeTo(4, 1E-12);
       expect(h(6)).closeTo(3, 1E-12);
 
@@ -875,8 +875,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-2)).closeTo(2, 1E-12);
       expect(f(-5)).closeTo(0, 1E-12);
       expect(f(-6)).closeTo(-1, 1E-12);
@@ -910,8 +910,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1, 1E-12);
       expect(f(-12)).closeTo(-1, 1E-12);
@@ -934,8 +934,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 3 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 3 * (-12 + 6), 1E-12);
@@ -959,8 +959,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 0 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 0 * (-12 + 6), 1E-12);
@@ -969,8 +969,8 @@ describe('Function Tag Tests', function () {
 
     cy.get('#\\/_mathinput1 textarea').type("2{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 2 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 2 * (-12 + 6), 1E-12);
@@ -979,8 +979,8 @@ describe('Function Tag Tests', function () {
 
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}-3{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 - 3 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 - 3 * (-12 + 6), 1E-12);
@@ -990,8 +990,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}", { force: true }).blur();
     cy.wait(100);
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 0 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 0 * (-12 + 6), 1E-12);
@@ -1018,8 +1018,8 @@ describe('Function Tag Tests', function () {
 
     cy.log('with undefined slope, get line through points')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 1 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 1 * (-12 + 6), 1E-12);
@@ -1028,8 +1028,8 @@ describe('Function Tag Tests', function () {
 
     cy.get('#\\/_mathinput1 textarea').type("2{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-6 - 0.01)).closeTo(-1 - 0.01 * 2, 1E-3);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-6 + 0.01)).closeTo(-1 + 0.01 * 2, 1E-3);
@@ -1047,8 +1047,8 @@ describe('Function Tag Tests', function () {
 
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}-3{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-6 - 0.01)).closeTo(-1 - 0.01 * (-3), 1E-3);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-6 + 0.01)).closeTo(-1 + 0.01 * (-3), 1E-3);
@@ -1066,8 +1066,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}", { force: true }).blur();
     cy.wait(100)
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 1 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 1 * (-12 + 6), 1E-12);
@@ -1092,8 +1092,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(3)).closeTo(2, 1E-12);
@@ -1126,8 +1126,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       expect(f(-0.01)).closeTo(2 - 0.01 * 0.5, 1E-3)
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(0.01)).closeTo(2 + 0.01 * 0.5, 1E-3)
@@ -1168,8 +1168,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       assert.isNaN(f(0));
       assert.isNaN(f(1));
       assert.isNaN(f(2));
@@ -1193,8 +1193,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/f'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/f'].stateValues.fs)[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(3)).closeTo(2, 1E-12);
@@ -1208,7 +1208,7 @@ describe('Function Tag Tests', function () {
       expect(f(-3)).closeTo(2 - slope * 3, 1E-12);
       expect(f(-4)).closeTo(2 - slope * 4, 1E-12);
 
-      let g = (await components['/g'].stateValues.fs)[0];
+      let g = (stateVariables['/g'].stateValues.fs)[0];
       expect(g(1)).closeTo(5, 1E-12);
       expect(g(4)).closeTo(2, 1E-12);
       // linear function
@@ -1220,7 +1220,7 @@ describe('Function Tag Tests', function () {
       expect(g(-1)).closeTo(5 + slope * -2, 1E-12);
       expect(g(-2)).closeTo(5 + slope * -3, 1E-12);
 
-      let h = (await components['/h'].stateValues.fs)[0];
+      let h = (stateVariables['/h'].stateValues.fs)[0];
       expect(h(0)).closeTo(2, 1E-12);
       expect(h(2)).closeTo(1, 1E-12);
       expect(h(3)).closeTo(2, 1E-12);
@@ -1256,8 +1256,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
       for (let x = -5; x <= 6; x += 0.1) {
         expect(f(x - 0.1)).lessThan(f(x));
       }
@@ -1295,9 +1295,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let p = components['/_point1'];
+      let p = stateVariables['/_point1'];
 
       let x = p.stateValues.xs[0].evaluate_to_constant();
       let y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1343,9 +1343,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let p = components['/_point1'];
+      let p = stateVariables['/_point1'];
 
       expect(p.stateValues.xs[0].evaluate_to_constant()).closeTo(Math.sqrt(2), 1E-6)
       expect(p.stateValues.xs[1].evaluate_to_constant()).closeTo(2, 1E-6)
@@ -1378,9 +1378,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let p = components['/_point1'];
+      let p = stateVariables['/_point1'];
 
       let x = p.stateValues.xs[0].evaluate_to_constant();
       let y = p.stateValues.xs[1].evaluate_to_constant();
@@ -1438,9 +1438,9 @@ describe('Function Tag Tests', function () {
     let f = x => Math.sqrt(x) * Math.sqrt(5 - x);
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let p = components['/_point1'];
+      let p = stateVariables['/_point1'];
       expect(p.stateValues.xs[0].evaluate_to_constant()).closeTo(1, 1E-6)
       expect(p.stateValues.xs[1].evaluate_to_constant()).closeTo(f(1), 1E-6)
 
@@ -1494,12 +1494,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1531,12 +1531,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1566,12 +1566,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1603,12 +1603,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1636,12 +1636,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1673,12 +1673,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1709,10 +1709,10 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
       expect(f(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
@@ -1744,10 +1744,10 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
       expect(f(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
@@ -1776,10 +1776,10 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
       expect(f(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
@@ -1810,10 +1810,10 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1847,10 +1847,10 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1878,10 +1878,10 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1912,10 +1912,10 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1946,10 +1946,10 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = (await components['/_function2'].stateValues.fs)[0];
-      let numericalf = (await components['/_function2'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function2'].stateValues.symbolicfs)[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = (stateVariables['/_function2'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function2'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function2'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1986,9 +1986,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let p = components['/_point1'];
+      let p = stateVariables['/_point1'];
 
       let x = p.stateValues.xs[0].evaluate_to_constant();
       let y = p.stateValues.xs[1].evaluate_to_constant();
@@ -2036,9 +2036,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let p = components['/_point1'];
+      let p = stateVariables['/_point1'];
 
       let x = p.stateValues.xs[0].evaluate_to_constant();
       let y = p.stateValues.xs[1].evaluate_to_constant();
@@ -2103,11 +2103,11 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
-      let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
-      let numberExtremaAnchor = cesc('#' + components["/numberextrema"].replacements[0].componentName);
+      let numberMaximaAnchor = cesc('#' + stateVariables["/numbermaxima"].replacements[0].componentName);
+      let numberMinimaAnchor = cesc('#' + stateVariables["/numberminima"].replacements[0].componentName);
+      let numberExtremaAnchor = cesc('#' + stateVariables["/numberextrema"].replacements[0].componentName);
 
       cy.get(numberMaximaAnchor).should('have.text', '2');
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2125,9 +2125,13 @@ describe('Function Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point1'].movePoint({ x: 2, y: 2 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 2, y: 2 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '2');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2145,9 +2149,13 @@ describe('Function Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point1'].movePoint({ x: 3.6, y: 5.1 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 3.6, y: 5.1 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '3');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2165,9 +2173,13 @@ describe('Function Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point1'].movePoint({ x: 8, y: 9 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 8, y: 9 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '2');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2185,9 +2197,13 @@ describe('Function Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point1'].movePoint({ x: 5, y: 2 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 5, y: 2 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '0');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2205,9 +2221,13 @@ describe('Function Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point1'].movePoint({ x: -9, y: 0 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -9, y: 0 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '3');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2226,9 +2246,13 @@ describe('Function Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point4'].movePoint({ x: 8, y: 3 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point4",
+        args: { x: 8, y: 3 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2246,9 +2270,13 @@ describe('Function Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point4'].movePoint({ x: 8, y: 6 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point4",
+        args: { x: 8, y: 6 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '2');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2298,11 +2326,11 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
-      let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
-      let numberExtremaAnchor = cesc('#' + components["/numberextrema"].replacements[0].componentName);
+      let numberMaximaAnchor = cesc('#' + stateVariables["/numbermaxima"].replacements[0].componentName);
+      let numberMinimaAnchor = cesc('#' + stateVariables["/numberminima"].replacements[0].componentName);
+      let numberExtremaAnchor = cesc('#' + stateVariables["/numberextrema"].replacements[0].componentName);
 
       cy.get(numberMaximaAnchor).should('have.text', '2');
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2337,9 +2365,13 @@ describe('Function Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point1'].movePoint({ x: 2, y: 2 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 2, y: 2 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2373,9 +2405,13 @@ describe('Function Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point1'].movePoint({ x: 3.6, y: 5.1 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 3.6, y: 5.1 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '3');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2441,11 +2477,11 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
-      let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
-      let numberExtremaAnchor = cesc('#' + components["/numberextrema"].replacements[0].componentName);
+      let numberMaximaAnchor = cesc('#' + stateVariables["/numbermaxima"].replacements[0].componentName);
+      let numberMinimaAnchor = cesc('#' + stateVariables["/numberminima"].replacements[0].componentName);
+      let numberExtremaAnchor = cesc('#' + stateVariables["/numberextrema"].replacements[0].componentName);
 
       // it is set up so that minimum of quadratic interpolating between first two points
       // is past maximum of domain
@@ -2463,15 +2499,27 @@ describe('Function Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         // now move points so that the minimum of the cubic interpolating between
         // the first two points is past maximum of the domain
         // check for bug where this stopped looking for minima
 
-        await components['/_point1'].movePoint({ x: 0, y: -0.35 });
-        await components['/_point2'].movePoint({ x: 1.8, y: -1.36 });
-        await components['/_point5'].movePoint({ x: 1, y: -0.866 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 0, y: -0.35 }
+      });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: 1.8, y: -1.36 }
+      });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point5",
+        args: { x: 1, y: -0.866 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '0');
         cy.get(numberMinimaAnchor).should('have.text', '1');
@@ -2487,16 +2535,32 @@ describe('Function Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         // now move points so that maximum of quadratic interpolating between first two points
         // is past maximum of domain
         // check for bug where this stopped looking for maxima
 
-        await components['/_point1'].movePoint({ x: 0, y: 0 });
-        await components['/_point2'].movePoint({ x: 2, y: 1.8 });
-        await components['/_point3'].movePoint({ x: 5, y: 4 });
-        await components['/_point5'].movePoint({ x: 8, y: -1 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 0, y: 0 }
+      });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: 2, y: 1.8 }
+      });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: 5, y: 4 }
+      });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point5",
+        args: { x: 8, y: -1 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2511,15 +2575,27 @@ describe('Function Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         // now move points so that the maximum of the cubic interpolating between
         // the first two points is past maximum of the domain
         // check for bug where this stopped looking for maximum
 
-        await components['/_point1'].movePoint({ x: 0, y: 0.35 });
-        await components['/_point2'].movePoint({ x: 1.8, y: 1.36 });
-        await components['/_point5'].movePoint({ x: 1, y: 0.866 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 0, y: 0.35 }
+      });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: 1.8, y: 1.36 }
+      });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point5",
+        args: { x: 1, y: 0.866 }
+      });
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2573,23 +2649,23 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
-      let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
-      let numberExtremaAnchor = cesc('#' + components["/numberextrema"].replacements[0].componentName);
-      let maximumLocation1Anchor = cesc('#' + components["/maximumlocation1"].replacements[0].componentName);
-      let maximumLocation2Anchor = cesc('#' + components["/maximumlocation2"].replacements[0].componentName);
-      let maximumValue1Anchor = cesc('#' + components["/maximumvalue1"].replacements[0].componentName);
-      let maximumValue2Anchor = cesc('#' + components["/maximumvalue2"].replacements[0].componentName);
-      let minimumLocation1Anchor = cesc('#' + components["/minimumlocation1"].replacements[0].componentName);
-      let minimumValue1Anchor = cesc('#' + components["/minimumvalue1"].replacements[0].componentName);
-      let extremumLocation1Anchor = cesc('#' + components["/extremumlocation1"].replacements[0].componentName);
-      let extremumLocation2Anchor = cesc('#' + components["/extremumlocation2"].replacements[0].componentName);
-      let extremumLocation3Anchor = cesc('#' + components["/extremumlocation3"].replacements[0].componentName);
-      let extremumValue1Anchor = cesc('#' + components["/extremumvalue1"].replacements[0].componentName);
-      let extremumValue2Anchor = cesc('#' + components["/extremumvalue2"].replacements[0].componentName);
-      let extremumValue3Anchor = cesc('#' + components["/extremumvalue3"].replacements[0].componentName);
+      let numberMaximaAnchor = cesc('#' + stateVariables["/numbermaxima"].replacements[0].componentName);
+      let numberMinimaAnchor = cesc('#' + stateVariables["/numberminima"].replacements[0].componentName);
+      let numberExtremaAnchor = cesc('#' + stateVariables["/numberextrema"].replacements[0].componentName);
+      let maximumLocation1Anchor = cesc('#' + stateVariables["/maximumlocation1"].replacements[0].componentName);
+      let maximumLocation2Anchor = cesc('#' + stateVariables["/maximumlocation2"].replacements[0].componentName);
+      let maximumValue1Anchor = cesc('#' + stateVariables["/maximumvalue1"].replacements[0].componentName);
+      let maximumValue2Anchor = cesc('#' + stateVariables["/maximumvalue2"].replacements[0].componentName);
+      let minimumLocation1Anchor = cesc('#' + stateVariables["/minimumlocation1"].replacements[0].componentName);
+      let minimumValue1Anchor = cesc('#' + stateVariables["/minimumvalue1"].replacements[0].componentName);
+      let extremumLocation1Anchor = cesc('#' + stateVariables["/extremumlocation1"].replacements[0].componentName);
+      let extremumLocation2Anchor = cesc('#' + stateVariables["/extremumlocation2"].replacements[0].componentName);
+      let extremumLocation3Anchor = cesc('#' + stateVariables["/extremumlocation3"].replacements[0].componentName);
+      let extremumValue1Anchor = cesc('#' + stateVariables["/extremumvalue1"].replacements[0].componentName);
+      let extremumValue2Anchor = cesc('#' + stateVariables["/extremumvalue2"].replacements[0].componentName);
+      let extremumValue3Anchor = cesc('#' + stateVariables["/extremumvalue3"].replacements[0].componentName);
 
       cy.get(numberMaximaAnchor).should('have.text', '2');
       cy.get(maximumLocation1Anchor).invoke('text').then((text) => {
@@ -2635,9 +2711,13 @@ describe('Function Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point2'].movePoint({ x: 3, y: -1 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: 3, y: -1 }
+      });
 
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
@@ -2680,17 +2760,21 @@ describe('Function Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point1'].movePoint({ x: 0, y: -1 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 0, y: -1 }
+      });
 
-        let minimumLocation2Anchor = cesc('#' + components["/minimumlocation2"].replacements[0].componentName);
-        let minimumValue2Anchor = cesc('#' + components["/minimumvalue2"].replacements[0].componentName);
+        let minimumLocation2Anchor = cesc('#' + stateVariables["/minimumlocation2"].replacements[0].componentName);
+        let minimumValue2Anchor = cesc('#' + stateVariables["/minimumvalue2"].replacements[0].componentName);
 
         // let extremumLocation3AnchorOld = extremumLocation3Anchor;
-        // let extremumLocation3AnchorNew = cesc('#' + components["/extremumlocation3"].replacements[0].componentName);
+        // let extremumLocation3AnchorNew = cesc('#' + stateVariables["/extremumlocation3"].replacements[0].componentName);
         // let extremumValue3AnchorOld = extremumValue3Anchor;
-        // let extremumValue3AnchorNew = cesc('#' + components["/extremumvalue3"].replacements[0].componentName);
+        // let extremumValue3AnchorNew = cesc('#' + stateVariables["/extremumvalue3"].replacements[0].componentName);
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
         cy.get(maximumLocation1Anchor).invoke('text').then((text) => {
@@ -2769,9 +2853,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
 
       expect(f.stateValues.numberMaxima).eq(0);
       expect(f.stateValues.numberMinima).eq(0);
@@ -2782,11 +2866,11 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("10{enter}", { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let period = 10;
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
 
       expect(f.stateValues.numberMaxima).eq(200 / period);
 
@@ -2829,11 +2913,11 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let period = 5;
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
 
       expect(f.stateValues.numberMaxima).eq(200 / period);
 
@@ -2902,9 +2986,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
 
       expect(f.stateValues.numberMaxima).eq(0);
       expect(f.stateValues.numberMinima).eq(0);
@@ -2915,11 +2999,11 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("10{enter}", { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let period = 10;
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
 
       expect(f.stateValues.numberMaxima).eq(20 / period);
 
@@ -2963,11 +3047,11 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/xmax textarea').type("{end}{backspace}{backspace}25{enter}", { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let period = 10;
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
 
       expect(f.stateValues.numberMaxima).eq(30 / period);
 
@@ -3011,11 +3095,11 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let period = 5;
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
 
       expect(f.stateValues.numberMaxima).eq(30 / period);
 
@@ -3060,11 +3144,11 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/xmax textarea').type("{end}{backspace}{backspace}9{enter}", { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let period = 5;
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
 
       expect(f.stateValues.numberMaxima).eq(10 / period);
 
@@ -3126,9 +3210,9 @@ describe('Function Tag Tests', function () {
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
 
       expect(await f.stateValues.numberMaxima).eq(0);
       expect(await f.stateValues.numberMinima).eq(0);
@@ -3163,9 +3247,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
 
       // values of extrema computed in Sage
       let minimumLocations = [-2.29152990292159];
@@ -3206,9 +3290,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
       expect(f.stateValues.numberMaxima).eq(0);
       expect(f.stateValues.numberMinima).eq(0);
       expect(f.stateValues.numberExtrema).eq(0);
@@ -3244,9 +3328,9 @@ describe('Function Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let f = components['/_function1'];
+      let f = stateVariables['/_function1'];
       expect(f.stateValues.numberMaxima).eq(1);
       expect(f.stateValues.numberMinima).eq(0);
       expect(f.stateValues.numberExtrema).eq(1);
@@ -3281,11 +3365,11 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let f1 = components['/f1'];
-      let f2 = components['/f2'];
-      let f3 = components['/f3'];
+      let f1 = stateVariables['/f1'];
+      let f2 = stateVariables['/f2'];
+      let f3 = stateVariables['/f3'];
       expect(f1.stateValues.numberMaxima).eq(1);
       expect(f1.stateValues.numberMinima).eq(0);
       expect(f1.stateValues.numberExtrema).eq(1);
@@ -3359,16 +3443,16 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
-      let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
+      let numberMaximaAnchor = cesc('#' + stateVariables["/numbermaxima"].replacements[0].componentName);
+      let numberMinimaAnchor = cesc('#' + stateVariables["/numberminima"].replacements[0].componentName);
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        let f1 = components['/_function1'];
-        let f2 = components['/_function2'];
+        let f1 = stateVariables['/_function1'];
+        let f2 = stateVariables['/_function2'];
         expect(await f1.stateValues.numberMaxima).eq(1);
         expect(await f1.stateValues.numberMinima).eq(2);
         expect(await f1.stateValues.numberExtrema).eq(3);
@@ -3390,12 +3474,16 @@ describe('Function Tag Tests', function () {
       cy.get(numberMinimaAnchor).should('have.text', '1')
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point1'].movePoint({ x: 2, y: 6 })
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 2, y: 6 }
+      })
 
-        let f1 = components['/_function1'];
-        let f2 = components['/_function2'];
+        let f1 = stateVariables['/_function1'];
+        let f2 = stateVariables['/_function2'];
         expect(await f1.stateValues.numberMaxima).eq(1);
         expect(await f1.stateValues.numberMinima).eq(2);
         expect(await f1.stateValues.numberExtrema).eq(3);
@@ -3413,13 +3501,21 @@ describe('Function Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        await components['/_point2'].movePoint({ x: 3, y: 7 })
-        await components['/_point3'].movePoint({ x: 9, y: 0 })
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: 3, y: 7 }
+      })
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: 9, y: 0 }
+      })
 
-        let f1 = components['/_function1'];
-        let f2 = components['/_function2'];
+        let f1 = stateVariables['/_function1'];
+        let f2 = stateVariables['/_function2'];
         expect(await f1.stateValues.numberMaxima).eq(1);
         expect(await f1.stateValues.numberMinima).eq(2);
         expect(await f1.stateValues.numberExtrema).eq(3);
@@ -3472,9 +3568,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_p2').should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect((await components["/_function1"].stateValues.fs)[0](-2)).eq(2 * (-2) ** 3 + 1)
+      expect((stateVariables["/_function1"].stateValues.fs)[0](-2)).eq(2 * (-2) ** 3 + 1)
     });
 
 
@@ -3485,9 +3581,9 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_p2').should('have.text', '3')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect((await components["/_function1"].stateValues.fs)[0](-2)).eq(4 * (-2) ** 3 + 1)
+      expect((stateVariables["/_function1"].stateValues.fs)[0](-2)).eq(4 * (-2) ** 3 + 1)
     });
 
   });
@@ -3522,72 +3618,72 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/maxima"].replacements.length).eq(1);
-      let max1 = components["/maxima"].replacements[0].stateValues.coords.tree;
+      expect(stateVariables["/maxima"].replacements.length).eq(1);
+      let max1 = stateVariables["/maxima"].replacements[0].stateValues.coords.tree;
       expect(max1[1]).closeTo(0, 0.00001);
       expect(max1[2]).closeTo(1, 0.00001);
-      expect(components["/minima"].replacements.length).eq(2);
-      let min1 = components["/minima"].replacements[0].stateValues.coords.tree;
+      expect(stateVariables["/minima"].replacements.length).eq(2);
+      let min1 = stateVariables["/minima"].replacements[0].stateValues.coords.tree;
       expect(min1[1]).closeTo(-1, 0.00001)
       expect(min1[2]).closeTo(0, 0.00001)
-      let min2 = components["/minima"].replacements[1].stateValues.coords.tree;
+      let min2 = stateVariables["/minima"].replacements[1].stateValues.coords.tree;
       expect(min2[1]).closeTo(1, 0.00001)
       expect(min2[2]).closeTo(0, 0.00001)
-      expect(components["/extremum1"].replacements.length).eq(1);
-      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(min1);
-      expect(components["/extremum2"].replacements.length).eq(1);
-      expect(components["/extremum2"].replacements[0].stateValues.coords.tree).eqls(max1);
-      expect(components["/extremum3"].replacements.length).eq(1);
-      expect(components["/extremum3"].replacements[0].stateValues.coords.tree).eqls(min2);
+      expect(stateVariables["/extremum1"].replacements.length).eq(1);
+      expect(stateVariables["/extremum1"].replacements[0].stateValues.coords.tree).eqls(min1);
+      expect(stateVariables["/extremum2"].replacements.length).eq(1);
+      expect(stateVariables["/extremum2"].replacements[0].stateValues.coords.tree).eqls(max1);
+      expect(stateVariables["/extremum3"].replacements.length).eq(1);
+      expect(stateVariables["/extremum3"].replacements[0].stateValues.coords.tree).eqls(min2);
 
     });
 
     cy.get("#\\/_mathinput2 textarea").type('{end}{backspace}2{enter}', { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/maxima"].replacements.length).eq(1)
-      let max1 = components["/maxima"].replacements[0].stateValues.coords.tree;
+      expect(stateVariables["/maxima"].replacements.length).eq(1)
+      let max1 = stateVariables["/maxima"].replacements[0].stateValues.coords.tree;
       expect(max1[1]).closeTo(0, 0.00001);
       expect(max1[2]).closeTo(1, 0.00001);
-      expect(components["/minima"].replacements.length).eq(2);
-      let min1 = components["/minima"].replacements[0].stateValues.coords.tree;
+      expect(stateVariables["/minima"].replacements.length).eq(2);
+      let min1 = stateVariables["/minima"].replacements[0].stateValues.coords.tree;
       expect(min1[1]).closeTo(-2, 0.00001)
       expect(min1[2]).closeTo(-7, 0.00001)
 
-      let min2 = components["/minima"].replacements[1].stateValues.coords.tree;
+      let min2 = stateVariables["/minima"].replacements[1].stateValues.coords.tree;
       expect(min2[1]).closeTo(0.5, 0.00001)
       expect(min2[2]).closeTo(13 / 16, 0.00001)
 
-      expect(components["/extremum1"].replacements.length).eq(1);
-      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(min1);
-      expect(components["/extremum2"].replacements.length).eq(1);
-      expect(components["/extremum2"].replacements[0].stateValues.coords.tree).eqls(max1);
-      expect(components["/extremum3"].replacements.length).eq(1);
-      expect(components["/extremum3"].replacements[0].stateValues.coords.tree).eqls(min2);
+      expect(stateVariables["/extremum1"].replacements.length).eq(1);
+      expect(stateVariables["/extremum1"].replacements[0].stateValues.coords.tree).eqls(min1);
+      expect(stateVariables["/extremum2"].replacements.length).eq(1);
+      expect(stateVariables["/extremum2"].replacements[0].stateValues.coords.tree).eqls(max1);
+      expect(stateVariables["/extremum3"].replacements.length).eq(1);
+      expect(stateVariables["/extremum3"].replacements[0].stateValues.coords.tree).eqls(min2);
 
     });
 
     cy.get("#\\/_mathinput1 textarea").type('{end}{backspace}-1{enter}', { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/maxima"].replacements.length).eq(1);
-      let max1 = components["/maxima"].replacements[0].stateValues.coords.tree;
+      expect(stateVariables["/maxima"].replacements.length).eq(1);
+      let max1 = stateVariables["/maxima"].replacements[0].stateValues.coords.tree;
       expect(max1[1]).closeTo(0, 0.00001);
       expect(max1[2]).closeTo(1, 0.00001);
 
-      expect(components["/minima"].replacements.length).eq(0);
+      expect(stateVariables["/minima"].replacements.length).eq(0);
 
-      expect(components["/extremum1"].replacements.length).eq(1);
-      expect(components["/extremum1"].replacements[0].stateValues.coords.tree).eqls(max1);
+      expect(stateVariables["/extremum1"].replacements.length).eq(1);
+      expect(stateVariables["/extremum1"].replacements[0].stateValues.coords.tree).eqls(max1);
 
-      expect(components["/extremum2"].replacements.length).eq(0);
-      expect(components["/extremum3"].replacements.length).eq(0);
+      expect(stateVariables["/extremum2"].replacements.length).eq(0);
+      expect(stateVariables["/extremum3"].replacements.length).eq(0);
 
     });
   });
@@ -3629,14 +3725,14 @@ describe('Function Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let variable1Anchor = cesc('#' + components["/fv"].replacements[0].componentName);
-      let variable2Anchor = cesc('#' + components["/f2v"].replacements[0].componentName);
-      let variable3Anchor = cesc('#' + components["/f3v"].replacements[0].componentName);
-      let variable4Anchor = cesc('#' + components["/f4v"].replacements[0].componentName);
-      let variable5Anchor = cesc('#' + components["/f5v"].replacements[0].componentName);
-      let variable6Anchor = cesc('#' + components["/f6v"].replacements[0].componentName);
+      let variable1Anchor = cesc('#' + stateVariables["/fv"].replacements[0].componentName);
+      let variable2Anchor = cesc('#' + stateVariables["/f2v"].replacements[0].componentName);
+      let variable3Anchor = cesc('#' + stateVariables["/f3v"].replacements[0].componentName);
+      let variable4Anchor = cesc('#' + stateVariables["/f4v"].replacements[0].componentName);
+      let variable5Anchor = cesc('#' + stateVariables["/f5v"].replacements[0].componentName);
+      let variable6Anchor = cesc('#' + stateVariables["/f6v"].replacements[0].componentName);
 
       cy.get(variable1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('t')
@@ -3677,26 +3773,26 @@ describe('Function Tag Tests', function () {
 
       cy.window().then(async (win) => {
 
-        expect((await components["/f"].stateValues.variables)[0].tree).eq('t');
-        expect((await components["/f2"].stateValues.variables)[0].tree).eq('t');
-        expect((await components["/f3"].stateValues.variables)[0].tree).eq('s');
-        expect((await components["/f4"].replacements[0].stateValues.variables)[0].tree).eq('t');
-        expect((await components["/f5"].replacements[0].stateValues.variables)[0].tree).eq('t');
-        expect((await components["/f6"].replacements[0].stateValues.variables)[0].tree).eq('s');
+        expect((stateVariables["/f"].stateValues.variables)[0].tree).eq('t');
+        expect((stateVariables["/f2"].stateValues.variables)[0].tree).eq('t');
+        expect((stateVariables["/f3"].stateValues.variables)[0].tree).eq('s');
+        expect((stateVariables["/f4"].replacements[0].stateValues.variables)[0].tree).eq('t');
+        expect((stateVariables["/f5"].replacements[0].stateValues.variables)[0].tree).eq('t');
+        expect((stateVariables["/f6"].replacements[0].stateValues.variables)[0].tree).eq('s');
 
-        expect((await components["/f"].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
-        expect((await components["/f2"].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
-        expect((await components["/f3"].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
-        expect((await components["/f4"].replacements[0].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
-        expect((await components["/f5"].replacements[0].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
-        expect((await components["/f6"].replacements[0].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((stateVariables["/f"].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((stateVariables["/f2"].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((stateVariables["/f3"].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((stateVariables["/f4"].replacements[0].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((stateVariables["/f5"].replacements[0].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect((stateVariables["/f6"].replacements[0].stateValues.formula).tree).eqls(["*", "s", ["^", "t", 3]]);
 
-        expect((await components["/fOfu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
-        expect((await components["/f2Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
-        expect((await components["/f3Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "u", ["^", "t", 3]]);
-        expect((await components["/f4Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
-        expect((await components["/f5Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
-        expect((await components["/f6Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "u", ["^", "t", 3]]);
+        expect((stateVariables["/fOfu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect((stateVariables["/f2Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect((stateVariables["/f3Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "u", ["^", "t", 3]]);
+        expect((stateVariables["/f4Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect((stateVariables["/f5Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect((stateVariables["/f6Ofu"].activeChildren[0].stateValues.value).tree).eqls(["*", "u", ["^", "t", 3]]);
 
       })
     });
@@ -3752,14 +3848,14 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let variable1Anchor = cesc('#' + components["/fv"].replacements[0].componentName);
-      let variable2Anchor = cesc('#' + components["/f2v"].replacements[0].componentName);
-      let variable3Anchor = cesc('#' + components["/f3v"].replacements[0].componentName);
-      let variable4Anchor = cesc('#' + components["/f4v"].replacements[0].componentName);
-      let variable5Anchor = cesc('#' + components["/f5v"].replacements[0].componentName);
-      let variable6Anchor = cesc('#' + components["/f6v"].replacements[0].componentName);
+      let variable1Anchor = cesc('#' + stateVariables["/fv"].replacements[0].componentName);
+      let variable2Anchor = cesc('#' + stateVariables["/f2v"].replacements[0].componentName);
+      let variable3Anchor = cesc('#' + stateVariables["/f3v"].replacements[0].componentName);
+      let variable4Anchor = cesc('#' + stateVariables["/f4v"].replacements[0].componentName);
+      let variable5Anchor = cesc('#' + stateVariables["/f5v"].replacements[0].componentName);
+      let variable6Anchor = cesc('#' + stateVariables["/f6v"].replacements[0].componentName);
 
       cy.get(variable1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
@@ -3859,85 +3955,85 @@ describe('Function Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/f"].state.formula.isResolved).eq(true);
-      expect(components["/f"].state.symbolicfs.isResolved).eq(false);
-      expect(components["/f"].state.numericalfs.isResolved).eq(false);
-      expect(components["/f"].state.allMaxima.isResolved).eq(false);
-      expect(components["/f"].state.allMinima.isResolved).eq(false);
-      expect(components["/f"].state.allExtrema.isResolved).eq(false);
-      expect(components["/f"].state.numberMaxima.isResolved).eq(false);
-      expect(components["/f"].state.numberMinima.isResolved).eq(false);
-      expect(components["/f"].state.numberExtrema.isResolved).eq(false);
-      expect(components["/f"].state.maxima.isResolved).eq(false);
-      expect(components["/f"].state.minima.isResolved).eq(false);
-      expect(components["/f"].state.extrema.isResolved).eq(false);
+      expect(stateVariables["/f"].state.formula.isResolved).eq(true);
+      expect(stateVariables["/f"].state.symbolicfs.isResolved).eq(false);
+      expect(stateVariables["/f"].state.numericalfs.isResolved).eq(false);
+      expect(stateVariables["/f"].state.allMaxima.isResolved).eq(false);
+      expect(stateVariables["/f"].state.allMinima.isResolved).eq(false);
+      expect(stateVariables["/f"].state.allExtrema.isResolved).eq(false);
+      expect(stateVariables["/f"].state.numberMaxima.isResolved).eq(false);
+      expect(stateVariables["/f"].state.numberMinima.isResolved).eq(false);
+      expect(stateVariables["/f"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/f"].state.maxima.isResolved).eq(false);
+      expect(stateVariables["/f"].state.minima.isResolved).eq(false);
+      expect(stateVariables["/f"].state.extrema.isResolved).eq(false);
 
-      expect(components["/f2"].state.formula.isResolved).eq(true);
-      expect(components["/f2"].state.symbolicfs.isResolved).eq(false);
-      expect(components["/f2"].state.numericalfs.isResolved).eq(false);
-      expect(components["/f2"].state.allMaxima.isResolved).eq(false);
-      expect(components["/f2"].state.allMinima.isResolved).eq(false);
-      expect(components["/f2"].state.allExtrema.isResolved).eq(false);
-      expect(components["/f2"].state.numberMaxima.isResolved).eq(false);
-      expect(components["/f2"].state.numberMinima.isResolved).eq(false);
-      expect(components["/f2"].state.numberExtrema.isResolved).eq(false);
-      expect(components["/f2"].state.maxima.isResolved).eq(false);
-      expect(components["/f2"].state.minima.isResolved).eq(false);
-      expect(components["/f2"].state.extrema.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.formula.isResolved).eq(true);
+      expect(stateVariables["/f2"].state.symbolicfs.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.numericalfs.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.allMaxima.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.allMinima.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.allExtrema.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.numberMaxima.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.numberMinima.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.maxima.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.minima.isResolved).eq(false);
+      expect(stateVariables["/f2"].state.extrema.isResolved).eq(false);
 
-      expect(components["/f3"].state.formula.isResolved).eq(true);
-      expect(components["/f3"].state.symbolicfs.isResolved).eq(false);
-      expect(components["/f3"].state.numericalfs.isResolved).eq(false);
-      expect(components["/f3"].state.allMaxima.isResolved).eq(false);
-      expect(components["/f3"].state.allMinima.isResolved).eq(false);
-      expect(components["/f3"].state.allExtrema.isResolved).eq(false);
-      expect(components["/f3"].state.numberMaxima.isResolved).eq(false);
-      expect(components["/f3"].state.numberMinima.isResolved).eq(false);
-      expect(components["/f3"].state.numberExtrema.isResolved).eq(false);
-      expect(components["/f3"].state.maxima.isResolved).eq(false);
-      expect(components["/f3"].state.minima.isResolved).eq(false);
-      expect(components["/f3"].state.extrema.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.formula.isResolved).eq(true);
+      expect(stateVariables["/f3"].state.symbolicfs.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.numericalfs.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.allMaxima.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.allMinima.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.allExtrema.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.numberMaxima.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.numberMinima.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.maxima.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.minima.isResolved).eq(false);
+      expect(stateVariables["/f3"].state.extrema.isResolved).eq(false);
 
-      expect(components["/g"].state.formula.isResolved).eq(true);
-      expect(components["/g"].state.symbolicfs.isResolved).eq(false);
-      expect(components["/g"].state.numericalfs.isResolved).eq(false);
-      expect(components["/g"].state.allMaxima.isResolved).eq(false);
-      expect(components["/g"].state.allMinima.isResolved).eq(false);
-      expect(components["/g"].state.allExtrema.isResolved).eq(false);
-      expect(components["/g"].state.numberMaxima.isResolved).eq(false);
-      expect(components["/g"].state.numberMinima.isResolved).eq(false);
-      expect(components["/g"].state.numberExtrema.isResolved).eq(false);
-      expect(components["/g"].state.maxima.isResolved).eq(false);
-      expect(components["/g"].state.minima.isResolved).eq(false);
-      expect(components["/g"].state.extrema.isResolved).eq(false);
+      expect(stateVariables["/g"].state.formula.isResolved).eq(true);
+      expect(stateVariables["/g"].state.symbolicfs.isResolved).eq(false);
+      expect(stateVariables["/g"].state.numericalfs.isResolved).eq(false);
+      expect(stateVariables["/g"].state.allMaxima.isResolved).eq(false);
+      expect(stateVariables["/g"].state.allMinima.isResolved).eq(false);
+      expect(stateVariables["/g"].state.allExtrema.isResolved).eq(false);
+      expect(stateVariables["/g"].state.numberMaxima.isResolved).eq(false);
+      expect(stateVariables["/g"].state.numberMinima.isResolved).eq(false);
+      expect(stateVariables["/g"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/g"].state.maxima.isResolved).eq(false);
+      expect(stateVariables["/g"].state.minima.isResolved).eq(false);
+      expect(stateVariables["/g"].state.extrema.isResolved).eq(false);
 
-      expect(components["/g2"].state.formula.isResolved).eq(true);
-      expect(components["/g2"].state.symbolicfs.isResolved).eq(false);
-      expect(components["/g2"].state.numericalfs.isResolved).eq(false);
-      expect(components["/g2"].state.allMaxima.isResolved).eq(false);
-      expect(components["/g2"].state.allMinima.isResolved).eq(false);
-      expect(components["/g2"].state.allExtrema.isResolved).eq(false);
-      expect(components["/g2"].state.numberMaxima.isResolved).eq(false);
-      expect(components["/g2"].state.numberMinima.isResolved).eq(false);
-      expect(components["/g2"].state.numberExtrema.isResolved).eq(false);
-      expect(components["/g2"].state.maxima.isResolved).eq(false);
-      expect(components["/g2"].state.minima.isResolved).eq(false);
-      expect(components["/g2"].state.extrema.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.formula.isResolved).eq(true);
+      expect(stateVariables["/g2"].state.symbolicfs.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.numericalfs.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.allMaxima.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.allMinima.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.allExtrema.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.numberMaxima.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.numberMinima.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.maxima.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.minima.isResolved).eq(false);
+      expect(stateVariables["/g2"].state.extrema.isResolved).eq(false);
 
-      expect(components["/g3"].state.formula.isResolved).eq(true);
-      expect(components["/g3"].state.symbolicfs.isResolved).eq(false);
-      expect(components["/g3"].state.numericalfs.isResolved).eq(false);
-      expect(components["/g3"].state.allMaxima.isResolved).eq(false);
-      expect(components["/g3"].state.allMinima.isResolved).eq(false);
-      expect(components["/g3"].state.allExtrema.isResolved).eq(false);
-      expect(components["/g3"].state.numberMaxima.isResolved).eq(false);
-      expect(components["/g3"].state.numberMinima.isResolved).eq(false);
-      expect(components["/g3"].state.numberExtrema.isResolved).eq(false);
-      expect(components["/g3"].state.maxima.isResolved).eq(false);
-      expect(components["/g3"].state.minima.isResolved).eq(false);
-      expect(components["/g3"].state.extrema.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.formula.isResolved).eq(true);
+      expect(stateVariables["/g3"].state.symbolicfs.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.numericalfs.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.allMaxima.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.allMinima.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.allExtrema.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.numberMaxima.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.numberMinima.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.numberExtrema.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.maxima.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.minima.isResolved).eq(false);
+      expect(stateVariables["/g3"].state.extrema.isResolved).eq(false);
     });
 
   });
@@ -3957,12 +4053,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -3988,12 +4084,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -4019,12 +4115,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -4050,12 +4146,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -4081,12 +4177,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(3);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -4112,12 +4208,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(3);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -4143,12 +4239,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(4);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(4);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
       expect(f(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
@@ -4174,12 +4270,12 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(4);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(4);
 
-      let f = (await components['/_function1'].stateValues.fs)[0];
-      let numericalf = (await components['/_function1'].stateValues.numericalfs)[0];
-      let symbolicf = (await components['/_function1'].stateValues.symbolicfs)[0];
+      let f = (stateVariables['/_function1'].stateValues.fs)[0];
+      let numericalf = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let symbolicf = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
 
       expect(f(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
       expect(f(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
@@ -4205,16 +4301,16 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
-      expect(await components['/_function1'].stateValues.nOutputs).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
+      expect(stateVariables['/_function1'].stateValues.nOutputs).eq(2);
 
-      let f1 = (await components['/_function1'].stateValues.fs)[0];
-      let f2 = (await components['/_function1'].stateValues.fs)[1];
-      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
-      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
-      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
-      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
+      let f1 = (stateVariables['/_function1'].stateValues.fs)[0];
+      let f2 = (stateVariables['/_function1'].stateValues.fs)[1];
+      let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
+      let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (stateVariables['/_function1'].stateValues.symbolicfs)[1];
 
       expect(f1(-5)).closeTo(25, 1E-12);
       expect(f2(-5)).closeTo(-125, 1E-12);
@@ -4248,16 +4344,16 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
-      expect(await components['/_function1'].stateValues.nOutputs).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
+      expect(stateVariables['/_function1'].stateValues.nOutputs).eq(2);
 
-      let f1 = (await components['/_function1'].stateValues.fs)[0];
-      let f2 = (await components['/_function1'].stateValues.fs)[1];
-      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
-      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
-      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
-      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
+      let f1 = (stateVariables['/_function1'].stateValues.fs)[0];
+      let f2 = (stateVariables['/_function1'].stateValues.fs)[1];
+      let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
+      let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (stateVariables['/_function1'].stateValues.symbolicfs)[1];
 
       expect(f1(-5)).closeTo(25, 1E-12);
       expect(f2(-5)).closeTo(-125, 1E-12);
@@ -4291,16 +4387,16 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
-      expect(await components['/_function1'].stateValues.nOutputs).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
+      expect(stateVariables['/_function1'].stateValues.nOutputs).eq(2);
 
-      let f1 = (await components['/_function1'].stateValues.fs)[0];
-      let f2 = (await components['/_function1'].stateValues.fs)[1];
-      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
-      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
-      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
-      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
+      let f1 = (stateVariables['/_function1'].stateValues.fs)[0];
+      let f2 = (stateVariables['/_function1'].stateValues.fs)[1];
+      let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
+      let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (stateVariables['/_function1'].stateValues.symbolicfs)[1];
 
       expect(f1(-5)).closeTo(25, 1E-12);
       expect(f2(-5)).closeTo(-125, 1E-12);
@@ -4334,19 +4430,19 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
-      expect(await components['/_function1'].stateValues.nOutputs).eq(3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
+      expect(stateVariables['/_function1'].stateValues.nOutputs).eq(3);
 
-      let f1 = (await components['/_function1'].stateValues.fs)[0];
-      let f2 = (await components['/_function1'].stateValues.fs)[1];
-      let f3 = (await components['/_function1'].stateValues.fs)[2];
-      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
-      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
-      let numericalf3 = (await components['/_function1'].stateValues.numericalfs)[2];
-      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
-      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
-      let symbolicf3 = (await components['/_function1'].stateValues.symbolicfs)[2];
+      let f1 = (stateVariables['/_function1'].stateValues.fs)[0];
+      let f2 = (stateVariables['/_function1'].stateValues.fs)[1];
+      let f3 = (stateVariables['/_function1'].stateValues.fs)[2];
+      let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
+      let numericalf3 = (stateVariables['/_function1'].stateValues.numericalfs)[2];
+      let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (stateVariables['/_function1'].stateValues.symbolicfs)[1];
+      let symbolicf3 = (stateVariables['/_function1'].stateValues.symbolicfs)[2];
 
       expect(f1(-5)).closeTo(25, 1E-12);
       expect(f2(-5)).closeTo(-125, 1E-12);
@@ -4387,19 +4483,19 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(1);
-      expect(await components['/_function1'].stateValues.nOutputs).eq(3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
+      expect(stateVariables['/_function1'].stateValues.nOutputs).eq(3);
 
-      let f1 = (await components['/_function1'].stateValues.fs)[0];
-      let f2 = (await components['/_function1'].stateValues.fs)[1];
-      let f3 = (await components['/_function1'].stateValues.fs)[2];
-      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
-      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
-      let numericalf3 = (await components['/_function1'].stateValues.numericalfs)[2];
-      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
-      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
-      let symbolicf3 = (await components['/_function1'].stateValues.symbolicfs)[2];
+      let f1 = (stateVariables['/_function1'].stateValues.fs)[0];
+      let f2 = (stateVariables['/_function1'].stateValues.fs)[1];
+      let f3 = (stateVariables['/_function1'].stateValues.fs)[2];
+      let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
+      let numericalf3 = (stateVariables['/_function1'].stateValues.numericalfs)[2];
+      let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (stateVariables['/_function1'].stateValues.symbolicfs)[1];
+      let symbolicf3 = (stateVariables['/_function1'].stateValues.symbolicfs)[2];
 
       expect(f1(-5)).closeTo(25, 1E-12);
       expect(f2(-5)).closeTo(-125, 1E-12);
@@ -4440,16 +4536,16 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(2);
-      expect(await components['/_function1'].stateValues.nOutputs).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
+      expect(stateVariables['/_function1'].stateValues.nOutputs).eq(2);
 
-      let f1 = (await components['/_function1'].stateValues.fs)[0];
-      let f2 = (await components['/_function1'].stateValues.fs)[1];
-      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
-      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
-      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
-      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
+      let f1 = (stateVariables['/_function1'].stateValues.fs)[0];
+      let f2 = (stateVariables['/_function1'].stateValues.fs)[1];
+      let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
+      let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (stateVariables['/_function1'].stateValues.symbolicfs)[1];
 
       expect(f1(-5, 2)).closeTo(200, 1E-12);
       expect(f2(-5, 2)).closeTo(-500, 1E-12);
@@ -4483,19 +4579,19 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components['/_function1'].stateValues.nInputs).eq(2);
-      expect(await components['/_function1'].stateValues.nOutputs).eq(3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(2);
+      expect(stateVariables['/_function1'].stateValues.nOutputs).eq(3);
 
-      let f1 = (await components['/_function1'].stateValues.fs)[0];
-      let f2 = (await components['/_function1'].stateValues.fs)[1];
-      let f3 = (await components['/_function1'].stateValues.fs)[2];
-      let numericalf1 = (await components['/_function1'].stateValues.numericalfs)[0];
-      let numericalf2 = (await components['/_function1'].stateValues.numericalfs)[1];
-      let numericalf3 = (await components['/_function1'].stateValues.numericalfs)[2];
-      let symbolicf1 = (await components['/_function1'].stateValues.symbolicfs)[0];
-      let symbolicf2 = (await components['/_function1'].stateValues.symbolicfs)[1];
-      let symbolicf3 = (await components['/_function1'].stateValues.symbolicfs)[2];
+      let f1 = (stateVariables['/_function1'].stateValues.fs)[0];
+      let f2 = (stateVariables['/_function1'].stateValues.fs)[1];
+      let f3 = (stateVariables['/_function1'].stateValues.fs)[2];
+      let numericalf1 = (stateVariables['/_function1'].stateValues.numericalfs)[0];
+      let numericalf2 = (stateVariables['/_function1'].stateValues.numericalfs)[1];
+      let numericalf3 = (stateVariables['/_function1'].stateValues.numericalfs)[2];
+      let symbolicf1 = (stateVariables['/_function1'].stateValues.symbolicfs)[0];
+      let symbolicf2 = (stateVariables['/_function1'].stateValues.symbolicfs)[1];
+      let symbolicf3 = (stateVariables['/_function1'].stateValues.symbolicfs)[2];
 
       expect(f1(-5, 2)).closeTo(200, 1E-12);
       expect(f2(-5, 2)).closeTo(-500, 1E-12);
@@ -4542,14 +4638,14 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(await components["/f1"].stateValues.symbolic).eq(false)
-      expect(await components["/f2"].stateValues.symbolic).eq(true)
-      expect(await components["/f3"].stateValues.symbolic).eq(false)
-      expect(await components["/g1"].stateValues.symbolic).eq(true)
-      expect(await components["/g2"].stateValues.symbolic).eq(false)
-      expect(await components["/g3"].stateValues.symbolic).eq(true)
+      expect(stateVariables["/f1"].stateValues.symbolic).eq(false)
+      expect(stateVariables["/f2"].stateValues.symbolic).eq(true)
+      expect(stateVariables["/f3"].stateValues.symbolic).eq(false)
+      expect(stateVariables["/g1"].stateValues.symbolic).eq(true)
+      expect(stateVariables["/g2"].stateValues.symbolic).eq(false)
+      expect(stateVariables["/g3"].stateValues.symbolic).eq(true)
 
     })
   });
@@ -4583,14 +4679,14 @@ describe('Function Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(await components["/f1"].stateValues.nInputs).eq(1)
-      expect(await components["/f2"].stateValues.nInputs).eq(2)
-      expect(await components["/f3"].stateValues.nInputs).eq(3)
-      expect((await components["/f1"].stateValues.variables).map(x => x.tree)).eqls(["x"])
-      expect((await components["/f2"].stateValues.variables).map(x => x.tree)).eqls(["x", "y"])
-      expect((await components["/f3"].stateValues.variables).map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(stateVariables["/f1"].stateValues.nInputs).eq(1)
+      expect(stateVariables["/f2"].stateValues.nInputs).eq(2)
+      expect(stateVariables["/f3"].stateValues.nInputs).eq(3)
+      expect((stateVariables["/f1"].stateValues.variables).map(x => x.tree)).eqls(["x"])
+      expect((stateVariables["/f2"].stateValues.variables).map(x => x.tree)).eqls(["x", "y"])
+      expect((stateVariables["/f3"].stateValues.variables).map(x => x.tree)).eqls(["x", "y", "z"])
 
     })
   });
@@ -4634,18 +4730,18 @@ describe('Function Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(await components["/f1"].stateValues.nInputs).eq(1)
-      expect(await components["/f2"].stateValues.nInputs).eq(2)
-      expect(await components["/f3"].stateValues.nInputs).eq(3)
-      expect(await components["/f4"].stateValues.nInputs).eq(2)
-      expect(await components["/f5"].stateValues.nInputs).eq(1)
-      expect((await components["/f1"].stateValues.variables).map(x => x.tree)).eqls(["x"])
-      expect((await components["/f2"].stateValues.variables).map(x => x.tree)).eqls(["x", "y"])
-      expect((await components["/f3"].stateValues.variables).map(x => x.tree)).eqls(["x", "y", "z"])
-      expect((await components["/f4"].stateValues.variables).map(x => x.tree)).eqls(["z", "y"])
-      expect((await components["/f5"].stateValues.variables).map(x => x.tree)).eqls(["y"])
+      expect(stateVariables["/f1"].stateValues.nInputs).eq(1)
+      expect(stateVariables["/f2"].stateValues.nInputs).eq(2)
+      expect(stateVariables["/f3"].stateValues.nInputs).eq(3)
+      expect(stateVariables["/f4"].stateValues.nInputs).eq(2)
+      expect(stateVariables["/f5"].stateValues.nInputs).eq(1)
+      expect((stateVariables["/f1"].stateValues.variables).map(x => x.tree)).eqls(["x"])
+      expect((stateVariables["/f2"].stateValues.variables).map(x => x.tree)).eqls(["x", "y"])
+      expect((stateVariables["/f3"].stateValues.variables).map(x => x.tree)).eqls(["x", "y", "z"])
+      expect((stateVariables["/f4"].stateValues.variables).map(x => x.tree)).eqls(["z", "y"])
+      expect((stateVariables["/f5"].stateValues.variables).map(x => x.tree)).eqls(["y"])
 
     })
   });

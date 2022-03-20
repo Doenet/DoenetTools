@@ -674,10 +674,10 @@ describe('Polygon Tag Tests', function () {
       let ps = [[-3, -1], [1, 2], [3, 4], [6, -2]];
 
       for (let i = 0; i < 4; i++) {
-        expect((await stateVariables[`/v${i + 1}`].stateValues.xs)[0]).eq(ps[i][0]);
-        expect((await stateVariables[`/v${i + 1}a`].stateValues.xs)[0]).eq(ps[i][0]);
-        expect((await stateVariables[`/v${i + 1}`].stateValues.xs)[1]).eq(ps[i][1]);
-        expect((await stateVariables[`/v${i + 1}a`].stateValues.xs)[1]).eq(ps[i][1]);
+        expect((stateVariables[`/v${i + 1}`].stateValues.xs)[0]).eq(ps[i][0]);
+        expect((stateVariables[`/v${i + 1}a`].stateValues.xs)[0]).eq(ps[i][0]);
+        expect((stateVariables[`/v${i + 1}`].stateValues.xs)[1]).eq(ps[i][1]);
+        expect((stateVariables[`/v${i + 1}a`].stateValues.xs)[1]).eq(ps[i][1]);
       }
     })
 
@@ -698,10 +698,10 @@ describe('Polygon Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let i = 0; i < 4; i++) {
-          expect((await stateVariables[`/v${i + 1}`].stateValues.xs)[0]).eq(ps[i][0]);
-          expect((await stateVariables[`/v${i + 1}a`].stateValues.xs)[0]).eq(ps[i][0]);
-          expect((await stateVariables[`/v${i + 1}`].stateValues.xs)[1]).eq(ps[i][1]);
-          expect((await stateVariables[`/v${i + 1}a`].stateValues.xs)[1]).eq(ps[i][1]);
+          expect((stateVariables[`/v${i + 1}`].stateValues.xs)[0]).eq(ps[i][0]);
+          expect((stateVariables[`/v${i + 1}a`].stateValues.xs)[0]).eq(ps[i][0]);
+          expect((stateVariables[`/v${i + 1}`].stateValues.xs)[1]).eq(ps[i][1]);
+          expect((stateVariables[`/v${i + 1}a`].stateValues.xs)[1]).eq(ps[i][1]);
         }
       })
 
@@ -724,10 +724,10 @@ describe('Polygon Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let i = 0; i < 4; i++) {
-          expect((await stateVariables[`/v${i + 1}`].stateValues.xs)[0]).eq(ps[i][0]);
-          expect((await stateVariables[`/v${i + 1}a`].stateValues.xs)[0]).eq(ps[i][0]);
-          expect((await stateVariables[`/v${i + 1}`].stateValues.xs)[1]).eq(ps[i][1]);
-          expect((await stateVariables[`/v${i + 1}a`].stateValues.xs)[1]).eq(ps[i][1]);
+          expect((stateVariables[`/v${i + 1}`].stateValues.xs)[0]).eq(ps[i][0]);
+          expect((stateVariables[`/v${i + 1}a`].stateValues.xs)[0]).eq(ps[i][0]);
+          expect((stateVariables[`/v${i + 1}`].stateValues.xs)[1]).eq(ps[i][1]);
+          expect((stateVariables[`/v${i + 1}a`].stateValues.xs)[1]).eq(ps[i][1]);
         }
       })
 
@@ -979,10 +979,10 @@ describe('Polygon Tag Tests', function () {
     let D = [A[0] + C[0] - B[0], A[1] + C[1] - B[1]];
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
-      expect((await stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
-      expect((await stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
-      expect((await stateVariables['/parallelogram'].stateValues.vertices)[3]).eqls(D);
+      expect((stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
+      expect((stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
+      expect((stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
+      expect((stateVariables['/parallelogram'].stateValues.vertices)[3]).eqls(D);
     })
 
     cy.log('move first vertex')
@@ -1002,10 +1002,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[3]).eqls(D);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[3]).eqls(D);
       })
     })
 
@@ -1026,10 +1026,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[3]).eqls(D);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[3]).eqls(D);
       })
     })
 
@@ -1050,10 +1050,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[3]).eqls(D);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[3]).eqls(D);
       })
     })
 
@@ -1074,10 +1074,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/parallelogram'].stateValues.vertices)[3]).eqls(D);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/parallelogram'].stateValues.vertices)[3]).eqls(D);
       })
     })
 
@@ -1204,10 +1204,10 @@ describe('Polygon Tag Tests', function () {
     let D = [C[0] + B[0] - A[0], C[1] + B[1] - A[1]];
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(D);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(D);
     })
 
     cy.log('move first vertex')
@@ -1227,10 +1227,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(D);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(D);
       })
     })
 
@@ -1251,10 +1251,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(D);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(D);
       })
     })
 
@@ -1275,10 +1275,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(D);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(D);
       })
     })
 
@@ -1299,10 +1299,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(D);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(D);
       })
     })
 
@@ -1327,10 +1327,10 @@ describe('Polygon Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_polygon1'].stateValues.nVertices).eq(4)
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
     })
 
     cy.log('move first vertex')
@@ -1349,10 +1349,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
       })
     })
 
@@ -1372,10 +1372,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
       })
     })
 
@@ -1395,10 +1395,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
       })
     })
 
@@ -1417,10 +1417,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
       })
     })
 
@@ -1446,10 +1446,10 @@ describe('Polygon Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_polygon1'].stateValues.nVertices).eq(4)
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
     })
 
     cy.log('move first vertex')
@@ -1468,10 +1468,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
       })
     })
 
@@ -1491,10 +1491,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
       })
     })
 
@@ -1514,10 +1514,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
       })
     })
 
@@ -1537,10 +1537,10 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
       })
     })
 
@@ -1566,11 +1566,11 @@ describe('Polygon Tag Tests', function () {
     let D = [A[0] + 1, 2];
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
-      expect((await stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+      expect((stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
     })
 
     cy.log('move first vertex')
@@ -1590,11 +1590,11 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
       })
     })
 
@@ -1614,11 +1614,11 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
       })
     })
 
@@ -1638,11 +1638,11 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
       })
     })
 
@@ -1663,11 +1663,11 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
       })
     })
 
@@ -1688,11 +1688,11 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/_polygon1'].stateValues.vertices)[4]).eqls(D);
       })
     })
 
@@ -1721,16 +1721,16 @@ describe('Polygon Tag Tests', function () {
     let G = [5, 0];
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
-      expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-      expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-      expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
-      expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-      expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-      expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
-      expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-      expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-      expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+      expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
+      expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+      expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+      expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
+      expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+      expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+      expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
+      expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+      expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+      expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
     })
 
     cy.log('move first vertex')
@@ -1749,16 +1749,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -1778,16 +1778,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -1807,16 +1807,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -1836,16 +1836,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -1865,16 +1865,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -1894,16 +1894,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -1923,16 +1923,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -1952,16 +1952,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -1981,16 +1981,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -2010,16 +2010,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
   })
@@ -2050,16 +2050,16 @@ describe('Polygon Tag Tests', function () {
     let A3 = [A[0] + 3, A[1] + 3];
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
-      expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-      expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-      expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
-      expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-      expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-      expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
-      expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-      expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-      expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+      expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
+      expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+      expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+      expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
+      expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+      expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+      expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
+      expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+      expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+      expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
     })
 
     cy.log('move first vertex')
@@ -2081,16 +2081,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -2110,16 +2110,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -2139,16 +2139,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -2171,16 +2171,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -2200,16 +2200,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -2229,16 +2229,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -2261,16 +2261,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -2290,16 +2290,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -2319,16 +2319,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
 
@@ -2351,16 +2351,16 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
-        expect((await stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
-        expect((await stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
-        expect((await stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
-        expect((await stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
-        expect((await stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
-        expect((await stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
-        expect((await stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
-        expect((await stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
-        expect((await stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
+        expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
+        expect((stateVariables['/P'].stateValues.vertices)[1]).eqls(B);
+        expect((stateVariables['/P'].stateValues.vertices)[2]).eqls(C);
+        expect((stateVariables['/P'].stateValues.vertices)[3]).eqls(A2);
+        expect((stateVariables['/P'].stateValues.vertices)[4]).eqls(D);
+        expect((stateVariables['/P'].stateValues.vertices)[5]).eqls(E);
+        expect((stateVariables['/P'].stateValues.vertices)[6]).eqls(A1);
+        expect((stateVariables['/P'].stateValues.vertices)[7]).eqls(F);
+        expect((stateVariables['/P'].stateValues.vertices)[8]).eqls(G);
+        expect((stateVariables['/P'].stateValues.vertices)[9]).eqls(A);
       })
     })
   })
@@ -3125,9 +3125,9 @@ describe('Polygon Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/p'].stateValues.vertices)[0]).eqls([1, 3]);
-      expect((await stateVariables['/p'].stateValues.vertices)[1]).eqls([5, 7]);
-      expect((await stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);
+      expect((stateVariables['/p'].stateValues.vertices)[0]).eqls([1, 3]);
+      expect((stateVariables['/p'].stateValues.vertices)[1]).eqls([5, 7]);
+      expect((stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);
       expect(stateVariables['/p'].stateValues.fixed).eq(true);
 
     })
@@ -3150,9 +3150,9 @@ describe('Polygon Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/p'].stateValues.vertices)[0]).eqls([1, 3]);
-        expect((await stateVariables['/p'].stateValues.vertices)[1]).eqls([5, 7]);
-        expect((await stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);
+        expect((stateVariables['/p'].stateValues.vertices)[0]).eqls([1, 3]);
+        expect((stateVariables['/p'].stateValues.vertices)[1]).eqls([5, 7]);
+        expect((stateVariables['/p'].stateValues.vertices)[2]).eqls([-2, 6]);
       })
     })
 

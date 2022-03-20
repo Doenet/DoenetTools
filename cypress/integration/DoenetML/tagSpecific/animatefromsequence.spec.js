@@ -6,7 +6,7 @@ describe('AnimateFromSequence Tag Tests', function () {
   })
 
   it('increase from 1 to 10', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -84,7 +84,7 @@ describe('AnimateFromSequence Tag Tests', function () {
   })
 
   it('increase once from 1 to 10', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -150,7 +150,7 @@ describe('AnimateFromSequence Tag Tests', function () {
   })
 
   it('decrease from z to e by 3', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -244,7 +244,7 @@ describe('AnimateFromSequence Tag Tests', function () {
   })
 
   it('decrease once from z to e by 3', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -306,7 +306,7 @@ describe('AnimateFromSequence Tag Tests', function () {
   })
 
   it('oscillate between -1000 and 1000 by 100s, skipping 0, +-200, +-300 +-400, +-700, +-800', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -418,7 +418,7 @@ describe('AnimateFromSequence Tag Tests', function () {
   })
 
   it('animation adjusts if value changed when paused', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -590,7 +590,7 @@ describe('AnimateFromSequence Tag Tests', function () {
   })
 
   it('animation adjusts if value changed when running', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -685,7 +685,7 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -703,7 +703,7 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get('#\\/anmode_input').should('have.value', 'decrease')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: '<text>b</text>',
       }, "*");
@@ -711,7 +711,7 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
       }, "*");
@@ -726,7 +726,7 @@ describe('AnimateFromSequence Tag Tests', function () {
   })
 
   it('call animation actions', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>

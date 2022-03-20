@@ -15,7 +15,7 @@ describe('Feedback Tag Tests', function () {
   })
 
   it('feedback from answer value or credit', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -33,9 +33,9 @@ describe('Feedback Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
@@ -100,7 +100,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback from award', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -118,9 +118,9 @@ describe('Feedback Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
@@ -181,7 +181,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback from awards, select which one to display', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -216,9 +216,9 @@ describe('Feedback Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let caAnchor = cesc('#' + stateVariables['/ca'].replacements[0].componentName);
 
       cy.log('Test value displayed in browser')
       // cy.get('#\\/_mathinput1_input').should('have.value', '');
@@ -311,7 +311,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback from multiple choice, select which one to display', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -347,10 +347,10 @@ describe('Feedback Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName)
-      let choiceinputName = components['/_answer1'].stateValues.inputChildren[0].componentName;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let caAnchor = cesc('#' + stateVariables['/ca'].replacements[0].componentName)
+      let choiceinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName;
       let choiceinputAnchor = cesc('#' + choiceinputName);
       let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
 
@@ -411,7 +411,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback for any incorrect response', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -426,9 +426,9 @@ describe('Feedback Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
 
       cy.log('Test value displayed in browser')
@@ -459,7 +459,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback defined in awards', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -485,9 +485,9 @@ describe('Feedback Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
@@ -588,7 +588,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback defined in awards, new feedback definitions', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -621,9 +621,9 @@ describe('Feedback Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
@@ -724,7 +724,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback defined in awards, new feedback definitions in document and section', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -765,9 +765,9 @@ describe('Feedback Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
@@ -868,7 +868,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback defined in awards, new feedback definitions in document, incorrect codes', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -902,9 +902,9 @@ describe('Feedback Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
@@ -1005,7 +1005,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback defined in choices', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1026,9 +1026,9 @@ describe('Feedback Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
       let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
@@ -1076,7 +1076,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback defined in choices, new feedback definitions in document and section', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1112,9 +1112,9 @@ describe('Feedback Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
       let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
@@ -1162,7 +1162,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback updated with target', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1198,7 +1198,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback based on booleans, updated with target', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1302,7 +1302,7 @@ describe('Feedback Tag Tests', function () {
   });
 
   it('feedback based on fractionSatisfied/creditAchieved of award', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>

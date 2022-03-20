@@ -203,13 +203,13 @@ describe('Module Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/m/g"].stateValues.width.size).eq(300)
-      expect(components["/m/g"].stateValues.height.size).eq(300)
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([3, 5]);
-      expect(components["/m2/g"].stateValues.width.size).eq(200)
-      expect(components["/m2/g"].stateValues.height.size).eq(100)
-      expect((await components["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([7, -7]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.height.size).eq(300)
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([3, 5]);
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(200)
+      expect(stateVariables["/m2/g"].stateValues.height.size).eq(100)
+      expect((stateVariables["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([7, -7]);
     });
 
     cy.get(cesc('#/m/x2') + " textarea").type("{end}{backspace}-6{enter}", { force: true })
@@ -217,13 +217,13 @@ describe('Module Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/m/g"].stateValues.width.size).eq(300)
-      expect(components["/m/g"].stateValues.height.size).eq(300)
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 9]);
-      expect(components["/m2/g"].stateValues.width.size).eq(200)
-      expect(components["/m2/g"].stateValues.height.size).eq(100)
-      expect((await components["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([7, -7]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.height.size).eq(300)
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 9]);
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(200)
+      expect(stateVariables["/m2/g"].stateValues.height.size).eq(100)
+      expect((stateVariables["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([7, -7]);
     });
 
 
@@ -233,50 +233,58 @@ describe('Module Tag Tests', function () {
     cy.get(cesc('#/h') + " textarea").type("{end}{backspace}{backspace}80{enter}", { force: true })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/m/g"].stateValues.width.size).eq(300)
-      expect(components["/m/g"].stateValues.height.size).eq(300)
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 9]);
-      expect(components["/m2/g"].stateValues.width.size).eq(230)
-      expect(components["/m2/g"].stateValues.height.size).eq(180)
-      expect((await components["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([1, 2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.height.size).eq(300)
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 9]);
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(230)
+      expect(stateVariables["/m2/g"].stateValues.height.size).eq(180)
+      expect((stateVariables["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([1, 2]);
     });
 
     cy.get(cesc('#/m2/x2') + " textarea").type("{end}{backspace}-3{enter}", { force: true })
     cy.get(cesc('#/m2/y2') + " textarea").type("{end}{backspace}-4{enter}", { force: true })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/m/g"].stateValues.width.size).eq(300)
-      expect(components["/m/g"].stateValues.height.size).eq(300)
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 9]);
-      expect(components["/m2/g"].stateValues.width.size).eq(230)
-      expect(components["/m2/g"].stateValues.height.size).eq(180)
-      expect((await components["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([-3, -4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.height.size).eq(300)
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 9]);
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(230)
+      expect(stateVariables["/m2/g"].stateValues.height.size).eq(180)
+      expect((stateVariables["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([-3, -4]);
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/m/p"].movePoint({ x: -8, y: -9 })
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/m/p",
+        args: { x: -8, y: -9 }
+      })
 
-      expect(components["/m/g"].stateValues.width.size).eq(300)
-      expect(components["/m/g"].stateValues.height.size).eq(300)
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-8, -9]);
-      expect(components["/m2/g"].stateValues.width.size).eq(230)
-      expect(components["/m2/g"].stateValues.height.size).eq(180)
-      expect((await components["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([-3, -4]);
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.height.size).eq(300)
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-8, -9]);
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(230)
+      expect(stateVariables["/m2/g"].stateValues.height.size).eq(180)
+      expect((stateVariables["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([-3, -4]);
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/m2/p"].movePoint({ x: 6, y: -10 })
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/m2/p",
+        args: { x: 6, y: -10 }
+      })
 
-      expect(components["/m/g"].stateValues.width.size).eq(300)
-      expect(components["/m/g"].stateValues.height.size).eq(300)
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-8, -9]);
-      expect(components["/m2/g"].stateValues.width.size).eq(230)
-      expect(components["/m2/g"].stateValues.height.size).eq(180)
-      expect((await components["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([6, -10]);
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.height.size).eq(300)
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-8, -9]);
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(230)
+      expect(stateVariables["/m2/g"].stateValues.height.size).eq(180)
+      expect((stateVariables["/m2/p"].stateValues.xs).map(x => x.tree)).eqls([6, -10]);
     });
 
 
@@ -318,74 +326,94 @@ describe('Module Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([3, 5]);
-      expect((await components["/n/p"].stateValues.xs).map(x => x.tree)).eqls([1, -2]);
-      expect((await components["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-1, 9]);
-      expect((await components["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([7, -7]);
-      expect((await components["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([0, 9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([3, 5]);
+      expect((stateVariables["/n/p"].stateValues.xs).map(x => x.tree)).eqls([1, -2]);
+      expect((stateVariables["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-1, 9]);
+      expect((stateVariables["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([7, -7]);
+      expect((stateVariables["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([0, 9]);
     });
 
     cy.get(cesc('#/x') + " textarea").type("{end}{backspace}{backspace}-6{enter}", { force: true })
     cy.get(cesc('#/y') + " textarea").type("{end}{backspace}{backspace}8{enter}", { force: true })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([3, 5]);
-      expect((await components["/n/p"].stateValues.xs).map(x => x.tree)).eqls([1, -2]);
-      expect((await components["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-1, 9]);
-      expect((await components["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 8]);
-      expect((await components["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([2, 9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([3, 5]);
+      expect((stateVariables["/n/p"].stateValues.xs).map(x => x.tree)).eqls([1, -2]);
+      expect((stateVariables["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-1, 9]);
+      expect((stateVariables["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 8]);
+      expect((stateVariables["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([2, 9]);
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/m/p"].movePoint({ x: -2, y: -4 })
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -4]);
-      expect((await components["/n/p"].stateValues.xs).map(x => x.tree)).eqls([1, -2]);
-      expect((await components["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-1, 9]);
-      expect((await components["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 8]);
-      expect((await components["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([2, 9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/m/p",
+        args: { x: -2, y: -4 }
+      })
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -4]);
+      expect((stateVariables["/n/p"].stateValues.xs).map(x => x.tree)).eqls([1, -2]);
+      expect((stateVariables["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-1, 9]);
+      expect((stateVariables["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 8]);
+      expect((stateVariables["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([2, 9]);
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/n/p"].movePoint({ x: 7, y: -3 })
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -4]);
-      expect((await components["/n/p"].stateValues.xs).map(x => x.tree)).eqls([7, -3]);
-      expect((await components["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([4, 9]);
-      expect((await components["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 8]);
-      expect((await components["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([2, 9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/n/p",
+        args: { x: 7, y: -3 }
+      })
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -4]);
+      expect((stateVariables["/n/p"].stateValues.xs).map(x => x.tree)).eqls([7, -3]);
+      expect((stateVariables["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([4, 9]);
+      expect((stateVariables["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 8]);
+      expect((stateVariables["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([2, 9]);
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/n/m/p"].movePoint({ x: -5, y: -7 })
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -4]);
-      expect((await components["/n/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -3]);
-      expect((await components["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-5, -7]);
-      expect((await components["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 8]);
-      expect((await components["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([2, 9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/n/m/p",
+        args: { x: -5, y: -7 }
+      })
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -4]);
+      expect((stateVariables["/n/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -3]);
+      expect((stateVariables["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-5, -7]);
+      expect((stateVariables["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([-6, 8]);
+      expect((stateVariables["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([2, 9]);
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/n2/p"].movePoint({ x: 4, y: 5 })
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -4]);
-      expect((await components["/n/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -3]);
-      expect((await components["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-5, -7]);
-      expect((await components["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([4, 5]);
-      expect((await components["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([9, 9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/n2/p",
+        args: { x: 4, y: 5 }
+      })
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -4]);
+      expect((stateVariables["/n/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -3]);
+      expect((stateVariables["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-5, -7]);
+      expect((stateVariables["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([4, 5]);
+      expect((stateVariables["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([9, 9]);
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/n2/m/p"].movePoint({ x: -5, y: -6 })
-      expect((await components["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -4]);
-      expect((await components["/n/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -3]);
-      expect((await components["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-5, -7]);
-      expect((await components["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([-10, 5]);
-      expect((await components["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([-5, -6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/n2/m/p",
+        args: { x: -5, y: -6 }
+      })
+      expect((stateVariables["/m/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -4]);
+      expect((stateVariables["/n/p"].stateValues.xs).map(x => x.tree)).eqls([-2, -3]);
+      expect((stateVariables["/n/m/p"].stateValues.xs).map(x => x.tree)).eqls([-5, -7]);
+      expect((stateVariables["/n2/p"].stateValues.xs).map(x => x.tree)).eqls([-10, 5]);
+      expect((stateVariables["/n2/m/p"].stateValues.xs).map(x => x.tree)).eqls([-5, -6]);
     });
 
   })
@@ -440,9 +468,9 @@ describe('Module Tag Tests', function () {
     cy.get('#\\/ca2').should('have.text', '0');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components["/m1/P"].stateValues.xs).map(x => x.tree)).eqls([0, 0]);
-      expect((await components["/m2/P"].stateValues.xs).map(x => x.tree)).eqls([-3, 3]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables["/m1/P"].stateValues.xs).map(x => x.tree)).eqls([0, 0]);
+      expect((stateVariables["/m2/P"].stateValues.xs).map(x => x.tree)).eqls([-3, 3]);
     });
 
     cy.log('submit answers')
@@ -461,9 +489,17 @@ describe('Module Tag Tests', function () {
 
     cy.log('move near correct answers')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/m1/P"].movePoint({ x: 3.2, y: 3.9 });
-      await components["/m2/P"].movePoint({ x: 7.2, y: -4.9 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/m1/P",
+        args: { x: 3.2, y: 3.9 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/m2/P",
+        args: { x: 7.2, y: -4.9 }
+      });
     });
 
 
@@ -574,16 +610,16 @@ describe('Module Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components["/g/extMod/P"].stateValues.xs).map(x => x.tree)).eqls([3, 0]);
-      expect((await components["/g2/extMod/P"].stateValues.xs).map(x => x.tree)).eqls([9, 0]);
-      expect((await components["/g3/extMod/P"].stateValues.xs).map(x => x.tree)).eqls([-3, 0]);
-      expect(components["/g/extMod/_graph1"].stateValues.width.size).eq(300);
-      expect(components["/g/extMod/_graph1"].stateValues.height.size).eq(300);
-      expect(components["/g2/extMod/_graph1"].stateValues.width.size).eq(200);
-      expect(components["/g2/extMod/_graph1"].stateValues.height.size).eq(250);
-      expect(components["/g3/extMod/_graph1"].stateValues.width.size).eq(350);
-      expect(components["/g3/extMod/_graph1"].stateValues.height.size).eq(325);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables["/g/extMod/P"].stateValues.xs).map(x => x.tree)).eqls([3, 0]);
+      expect((stateVariables["/g2/extMod/P"].stateValues.xs).map(x => x.tree)).eqls([9, 0]);
+      expect((stateVariables["/g3/extMod/P"].stateValues.xs).map(x => x.tree)).eqls([-3, 0]);
+      expect(stateVariables["/g/extMod/_graph1"].stateValues.width.size).eq(300);
+      expect(stateVariables["/g/extMod/_graph1"].stateValues.height.size).eq(300);
+      expect(stateVariables["/g2/extMod/_graph1"].stateValues.width.size).eq(200);
+      expect(stateVariables["/g2/extMod/_graph1"].stateValues.height.size).eq(250);
+      expect(stateVariables["/g3/extMod/_graph1"].stateValues.width.size).eq(350);
+      expect(stateVariables["/g3/extMod/_graph1"].stateValues.height.size).eq(325);
     });
 
     cy.log('submit answers')
@@ -609,10 +645,22 @@ describe('Module Tag Tests', function () {
 
     cy.log('move near correct answers')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/g/extMod/P"].movePoint({ x: 1.2, y: 1.9 });
-      await components["/g2/extMod/P"].movePoint({ x: 1.2, y: -4.9 });
-      await components["/g3/extMod/P"].movePoint({ x: 7.2, y: 1.9 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g/extMod/P",
+        args: { x: 1.2, y: 1.9 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g2/extMod/P",
+        args: { x: 1.2, y: -4.9 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g3/extMod/P",
+        args: { x: 7.2, y: 1.9 }
+      });
     });
 
 
@@ -716,18 +764,18 @@ describe('Module Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let g2m1Anchor = cesc('#' + components["/g2"].replacements[3].activeChildren[1].componentName);
-      let g2m3Anchor = cesc('#' + components["/g2"].replacements[5].activeChildren[3].componentName);
-      let g2extProblem = components["/g2"].replacements[7].replacements[0].replacements[0].replacements[3];
+      let g2m1Anchor = cesc('#' + stateVariables["/g2"].replacements[3].activeChildren[1].componentName);
+      let g2m3Anchor = cesc('#' + stateVariables["/g2"].replacements[5].activeChildren[3].componentName);
+      let g2extProblem = stateVariables["/g2"].replacements[7].replacements[0].replacements[0].replacements[3];
       let g2extm1Anchor = cesc('#' + g2extProblem.activeChildren[2].activeChildren[1].componentName);
       let g2extGraph = g2extProblem.activeChildren[4];
       let g2extP = g2extGraph.activeChildren[0];
       let g2extAnswerSubmitAnchor = cesc('#' + g2extProblem.activeChildren[6].componentName + "_submit");
-      let g3m1Anchor = cesc('#' + components["/g3"].replacements[3].activeChildren[1].componentName);
-      let g3m3Anchor = cesc('#' + components["/g3"].replacements[5].activeChildren[3].componentName);
-      let g3extProblem = components["/g3"].replacements[7].replacements[0].replacements[0].replacements[3];
+      let g3m1Anchor = cesc('#' + stateVariables["/g3"].replacements[3].activeChildren[1].componentName);
+      let g3m3Anchor = cesc('#' + stateVariables["/g3"].replacements[5].activeChildren[3].componentName);
+      let g3extProblem = stateVariables["/g3"].replacements[7].replacements[0].replacements[0].replacements[3];
       let g3extm1Anchor = cesc('#' + g3extProblem.activeChildren[2].activeChildren[1].componentName);
       let g3extGraph = g3extProblem.activeChildren[4];
       let g3extP = g3extGraph.activeChildren[0];
@@ -763,12 +811,12 @@ describe('Module Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect((await components["/extMod/P"].stateValues.xs).map(x => x.tree)).eqls([3, 0]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables["/extMod/P"].stateValues.xs).map(x => x.tree)).eqls([3, 0]);
         expect(g2extP.stateValues.xs.map(x => x.tree)).eqls([9, 0]);
         expect(g3extP.stateValues.xs.map(x => x.tree)).eqls([-3, 0]);
-        expect(components["/extMod/_graph1"].stateValues.width.size).eq(300);
-        expect(components["/extMod/_graph1"].stateValues.height.size).eq(300);
+        expect(stateVariables["/extMod/_graph1"].stateValues.width.size).eq(300);
+        expect(stateVariables["/extMod/_graph1"].stateValues.height.size).eq(300);
         expect(g2extGraph.stateValues.width.size).eq(200);
         expect(g2extGraph.stateValues.height.size).eq(250);
         expect(g3extGraph.stateValues.width.size).eq(350);
@@ -783,8 +831,8 @@ describe('Module Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components["/extMod/prob"].stateValues.creditAchieved).eq(0);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/extMod/prob"].stateValues.creditAchieved).eq(0);
         expect(g2extProblem.stateValues.creditAchieved).eq(0);
         expect(g3extProblem.stateValues.creditAchieved).eq(0);
       })
@@ -792,8 +840,12 @@ describe('Module Tag Tests', function () {
 
       cy.log('move near correct answers')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        await components["/extMod/P"].movePoint({ x: 1.2, y: 1.9 });
+        let stateVariables = await win.returnAllStateVariables1();
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/extMod/P",
+        args: { x: 1.2, y: 1.9 }
+      });
         await g2extP.movePoint({ x: 1.2, y: -4.9 });
         await g3extP.movePoint({ x: 7.2, y: 1.9 });
       });
@@ -834,8 +886,8 @@ describe('Module Tag Tests', function () {
       cy.get(g3extAnswerSubmitAnchor).click();
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components["/extMod/prob"].stateValues.creditAchieved).eq(1);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/extMod/prob"].stateValues.creditAchieved).eq(1);
         expect(g2extProblem.stateValues.creditAchieved).eq(1);
         expect(g3extProblem.stateValues.creditAchieved).eq(1);
       })
@@ -881,8 +933,12 @@ describe('Module Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/Q"].movePoint({ x: 7, y: 8 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/Q",
+        args: { x: 7, y: 8 }
+      });
     });
 
     cy.get(cesc('#/m3/_p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {

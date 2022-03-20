@@ -5,7 +5,7 @@ describe('Math Display Tag Tests', function () {
   })
 
   it('inline and display', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -28,7 +28,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('numbered equations', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -69,7 +69,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('dynamic numbered equations', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -123,7 +123,7 @@ describe('Math Display Tag Tests', function () {
       cy.get('#\\/rx').should('have.attr', 'href', `#/x`)
 
       for (let i = 1; i <= m; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           counter++;
           cy.get(`#\\/m${i}\\/eq`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}m(${counter})`)
@@ -137,7 +137,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
       for (let i = m + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
           cy.get(`#\\/etm${i}`).should('not.exist')
           cy.get(`#\\/rm${i}`).should('have.text', `???`)
@@ -145,7 +145,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`y(${counter})`)
@@ -157,7 +157,7 @@ describe('Math Display Tag Tests', function () {
       })
 
       for (let i = 1; i <= n; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           counter++;
           cy.get(`#\\/n${i}\\/eq`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}n(${counter})`)
@@ -172,7 +172,7 @@ describe('Math Display Tag Tests', function () {
       }
 
       for (let i = n + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
           cy.get(`#\\/etn${i}`).should('not.exist')
           cy.get(`#\\/rn${i}`).should('have.text', `???`)
@@ -181,7 +181,7 @@ describe('Math Display Tag Tests', function () {
       }
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`z(${counter})`)
@@ -218,7 +218,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('math inside', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -244,7 +244,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('align equations', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -310,7 +310,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('dynamic numbered aligned equations', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -368,7 +368,7 @@ describe('Math Display Tag Tests', function () {
       cy.get('#\\/rx').should('have.attr', 'href', `#/x`)
 
       for (let i = 1; i <= m; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           counter++;
           cy.get('#\\/ms').find('.mjx-mlabeledtr').eq(i - 1).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}m=${i + 10}`)
@@ -385,7 +385,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
       for (let i = m + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
           cy.get(`#\\/etm${i}`).should('not.exist')
           cy.get(`#\\/rm${i}`).should('have.text', `???`)
@@ -393,7 +393,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`y(${counter})`)
@@ -405,7 +405,7 @@ describe('Math Display Tag Tests', function () {
       })
 
       for (let i = 1; i <= n; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           counter++;
           cy.get('#\\/ns').find('.mjx-mlabeledtr').eq(i - 1).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}n=${i + 10}`)
@@ -423,7 +423,7 @@ describe('Math Display Tag Tests', function () {
       }
 
       for (let i = n + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
           cy.get(`#\\/etn${i}`).should('not.exist')
           cy.get(`#\\/rn${i}`).should('have.text', `???`)
@@ -432,7 +432,7 @@ describe('Math Display Tag Tests', function () {
       }
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`z(${counter})`)
@@ -469,7 +469,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('dynamic numbered aligned equations, numbering swapped', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -529,7 +529,7 @@ describe('Math Display Tag Tests', function () {
       let labeledMs = 0;
       let unlabeledMs = 0;
       for (let i = 1; i <= m; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           if (i % 2 === 1) {
             labeledMs++;
             counter++;
@@ -560,7 +560,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
       for (let i = m + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
           cy.get(`#\\/etm${i}`).should('not.exist')
           cy.get(`#\\/rm${i}`).should('have.text', `???`)
@@ -568,7 +568,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`y(${counter})`)
@@ -582,7 +582,7 @@ describe('Math Display Tag Tests', function () {
       let labeledNs = 0;
       let unlabeledNs = 0;
       for (let i = 1; i <= n; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           if (i % 2 === 0) {
             labeledNs++;
             counter++;
@@ -614,7 +614,7 @@ describe('Math Display Tag Tests', function () {
       }
 
       for (let i = n + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
           cy.get(`#\\/etn${i}`).should('not.exist')
           cy.get(`#\\/rn${i}`).should('have.text', `???`)
@@ -623,7 +623,7 @@ describe('Math Display Tag Tests', function () {
       }
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`z(${counter})`)
@@ -660,7 +660,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('add commas to large integers', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -685,7 +685,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('include blank string children', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>

@@ -11,7 +11,7 @@ describe('Specifying unique variant tests', function () {
 
     cy.log("get all values in six variants")
     for (let ind = 0; ind < 6; ind++) {
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -24,10 +24,10 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newValue = components['/x'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x'].stateValues.value;
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
@@ -37,7 +37,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values repeat in next variants")
     for (let ind = 6; ind < 18; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -50,10 +50,10 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        expect(components['/x'].stateValues.value).eq(valuesFound[ind % 6])
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/x'].stateValues.value).eq(valuesFound[ind % 6])
       })
     }
 
@@ -67,7 +67,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in ten variants")
     for (let ind = 0; ind < 10; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -80,10 +80,10 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newValue = components['/x'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x'].stateValues.value;
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
@@ -93,7 +93,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values repeat in next variants")
     for (let ind = 10; ind < 30; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -106,10 +106,10 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        expect(components['/x'].stateValues.value).eq(valuesFound[ind % 10])
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/x'].stateValues.value).eq(valuesFound[ind % 10])
       })
     }
 
@@ -139,7 +139,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in variants")
     for (let ind = 0; ind < numVariants; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -157,13 +157,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newW = components['/w'].stateValues.value;
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newW = stateVariables['/w'].stateValues.value;
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newW, newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -174,7 +174,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values begin to repeat in next variants")
     for (let ind = numVariants; ind < numVariants + 15; ind += 3) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -192,13 +192,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newW = components['/w'].stateValues.value;
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newW = stateVariables['/w'].stateValues.value;
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newW, newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -209,7 +209,7 @@ describe('Specifying unique variant tests', function () {
     let wsFound = [], xsFound = [], ysFound = [], zsFound = [];
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -227,16 +227,16 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        wsFound.push(components['/w'].stateValues.value);
-        xsFound.push(components['/x'].stateValues.value);
-        ysFound.push(components['/y'].stateValues.value);
-        zsFound.push(components['/z'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        wsFound.push(stateVariables['/w'].stateValues.value);
+        xsFound.push(stateVariables['/x'].stateValues.value);
+        ysFound.push(stateVariables['/y'].stateValues.value);
+        zsFound.push(stateVariables['/z'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(wsFound.slice(0, 2).sort()).eqls(valuesW)
       expect(xsFound.sort()).eqls(valuesX);
       expect(ysFound.sort()).eqls(valuesY);
@@ -269,7 +269,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in first variants")
     for (let ind = 0; ind < numVariants; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -284,12 +284,12 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -302,7 +302,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values begin to repeat in next variants")
     for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -317,12 +317,12 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -333,7 +333,7 @@ describe('Specifying unique variant tests', function () {
     let xsFound = [], ysFound = [], zsFound = [];
     for (let ind = 0; ind < 4; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -348,15 +348,15 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        xsFound.push(components['/x'].stateValues.value);
-        ysFound.push(components['/y'].stateValues.value);
-        zsFound.push(components['/z'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        xsFound.push(stateVariables['/x'].stateValues.value);
+        ysFound.push(stateVariables['/y'].stateValues.value);
+        zsFound.push(stateVariables['/z'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(xsFound.sort()).eqls(valuesSingle);
       expect(ysFound.sort()).eqls(valuesSingle);
       expect(zsFound.sort()).eqls(valuesSingle)
@@ -382,7 +382,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in first variants")
     for (let ind = 0; ind < numVariants; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -397,12 +397,12 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -415,7 +415,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values begin to repeat in next variants")
     for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -430,12 +430,12 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -446,7 +446,7 @@ describe('Specifying unique variant tests', function () {
     let xsFound = [], ysFound = [], zsFound = [];
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -461,15 +461,15 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        xsFound.push(components['/x'].stateValues.value);
-        ysFound.push(components['/y'].stateValues.value);
-        zsFound.push(components['/z'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        xsFound.push(stateVariables['/x'].stateValues.value);
+        ysFound.push(stateVariables['/y'].stateValues.value);
+        zsFound.push(stateVariables['/z'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(xsFound.sort()).eqls(valuesSingle);
       expect(ysFound.sort()).eqls(valuesSingle);
       expect(zsFound.sort()).eqls(valuesSingle)
@@ -501,7 +501,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in first variants")
     for (let ind = 0; ind < numVariants; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -516,12 +516,12 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -534,7 +534,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values begin to repeat in next variants")
     for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -549,12 +549,12 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -565,7 +565,7 @@ describe('Specifying unique variant tests', function () {
     let xsFound = [], ysFound = [], zsFound = [];
     for (let ind = 0; ind < 4; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -580,15 +580,15 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        xsFound.push(components['/x'].stateValues.value);
-        ysFound.push(components['/y'].stateValues.value);
-        zsFound.push(components['/z'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        xsFound.push(stateVariables['/x'].stateValues.value);
+        ysFound.push(stateVariables['/y'].stateValues.value);
+        zsFound.push(stateVariables['/z'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(xsFound.sort()).eqls(valuesSingle);
       expect(ysFound.sort()).eqls(valuesSingle);
       expect(zsFound.sort()).eqls(valuesSingle)
@@ -614,7 +614,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in first variants")
     for (let ind = 0; ind < numVariants; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -629,12 +629,12 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -647,7 +647,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values begin to repeat in next variants")
     for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -662,12 +662,12 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -678,7 +678,7 @@ describe('Specifying unique variant tests', function () {
     let xsFound = [], ysFound = [], zsFound = [];
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -693,15 +693,15 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        xsFound.push(components['/x'].stateValues.value);
-        ysFound.push(components['/y'].stateValues.value);
-        zsFound.push(components['/z'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        xsFound.push(stateVariables['/x'].stateValues.value);
+        ysFound.push(stateVariables['/y'].stateValues.value);
+        zsFound.push(stateVariables['/z'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(xsFound.sort()).eqls(valuesSingle);
       expect(ysFound.sort()).eqls(valuesSingle);
       expect(zsFound.sort()).eqls(valuesSingle)
@@ -729,7 +729,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get unique values in first variants")
     for (let ind = 0; ind < numVariants; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -744,13 +744,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newW = components['/w'].stateValues.value;
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newW = stateVariables['/w'].stateValues.value;
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newW, newX, newY, newZ].join(',')
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -763,7 +763,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values repeat in next variants")
     for (let ind = numVariants; ind < 2 * numVariants + 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -778,13 +778,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newW = components['/w'].stateValues.value;
-        let newX = components['/x'].stateValues.value;
-        let newY = components['/y'].stateValues.value;
-        let newZ = components['/z'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newW = stateVariables['/w'].stateValues.value;
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newW, newX, newY, newZ].join(',')
 
         expect(newValue).eq(valuesFound[ind % numVariants])
@@ -795,7 +795,7 @@ describe('Specifying unique variant tests', function () {
     let wsFound = [], xsFound = [], ysFound = [], zsFound = [];
     for (let ind = 0; ind < 6; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
@@ -810,16 +810,16 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        wsFound.push(components['/w'].stateValues.value);
-        xsFound.push(components['/x'].stateValues.value);
-        ysFound.push(components['/y'].stateValues.value);
-        zsFound.push(components['/z'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        wsFound.push(stateVariables['/w'].stateValues.value);
+        xsFound.push(stateVariables['/x'].stateValues.value);
+        ysFound.push(stateVariables['/y'].stateValues.value);
+        zsFound.push(stateVariables['/z'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(wsFound.sort()).eqls(valuesSingle);
       expect(xsFound.sort()).eqls(valuesSingle);
       expect(ysFound.sort()).eqls(valuesSingle);
@@ -837,7 +837,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in first variants")
     for (let ind = 0; ind < numVariants; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -856,10 +856,10 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newValue = components['/x/n'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x/n'].stateValues.value;
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
@@ -871,7 +871,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values repeat in next variants")
     for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -890,10 +890,10 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newValue = components['/x/n'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x/n'].stateValues.value;
         expect(newValue).eq(valuesFound[ind % numVariants])
       })
     }
@@ -902,7 +902,7 @@ describe('Specifying unique variant tests', function () {
     let valuesFound2 = [];
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -921,13 +921,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(valuesFound2.some(x => x <= 2)).eq(true);
       expect(valuesFound2.some(x => x >= 101 && x <= 103)).eq(true);
       expect(valuesFound2.some(x => x >= 201 && x <= 204)).eq(true);
@@ -936,7 +936,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("all individual groups selected twice in first variants")
     for (let ind = 3; ind < 6; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -955,13 +955,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(2);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(2);
@@ -971,7 +971,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("most individual groups selected three times in first variants")
     for (let ind = 6; ind < 8; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -990,13 +990,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(3);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(3);
@@ -1013,7 +1013,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in first variants")
     for (let ind = 0; ind < numVariants; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1032,10 +1032,10 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newValue = components['/x/n'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x/n'].stateValues.value;
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
@@ -1047,7 +1047,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values repeat in next variants")
     for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1066,10 +1066,10 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newValue = components['/x/n'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x/n'].stateValues.value;
         expect(newValue).eq(valuesFound[ind % numVariants])
       })
     }
@@ -1078,7 +1078,7 @@ describe('Specifying unique variant tests', function () {
     let valuesFound2 = [];
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1097,13 +1097,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(valuesFound2.some(x => x <= 2)).eq(true);
       expect(valuesFound2.some(x => x >= 101 && x <= 103)).eq(true);
       expect(valuesFound2.some(x => x >= 201 && x <= 204)).eq(true);
@@ -1112,7 +1112,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("all individual groups selected twice in first variants")
     for (let ind = 3; ind < 6; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1131,13 +1131,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(2);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(2);
@@ -1147,7 +1147,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("most individual groups selected three times in first variants")
     for (let ind = 6; ind < 8; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1166,13 +1166,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x/n'].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(3);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(3);
@@ -1189,7 +1189,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in first variants")
     for (let ind = 0; ind < numVariants; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1206,10 +1206,10 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newValue = components['/x'].activeChildren[0].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x'].activeChildren[0].stateValues.value;
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
@@ -1221,7 +1221,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values repeat in next variants")
     for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1238,10 +1238,10 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newValue = components['/x'].activeChildren[0].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x'].activeChildren[0].stateValues.value;
         expect(newValue).eq(valuesFound[ind % numVariants])
       })
     }
@@ -1250,7 +1250,7 @@ describe('Specifying unique variant tests', function () {
     let valuesFound2 = [];
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1267,13 +1267,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x'].activeChildren[0].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        valuesFound2.push(stateVariables['/x'].activeChildren[0].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(valuesFound2.some(x => x <= 2)).eq(true);
       expect(valuesFound2.some(x => x >= 101 && x <= 103)).eq(true);
       expect(valuesFound2.some(x => x >= 201 && x <= 204)).eq(true);
@@ -1282,7 +1282,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("all individual groups selected twice in first variants")
     for (let ind = 3; ind < 6; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1299,13 +1299,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x'].activeChildren[0].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        valuesFound2.push(stateVariables['/x'].activeChildren[0].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(2);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(2);
@@ -1315,7 +1315,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("most individual groups selected three times in first variants")
     for (let ind = 6; ind < 8; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1332,13 +1332,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        valuesFound2.push(components['/x'].activeChildren[0].stateValues.value);
+        let stateVariables = await win.returnAllStateVariables1();
+        valuesFound2.push(stateVariables['/x'].activeChildren[0].stateValues.value);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(3);
       expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(3);
@@ -1363,7 +1363,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get unique values in first variants")
     for (let ind = 0; ind < 20; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1382,11 +1382,11 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newX = components['/x/n'].stateValues.value;
-        let newY = components['/y/n'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newX = stateVariables['/x/n'].stateValues.value;
+        let newY = stateVariables['/y/n'].stateValues.value;
         let newValue = [newX, newY].join(',');
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -1399,7 +1399,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values repeat in next variants")
     for (let ind = numVariants; ind < numVariants + 20; ind += 5) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1418,11 +1418,11 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let newX = components['/x/n'].stateValues.value;
-        let newY = components['/y/n'].stateValues.value;
+        let stateVariables = await win.returnAllStateVariables1();
+        let newX = stateVariables['/x/n'].stateValues.value;
+        let newY = stateVariables['/y/n'].stateValues.value;
         let newValue = [newX, newY].join(',');
         expect(newValue).eq(valuesFound[ind % numVariants])
       })
@@ -1434,7 +1434,7 @@ describe('Specifying unique variant tests', function () {
     for (let pass = 0; pass < 12; pass++) {
       for (let ind = pass * 3; ind < (pass + 1) * 3; ind++) {
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `
         <text>${ind}</text>
@@ -1453,14 +1453,14 @@ describe('Specifying unique variant tests', function () {
         // to wait for page to load
         cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
-          let components = Object.assign({}, win.state.components);
-          valuesFound1.push(components['/x/n'].stateValues.value);
-          valuesFound2.push(components['/y/n'].stateValues.value);
+          let stateVariables = await win.returnAllStateVariables1();
+          valuesFound1.push(stateVariables['/x/n'].stateValues.value);
+          valuesFound2.push(stateVariables['/y/n'].stateValues.value);
         })
       }
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         expect(valuesFound1.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(pass + 1);
         expect(valuesFound1.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(pass + 1);
         expect(valuesFound1.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(pass + 1);
@@ -1495,7 +1495,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in first variants")
     for (let ind = 0; ind < numVariants; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1541,13 +1541,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let category = components['/p'].activeChildren[0].stateValues.value.trim();
+        let stateVariables = await win.returnAllStateVariables1();
+        let category = stateVariables['/p'].activeChildren[0].stateValues.value.trim();
         expect(categories.includes(category)).eq(true);
 
-        let component = components['/p'].activeChildren[1];
+        let component = stateVariables['/p'].activeChildren[1];
         let newValue = component.state.value;
         if (typeof newValue !== "string") {
           newValue = component.state.value;
@@ -1576,7 +1576,7 @@ describe('Specifying unique variant tests', function () {
       })
     }
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let colorsFoundSet = new Set(colorsFound);
       expect(colorsFoundSet.size).eq(6);
       expect(colorsA.reduce((a, c) => a + (colorsFoundSet.has(c) ? 1 : 0), 0)).eq(2);
@@ -1592,7 +1592,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values repeat in next variants")
     for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1638,11 +1638,11 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let category = components['/p'].activeChildren[0].stateValues.value.trim();
-        let component = components['/p'].activeChildren[1];
+        let stateVariables = await win.returnAllStateVariables1();
+        let category = stateVariables['/p'].activeChildren[0].stateValues.value.trim();
+        let component = stateVariables['/p'].activeChildren[1];
         let newValue = component.state.value;
         if (typeof newValue !== "string") {
           newValue = component.state.value;
@@ -1656,7 +1656,7 @@ describe('Specifying unique variant tests', function () {
     let categoriesFound = [];
     for (let ind = 0; ind < 4; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1702,13 +1702,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        categoriesFound.push(components['/p'].activeChildren[0].stateValues.value.trim());
+        let stateVariables = await win.returnAllStateVariables1();
+        categoriesFound.push(stateVariables['/p'].activeChildren[0].stateValues.value.trim());
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       for (let ind = 0; ind < 4; ind++) {
         expect(categoriesFound.includes(categories[ind])).eq(true);
       }
@@ -1717,7 +1717,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("all individual groups selected twice in first variants")
     for (let ind = 4; ind < 8; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1763,13 +1763,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        categoriesFound[ind - 4] = components['/p'].activeChildren[0].stateValues.value.trim();
+        let stateVariables = await win.returnAllStateVariables1();
+        categoriesFound[ind - 4] = stateVariables['/p'].activeChildren[0].stateValues.value.trim();
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       for (let ind = 0; ind < 4; ind++) {
         expect(categoriesFound.includes(categories[ind])).eq(true);
       }
@@ -1800,7 +1800,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in first variants")
     for (let ind = 0; ind < numVariants; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1858,13 +1858,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let category = components['/problem'].stateValues.title;
+        let stateVariables = await win.returnAllStateVariables1();
+        let category = stateVariables['/problem'].stateValues.title;
         expect(categories.includes(category)).eq(true);
 
-        let component = components['/problem'].activeChildren[2].activeChildren[1];
+        let component = stateVariables['/problem'].activeChildren[2].activeChildren[1];
         let newValue = component.state.value;
         if (typeof newValue !== "string") {
           newValue = component.state.value;
@@ -1893,7 +1893,7 @@ describe('Specifying unique variant tests', function () {
       })
     }
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       let colorsFoundSet = new Set(colorsFound);
       expect(colorsFoundSet.size).eq(6);
       expect(colorsA.reduce((a, c) => a + (colorsFoundSet.has(c) ? 1 : 0), 0)).eq(2);
@@ -1909,7 +1909,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("values repeat in next variants")
     for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1967,11 +1967,11 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        let category = components['/problem'].stateValues.title;
-        let component = components['/problem'].activeChildren[2].activeChildren[1];
+        let stateVariables = await win.returnAllStateVariables1();
+        let category = stateVariables['/problem'].stateValues.title;
+        let component = stateVariables['/problem'].activeChildren[2].activeChildren[1];
         let newValue = component.state.value;
         if (typeof newValue !== "string") {
           newValue = component.state.value;
@@ -1985,7 +1985,7 @@ describe('Specifying unique variant tests', function () {
     let categoriesFound = [];
     for (let ind = 0; ind < 4; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -2043,13 +2043,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        categoriesFound.push(components['/problem'].stateValues.title);
+        let stateVariables = await win.returnAllStateVariables1();
+        categoriesFound.push(stateVariables['/problem'].stateValues.title);
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       for (let ind = 0; ind < 4; ind++) {
         expect(categoriesFound.includes(categories[ind])).eq(true);
       }
@@ -2058,7 +2058,7 @@ describe('Specifying unique variant tests', function () {
     cy.log("all individual groups selected twice in first variants")
     for (let ind = 4; ind < 8; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -2116,13 +2116,13 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        categoriesFound[ind - 4] = components['/problem'].stateValues.title;
+        let stateVariables = await win.returnAllStateVariables1();
+        categoriesFound[ind - 4] = stateVariables['/problem'].stateValues.title;
       })
     }
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       for (let ind = 0; ind < 4; ind++) {
         expect(categoriesFound.includes(categories[ind])).eq(true);
       }

@@ -18,7 +18,7 @@ describe('Document Tag Tests', function () {
 
 
   it('get 1 for document credit with nothing', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -33,7 +33,7 @@ describe('Document Tag Tests', function () {
   })
 
   it('document credit when have problem with nothing', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -49,9 +49,9 @@ describe('Document Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
     cy.get('#\\/docCa').should('have.text', '0.5');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components["/ans"].stateValues.inputChildren[0].componentName;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables["/ans"].stateValues.inputChildren[0].componentName;
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
 
       cy.get(mathinputAnchor).type('x{enter}', { force: true });
@@ -63,7 +63,7 @@ describe('Document Tag Tests', function () {
   })
 
   it('get document credit even when have composites as a siblings', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -82,9 +82,9 @@ describe('Document Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
     cy.get('#\\/docCa').should('have.text', '0');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components["/ans"].stateValues.inputChildren[0].componentName;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables["/ans"].stateValues.inputChildren[0].componentName;
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
 
       cy.get(mathinputAnchor).type('x{enter}', { force: true });
@@ -97,7 +97,7 @@ describe('Document Tag Tests', function () {
   })
 
   it(`item credit achieved, don't skip weight 0`, () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -120,23 +120,23 @@ describe('Document Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
     cy.get('#\\/docCa').should('have.text', '0');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([0, 0, 0, 0, 0])
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([0, 0, 0, 0, 0])
 
-      let mathinputXName = components["/x"].stateValues.inputChildren[0].componentName;
+      let mathinputXName = stateVariables["/x"].stateValues.inputChildren[0].componentName;
       let mathinputXAnchor = cesc('#' + mathinputXName) + " textarea";
       let mathinputXCorrect = cesc('#' + mathinputXName) + "_correct";
-      let mathinputYName = components["/y"].stateValues.inputChildren[0].componentName;
+      let mathinputYName = stateVariables["/y"].stateValues.inputChildren[0].componentName;
       let mathinputYAnchor = cesc('#' + mathinputYName) + " textarea";
       let mathinputYCorrect = cesc('#' + mathinputYName) + "_correct";
-      let mathinputZName = components["/z"].stateValues.inputChildren[0].componentName;
+      let mathinputZName = stateVariables["/z"].stateValues.inputChildren[0].componentName;
       let mathinputZAnchor = cesc('#' + mathinputZName) + " textarea";
       let mathinputZCorrect = cesc('#' + mathinputZName) + "_correct";
-      let mathinputAName = components["/a"].stateValues.inputChildren[0].componentName;
+      let mathinputAName = stateVariables["/a"].stateValues.inputChildren[0].componentName;
       let mathinputAAnchor = cesc('#' + mathinputAName) + " textarea";
       let mathinputACorrect = cesc('#' + mathinputAName) + "_correct";
-      let mathinputBName = components["/b"].stateValues.inputChildren[0].componentName;
+      let mathinputBName = stateVariables["/b"].stateValues.inputChildren[0].componentName;
       let mathinputBAnchor = cesc('#' + mathinputBName) + " textarea";
       let mathinputBCorrect = cesc('#' + mathinputBName) + "_correct";
 
@@ -145,24 +145,24 @@ describe('Document Tag Tests', function () {
       cy.get(mathinputXCorrect).should('be.visible');
       cy.get('#\\/docCa').should('have.text', '0.333');
 
-      cy.window().then((win) => {
-        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 0, 0, 0, 0])
+      cy.window().then(async (win) => {
+        expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([1, 0, 0, 0, 0])
       })
 
       cy.get(mathinputAAnchor).type('a{enter}', { force: true });
       cy.get(mathinputACorrect).should('be.visible');
       cy.get('#\\/docCa').should('have.text', '0.333');
 
-      cy.window().then((win) => {
-        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 0, 0, 0])
+      cy.window().then(async (win) => {
+        expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 0, 0, 0])
       })
 
       cy.get(mathinputYAnchor).type('y{enter}', { force: true });
       cy.get(mathinputYCorrect).should('be.visible');
       cy.get('#\\/docCa').should('have.text', '0.667');
 
-      cy.window().then((win) => {
-        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 0, 0])
+      cy.window().then(async (win) => {
+        expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 0, 0])
       })
 
 
@@ -170,8 +170,8 @@ describe('Document Tag Tests', function () {
       cy.get(mathinputBCorrect).should('be.visible');
       cy.get('#\\/docCa').should('have.text', '0.667');
 
-      cy.window().then((win) => {
-        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 1, 0])
+      cy.window().then(async (win) => {
+        expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 1, 0])
       })
 
 
@@ -179,8 +179,8 @@ describe('Document Tag Tests', function () {
       cy.get(mathinputZCorrect).should('be.visible');
       cy.get('#\\/docCa').should('have.text', '1');
 
-      cy.window().then((win) => {
-        expect(components["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 1, 1])
+      cy.window().then(async (win) => {
+        expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 1, 1])
       })
 
     });

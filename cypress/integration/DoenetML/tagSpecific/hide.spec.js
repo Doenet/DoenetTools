@@ -10,7 +10,7 @@ describe('Hide Tag Tests', function () {
 
   // if we do allow property children again, then we can revive this test
   it.skip('copied hide is not a property', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <booleaninput label="hide" name="bib" />

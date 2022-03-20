@@ -8,7 +8,7 @@ describe('Sort Tag Tests', function () {
 
 
   it('sort numbers and math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -59,21 +59,21 @@ describe('Sort Tag Tests', function () {
     })
     cy.get('#\\/x13').should('have.text', '10')
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/x1'].stateValues.value).eq(-3)
-      expect(components['/x2'].stateValues.value.tree).eqls(['-', ['/', 2, 3]])
-      expect(components['/x3'].stateValues.value.tree).eqls(['/', 1, 'e'])
-      expect(components['/x4'].stateValues.value.tree).eqls(['apply', 'log', 2])
-      expect(components['/x5'].stateValues.value.tree).eqls(['apply', 'sin', 2])
-      expect(components['/x6'].stateValues.value.tree).eqls(1)
-      expect(components['/x7'].stateValues.value).closeTo(Math.sqrt(2), 1E-14)
-      expect(components['/x8'].stateValues.value.tree).eqls(['apply', 'sqrt', 3])
-      expect(components['/x9'].stateValues.value).eq(2)
-      expect(components['/x10'].stateValues.value.tree).eqls('e')
-      expect(components['/x11'].stateValues.value).eq(3)
-      expect(components['/x12'].stateValues.value.tree).eqls('pi')
-      expect(components['/x13'].stateValues.value).eq(10)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x1'].stateValues.value).eq(-3)
+      expect(stateVariables['/x2'].stateValues.value.tree).eqls(['-', ['/', 2, 3]])
+      expect(stateVariables['/x3'].stateValues.value.tree).eqls(['/', 1, 'e'])
+      expect(stateVariables['/x4'].stateValues.value.tree).eqls(['apply', 'log', 2])
+      expect(stateVariables['/x5'].stateValues.value.tree).eqls(['apply', 'sin', 2])
+      expect(stateVariables['/x6'].stateValues.value.tree).eqls(1)
+      expect(stateVariables['/x7'].stateValues.value).closeTo(Math.sqrt(2), 1E-14)
+      expect(stateVariables['/x8'].stateValues.value.tree).eqls(['apply', 'sqrt', 3])
+      expect(stateVariables['/x9'].stateValues.value).eq(2)
+      expect(stateVariables['/x10'].stateValues.value.tree).eqls('e')
+      expect(stateVariables['/x11'].stateValues.value).eq(3)
+      expect(stateVariables['/x12'].stateValues.value.tree).eqls('pi')
+      expect(stateVariables['/x13'].stateValues.value).eq(10)
 
 
     })
@@ -83,7 +83,7 @@ describe('Sort Tag Tests', function () {
   })
 
   it('sort dynamic maths', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -120,14 +120,14 @@ describe('Sort Tag Tests', function () {
       expect(text.trim()).equal('∞')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/x1'].stateValues.value).eq(-Infinity)
-      expect(components['/x2'].stateValues.value.tree).eqls(['-', 'pi'])
-      expect(components['/x3'].stateValues.value.tree).eqls(['/', 5, 6])
-      expect(components['/x4'].stateValues.value.tree).eqls(['apply', 'sqrt', 2])
-      expect(components['/x5'].stateValues.value).eq(70)
-      expect(components['/x6'].stateValues.value.tree).eqls(Infinity)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x1'].stateValues.value).eq(-Infinity)
+      expect(stateVariables['/x2'].stateValues.value.tree).eqls(['-', 'pi'])
+      expect(stateVariables['/x3'].stateValues.value.tree).eqls(['/', 5, 6])
+      expect(stateVariables['/x4'].stateValues.value.tree).eqls(['apply', 'sqrt', 2])
+      expect(stateVariables['/x5'].stateValues.value).eq(70)
+      expect(stateVariables['/x6'].stateValues.value.tree).eqls(Infinity)
     })
 
 
@@ -150,14 +150,14 @@ describe('Sort Tag Tests', function () {
       expect(text.trim()).equal('∞')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/x1'].stateValues.value).eq(-Infinity)
-      expect(components['/x2'].stateValues.value.tree).eqls(['-', 5])
-      expect(components['/x3'].stateValues.value.tree).eqls(['-', 'pi'])
-      expect(components['/x4'].stateValues.value.tree).eqls(['/', 5, 6])
-      expect(components['/x5'].stateValues.value).eq(70)
-      expect(components['/x6'].stateValues.value.tree).eqls(Infinity)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x1'].stateValues.value).eq(-Infinity)
+      expect(stateVariables['/x2'].stateValues.value.tree).eqls(['-', 5])
+      expect(stateVariables['/x3'].stateValues.value.tree).eqls(['-', 'pi'])
+      expect(stateVariables['/x4'].stateValues.value.tree).eqls(['/', 5, 6])
+      expect(stateVariables['/x5'].stateValues.value).eq(70)
+      expect(stateVariables['/x6'].stateValues.value.tree).eqls(Infinity)
     })
 
 
@@ -180,14 +180,14 @@ describe('Sort Tag Tests', function () {
       expect(text.trim()).equal('∞')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/x1'].stateValues.value).eq(-Infinity)
-      expect(components['/x2'].stateValues.value.tree).eqls(['-', 5])
-      expect(components['/x3'].stateValues.value.tree).eqls(['-', 'pi'])
-      expect(components['/x4'].stateValues.value).eq(70)
-      expect(components['/x5'].stateValues.value.tree).eqls(['^', 'e', 5])
-      expect(components['/x6'].stateValues.value.tree).eqls(Infinity)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x1'].stateValues.value).eq(-Infinity)
+      expect(stateVariables['/x2'].stateValues.value.tree).eqls(['-', 5])
+      expect(stateVariables['/x3'].stateValues.value.tree).eqls(['-', 'pi'])
+      expect(stateVariables['/x4'].stateValues.value).eq(70)
+      expect(stateVariables['/x5'].stateValues.value.tree).eqls(['^', 'e', 5])
+      expect(stateVariables['/x6'].stateValues.value.tree).eqls(Infinity)
     })
 
 
@@ -210,14 +210,14 @@ describe('Sort Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/x1'].stateValues.value).eq(-Infinity)
-      expect(components['/x2'].stateValues.value.tree).eqls(['-', 100])
-      expect(components['/x3'].stateValues.value.tree).eqls(['-', 5])
-      expect(components['/x4'].stateValues.value.tree).eqls(['-', 'pi'])
-      expect(components['/x5'].stateValues.value).eq(70)
-      expect(components['/x6'].stateValues.value.tree).eqls(['^', 'e', 5])
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x1'].stateValues.value).eq(-Infinity)
+      expect(stateVariables['/x2'].stateValues.value.tree).eqls(['-', 100])
+      expect(stateVariables['/x3'].stateValues.value.tree).eqls(['-', 5])
+      expect(stateVariables['/x4'].stateValues.value.tree).eqls(['-', 'pi'])
+      expect(stateVariables['/x5'].stateValues.value).eq(70)
+      expect(stateVariables['/x6'].stateValues.value.tree).eqls(['^', 'e', 5])
     })
 
 
@@ -240,20 +240,20 @@ describe('Sort Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/x1'].stateValues.value.tree).eqls(['-', 100])
-      expect(components['/x2'].stateValues.value.tree).eqls(['-', 5])
-      expect(components['/x3'].stateValues.value.tree).eqls(['-', 'pi'])
-      expect(components['/x4'].stateValues.value).eq(0)
-      expect(components['/x5'].stateValues.value).eq(70)
-      expect(components['/x6'].stateValues.value.tree).eqls(['^', 'e', 5])
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x1'].stateValues.value.tree).eqls(['-', 100])
+      expect(stateVariables['/x2'].stateValues.value.tree).eqls(['-', 5])
+      expect(stateVariables['/x3'].stateValues.value.tree).eqls(['-', 'pi'])
+      expect(stateVariables['/x4'].stateValues.value).eq(0)
+      expect(stateVariables['/x5'].stateValues.value).eq(70)
+      expect(stateVariables['/x6'].stateValues.value.tree).eqls(['^', 'e', 5])
     })
 
   })
 
   it('sort nested lists of numbers and math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -318,21 +318,21 @@ describe('Sort Tag Tests', function () {
     })
     cy.get('#\\/x13').should('have.text', '10')
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/x1'].stateValues.value).eq(-3)
-      expect(components['/x2'].stateValues.value.tree).eqls(['-', ['/', 2, 3]])
-      expect(components['/x3'].stateValues.value.tree).eqls(['/', 1, 'e'])
-      expect(components['/x4'].stateValues.value.tree).eqls(['apply', 'log', 2])
-      expect(components['/x5'].stateValues.value.tree).eqls(['apply', 'sin', 2])
-      expect(components['/x6'].stateValues.value.tree).eqls(1)
-      expect(components['/x7'].stateValues.value).closeTo(Math.sqrt(2), 1E-14)
-      expect(components['/x8'].stateValues.value.tree).eqls(['apply', 'sqrt', 3])
-      expect(components['/x9'].stateValues.value).eq(2)
-      expect(components['/x10'].stateValues.value.tree).eqls('e')
-      expect(components['/x11'].stateValues.value).eq(3)
-      expect(components['/x12'].stateValues.value.tree).eqls('pi')
-      expect(components['/x13'].stateValues.value).eq(10)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x1'].stateValues.value).eq(-3)
+      expect(stateVariables['/x2'].stateValues.value.tree).eqls(['-', ['/', 2, 3]])
+      expect(stateVariables['/x3'].stateValues.value.tree).eqls(['/', 1, 'e'])
+      expect(stateVariables['/x4'].stateValues.value.tree).eqls(['apply', 'log', 2])
+      expect(stateVariables['/x5'].stateValues.value.tree).eqls(['apply', 'sin', 2])
+      expect(stateVariables['/x6'].stateValues.value.tree).eqls(1)
+      expect(stateVariables['/x7'].stateValues.value).closeTo(Math.sqrt(2), 1E-14)
+      expect(stateVariables['/x8'].stateValues.value.tree).eqls(['apply', 'sqrt', 3])
+      expect(stateVariables['/x9'].stateValues.value).eq(2)
+      expect(stateVariables['/x10'].stateValues.value.tree).eqls('e')
+      expect(stateVariables['/x11'].stateValues.value).eq(3)
+      expect(stateVariables['/x12'].stateValues.value.tree).eqls('pi')
+      expect(stateVariables['/x13'].stateValues.value).eq(10)
 
 
     })
@@ -342,7 +342,7 @@ describe('Sort Tag Tests', function () {
   })
 
   it('sort points', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -376,8 +376,12 @@ describe('Sort Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/A"].movePoint({ x: -8, y: 9 })
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: -8, y: 9 }
+      })
     })
 
 
@@ -398,8 +402,12 @@ describe('Sort Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/B"].movePoint({ x: 8, y: -3 })
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: 8, y: -3 }
+      })
     })
 
     cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -420,8 +428,12 @@ describe('Sort Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/C"].movePoint({ x: 4, y: 5 })
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/C",
+        args: { x: 4, y: 5 }
+      })
     })
 
     cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -442,8 +454,12 @@ describe('Sort Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/D"].movePoint({ x: -9, y: 0 })
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/D",
+        args: { x: -9, y: 0 }
+      })
     })
 
     cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -463,8 +479,12 @@ describe('Sort Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/E"].movePoint({ x: -2, y: -1 })
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/E",
+        args: { x: -2, y: -1 }
+      })
     })
 
     cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -488,7 +508,7 @@ describe('Sort Tag Tests', function () {
   })
 
   it('sort points by component', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -580,7 +600,7 @@ describe('Sort Tag Tests', function () {
   })
 
   it('sort vectors', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>

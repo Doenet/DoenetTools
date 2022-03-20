@@ -6,7 +6,7 @@ describe('ODEsystem Tag Tests', function () {
   })
 
   it('1D linear system', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -35,9 +35,9 @@ describe('ODEsystem Tag Tests', function () {
 
     let ic = 1, a = 1, tol = 1e-6;
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
@@ -55,10 +55,10 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       ic = 3;
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
@@ -75,10 +75,10 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       a = -2;
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
@@ -90,12 +90,16 @@ describe('ODEsystem Tag Tests', function () {
 
     cy.log("Change ic with point")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       ic = -5;
 
-      await components['/_point1'].movePoint({ y: ic });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { y: ic }
+      });
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
@@ -117,10 +121,10 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       tol = 1E-10;
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
@@ -138,10 +142,10 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       a = 0.5;
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
@@ -158,8 +162,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       for (let x = 0; x <= 1000; x += 100) {
         expect(solutionF(x)).eq(0);
@@ -170,7 +174,7 @@ describe('ODEsystem Tag Tests', function () {
   });
 
   it('effect of max iterations, chunksize', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -197,9 +201,9 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       for (let x = 0; x <= 10; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -215,9 +219,9 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       assert.isNaN(solutionF(20));
 
@@ -231,9 +235,9 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -249,9 +253,9 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       assert.isNaN(solutionF(20));
 
@@ -266,9 +270,9 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -286,9 +290,9 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       assert.isNaN(solutionF(20));
 
@@ -303,9 +307,9 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -317,7 +321,7 @@ describe('ODEsystem Tag Tests', function () {
   })
 
   it('change variables 1D', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -344,9 +348,9 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
@@ -363,9 +367,9 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
@@ -382,8 +386,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
@@ -399,8 +403,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
@@ -417,8 +421,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
@@ -434,8 +438,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
@@ -451,8 +455,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
@@ -469,8 +473,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
@@ -487,8 +491,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
@@ -505,8 +509,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
@@ -522,8 +526,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
@@ -534,7 +538,7 @@ describe('ODEsystem Tag Tests', function () {
   })
 
   it('display digits', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -570,7 +574,7 @@ describe('ODEsystem Tag Tests', function () {
   })
 
   it('initial independent variable value', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -641,7 +645,7 @@ describe('ODEsystem Tag Tests', function () {
   })
 
   it('display initial conditions', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -674,7 +678,7 @@ describe('ODEsystem Tag Tests', function () {
   })
 
   it('2D linear system', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -703,8 +707,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionFx = (await ode.stateValues.numericalSolutions)[0];
       let solutionFy = (await ode.stateValues.numericalSolutions)[1];
       let expectedFx = t => 8 * Math.exp(0.1 * t) - 7 * Math.exp(0.2 * t);
@@ -727,8 +731,8 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionFx = (await ode.stateValues.numericalSolutions)[0];
       let solutionFy = (await ode.stateValues.numericalSolutions)[1];
       let expectedFx = t => 4 * Math.exp(0.1 * t) - 1 * Math.exp(0.2 * t);
@@ -743,10 +747,14 @@ describe('ODEsystem Tag Tests', function () {
 
     cy.log("Change ic with point")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: -5, y: 2 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -5, y: 2 }
+      });
 
-      let ode = components['/ode'];
+      let ode = stateVariables['/ode'];
       let solutionFx = (await ode.stateValues.numericalSolutions)[0];
       let solutionFy = (await ode.stateValues.numericalSolutions)[1];
       let expectedFx = t => -6 * Math.exp(0.1 * t) + 1 * Math.exp(0.2 * t);
@@ -773,8 +781,8 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let ode = components['/ode'];
+      let stateVariables = await win.returnAllStateVariables1();
+      let ode = stateVariables['/ode'];
       let solutionFx = (await ode.stateValues.numericalSolutions)[0];
       let solutionFy = (await ode.stateValues.numericalSolutions)[1];
       for (let t = 0; t <= 10; t += 1) {
@@ -790,7 +798,7 @@ describe('ODEsystem Tag Tests', function () {
   it('higher dimensional ode', () => {
 
     cy.log("no variables specified")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -828,7 +836,7 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.log("all variables specified")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>b</text>
@@ -854,7 +862,7 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("some variables specified")
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>c</text>
@@ -881,7 +889,7 @@ describe('ODEsystem Tag Tests', function () {
   })
 
   it('copy righthandside, initial conditions', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -965,25 +973,25 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal('dxdt=xydydt=axy+zx(0)=cy(0)=3')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
       let rhs1tree = ['+', ['*', 'a', 'x', 'y'], 'z'];
       let rhs2tree = ['/', 'x', 'y'];
-      expect(components['/rhs1a'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(components['/rhs1b'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(components['/rhs1c'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(components['/rhs1d'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(components['/rhs2a'].replacements[0].stateValues.value.tree).eqls(rhs2tree);
-      expect(components['/rhs2b'].replacements[0].stateValues.value.tree).eqls(rhs2tree);
-      expect(components['/rhssa'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(components['/rhssa'].replacements[1].stateValues.value.tree).eqls(rhs2tree);
-      expect(components['/rhssb'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(components['/rhssb'].replacements[1].stateValues.value.tree).eqls(rhs2tree);
-      expect(components['/ic1a'].replacements[0].stateValues.value.tree).eqls('c');
-      expect(components['/ic1b'].replacements[0].stateValues.value.tree).eqls('c');
-      expect(components['/ic2a'].replacements[0].stateValues.value.tree).eqls(3);
-      expect(components['/icsa'].replacements[0].stateValues.value.tree).eqls('c');
-      expect(components['/icsa'].replacements[1].stateValues.value.tree).eqls(3);
+      expect(stateVariables['/rhs1a'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(stateVariables['/rhs1b'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(stateVariables['/rhs1c'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(stateVariables['/rhs1d'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(stateVariables['/rhs2a'].replacements[0].stateValues.value.tree).eqls(rhs2tree);
+      expect(stateVariables['/rhs2b'].replacements[0].stateValues.value.tree).eqls(rhs2tree);
+      expect(stateVariables['/rhssa'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(stateVariables['/rhssa'].replacements[1].stateValues.value.tree).eqls(rhs2tree);
+      expect(stateVariables['/rhssb'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(stateVariables['/rhssb'].replacements[1].stateValues.value.tree).eqls(rhs2tree);
+      expect(stateVariables['/ic1a'].replacements[0].stateValues.value.tree).eqls('c');
+      expect(stateVariables['/ic1b'].replacements[0].stateValues.value.tree).eqls('c');
+      expect(stateVariables['/ic2a'].replacements[0].stateValues.value.tree).eqls(3);
+      expect(stateVariables['/icsa'].replacements[0].stateValues.value.tree).eqls('c');
+      expect(stateVariables['/icsa'].replacements[1].stateValues.value.tree).eqls(3);
 
     });
 

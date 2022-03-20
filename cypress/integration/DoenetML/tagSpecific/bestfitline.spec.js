@@ -8,7 +8,7 @@ describe('BestFitLine Tag Tests', function () {
   })
 
   it('fit line to 4 points', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <setup>
@@ -37,40 +37,56 @@ describe('BestFitLine Tag Tests', function () {
       expect(text.trim()).equal('y=−0.5x+4.5')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
       let eqTree = me.fromText('y=-0.5x+4.5').simplify().tree;
-      expect(components['/l'].stateValues.equation.tree).eqls(eqTree);
-      expect(components['/eq'].stateValues.value.tree).eqls(eqTree);
+      expect(stateVariables['/l'].stateValues.equation).eqls(eqTree);
+      expect(stateVariables['/eq'].stateValues.value).eqls(eqTree);
     })
 
     cy.log('move points')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/_point1"].movePoint({ x: -5, y: -8 });
-      await components["/_point2"].movePoint({ x: 3, y: 5 });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -5, y: -8 }
+      });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: 3, y: 5 }
+      });
 
-      await components["/_point3"].movePoint({ x: -5, y: -10 });
-      await components["/_point4"].movePoint({ x: 3, y: 9 });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: -5, y: -10 }
+      });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point4",
+        args: { x: 3, y: 9 }
+      });
 
     })
 
+    cy.get('#\\/eq').should('contain.text', 'y=2x+1')
     cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=2x+1')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
       let eqTree = me.fromText('y=2x+1').simplify().tree;
-      expect(components['/l'].stateValues.equation.tree).eqls(eqTree);
-      expect(components['/eq'].stateValues.value.tree).eqls(eqTree);
+      expect(stateVariables['/l'].stateValues.equation).eqls(eqTree);
+      expect(stateVariables['/eq'].stateValues.value).eqls(eqTree);
     })
 
   })
 
   it('no arguments', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       
@@ -91,17 +107,17 @@ describe('BestFitLine Tag Tests', function () {
       expect(text.trim()).equal('＿')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/l'].stateValues.equation.tree).eqls("＿");
-      expect(components['/eq'].stateValues.value.tree).eqls("＿");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.equation).eqls("＿");
+      expect(stateVariables['/eq'].stateValues.value).eqls("＿");
     })
 
 
   })
 
   it('fit line to 0 points', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <setup>
@@ -125,16 +141,16 @@ describe('BestFitLine Tag Tests', function () {
       expect(text.trim()).equal('＿')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/l'].stateValues.equation.tree).eqls("＿");
-      expect(components['/eq'].stateValues.value.tree).eqls("＿");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.equation).eqls("＿");
+      expect(stateVariables['/eq'].stateValues.value).eqls("＿");
     })
 
   })
 
   it('fit line to 1 point', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <setup>
@@ -159,33 +175,37 @@ describe('BestFitLine Tag Tests', function () {
       expect(text.trim()).equal('y=4')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/l'].stateValues.equation.tree).eqls(["=", "y", 4]);
-      expect(components['/eq'].stateValues.value.tree).eqls(["=", "y", 4]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.equation).eqls(["=", "y", 4]);
+      expect(stateVariables['/eq'].stateValues.value).eqls(["=", "y", 4]);
     })
 
     cy.log('move point')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/_point1"].movePoint({ x: -5, y: -8 });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -5, y: -8 }
+      });
     })
 
+    cy.get('#\\/eq').should('contain.text', 'y=−8')
     cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=−8')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/l'].stateValues.equation.tree).eqls(["=", "y", -8]);
-      expect(components['/eq'].stateValues.value.tree).eqls(["=", "y", -8]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.equation).eqls(["=", "y", -8]);
+      expect(stateVariables['/eq'].stateValues.value).eqls(["=", "y", -8]);
     })
 
   })
 
   it('fit line to 2 points', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <setup>
@@ -211,53 +231,61 @@ describe('BestFitLine Tag Tests', function () {
       expect(text.trim()).equal('y=0.5x+2.5')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
       let eqTree = me.fromText('y=0.5x+2.5').simplify().tree;
-      expect(components['/l'].stateValues.equation.tree).eqls(eqTree);
-      expect(components['/eq'].stateValues.value.tree).eqls(eqTree);
+      expect(stateVariables['/l'].stateValues.equation).eqls(eqTree);
+      expect(stateVariables['/eq'].stateValues.value).eqls(eqTree);
     })
 
     cy.log('move points to be vertical')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/_point1"].movePoint({ x: -5, y: -8 });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -5, y: -8 }
+      });
     })
 
+    cy.get('#\\/eq').should('contain.text', 'y=−4');
     cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=−4')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/l'].stateValues.equation.tree).eqls(["=", "y", -4]);
-      expect(components['/eq'].stateValues.value.tree).eqls(["=", "y", -4]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.equation).eqls(["=", "y", -4]);
+      expect(stateVariables['/eq'].stateValues.value).eqls(["=", "y", -4]);
     })
 
 
     cy.log('move points')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/_point2"].movePoint({ x: -4, y: -6 });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: -4, y: -6 }
+      });
     })
 
+    cy.get('#\\/eq').should('contain.text', 'y=2x+2')
     cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=2x+2')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
       let eqTree = me.fromText('y=2x+2').simplify().tree;
-      expect(components['/l'].stateValues.equation.tree).eqls(eqTree);
-      expect(components['/eq'].stateValues.value.tree).eqls(eqTree);
+      expect(stateVariables['/l'].stateValues.equation).eqls(eqTree);
+      expect(stateVariables['/eq'].stateValues.value).eqls(eqTree);
     })
 
   })
 
   it('fit line to points of different dimensions', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <setup>
@@ -287,41 +315,57 @@ describe('BestFitLine Tag Tests', function () {
       expect(text.trim()).equal('y=−0.5x+4.5')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
       let eqTree = me.fromText('y=-0.5x+4.5').simplify().tree;
-      expect(components['/l'].stateValues.equation.tree).eqls(eqTree);
-      expect(components['/eq'].stateValues.value.tree).eqls(eqTree);
+      expect(stateVariables['/l'].stateValues.equation).eqls(eqTree);
+      expect(stateVariables['/eq'].stateValues.value).eqls(eqTree);
     })
 
     cy.log('move points')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/_point1"].movePoint({ x: -5, y: -8 });
-      await components["/_point2"].movePoint({ x: 3, y: 5 });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -5, y: -8 }
+      });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: 3, y: 5 }
+      });
 
-      await components["/_point3"].movePoint({ x: -5, y: -10 });
-      await components["/_point4"].movePoint({ x: 3, y: 9 });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: -5, y: -10 }
+      });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point4",
+        args: { x: 3, y: 9 }
+      });
 
     })
 
+    cy.get('#\\/eq').should('contain.text', 'y=2x+1')
     cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=2x+1')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
       let eqTree = me.fromText('y=2x+1').simplify().tree;
-      expect(components['/l'].stateValues.equation.tree).eqls(eqTree);
-      expect(components['/eq'].stateValues.value.tree).eqls(eqTree);
+      expect(stateVariables['/l'].stateValues.equation).eqls(eqTree);
+      expect(stateVariables['/eq'].stateValues.value).eqls(eqTree);
     })
 
   })
 
 
   it('fit line to 4 points, ignore non-numerical points', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <setup>
@@ -355,34 +399,51 @@ describe('BestFitLine Tag Tests', function () {
       expect(text.trim()).equal('y=−0.5x+4.5')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
       let eqTree = me.fromText('y=-0.5x+4.5').simplify().tree;
-      expect(components['/l'].stateValues.equation.tree).eqls(eqTree);
-      expect(components['/eq'].stateValues.value.tree).eqls(eqTree);
+      expect(stateVariables['/l'].stateValues.equation).eqls(eqTree);
+      expect(stateVariables['/eq'].stateValues.value).eqls(eqTree);
     })
 
     cy.log('move points')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/_point2"].movePoint({ x: -5, y: -8 });
-      await components["/_point4"].movePoint({ x: 3, y: 5 });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: -5, y: -8 }
+      });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point4",
+        args: { x: 3, y: 5 }
+      });
 
-      await components["/_point6"].movePoint({ x: -5, y: -10 });
-      await components["/_point8"].movePoint({ x: 3, y: 9 });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point6",
+        args: { x: -5, y: -10 }
+      });
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point8",
+        args: { x: 3, y: 9 }
+      });
 
     })
+
+    cy.get('#\\/eq').should('contain.text', 'y=2x+1')
 
     cy.get('#\\/eq').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y=2x+1')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
       let eqTree = me.fromText('y=2x+1').simplify().tree;
-      expect(components['/l'].stateValues.equation.tree).eqls(eqTree);
-      expect(components['/eq'].stateValues.value.tree).eqls(eqTree);
+      expect(stateVariables['/l'].stateValues.equation).eqls(eqTree);
+      expect(stateVariables['/eq'].stateValues.value).eqls(eqTree);
     })
 
   })

@@ -170,10 +170,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
     })
 
     cy.log('create 2D point')
@@ -184,10 +184,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls(["vector", -1, -7])
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
+      expect((stateVariables['/P'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", -1, -7])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
     })
 
     cy.log('move point P to (3,5)')
@@ -205,10 +205,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls([3, 5])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls(["vector", 3, 5])
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls([3, 5])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls(["vector", 3, 5])
+      expect((stateVariables['/P'].stateValues.xs)).eqls([3, 5])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 3, 5])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([3, 5])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 3, 5])
     })
 
     cy.log('move point Q to (9,1)')
@@ -226,10 +226,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls([9, 1])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls(["vector", 9, 1])
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls([9, 1])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls(["vector", 9, 1])
+      expect((stateVariables['/P'].stateValues.xs)).eqls([9, 1])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 9, 1])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([9, 1])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 9, 1])
     })
 
     cy.log('make point undefined again')
@@ -240,10 +240,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
     })
 
     cy.log('create 1D point')
@@ -254,10 +254,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls([-3])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls(-3)
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls([-3])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls(-3)
+      expect((stateVariables['/P'].stateValues.xs)).eqls([-3])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(-3)
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([-3])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(-3)
     })
 
 
@@ -269,10 +269,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls([6, 5, 4])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls(["vector", 6, 5, 4])
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls([6, 5, 4])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+      expect((stateVariables['/P'].stateValues.xs)).eqls([6, 5, 4])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([6, 5, 4])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 6, 5, 4])
     })
 
   });
@@ -342,11 +342,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
     })
 
     cy.log('move point 1')
@@ -362,11 +362,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
     })
   })
 
@@ -396,11 +396,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
     })
 
     cy.log('move point 1')
@@ -417,11 +417,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
     })
   })
 
@@ -449,11 +449,11 @@ describe('Point Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
     })
 
     cy.log('move point 1')
@@ -469,11 +469,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
     })
   })
 
@@ -503,11 +503,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
     })
 
 
@@ -524,11 +524,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
     })
   })
 
@@ -636,8 +636,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 1, 10]);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(1)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 1, 10]);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(1)
 
     })
 
@@ -654,8 +654,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 18, 5])
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(6)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 18, 5])
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(6)
     })
 
     cy.log(`move point1 to (9,-3)`)
@@ -671,8 +671,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 9, 10])
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-3)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 9, 10])
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-3)
     })
 
 
@@ -698,8 +698,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', 1]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', 1]);
 
     })
 
@@ -716,8 +716,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-9)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', -9]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-9)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', -9]);
     })
 
     cy.log(`move point1 to (9,-3)`)
@@ -733,8 +733,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(9)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', 9])
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(9)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', 9])
     })
 
 
@@ -762,10 +762,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(2);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(1);
 
     })
 
@@ -782,10 +782,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-9)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(6);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(6)
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(-9);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-9)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(6);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(6)
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(-9);
     })
 
     cy.log(`move point2 to (0,-3)`)
@@ -801,10 +801,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-3)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0)
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(0)
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(-3)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-3)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0)
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(0)
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(-3)
     })
 
   });
@@ -826,8 +826,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
     })
 
     cy.log(`move point1 to (-9,6)`)
@@ -843,8 +843,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
     })
 
   });
@@ -871,8 +871,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-2);
     })
 
     cy.log(`move point1 to (8,8)`)
@@ -888,8 +888,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(8);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-5);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(8);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-5);
     })
 
   });
@@ -919,10 +919,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(6);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(6);
     })
 
     cy.log(`move point1 to (-4,-8)`)
@@ -938,10 +938,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(-4);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(-8);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-8);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-3);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(-4);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(-8);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-8);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-3);
     })
 
     cy.log(`move point2 to (-9,10)`)
@@ -957,10 +957,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(9);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(-9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(10);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(9);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(-9);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-9);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(10);
     })
 
   });
@@ -1004,14 +1004,14 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
-      expect((await stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
-      expect((await stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
-      expect((await stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
+      expect((stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
+      expect((stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
+      expect((stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
 
     })
 
@@ -1028,15 +1028,19 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      await stateVariables['/_point2'].movePoint({ x: point2x, y: point2y });
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
-      expect((await stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
-      expect((await stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
-      expect((await stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: point2x, y: point2y }
+      });
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
+      expect((stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
+      expect((stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
+      expect((stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
     })
 
     cy.log(`move point1 along constained curve`)
@@ -1052,22 +1056,30 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      await stateVariables['/_point1'].movePoint({ x: point1x, y: point1y });
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
-      expect((await stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
-      expect((await stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
-      expect((await stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: point1x, y: point1y }
+      });
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
+      expect((stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
+      expect((stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
+      expect((stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
     })
 
     cy.log(`move point2 to upper right`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/_point2'].movePoint({ x: 9, y: 9 });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: 9, y: 9 }
+      });
 
       let d = 9;
       let point2x = d;
@@ -1078,21 +1090,25 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
-      expect((await stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
-      expect((await stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
-      expect((await stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
+      expect((stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
+      expect((stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
+      expect((stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
     })
 
     cy.log(`move point1 to upper left`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/_point1'].movePoint({ x: -6, y: 4 });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -6, y: 4 }
+      });
 
       let d = 4;
       let point2x = d;
@@ -1103,14 +1119,14 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
-      expect((await stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
-      expect((await stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
-      expect((await stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
+      expect((stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
+      expect((stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
+      expect((stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
     })
 
   });
@@ -1152,11 +1168,11 @@ describe('Point Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(-3, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-3, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(-3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(-3, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(-3, 1E-12);
 
     })
     // test zero as had a bug affect case when zero
@@ -1173,11 +1189,11 @@ describe('Point Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
 
@@ -1195,11 +1211,11 @@ describe('Point Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(9, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-6, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(9, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(9, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(9, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(9, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-6, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(9, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(9, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(9, 1E-12);
 
     })
 
@@ -1216,11 +1232,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
 
@@ -1261,11 +1277,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(-3, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-3, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(-3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(-3, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(-3, 1E-12);
 
     })
     // test zero as had a bug affect case when zero
@@ -1281,11 +1297,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
 
@@ -1302,11 +1318,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(9, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-6, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(9, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(9, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(9, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(9, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-6, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(9, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(9, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(9, 1E-12);
 
     })
 
@@ -1323,11 +1339,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
 
@@ -1368,9 +1384,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1390,9 +1406,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1414,9 +1430,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1462,9 +1478,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1484,9 +1500,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1531,9 +1547,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1553,9 +1569,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1597,10 +1613,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4, 5]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1620,10 +1636,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(-5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7, -5]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(-5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7, -5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1645,10 +1661,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0, 0]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1686,9 +1702,9 @@ describe('Point Tag Tests', function () {
     cy.log("second constraint wins, but first constraint affects result")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1714,9 +1730,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 7, 5]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 7, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1750,8 +1766,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1773,8 +1789,8 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1833,11 +1849,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(9.8);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(3);
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(9.8);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(3);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/B'].stateValues.xs)[0]).eq(9.8);
-      expect((await stateVariables['/B'].stateValues.xs)[1]).eq(3);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(9.8);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(3);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1862,11 +1878,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(-9.8);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(9.8);
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(-9.8);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(9.8);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/B'].stateValues.xs)[0]).eq(-9.8);
-      expect((await stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(-9.8);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1890,11 +1906,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(-3);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(1);
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(1);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/B'].stateValues.xs)[0]).eq(-3);
-      expect((await stateVariables['/B'].stateValues.xs)[1]).eq(1);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(1);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1918,11 +1934,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(9.8);
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(9.8);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/B'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1947,11 +1963,11 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(9.8);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(-9.8);
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(9.8);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(-9.8);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/B'].stateValues.xs)[0]).eq(9.8);
-      expect((await stateVariables['/B'].stateValues.xs)[1]).eq(-9.8);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(9.8);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(-9.8);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1976,12 +1992,12 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/C'].stateValues.xs)[0]).eq(9.5);
-      expect((await stateVariables['/C'].stateValues.xs)[1]).eq(-9.5);
-      expect(await stateVariables['/C'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/D'].stateValues.xs)[0]).eq(9.5);
-      expect((await stateVariables['/D'].stateValues.xs)[1]).eq(-9.5);
-      expect(await stateVariables['/D'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/C'].stateValues.xs)[0]).eq(9.5);
+      expect((stateVariables['/C'].stateValues.xs)[1]).eq(-9.5);
+      expect(stateVariables['/C'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/D'].stateValues.xs)[0]).eq(9.5);
+      expect((stateVariables['/D'].stateValues.xs)[1]).eq(-9.5);
+      expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
     })
 
     cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2006,12 +2022,12 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/C'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/C'].stateValues.xs)[1]).eq(9.5);
-      expect(await stateVariables['/C'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/D'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/D'].stateValues.xs)[1]).eq(9.5);
-      expect(await stateVariables['/D'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/C'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/C'].stateValues.xs)[1]).eq(9.5);
+      expect(stateVariables['/C'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/D'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/D'].stateValues.xs)[1]).eq(9.5);
+      expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,9.5)')
@@ -2067,17 +2083,17 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
       expect(stateVariables['/original'].stateValues.constraintUsed).eq(false);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(2);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2, 5]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(2);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2, 5]);
       expect(stateVariables['/constrained'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(6);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3, 6]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(6);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3, 6]);
       expect(stateVariables['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2106,17 +2122,17 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(-4);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(6);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", -4, 6]);
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(-4);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(6);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", -4, 6]);
       expect(stateVariables['/original'].stateValues.constraintUsed).eq(false);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(-3);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(7);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", -3, 7]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(7);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", -3, 7]);
       expect(stateVariables['/constrained'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(-2);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(8);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", -2, 8]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(-2);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(8);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", -2, 8]);
       expect(stateVariables['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2144,17 +2160,17 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(-4);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 3, -4]);
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(-4);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 3, -4]);
       expect(stateVariables['/original'].stateValues.constraintUsed).eq(false);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(4);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(-3);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 4, -3]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(4);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(-3);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 4, -3]);
       expect(stateVariables['/constrained'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(-2);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", 5, -2]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(-2);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 5, -2]);
       expect(stateVariables['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2214,15 +2230,15 @@ describe('Point Tag Tests', function () {
       expect(text.trim()).equal('(3.2,5.6)')
     }); cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(2.2);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(4.6);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2.2, 4.6]);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(3.2);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(5.6);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3.2, 5.6]);
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(2.2);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(4.6);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2.2, 4.6]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(3.2);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(5.6);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3.2, 5.6]);
     })
 
 
@@ -2238,15 +2254,15 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(2);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2, 5]);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(6);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3, 6]);
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(2);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2, 5]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(6);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3, 6]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.2,3.6)')
@@ -2273,15 +2289,15 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(4);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(-3);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 4, -3]);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(-2);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 5, -2]);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(6);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(-1);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", 6, -1]);
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(4);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(-3);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 4, -3]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(-2);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 5, -2]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(6);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(-1);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 6, -1]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,−3)')
@@ -2305,16 +2321,16 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(4);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(-3);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 4, -3]);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(4);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(-1.9);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 4, -1.9]);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).to.be.approximately(-0.9, 1E-10);
-      expect((await stateVariables['/follower'].stateValues.coords).slice(0, 2)).eqls(["vector", 5]);
-      expect((await stateVariables['/follower'].stateValues.coords)[2]).to.be.approximately(-0.9, 1E-10);
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(4);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(-3);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 4, -3]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(4);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(-1.9);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 4, -1.9]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).to.be.approximately(-0.9, 1E-10);
+      expect((stateVariables['/follower'].stateValues.coords).slice(0, 2)).eqls(["vector", 5]);
+      expect((stateVariables['/follower'].stateValues.coords)[2]).to.be.approximately(-0.9, 1E-10);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,−3)')
@@ -2342,15 +2358,15 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(-3);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(-9.4);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", -3, -9.4]);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(-2);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(-8.4);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", -2, -8.4]);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(-1);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(-7.4);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", -1, -7.4]);
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(-9.4);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", -3, -9.4]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(-2);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(-8.4);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", -2, -8.4]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(-1);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(-7.4);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", -1, -7.4]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−3,−9.4)')
@@ -2390,9 +2406,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2413,9 +2429,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(3.6);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.6]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(3.6);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.6]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2435,9 +2451,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2459,9 +2475,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2498,9 +2514,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2520,9 +2536,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(3.6);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.6]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(3.6);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.6]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2542,9 +2558,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2575,10 +2591,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9, 2]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(2);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9, 2]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2598,10 +2614,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(3.9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(5.4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.9, 5.4]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(3.9);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(5.4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.9, 5.4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2621,10 +2637,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(6);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4, 6]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(6);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4, 6]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2646,10 +2662,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0, 0]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2691,9 +2707,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-3.4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, -3.4]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-3.4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, -3.4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
 
@@ -2710,9 +2726,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1.3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.3, 4]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1.3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.3, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2732,9 +2748,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2754,9 +2770,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1.3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(3.7);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.3, 3.7]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1.3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(3.7);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.3, 3.7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2800,9 +2816,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7.1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(8.9);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7.1, 8.9]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7.1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(8.9);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7.1, 8.9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2822,9 +2838,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2842,9 +2858,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7.1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(8.9);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7.1, 8.9]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7.1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(8.9);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7.1, 8.9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2859,9 +2875,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-8);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(9.1);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -8, 9.1]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-8);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(9.1);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -8, 9.1]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2902,7 +2918,7 @@ describe('Point Tag Tests', function () {
       cy.log(`point is on line`);
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).eq(2);
+        expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -2920,7 +2936,7 @@ describe('Point Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).eq(2);
+        expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -2937,7 +2953,7 @@ describe('Point Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).eq(2);
+        expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -2954,7 +2970,7 @@ describe('Point Tag Tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).eq(2);
+        expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -2987,9 +3003,9 @@ describe('Point Tag Tests', function () {
     cy.log(`point is not on line`);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(-1);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(-5);
-      expect((await stateVariables['/A'].stateValues.coords)).eqls(["vector", -1, -5]);
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(-1);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(-5);
+      expect((stateVariables['/A'].stateValues.coords)).eqls(["vector", -1, -5]);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false)
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
@@ -3006,7 +3022,7 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
 
@@ -3022,7 +3038,7 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false)
     })
 
@@ -3038,7 +3054,7 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
+      expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
 
@@ -3082,10 +3098,10 @@ describe('Point Tag Tests', function () {
     cy.log(`point is not on line`);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-1, -5])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-1, -5])
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(false);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(false);
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-1, -5])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-1, -5])
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(false);
     })
 
     cy.get("#\\/constraintUsedA").should('have.text', "false")
@@ -3104,10 +3120,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect((await stateVariables['/B'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/A'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect((stateVariables['/B'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
 
 
@@ -3119,10 +3135,10 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsedB").should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect((await stateVariables['/B'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/A'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect((stateVariables['/B'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
 
     cy.log('point is no longer close')
@@ -3139,10 +3155,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([0.3, 0])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([0.3, 0])
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(false);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(false);
+      expect((stateVariables['/A'].stateValues.xs)).eqls([0.3, 0])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([0.3, 0])
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(false);
     })
 
     cy.log('point is close again for larger x limits')
@@ -3155,10 +3171,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect((await stateVariables['/B'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/A'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect((stateVariables['/B'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
 
 
@@ -3184,10 +3200,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 100 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect((await stateVariables['/B'].stateValues.xs)[0] + 100 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/A'].stateValues.xs)[0] + 100 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect((stateVariables['/B'].stateValues.xs)[0] + 100 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
 
 
@@ -3205,10 +3221,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-6, 8])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-6, 8])
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(false);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(false);
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-6, 8])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-6, 8])
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(false);
     })
 
 
@@ -3223,10 +3239,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 100 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect((await stateVariables['/B'].stateValues.xs)[0] + 100 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/A'].stateValues.xs)[0] + 100 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect((stateVariables['/B'].stateValues.xs)[0] + 100 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
 
 
@@ -3240,10 +3256,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-6, 8])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-6, 8])
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(false);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(false);
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-6, 8])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-6, 8])
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(false);
     })
 
 
@@ -3287,7 +3303,7 @@ describe('Point Tag Tests', function () {
     cy.log(`point is on line`);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[1] - (await stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3304,7 +3320,7 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[1] - (await stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3321,9 +3337,9 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3340,7 +3356,7 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[1] - (await stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3382,9 +3398,9 @@ describe('Point Tag Tests', function () {
     cy.log(`point is in original location`);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 2]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 2]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
@@ -3400,7 +3416,7 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[1] - (await stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
 
@@ -3415,9 +3431,9 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "false")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 9, -5]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 9, -5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
 
@@ -3432,9 +3448,9 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
 
@@ -3449,9 +3465,9 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "false")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(8);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -9, 8]);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-9);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(8);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -9, 8]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
 
@@ -3466,7 +3482,7 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[1] - (await stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
   });
@@ -3503,8 +3519,8 @@ describe('Point Tag Tests', function () {
     cy.log(`point on grid`);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(4, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(4, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3520,7 +3536,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−7.65,7.65)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3536,7 +3552,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(7.65,7.65)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3552,7 +3568,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3568,7 +3584,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3609,8 +3625,8 @@ describe('Point Tag Tests', function () {
     cy.log(`point in original location`);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
@@ -3626,8 +3642,8 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-2, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-2, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
 
@@ -3642,8 +3658,8 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "false")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-7.1, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-7.1, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
 
@@ -3658,7 +3674,7 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
 
@@ -3673,8 +3689,8 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "false")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7.1, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7.1, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
 
@@ -3689,7 +3705,7 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
 
@@ -3704,7 +3720,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3721,7 +3737,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3768,8 +3784,8 @@ describe('Point Tag Tests', function () {
     cy.log(`point in original location`);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
@@ -3785,8 +3801,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−7.1,8.2)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-7.1, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-7.1, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
@@ -3802,7 +3818,7 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
 
@@ -3817,8 +3833,8 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "false")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7.1, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7.1, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
 
@@ -3833,7 +3849,7 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
 
@@ -3848,7 +3864,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3864,7 +3880,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3880,8 +3896,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,0)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3897,8 +3913,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(2.67,−2.67)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8 / 3, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3914,8 +3930,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8,−8)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3931,8 +3947,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8,−8)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3948,8 +3964,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−2.67,−2.67)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8 / 3, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3965,8 +3981,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,−4)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-4, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-4, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4012,7 +4028,7 @@ describe('Point Tag Tests', function () {
     cy.log(`on x=y`);
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4028,7 +4044,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8.55,8.55)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4044,7 +4060,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8.4,0.2)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4060,7 +4076,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8.4,0.2)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4076,8 +4092,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,0)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4093,8 +4109,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(2.67,−2.67)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8 / 3, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4110,8 +4126,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8,−8)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4127,8 +4143,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8,−8)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4144,8 +4160,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−2.67,−2.67)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8 / 3, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4161,8 +4177,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,−4)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-4, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-4, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4532,8 +4548,8 @@ describe('Point Tag Tests', function () {
           [math1Name, '/_sequence1', math2Name]);
         expect(x1.activeChildren.map(x => x.componentName)).eqls(
           [math1Name, math2Name]);
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(5)
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4)
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(5)
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4)
       })
 
       cy.get('#\\/n textarea').type("2{enter}", { force: true }).
@@ -4546,8 +4562,8 @@ describe('Point Tag Tests', function () {
           [math1Name, '/_sequence1', math2Name]);
         expect(x1.activeChildren.map(x => x.componentName)).eqls(
           [math1Name, math3Name, math2Name]);
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(10)
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4)
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(10)
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4)
 
       })
     })
@@ -4572,10 +4588,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(2);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(1);
     })
 
     cy.log("move point 2")
@@ -4590,10 +4606,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-4);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(-4);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-4);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(-4);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(9);
     })
 
   })
@@ -4637,8 +4653,8 @@ describe('Point Tag Tests', function () {
       let x = 1;
       let y = 2;
       for (let point of points) {
-        expect((await stateVariables[point].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables[point].stateValues.xs)[1]).eq(y);
+        expect((stateVariables[point].stateValues.xs)[0]).eq(x);
+        expect((stateVariables[point].stateValues.xs)[1]).eq(y);
       }
     })
 
@@ -4659,8 +4675,8 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         for (let point of points) {
-          expect((await stateVariables[point].stateValues.xs)[0]).eq(x);
-          expect((await stateVariables[point].stateValues.xs)[1]).eq(y);
+          expect((stateVariables[point].stateValues.xs)[0]).eq(x);
+          expect((stateVariables[point].stateValues.xs)[1]).eq(y);
         }
 
       })
@@ -4691,11 +4707,11 @@ describe('Point Tag Tests', function () {
       let x = 1;
       let y = 2;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -4716,11 +4732,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -4743,11 +4759,11 @@ describe('Point Tag Tests', function () {
 
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
   })
@@ -4776,11 +4792,11 @@ describe('Point Tag Tests', function () {
       let x = 1;
       let y = 2;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -4802,11 +4818,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -4829,11 +4845,11 @@ describe('Point Tag Tests', function () {
 
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
   })
@@ -4867,13 +4883,13 @@ describe('Point Tag Tests', function () {
       let x = 3;
       let y = 7;
 
-      expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/p1ay'].stateValues.value)).eq(y);
+      expect((stateVariables['/p1ay'].stateValues.value)).eq(y);
 
     });
 
@@ -4895,12 +4911,12 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/p1ay'].stateValues.value)).eq(y);
+        expect((stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1ay'].stateValues.value)).eq(y);
       })
 
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4927,12 +4943,12 @@ describe('Point Tag Tests', function () {
 
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/p1ay'].stateValues.value)).eq(y);
+        expect((stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1ay'].stateValues.value)).eq(y);
       })
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(y.toString())
@@ -4972,14 +4988,14 @@ describe('Point Tag Tests', function () {
       let x = 3;
       let y = 7;
 
-      expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
 
     });
 
@@ -5000,14 +5016,14 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
 
       });
     })
@@ -5030,14 +5046,14 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
       })
     });
 
@@ -5059,14 +5075,14 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
 
       });
 
@@ -5102,11 +5118,11 @@ describe('Point Tag Tests', function () {
       let x = 9;
       let y = 7;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -5127,11 +5143,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
       });
     })
@@ -5153,11 +5169,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
       });
     })
@@ -5190,11 +5206,11 @@ describe('Point Tag Tests', function () {
       let x = 9;
       let y = 7;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -5215,11 +5231,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5240,11 +5256,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
       });
     })
@@ -5281,17 +5297,17 @@ describe('Point Tag Tests', function () {
       let x = 9;
       let y = 7;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-      expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -5312,17 +5328,17 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5343,17 +5359,17 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5375,17 +5391,17 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5407,17 +5423,17 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5454,17 +5470,17 @@ describe('Point Tag Tests', function () {
       let x = 9;
       let y = 7;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-      expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -5485,17 +5501,17 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5516,17 +5532,17 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5548,17 +5564,17 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5580,17 +5596,17 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
 
       });
     })
@@ -5625,11 +5641,11 @@ describe('Point Tag Tests', function () {
       let x = 9;
       let y = 7;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -5650,11 +5666,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5675,11 +5691,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5716,11 +5732,11 @@ describe('Point Tag Tests', function () {
       let y2 = 3;
       let x2 = 2 * y2 + 1;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
     });
 
@@ -5755,11 +5771,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
       })
     });
@@ -5798,11 +5814,11 @@ describe('Point Tag Tests', function () {
       let x2 = -10
       let y2 = 5;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
     });
 
@@ -5834,11 +5850,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(10);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(10);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(-10);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(-10);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
       })
     });
@@ -5885,11 +5901,11 @@ describe('Point Tag Tests', function () {
       let label1 = `${x1}, ${x2}`;
       let label2 = `${y1}, ${y2}`;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
       expect(stateVariables['/_point1'].stateValues.label).eq(label1);
       expect(stateVariables['/_point2'].stateValues.label).eq(label2);
@@ -5923,11 +5939,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
         expect(stateVariables['/_point1'].stateValues.label).eq(label1);
         expect(stateVariables['/_point2'].stateValues.label).eq(label2);
@@ -5973,11 +5989,11 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
         expect(stateVariables['/_point1'].stateValues.label).eq(label1);
         expect(stateVariables['/_point2'].stateValues.label).eq(label2);
@@ -6015,12 +6031,12 @@ describe('Point Tag Tests', function () {
       let x = -4;
       let y = 1;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-      expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-      expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-      expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+      expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
 
     });
 
@@ -6041,12 +6057,12 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
       })
     });
 
@@ -6067,12 +6083,12 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
       })
     });
 
@@ -6093,12 +6109,12 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
       })
     });
 
@@ -6118,12 +6134,12 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
       })
     });
 
@@ -6149,12 +6165,12 @@ describe('Point Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
       })
     });
   })
@@ -6340,20 +6356,20 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('＿');
       expect(stateVariables['/_point1'].stateValues.x1).eq('＿');
       expect(stateVariables['/_point1'].stateValues.x2).eq(undefined);
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('＿');
       expect(stateVariables['/point2'].stateValues.x1).eq('＿');
       expect(stateVariables['/point2'].stateValues.x2).eq(undefined);
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('＿');
       expect(stateVariables['/point3'].stateValues.x1).eq('＿');
       expect(stateVariables['/point3'].stateValues.x2).eq(undefined);
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -6504,23 +6520,23 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/_point1'].stateValues.x1).eq('a');
       expect(stateVariables['/_point1'].stateValues.x2).eq('b');
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point2'].stateValues.x1).eq('a');
       expect(stateVariables['/point2'].stateValues.x2).eq('b');
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point3'].stateValues.x1).eq('a');
       expect(stateVariables['/point3'].stateValues.x2).eq('b');
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -6646,20 +6662,20 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
       expect(stateVariables['/_point1'].stateValues.x1).eq('q');
       expect(stateVariables['/_point1'].stateValues.x2).eq(undefined);
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('q');
       expect(stateVariables['/point2'].stateValues.x1).eq('q');
       expect(stateVariables['/point2'].stateValues.x2).eq(undefined);
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('q');
       expect(stateVariables['/point3'].stateValues.x1).eq('q');
       expect(stateVariables['/point3'].stateValues.x2).eq(undefined);
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -6843,26 +6859,26 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eqls(["^", "w", 2]);
       expect(stateVariables['/_point1'].stateValues.x1).eqls(["*", 2, "x"]);;
       expect(stateVariables['/_point1'].stateValues.x2).eqls(["/", "u", "v"]);
       expect(stateVariables['/_point1'].stateValues.x3).eqls(["^", "w", 2]);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eqls(["^", "w", 2]);
       expect(stateVariables['/point2'].stateValues.x1).eqls(["*", 2, "x"]);
       expect(stateVariables['/point2'].stateValues.x2).eqls(["/", "u", "v"]);
       expect(stateVariables['/point2'].stateValues.x3).eqls(["^", "w", 2]);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eqls(["^", "w", 2]);
       expect(stateVariables['/point3'].stateValues.x1).eqls(["*", 2, "x"]);
       expect(stateVariables['/point3'].stateValues.x2).eqls(["/", "u", "v"]);
       expect(stateVariables['/point3'].stateValues.x3).eqls(["^", "w", 2]);
@@ -7042,26 +7058,26 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(8);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(8);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(9);
       expect(stateVariables['/_point1'].stateValues.x1).eq(7);;
       expect(stateVariables['/_point1'].stateValues.x2).eq(8);
       expect(stateVariables['/_point1'].stateValues.x3).eq(9);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq(7);
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq(8);
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq(9);
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq(7);
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq(8);
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq(9);
       expect(stateVariables['/point2'].stateValues.x1).eq(7);
       expect(stateVariables['/point2'].stateValues.x2).eq(8);
       expect(stateVariables['/point2'].stateValues.x3).eq(9);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq(7);
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq(8);
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq(9);
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq(7);
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq(8);
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq(9);
       expect(stateVariables['/point3'].stateValues.x1).eq(7);
       expect(stateVariables['/point3'].stateValues.x2).eq(8);
       expect(stateVariables['/point3'].stateValues.x3).eq(9);
@@ -7241,26 +7257,26 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('i');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('j');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('k');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('i');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('j');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('k');
       expect(stateVariables['/_point1'].stateValues.x1).eq('i');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('j');
       expect(stateVariables['/_point1'].stateValues.x3).eq('k');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('i');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('j');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('k');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('i');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('j');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('k');
       expect(stateVariables['/point2'].stateValues.x1).eq('i');
       expect(stateVariables['/point2'].stateValues.x2).eq('j');
       expect(stateVariables['/point2'].stateValues.x3).eq('k');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('i');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('j');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('k');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('i');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('j');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('k');
       expect(stateVariables['/point3'].stateValues.x1).eq('i');
       expect(stateVariables['/point3'].stateValues.x2).eq('j');
       expect(stateVariables['/point3'].stateValues.x3).eq('k');
@@ -7441,26 +7457,26 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('l');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('m');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('n');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('l');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('m');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('n');
       expect(stateVariables['/_point1'].stateValues.x1).eq('l');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('m');
       expect(stateVariables['/_point1'].stateValues.x3).eq('n');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('l');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('m');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('n');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('l');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('m');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('n');
       expect(stateVariables['/point2'].stateValues.x1).eq('l');
       expect(stateVariables['/point2'].stateValues.x2).eq('m');
       expect(stateVariables['/point2'].stateValues.x3).eq('n');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('l');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('m');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('n');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('l');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('m');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('n');
       expect(stateVariables['/point3'].stateValues.x1).eq('l');
       expect(stateVariables['/point3'].stateValues.x2).eq('m');
       expect(stateVariables['/point3'].stateValues.x3).eq('n');
@@ -7643,26 +7659,26 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('r');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('s');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('t');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('r');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('s');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('t');
       expect(stateVariables['/_point1'].stateValues.x1).eq('r');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('s');
       expect(stateVariables['/_point1'].stateValues.x3).eq('t');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('r');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('s');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('t');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('r');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('s');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('t');
       expect(stateVariables['/point2'].stateValues.x1).eq('r');
       expect(stateVariables['/point2'].stateValues.x2).eq('s');
       expect(stateVariables['/point2'].stateValues.x3).eq('t');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('r');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('s');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('t');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('r');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('s');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('t');
       expect(stateVariables['/point3'].stateValues.x1).eq('r');
       expect(stateVariables['/point3'].stateValues.x2).eq('s');
       expect(stateVariables['/point3'].stateValues.x3).eq('t');
@@ -7848,26 +7864,26 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('f');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('g');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('h');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('f');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('g');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('h');
       expect(stateVariables['/_point1'].stateValues.x1).eq('f');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('g');
       expect(stateVariables['/_point1'].stateValues.x3).eq('h');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('f');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('g');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('h');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('f');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('g');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('h');
       expect(stateVariables['/point2'].stateValues.x1).eq('f');
       expect(stateVariables['/point2'].stateValues.x2).eq('g');
       expect(stateVariables['/point2'].stateValues.x3).eq('h');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('f');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('g');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('h');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('f');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('g');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('h');
       expect(stateVariables['/point3'].stateValues.x1).eq('f');
       expect(stateVariables['/point3'].stateValues.x2).eq('g');
       expect(stateVariables['/point3'].stateValues.x3).eq('h');
@@ -8050,26 +8066,26 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('x');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('y');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('x');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('y');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/_point1'].stateValues.x1).eq('x');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('y');
       expect(stateVariables['/_point1'].stateValues.x3).eq('z');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('x');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('y');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('x');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('y');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point2'].stateValues.x1).eq('x');
       expect(stateVariables['/point2'].stateValues.x2).eq('y');
       expect(stateVariables['/point2'].stateValues.x3).eq('z');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('x');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('y');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('x');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('y');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point3'].stateValues.x1).eq('x');
       expect(stateVariables['/point3'].stateValues.x2).eq('y');
       expect(stateVariables['/point3'].stateValues.x3).eq('z');
@@ -8251,26 +8267,26 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('u');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('v');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('u');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('v');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/_point1'].stateValues.x1).eq('u');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('v');
       expect(stateVariables['/_point1'].stateValues.x3).eq('z');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('u');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('v');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('u');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('v');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point2'].stateValues.x1).eq('u');
       expect(stateVariables['/point2'].stateValues.x2).eq('v');
       expect(stateVariables['/point2'].stateValues.x3).eq('z');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('u');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('v');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('u');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('v');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point3'].stateValues.x1).eq('u');
       expect(stateVariables['/point3'].stateValues.x2).eq('v');
       expect(stateVariables['/point3'].stateValues.x3).eq('z');
@@ -8452,26 +8468,26 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('s');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('t');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('s');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('t');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/_point1'].stateValues.x1).eq('s');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('t');
       expect(stateVariables['/_point1'].stateValues.x3).eq('z');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('s');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('t');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('s');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('t');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point2'].stateValues.x1).eq('s');
       expect(stateVariables['/point2'].stateValues.x2).eq('t');
       expect(stateVariables['/point2'].stateValues.x3).eq('z');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('s');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('t');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('s');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('t');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point3'].stateValues.x1).eq('s');
       expect(stateVariables['/point3'].stateValues.x2).eq('t');
       expect(stateVariables['/point3'].stateValues.x3).eq('z');
@@ -8651,26 +8667,26 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('r');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('r');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/_point1'].stateValues.x1).eq('q');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('r');
       expect(stateVariables['/_point1'].stateValues.x3).eq('z');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('q');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('r');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('r');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point2'].stateValues.x1).eq('q');
       expect(stateVariables['/point2'].stateValues.x2).eq('r');
       expect(stateVariables['/point2'].stateValues.x3).eq('z');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('q');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('r');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('r');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point3'].stateValues.x1).eq('q');
       expect(stateVariables['/point3'].stateValues.x2).eq('r');
       expect(stateVariables['/point3'].stateValues.x3).eq('z');
@@ -8827,23 +8843,23 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('q');
       expect(stateVariables['/_point1'].stateValues.x1).eq('p');
       expect(stateVariables['/_point1'].stateValues.x2).eq('q');
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('q');
       expect(stateVariables['/point2'].stateValues.x1).eq('p');
       expect(stateVariables['/point2'].stateValues.x2).eq('q');
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('q');
       expect(stateVariables['/point3'].stateValues.x1).eq('p');
       expect(stateVariables['/point3'].stateValues.x2).eq('q');
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -8996,23 +9012,23 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/_point1'].stateValues.x1).eq('a');
       expect(stateVariables['/_point1'].stateValues.x2).eq('b');
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point2'].stateValues.x1).eq('a');
       expect(stateVariables['/point2'].stateValues.x2).eq('b');
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point3'].stateValues.x1).eq('a');
       expect(stateVariables['/point3'].stateValues.x2).eq('b');
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -9166,23 +9182,23 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('d');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('e');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('d');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('e');
       expect(stateVariables['/_point1'].stateValues.x1).eq('d');
       expect(stateVariables['/_point1'].stateValues.x2).eq('e');
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('d');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('e');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('d');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('e');
       expect(stateVariables['/point2'].stateValues.x1).eq('d');
       expect(stateVariables['/point2'].stateValues.x2).eq('e');
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('d');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('e');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('d');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('e');
       expect(stateVariables['/point3'].stateValues.x1).eq('d');
       expect(stateVariables['/point3'].stateValues.x2).eq('e');
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -9335,23 +9351,23 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('g');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('h');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('g');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('h');
       expect(stateVariables['/_point1'].stateValues.x1).eq('g');
       expect(stateVariables['/_point1'].stateValues.x2).eq('h');
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('g');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('h');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('g');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('h');
       expect(stateVariables['/point2'].stateValues.x1).eq('g');
       expect(stateVariables['/point2'].stateValues.x2).eq('h');
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('g');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('h');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('g');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('h');
       expect(stateVariables['/point3'].stateValues.x1).eq('g');
       expect(stateVariables['/point3'].stateValues.x2).eq('h');
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -9400,14 +9416,14 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('＿');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('＿');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('＿');
 
     });
 
@@ -9430,17 +9446,17 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('b');
 
     });
 
@@ -9465,14 +9481,14 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('q');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('q');
 
     });
 
@@ -9496,20 +9512,20 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eqls(["^", "w", 2]);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eqls(["^", "w", 2]);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eqls(["^", "w", 2]);
 
     });
 
@@ -9536,17 +9552,17 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('q');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('q');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('q');
 
     });
 
@@ -9627,22 +9643,22 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([1, 2])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([3, 4])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([3, 1])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
-      expect(await stateVariables['/A'].stateValues.label).eq('A');
-      expect(await stateVariables['/A1'].stateValues.label).eq('A');
-      expect(await stateVariables['/B'].stateValues.label).eq('B');
-      expect(await stateVariables['/B1'].stateValues.label).eq('B');
-      expect(await stateVariables['/C'].stateValues.label).eq('C');
-      expect(await stateVariables['/C1'].stateValues.label).eq('C');
-      expect(await stateVariables['/C2/C'].stateValues.label).eq('C');
+      expect((stateVariables['/A'].stateValues.xs)).eqls([1, 2])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([3, 4])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([3, 1])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
+      expect(stateVariables['/A'].stateValues.label).eq('A');
+      expect(stateVariables['/A1'].stateValues.label).eq('A');
+      expect(stateVariables['/B'].stateValues.label).eq('B');
+      expect(stateVariables['/B1'].stateValues.label).eq('B');
+      expect(stateVariables['/C'].stateValues.label).eq('C');
+      expect(stateVariables['/C1'].stateValues.label).eq('C');
+      expect(stateVariables['/C2/C'].stateValues.label).eq('C');
 
     })
 
@@ -9671,15 +9687,15 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([5, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([5, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
 
     })
 
@@ -9708,15 +9724,15 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
 
     })
 
@@ -9763,22 +9779,22 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([1, 2])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([3, 4])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([3, 1])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
-      expect(await stateVariables['/A'].stateValues.label).eq('A');
-      expect(await stateVariables['/A1'].stateValues.label).eq('A');
-      expect(await stateVariables['/B'].stateValues.label).eq('B');
-      expect(await stateVariables['/B1'].stateValues.label).eq('B');
-      expect(await stateVariables['/C'].stateValues.label).eq('C');
-      expect(await stateVariables['/C1'].stateValues.label).eq('C');
-      expect(await stateVariables['/C2/C'].stateValues.label).eq('C');
+      expect((stateVariables['/A'].stateValues.xs)).eqls([1, 2])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([3, 4])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([3, 1])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
+      expect(stateVariables['/A'].stateValues.label).eq('A');
+      expect(stateVariables['/A1'].stateValues.label).eq('A');
+      expect(stateVariables['/B'].stateValues.label).eq('B');
+      expect(stateVariables['/B1'].stateValues.label).eq('B');
+      expect(stateVariables['/C'].stateValues.label).eq('C');
+      expect(stateVariables['/C1'].stateValues.label).eq('C');
+      expect(stateVariables['/C2/C'].stateValues.label).eq('C');
 
     })
 
@@ -9806,15 +9822,15 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([5, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([5, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
 
     })
 
@@ -9843,15 +9859,15 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
 
     })
 
@@ -9898,22 +9914,22 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([1, 2])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([3, 4])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([3, 1])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
-      expect(await stateVariables['/A'].stateValues.label).eq('A');
-      expect(await stateVariables['/A1'].stateValues.label).eq('A');
-      expect(await stateVariables['/B'].stateValues.label).eq('B');
-      expect(await stateVariables['/B1'].stateValues.label).eq('B');
-      expect(await stateVariables['/C'].stateValues.label).eq('C');
-      expect(await stateVariables['/C1'].stateValues.label).eq('C');
-      expect(await stateVariables['/C2/C'].stateValues.label).eq('C');
+      expect((stateVariables['/A'].stateValues.xs)).eqls([1, 2])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([3, 4])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([3, 1])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
+      expect(stateVariables['/A'].stateValues.label).eq('A');
+      expect(stateVariables['/A1'].stateValues.label).eq('A');
+      expect(stateVariables['/B'].stateValues.label).eq('B');
+      expect(stateVariables['/B1'].stateValues.label).eq('B');
+      expect(stateVariables['/C'].stateValues.label).eq('C');
+      expect(stateVariables['/C1'].stateValues.label).eq('C');
+      expect(stateVariables['/C2/C'].stateValues.label).eq('C');
 
     })
 
@@ -9941,15 +9957,15 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([5, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([5, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
 
     })
 
@@ -9978,15 +9994,15 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
 
     })
 
@@ -10034,10 +10050,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/g1/P'].stateValues.xs)).eqls([3, 2])
-      expect((await stateVariables['/g2/P'].stateValues.xs)).eqls([-1, 2])
-      expect((await stateVariables['/g3/P'].stateValues.xs)).eqls([-1, 2])
-      expect((await stateVariables['/g4/P'].stateValues.xs)).eqls([-1, -5])
+      expect((stateVariables['/g1/P'].stateValues.xs)).eqls([3, 2])
+      expect((stateVariables['/g2/P'].stateValues.xs)).eqls([-1, 2])
+      expect((stateVariables['/g3/P'].stateValues.xs)).eqls([-1, 2])
+      expect((stateVariables['/g4/P'].stateValues.xs)).eqls([-1, -5])
     })
 
     cy.log('move first point')
@@ -10056,10 +10072,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/g1/P'].stateValues.xs)).eqls([-2, -7])
-      expect((await stateVariables['/g2/P'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/g3/P'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/g4/P'].stateValues.xs)).eqls([-1, -5])
+      expect((stateVariables['/g1/P'].stateValues.xs)).eqls([-2, -7])
+      expect((stateVariables['/g2/P'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/g3/P'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/g4/P'].stateValues.xs)).eqls([-1, -5])
     })
 
 
@@ -10079,10 +10095,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/g1/P'].stateValues.xs)).eqls([-2, -6])
-      expect((await stateVariables['/g2/P'].stateValues.xs)).eqls([8, -6])
-      expect((await stateVariables['/g3/P'].stateValues.xs)).eqls([8, -6])
-      expect((await stateVariables['/g4/P'].stateValues.xs)).eqls([8, -5])
+      expect((stateVariables['/g1/P'].stateValues.xs)).eqls([-2, -6])
+      expect((stateVariables['/g2/P'].stateValues.xs)).eqls([8, -6])
+      expect((stateVariables['/g3/P'].stateValues.xs)).eqls([8, -6])
+      expect((stateVariables['/g4/P'].stateValues.xs)).eqls([8, -5])
     })
 
 
@@ -10102,10 +10118,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/g1/P'].stateValues.xs)).eqls([-2, 0])
-      expect((await stateVariables['/g2/P'].stateValues.xs)).eqls([1, 0])
-      expect((await stateVariables['/g3/P'].stateValues.xs)).eqls([1, 0])
-      expect((await stateVariables['/g4/P'].stateValues.xs)).eqls([1, -5])
+      expect((stateVariables['/g1/P'].stateValues.xs)).eqls([-2, 0])
+      expect((stateVariables['/g2/P'].stateValues.xs)).eqls([1, 0])
+      expect((stateVariables['/g3/P'].stateValues.xs)).eqls([1, 0])
+      expect((stateVariables['/g4/P'].stateValues.xs)).eqls([1, -5])
     })
 
     cy.log('move fourth point')
@@ -10124,10 +10140,10 @@ describe('Point Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect((await stateVariables['/g1/P'].stateValues.xs)).eqls([-2, 0])
-      expect((await stateVariables['/g2/P'].stateValues.xs)).eqls([3, 0])
-      expect((await stateVariables['/g3/P'].stateValues.xs)).eqls([3, 0])
-      expect((await stateVariables['/g4/P'].stateValues.xs)).eqls([3, 4])
+      expect((stateVariables['/g1/P'].stateValues.xs)).eqls([-2, 0])
+      expect((stateVariables['/g2/P'].stateValues.xs)).eqls([3, 0])
+      expect((stateVariables['/g3/P'].stateValues.xs)).eqls([3, 0])
+      expect((stateVariables['/g4/P'].stateValues.xs)).eqls([3, 4])
     })
 
   });

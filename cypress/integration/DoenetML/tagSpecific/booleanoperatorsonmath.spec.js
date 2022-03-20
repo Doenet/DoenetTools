@@ -6,7 +6,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
 
   it('isinteger, is number', () => {
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <mathinput name="n"/>
@@ -48,24 +48,24 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num6').should('have.text', "false");
     cy.get('#\\/num7').should('have.text', "true");
     cy.get('#\\/num8').should('have.text', "true");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(false);
-      expect(components['/int2'].stateValues.value).eq(false);
-      expect(components['/int3'].stateValues.value).eq(false);
-      expect(components['/int4'].stateValues.value).eq(false);
-      expect(components['/int5'].stateValues.value).eq(false);
-      expect(components['/int6'].stateValues.value).eq(false);
-      expect(components['/int7'].stateValues.value).eq(true);
-      expect(components['/int8'].stateValues.value).eq(false);
-      expect(components['/num1'].stateValues.value).eq(false);
-      expect(components['/num2'].stateValues.value).eq(false);
-      expect(components['/num3'].stateValues.value).eq(false);
-      expect(components['/num4'].stateValues.value).eq(false);
-      expect(components['/num5'].stateValues.value).eq(false);
-      expect(components['/num6'].stateValues.value).eq(false);
-      expect(components['/num7'].stateValues.value).eq(true);
-      expect(components['/num8'].stateValues.value).eq(true);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(false);
+      expect(stateVariables['/int2'].stateValues.value).eq(false);
+      expect(stateVariables['/int3'].stateValues.value).eq(false);
+      expect(stateVariables['/int4'].stateValues.value).eq(false);
+      expect(stateVariables['/int5'].stateValues.value).eq(false);
+      expect(stateVariables['/int6'].stateValues.value).eq(false);
+      expect(stateVariables['/int7'].stateValues.value).eq(true);
+      expect(stateVariables['/int8'].stateValues.value).eq(false);
+      expect(stateVariables['/num1'].stateValues.value).eq(false);
+      expect(stateVariables['/num2'].stateValues.value).eq(false);
+      expect(stateVariables['/num3'].stateValues.value).eq(false);
+      expect(stateVariables['/num4'].stateValues.value).eq(false);
+      expect(stateVariables['/num5'].stateValues.value).eq(false);
+      expect(stateVariables['/num6'].stateValues.value).eq(false);
+      expect(stateVariables['/num7'].stateValues.value).eq(true);
+      expect(stateVariables['/num8'].stateValues.value).eq(true);
     });
 
     cy.log('36');
@@ -82,20 +82,20 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "true");
     cy.get('#\\/num5').should('have.text', "true");
     cy.get('#\\/num6').should('have.text', "true");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(true);
-      expect(components['/int2'].stateValues.value).eq(true);
-      expect(components['/int3'].stateValues.value).eq(true);
-      expect(components['/int4'].stateValues.value).eq(true);
-      expect(components['/int5'].stateValues.value).eq(true);
-      expect(components['/int6'].stateValues.value).eq(true);
-      expect(components['/num1'].stateValues.value).eq(true);
-      expect(components['/num2'].stateValues.value).eq(true);
-      expect(components['/num3'].stateValues.value).eq(true);
-      expect(components['/num4'].stateValues.value).eq(true);
-      expect(components['/num5'].stateValues.value).eq(true);
-      expect(components['/num6'].stateValues.value).eq(true);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(true);
+      expect(stateVariables['/int2'].stateValues.value).eq(true);
+      expect(stateVariables['/int3'].stateValues.value).eq(true);
+      expect(stateVariables['/int4'].stateValues.value).eq(true);
+      expect(stateVariables['/int5'].stateValues.value).eq(true);
+      expect(stateVariables['/int6'].stateValues.value).eq(true);
+      expect(stateVariables['/num1'].stateValues.value).eq(true);
+      expect(stateVariables['/num2'].stateValues.value).eq(true);
+      expect(stateVariables['/num3'].stateValues.value).eq(true);
+      expect(stateVariables['/num4'].stateValues.value).eq(true);
+      expect(stateVariables['/num5'].stateValues.value).eq(true);
+      expect(stateVariables['/num6'].stateValues.value).eq(true);
     });
 
     cy.log('37');
@@ -112,20 +112,20 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "true");
     cy.get('#\\/num5').should('have.text', "true");
     cy.get('#\\/num6').should('have.text', "true");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(true);
-      expect(components['/int2'].stateValues.value).eq(true);
-      expect(components['/int3'].stateValues.value).eq(true);
-      expect(components['/int4'].stateValues.value).eq(true);
-      expect(components['/int5'].stateValues.value).eq(false);
-      expect(components['/int6'].stateValues.value).eq(false);
-      expect(components['/num1'].stateValues.value).eq(true);
-      expect(components['/num2'].stateValues.value).eq(true);
-      expect(components['/num3'].stateValues.value).eq(true);
-      expect(components['/num4'].stateValues.value).eq(true);
-      expect(components['/num5'].stateValues.value).eq(true);
-      expect(components['/num6'].stateValues.value).eq(true);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(true);
+      expect(stateVariables['/int2'].stateValues.value).eq(true);
+      expect(stateVariables['/int3'].stateValues.value).eq(true);
+      expect(stateVariables['/int4'].stateValues.value).eq(true);
+      expect(stateVariables['/int5'].stateValues.value).eq(false);
+      expect(stateVariables['/int6'].stateValues.value).eq(false);
+      expect(stateVariables['/num1'].stateValues.value).eq(true);
+      expect(stateVariables['/num2'].stateValues.value).eq(true);
+      expect(stateVariables['/num3'].stateValues.value).eq(true);
+      expect(stateVariables['/num4'].stateValues.value).eq(true);
+      expect(stateVariables['/num5'].stateValues.value).eq(true);
+      expect(stateVariables['/num6'].stateValues.value).eq(true);
     });
 
     cy.log('37.1');
@@ -142,24 +142,24 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "true");
     cy.get('#\\/num5').should('have.text', "true");
     cy.get('#\\/num6').should('have.text', "true");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(false);
-      expect(components['/int2'].stateValues.value).eq(false);
-      expect(components['/int3'].stateValues.value).eq(false);
-      expect(components['/int4'].stateValues.value).eq(false);
-      expect(components['/int5'].stateValues.value).eq(false);
-      expect(components['/int6'].stateValues.value).eq(false);
-      expect(components['/num1'].stateValues.value).eq(true);
-      expect(components['/num2'].stateValues.value).eq(true);
-      expect(components['/num3'].stateValues.value).eq(true);
-      expect(components['/num4'].stateValues.value).eq(true);
-      expect(components['/num5'].stateValues.value).eq(true);
-      expect(components['/num6'].stateValues.value).eq(true);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(false);
+      expect(stateVariables['/int2'].stateValues.value).eq(false);
+      expect(stateVariables['/int3'].stateValues.value).eq(false);
+      expect(stateVariables['/int4'].stateValues.value).eq(false);
+      expect(stateVariables['/int5'].stateValues.value).eq(false);
+      expect(stateVariables['/int6'].stateValues.value).eq(false);
+      expect(stateVariables['/num1'].stateValues.value).eq(true);
+      expect(stateVariables['/num2'].stateValues.value).eq(true);
+      expect(stateVariables['/num3'].stateValues.value).eq(true);
+      expect(stateVariables['/num4'].stateValues.value).eq(true);
+      expect(stateVariables['/num5'].stateValues.value).eq(true);
+      expect(stateVariables['/num6'].stateValues.value).eq(true);
     });
 
     cy.log('42/3');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}42/3{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}42/3{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "true");
     cy.get('#\\/int2').should('have.text', "true");
     cy.get('#\\/int3').should('have.text', "true");
@@ -172,24 +172,24 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "true");
     cy.get('#\\/num5').should('have.text', "true");
     cy.get('#\\/num6').should('have.text', "true");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(true);
-      expect(components['/int2'].stateValues.value).eq(true);
-      expect(components['/int3'].stateValues.value).eq(true);
-      expect(components['/int4'].stateValues.value).eq(true);
-      expect(components['/int5'].stateValues.value).eq(true);
-      expect(components['/int6'].stateValues.value).eq(true);
-      expect(components['/num1'].stateValues.value).eq(true);
-      expect(components['/num2'].stateValues.value).eq(true);
-      expect(components['/num3'].stateValues.value).eq(true);
-      expect(components['/num4'].stateValues.value).eq(true);
-      expect(components['/num5'].stateValues.value).eq(true);
-      expect(components['/num6'].stateValues.value).eq(true);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(true);
+      expect(stateVariables['/int2'].stateValues.value).eq(true);
+      expect(stateVariables['/int3'].stateValues.value).eq(true);
+      expect(stateVariables['/int4'].stateValues.value).eq(true);
+      expect(stateVariables['/int5'].stateValues.value).eq(true);
+      expect(stateVariables['/int6'].stateValues.value).eq(true);
+      expect(stateVariables['/num1'].stateValues.value).eq(true);
+      expect(stateVariables['/num2'].stateValues.value).eq(true);
+      expect(stateVariables['/num3'].stateValues.value).eq(true);
+      expect(stateVariables['/num4'].stateValues.value).eq(true);
+      expect(stateVariables['/num5'].stateValues.value).eq(true);
+      expect(stateVariables['/num6'].stateValues.value).eq(true);
     });
 
     cy.log('-39.6/3.3');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-39.6/3.3{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}-39.6/3.3{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "true");
     cy.get('#\\/int2').should('have.text', "true");
     cy.get('#\\/int3').should('have.text', "true");
@@ -202,24 +202,24 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "true");
     cy.get('#\\/num5').should('have.text', "true");
     cy.get('#\\/num6').should('have.text', "true");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(true);
-      expect(components['/int2'].stateValues.value).eq(true);
-      expect(components['/int3'].stateValues.value).eq(true);
-      expect(components['/int4'].stateValues.value).eq(true);
-      expect(components['/int5'].stateValues.value).eq(true);
-      expect(components['/int6'].stateValues.value).eq(true);
-      expect(components['/num1'].stateValues.value).eq(true);
-      expect(components['/num2'].stateValues.value).eq(true);
-      expect(components['/num3'].stateValues.value).eq(true);
-      expect(components['/num4'].stateValues.value).eq(true);
-      expect(components['/num5'].stateValues.value).eq(true);
-      expect(components['/num6'].stateValues.value).eq(true);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(true);
+      expect(stateVariables['/int2'].stateValues.value).eq(true);
+      expect(stateVariables['/int3'].stateValues.value).eq(true);
+      expect(stateVariables['/int4'].stateValues.value).eq(true);
+      expect(stateVariables['/int5'].stateValues.value).eq(true);
+      expect(stateVariables['/int6'].stateValues.value).eq(true);
+      expect(stateVariables['/num1'].stateValues.value).eq(true);
+      expect(stateVariables['/num2'].stateValues.value).eq(true);
+      expect(stateVariables['/num3'].stateValues.value).eq(true);
+      expect(stateVariables['/num4'].stateValues.value).eq(true);
+      expect(stateVariables['/num5'].stateValues.value).eq(true);
+      expect(stateVariables['/num6'].stateValues.value).eq(true);
     });
 
     cy.log('x');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "false");
     cy.get('#\\/int2').should('have.text', "false");
     cy.get('#\\/int3').should('have.text', "false");
@@ -232,24 +232,24 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "false");
     cy.get('#\\/num5').should('have.text', "false");
     cy.get('#\\/num6').should('have.text', "false");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(false);
-      expect(components['/int2'].stateValues.value).eq(false);
-      expect(components['/int3'].stateValues.value).eq(false);
-      expect(components['/int4'].stateValues.value).eq(false);
-      expect(components['/int5'].stateValues.value).eq(false);
-      expect(components['/int6'].stateValues.value).eq(false);
-      expect(components['/num1'].stateValues.value).eq(false);
-      expect(components['/num2'].stateValues.value).eq(false);
-      expect(components['/num3'].stateValues.value).eq(false);
-      expect(components['/num4'].stateValues.value).eq(false);
-      expect(components['/num5'].stateValues.value).eq(false);
-      expect(components['/num6'].stateValues.value).eq(false);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(false);
+      expect(stateVariables['/int2'].stateValues.value).eq(false);
+      expect(stateVariables['/int3'].stateValues.value).eq(false);
+      expect(stateVariables['/int4'].stateValues.value).eq(false);
+      expect(stateVariables['/int5'].stateValues.value).eq(false);
+      expect(stateVariables['/int6'].stateValues.value).eq(false);
+      expect(stateVariables['/num1'].stateValues.value).eq(false);
+      expect(stateVariables['/num2'].stateValues.value).eq(false);
+      expect(stateVariables['/num3'].stateValues.value).eq(false);
+      expect(stateVariables['/num4'].stateValues.value).eq(false);
+      expect(stateVariables['/num5'].stateValues.value).eq(false);
+      expect(stateVariables['/num6'].stateValues.value).eq(false);
     });
 
     cy.log('sqrt(4)');
-    cy.get('#\\/n textarea').type("{end}{backspace}sqrt4{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}sqrt4{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "true");
     cy.get('#\\/int2').should('have.text', "true");
     cy.get('#\\/int3').should('have.text', "true");
@@ -262,24 +262,24 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "true");
     cy.get('#\\/num5').should('have.text', "true");
     cy.get('#\\/num6').should('have.text', "true");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(true);
-      expect(components['/int2'].stateValues.value).eq(true);
-      expect(components['/int3'].stateValues.value).eq(true);
-      expect(components['/int4'].stateValues.value).eq(true);
-      expect(components['/int5'].stateValues.value).eq(true);
-      expect(components['/int6'].stateValues.value).eq(true);
-      expect(components['/num1'].stateValues.value).eq(true);
-      expect(components['/num2'].stateValues.value).eq(true);
-      expect(components['/num3'].stateValues.value).eq(true);
-      expect(components['/num4'].stateValues.value).eq(true);
-      expect(components['/num5'].stateValues.value).eq(true);
-      expect(components['/num6'].stateValues.value).eq(true);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(true);
+      expect(stateVariables['/int2'].stateValues.value).eq(true);
+      expect(stateVariables['/int3'].stateValues.value).eq(true);
+      expect(stateVariables['/int4'].stateValues.value).eq(true);
+      expect(stateVariables['/int5'].stateValues.value).eq(true);
+      expect(stateVariables['/int6'].stateValues.value).eq(true);
+      expect(stateVariables['/num1'].stateValues.value).eq(true);
+      expect(stateVariables['/num2'].stateValues.value).eq(true);
+      expect(stateVariables['/num3'].stateValues.value).eq(true);
+      expect(stateVariables['/num4'].stateValues.value).eq(true);
+      expect(stateVariables['/num5'].stateValues.value).eq(true);
+      expect(stateVariables['/num6'].stateValues.value).eq(true);
     });
 
     cy.log('2sin(pi/4)^2');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}2sin(pi/4){rightarrow}{rightarrow}^2{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}2sin(pi/4){rightarrow}{rightarrow}^2{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "true");
     cy.get('#\\/int2').should('have.text', "true");
     cy.get('#\\/int3').should('have.text', "true");
@@ -292,24 +292,24 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "true");
     cy.get('#\\/num5').should('have.text', "true");
     cy.get('#\\/num6').should('have.text', "true");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(true);
-      expect(components['/int2'].stateValues.value).eq(true);
-      expect(components['/int3'].stateValues.value).eq(true);
-      expect(components['/int4'].stateValues.value).eq(true);
-      expect(components['/int5'].stateValues.value).eq(false);
-      expect(components['/int6'].stateValues.value).eq(false);
-      expect(components['/num1'].stateValues.value).eq(true);
-      expect(components['/num2'].stateValues.value).eq(true);
-      expect(components['/num3'].stateValues.value).eq(true);
-      expect(components['/num4'].stateValues.value).eq(true);
-      expect(components['/num5'].stateValues.value).eq(true);
-      expect(components['/num6'].stateValues.value).eq(true);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(true);
+      expect(stateVariables['/int2'].stateValues.value).eq(true);
+      expect(stateVariables['/int3'].stateValues.value).eq(true);
+      expect(stateVariables['/int4'].stateValues.value).eq(true);
+      expect(stateVariables['/int5'].stateValues.value).eq(false);
+      expect(stateVariables['/int6'].stateValues.value).eq(false);
+      expect(stateVariables['/num1'].stateValues.value).eq(true);
+      expect(stateVariables['/num2'].stateValues.value).eq(true);
+      expect(stateVariables['/num3'].stateValues.value).eq(true);
+      expect(stateVariables['/num4'].stateValues.value).eq(true);
+      expect(stateVariables['/num5'].stateValues.value).eq(true);
+      expect(stateVariables['/num6'].stateValues.value).eq(true);
     });
 
     cy.log('1E-300');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1E-300{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1E-300{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "false");
     cy.get('#\\/int2').should('have.text', "false");
     cy.get('#\\/int3').should('have.text', "false");
@@ -322,24 +322,24 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "true");
     cy.get('#\\/num5').should('have.text', "true");
     cy.get('#\\/num6').should('have.text', "true");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(false);
-      expect(components['/int2'].stateValues.value).eq(false);
-      expect(components['/int3'].stateValues.value).eq(false);
-      expect(components['/int4'].stateValues.value).eq(false);
-      expect(components['/int5'].stateValues.value).eq(false);
-      expect(components['/int6'].stateValues.value).eq(false);
-      expect(components['/num1'].stateValues.value).eq(true);
-      expect(components['/num2'].stateValues.value).eq(true);
-      expect(components['/num3'].stateValues.value).eq(true);
-      expect(components['/num4'].stateValues.value).eq(true);
-      expect(components['/num5'].stateValues.value).eq(true);
-      expect(components['/num6'].stateValues.value).eq(true);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(false);
+      expect(stateVariables['/int2'].stateValues.value).eq(false);
+      expect(stateVariables['/int3'].stateValues.value).eq(false);
+      expect(stateVariables['/int4'].stateValues.value).eq(false);
+      expect(stateVariables['/int5'].stateValues.value).eq(false);
+      expect(stateVariables['/int6'].stateValues.value).eq(false);
+      expect(stateVariables['/num1'].stateValues.value).eq(true);
+      expect(stateVariables['/num2'].stateValues.value).eq(true);
+      expect(stateVariables['/num3'].stateValues.value).eq(true);
+      expect(stateVariables['/num4'].stateValues.value).eq(true);
+      expect(stateVariables['/num5'].stateValues.value).eq(true);
+      expect(stateVariables['/num6'].stateValues.value).eq(true);
     });
 
     cy.log('-0');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-0{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-0{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "true");
     cy.get('#\\/int2').should('have.text', "true");
     cy.get('#\\/int3').should('have.text', "true");
@@ -352,25 +352,25 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "true");
     cy.get('#\\/num5').should('have.text', "true");
     cy.get('#\\/num6').should('have.text', "true");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(true);
-      expect(components['/int2'].stateValues.value).eq(true);
-      expect(components['/int3'].stateValues.value).eq(true);
-      expect(components['/int4'].stateValues.value).eq(true);
-      expect(components['/int5'].stateValues.value).eq(true);
-      expect(components['/int6'].stateValues.value).eq(true);
-      expect(components['/num1'].stateValues.value).eq(true);
-      expect(components['/num2'].stateValues.value).eq(true);
-      expect(components['/num3'].stateValues.value).eq(true);
-      expect(components['/num4'].stateValues.value).eq(true);
-      expect(components['/num5'].stateValues.value).eq(true);
-      expect(components['/num6'].stateValues.value).eq(true);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(true);
+      expect(stateVariables['/int2'].stateValues.value).eq(true);
+      expect(stateVariables['/int3'].stateValues.value).eq(true);
+      expect(stateVariables['/int4'].stateValues.value).eq(true);
+      expect(stateVariables['/int5'].stateValues.value).eq(true);
+      expect(stateVariables['/int6'].stateValues.value).eq(true);
+      expect(stateVariables['/num1'].stateValues.value).eq(true);
+      expect(stateVariables['/num2'].stateValues.value).eq(true);
+      expect(stateVariables['/num3'].stateValues.value).eq(true);
+      expect(stateVariables['/num4'].stateValues.value).eq(true);
+      expect(stateVariables['/num5'].stateValues.value).eq(true);
+      expect(stateVariables['/num6'].stateValues.value).eq(true);
     });
 
 
     cy.log('0/0');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}0/0{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}0/0{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "false");
     cy.get('#\\/int2').should('have.text', "false");
     cy.get('#\\/int3').should('have.text', "false");
@@ -383,25 +383,25 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "false");
     cy.get('#\\/num5').should('have.text', "false");
     cy.get('#\\/num6').should('have.text', "false");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(false);
-      expect(components['/int2'].stateValues.value).eq(false);
-      expect(components['/int3'].stateValues.value).eq(false);
-      expect(components['/int4'].stateValues.value).eq(false);
-      expect(components['/int5'].stateValues.value).eq(false);
-      expect(components['/int6'].stateValues.value).eq(false);
-      expect(components['/num1'].stateValues.value).eq(false);
-      expect(components['/num2'].stateValues.value).eq(false);
-      expect(components['/num3'].stateValues.value).eq(false);
-      expect(components['/num4'].stateValues.value).eq(false);
-      expect(components['/num5'].stateValues.value).eq(false);
-      expect(components['/num6'].stateValues.value).eq(false);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(false);
+      expect(stateVariables['/int2'].stateValues.value).eq(false);
+      expect(stateVariables['/int3'].stateValues.value).eq(false);
+      expect(stateVariables['/int4'].stateValues.value).eq(false);
+      expect(stateVariables['/int5'].stateValues.value).eq(false);
+      expect(stateVariables['/int6'].stateValues.value).eq(false);
+      expect(stateVariables['/num1'].stateValues.value).eq(false);
+      expect(stateVariables['/num2'].stateValues.value).eq(false);
+      expect(stateVariables['/num3'].stateValues.value).eq(false);
+      expect(stateVariables['/num4'].stateValues.value).eq(false);
+      expect(stateVariables['/num5'].stateValues.value).eq(false);
+      expect(stateVariables['/num6'].stateValues.value).eq(false);
     });
 
 
     cy.log('10/0');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}10/0{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}10/0{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "false");
     cy.get('#\\/int2').should('have.text', "false");
     cy.get('#\\/int3').should('have.text', "false");
@@ -414,25 +414,25 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "false");
     cy.get('#\\/num5').should('have.text', "false");
     cy.get('#\\/num6').should('have.text', "false");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(false);
-      expect(components['/int2'].stateValues.value).eq(false);
-      expect(components['/int3'].stateValues.value).eq(false);
-      expect(components['/int4'].stateValues.value).eq(false);
-      expect(components['/int5'].stateValues.value).eq(false);
-      expect(components['/int6'].stateValues.value).eq(false);
-      expect(components['/num1'].stateValues.value).eq(false);
-      expect(components['/num2'].stateValues.value).eq(false);
-      expect(components['/num3'].stateValues.value).eq(false);
-      expect(components['/num4'].stateValues.value).eq(false);
-      expect(components['/num5'].stateValues.value).eq(false);
-      expect(components['/num6'].stateValues.value).eq(false);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(false);
+      expect(stateVariables['/int2'].stateValues.value).eq(false);
+      expect(stateVariables['/int3'].stateValues.value).eq(false);
+      expect(stateVariables['/int4'].stateValues.value).eq(false);
+      expect(stateVariables['/int5'].stateValues.value).eq(false);
+      expect(stateVariables['/int6'].stateValues.value).eq(false);
+      expect(stateVariables['/num1'].stateValues.value).eq(false);
+      expect(stateVariables['/num2'].stateValues.value).eq(false);
+      expect(stateVariables['/num3'].stateValues.value).eq(false);
+      expect(stateVariables['/num4'].stateValues.value).eq(false);
+      expect(stateVariables['/num5'].stateValues.value).eq(false);
+      expect(stateVariables['/num6'].stateValues.value).eq(false);
     });
 
 
     cy.log('10/-0');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}10/-0{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}10/-0{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "false");
     cy.get('#\\/int2').should('have.text', "false");
     cy.get('#\\/int3').should('have.text', "false");
@@ -445,20 +445,20 @@ describe('Boolean Operator on Math Tag Tests', function () {
     cy.get('#\\/num4').should('have.text', "false");
     cy.get('#\\/num5').should('have.text', "false");
     cy.get('#\\/num6').should('have.text', "false");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/int1'].stateValues.value).eq(false);
-      expect(components['/int2'].stateValues.value).eq(false);
-      expect(components['/int3'].stateValues.value).eq(false);
-      expect(components['/int4'].stateValues.value).eq(false);
-      expect(components['/int5'].stateValues.value).eq(false);
-      expect(components['/int6'].stateValues.value).eq(false);
-      expect(components['/num1'].stateValues.value).eq(false);
-      expect(components['/num2'].stateValues.value).eq(false);
-      expect(components['/num3'].stateValues.value).eq(false);
-      expect(components['/num4'].stateValues.value).eq(false);
-      expect(components['/num5'].stateValues.value).eq(false);
-      expect(components['/num6'].stateValues.value).eq(false);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/int1'].stateValues.value).eq(false);
+      expect(stateVariables['/int2'].stateValues.value).eq(false);
+      expect(stateVariables['/int3'].stateValues.value).eq(false);
+      expect(stateVariables['/int4'].stateValues.value).eq(false);
+      expect(stateVariables['/int5'].stateValues.value).eq(false);
+      expect(stateVariables['/int6'].stateValues.value).eq(false);
+      expect(stateVariables['/num1'].stateValues.value).eq(false);
+      expect(stateVariables['/num2'].stateValues.value).eq(false);
+      expect(stateVariables['/num3'].stateValues.value).eq(false);
+      expect(stateVariables['/num4'].stateValues.value).eq(false);
+      expect(stateVariables['/num5'].stateValues.value).eq(false);
+      expect(stateVariables['/num6'].stateValues.value).eq(false);
     });
 
 

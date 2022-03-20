@@ -123,19 +123,19 @@ describe('Collect Tag Tests', function () {
     cy.window().then(async (win) => {
       let xs = [x1, x2, x1, x3, y2];
       let ys = [y1, y2, y1, y3, x2];
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       for (let i = 0; i < 5; i++) {
-        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
+        expect(stateVariables['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].stateValues.value.tree).eq(meany);
+      expect(stateVariables['/mean'].stateValues.value.tree).eq(meany);
 
     })
 
@@ -147,21 +147,25 @@ describe('Collect Tag Tests', function () {
       let ys = [y1, y2, y1, y3, x2];
       meany = (y1 + y2 + y1 + y3 + x2) / 5
 
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: x1, y: y1 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: x1, y: y1 }
+      });
 
       for (let i = 0; i < 5; i++) {
-        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
+        expect(stateVariables['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].stateValues.value.tree).eq(meany);
+      expect(stateVariables['/mean'].stateValues.value.tree).eq(meany);
 
     })
 
@@ -173,21 +177,21 @@ describe('Collect Tag Tests', function () {
       let ys = [y1, y2, y1, y3, x2];
       meany = (y1 + y2 + y1 + y3 + x2) / 5
 
-      let components = Object.assign({}, win.state.components);
-      await components['/_copy1'].replacements[0].movePoint({ x: x1, y: y1 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_copy1'].replacements[0].movePoint({ x: x1, y: y1 });
 
       for (let i = 0; i < 5; i++) {
-        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
+        expect(stateVariables['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].stateValues.value.tree).eq(meany);
+      expect(stateVariables['/mean'].stateValues.value.tree).eq(meany);
 
     })
 
@@ -200,21 +204,25 @@ describe('Collect Tag Tests', function () {
       let ys = [y1, y2, y1, y3, x2];
       meany = (y1 + y2 + y1 + y3 + x2) / 5
 
-      let components = Object.assign({}, win.state.components);
-      await components['/_point2'].movePoint({ x: x2, y: y2 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: x2, y: y2 }
+      });
 
       for (let i = 0; i < 5; i++) {
-        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
+        expect(stateVariables['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].stateValues.value.tree).eq(meany);
+      expect(stateVariables['/mean'].stateValues.value.tree).eq(meany);
 
     })
 
@@ -227,21 +235,25 @@ describe('Collect Tag Tests', function () {
       let ys = [y1, y2, y1, y3, x2];
       meany = (y1 + y2 + y1 + y3 + x2) / 5
 
-      let components = Object.assign({}, win.state.components);
-      await components['/_point4'].movePoint({ x: y2, y: x2 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point4",
+        args: { x: y2, y: x2 }
+      });
 
       for (let i = 0; i < 5; i++) {
-        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
+        expect(stateVariables['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].stateValues.value.tree).eq(meany);
+      expect(stateVariables['/mean'].stateValues.value.tree).eq(meany);
 
     })
 
@@ -253,21 +265,25 @@ describe('Collect Tag Tests', function () {
       let ys = [y1, y2, y1, y3, x2];
       meany = (y1 + y2 + y1 + y3 + x2) / 5
 
-      let components = Object.assign({}, win.state.components);
-      await components['/_point3'].movePoint({ x: x3, y: y3 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point3",
+        args: { x: x3, y: y3 }
+      });
 
       for (let i = 0; i < 5; i++) {
-        expect((await components['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
-        expect((await components['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
-        expect((await components['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
-        expect(components['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
-        expect(components['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[0].tree).eq(xs[i]);
+        expect((stateVariables['/points2'].replacements[i].stateValues.xs)[1].tree).eq(ys[i]);
+        expect((stateVariables['/coords'].replacements[i].stateValues.value).tree).eqls(["vector", xs[i], ys[i]]);
+        expect(stateVariables['/xs'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs2'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/xs3'].replacements[i].stateValues.value.tree).eq(xs[i]);
+        expect(stateVariables['/ys'].replacements[i].stateValues.value.tree).eq(ys[i]);
       }
-      expect(components['/mean'].stateValues.value.tree).eq(meany);
+      expect(stateVariables['/mean'].stateValues.value.tree).eq(meany);
 
     })
   });
@@ -310,27 +326,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length).eq(3);
-      expect(components['/_collect1'].replacements.length).eq(3);
-      expect(components['/_map2'].replacements.length).eq(3);
-      expect(components['/_collect2'].replacements.length).eq(6);
-      expect(components['/_collect3'].replacements.length).eq(6);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length).eq(3);
+      expect(stateVariables['/_collect1'].replacements.length).eq(3);
+      expect(stateVariables['/_map2'].replacements.length).eq(3);
+      expect(stateVariables['/_collect2'].replacements.length).eq(6);
+      expect(stateVariables['/_collect3'].replacements.length).eq(6);
 
       for (let i = 0; i < 3; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_collect2'].replacements[i + 3].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 3].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
-        expect(components['/_collect3'].replacements[i + 3].stateValues.value.tree).eq(3 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 3].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 3].stateValues.xs[1].tree).eq(3 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 3].stateValues.value.tree).eq(3 * x);
       }
 
     })
@@ -339,27 +355,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/length textarea').type(`{end}{backspace}5{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length).eq(5);
-      expect(components['/_collect1'].replacements.length).eq(5);
-      expect(components['/_map2'].replacements.length).eq(5);
-      expect(components['/_collect2'].replacements.length).eq(10);
-      expect(components['/_collect3'].replacements.length).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length).eq(5);
+      expect(stateVariables['/_collect1'].replacements.length).eq(5);
+      expect(stateVariables['/_map2'].replacements.length).eq(5);
+      expect(stateVariables['/_collect2'].replacements.length).eq(10);
+      expect(stateVariables['/_collect3'].replacements.length).eq(10);
 
       for (let i = 0; i < 5; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
-        expect(components['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(3 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(3 * x);
       }
 
     })
@@ -369,27 +385,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/mult textarea').type(`{end}{backspace}0.5{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length).eq(5);
-      expect(components['/_collect1'].replacements.length).eq(5);
-      expect(components['/_map2'].replacements.length).eq(5);
-      expect(components['/_collect2'].replacements.length).eq(10);
-      expect(components['/_collect3'].replacements.length).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length).eq(5);
+      expect(stateVariables['/_collect1'].replacements.length).eq(5);
+      expect(stateVariables['/_map2'].replacements.length).eq(5);
+      expect(stateVariables['/_collect2'].replacements.length).eq(10);
+      expect(stateVariables['/_collect3'].replacements.length).eq(10);
 
       for (let i = 0; i < 5; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
-        expect(components['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(0.75 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(0.75 * x);
       }
 
     })
@@ -399,27 +415,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/length textarea').type(`{end}{backspace}1{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(1);
-      expect(components['/_collect1'].replacements.length).eq(1);
-      expect(components['/_map2'].replacements.length - components['/_map2'].replacementsToWithhold).eq(1);
-      expect(components['/_collect2'].replacements.length).eq(2);
-      expect(components['/_collect3'].replacements.length).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length - stateVariables['/_map1'].replacementsToWithhold).eq(1);
+      expect(stateVariables['/_collect1'].replacements.length).eq(1);
+      expect(stateVariables['/_map2'].replacements.length - stateVariables['/_map2'].replacementsToWithhold).eq(1);
+      expect(stateVariables['/_collect2'].replacements.length).eq(2);
+      expect(stateVariables['/_collect3'].replacements.length).eq(2);
 
       for (let i = 0; i < 1; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i + 1].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 1].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
-        expect(components['/_collect3'].replacements[i + 1].stateValues.value.tree).eq(0.75 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 1].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 1].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 1].stateValues.value.tree).eq(0.75 * x);
       }
 
     })
@@ -429,27 +445,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/length textarea').type(`{end}{backspace}4{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(4);
-      expect(components['/_collect1'].replacements.length).eq(4);
-      expect(components['/_map2'].replacements.length - components['/_map2'].replacementsToWithhold).eq(4);
-      expect(components['/_collect2'].replacements.length).eq(8);
-      expect(components['/_collect3'].replacements.length).eq(8);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length - stateVariables['/_map1'].replacementsToWithhold).eq(4);
+      expect(stateVariables['/_collect1'].replacements.length).eq(4);
+      expect(stateVariables['/_map2'].replacements.length - stateVariables['/_map2'].replacementsToWithhold).eq(4);
+      expect(stateVariables['/_collect2'].replacements.length).eq(8);
+      expect(stateVariables['/_collect3'].replacements.length).eq(8);
 
       for (let i = 0; i < 4; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i + 4].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 4].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
-        expect(components['/_collect3'].replacements[i + 4].stateValues.value.tree).eq(0.75 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 4].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 4].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 4].stateValues.value.tree).eq(0.75 * x);
       }
 
     })
@@ -458,27 +474,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/length textarea').type(`{end}{backspace}6{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(6);
-      expect(components['/_collect1'].replacements.length).eq(6);
-      expect(components['/_map2'].replacements.length - components['/_map2'].replacementsToWithhold).eq(6);
-      expect(components['/_collect2'].replacements.length).eq(12);
-      expect(components['/_collect3'].replacements.length).eq(12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length - stateVariables['/_map1'].replacementsToWithhold).eq(6);
+      expect(stateVariables['/_collect1'].replacements.length).eq(6);
+      expect(stateVariables['/_map2'].replacements.length - stateVariables['/_map2'].replacementsToWithhold).eq(6);
+      expect(stateVariables['/_collect2'].replacements.length).eq(12);
+      expect(stateVariables['/_collect3'].replacements.length).eq(12);
 
       for (let i = 0; i < 6; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i + 6].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 6].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
-        expect(components['/_collect3'].replacements[i + 6].stateValues.value.tree).eq(0.75 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 6].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 6].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 6].stateValues.value.tree).eq(0.75 * x);
       }
 
     })
@@ -522,27 +538,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length).eq(3);
-      expect(components['/_collect1'].replacements.length).eq(3);
-      expect(components['/_map2'].replacements.length).eq(3);
-      expect(components['/_collect2'].replacements.length).eq(6);
-      expect(components['/_collect3'].replacements.length).eq(6);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length).eq(3);
+      expect(stateVariables['/_collect1'].replacements.length).eq(3);
+      expect(stateVariables['/_map2'].replacements.length).eq(3);
+      expect(stateVariables['/_collect2'].replacements.length).eq(6);
+      expect(stateVariables['/_collect3'].replacements.length).eq(6);
 
       for (let i = 0; i < 3; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_collect2'].replacements[i + 3].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 3].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
-        expect(components['/_collect3'].replacements[i + 3].stateValues.value.tree).eq(3 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 3].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 3].stateValues.xs[1].tree).eq(3 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 3].stateValues.value.tree).eq(3 * x);
       }
 
     })
@@ -551,27 +567,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/length textarea').type(`{end}{backspace}5{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length).eq(5);
-      expect(components['/_collect1'].replacements.length).eq(5);
-      expect(components['/_map2'].replacements.length).eq(5);
-      expect(components['/_collect2'].replacements.length).eq(10);
-      expect(components['/_collect3'].replacements.length).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length).eq(5);
+      expect(stateVariables['/_collect1'].replacements.length).eq(5);
+      expect(stateVariables['/_map2'].replacements.length).eq(5);
+      expect(stateVariables['/_collect2'].replacements.length).eq(10);
+      expect(stateVariables['/_collect3'].replacements.length).eq(10);
 
       for (let i = 0; i < 5; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
-        expect(components['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(3 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(3 * x);
       }
 
     })
@@ -581,27 +597,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/mult textarea').type(`{end}{backspace}0.5{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length).eq(5);
-      expect(components['/_collect1'].replacements.length).eq(5);
-      expect(components['/_map2'].replacements.length).eq(5);
-      expect(components['/_collect2'].replacements.length).eq(10);
-      expect(components['/_collect3'].replacements.length).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length).eq(5);
+      expect(stateVariables['/_collect1'].replacements.length).eq(5);
+      expect(stateVariables['/_map2'].replacements.length).eq(5);
+      expect(stateVariables['/_collect2'].replacements.length).eq(10);
+      expect(stateVariables['/_collect3'].replacements.length).eq(10);
 
       for (let i = 0; i < 5; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
-        expect(components['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(0.75 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(0.75 * x);
       }
 
     })
@@ -611,27 +627,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/length textarea').type(`{end}{backspace}1{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(1);
-      expect(components['/_collect1'].replacements.length).eq(1);
-      expect(components['/_map2'].replacements.length - components['/_map2'].replacementsToWithhold).eq(1);
-      expect(components['/_collect2'].replacements.length).eq(2);
-      expect(components['/_collect3'].replacements.length).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length - stateVariables['/_map1'].replacementsToWithhold).eq(1);
+      expect(stateVariables['/_collect1'].replacements.length).eq(1);
+      expect(stateVariables['/_map2'].replacements.length - stateVariables['/_map2'].replacementsToWithhold).eq(1);
+      expect(stateVariables['/_collect2'].replacements.length).eq(2);
+      expect(stateVariables['/_collect3'].replacements.length).eq(2);
 
       for (let i = 0; i < 1; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i + 1].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 1].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
-        expect(components['/_collect3'].replacements[i + 1].stateValues.value.tree).eq(0.75 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 1].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 1].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 1].stateValues.value.tree).eq(0.75 * x);
       }
 
     })
@@ -641,27 +657,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/length textarea').type(`{end}{backspace}4{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(4);
-      expect(components['/_collect1'].replacements.length).eq(4);
-      expect(components['/_map2'].replacements.length - components['/_map2'].replacementsToWithhold).eq(4);
-      expect(components['/_collect2'].replacements.length).eq(8);
-      expect(components['/_collect3'].replacements.length).eq(8);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length - stateVariables['/_map1'].replacementsToWithhold).eq(4);
+      expect(stateVariables['/_collect1'].replacements.length).eq(4);
+      expect(stateVariables['/_map2'].replacements.length - stateVariables['/_map2'].replacementsToWithhold).eq(4);
+      expect(stateVariables['/_collect2'].replacements.length).eq(8);
+      expect(stateVariables['/_collect3'].replacements.length).eq(8);
 
       for (let i = 0; i < 4; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i + 4].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 4].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
-        expect(components['/_collect3'].replacements[i + 4].stateValues.value.tree).eq(0.75 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 4].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 4].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 4].stateValues.value.tree).eq(0.75 * x);
       }
 
     })
@@ -670,27 +686,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/length textarea').type(`{end}{backspace}6{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(6);
-      expect(components['/_collect1'].replacements.length).eq(6);
-      expect(components['/_map2'].replacements.length - components['/_map2'].replacementsToWithhold).eq(6);
-      expect(components['/_collect2'].replacements.length).eq(12);
-      expect(components['/_collect3'].replacements.length).eq(12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length - stateVariables['/_map1'].replacementsToWithhold).eq(6);
+      expect(stateVariables['/_collect1'].replacements.length).eq(6);
+      expect(stateVariables['/_map2'].replacements.length - stateVariables['/_map2'].replacementsToWithhold).eq(6);
+      expect(stateVariables['/_collect2'].replacements.length).eq(12);
+      expect(stateVariables['/_collect3'].replacements.length).eq(12);
 
       for (let i = 0; i < 6; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i + 6].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 6].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
-        expect(components['/_collect3'].replacements[i + 6].stateValues.value.tree).eq(0.75 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 6].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 6].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 6].stateValues.value.tree).eq(0.75 * x);
       }
 
     })
@@ -724,9 +740,9 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_collect1'].replacements.length).eq(0);
-      expect(components['/_collect2'].replacements.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_collect1'].replacements.length).eq(0);
+      expect(stateVariables['/_collect2'].replacements.length).eq(0);
     })
 
   })
@@ -764,101 +780,101 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_collect1'].replacements.length).eq(0);
-      expect(components['/_collect2'].replacements.length).eq(0);
-      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 1, 2]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -3, 5]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_collect1'].replacements.length).eq(0);
+      expect(stateVariables['/_collect2'].replacements.length).eq(0);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 1, 2]);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -3, 5]);
     })
 
     cy.log('include hidden')
     cy.get('#\\/_booleaninput1_input').click();
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_collect1'].replacements.length).eq(2);
-      expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(1);
-      expect(components['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(2);
-      expect(components['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(-3);
-      expect(components['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(5);
-      expect(components['/_collect2'].replacements.length).eq(2);
-      expect(components['/_collect2'].replacements[0].stateValues.value.tree).eq(1);
-      expect(components['/_collect2'].replacements[1].stateValues.value.tree).eq(-3);
-      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 1, 2]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -3, 5]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_collect1'].replacements.length).eq(2);
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(1);
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(2);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(-3);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(5);
+      expect(stateVariables['/_collect2'].replacements.length).eq(2);
+      expect(stateVariables['/_collect2'].replacements[0].stateValues.value.tree).eq(1);
+      expect(stateVariables['/_collect2'].replacements[1].stateValues.value.tree).eq(-3);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 1, 2]);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -3, 5]);
 
     })
 
     cy.log('move points')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_collect1'].replacements[0].movePoint({ x: 3, y: 9 })
-      await components['/_collect1'].replacements[1].movePoint({ x: -7, y: -6 })
-      expect(components['/_collect1'].replacements.length).eq(2);
-      expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(3);
-      expect(components['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(9);
-      expect(components['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(-7);
-      expect(components['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(-6);
-      expect(components['/_collect2'].replacements.length).eq(2);
-      expect(components['/_collect2'].replacements[0].stateValues.value.tree).eq(3);
-      expect(components['/_collect2'].replacements[1].stateValues.value.tree).eq(-7);
-      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 3, 9]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -7, -6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_collect1'].replacements[0].movePoint({ x: 3, y: 9 })
+      await stateVariables['/_collect1'].replacements[1].movePoint({ x: -7, y: -6 })
+      expect(stateVariables['/_collect1'].replacements.length).eq(2);
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(3);
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(9);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(-7);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(-6);
+      expect(stateVariables['/_collect2'].replacements.length).eq(2);
+      expect(stateVariables['/_collect2'].replacements[0].stateValues.value.tree).eq(3);
+      expect(stateVariables['/_collect2'].replacements[1].stateValues.value.tree).eq(-7);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 3, 9]);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -7, -6]);
 
     })
 
     cy.log(`don't include hidden`)
     cy.get('#\\/_booleaninput1_input').click();
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_collect1'].replacements.length).eq(0);
-      expect(components['/_collect2'].replacements.length).eq(0);
-      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 3, 9]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -7, -6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_collect1'].replacements.length).eq(0);
+      expect(stateVariables['/_collect2'].replacements.length).eq(0);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 3, 9]);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -7, -6]);
     })
 
 
     cy.log('move line segment point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_linesegment1'].moveLineSegment({ point1coords: [0, -8] })
-      expect(components['/_collect1'].replacements.length).eq(0);
-      expect(components['/_collect2'].replacements.length).eq(0);
-      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 0, -8]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -7, -6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_linesegment1'].moveLineSegment({ point1coords: [0, -8] })
+      expect(stateVariables['/_collect1'].replacements.length).eq(0);
+      expect(stateVariables['/_collect2'].replacements.length).eq(0);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 0, -8]);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -7, -6]);
 
     })
 
     cy.log('include hidden again')
     cy.get('#\\/_booleaninput1_input').click();
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_collect1'].replacements.length).eq(2);
-      expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(0);
-      expect(components['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(-8);
-      expect(components['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(-7);
-      expect(components['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(-6);
-      expect(components['/_collect2'].replacements.length).eq(2);
-      expect(components['/_collect2'].replacements[0].stateValues.value.tree).eq(0);
-      expect(components['/_collect2'].replacements[1].stateValues.value.tree).eq(-7);
-      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 0, -8]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -7, -6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_collect1'].replacements.length).eq(2);
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(0);
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(-8);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(-7);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(-6);
+      expect(stateVariables['/_collect2'].replacements.length).eq(2);
+      expect(stateVariables['/_collect2'].replacements[0].stateValues.value.tree).eq(0);
+      expect(stateVariables['/_collect2'].replacements[1].stateValues.value.tree).eq(-7);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 0, -8]);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", -7, -6]);
 
     })
 
     cy.log('move other line segment point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_linesegment1'].moveLineSegment({ point2coords: [3, 4] })
-      expect(components['/_collect1'].replacements.length).eq(2);
-      expect(components['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(0);
-      expect(components['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(-8);
-      expect(components['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(3);
-      expect(components['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(4);
-      expect(components['/_collect2'].replacements.length).eq(2);
-      expect(components['/_collect2'].replacements[0].stateValues.value.tree).eq(0);
-      expect(components['/_collect2'].replacements[1].stateValues.value.tree).eq(3);
-      expect(components['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 0, -8]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", 3, 4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_linesegment1'].moveLineSegment({ point2coords: [3, 4] })
+      expect(stateVariables['/_collect1'].replacements.length).eq(2);
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.xs[0].tree).eq(0);
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.xs[1].tree).eq(-8);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.xs[0].tree).eq(3);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.xs[1].tree).eq(4);
+      expect(stateVariables['/_collect2'].replacements.length).eq(2);
+      expect(stateVariables['/_collect2'].replacements[0].stateValues.value.tree).eq(0);
+      expect(stateVariables['/_collect2'].replacements[1].stateValues.value.tree).eq(3);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[0].tree).eqls(["vector", 0, -8]);
+      expect(stateVariables['/_linesegment1'].stateValues.endpoints[1].tree).eqls(["vector", 3, 4]);
 
     })
   })
@@ -901,24 +917,24 @@ describe('Collect Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-      expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
-      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
-      expect(components['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
-      expect(components['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
-      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
-      expect(components['/_collect1'].replacements.length).eq(6);
-      expect(components['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
-      expect(components['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_collect1'].replacements[2].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
-      expect(components['/_collect1'].replacements[2].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
-      expect(components['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
-      expect(components['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_collect1'].replacements[5].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
-      expect(components['/_collect1'].replacements[5].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(stateVariables['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(stateVariables['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(stateVariables['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(stateVariables['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(stateVariables['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(stateVariables['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
+      expect(stateVariables['/_vector2'].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
+      expect(stateVariables['/_collect1'].replacements.length).eq(6);
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(stateVariables['/_collect1'].replacements[2].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(stateVariables['/_collect1'].replacements[2].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(stateVariables['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(stateVariables['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(stateVariables['/_collect1'].replacements[5].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
+      expect(stateVariables['/_collect1'].replacements[5].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
 
     })
 
@@ -929,25 +945,25 @@ describe('Collect Tag Tests', function () {
       x2 = 3;
       y2 = 2;
 
-      let components = Object.assign({}, win.state.components);
-      await components['/_collect1'].replacements[2].moveVector({ tailcoords: [x1, y1], headcoords: [x2, y2] });
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-      expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
-      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
-      expect(components['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
-      expect(components['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
-      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
-      expect(components['/_collect1'].replacements.length).eq(6);
-      expect(components['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
-      expect(components['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_collect1'].replacements[2].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
-      expect(components['/_collect1'].replacements[2].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
-      expect(components['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
-      expect(components['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_collect1'].replacements[5].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
-      expect(components['/_collect1'].replacements[5].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_collect1'].replacements[2].moveVector({ tailcoords: [x1, y1], headcoords: [x2, y2] });
+      expect(stateVariables['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(stateVariables['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(stateVariables['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(stateVariables['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(stateVariables['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(stateVariables['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(stateVariables['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
+      expect(stateVariables['/_vector2'].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
+      expect(stateVariables['/_collect1'].replacements.length).eq(6);
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(stateVariables['/_collect1'].replacements[2].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(stateVariables['/_collect1'].replacements[2].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(stateVariables['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(stateVariables['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(stateVariables['/_collect1'].replacements[5].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
+      expect(stateVariables['/_collect1'].replacements[5].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
 
     })
 
@@ -958,25 +974,25 @@ describe('Collect Tag Tests', function () {
       x2 = -7;
       y2 = 5;
 
-      let components = Object.assign({}, win.state.components);
-      await components['/_collect1'].replacements[5].moveVector({ tailcoords: [y1, x1], headcoords: [y2, x2] });
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-      expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
-      expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
-      expect(components['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
-      expect(components['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
-      expect(components['/_vector2'].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
-      expect(components['/_collect1'].replacements.length).eq(6);
-      expect(components['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
-      expect(components['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
-      expect(components['/_collect1'].replacements[2].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
-      expect(components['/_collect1'].replacements[2].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
-      expect(components['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
-      expect(components['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
-      expect(components['/_collect1'].replacements[5].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
-      expect(components['/_collect1'].replacements[5].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_collect1'].replacements[5].moveVector({ tailcoords: [y1, x1], headcoords: [y2, x2] });
+      expect(stateVariables['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(stateVariables['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(stateVariables['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(stateVariables['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(stateVariables['/_point3'].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(stateVariables['/_point4'].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(stateVariables['/_vector2'].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
+      expect(stateVariables['/_vector2'].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
+      expect(stateVariables['/_collect1'].replacements.length).eq(6);
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.coords.tree).eqls(["vector", x1, y1]);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.coords.tree).eqls(["vector", x2, y2]);
+      expect(stateVariables['/_collect1'].replacements[2].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
+      expect(stateVariables['/_collect1'].replacements[2].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
+      expect(stateVariables['/_collect1'].replacements[3].stateValues.coords.tree).eqls(["vector", y1, x1]);
+      expect(stateVariables['/_collect1'].replacements[4].stateValues.coords.tree).eqls(["vector", y2, x2]);
+      expect(stateVariables['/_collect1'].replacements[5].stateValues.tail.map(x => x.tree)).eqls([y1, x1]);
+      expect(stateVariables['/_collect1'].replacements[5].stateValues.head.map(x => x.tree)).eqls([y2, x2]);
 
     })
   });
@@ -1020,33 +1036,33 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length).eq(5);
-      expect(components['/_collect1'].replacements.length).eq(2);
-      expect(components['/_map2'].replacements.length).eq(2);
-      expect(components['/_collect2'].replacements.length).eq(4);
-      expect(components['/_collect3'].replacements.length).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length).eq(5);
+      expect(stateVariables['/_collect1'].replacements.length).eq(2);
+      expect(stateVariables['/_map2'].replacements.length).eq(2);
+      expect(stateVariables['/_collect2'].replacements.length).eq(4);
+      expect(stateVariables['/_collect3'].replacements.length).eq(2);
 
       for (let i = 0; i < 5; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
       }
       for (let i = 0; i < 2; i++) {
         let x = i + 1;
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
       }
       for (let i = 0; i < 4; i++) {
         let x = i + 1;
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
       }
       for (let i = 0; i < 2; i++) {
         let x = i + 1;
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
       }
 
     })
@@ -1056,27 +1072,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/maxnumber textarea').type(`{end}{backspace}5{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length).eq(5);
-      expect(components['/_collect1'].replacements.length).eq(5);
-      expect(components['/_map2'].replacements.length).eq(5);
-      expect(components['/_collect2'].replacements.length).eq(10);
-      expect(components['/_collect3'].replacements.length).eq(5);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length).eq(5);
+      expect(stateVariables['/_collect1'].replacements.length).eq(5);
+      expect(stateVariables['/_map2'].replacements.length).eq(5);
+      expect(stateVariables['/_collect2'].replacements.length).eq(10);
+      expect(stateVariables['/_collect3'].replacements.length).eq(5);
 
       for (let i = 0; i < 5; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
-        // expect(components['/_collect3'].replacements[i+5].stateValues.value.tree).eq(3*x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
+        // expect(stateVariables['/_collect3'].replacements[i+5].stateValues.value.tree).eq(3*x);
       }
 
     })
@@ -1087,27 +1103,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/maxnumber textarea').type(`{end}{backspace}10{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length).eq(5);
-      expect(components['/_collect1'].replacements.length).eq(5);
-      expect(components['/_map2'].replacements.length).eq(5);
-      expect(components['/_collect2'].replacements.length).eq(10);
-      expect(components['/_collect3'].replacements.length).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length).eq(5);
+      expect(stateVariables['/_collect1'].replacements.length).eq(5);
+      expect(stateVariables['/_map2'].replacements.length).eq(5);
+      expect(stateVariables['/_collect2'].replacements.length).eq(10);
+      expect(stateVariables['/_collect3'].replacements.length).eq(10);
 
       for (let i = 0; i < 5; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
-        expect(components['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(3 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(2 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(3 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(2 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(3 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(2 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(3 * x);
       }
 
     })
@@ -1118,27 +1134,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/mult textarea').type(`{end}{backspace}0.5{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length).eq(5);
-      expect(components['/_collect1'].replacements.length).eq(5);
-      expect(components['/_map2'].replacements.length).eq(5);
-      expect(components['/_collect2'].replacements.length).eq(10);
-      expect(components['/_collect3'].replacements.length).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length).eq(5);
+      expect(stateVariables['/_collect1'].replacements.length).eq(5);
+      expect(stateVariables['/_map2'].replacements.length).eq(5);
+      expect(stateVariables['/_collect2'].replacements.length).eq(10);
+      expect(stateVariables['/_collect3'].replacements.length).eq(10);
 
       for (let i = 0; i < 5; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
-        expect(components['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(0.75 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 5].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 5].stateValues.value.tree).eq(0.75 * x);
       }
 
     })
@@ -1148,27 +1164,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/length textarea').type(`{end}{backspace}1{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(1);
-      expect(components['/_collect1'].replacements.length).eq(1);
-      expect(components['/_map2'].replacements.length - components['/_map2'].replacementsToWithhold).eq(1);
-      expect(components['/_collect2'].replacements.length).eq(2);
-      expect(components['/_collect3'].replacements.length).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length - stateVariables['/_map1'].replacementsToWithhold).eq(1);
+      expect(stateVariables['/_collect1'].replacements.length).eq(1);
+      expect(stateVariables['/_map2'].replacements.length - stateVariables['/_map2'].replacementsToWithhold).eq(1);
+      expect(stateVariables['/_collect2'].replacements.length).eq(2);
+      expect(stateVariables['/_collect3'].replacements.length).eq(2);
 
       for (let i = 0; i < 1; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i + 1].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 1].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
-        expect(components['/_collect3'].replacements[i + 1].stateValues.value.tree).eq(0.75 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 1].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 1].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 1].stateValues.value.tree).eq(0.75 * x);
       }
 
     })
@@ -1178,27 +1194,27 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/length textarea').type(`{end}{backspace}4{enter}`, { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(4);
-      expect(components['/_collect1'].replacements.length).eq(4);
-      expect(components['/_map2'].replacements.length - components['/_map2'].replacementsToWithhold).eq(4);
-      expect(components['/_collect2'].replacements.length).eq(8);
-      expect(components['/_collect3'].replacements.length).eq(8);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length - stateVariables['/_map1'].replacementsToWithhold).eq(4);
+      expect(stateVariables['/_collect1'].replacements.length).eq(4);
+      expect(stateVariables['/_map2'].replacements.length - stateVariables['/_map2'].replacementsToWithhold).eq(4);
+      expect(stateVariables['/_collect2'].replacements.length).eq(8);
+      expect(stateVariables['/_collect3'].replacements.length).eq(8);
 
       for (let i = 0; i < 4; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_collect2'].replacements[i + 4].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 4].stateValues.xs[1].tree).eq(0.75 * x);
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
-        expect(components['/_collect3'].replacements[i + 4].stateValues.value.tree).eq(0.75 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 4].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 4].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i + 4].stateValues.value.tree).eq(0.75 * x);
       }
 
     })
@@ -1208,40 +1224,40 @@ describe('Collect Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_map1'].replacements.length - components['/_map1'].replacementsToWithhold).eq(4);
-      expect(components['/_collect1'].replacements.length).eq(3);
-      expect(components['/_map2'].replacements.length - components['/_map2'].replacementsToWithhold).eq(3);
-      expect(components['/_collect2'].replacements.length).eq(6);
-      expect(components['/_collect3'].replacements.length).eq(3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_map1'].replacements.length - stateVariables['/_map1'].replacementsToWithhold).eq(4);
+      expect(stateVariables['/_collect1'].replacements.length).eq(3);
+      expect(stateVariables['/_map2'].replacements.length - stateVariables['/_map2'].replacementsToWithhold).eq(3);
+      expect(stateVariables['/_collect2'].replacements.length).eq(6);
+      expect(stateVariables['/_collect3'].replacements.length).eq(3);
 
       for (let i = 0; i < 4; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
       }
       for (let i = 0; i < 3; i++) {
         let x = i + 1;
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect1'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_map2'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.75 * x);
       }
       for (let i = 0; i < 4; i++) {
         let x = i + 1;
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
-        expect(components['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
-        expect((await components['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[0].tree).eq(x);
+        expect(stateVariables['/_map1'].replacements[i].replacements[0].stateValues.xs[1].tree).eq(0.5 * x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[0].tree).eq(x);
+        expect((stateVariables['/_collect2'].replacements[i].stateValues.xs)[1].tree).eq(0.5 * x);
       }
       for (let i = 0; i < 2; i++) {
         let x = i + 1;
-        expect(components['/_collect2'].replacements[i + 4].stateValues.xs[0].tree).eq(x + 1);
-        expect(components['/_collect2'].replacements[i + 4].stateValues.xs[1].tree).eq(0.75 * x);
+        expect(stateVariables['/_collect2'].replacements[i + 4].stateValues.xs[0].tree).eq(x + 1);
+        expect(stateVariables['/_collect2'].replacements[i + 4].stateValues.xs[1].tree).eq(0.75 * x);
       }
       for (let i = 0; i < 3; i++) {
         let x = i + 1;
-        expect(components['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
+        expect(stateVariables['/_collect3'].replacements[i].stateValues.value.tree).eq(0.5 * x);
       }
 
     })
@@ -1280,10 +1296,10 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_collect1'].replacements[0].stateValues.number).eq(1);
-      expect(components['/_collect1'].replacements[1].stateValues.number).eq(2);
-      expect(components['/_collect1'].replacements[2].stateValues.number).eq(3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.number).eq(1);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.number).eq(2);
+      expect(stateVariables['/_collect1'].replacements[2].stateValues.number).eq(3);
     })
 
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}3{enter}", { force: true });
@@ -1308,13 +1324,13 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_collect1'].replacements[0].stateValues.number).eq(1);
-      expect(components['/_collect1'].replacements[1].stateValues.number).eq(2);
-      expect(components['/_collect1'].replacements[2].stateValues.number).eq(3);
-      expect(components['/_collect1'].replacements[3].stateValues.number).eq(4);
-      expect(components['/_collect1'].replacements[4].stateValues.number).eq(5);
-      expect(components['/_collect1'].replacements[5].stateValues.number).eq(6);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.number).eq(1);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.number).eq(2);
+      expect(stateVariables['/_collect1'].replacements[2].stateValues.number).eq(3);
+      expect(stateVariables['/_collect1'].replacements[3].stateValues.number).eq(4);
+      expect(stateVariables['/_collect1'].replacements[4].stateValues.number).eq(5);
+      expect(stateVariables['/_collect1'].replacements[5].stateValues.number).eq(6);
     })
 
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}1{enter}", { force: true });
@@ -1333,11 +1349,11 @@ describe('Collect Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_collect1'].replacements[0].stateValues.number).eq(1);
-      expect(components['/_collect1'].replacements[1].stateValues.number).eq(2);
-      expect(components['/_collect1'].replacements[2].stateValues.number).eq(3);
-      expect(components['/_collect1'].replacements[3].stateValues.number).eq(4);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.number).eq(1);
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.number).eq(2);
+      expect(stateVariables['/_collect1'].replacements[2].stateValues.number).eq(3);
+      expect(stateVariables['/_collect1'].replacements[3].stateValues.number).eq(4);
     })
 
   });
@@ -1937,68 +1953,68 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let collect2 = components["/_p2"].definingChildren[0];
-      let group2 = components["/_p3"].definingChildren[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let collect2 = stateVariables["/_p2"].definingChildren[0];
+      let group2 = stateVariables["/_p3"].definingChildren[0];
 
       let group2reps = (await group2.stateValues.fullRecursiveReplacements)
-        .map(x => components[x.componentName]);
+        .map(x => stateVariables[x.componentName]);
 
-      expect(components['/_group1'].replacements.length).eq(13);
-      expect(components['/_collect1'].replacements.length).eq(6);
+      expect(stateVariables['/_group1'].replacements.length).eq(13);
+      expect(stateVariables['/_collect1'].replacements.length).eq(6);
       expect(collect2.replacements.length).eq(6);
       expect(group2.replacements.length).eq(1);
       expect(group2reps.length).eq(13);
 
-      expect(components['/_group1'].replacements[1].componentType).eq("mathInput");
-      expect(components['/_group1'].replacements[1].stateValues.value.tree).eq('x');
-      expect(components['/_collect1'].replacements[0].componentType).eq("mathInput");
-      expect(components['/_collect1'].replacements[0].stateValues.value.tree).eq('x');
+      expect(stateVariables['/_group1'].replacements[1].componentType).eq("mathInput");
+      expect(stateVariables['/_group1'].replacements[1].stateValues.value.tree).eq('x');
+      expect(stateVariables['/_collect1'].replacements[0].componentType).eq("mathInput");
+      expect(stateVariables['/_collect1'].replacements[0].stateValues.value.tree).eq('x');
       expect(collect2.replacements[0].componentType).eq("math");
       expect(collect2.replacements[0].stateValues.value.tree).eq('x');
       expect(group2reps[1].componentType).eq("mathInput");
       expect(group2reps[1].stateValues.value.tree).eq('x');
 
-      expect(components['/_group1'].replacements[3].componentType).eq("textInput");
-      expect(components['/_group1'].replacements[3].stateValues.value).eq('hello');
-      expect(components['/_collect1'].replacements[1].componentType).eq("textInput");
-      expect(components['/_collect1'].replacements[1].stateValues.value).eq('hello');
+      expect(stateVariables['/_group1'].replacements[3].componentType).eq("textInput");
+      expect(stateVariables['/_group1'].replacements[3].stateValues.value).eq('hello');
+      expect(stateVariables['/_collect1'].replacements[1].componentType).eq("textInput");
+      expect(stateVariables['/_collect1'].replacements[1].stateValues.value).eq('hello');
       expect(collect2.replacements[1].componentType).eq("text");
       expect(collect2.replacements[1].stateValues.value).eq('hello');
       expect(group2reps[3].componentType).eq("textInput");
       expect(group2reps[3].stateValues.value).eq('hello');
 
-      expect(components['/_group1'].replacements[5].componentType).eq("booleanInput");
-      expect(components['/_group1'].replacements[5].stateValues.value).eq(false);
-      expect(components['/_collect1'].replacements[2].componentType).eq("booleanInput");
-      expect(components['/_collect1'].replacements[2].stateValues.value).eq(false);
+      expect(stateVariables['/_group1'].replacements[5].componentType).eq("booleanInput");
+      expect(stateVariables['/_group1'].replacements[5].stateValues.value).eq(false);
+      expect(stateVariables['/_collect1'].replacements[2].componentType).eq("booleanInput");
+      expect(stateVariables['/_collect1'].replacements[2].stateValues.value).eq(false);
       expect(collect2.replacements[2].componentType).eq("boolean");
       expect(collect2.replacements[2].stateValues.value).eq(false);
       expect(group2reps[5].componentType).eq("booleanInput");
       expect(group2reps[5].stateValues.value).eq(false);
 
-      expect(components['/_group1'].replacements[7].componentType).eq("math");
-      expect(components['/_group1'].replacements[7].stateValues.value.tree).eqls(["*", 2, "x"]);
-      expect(components['/_collect1'].replacements[3].componentType).eq("math");
-      expect(components['/_collect1'].replacements[3].stateValues.value.tree).eqls(["*", 2, "x"]);
+      expect(stateVariables['/_group1'].replacements[7].componentType).eq("math");
+      expect(stateVariables['/_group1'].replacements[7].stateValues.value.tree).eqls(["*", 2, "x"]);
+      expect(stateVariables['/_collect1'].replacements[3].componentType).eq("math");
+      expect(stateVariables['/_collect1'].replacements[3].stateValues.value.tree).eqls(["*", 2, "x"]);
       expect(collect2.replacements[3].componentType).eq("math");
       expect(collect2.replacements[3].stateValues.value.tree).eqls(["*", 2, "x"]);
       expect(group2reps[7].componentType).eq("math");
       expect(group2reps[7].stateValues.value.tree).eqls(["*", 2, "x"]);
 
-      expect(components['/_group1'].replacements[9].componentType).eq("text");
-      expect(components['/_group1'].replacements[9].stateValues.value).eq('hello there');
-      expect(components['/_collect1'].replacements[4].componentType).eq("text");
-      expect(components['/_collect1'].replacements[4].stateValues.value).eq('hello there');
+      expect(stateVariables['/_group1'].replacements[9].componentType).eq("text");
+      expect(stateVariables['/_group1'].replacements[9].stateValues.value).eq('hello there');
+      expect(stateVariables['/_collect1'].replacements[4].componentType).eq("text");
+      expect(stateVariables['/_collect1'].replacements[4].stateValues.value).eq('hello there');
       expect(collect2.replacements[4].componentType).eq("text");
       expect(collect2.replacements[4].stateValues.value).eq('hello there');
       expect(group2reps[9].componentType).eq("text");
       expect(group2reps[9].stateValues.value).eq('hello there');
 
-      expect(components['/_group1'].replacements[11].componentType).eq("boolean");
-      expect(components['/_group1'].replacements[11].stateValues.value).eq(true);
-      expect(components['/_collect1'].replacements[5].componentType).eq("boolean");
-      expect(components['/_collect1'].replacements[5].stateValues.value).eq(true);
+      expect(stateVariables['/_group1'].replacements[11].componentType).eq("boolean");
+      expect(stateVariables['/_group1'].replacements[11].stateValues.value).eq(true);
+      expect(stateVariables['/_collect1'].replacements[5].componentType).eq("boolean");
+      expect(stateVariables['/_collect1'].replacements[5].stateValues.value).eq(true);
       expect(collect2.replacements[5].componentType).eq("boolean");
       expect(collect2.replacements[5].stateValues.value).eq(true);
       expect(group2reps[11].componentType).eq("boolean");
@@ -2195,14 +2211,14 @@ describe('Collect Tag Tests', function () {
     function checkAllChildren(components) {
       let p1AllChildren = [];
       p1AllChildren.push("/A");
-      p1AllChildren.push(components["/A"].adapterUsed.componentName);
+      p1AllChildren.push(stateVariables["/A"].adapterUsed.componentName);
       p1AllChildren.push("/_map1");
 
-      let map = components['/_map1'];
+      let map = stateVariables['/_map1'];
 
       let nActiveReps = map.replacements.length;
       if(map.replacementsToWithhold) {
-        nActiveReps -= components["/_map1"].replacementsToWithhold 
+        nActiveReps -= stateVariables["/_map1"].replacementsToWithhold 
       }
       for (let template of map.replacements.slice(0, nActiveReps)) {
         p1AllChildren.push(template.componentName);
@@ -2211,53 +2227,53 @@ describe('Collect Tag Tests', function () {
         p1AllChildren.push(point.adapterUsed.componentName);
       }
       p1AllChildren.push("/B");
-      p1AllChildren.push(components["/B"].adapterUsed.componentName);
+      p1AllChildren.push(stateVariables["/B"].adapterUsed.componentName);
 
-      expect(components['/_p1'].allChildrenOrdered).eqls(p1AllChildren)
+      expect(stateVariables['/_p1'].allChildrenOrdered).eqls(p1AllChildren)
 
       let p2AllChildren = [];
       p2AllChildren.push("/_collect1");
-      let collect = components['/_collect1'];
+      let collect = stateVariables['/_collect1'];
       nActiveReps = collect.replacements.length;
       if(collect.replacementsToWithhold) {
-        nActiveReps -= components["/_collect1"].replacementsToWithhold 
+        nActiveReps -= stateVariables["/_collect1"].replacementsToWithhold 
       }
       for (let rep of collect.replacements.slice(0, nActiveReps)) {
         p2AllChildren.push(rep.componentName);
         p2AllChildren.push(rep.adapterUsed.componentName);
       }
 
-      expect(components['/_p2'].allChildrenOrdered).eqls(p2AllChildren)
+      expect(stateVariables['/_p2'].allChildrenOrdered).eqls(p2AllChildren)
 
     }
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       checkAllChildren(components);
     });
 
     cy.get('#\\/n textarea').type('{end}{backspace}4{enter}', { force: true })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       checkAllChildren(components);
     });
 
 
     cy.get('#\\/n textarea').type('{end}{backspace}0{enter}', { force: true })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       checkAllChildren(components);
     });
 
     cy.get('#\\/n textarea').type('{end}{backspace}3{enter}', { force: true })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       checkAllChildren(components);
     });
 
     cy.get('#\\/n textarea').type('{end}{backspace}1{enter}', { force: true })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       checkAllChildren(components);
     });
 
@@ -2292,35 +2308,35 @@ describe('Collect Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let A3 = components["/g3"].activeChildren[0];
-      let B3 = components["/g3"].activeChildren[1];
+      let A3 = stateVariables["/g3"].activeChildren[0];
+      let B3 = stateVariables["/g3"].activeChildren[1];
 
-      let Ax2 = components["/al2"].activeChildren[0];
-      let Bx2 = components["/al2"].activeChildren[1];
+      let Ax2 = stateVariables["/al2"].activeChildren[0];
+      let Bx2 = stateVariables["/al2"].activeChildren[1];
 
-      expect(components['/A'].stateValues.fixed).eq(false);
-      expect(components['/B'].stateValues.fixed).eq(false);
-      expect(components['/A2'].stateValues.fixed).eq(false);
-      expect(components['/B2'].stateValues.fixed).eq(false);
+      expect(stateVariables['/A'].stateValues.fixed).eq(false);
+      expect(stateVariables['/B'].stateValues.fixed).eq(false);
+      expect(stateVariables['/A2'].stateValues.fixed).eq(false);
+      expect(stateVariables['/B2'].stateValues.fixed).eq(false);
       expect(A3.stateValues.fixed).eq(false);
       expect(B3.stateValues.fixed).eq(false);
-      expect(components['/Ax'].stateValues.fixed).eq(false);
-      expect(components['/Bx'].stateValues.fixed).eq(false);
+      expect(stateVariables['/Ax'].stateValues.fixed).eq(false);
+      expect(stateVariables['/Bx'].stateValues.fixed).eq(false);
       expect(Ax2.stateValues.fixed).eq(false);
       expect(Bx2.stateValues.fixed).eq(false);
 
       cy.get('#\\/fixed_input').click().then(() => {
 
-        expect(components['/A'].stateValues.fixed).eq(false);
-        expect(components['/B'].stateValues.fixed).eq(false);
-        expect(components['/A2'].stateValues.fixed).eq(true);
-        expect(components['/B2'].stateValues.fixed).eq(true);
+        expect(stateVariables['/A'].stateValues.fixed).eq(false);
+        expect(stateVariables['/B'].stateValues.fixed).eq(false);
+        expect(stateVariables['/A2'].stateValues.fixed).eq(true);
+        expect(stateVariables['/B2'].stateValues.fixed).eq(true);
         expect(A3.stateValues.fixed).eq(true);
         expect(B3.stateValues.fixed).eq(true);
-        expect(components['/Ax'].stateValues.fixed).eq(true);
-        expect(components['/Bx'].stateValues.fixed).eq(true);
+        expect(stateVariables['/Ax'].stateValues.fixed).eq(true);
+        expect(stateVariables['/Bx'].stateValues.fixed).eq(true);
         expect(Ax2.stateValues.fixed).eq(true);
         expect(Bx2.stateValues.fixed).eq(true);
       });
@@ -2328,14 +2344,14 @@ describe('Collect Tag Tests', function () {
 
       cy.get('#\\/fixed_input').click().then(() => {
 
-        expect(components['/A'].stateValues.fixed).eq(false);
-        expect(components['/B'].stateValues.fixed).eq(false);
-        expect(components['/A2'].stateValues.fixed).eq(false);
-        expect(components['/B2'].stateValues.fixed).eq(false);
+        expect(stateVariables['/A'].stateValues.fixed).eq(false);
+        expect(stateVariables['/B'].stateValues.fixed).eq(false);
+        expect(stateVariables['/A2'].stateValues.fixed).eq(false);
+        expect(stateVariables['/B2'].stateValues.fixed).eq(false);
         expect(A3.stateValues.fixed).eq(false);
         expect(B3.stateValues.fixed).eq(false);
-        expect(components['/Ax'].stateValues.fixed).eq(false);
-        expect(components['/Bx'].stateValues.fixed).eq(false);
+        expect(stateVariables['/Ax'].stateValues.fixed).eq(false);
+        expect(stateVariables['/Bx'].stateValues.fixed).eq(false);
         expect(Ax2.stateValues.fixed).eq(false);
         expect(Bx2.stateValues.fixed).eq(false);
       });

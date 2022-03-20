@@ -16,7 +16,7 @@ describe('ref Tag Tests', function () {
   })
 
   it('ref to sections', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <section newnamespace name="section1">
@@ -132,7 +132,7 @@ describe('ref Tag Tests', function () {
   });
 
   it('simple url', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p>A link to <ref uri="http://doenet.org">Doenet</ref>.</p>
@@ -147,7 +147,7 @@ describe('ref Tag Tests', function () {
   })
 
   it('url with XML entity', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p>A link to <ref uri="http://doenet.org/#a&amp;b">Doenet</ref>.</p>
@@ -162,7 +162,7 @@ describe('ref Tag Tests', function () {
   })
 
   it('ref to DoenetId', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p>A link to <ref uri="doenet:doenetId=abcdefg">a Doenet doc</ref>.</p>
@@ -177,7 +177,7 @@ describe('ref Tag Tests', function () {
   })
 
   it('url with no link text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p>A link to <ref uri="http://doenet.org"/>.</p>
@@ -193,7 +193,7 @@ describe('ref Tag Tests', function () {
 
   // TODO: do we allow one to use a component/copy inside a uri?
   it('referencing refs', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p>A link to <ref uri="http://doenet.org">Doenet</ref>.</p>
@@ -212,9 +212,9 @@ describe('ref Tag Tests', function () {
     cy.get('#\\/_ref1').should('have.text', 'Doenet').invoke('attr', 'href')
       .then((href) => expect(href).eq("http://doenet.org"));
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      cy.get(cesc('#' + components["/_copy1"].replacements[0].componentName))
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      cy.get(cesc('#' + stateVariables["/_copy1"].replacements[0].componentName))
         .should('have.text', 'Doenet').invoke('attr', 'href')
         .then((href) => expect(href).eq("http://doenet.org"));
     })
@@ -231,7 +231,7 @@ describe('ref Tag Tests', function () {
   })
 
   it('create button', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><ref uri="http://doenet.org" name="toDoenet" createButton>Go to Doenet</ref>.</p>

@@ -8,7 +8,7 @@ describe('Slider Tag Tests', function () {
 
 
   it.skip('move default two number slider', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -28,9 +28,9 @@ describe('Slider Tag Tests', function () {
       .trigger('mouseup')
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let slider1value = components['/_slider1'].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let slider1value = stateVariables['/_slider1'].stateValues.value;
       expect(slider1value).eq(1)
     })
 
@@ -39,25 +39,25 @@ describe('Slider Tag Tests', function () {
       .trigger('mousemove', { clientX: 160, clientY: 0 })
       .trigger('mouseup')
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let slider1value = components['/_slider1'].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let slider1value = stateVariables['/_slider1'].stateValues.value;
       expect(slider1value).eq(2)
     })
 
     cy.get('[data-cy=\\/_slider1divslider-track]')
       .click('left');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let slider1value = components['/_slider1'].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let slider1value = stateVariables['/_slider1'].stateValues.value;
       expect(slider1value).eq(1)
     })
   })
 
 
   it('no arguments, default to number slider from 0 to 10', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -77,11 +77,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(0)
-      expect(components['/sv'].stateValues.value).eq(0)
-      expect(components['/mi'].stateValues.value.tree).eq(0)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(0)
+      expect(stateVariables['/sv'].stateValues.value).eq(0)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(0)
     })
 
 
@@ -97,11 +97,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(1)
-      expect(components['/sv'].stateValues.value).eq(1)
-      expect(components['/mi'].stateValues.value.tree).eq(1)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(1)
+      expect(stateVariables['/sv'].stateValues.value).eq(1)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(1)
     })
 
 
@@ -116,11 +116,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(9)
-      expect(components['/sv'].stateValues.value).eq(9)
-      expect(components['/mi'].stateValues.value.tree).eq(9)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(9)
+      expect(stateVariables['/sv'].stateValues.value).eq(9)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(9)
     })
 
 
@@ -133,11 +133,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(3)
-      expect(components['/sv'].stateValues.value).eq(3)
-      expect(components['/mi'].stateValues.value.tree).eq(3)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(3)
+      expect(stateVariables['/sv'].stateValues.value).eq(3)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(3)
     })
 
 
@@ -150,18 +150,18 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(3)
-      expect(components['/sv'].stateValues.value).eq(3)
-      expect(components['/mi'].stateValues.value.tree).eq(3)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(3)
+      expect(stateVariables['/sv'].stateValues.value).eq(3)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(3)
     })
 
 
   })
 
   it('change step to 0.1', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -181,11 +181,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(0)
-      expect(components['/sv'].stateValues.value).eq(0)
-      expect(components['/mi'].stateValues.value.tree).eq(0)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(0)
+      expect(stateVariables['/sv'].stateValues.value).eq(0)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(0)
     })
 
 
@@ -202,11 +202,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(1)
-      expect(components['/sv'].stateValues.value).eq(1)
-      expect(components['/mi'].stateValues.value.tree).eq(1)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(1)
+      expect(stateVariables['/sv'].stateValues.value).eq(1)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(1)
     })
 
 
@@ -222,11 +222,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9.4')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(9.4)
-      expect(components['/sv'].stateValues.value).eq(9.4)
-      expect(components['/mi'].stateValues.value.tree).eq(9.4)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(9.4)
+      expect(stateVariables['/sv'].stateValues.value).eq(9.4)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(9.4)
     })
 
 
@@ -240,17 +240,17 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2.5')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(2.5)
-      expect(components['/sv'].stateValues.value).eq(2.5)
-      expect(components['/mi'].stateValues.value.tree).eq(2.5)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(2.5)
+      expect(stateVariables['/sv'].stateValues.value).eq(2.5)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(2.5)
     })
 
   })
 
   it('from 100 to 200', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -270,11 +270,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('100')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(100)
-      expect(components['/sv'].stateValues.value).eq(100)
-      expect(components['/mi'].stateValues.value.tree).eq(100)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(100)
+      expect(stateVariables['/sv'].stateValues.value).eq(100)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(100)
     })
 
 
@@ -291,11 +291,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('137')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(137)
-      expect(components['/sv'].stateValues.value).eq(137)
-      expect(components['/mi'].stateValues.value.tree).eq(137)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(137)
+      expect(stateVariables['/sv'].stateValues.value).eq(137)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(137)
     })
 
 
@@ -311,11 +311,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('199')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(199)
-      expect(components['/sv'].stateValues.value).eq(199)
-      expect(components['/mi'].stateValues.value.tree).eq(199)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(199)
+      expect(stateVariables['/sv'].stateValues.value).eq(199)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(199)
     })
 
 
@@ -329,11 +329,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('100')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(100)
-      expect(components['/sv'].stateValues.value).eq(100)
-      expect(components['/mi'].stateValues.value.tree).eq(100)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(100)
+      expect(stateVariables['/sv'].stateValues.value).eq(100)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(100)
     })
 
 
@@ -347,11 +347,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('200')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(200)
-      expect(components['/sv'].stateValues.value).eq(200)
-      expect(components['/mi'].stateValues.value.tree).eq(200)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(200)
+      expect(stateVariables['/sv'].stateValues.value).eq(200)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(200)
     })
 
 
@@ -365,17 +365,17 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('171')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(171)
-      expect(components['/sv'].stateValues.value).eq(171)
-      expect(components['/mi'].stateValues.value.tree).eq(171)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(171)
+      expect(stateVariables['/sv'].stateValues.value).eq(171)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(171)
     })
 
   })
 
   it('initial value', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -395,11 +395,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('7')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(7)
-      expect(components['/sv'].stateValues.value).eq(7)
-      expect(components['/mi'].stateValues.value.tree).eq(7)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(7)
+      expect(stateVariables['/sv'].stateValues.value).eq(7)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(7)
     })
 
 
@@ -415,11 +415,11 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(1)
-      expect(components['/sv'].stateValues.value).eq(1)
-      expect(components['/mi'].stateValues.value.tree).eq(1)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(1)
+      expect(stateVariables['/sv'].stateValues.value).eq(1)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(1)
     })
 
 
@@ -433,17 +433,17 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(4)
-      expect(components['/sv'].stateValues.value).eq(4)
-      expect(components['/mi'].stateValues.value.tree).eq(4)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(4)
+      expect(stateVariables['/sv'].stateValues.value).eq(4)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(4)
     })
 
   })
 
   it('bind value to', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -466,12 +466,12 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(0)
-      expect(components['/sv'].stateValues.value).eq(0)
-      expect(components['/mi0'].stateValues.value.tree).eq('\uff3f')
-      expect(components['/mi'].stateValues.value.tree).eq(0)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(0)
+      expect(stateVariables['/sv'].stateValues.value).eq(0)
+      expect(stateVariables['/mi0'].stateValues.value.tree).eq('\uff3f')
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(0)
     })
 
 
@@ -490,12 +490,12 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(1)
-      expect(components['/sv'].stateValues.value).eq(1)
-      expect(components['/mi0'].stateValues.value.tree).eq(1)
-      expect(components['/mi'].stateValues.value.tree).eq(1)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(1)
+      expect(stateVariables['/sv'].stateValues.value).eq(1)
+      expect(stateVariables['/mi0'].stateValues.value.tree).eq(1)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(1)
     })
 
 
@@ -512,12 +512,12 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(4)
-      expect(components['/sv'].stateValues.value).eq(4)
-      expect(components['/mi0'].stateValues.value.tree).eq(4)
-      expect(components['/mi'].stateValues.value.tree).eq(4)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(4)
+      expect(stateVariables['/sv'].stateValues.value).eq(4)
+      expect(stateVariables['/mi0'].stateValues.value.tree).eq(4)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(4)
     })
 
 
@@ -533,12 +533,12 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(9)
-      expect(components['/sv'].stateValues.value).eq(9)
-      expect(components['/mi0'].stateValues.value.tree).eq(8.7)
-      expect(components['/mi'].stateValues.value.tree).eq(9)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(9)
+      expect(stateVariables['/sv'].stateValues.value).eq(9)
+      expect(stateVariables['/mi0'].stateValues.value.tree).eq(8.7)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(9)
     })
 
 
@@ -554,12 +554,12 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(0)
-      expect(components['/sv'].stateValues.value).eq(0)
-      expect(components['/mi0'].stateValues.value.tree).eq('x')
-      expect(components['/mi'].stateValues.value.tree).eq(0)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(0)
+      expect(stateVariables['/sv'].stateValues.value).eq(0)
+      expect(stateVariables['/mi0'].stateValues.value.tree).eq('x')
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(0)
     })
 
 
@@ -577,12 +577,12 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(5)
-      expect(components['/sv'].stateValues.value).eq(5)
-      expect(components['/mi0'].stateValues.value.tree).eq(5)
-      expect(components['/mi'].stateValues.value.tree).eq(5)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(5)
+      expect(stateVariables['/sv'].stateValues.value).eq(5)
+      expect(stateVariables['/mi0'].stateValues.value.tree).eq(5)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(5)
     })
 
 
@@ -598,12 +598,12 @@ describe('Slider Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('10')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/s'].stateValues.value).eq(10)
-      expect(components['/sv'].stateValues.value).eq(10)
-      expect(components['/mi0'].stateValues.value.tree).eq(999)
-      expect(components['/mi'].stateValues.value.tree).eq(10)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(10)
+      expect(stateVariables['/sv'].stateValues.value).eq(10)
+      expect(stateVariables['/mi0'].stateValues.value.tree).eq(999)
+      expect(stateVariables['/mi'].stateValues.value.tree).eq(10)
     })
 
 

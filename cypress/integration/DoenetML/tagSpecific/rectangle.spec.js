@@ -216,7 +216,7 @@ describe('Rectangle Tag Tests', function () {
     async function checkTransformedRectangleValues({ components, v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4 }) {
 
       await checkRectangleValues({
-        rectangles: [components["/g1/r1"], components["/g2/r1"]]
+        rectangles: [stateVariables["/g1/r1"], stateVariables["/g2/r1"]]
       }, {
         v0x: v0x1,
         v0y: v0y1,
@@ -225,7 +225,7 @@ describe('Rectangle Tag Tests', function () {
       })
 
       await checkRectangleValues({
-        rectangles: [components["/g1/r2"], components["/g2/r2"]]
+        rectangles: [stateVariables["/g1/r2"], stateVariables["/g2/r2"]]
       }, {
         v0x: v0x2,
         v0y: v0y2,
@@ -234,7 +234,7 @@ describe('Rectangle Tag Tests', function () {
       })
 
       await checkRectangleValues({
-        rectangles: [components["/g1/r3"], components["/g2/r3"]]
+        rectangles: [stateVariables["/g1/r3"], stateVariables["/g2/r3"]]
       }, {
         v0x: v0x2,
         v0y: v0y2,
@@ -243,7 +243,7 @@ describe('Rectangle Tag Tests', function () {
       })
 
       await checkRectangleValues({
-        rectangles: [components["/g1/r4"], components["/g2/r4"]]
+        rectangles: [stateVariables["/g1/r4"], stateVariables["/g2/r4"]]
       }, {
         v0x: v0x2,
         v0y: v0y2,
@@ -254,7 +254,7 @@ describe('Rectangle Tag Tests', function () {
 
     let v0x1 = 0, v0y1 = 0, v2x1 = 1, v2y1 = 1, v0x2 = 3, v0y2 = 4, v2x2 = 4, v2y2 = 5, v2x3 = 8, v2x4 = 5, v2y4 = 6;
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       await checkTransformedRectangleValues({
         components,
@@ -266,7 +266,7 @@ describe('Rectangle Tag Tests', function () {
     cy.log('shift g1/r1')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       let dx = -2;
       let dy = 4;
 
@@ -275,7 +275,7 @@ describe('Rectangle Tag Tests', function () {
       v2x1 += dx;
       v2y1 += dy;
 
-      await components["/g1/r1"].movePolygon({ pointCoords: { 0: [v0x1, v0y1], 2: [v2x1, v2y1] } })
+      await stateVariables["/g1/r1"].movePolygon({ pointCoords: { 0: [v0x1, v0y1], 2: [v2x1, v2y1] } })
 
       await checkTransformedRectangleValues({
         components,
@@ -286,7 +286,7 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 0 of g2/r1')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       v0x1 = 1;
       v0y1 = 8;
@@ -298,7 +298,7 @@ describe('Rectangle Tag Tests', function () {
       v2y2 = v0y2 + height;
 
 
-      await components["/g2/r1"].movePolygon({ pointCoords: { 0: [v0x1, v0y1] } })
+      await stateVariables["/g2/r1"].movePolygon({ pointCoords: { 0: [v0x1, v0y1] } })
 
       await checkTransformedRectangleValues({
         components,
@@ -310,7 +310,7 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 1 of g1/r2')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -332,7 +332,7 @@ describe('Rectangle Tag Tests', function () {
       v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g1/r2"].movePolygon({ pointCoords: { 0: [v0x2, v0y2] } })
+      await stateVariables["/g1/r2"].movePolygon({ pointCoords: { 0: [v0x2, v0y2] } })
 
       await checkTransformedRectangleValues({
         components,
@@ -345,7 +345,7 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 2 of g2/r2')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -367,7 +367,7 @@ describe('Rectangle Tag Tests', function () {
       v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g2/r2"].movePolygon({ pointCoords: { 1: [v2x2, v0y2] } })
+      await stateVariables["/g2/r2"].movePolygon({ pointCoords: { 1: [v2x2, v0y2] } })
 
       await checkTransformedRectangleValues({
         components,
@@ -380,7 +380,7 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 3 of g1/r3')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -402,7 +402,7 @@ describe('Rectangle Tag Tests', function () {
       // v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g1/r3"].movePolygon({ pointCoords: { 2: [v2x3, v2y2] } })
+      await stateVariables["/g1/r3"].movePolygon({ pointCoords: { 2: [v2x3, v2y2] } })
 
       await checkTransformedRectangleValues({
         components,
@@ -416,7 +416,7 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 4 of g2/r3')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -441,7 +441,7 @@ describe('Rectangle Tag Tests', function () {
       // v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g2/r3"].movePolygon({ pointCoords: { 3: [v0x2, v2y2] } })
+      await stateVariables["/g2/r3"].movePolygon({ pointCoords: { 3: [v0x2, v2y2] } })
 
       await checkTransformedRectangleValues({
         components,
@@ -455,7 +455,7 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 2 of g1/r4')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -480,7 +480,7 @@ describe('Rectangle Tag Tests', function () {
       // v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g1/r4"].movePolygon({ pointCoords: { 1: [v2x4, v0y2] } })
+      await stateVariables["/g1/r4"].movePolygon({ pointCoords: { 1: [v2x4, v0y2] } })
 
       await checkTransformedRectangleValues({
         components,
@@ -494,7 +494,7 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 3 of g2/r4')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -519,7 +519,7 @@ describe('Rectangle Tag Tests', function () {
       // v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g1/r4"].movePolygon({ pointCoords: { 2: [v2x4, v2y4] } })
+      await stateVariables["/g1/r4"].movePolygon({ pointCoords: { 2: [v2x4, v2y4] } })
 
       await checkTransformedRectangleValues({
         components,
@@ -568,18 +568,18 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
   cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
   cy.window().then(async (win) => {
-    let components = Object.assign({}, win.state.components);
+    let stateVariables = await win.returnAllStateVariables1();
 
-    let rectangle = components["/_rectangle1"];
-    let centerPoint = components["/centerPoint"].replacements[0];
-    let v0 = components["/v1"].replacements[0];
-    let v1 = components["/v2"].replacements[0];
-    let v2 = components["/v3"].replacements[0];
-    let v3 = components["/v4"].replacements[0];
-    let rectangleCopy = components["/rectangleCopy"].replacements[0];
-    let rectangleCopy2 = components["/graph4"].replacements[0].activeChildren[0];
-    let widthInput = components["/_mathinput1"];
-    let heightInput = components["/_mathinput2"];
+    let rectangle = stateVariables["/_rectangle1"];
+    let centerPoint = stateVariables["/centerPoint"].replacements[0];
+    let v0 = stateVariables["/v1"].replacements[0];
+    let v1 = stateVariables["/v2"].replacements[0];
+    let v2 = stateVariables["/v3"].replacements[0];
+    let v3 = stateVariables["/v4"].replacements[0];
+    let rectangleCopy = stateVariables["/rectangleCopy"].replacements[0];
+    let rectangleCopy2 = stateVariables["/graph4"].replacements[0].activeChildren[0];
+    let widthInput = stateVariables["/_mathinput1"];
+    let heightInput = stateVariables["/_mathinput2"];
 
     let inputs = {
       rectangles: [rectangle, rectangleCopy, rectangleCopy2],

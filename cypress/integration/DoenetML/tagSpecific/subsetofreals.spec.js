@@ -8,7 +8,7 @@ describe('SubsetOfReals Tag Tests', function () {
 
 
   it("single intervals", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -101,7 +101,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("single intervals, display as inequality", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -194,7 +194,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("single intervals, display as inequality, change variable", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -287,7 +287,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("single inequality", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -395,7 +395,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("single inequality, change variable", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -503,7 +503,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("single equality", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -525,7 +525,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("single inequality in set notation", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -633,7 +633,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("union and intersections of intervals and singletons", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -722,7 +722,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("union and intersections of intervals and singletons, latex format", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -810,7 +810,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("x element of union and intersections of intervals and singletons", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -899,7 +899,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("union and intersections of intervals and singletons contains element x", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -988,7 +988,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("x in union and intersections of intervals and singletons, latex format", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1076,7 +1076,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("union and intersections of intervals and singletons ni x, latex format", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1164,7 +1164,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("ands and ors with inequalities", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1253,7 +1253,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("complements of intervals and singletons", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1291,7 +1291,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("dynamic subsets", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1342,7 +1342,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("modifying copies of subsets", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1465,7 +1465,7 @@ describe('SubsetOfReals Tag Tests', function () {
   })
 
   it("union of subset with numbers", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>

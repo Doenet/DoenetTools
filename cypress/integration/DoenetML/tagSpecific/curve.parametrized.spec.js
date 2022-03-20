@@ -20,15 +20,15 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.variableForChild.tree).eq("x");
-      expect(components['/_curve1'].stateValues.parMin).eq(-10);
-      expect(components['/_curve1'].stateValues.parMax).eq(10);
-      expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
-      expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
-      expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
-      expect(components['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variableForChild.tree).eq("x");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
     })
 
   });
@@ -51,15 +51,15 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.variableForChild.tree).eq("x");
-      expect(components['/_curve1'].stateValues.parMin).eq(-10);
-      expect(components['/_curve1'].stateValues.parMax).eq(10);
-      expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
-      expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
-      expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
-      expect(components['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variableForChild.tree).eq("x");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
     })
 
   });
@@ -80,15 +80,15 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.variableForChild.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parMin).eq(-10);
-      expect(components['/_curve1'].stateValues.parMax).eq(10);
-      expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
-      expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
-      expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
-      expect(components['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variableForChild.tree).eq("t");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
     })
 
   });
@@ -110,15 +110,15 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.variableForChild.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parMin).eq(-10);
-      expect(components['/_curve1'].stateValues.parMax).eq(10);
-      expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
-      expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
-      expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
-      expect(components['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variableForChild.tree).eq("t");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
     })
 
   });
@@ -140,14 +140,14 @@ describe('Parameterized Curve Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
-      // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.variables[0].tree).eq("x");
-      expect(components['/_curve1'].stateValues.variables[1].tree).eq("y");
-      expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parMin).eq(-10);
-      expect(components['/_curve1'].stateValues.parMax).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      let parametrizedCurve = stateVariables[stateVariables['/_curve1'].stateValues.curveChild];
+      // expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variables[0].tree).eq("x");
+      expect(stateVariables['/_curve1'].stateValues.variables[1].tree).eq("y");
+      expect(stateVariables['/_curve1'].stateValues.parameter.tree).eq("t");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("x");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("y");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
@@ -177,14 +177,14 @@ describe('Parameterized Curve Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
-      // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.variables[0].tree).eq("y");
-      expect(components['/_curve1'].stateValues.variables[1].tree).eq("x");
-      expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parMin).eq(-10);
-      expect(components['/_curve1'].stateValues.parMax).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      let parametrizedCurve = stateVariables[stateVariables['/_curve1'].stateValues.curveChild];
+      // expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variables[0].tree).eq("y");
+      expect(stateVariables['/_curve1'].stateValues.variables[1].tree).eq("x");
+      expect(stateVariables['/_curve1'].stateValues.parameter.tree).eq("t");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("y");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("x");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
@@ -214,14 +214,14 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
-      // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.variables[0].tree).eq("u");
-      expect(components['/_curve1'].stateValues.variables[1].tree).eq("v");
-      expect(components['/_curve1'].stateValues.parameter.tree).eq("s");
-      expect(components['/_curve1'].stateValues.parMin).eq(-10);
-      expect(components['/_curve1'].stateValues.parMax).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      let parametrizedCurve = stateVariables[stateVariables['/_curve1'].stateValues.curveChild];
+      // expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variables[0].tree).eq("u");
+      expect(stateVariables['/_curve1'].stateValues.variables[1].tree).eq("v");
+      expect(stateVariables['/_curve1'].stateValues.parameter.tree).eq("s");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("u");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("v");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("s");
@@ -251,14 +251,14 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
-      // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.variables[0].tree).eq("x");
-      expect(components['/_curve1'].stateValues.variables[1].tree).eq("y");
-      expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parMin).eq(-10);
-      expect(components['/_curve1'].stateValues.parMax).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      let parametrizedCurve = stateVariables[stateVariables['/_curve1'].stateValues.curveChild];
+      // expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variables[0].tree).eq("x");
+      expect(stateVariables['/_curve1'].stateValues.variables[1].tree).eq("y");
+      expect(stateVariables['/_curve1'].stateValues.parameter.tree).eq("t");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("x");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("y");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
@@ -288,14 +288,14 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
-      // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.variables[0].tree).eq("x");
-      expect(components['/_curve1'].stateValues.variables[1].tree).eq("y");
-      expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parMin).eq(-10);
-      expect(components['/_curve1'].stateValues.parMax).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      let parametrizedCurve = stateVariables[stateVariables['/_curve1'].stateValues.curveChild];
+      // expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variables[0].tree).eq("x");
+      expect(stateVariables['/_curve1'].stateValues.variables[1].tree).eq("y");
+      expect(stateVariables['/_curve1'].stateValues.parameter.tree).eq("t");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("x");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("y");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
@@ -325,14 +325,14 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
-      // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.variables[0].tree).eq("x");
-      expect(components['/_curve1'].stateValues.variables[1].tree).eq("y");
-      expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parMin.simplify().tree).eq(-1);
-      expect(components['/_curve1'].stateValues.parMax).eq(0.5);
+      let stateVariables = await win.returnAllStateVariables1();
+      let parametrizedCurve = stateVariables[stateVariables['/_curve1'].stateValues.curveChild];
+      // expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variables[0].tree).eq("x");
+      expect(stateVariables['/_curve1'].stateValues.variables[1].tree).eq("y");
+      expect(stateVariables['/_curve1'].stateValues.parameter.tree).eq("t");
+      expect(stateVariables['/_curve1'].stateValues.parMin.simplify().tree).eq(-1);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(0.5);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("x");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("y");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
@@ -364,14 +364,14 @@ describe('Parameterized Curve Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.parMin).eq(-10);
-      expect(components['/_curve1'].stateValues.parMax).eq(10);
-      expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
-      expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
-      expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
-      expect(components['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
     })
 
   });
@@ -393,14 +393,14 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.parMin).eq(-1);
-      expect(components['/_curve1'].stateValues.parMax).eq(0.5);
-      expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
-      expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
-      expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
-      expect(components['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-1);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(0.5);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(stateVariables['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(stateVariables['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
     })
 
   });
@@ -426,23 +426,23 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/c1'].stateValues.curveType).eq("parameterization");
-      expect(components['/c1'].stateValues.parMin).eq(-1);
-      expect(components['/c1'].stateValues.parMax).eq(0.5);
-      expect(components['/c1'].stateValues.fs[0](-2)).eq(-5 * 8);
-      expect(components['/c1'].stateValues.fs[0](3)).eq(5 * 27);
-      expect(components['/c1'].stateValues.fs[1](-2)).eq(-3 * 32);
-      expect(components['/c1'].stateValues.fs[1](3)).eq(3 * 243);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/c1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/c1'].stateValues.parMin).eq(-1);
+      expect(stateVariables['/c1'].stateValues.parMax).eq(0.5);
+      expect(stateVariables['/c1'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(stateVariables['/c1'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(stateVariables['/c1'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(stateVariables['/c1'].stateValues.fs[1](3)).eq(3 * 243);
 
 
-      expect(components['/c2'].stateValues.curveType).eq("parameterization");
-      expect(components['/c2'].stateValues.parMin).eq(-4);
-      expect(components['/c2'].stateValues.parMax).eq(0);
-      expect(components['/c2'].stateValues.fs[0](-2)).eq(-5 * 8);
-      expect(components['/c2'].stateValues.fs[0](3)).eq(5 * 27);
-      expect(components['/c2'].stateValues.fs[1](-2)).eq(-3 * 32);
-      expect(components['/c2'].stateValues.fs[1](3)).eq(3 * 243);
+      expect(stateVariables['/c2'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/c2'].stateValues.parMin).eq(-4);
+      expect(stateVariables['/c2'].stateValues.parMax).eq(0);
+      expect(stateVariables['/c2'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(stateVariables['/c2'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(stateVariables['/c2'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(stateVariables['/c2'].stateValues.fs[1](3)).eq(3 * 243);
     })
 
   });
@@ -464,14 +464,14 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let parametrizedCurve = components[components['/_curve1'].stateValues.curveChild];
-      // expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
-      expect(components['/_curve1'].stateValues.variables[0].tree).eq("x");
-      expect(components['/_curve1'].stateValues.variables[1].tree).eq("y");
-      expect(components['/_curve1'].stateValues.parameter.tree).eq("t");
-      expect(components['/_curve1'].stateValues.parMin).eq(-10);
-      expect(components['/_curve1'].stateValues.parMax).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      let parametrizedCurve = stateVariables[stateVariables['/_curve1'].stateValues.curveChild];
+      // expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variables[0].tree).eq("x");
+      expect(stateVariables['/_curve1'].stateValues.variables[1].tree).eq("y");
+      expect(stateVariables['/_curve1'].stateValues.parameter.tree).eq("t");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
       expect(parametrizedCurve.stateValues.variables[0].tree).eq("x");
       expect(parametrizedCurve.stateValues.variables[1].tree).eq("y");
       expect(parametrizedCurve.stateValues.parameter.tree).eq("t");
@@ -503,24 +503,24 @@ describe('Parameterized Curve Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/_curve1"].stateValues.parMin).eq(-10);
-      expect(components["/_curve1"].stateValues.parMax).eq(10);
-      expect(components["/_curve1"].stateValues.fs[0](-2)).eq(-4 + 1);
-      expect(components["/_curve1"].stateValues.fs[0](3)).eq(6 + 1);
-      expect(components["/_curve1"].stateValues.fs[1](-2)).eq(-8 - 2);
-      expect(components["/_curve1"].stateValues.fs[1](3)).eq(27 - 2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_curve1"].stateValues.parMin).eq(-10);
+      expect(stateVariables["/_curve1"].stateValues.parMax).eq(10);
+      expect(stateVariables["/_curve1"].stateValues.fs[0](-2)).eq(-4 + 1);
+      expect(stateVariables["/_curve1"].stateValues.fs[0](3)).eq(6 + 1);
+      expect(stateVariables["/_curve1"].stateValues.fs[1](-2)).eq(-8 - 2);
+      expect(stateVariables["/_curve1"].stateValues.fs[1](3)).eq(27 - 2);
     })
 
     cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}-3{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/_curve1"].stateValues.parMin).eq(-10);
-      expect(components["/_curve1"].stateValues.parMax).eq(10);
-      expect(components["/_curve1"].stateValues.fs[0](-2)).eq(6 + 1);
-      expect(components["/_curve1"].stateValues.fs[0](3)).eq(-9 + 1);
-      expect(components["/_curve1"].stateValues.fs[1](-2)).eq(-8 + 3);
-      expect(components["/_curve1"].stateValues.fs[1](3)).eq(27 + 3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_curve1"].stateValues.parMin).eq(-10);
+      expect(stateVariables["/_curve1"].stateValues.parMax).eq(10);
+      expect(stateVariables["/_curve1"].stateValues.fs[0](-2)).eq(6 + 1);
+      expect(stateVariables["/_curve1"].stateValues.fs[0](3)).eq(-9 + 1);
+      expect(stateVariables["/_curve1"].stateValues.fs[1](-2)).eq(-8 + 3);
+      expect(stateVariables["/_curve1"].stateValues.fs[1](3)).eq(27 + 3);
     })
   });
 
@@ -551,54 +551,66 @@ describe('Parameterized Curve Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let x = components['/_point1'].stateValues.xs[0].tree;
-      let y = components['/_point1'].stateValues.xs[1].tree;
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0].tree;
+      let y = stateVariables['/_point1'].stateValues.xs[1].tree;
       expect(x).closeTo(7, 0.5);
       expect(y).closeTo(Math.sin(2 * Math.pow(x, 1 / 3)), 1E-5);
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: -2, y: 10 })
-      let x = components['/_point1'].stateValues.xs[0].tree;
-      let y = components['/_point1'].stateValues.xs[1].tree;
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -2, y: 10 }
+      })
+      let x = stateVariables['/_point1'].stateValues.xs[0].tree;
+      let y = stateVariables['/_point1'].stateValues.xs[1].tree;
       expect(x).closeTo(0.3, 0.1);
       expect(y).closeTo(Math.sin(2 * Math.pow(x, 1 / 3)), 1E-5);
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: -10, y: 2 })
-      let x = components['/_point1'].stateValues.xs[0].tree;
-      let y = components['/_point1'].stateValues.xs[1].tree;
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -10, y: 2 }
+      })
+      let x = stateVariables['/_point1'].stateValues.xs[0].tree;
+      let y = stateVariables['/_point1'].stateValues.xs[1].tree;
       expect(x).closeTo(-8, 1E-3);
       expect(y).closeTo(Math.sin(-4), 1E-3);
     })
 
     cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}-1{enter}", { force: true })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let x = components['/_point1'].stateValues.xs[0].tree;
-      let y = components['/_point1'].stateValues.xs[1].tree;
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0].tree;
+      let y = stateVariables['/_point1'].stateValues.xs[1].tree;
       expect(x).closeTo(-1, 1E-3);
       expect(y).closeTo(Math.sin(-2), 1E-3);
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: 10, y: 2 })
-      let x = components['/_point1'].stateValues.xs[0].tree;
-      let y = components['/_point1'].stateValues.xs[1].tree;
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 10, y: 2 }
+      })
+      let x = stateVariables['/_point1'].stateValues.xs[0].tree;
+      let y = stateVariables['/_point1'].stateValues.xs[1].tree;
       expect(x).closeTo(8, 1E-3);
       expect(y).closeTo(Math.sin(4), 1E-3);
     })
 
     cy.get("#\\/_mathinput2 textarea").type("{end}{backspace}1{enter}", { force: true })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let x = components['/_point1'].stateValues.xs[0].tree;
-      let y = components['/_point1'].stateValues.xs[1].tree;
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0].tree;
+      let y = stateVariables['/_point1'].stateValues.xs[1].tree;
       expect(x).closeTo(1, 1E-3);
       expect(y).closeTo(Math.sin(2), 1E-3);
     })
@@ -633,27 +645,35 @@ describe('Parameterized Curve Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let x = components['/P'].stateValues.xs[0].tree;
-      let y = components['/P'].stateValues.xs[1].tree;
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/P'].stateValues.xs[0].tree;
+      let y = stateVariables['/P'].stateValues.xs[1].tree;
       expect(x).closeTo(100 / Math.sqrt(2), 1E-4);
       expect(y).closeTo(0.1 / Math.sqrt(2), 1E-4);
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: -200, y: 0.8 })
-      let x = components['/P'].stateValues.xs[0].tree;
-      let y = components['/P'].stateValues.xs[1].tree;
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -200, y: 0.8 }
+      })
+      let x = stateVariables['/P'].stateValues.xs[0].tree;
+      let y = stateVariables['/P'].stateValues.xs[1].tree;
       expect(x).closeTo(-100 / Math.sqrt(17), 1E-4);
       expect(y).closeTo(0.1 * 4 / Math.sqrt(17), 1E-4);
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: -2, y: -0.001 })
-      let x = components['/P'].stateValues.xs[0].tree;
-      let y = components['/P'].stateValues.xs[1].tree;
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -2, y: -0.001 }
+      })
+      let x = stateVariables['/P'].stateValues.xs[0].tree;
+      let y = stateVariables['/P'].stateValues.xs[1].tree;
       expect(x).closeTo(-100 * 2 / Math.sqrt(5), 1E-4);
       expect(y).closeTo(-0.1 / Math.sqrt(5), 1E-4);
     })

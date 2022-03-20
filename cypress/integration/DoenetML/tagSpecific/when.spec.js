@@ -8,7 +8,7 @@ describe('When Tag Tests', function () {
 
 
   it('value, fractionSatisfied, conditionSatisfied are public', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>

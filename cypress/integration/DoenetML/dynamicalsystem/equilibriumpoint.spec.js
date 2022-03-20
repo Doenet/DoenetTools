@@ -16,7 +16,7 @@ describe('Equilibriumpoint Tag Tests', function () {
   })
 
   it('equilibriumpoint change stable', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -61,26 +61,26 @@ describe('Equilibriumpoint Tag Tests', function () {
     cy.get("#\\/g2Cs").should('have.text', 'false');
     cy.get("#\\/g2Ds").should('have.text', 'false');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/g/A"].stateValues.stable).eq(true);
-      expect(components["/g/B"].stateValues.stable).eq(false);
-      expect(components["/g/C"].stateValues.stable).eq(false);
-      expect(components["/g/D"].stateValues.stable).eq(false);
-      expect(components["/g/A"].stateValues.xs.map(x => x.tree)).eqls([4, 0]);
-      expect(components["/g/B"].stateValues.xs.map(x => x.tree)).eqls([7, 0]);
-      expect(components["/g/C"].stateValues.xs.map(x => x.tree)).eqls([-9, 0]);
-      expect(components["/g/D"].stateValues.xs.map(x => x.tree)).eqls([-3, 0]);
+      expect(stateVariables["/g/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/C"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/D"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/A"].stateValues.xs.map(x => x.tree)).eqls([4, 0]);
+      expect(stateVariables["/g/B"].stateValues.xs.map(x => x.tree)).eqls([7, 0]);
+      expect(stateVariables["/g/C"].stateValues.xs.map(x => x.tree)).eqls([-9, 0]);
+      expect(stateVariables["/g/D"].stateValues.xs.map(x => x.tree)).eqls([-3, 0]);
 
-      expect(components["/g2/A"].stateValues.stable).eq(true);
-      expect(components["/g2/B"].stateValues.stable).eq(false);
-      expect(components["/g2/C"].stateValues.stable).eq(false);
-      expect(components["/g2/D"].stateValues.stable).eq(false);
-      expect(components["/g2/A"].stateValues.xs.map(x => x.tree)).eqls([4, 0]);
-      expect(components["/g2/B"].stateValues.xs.map(x => x.tree)).eqls([7, 0]);
-      expect(components["/g2/C"].stateValues.xs.map(x => x.tree)).eqls([-9, 0]);
-      expect(components["/g2/D"].stateValues.xs.map(x => x.tree)).eqls([-3, 0]);
+      expect(stateVariables["/g2/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/D"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/A"].stateValues.xs.map(x => x.tree)).eqls([4, 0]);
+      expect(stateVariables["/g2/B"].stateValues.xs.map(x => x.tree)).eqls([7, 0]);
+      expect(stateVariables["/g2/C"].stateValues.xs.map(x => x.tree)).eqls([-9, 0]);
+      expect(stateVariables["/g2/D"].stateValues.xs.map(x => x.tree)).eqls([-3, 0]);
     })
 
     cy.log('switch C via boolean input')
@@ -95,18 +95,18 @@ describe('Equilibriumpoint Tag Tests', function () {
     cy.get("#\\/g2Cs").should('have.text', 'true');
     cy.get("#\\/g2Ds").should('have.text', 'false');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/g/A"].stateValues.stable).eq(true);
-      expect(components["/g/B"].stateValues.stable).eq(false);
-      expect(components["/g/C"].stateValues.stable).eq(true);
-      expect(components["/g/D"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/D"].stateValues.stable).eq(false);
 
-      expect(components["/g2/A"].stateValues.stable).eq(true);
-      expect(components["/g2/B"].stateValues.stable).eq(false);
-      expect(components["/g2/C"].stateValues.stable).eq(true);
-      expect(components["/g2/D"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.stable).eq(false);
     })
 
     cy.log('switch D via boolean input')
@@ -121,35 +121,35 @@ describe('Equilibriumpoint Tag Tests', function () {
     cy.get("#\\/g2Cs").should('have.text', 'true');
     cy.get("#\\/g2Ds").should('have.text', 'true');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/g/A"].stateValues.stable).eq(true);
-      expect(components["/g/B"].stateValues.stable).eq(false);
-      expect(components["/g/C"].stateValues.stable).eq(true);
-      expect(components["/g/D"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/D"].stateValues.stable).eq(true);
 
-      expect(components["/g2/A"].stateValues.stable).eq(true);
-      expect(components["/g2/B"].stateValues.stable).eq(false);
-      expect(components["/g2/C"].stateValues.stable).eq(true);
-      expect(components["/g2/D"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.stable).eq(true);
     })
 
 
     cy.log('switch A via first action')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/g/A"].actions.switchPoint();
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables["/g/A"].actions.switchPoint();
 
-      expect(components["/g/A"].stateValues.stable).eq(false);
-      expect(components["/g/B"].stateValues.stable).eq(false);
-      expect(components["/g/C"].stateValues.stable).eq(true);
-      expect(components["/g/D"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/A"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/D"].stateValues.stable).eq(true);
 
-      expect(components["/g2/A"].stateValues.stable).eq(false);
-      expect(components["/g2/B"].stateValues.stable).eq(false);
-      expect(components["/g2/C"].stateValues.stable).eq(true);
-      expect(components["/g2/D"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/A"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.stable).eq(true);
 
 
       cy.get("#\\/gAs").should('have.text', 'false');
@@ -166,18 +166,18 @@ describe('Equilibriumpoint Tag Tests', function () {
 
     cy.log('switch A via second action')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/g2/A"].actions.switchPoint();
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables["/g2/A"].actions.switchPoint();
 
-      expect(components["/g/A"].stateValues.stable).eq(true);
-      expect(components["/g/B"].stateValues.stable).eq(false);
-      expect(components["/g/C"].stateValues.stable).eq(true);
-      expect(components["/g/D"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/D"].stateValues.stable).eq(true);
 
-      expect(components["/g2/A"].stateValues.stable).eq(true);
-      expect(components["/g2/B"].stateValues.stable).eq(false);
-      expect(components["/g2/C"].stateValues.stable).eq(true);
-      expect(components["/g2/D"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.stable).eq(true);
 
 
       cy.get("#\\/gAs").should('have.text', 'true');
@@ -193,18 +193,18 @@ describe('Equilibriumpoint Tag Tests', function () {
 
     cy.log('cannot switch B via action')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/g/B"].actions.switchPoint();
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables["/g/B"].actions.switchPoint();
 
-      expect(components["/g/A"].stateValues.stable).eq(true);
-      expect(components["/g/B"].stateValues.stable).eq(false);
-      expect(components["/g/C"].stateValues.stable).eq(true);
-      expect(components["/g/D"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/D"].stateValues.stable).eq(true);
 
-      expect(components["/g2/A"].stateValues.stable).eq(true);
-      expect(components["/g2/B"].stateValues.stable).eq(false);
-      expect(components["/g2/C"].stateValues.stable).eq(true);
-      expect(components["/g2/D"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.stable).eq(true);
 
       cy.get("#\\/gAs").should('have.text', 'true');
       cy.get("#\\/gBs").should('have.text', 'false');
@@ -220,18 +220,18 @@ describe('Equilibriumpoint Tag Tests', function () {
 
     cy.log('cannot switch C via second action')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/g2/C"].actions.switchPoint();
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables["/g2/C"].actions.switchPoint();
 
-      expect(components["/g/A"].stateValues.stable).eq(true);
-      expect(components["/g/B"].stateValues.stable).eq(false);
-      expect(components["/g/C"].stateValues.stable).eq(true);
-      expect(components["/g/D"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/D"].stateValues.stable).eq(true);
 
-      expect(components["/g2/A"].stateValues.stable).eq(true);
-      expect(components["/g2/B"].stateValues.stable).eq(false);
-      expect(components["/g2/C"].stateValues.stable).eq(true);
-      expect(components["/g2/D"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.stable).eq(true);
 
       cy.get("#\\/gAs").should('have.text', 'true');
       cy.get("#\\/gBs").should('have.text', 'false');
@@ -246,18 +246,18 @@ describe('Equilibriumpoint Tag Tests', function () {
 
     cy.log('switch D via second action')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/g2/D"].actions.switchPoint();
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables["/g2/D"].actions.switchPoint();
 
-      expect(components["/g/A"].stateValues.stable).eq(true);
-      expect(components["/g/B"].stateValues.stable).eq(false);
-      expect(components["/g/C"].stateValues.stable).eq(true);
-      expect(components["/g/D"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g/D"].stateValues.stable).eq(false);
 
-      expect(components["/g2/A"].stateValues.stable).eq(true);
-      expect(components["/g2/B"].stateValues.stable).eq(false);
-      expect(components["/g2/C"].stateValues.stable).eq(true);
-      expect(components["/g2/D"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/A"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.stable).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.stable).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.stable).eq(false);
 
       cy.get("#\\/gAs").should('have.text', 'true');
       cy.get("#\\/gBs").should('have.text', 'false');

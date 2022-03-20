@@ -8,7 +8,7 @@ describe('Image Tag Tests', function () {
 
 
   it('image from external source', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>

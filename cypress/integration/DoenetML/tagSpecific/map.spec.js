@@ -34,8 +34,8 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
       let mathr1 = replacements[0].replacements[0];
       let mathr1Anchor = '#' + mathr1.componentName;
       let mathr2 = replacements[1].replacements[0];
@@ -71,8 +71,8 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
       let textr1 = replacements[0].replacements[0];
       let textr1Anchor = '#' + textr1.componentName;
       let textr2 = replacements[1].replacements[0];
@@ -105,8 +105,8 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
       let mathrs = replacements.map(x => x.replacements[0]);
       let mathrAnchors = mathrs.map(x => '#' + x.componentName);
 
@@ -158,8 +158,8 @@ describe('Map Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
       let mathrs = replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let mathrAnchors = mathrs.map(x => '#' + x.componentName);
 
@@ -212,8 +212,8 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
       let mathrs = replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let mathrAnchors = mathrs.map(x => '#' + x.componentName);
 
@@ -340,8 +340,8 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
       let mathrs = replacements.reduce(
         (a, c) => [
           ...a,
@@ -415,10 +415,10 @@ describe('Map Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let graphs = components['/_map1'].replacements.map(x => x.replacements[0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      let graphs = stateVariables['/_map1'].replacements.map(x => x.replacements[0]);
       let graphsChildren = graphs.map(x => x.activeChildren);
-      let graphs2 = components['/mapcopy'].replacements.map(x => x.replacements[0]);
+      let graphs2 = stateVariables['/mapcopy'].replacements.map(x => x.replacements[0]);
       let graphs2Children = graphs2.map(x => x.activeChildren);
 
       expect(graphs[0].stateValues.graphicalDescendants.length).eq(8);
@@ -533,22 +533,22 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1 = components['/c1'].replacements[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let coords1 = stateVariables['/c1'].replacements[0];
       let coords1Anchor = cesc('#' + coords1.componentName);
-      let coords2 = components['/c2'].replacements[0];
+      let coords2 = stateVariables['/c2'].replacements[0];
       let coords2Anchor = cesc('#' + coords2.componentName);
-      let coords3 = components['/c3'].replacements[0];
+      let coords3 = stateVariables['/c3'].replacements[0];
       let coords3Anchor = cesc('#' + coords3.componentName);
-      let coords4 = components['/c4'].replacements[0];
+      let coords4 = stateVariables['/c4'].replacements[0];
       let coords4Anchor = cesc('#' + coords4.componentName);
-      let coords5 = components['/c5'].replacements[0];
+      let coords5 = stateVariables['/c5'].replacements[0];
       let coords5Anchor = cesc('#' + coords5.componentName);
-      let coords6 = components['/c6'].replacements[0];
+      let coords6 = stateVariables['/c6'].replacements[0];
       let coords6Anchor = cesc('#' + coords6.componentName);
-      let coords7 = components['/c7'].replacements[0];
+      let coords7 = stateVariables['/c7'].replacements[0];
       let coords7Anchor = cesc('#' + coords7.componentName);
-      let coords8 = components['/c8'].replacements[0];
+      let coords8 = stateVariables['/c8'].replacements[0];
       let coords8Anchor = cesc('#' + coords8.componentName);
 
       cy.log('Test values displayed in browser')
@@ -579,26 +579,26 @@ describe('Map Tag Tests', function () {
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect(components['/u/_graph1'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/v/_graph1'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/u/u/u/A'].stateValues.xs[0].tree).eq(-9);
-        expect(components['/u/u/u/A'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/u/u/v/A'].stateValues.xs[0].tree).eq(-8);
-        expect(components['/u/u/v/A'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/u/v/u/A'].stateValues.xs[0].tree).eq(-9);
-        expect(components['/u/v/u/A'].stateValues.xs[1].tree).eq(5);
-        expect(components['/u/v/v/A'].stateValues.xs[0].tree).eq(-8);
-        expect(components['/u/v/v/A'].stateValues.xs[1].tree).eq(5);
-        expect(components['/v/u/u/A'].stateValues.xs[0].tree).eq(6);
-        expect(components['/v/u/u/A'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/v/u/v/A'].stateValues.xs[0].tree).eq(7);
-        expect(components['/v/u/v/A'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/v/v/u/A'].stateValues.xs[0].tree).eq(6);
-        expect(components['/v/v/u/A'].stateValues.xs[1].tree).eq(5);
-        expect(components['/v/v/v/A'].stateValues.xs[0].tree).eq(7);
-        expect(components['/v/v/v/A'].stateValues.xs[1].tree).eq(5);
+        expect(stateVariables['/u/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/v/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/u/u/u/A'].stateValues.xs[0].tree).eq(-9);
+        expect(stateVariables['/u/u/u/A'].stateValues.xs[1].tree).eq(-5);
+        expect(stateVariables['/u/u/v/A'].stateValues.xs[0].tree).eq(-8);
+        expect(stateVariables['/u/u/v/A'].stateValues.xs[1].tree).eq(-5);
+        expect(stateVariables['/u/v/u/A'].stateValues.xs[0].tree).eq(-9);
+        expect(stateVariables['/u/v/u/A'].stateValues.xs[1].tree).eq(5);
+        expect(stateVariables['/u/v/v/A'].stateValues.xs[0].tree).eq(-8);
+        expect(stateVariables['/u/v/v/A'].stateValues.xs[1].tree).eq(5);
+        expect(stateVariables['/v/u/u/A'].stateValues.xs[0].tree).eq(6);
+        expect(stateVariables['/v/u/u/A'].stateValues.xs[1].tree).eq(-5);
+        expect(stateVariables['/v/u/v/A'].stateValues.xs[0].tree).eq(7);
+        expect(stateVariables['/v/u/v/A'].stateValues.xs[1].tree).eq(-5);
+        expect(stateVariables['/v/v/u/A'].stateValues.xs[0].tree).eq(6);
+        expect(stateVariables['/v/v/u/A'].stateValues.xs[1].tree).eq(5);
+        expect(stateVariables['/v/v/v/A'].stateValues.xs[0].tree).eq(7);
+        expect(stateVariables['/v/v/v/A'].stateValues.xs[1].tree).eq(5);
       })
     })
   });
@@ -624,8 +624,8 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let graphs = components['/_map1'].replacements.map(x => x.replacements[0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      let graphs = stateVariables['/_map1'].replacements.map(x => x.replacements[0]);
       let graphsChildren = graphs.map(x => x.activeChildren);
 
       expect(graphs[0].stateValues.graphicalDescendants.length).eq(4);
@@ -670,10 +670,10 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let replacements2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.log('Test values displayed in browser')
@@ -732,10 +732,10 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let replacements2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.log('Test values displayed in browser')
@@ -762,13 +762,13 @@ describe('Map Tag Tests', function () {
 
     cy.window().then(async (win) => {
       console.log('hello')
-      let components = Object.assign({}, win.state.components);
-      console.log(components["/_map1"].replacements)
-      let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let stateVariables = await win.returnAllStateVariables1();
+      console.log(stateVariables["/_map1"].replacements)
+      let replacements = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      console.log(components["/mapcopy"].replacements)
-      console.log(components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []))
-      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      console.log(stateVariables["/mapcopy"].replacements)
+      console.log(stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []))
+      let replacements2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -805,10 +805,10 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_updatevalue1_button')).click(); //Update Button
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
+      let replacements2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -887,12 +887,12 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements.map(x => x.replacements[0]);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/_map2'].replacements.map(x => x.replacements[0]);
+      let replacements2 = stateVariables['/_map2'].replacements.map(x => x.replacements[0]);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
-      let replacements3 = components['/mapcopy'].replacements.map(x => x.replacements[0]);
+      let replacements3 = stateVariables['/mapcopy'].replacements.map(x => x.replacements[0]);
       let replacementAnchors3 = replacements3.map(x => '#' + x.componentName)
 
       cy.log('Test values displayed in browser')
@@ -933,10 +933,10 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements.map(x => x.replacements[0]);
       let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/mapcopy'].replacements.map(x => x.replacements[0]);
+      let replacements2 = stateVariables['/mapcopy'].replacements.map(x => x.replacements[0]);
       let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
 
       cy.log('Test values displayed in browser')
@@ -977,15 +977,15 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1 = components['/_copy1'].replacements[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let coords1 = stateVariables['/_copy1'].replacements[0];
       let coords1Anchor = cesc('#' + coords1.componentName);
-      let coords2 = components['/_copy2'].replacements[0];
+      let coords2 = stateVariables['/_copy2'].replacements[0];
       let coords2Anchor = cesc('#' + coords2.componentName);
-      let coords3 = components['/_copy3'].replacements[0];
+      let coords3 = stateVariables['/_copy3'].replacements[0];
       let coords3Anchor = cesc('#' + coords3.componentName);
 
-      let replacements = components['/hi/_map1'].replacements.map(x => x.replacements[0]);
+      let replacements = stateVariables['/hi/_map1'].replacements.map(x => x.replacements[0]);
 
       cy.log('Test values displayed in browser')
 
@@ -1001,15 +1001,15 @@ describe('Map Tag Tests', function () {
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect(components['/hi'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/hi/q/_point1'].stateValues.xs[0].tree).eq(1);
-        expect(components['/hi/q/_point1'].stateValues.xs[1].tree).eq(-3);
-        expect(components['/hi/c/_point1'].stateValues.xs[0].tree).eq(1);
-        expect(components['/hi/c/_point1'].stateValues.xs[1].tree).eq(-2);
-        expect(components['/hi/s/_point1'].stateValues.xs[0].tree).eq(2);
-        expect(components['/hi/s/_point1'].stateValues.xs[1].tree).eq(-3);
+        expect(stateVariables['/hi'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/hi/q/_point1'].stateValues.xs[0].tree).eq(1);
+        expect(stateVariables['/hi/q/_point1'].stateValues.xs[1].tree).eq(-3);
+        expect(stateVariables['/hi/c/_point1'].stateValues.xs[0].tree).eq(1);
+        expect(stateVariables['/hi/c/_point1'].stateValues.xs[1].tree).eq(-2);
+        expect(stateVariables['/hi/s/_point1'].stateValues.xs[0].tree).eq(2);
+        expect(stateVariables['/hi/s/_point1'].stateValues.xs[1].tree).eq(-3);
         expect(replacements[3].stateValues.xs[0].tree).eq(2);
         expect(replacements[3].stateValues.xs[1].tree).eq(-2);
       })
@@ -1072,8 +1072,8 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements.map(x => x.replacements[0]);
       let replacementAnchors = replacements.map(x => x.replacements.map(y => '#' + y.replacements[0].componentName))
 
       cy.log('Test values displayed in browser')
@@ -1129,12 +1129,12 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let p4 = components['/copymapthroughp'].replacements[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let p4 = stateVariables['/copymapthroughp'].replacements[0];
       let p4Anchor = cesc('#' + p4.componentName);
-      let p5 = components['/copymapthroughp2'].replacements[0];
+      let p5 = stateVariables['/copymapthroughp2'].replacements[0];
       let p5Anchor = cesc('#' + p5.componentName);
-      let p6 = components['/copymapthroughp3'].replacements[0];
+      let p6 = stateVariables['/copymapthroughp3'].replacements[0];
       let p6Anchor = cesc('#' + p6.componentName);
 
 
@@ -1164,17 +1164,17 @@ describe('Map Tag Tests', function () {
 
       cy.window().then(() => {
 
-        let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
+        let map1maths = stateVariables['/_map1'].replacements.map(x => x.replacements[0]);
         let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
+        let map2maths = stateVariables['/copymap2'].replacements.map(x => x.replacements[0]);
         let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
+        let map3maths = stateVariables['/copymap3'].replacements.map(x => x.replacements[0]);
         let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
-        let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map4maths = stateVariables['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map5maths = stateVariables['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map6maths = stateVariables['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
 
         cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1225,17 +1225,17 @@ describe('Map Tag Tests', function () {
 
       cy.window().then(() => {
 
-        let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
+        let map1maths = stateVariables['/_map1'].replacements.map(x => x.replacements[0]);
         let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
+        let map2maths = stateVariables['/copymap2'].replacements.map(x => x.replacements[0]);
         let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
+        let map3maths = stateVariables['/copymap3'].replacements.map(x => x.replacements[0]);
         let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
-        let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map4maths = stateVariables['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map5maths = stateVariables['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map6maths = stateVariables['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
 
         cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1284,17 +1284,17 @@ describe('Map Tag Tests', function () {
 
       cy.window().then(() => {
 
-        let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
+        let map1maths = stateVariables['/_map1'].replacements.map(x => x.replacements[0]);
         let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
+        let map2maths = stateVariables['/copymap2'].replacements.map(x => x.replacements[0]);
         let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
+        let map3maths = stateVariables['/copymap3'].replacements.map(x => x.replacements[0]);
         let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
-        let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map4maths = stateVariables['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map5maths = stateVariables['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map6maths = stateVariables['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
 
         cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1362,17 +1362,17 @@ describe('Map Tag Tests', function () {
 
       cy.window().then(() => {
 
-        let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
+        let map1maths = stateVariables['/_map1'].replacements.map(x => x.replacements[0]);
         let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
+        let map2maths = stateVariables['/copymap2'].replacements.map(x => x.replacements[0]);
         let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
+        let map3maths = stateVariables['/copymap3'].replacements.map(x => x.replacements[0]);
         let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
-        let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map4maths = stateVariables['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map5maths = stateVariables['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
+        let map6maths = stateVariables['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
         let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
 
         cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1467,18 +1467,18 @@ describe('Map Tag Tests', function () {
 
     cy.log('Test values displayed in browser')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1 = components['/c1'].replacements[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let coords1 = stateVariables['/c1'].replacements[0];
       let coords1Anchor = '#' + coords1.componentName;
-      let coords2 = components['/c2'].replacements[0];
+      let coords2 = stateVariables['/c2'].replacements[0];
       let coords2Anchor = '#' + coords2.componentName;
-      let coords3 = components['/c3'].replacements[0];
+      let coords3 = stateVariables['/c3'].replacements[0];
       let coords3Anchor = '#' + coords3.componentName;
-      let coords4 = components['/c4'].replacements[0];
+      let coords4 = stateVariables['/c4'].replacements[0];
       let coords4Anchor = '#' + coords4.componentName;
-      let coords5 = components['/c5'].replacements[0];
+      let coords5 = stateVariables['/c5'].replacements[0];
       let coords5Anchor = '#' + coords5.componentName;
-      let coords6 = components['/c6'].replacements[0];
+      let coords6 = stateVariables['/c6'].replacements[0];
       let coords6Anchor = '#' + coords6.componentName;
 
       cy.get(`${cesc(coords1Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -1516,14 +1516,14 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(6);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(6);
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).eq(xs1[ind]);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).eq(xs2[ind]);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).eq(xs2[ind]);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).eq(xs1[ind]);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0].tree).eq(xs1[ind]);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1].tree).eq(xs2[ind]);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0].tree).eq(xs2[ind]);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1].tree).eq(xs1[ind]);
       }
     });
 
@@ -1535,15 +1535,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      await components['/a/_point1'].movePoint({ x: xs1[0], y: xs2[0] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/a/_point1",
+        args: { x: xs1[0], y: xs2[0] }
+      })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1555,15 +1559,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      await components['/a/_point2'].movePoint({ x: xs2[0], y: xs1[0] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/a/_point2",
+        args: { x: xs2[0], y: xs1[0] }
+      })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1575,15 +1583,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      await components['/b/_point1'].movePoint({ x: xs1[1], y: xs2[1] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/b/_point1",
+        args: { x: xs1[1], y: xs2[1] }
+      })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1595,15 +1607,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      await components['/b/_point2'].movePoint({ x: xs2[1], y: xs1[1] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/b/_point2",
+        args: { x: xs2[1], y: xs1[1] }
+      })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1615,15 +1631,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      await components['/c/_point1'].movePoint({ x: xs1[2], y: xs2[2] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/c/_point1",
+        args: { x: xs1[2], y: xs2[2] }
+      })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1635,15 +1655,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      await components['/c/_point2'].movePoint({ x: xs2[2], y: xs1[2] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/c/_point2",
+        args: { x: xs2[2], y: xs1[2] }
+      })
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1699,20 +1723,20 @@ describe('Map Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
     })
 
     cy.log('make sequence length 1');
     cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}1{enter}', { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
-      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
+      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].adapterUsed.componentName);
+      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].adapterUsed.componentName);
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,1)');
@@ -1722,19 +1746,19 @@ describe('Map Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(2);
-        expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(2);
-        expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(2);
-        expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(2);
-        expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(2);
+        expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(2);
+        expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(2);
+        expect(stateVariables['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(2);
+        expect(stateVariables['/a/_point1'].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(stateVariables['/q/_point1'].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        expect(stateVariables['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(stateVariables['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        expect(stateVariables['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(stateVariables['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", 1, -1]);
       })
     })
 
@@ -1746,11 +1770,11 @@ describe('Map Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
     })
 
 
@@ -1758,11 +1782,11 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}2{enter}', { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
-      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
-      let coords3Anchor = cesc('#' + components["/_collect1"].replacements[2].adapterUsed.componentName);
-      let coords4Anchor = cesc('#' + components["/_collect1"].replacements[3].adapterUsed.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
+      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].adapterUsed.componentName);
+      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].adapterUsed.componentName);
+      let coords3Anchor = cesc('#' + stateVariables["/_collect1"].replacements[2].adapterUsed.componentName);
+      let coords4Anchor = cesc('#' + stateVariables["/_collect1"].replacements[3].adapterUsed.componentName);
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,1)');
@@ -1778,27 +1802,27 @@ describe('Map Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/b/_point1'].stateValues.coords.tree).eqls(["vector", -2, 2]);
-        expect(components['/r/_point1'].stateValues.coords.tree).eqls(["vector", 2, -2]);
-        expect(components['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -2, 2]);
-        expect(components['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 2, -2]);
-        expect(components['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -2, 2]);
-        expect(components['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 2, -2]);
-        expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -2, 2]);
-        expect(components['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 2, -2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/a/_point1'].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(stateVariables['/q/_point1'].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        expect(stateVariables['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(stateVariables['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        expect(stateVariables['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(stateVariables['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        expect(stateVariables['/b/_point1'].stateValues.coords.tree).eqls(["vector", -2, 2]);
+        expect(stateVariables['/r/_point1'].stateValues.coords.tree).eqls(["vector", 2, -2]);
+        expect(stateVariables['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -2, 2]);
+        expect(stateVariables['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 2, -2]);
+        expect(stateVariables['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -2, 2]);
+        expect(stateVariables['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 2, -2]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -2, 2]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 2, -2]);
       })
 
     })
@@ -1808,11 +1832,11 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/sequenceTo') + " textarea").type('{end}{backspace}5{enter}', { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
-      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
-      let coords3Anchor = cesc('#' + components["/_collect1"].replacements[2].adapterUsed.componentName);
-      let coords4Anchor = cesc('#' + components["/_collect1"].replacements[3].adapterUsed.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
+      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].adapterUsed.componentName);
+      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].adapterUsed.componentName);
+      let coords3Anchor = cesc('#' + stateVariables["/_collect1"].replacements[2].adapterUsed.componentName);
+      let coords4Anchor = cesc('#' + stateVariables["/_collect1"].replacements[3].adapterUsed.componentName);
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,9)');
@@ -1828,27 +1852,27 @@ describe('Map Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/b/_point1'].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/r/_point1'].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/a/_point1'].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(stateVariables['/q/_point1'].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(stateVariables['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(stateVariables['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(stateVariables['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(stateVariables['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(stateVariables['/b/_point1'].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(stateVariables['/r/_point1'].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        expect(stateVariables['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(stateVariables['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        expect(stateVariables['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(stateVariables['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 5, -15]);
       })
     })
 
@@ -1860,24 +1884,24 @@ describe('Map Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
     })
 
     cy.log('make sequence length 3');
     cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}3{enter}', { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
-      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
-      let coords3Anchor = cesc('#' + components["/_collect1"].replacements[2].adapterUsed.componentName);
-      let coords4Anchor = cesc('#' + components["/_collect1"].replacements[3].adapterUsed.componentName);
-      let coords5Anchor = cesc('#' + components["/_collect1"].replacements[4].adapterUsed.componentName);
-      let coords6Anchor = cesc('#' + components["/_collect1"].replacements[5].adapterUsed.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
+      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].adapterUsed.componentName);
+      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].adapterUsed.componentName);
+      let coords3Anchor = cesc('#' + stateVariables["/_collect1"].replacements[2].adapterUsed.componentName);
+      let coords4Anchor = cesc('#' + stateVariables["/_collect1"].replacements[3].adapterUsed.componentName);
+      let coords5Anchor = cesc('#' + stateVariables["/_collect1"].replacements[4].adapterUsed.componentName);
+      let coords6Anchor = cesc('#' + stateVariables["/_collect1"].replacements[5].adapterUsed.componentName);
 
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1901,35 +1925,35 @@ describe('Map Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(6);
-        expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(6);
-        expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(6);
-        expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(6);
-        expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/b/_point1'].stateValues.coords.tree).eqls(["vector", -4, 12]);
-        expect(components['/r/_point1'].stateValues.coords.tree).eqls(["vector", 4, -12]);
-        expect(components['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -4, 12]);
-        expect(components['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 4, -12]);
-        expect(components['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -4, 12]);
-        expect(components['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 4, -12]);
-        expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -4, 12]);
-        expect(components['/graph4'].replacements[0].activeChildren[4].stateValues.coords.tree).eqls(["vector", 4, -12]);
-        expect(components['/c/_point1'].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/s/_point1'].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1b'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2b'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/graph4'].replacements[0].activeChildren[5].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(6);
+        expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(6);
+        expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(6);
+        expect(stateVariables['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(6);
+        expect(stateVariables['/a/_point1'].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(stateVariables['/q/_point1'].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(stateVariables['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(stateVariables['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(stateVariables['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(stateVariables['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 3, -9]);
+        expect(stateVariables['/b/_point1'].stateValues.coords.tree).eqls(["vector", -4, 12]);
+        expect(stateVariables['/r/_point1'].stateValues.coords.tree).eqls(["vector", 4, -12]);
+        expect(stateVariables['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -4, 12]);
+        expect(stateVariables['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 4, -12]);
+        expect(stateVariables['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -4, 12]);
+        expect(stateVariables['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 4, -12]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -4, 12]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[4].stateValues.coords.tree).eqls(["vector", 4, -12]);
+        expect(stateVariables['/c/_point1'].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(stateVariables['/s/_point1'].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        expect(stateVariables['/copymap1'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(stateVariables['/copymap2'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        expect(stateVariables['/copymap1b'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(stateVariables['/copymap2b'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", -5, 15]);
+        expect(stateVariables['/graph4'].replacements[0].activeChildren[5].stateValues.coords.tree).eqls(["vector", 5, -15]);
       })
     })
 
@@ -1958,76 +1982,76 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/number") + " textarea").type("10{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/step") + " textarea").type("1{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(10);
       for (let i = 0; i < 10; i++) {
         let j = i + 2;
-        expect(components['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
+        expect(stateVariables['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
       }
     })
 
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(20);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(20);
       for (let i = 0; i < 20; i++) {
         let j = i + 2;
-        expect(components['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
+        expect(stateVariables['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
       }
     })
 
     cy.get(cesc("#/step") + " textarea").type("{end}{backspace}0.5{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(20);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(20);
       for (let i = 0; i < 20; i++) {
         let j = 2 + i * 0.5;
-        expect(components['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
+        expect(stateVariables['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
       }
     })
 
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(10);
       for (let i = 0; i < 10; i++) {
         let j = 2 + i * 0.5;
-        expect(components['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
+        expect(stateVariables['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
       }
     })
 
     cy.get(cesc("#/step") + " textarea").type("{end}{backspace}{backspace}{backspace}{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/step") + " textarea").type("-3{enter}", { force: true });
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(5);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(5);
       for (let i = 0; i < 5; i++) {
         let j = 2 - i * 3;
-        expect(components['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
+        expect(stateVariables['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
       }
     })
 

@@ -45,7 +45,7 @@ describe('TriggerSet Tag Tests', function () {
     cy.window().then(async (win) => {
       let components = win.state.components;
       let numbers;
-      let g = components["/g"];
+      let g = stateVariables["/g"];
 
       expect(g.activeChildren.length).eq(1);
 
@@ -150,7 +150,7 @@ describe('TriggerSet Tag Tests', function () {
     cy.window().then(async (win) => {
       let components = win.state.components;
       let numbers;
-      let g = components["/g"];
+      let g = stateVariables["/g"];
 
       expect(g.activeChildren.length).eq(1);
 
@@ -258,7 +258,7 @@ describe('TriggerSet Tag Tests', function () {
     cy.window().then(async (win) => {
       let components = win.state.components;
       let numbers;
-      let g = components["/g"];
+      let g = stateVariables["/g"];
 
       expect(g.activeChildren.length).eq(1);
 
@@ -369,7 +369,7 @@ describe('TriggerSet Tag Tests', function () {
     cy.window().then(async (win) => {
       let components = win.state.components;
       let numbers;
-      let g = components["/g"];
+      let g = stateVariables["/g"];
 
       expect(g.activeChildren.length).eq(1);
 
@@ -449,8 +449,12 @@ describe('TriggerSet Tag Tests', function () {
     cy.get('#\\/quad').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: -1, y: -7 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -1, y: -7 }
+      });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
@@ -460,8 +464,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: 3, y: -4 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: -4 }
+      });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x')
       });
@@ -471,8 +479,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: 1, y: 7 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 1, y: 7 }
+      });
       cy.wait(10);
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
@@ -483,8 +495,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: 5, y: 9 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 5, y: 9 }
+      });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -494,8 +510,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: -3, y: 4 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -3, y: 4 }
+      });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -505,8 +525,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: -6, y: 5 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -6, y: 5 }
+      });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3x')
       });
@@ -516,8 +540,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: 4, y: 2 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 4, y: 2 }
+      });
       cy.wait(10);
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
@@ -528,8 +556,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: 9, y: 7 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 7 }
+      });
       cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9x')
       });
@@ -578,8 +610,12 @@ describe('TriggerSet Tag Tests', function () {
     cy.get('#\\/_triggerset2').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: -1, y: -7 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -1, y: -7 }
+      });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', "");
       cy.get('#\\/n').should('have.text', "2");
@@ -587,8 +623,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: 3, y: -4 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: -4 }
+      });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', "");
       cy.get('#\\/n').should('have.text', "2");
@@ -596,8 +636,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: 1, y: 7 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 1, y: 7 }
+      });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
@@ -606,8 +650,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: 5, y: 9 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 5, y: 9 }
+      });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "2");
@@ -615,8 +663,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: -3, y: -4 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -3, y: -4 }
+      });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "3");
@@ -624,8 +676,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: -6, y: -5 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -6, y: -5 }
+      });
       cy.get('#\\/b').should('have.text', "true");
       cy.get('#\\/hello').should('have.text', " hello");
       cy.get('#\\/n').should('have.text', "3");
@@ -633,8 +689,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: 4, y: 2 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 4, y: 2 }
+      });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', " hello hello");
       cy.get('#\\/n').should('have.text', "3");
@@ -642,8 +702,12 @@ describe('TriggerSet Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/P'].movePoint({ x: 9, y: 7 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 7 }
+      });
       cy.get('#\\/b').should('have.text', "false");
       cy.get('#\\/hello').should('have.text', " hello hello");
       cy.get('#\\/n').should('have.text', "3");
@@ -685,7 +749,7 @@ describe('TriggerSet Tag Tests', function () {
     cy.window().then(async (win) => {
       let components = win.state.components;
       let numbers;
-      let g = components["/g"];
+      let g = stateVariables["/g"];
 
       expect(g.activeChildren.length).eq(1);
 
@@ -704,7 +768,11 @@ describe('TriggerSet Tag Tests', function () {
       cy.get('#\\/n').should('have.text', "1");
 
       cy.window().then(async (win) => {
-        await components['/P'].movePoint({ x: -1, y: -7 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -1, y: -7 }
+      });
         expect(g.activeChildren.length).eq(1);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -716,7 +784,11 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        await components['/P'].movePoint({ x: 3, y: -4 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: -4 }
+      });
         expect(g.activeChildren.length).eq(1);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -728,7 +800,11 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        await components['/P'].movePoint({ x: 1, y: 7 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 1, y: 7 }
+      });
         cy.wait(10).then(() => {
           expect(g.activeChildren.length).eq(2);
           cy.get('#\\/nums').invoke('text').then(text => {
@@ -744,7 +820,11 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        await components['/P'].movePoint({ x: 5, y: 9 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 5, y: 9 }
+      });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -756,7 +836,11 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        await components['/P'].movePoint({ x: -3, y: -4 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -3, y: -4 }
+      });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -768,7 +852,11 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        await components['/P'].movePoint({ x: -6, y: -5 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -6, y: -5 }
+      });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -780,7 +868,11 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        await components['/P'].movePoint({ x: 4, y: 2 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 4, y: 2 }
+      });
         cy.wait(10).then(() => {
           expect(g.activeChildren.length).eq(3);
           cy.get('#\\/nums').invoke('text').then(text => {
@@ -795,7 +887,11 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        await components['/P'].movePoint({ x: 9, y: 7 });
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 7 }
+      });
         expect(g.activeChildren.length).eq(3);
         cy.get('#\\/nums').invoke('text').then(text => {
           let numbers2 = text.split(',').map(Number);
@@ -841,7 +937,7 @@ describe('TriggerSet Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let components = win.state.components;
-      let g = components["/g"];
+      let g = stateVariables["/g"];
 
       expect(g.activeChildren.length).eq(1);
       cy.get('#\\/b').should('have.text', "false");
@@ -852,8 +948,12 @@ describe('TriggerSet Tag Tests', function () {
       cy.get('#\\/uv').should('not.exist');
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        await components['/P'].movePoint({ x: -1, y: -7 });
+        let stateVariables = await win.returnAllStateVariables1();
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -1, y: -7 }
+      });
         expect(g.activeChildren.length).eq(1);
         cy.get('#\\/b').should('have.text', "false");
         cy.get('#\\/hello').should('have.text', "");
@@ -862,8 +962,12 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        await components['/P'].movePoint({ x: 3, y: -4 });
+        let stateVariables = await win.returnAllStateVariables1();
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: -4 }
+      });
         cy.get('#\\/b').should('have.text', "false");
         cy.get('#\\/hello').should('have.text', "");
         cy.get('#\\/n').should('have.text', "1");
@@ -871,8 +975,12 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        await components['/P'].movePoint({ x: 1, y: 7 });
+        let stateVariables = await win.returnAllStateVariables1();
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 1, y: 7 }
+      });
         cy.wait(10).then(() => {
           expect(g.activeChildren.length).eq(2);
           cy.get('#\\/b').should('have.text', "true");
@@ -883,8 +991,12 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        await components['/P'].movePoint({ x: 5, y: 9 });
+        let stateVariables = await win.returnAllStateVariables1();
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 5, y: 9 }
+      });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/b').should('have.text', "true");
         cy.get('#\\/hello').should('have.text', " hello");
@@ -893,8 +1005,12 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        await components['/P'].movePoint({ x: -3, y: -4 });
+        let stateVariables = await win.returnAllStateVariables1();
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -3, y: -4 }
+      });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/b').should('have.text', "true");
         cy.get('#\\/hello').should('have.text', " hello");
@@ -903,8 +1019,12 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        await components['/P'].movePoint({ x: -6, y: -5 });
+        let stateVariables = await win.returnAllStateVariables1();
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -6, y: -5 }
+      });
         expect(g.activeChildren.length).eq(2);
         cy.get('#\\/b').should('have.text', "true");
         cy.get('#\\/hello').should('have.text', " hello");
@@ -913,8 +1033,12 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        await components['/P'].movePoint({ x: 4, y: 2 });
+        let stateVariables = await win.returnAllStateVariables1();
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 4, y: 2 }
+      });
         cy.wait(10).then(() => {
           expect(g.activeChildren.length).eq(3);
           cy.get('#\\/b').should('have.text', "false");
@@ -925,8 +1049,12 @@ describe('TriggerSet Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        await components['/P'].movePoint({ x: 9, y: 7 });
+        let stateVariables = await win.returnAllStateVariables1();
+        await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 7 }
+      });
         expect(g.activeChildren.length).eq(3);
         cy.get('#\\/b').should('have.text', "false");
         cy.get('#\\/hello').should('have.text', " hello hello");
