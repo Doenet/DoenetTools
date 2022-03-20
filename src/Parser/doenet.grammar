@@ -20,11 +20,11 @@ topLevel {
 }
 
 OpenTag[closedBy="CloseTag MissingCloseTag"] {
-  StartTag TagName ws* (Attribute ws*)* endTag
+  StartTag TagName ws* Attribute* endTag
 }
 
 SelfClosingTag {
-  StartTag TagName ws* (Attribute ws*)* selfCloseEndTag
+  StartTag TagName ws* Attribute* selfCloseEndTag
 }
 
 CloseTag[openedBy=OpenTag] {
@@ -36,8 +36,8 @@ MismatchedCloseTag {
 }
 
 Attribute {
-  AttributeName  |
-   AttributeName Is AttributeValue
+  AttributeName ws* |
+   AttributeName ws* Is ws* AttributeValue ws*
 }
 
 AttributeValue {singleQuoteAttributeValue | doubleQuoteAttributeValue}
