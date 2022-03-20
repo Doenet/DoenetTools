@@ -78,6 +78,14 @@ export default class BaseComponent {
     return this.constructor.componentType;
   }
 
+  get componentOrAdaptedName() {
+    if (this.adaptedFrom) {
+      return this.adaptedFrom.componentOrAdaptedName
+    } else {
+      return this.componentName;
+    }
+  }
+
   get rendererType() {
     return this.constructor.rendererType;
   }

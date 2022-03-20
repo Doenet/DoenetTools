@@ -12,8 +12,9 @@ export const rendererState = atomFamily({
 // TODO: potentially remove initializeChildrenOnConstruction
 export default function useDoenetRenderer(props, initializeChildrenOnConstruction = true) {
   let actions = props.componentInstructions.actions;
-  let name = props.componentInstructions.componentName;
-  let rendererName = props.coreId + name;
+  let componentName = props.componentInstructions.componentName;
+  let effectiveName = props.componentInstructions.effectiveName;
+  let rendererName = props.coreId + componentName;
   let [renderersToLoad, setRenderersToLoad] = useState({})
 
   let { stateValues, sourceOfUpdate = {}, ignoreUpdate, childrenInstructions } = useRecoilValue(rendererState(rendererName));
@@ -77,9 +78,9 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
 
   let rendererType = props.componentInstructions.rendererType;
   const callAction = argObj => {
-    if (!argObj.name) {
+    if (!argObj.componentName) {
       argObj = { ...argObj };
-      argObj.name = name;
+      argObj.componentName = componentName;
     }
     if (!argObj.rendererType) {
       argObj = { ...argObj };
@@ -88,5 +89,5 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
     return props.callAction(argObj);
   }
 
-  return { name, SVs: stateValues, actions, children, sourceOfUpdate, ignoreUpdate, initializeChildren: () => { }, callAction };
+  return { name: effectiveName, SVs: stateValues, actions, children, sourceOfUpdate, ignoreUpdate, initializeChildren: () => { }, callAction };
 }

@@ -218,14 +218,14 @@ export default function PageViewer(props) {
   }, []);
 
 
-  function callAction({ action, args, baseVariableValue, name, rendererType }) {
+  function callAction({ action, args, baseVariableValue, componentName, rendererType }) {
 
     if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore) {
-      if (baseVariableValue !== undefined && name) {
+      if (baseVariableValue !== undefined && componentName) {
         let actionId = nanoid();
         updateRendererUpdatesToIgnore({
           coreId: coreId.current,
-          componentName: name,
+          componentName,
           baseVariableValue,
           actionId
         })
