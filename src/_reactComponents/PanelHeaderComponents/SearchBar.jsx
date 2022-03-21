@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
@@ -72,6 +72,8 @@ export default function Searchbar(props) {
     const marginLeft = props.noSearchButton ? 80 : 26;
     const alert = props.alert ? props.alert : null;
 
+    const searchBarRef = useRef(0);
+
     var searchIcon = {
         margin: '6px 0px 0px 6px',
         position: 'absolute',
@@ -99,8 +101,9 @@ export default function Searchbar(props) {
 
     // Get help with cancel button placement
     // console.log(this.style.getPropertyValue('width'));
-    let cancelLeftMargin = parseInt(width.split("px")[0]) + marginLeft + "px";
-    // console.log(cancelLeftMargin);
+    console.log(searchBarRef);
+    let cancelLeftMargin = Number(searchBarRef.width.split("px")[0]) - 54 + "px";
+    console.log(cancelLeftMargin);
 
     if (props.noSearchButton) {
         searchButton = '';
@@ -162,7 +165,7 @@ export default function Searchbar(props) {
     };
 
     return (
-        <Container align={align}>
+        <Container align={align} ref={searchBarRef}>
             <Label labelVisible={labelVisible} align={align}>{label}</Label>
             <div style={{display: "table-cell"}} >
                 <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
