@@ -3,15 +3,9 @@ import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import {
-  atom,
-  useSetRecoilState,
-  useRecoilValue,
-} from 'recoil';
+import { atom, useSetRecoilState, useRecoilValue } from 'recoil';
 import { useToast, toastType } from '@Toast';
-import Switch from '../../_framework/Switch';
-
-
+import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 
 export const enrollmentTableDataAtom = atom({
   key: 'enrollmentTableDataAtom',
@@ -35,9 +29,8 @@ export const enrolllearnerAtom = atom({
   default: '',
 });
 
-
-export default function Enrollment(props){
-  console.log(">>>===Enrollment")
+export default function Enrollment(props) {
+  console.log('>>>===Enrollment');
 
   const toast = useToast();
 
@@ -46,15 +39,14 @@ export default function Enrollment(props){
   const headers = useRecoilValue(headersAtom);
   const entries = useRecoilValue(entriesAtom);
   const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
-  const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom); 
+  const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
 
-  const driveId = useRecoilValue(searchParamAtomFamily('driveId'))
-  let [showWithdrawn,setShowWithdrawn] = useState(false);
+  const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  let [showWithdrawn, setShowWithdrawn] = useState(false);
 
   //Load Enrollment Data When CourseId changes
   useEffect(() => {
     if (driveId !== '') {
-
       axios
         .get('/api/getEnrollment.php', { params: { driveId } })
         .then((resp) => {
@@ -72,31 +64,40 @@ export default function Enrollment(props){
 
   if (!driveId) {
     return null;
-  } 
+  }
 
   let enrollmentRows = [];
   for (let [i, rowData] of enrollmentTableData.entries()) {
-    if (rowData.withdrew === '0' || showWithdrawn){
-      let bgcolor = "white";
-      let button = <Button value="Withdraw" onClick={(e) => withDrawLearners(e,rowData.email)} />
-      if (rowData.withdrew === '1'){
-        bgcolor = "grey"
-        button = <Button value="Enroll" onClick={(e) => enrollLearners(e,rowData.email)} />
+    if (rowData.withdrew === '0' || showWithdrawn) {
+      let bgcolor = 'white';
+      let button = (
+        <Button
+          value="Withdraw"
+          onClick={(e) => withDrawLearners(e, rowData.email)}
+        />
+      );
+      if (rowData.withdrew === '1') {
+        bgcolor = 'grey';
+        button = (
+          <Button
+            value="Enroll"
+            onClick={(e) => enrollLearners(e, rowData.email)}
+          />
+        );
       }
 
       let enrolledDateString = '';
-      if (rowData.withdrew === '0'){
+      if (rowData.withdrew === '0') {
         // Split timestamp into [ Y, M, D, h, m, s ]
         let t = rowData.dateEnrolled.split(/[- :]/);
         // Apply each element to the Date function
         enrolledDateString = new Date(
-          Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5])
+          Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5]),
         ).toLocaleString();
-
       }
 
       enrollmentRows.push(
-        <tr style={{backgroundColor:bgcolor}} key={`erow${i}`}>
+        <tr style={{ backgroundColor: bgcolor }} key={`erow${i}`}>
           <td>
             {rowData.firstName} {rowData.lastName}
           </td>
@@ -108,7 +109,6 @@ export default function Enrollment(props){
         </tr>,
       );
     }
-    
   }
 
   const enrollmentTable = (
@@ -137,10 +137,7 @@ export default function Enrollment(props){
     };
     for (let [i, colHead] of headers.entries()) {
       // const colHead = head.toLowerCase().replace(/\s/g, '').replace(/"/g, '');
-      if (
-        colHead === 'EmplId' ||
-        colHead === 'ID' 
-      ) {
+      if (colHead === 'EmplId' || colHead === 'ID') {
         columnToIndex.empId = i;
       }
       if (colHead === 'Email') {
@@ -160,9 +157,12 @@ export default function Enrollment(props){
       }
     }
     // console.log("columnToIndex",columnToIndex)
-    if ( columnToIndex.email == null) {
-      toast('Not Imported! CSV file needs an Email column heading.', toastType.ERROR)
-    }else{
+    if (columnToIndex.email == null) {
+      toast(
+        'Not Imported! CSV file needs an Email column heading.',
+        toastType.ERROR,
+      );
+    } else {
       let importHeads = [];
       let mergeHeads = [];
       if (columnToIndex.empId != null) {
@@ -195,7 +195,7 @@ export default function Enrollment(props){
 
       for (let [i, rowdata] of entries.entries()) {
         let rowcells = [];
-  
+
         if (
           columnToIndex.empId != null &&
           typeof rowdata[columnToIndex.empId] == 'string'
@@ -236,45 +236,49 @@ export default function Enrollment(props){
           rowcells.push(<td key="section">{section}</td>);
           mergeSection.push(section);
         }
-      
+
         importRows.push(<tr key={`rowdata${i}`}>{rowcells}</tr>);
       }
-      let cancelButton =  <Button alert
-      key="cancel"
-      onClick={() => setProcess('Display Enrollment')}
-      value="Cancel"
-      ></Button>
+      let cancelButton = (
+        <Button
+          alert
+          key="cancel"
+          onClick={() => setProcess('Display Enrollment')}
+          value="Cancel"
+        ></Button>
+      );
 
-      let mergeButton = <>
-      <Button
-                 value="Accept"
-                 key="merge"
-                 onClick={() => {
-                   const payload = {
-                     driveId,
-                     mergeHeads,
-                     mergeId,
-                     mergeFirstName,
-                     mergeLastName,
-                     mergeEmail,
-                     mergeSection,
-                   };
-                   console.log(">>>>payload",payload)
-                   axios
-                     .post('/api/mergeEnrollmentData.php', payload)
-                     .then((resp) => {
-                       console.log(">>>>resp.data",resp.data)
-                       const enrollmentArray = resp.data.enrollmentArray;
-                       if (enrollmentArray) {
-                         setEnrollmentTableDataAtom(enrollmentArray);
-                       }
-                       setProcess('Display Enrollment');
-                     });
-                 }}
-               ></Button>
-      </>
-          
-         
+      let mergeButton = (
+        <>
+          <Button
+            value="Accept"
+            key="merge"
+            onClick={() => {
+              const payload = {
+                driveId,
+                mergeHeads,
+                mergeId,
+                mergeFirstName,
+                mergeLastName,
+                mergeEmail,
+                mergeSection,
+              };
+              console.log('>>>>payload', payload);
+              axios
+                .post('/api/mergeEnrollmentData.php', payload)
+                .then((resp) => {
+                  console.log('>>>>resp.data', resp.data);
+                  const enrollmentArray = resp.data.enrollmentArray;
+                  if (enrollmentArray) {
+                    setEnrollmentTableDataAtom(enrollmentArray);
+                  }
+                  setProcess('Display Enrollment');
+                });
+            }}
+          ></Button>
+        </>
+      );
+
       return (
         <>
           <div style={{ flexDirection: 'row', display: 'flex' }}>
@@ -295,32 +299,29 @@ export default function Enrollment(props){
     }
   }
 
-  
+  const enrollLearners = (e, enrollLearner) => {
+    e.preventDefault();
 
-const enrollLearners = (e,enrollLearner) => {
-  e.preventDefault();
-
-  let payload = {
-    email: enrollLearner,
-    driveId: driveId,
+    let payload = {
+      email: enrollLearner,
+      driveId: driveId,
+    };
+    axios.post('/api/unWithDrawStudents.php', payload).then((resp) => {
+      const payload = { params: { driveId } };
+      axios
+        .get('/api/getEnrollment.php', payload)
+        .then((resp) => {
+          let enrollmentArray = resp.data.enrollmentArray;
+          setEnrollmentTableDataAtom(enrollmentArray);
+          setProcess('Display Enrollment');
+        })
+        .catch((error) => {
+          console.warn(error);
+        });
+    });
   };
-  axios.post('/api/unWithDrawStudents.php', payload).then((resp) => {
-    const payload = { params: { driveId } };
-    axios
-      .get('/api/getEnrollment.php', payload)
-      .then((resp) => {
-        let enrollmentArray = resp.data.enrollmentArray;
-        setEnrollmentTableDataAtom(enrollmentArray);
-        setProcess('Display Enrollment');
-      })
-      .catch((error) => {
-        console.warn(error);
-      });
-  });
-};
- 
 
-const withDrawLearners = (e,withdrewLearner) => {
+  const withDrawLearners = (e, withdrewLearner) => {
     e.preventDefault();
 
     let payload = {
@@ -342,31 +343,34 @@ const withDrawLearners = (e,withdrewLearner) => {
     });
   };
 
-
-// let manualEnroll = (
-//   <div>
-//     <label>Email:</label>
-//     <input
-//       required
-//       type="email"
-//       name="email"
-//       value={enrolllearner}
-//       placeholder="example@example.com"
-//       onChange={()=>setEnrolllearner(e.currentTarget.value);}
-//     />
-//     <Button value="Enroll" onClick={(e) => enrollManual(e)} />
-//   </div>
-// );
-
+  // let manualEnroll = (
+  //   <div>
+  //     <label>Email:</label>
+  //     <input
+  //       required
+  //       type="email"
+  //       name="email"
+  //       value={enrolllearner}
+  //       placeholder="example@example.com"
+  //       onChange={()=>setEnrolllearner(e.currentTarget.value);}
+  //     />
+  //     <Button value="Enroll" onClick={(e) => enrollManual(e)} />
+  //   </div>
+  // );
 
   return (
-    <div style={{padding:"8px"}}>
-    {enrollmentTableData.length > 0 ? (<div>Show Withdrawn <Switch
-    onChange={(e)=>{
-      setShowWithdrawn(e.currentTarget.checked)
-      }}
-    checked={showWithdrawn}
-  /></div>) : null}
+    <div style={{ padding: '8px' }}>
+      {enrollmentTableData.length > 0 ? (
+        <div>
+          Show Withdrawn{' '}
+          <Checkbox
+            onClick={(e) => {
+              setShowWithdrawn(!showWithdrawn);
+            }}
+            checked={showWithdrawn}
+          />
+        </div>
+      ) : null}
       {enrollmentTable}
       {enrollmentTableData.length === 0 ? (
         <p>No Students are currently enrolled in the course</p>
