@@ -18,27 +18,26 @@ import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedIt
 //     contentIdsToDoenetMLs
 // })
 
-var options = [];
-options.push(<option value="Keagan">Keagan</option>);
-options.push(<option value="Keagan">Keagan</option>);
-options.push(<option value="Keagan">Keagan</option>);
-options.push(<option value="Keagan">Keagan</option>);
-options.push(<option value="Keagan">Keagan</option>);
-options.push(<option value="Keagan">Keagan</option>);
-options.push(<option value="Keagan">Keagan</option>);
-options.push(<option value="Keagan">Keagan</option>);
-options.push(<option value="Keagan">Keagan</option>);
-
-
 ReactDOM.render(
   <RelatedItems 
-    width="menu" 
+    width="100px" 
     size="8"
-    option={options}
+    options={
+      [
+        <option value='Keagan'>Keagan</option>,
+        <option value='Keagan'>Keagan</option>,
+        <option value='Keagan'>Keagan</option>
+      ]
+    }
+    onChange={(data) => console.log(data)}
+    onBlur={(e) => console.log(e.target.value)}
+    disabled
   >
   </RelatedItems>,
   document.getElementById('root'),
 );
+
+options.push(<option value='Keagan'>Keagan</option>);
 
 
 // const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"

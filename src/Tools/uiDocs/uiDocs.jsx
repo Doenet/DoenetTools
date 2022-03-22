@@ -800,16 +800,34 @@ export default function attempt() {
       name: 'RelatedItems',
       id: 'relateditems',
       code: RelatedItems,
-      codePreview: '<RelatedItemsf/>',
+      codePreview: '<RelatedItems/>',
       req_props: null,
       req_children: null,
-      use: 'Currently used to track version history.',
+      use: 'Currently used to track version history. The styling on this component could be improved in the future by making <option> a part of RelatedItems.',
       props: [
+        {
+          name: 'Options',
+          propPreview: "<RelatedItems options={[<option value='apple'>apple</option>, <option value='pear'>pear</option>, <option value='banana'>banana</option>]} />",
+          propCode: { options: [<option value='apple'>apple</option>, <option value='pear'>pear</option>, <option value='banana'>banana</option>] },
+          description: 'Adds options to the select component',
+        },
         {
           name: 'Width - Menu Panel',
           propPreview: '<RelatedItems width="menu" />',
           propCode: { width: 'menu' },
           description: 'Sets width to fill menu panel width',
+        },
+        {
+          name: 'Width',
+          propPreview: '<RelatedItems width="100px" />',
+          propCode: { width: '100px' },
+          description: 'Sets width to custom amount',
+        },
+        {
+          name: 'Size',
+          propPreview: '<RelatedItems size="8" />',
+          propCode: { size: '8' },
+          description: 'Sets size (height) to custom amount',
         },
         {
           name: 'Label',
@@ -839,7 +857,7 @@ export default function attempt() {
           name: 'onClick',
           propPreview: '<RelatedItems onClick={() => console.log("clicked")} />',
           propCode: {onClick: () => console.log("clicked")},
-          description: 'Function called when form button is clicked'
+          description: 'Function called when component is clicked'
         },
         {
           name: 'onBlur',

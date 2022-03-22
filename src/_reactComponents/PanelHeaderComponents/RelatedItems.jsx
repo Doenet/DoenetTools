@@ -10,10 +10,22 @@ const Container = styled.div `
 
 const Select = styled.select `
     width: ${props => props.width === "menu" ? "230px" : props.width};
-    border: ${props => props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)"};
+    /* background-color: var(--lightBlue); */
+    border: ${props => props.alert ? "2px solid var(--mainRed)" : props.disabled ? "2px solid var(--mainGray)" : "var(--mainBorder)"};
     border-radius: var(--mainBorderRadius);
     size: ${props => props.size};
     overflow: auto;
+    cursor: ${props => props.disabled ? "not-allowed" : "auto"};
+`;
+
+const Option = styled.option `
+    key: ${props => props.key};
+    value: ${props => props.value};
+    selected: ${props => props.selected};
+
+    &:focus {
+        background-color: var(--lightBlue);
+    }
 `;
 
 const Label = styled.p `
@@ -26,10 +38,10 @@ const Label = styled.p `
 export default function RelatedItems(props) {
     const labelVisible = props.label ? 'static' : 'none';
     const width = props.width ? props.width : '200px';
-    const size = props.size ? props.size : 2;
+    const size = props.size ? props.size : 4;
     const ariaLabel = props.ariaLabel ? props.ariaLabel : null;
     const alert = props.alert ? props.alert : null;
-
+    const disabled = props.disabled ? props.disabled : null;
 
     var align = 'flex';
     var label = '';
@@ -73,6 +85,7 @@ export default function RelatedItems(props) {
                 onKeyDown={(e) => { handleKeyDown(e) }}
                 aria-label={ariaLabel}
                 alert={alert}
+                disabled={disabled}
             >
                 {options}
             </Select>
