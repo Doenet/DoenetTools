@@ -76,9 +76,9 @@ doubleQuoteAttributeValue { "\"" attributeContentDoubleQuote* "\"" }
 
   AttributeName { identifier }
 
-  attributeContentSingleQuote { ![' \t\r\n]  ![']* }
+  attributeContentSingleQuote { ![']+ }
 
-  attributeContentDoubleQuote { ![" \t\r\n]  !["]* }
+  attributeContentDoubleQuote { !["]+ }
 
   Is { "=" }
 
