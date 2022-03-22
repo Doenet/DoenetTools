@@ -1,6 +1,7 @@
 describe('Curve Tag Bezier Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

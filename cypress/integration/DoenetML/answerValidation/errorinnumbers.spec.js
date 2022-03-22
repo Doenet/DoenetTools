@@ -11,6 +11,7 @@ function cesc(s) {
 describe('Allow error in numbers validation tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

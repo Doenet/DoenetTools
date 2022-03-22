@@ -1,6 +1,7 @@
 describe('Graph Reference Test 2', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })

@@ -1,6 +1,7 @@
 describe('Function answer validation tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

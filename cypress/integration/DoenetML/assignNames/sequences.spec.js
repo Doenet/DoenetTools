@@ -12,6 +12,7 @@ function cesc(s) {
 describe('sequence and map assignName Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

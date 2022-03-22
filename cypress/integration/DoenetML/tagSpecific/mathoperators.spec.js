@@ -14,6 +14,7 @@ function cesc(s) {
 describe('Math Operator Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

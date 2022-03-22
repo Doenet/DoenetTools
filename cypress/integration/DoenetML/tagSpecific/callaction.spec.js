@@ -11,6 +11,7 @@ function cesc(s) {
 describe('CallAction Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
 

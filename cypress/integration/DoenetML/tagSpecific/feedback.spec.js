@@ -11,6 +11,7 @@ function cesc(s) {
 describe('Feedback Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

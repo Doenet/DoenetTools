@@ -12,6 +12,7 @@ function cesc(s) {
 describe('Endpoint Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

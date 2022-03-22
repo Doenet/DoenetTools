@@ -3,6 +3,7 @@ import { numberToLetters } from "../../../../src/Core/utils/sequence";
 describe('Specifying single variant document tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

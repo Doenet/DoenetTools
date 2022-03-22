@@ -68,6 +68,7 @@ async function testLineSegmentCopiedTwiceWithEndpoints({ x1, y1, x2, y2,
 describe('LineSegment Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

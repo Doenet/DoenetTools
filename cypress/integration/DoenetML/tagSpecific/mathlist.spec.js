@@ -11,6 +11,7 @@ function cesc(s) {
 describe('MathList Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

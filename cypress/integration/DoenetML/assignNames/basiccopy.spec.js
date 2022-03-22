@@ -12,6 +12,7 @@ function cesc(s) {
 describe('Basic copy assignName Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

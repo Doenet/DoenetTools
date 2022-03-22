@@ -20,6 +20,7 @@ function nInDOM(n) {
 describe('Vector Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })

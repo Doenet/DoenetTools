@@ -12,6 +12,7 @@ function cesc(s) {
 describe('Specifying subvariants tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

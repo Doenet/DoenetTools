@@ -70,6 +70,7 @@ async function testPolygonCopiedTwice({ vertices,
 describe('Polygon Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })

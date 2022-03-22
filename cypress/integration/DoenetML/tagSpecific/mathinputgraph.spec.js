@@ -11,6 +11,7 @@ function cesc(s) {
 describe('MathInput Graph Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

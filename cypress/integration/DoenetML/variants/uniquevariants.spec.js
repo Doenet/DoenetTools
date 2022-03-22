@@ -1,7 +1,8 @@
 describe('Specifying unique variant tests', function () {
 
   beforeEach(() => {
-    cy.visit.skip('/test')
+    cy.clearIndexedDB();
+    cy.visit('/cypressTest')
   })
 
   it.skip('single select', () => {

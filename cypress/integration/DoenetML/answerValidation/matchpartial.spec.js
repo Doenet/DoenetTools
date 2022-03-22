@@ -12,6 +12,7 @@ function cesc(s) {
 describe('Match partial validation tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

@@ -100,6 +100,7 @@ async function testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope,
 describe('Line Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

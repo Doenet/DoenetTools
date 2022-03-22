@@ -70,6 +70,7 @@ async function testPolylineCopiedTwice({ vertices,
 describe('Polyline Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })

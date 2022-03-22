@@ -3,7 +3,7 @@ import me from 'math-expressions';
 describe('Evaluate Tag Tests', function () {
 
   beforeEach(() => {
-
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })

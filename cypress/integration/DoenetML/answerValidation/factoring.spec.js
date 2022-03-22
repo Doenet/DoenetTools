@@ -1,6 +1,7 @@
 describe('factor polynomial tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

@@ -11,6 +11,7 @@ function cesc(s) {
 describe('Symbolic equality tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

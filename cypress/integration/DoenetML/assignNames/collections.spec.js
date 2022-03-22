@@ -13,6 +13,7 @@ function cesc(s) {
 describe('Collection assignName Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 

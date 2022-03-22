@@ -12,6 +12,7 @@ function cesc(s) {
 describe('Equilibriumcurve Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
