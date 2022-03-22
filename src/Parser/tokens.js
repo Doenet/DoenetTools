@@ -59,7 +59,7 @@ export const startTag = new ExternalTokenizer((input, stack) => {
     input.advance()
     let name = tagNameAfter(input, 0)
     if (!name) return input.acceptToken(incompleteStartCloseTag)
-    if (stack.context && name == stack.context.name) return input.acceptToken(StartCloseTag)
+    if (stack.context && name.toLowerCase() == stack.context.name.toLowerCase()) return input.acceptToken(StartCloseTag)
     for (let cx = stack.context; cx; cx = cx.parent) if (cx.name == name) return input.acceptToken(MissingCloseTag, -2)
     input.acceptToken(mismatchedStartCloseTag)
   } else if (input.next != 33 /* '!' */ && input.next != 63 /* '?' */ && !isSpace(input.next)) {
