@@ -70,14 +70,14 @@ export default class RenderDoenetML extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.codeSourceComponentName){
-          return { setValue: { codeSource: dependencyValues.codeSourceComponentName } }; 
-        }else if(dependencyValues.parentCodeSource){
-          return { setValue: { codeSource: dependencyValues.parentCodeSource } }; 
-        }else{
-          return { setValue: { codeSource: null } }; 
+        if (dependencyValues.codeSourceComponentName) {
+          return { setValue: { codeSource: dependencyValues.codeSourceComponentName } };
+        } else if (dependencyValues.parentCodeSource) {
+          return { setValue: { codeSource: dependencyValues.parentCodeSource } };
+        } else {
+          return { setValue: { codeSource: null } };
         }
-     
+
       },
     }
 
@@ -128,14 +128,14 @@ export default class RenderDoenetML extends CompositeComponent {
       definition() {
         return { useEssentialOrDefaultValue: { triggerUpdates: {} } };
       },
-      inverseDefinition({desiredStateVariableValues}) {
+      inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
             setEssentialValue: "triggerUpdates",
             value: desiredStateVariableValues.triggerUpdates,
           }]
-         };
+        };
       }
     };
 
@@ -297,16 +297,17 @@ export default class RenderDoenetML extends CompositeComponent {
 
   }
 
-  async updateComponents(){
+  async updateComponents({ actionId }) {
     let updateInstructions = [{
       updateType: "updateValue",
       componentName: this.componentName,
-      stateVariable:"triggerUpdates",
+      stateVariable: "triggerUpdates",
       value: true,
     }];
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       // event: {
       //   verb: "selected",
       //   object: {

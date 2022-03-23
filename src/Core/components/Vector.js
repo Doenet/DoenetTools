@@ -1695,7 +1695,7 @@ export default class Vector extends GraphicalComponent {
     componentType: "coords",
   }];
 
-  async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation }) {
+  async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation, actionId }) {
 
     let updateInstructions = [];
 
@@ -1806,11 +1806,13 @@ export default class Vector extends GraphicalComponent {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         transient,
-        skippable
+        skippable,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
+        actionId,
         event: {
           verb: "interacted",
           object: {

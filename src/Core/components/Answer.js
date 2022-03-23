@@ -1367,7 +1367,7 @@ export default class Answer extends InlineComponent {
   };
 
 
-  async submitAnswer() {
+  async submitAnswer({actionId}) {
 
     let numberOfAttemptsLeft = await this.stateValues.numberOfAttemptsLeft;
     if (numberOfAttemptsLeft < 1) {
@@ -1498,6 +1498,7 @@ export default class Answer extends InlineComponent {
 
     await this.coreFunctions.performUpdate({
       updateInstructions: instructions,
+      actionId,
       event: {
         verb: "submitted",
         object: {

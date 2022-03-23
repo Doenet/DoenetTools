@@ -988,7 +988,6 @@ export default class Choiceinput extends Input {
         componentName: this.componentName,
         stateVariable: "allSelectedIndices",
         value: selectedIndices,
-        sourceInformation: { actionId }
       }];
 
       let choiceTexts = await this.stateValues.choiceTexts;
@@ -1015,6 +1014,7 @@ export default class Choiceinput extends Input {
 
       await this.coreFunctions.performUpdate({
         updateInstructions,
+        actionId,
         event,
       });
 

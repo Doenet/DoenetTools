@@ -1387,7 +1387,7 @@ export default class Line extends GraphicalComponent {
 
   static adapters = ["equation"];
 
-  async moveLine({ point1coords, point2coords, transient }) {
+  async moveLine({ point1coords, point2coords, transient, actionId }) {
 
     let desiredPoints = {
       "0,0": me.fromAst(point1coords[0]),
@@ -1407,6 +1407,7 @@ export default class Line extends GraphicalComponent {
           value: desiredPoints
         }],
         transient: true,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -1416,6 +1417,7 @@ export default class Line extends GraphicalComponent {
           stateVariable: "points",
           value: desiredPoints
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {

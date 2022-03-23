@@ -653,7 +653,7 @@ export default class Graph extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  async changeAxisLimits({ xmin, xmax, ymin, ymax }) {
+  async changeAxisLimits({ xmin, xmax, ymin, ymax, actionId }) {
 
     let updateInstructions = [];
 
@@ -692,6 +692,7 @@ export default class Graph extends BlockComponent {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -706,7 +707,7 @@ export default class Graph extends BlockComponent {
 
   }
 
-  async addChildren({ serializedComponents }) {
+  async addChildren({ serializedComponents, actionId }) {
 
     if (serializedComponents && serializedComponents.length > 0) {
 
@@ -730,11 +731,12 @@ export default class Graph extends BlockComponent {
           stateVariable: "nChildrenAdded",
           value: await this.stateValues.nChildrenAdded + processResult.serializedComponents.length,
         }],
+        actionId,
       });
     }
   }
 
-  async deleteChildren({ number }) {
+  async deleteChildren({ number, actionId }) {
 
     let numberToDelete = Math.min(number, await this.stateValues.nChildrenAdded);
 
@@ -754,6 +756,7 @@ export default class Graph extends BlockComponent {
           stateVariable: "nChildrenAdded",
           value: await this.stateValues.nChildrenAdded - numberToDelete,
         }],
+        actionId
       });
 
     }

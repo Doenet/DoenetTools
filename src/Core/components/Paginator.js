@@ -260,7 +260,7 @@ export class Paginator extends Template {
 
   }
 
-  async setPage({ number }) {
+  async setPage({ number, actionId }) {
 
     if (await this.stateValues.submitAllOnPageChange && !this.flags.readOnly) {
       await this.coreFunctions.performAction({
@@ -286,6 +286,7 @@ export class Paginator extends Template {
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "selected",
         object: {

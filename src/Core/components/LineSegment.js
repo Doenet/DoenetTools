@@ -413,7 +413,7 @@ export default class LineSegment extends GraphicalComponent {
   }
 
 
-  async moveLineSegment({ point1coords, point2coords, transient }) {
+  async moveLineSegment({ point1coords, point2coords, transient, actionId }) {
 
     let newComponents = {};
 
@@ -436,6 +436,7 @@ export default class LineSegment extends GraphicalComponent {
           value: newComponents
         }],
         transient: true,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -445,6 +446,7 @@ export default class LineSegment extends GraphicalComponent {
           stateVariable: "endpoints",
           value: newComponents
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {

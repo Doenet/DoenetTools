@@ -1039,7 +1039,7 @@ export default class Point extends GraphicalComponent {
 
   static adapters = ["coords"];
 
-  async movePoint({ x, y, z, transient }) {
+  async movePoint({ x, y, z, transient, actionId }) {
     let components = {};
     if (x !== undefined) {
       components[0] = me.fromAst(x);
@@ -1058,7 +1058,8 @@ export default class Point extends GraphicalComponent {
           stateVariable: "xs",
           value: components,
         }],
-        transient
+        transient,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -1068,6 +1069,7 @@ export default class Point extends GraphicalComponent {
           stateVariable: "xs",
           value: components,
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {

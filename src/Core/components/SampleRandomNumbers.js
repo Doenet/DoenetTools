@@ -588,7 +588,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
   }
 
 
-  async resample() {
+  async resample({ actionId }) {
 
     let sampledValues = sampleFromRandomNumbers({
       type: await this.stateValues.type,
@@ -609,7 +609,8 @@ export default class SampleRandomNumbers extends CompositeComponent {
         componentName: this.componentName,
         stateVariable: "sampledValues",
         value: sampledValues,
-      }]
+      }],
+      actionId
     });
 
   }

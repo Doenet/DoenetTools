@@ -388,7 +388,7 @@ export default class Core {
         rendererStatesToUpdate: results.rendererStatesToUpdate,
       }]
 
-      this.postUpdateRenderers(updateInstructions, true)
+      this.postUpdateRenderers({ updateInstructions }, true)
 
       await this.processStateVariableTriggers();
 
@@ -429,7 +429,7 @@ export default class Core {
   }
 
 
-  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, recreatedComponents = {} }) {
+  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, actionId, recreatedComponents = {} }) {
 
     let deletedRenderers = [];
 
@@ -594,7 +594,7 @@ export default class Core {
       updateInstructions.splice(0, 0, instruction);
     }
 
-    this.postUpdateRenderers(updateInstructions)
+    this.postUpdateRenderers({ updateInstructions, actionId })
 
   }
 
@@ -7797,7 +7797,7 @@ export default class Core {
 
   }
 
-  async performUpdate({ updateInstructions, transient = false, event }) {
+  async performUpdate({ updateInstructions, actionId, event }) {
 
     let newStateVariableValues = {};
     let newStateVariableValuesProcessed = [];
@@ -7877,7 +7877,8 @@ export default class Core {
     await this.updateRendererInstructions({
       componentNamesToUpdate,
       sourceOfUpdate: { sourceInformation, local: true },
-      recreatedComponents: this.updateInfo.recreatedComponents
+      recreatedComponents: this.updateInfo.recreatedComponents,
+      actionId,
     });
 
     await this.processStateVariableTriggers();

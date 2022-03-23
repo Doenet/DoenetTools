@@ -2968,7 +2968,7 @@ export default class Curve extends GraphicalComponent {
 
 
 
-  async moveControlVector({ controlVector, controlVectorInds, transient }) {
+  async moveControlVector({ controlVector, controlVectorInds, transient, actionId, }) {
 
     let desiredVector = {
       [controlVectorInds + ",0"]: me.fromAst(controlVector[0]),
@@ -2984,7 +2984,8 @@ export default class Curve extends GraphicalComponent {
           value: desiredVector,
           sourceInformation: { controlVectorMoved: controlVectorInds }
         }],
-        transient
+        transient,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -2995,6 +2996,7 @@ export default class Curve extends GraphicalComponent {
           value: desiredVector,
           sourceInformation: { controlVectorMoved: controlVectorInds }
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -3009,7 +3011,7 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  async moveThroughPoint({ throughPoint, throughPointInd, transient }) {
+  async moveThroughPoint({ throughPoint, throughPointInd, transient, actionId, }) {
 
     let desiredPoint = {
       [throughPointInd + ",0"]: me.fromAst(throughPoint[0]),
@@ -3025,7 +3027,8 @@ export default class Curve extends GraphicalComponent {
           value: desiredPoint,
           sourceInformation: { throughPointMoved: throughPointInd }
         }],
-        transient
+        transient,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -3036,6 +3039,7 @@ export default class Curve extends GraphicalComponent {
           value: desiredPoint,
           sourceInformation: { throughPointMoved: throughPointInd }
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -3050,14 +3054,15 @@ export default class Curve extends GraphicalComponent {
 
   }
 
-  async changeVectorControlDirection({ direction, throughPointInd }) {
+  async changeVectorControlDirection({ direction, throughPointInd, actionId, }) {
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "vectorControlDirection",
         value: { [throughPointInd]: direction },
-      }]
+      }],
+      actionId,
     });
   }
 

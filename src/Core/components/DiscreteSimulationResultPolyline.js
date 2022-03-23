@@ -415,7 +415,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
   }
 
 
-  async movePolyline({ pointCoords, transient, sourceInformation }) {
+  async movePolyline({ pointCoords, transient, sourceInformation, actionId, }) {
 
     let vertexComponents = {};
     for (let ind in pointCoords) {
@@ -433,6 +433,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           sourceInformation
         }],
         transient: true,
+        actionId,
       });
     } else {
 
@@ -444,6 +445,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           value: vertexComponents,
           sourceInformation
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {

@@ -1320,7 +1320,7 @@ export default class Ray extends GraphicalComponent {
   }
 
 
-  async moveRay({ endpointcoords, throughcoords, transient, skippable, sourceInformation }) {
+  async moveRay({ endpointcoords, throughcoords, transient, skippable, sourceInformation, actionId }) {
 
     let updateInstructions = [];
 
@@ -1430,11 +1430,13 @@ export default class Ray extends GraphicalComponent {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         transient,
-        skippable
+        skippable,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
+        actionId,
         event: {
           verb: "interacted",
           object: {

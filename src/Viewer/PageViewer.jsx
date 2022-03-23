@@ -28,7 +28,7 @@ const rendererUpdatesToIgnore = atomFamily({
 export default function PageViewer(props) {
   const toast = useToast();
   const updateRendererSVsWithRecoil = useRecoilCallback(({ snapshot, set }) => async ({
-    coreId, componentName, stateValues, childrenInstructions, sourceOfUpdate, baseStateVariable
+    coreId, componentName, stateValues, childrenInstructions, sourceOfUpdate, baseStateVariable, actionId
   }) => {
 
     let ignoreUpdate = false;
@@ -37,12 +37,10 @@ export default function PageViewer(props) {
 
     if (baseStateVariable) {
 
-      let sourceActionId = sourceOfUpdate?.sourceInformation?.[componentName]?.actionId;
-
       let updatesToIgnore = snapshot.getLoadable(rendererUpdatesToIgnore(rendererName)).contents;
 
       if (Object.keys(updatesToIgnore).length > 0) {
-        let valueFromRenderer = updatesToIgnore[sourceActionId];
+        let valueFromRenderer = updatesToIgnore[actionId];
         let valueFromCore = stateValues[baseStateVariable];
         if (valueFromRenderer === valueFromCore
           || (
@@ -56,7 +54,7 @@ export default function PageViewer(props) {
           ignoreUpdate = true;
           set(rendererUpdatesToIgnore(rendererName), was => {
             let newUpdatesToIgnore = { ...was };
-            delete newUpdatesToIgnore[sourceActionId];
+            delete newUpdatesToIgnore[actionId];
             return newUpdatesToIgnore;
           })
 
@@ -133,6 +131,8 @@ export default function PageViewer(props) {
   const preventMoreAnimations = useRef(false);
   const animationInfo = useRef({});
 
+  const resolveActionPromises = useRef({});
+
   useEffect(() => {
 
     coreWorker.current.onmessage = function (e) {
@@ -194,8 +194,8 @@ export default function PageViewer(props) {
 
       }
 
-      window["callAction" + pageId] = function ({ actionName, componentName, args }) {
-        callAction({
+      window["callAction" + pageId] = async function ({ actionName, componentName, args }) {
+        await callAction({
           action: { actionName, componentName },
           args
         })
@@ -218,19 +218,20 @@ export default function PageViewer(props) {
   }, []);
 
 
-  function callAction({ action, args, baseVariableValue, componentName, rendererType }) {
+  async function callAction({ action, args, baseVariableValue, componentName, rendererType }) {
 
     if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore) {
+      let actionId = nanoid();
+      args = { ...args };
+      args.actionId = actionId;
+
       if (baseVariableValue !== undefined && componentName) {
-        let actionId = nanoid();
         updateRendererUpdatesToIgnore({
           coreId: coreId.current,
           componentName,
           baseVariableValue,
           actionId
         })
-        args = { ...args };
-        args.actionId = actionId;
       }
 
       let actionArgs = {
@@ -248,6 +249,11 @@ export default function PageViewer(props) {
         actionsBeforeCoreCreated.current.push(actionArgs);
         // console.log('actions before core created', actionsBeforeCoreCreated.current)
       }
+
+      return new Promise((resolve, reject) => {
+        resolveActionPromises.current[actionId] = resolve;
+      })
+
     }
   }
 
@@ -308,7 +314,7 @@ export default function PageViewer(props) {
   }
 
   //offscreen then postpone that one
-  function updateRenderers(updateInstructions) {
+  function updateRenderers({ updateInstructions, actionId }) {
 
     for (let instruction of updateInstructions) {
 
@@ -322,14 +328,19 @@ export default function PageViewer(props) {
             stateValues,
             childrenInstructions,
             sourceOfUpdate: instruction.sourceOfUpdate,
-            baseStateVariable: rendererClasses.current[rendererType]?.baseStateVariable
+            baseStateVariable: rendererClasses.current[rendererType]?.baseStateVariable,
+            actionId,
           })
 
         }
       }
     }
 
-
+    if (actionId) {
+      console.log(`resolving actionId ${actionId}`);
+      resolveActionPromises.current[actionId]?.();
+      delete resolveActionPromises.current[actionId]
+    }
   }
 
 
