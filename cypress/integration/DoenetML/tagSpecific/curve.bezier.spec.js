@@ -5,16 +5,16 @@ describe('Curve Tag Bezier Tests', function () {
     cy.visit('/cypressTest')
   })
 
-  async function checkBezierCurve({ curve, throughPoints, directions, controlVectors }) {
+  function checkBezierCurve({ curve, throughPoints, directions, controlVectors }) {
     if (throughPoints) {
       for (let [ind, pt] of throughPoints.entries()) {
-        expect((await curve.stateValues.throughPoints)[ind].map(x => x.tree)).eqls(pt);
+        expect(curve.stateValues.throughPoints[ind]).eqls(pt);
       }
     }
 
     if (directions) {
       for (let [ind, dir] of directions.entries()) {
-        expect((await curve.stateValues.vectorControlDirections)[ind]).eq(dir);
+        expect(curve.stateValues.vectorControlDirections[ind]).eq(dir);
       }
     }
 
@@ -23,16 +23,16 @@ describe('Curve Tag Bezier Tests', function () {
         if (vecs) {
           let pt = throughPoints[ind];
           if (vecs[0]) {
-            expect((await curve.stateValues.controlVectors)[ind][0].map(x => x.tree)).eqls(vecs[0]);
+            expect(curve.stateValues.controlVectors[ind][0]).eqls(vecs[0]);
             if (pt) {
-              expect((await curve.stateValues.controlPoints)[ind][0].map(x => x.tree)).eqls(
+              expect(curve.stateValues.controlPoints[ind][0]).eqls(
                 [pt[0] + vecs[0][0], pt[1] + vecs[0][1]]);
             }
           }
           if (vecs[1]) {
-            expect((await curve.stateValues.controlVectors)[ind][1].map(x => x.tree)).eqls(vecs[1]);
+            expect(curve.stateValues.controlVectors[ind][1]).eqls(vecs[1]);
             if (pt) {
-              expect((await curve.stateValues.controlPoints)[ind][1].map(x => x.tree)).eqls(
+              expect(curve.stateValues.controlPoints[ind][1]).eqls(
                 [pt[0] + vecs[1][0], pt[1] + vecs[1][1]]);
             }
           }
@@ -120,17 +120,17 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -142,58 +142,69 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir1`).should('have.value', '1');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: [2, 1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: [2, 1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
       })
 
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0][1][0].tree).not.eq(2);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0][1][1].tree).not.eq(1);
-      expect((stateVariables['/g2/curve'].stateValues.controlVectors)[0][1][0].tree).not.eq(2);
-      expect((stateVariables['/g2/curve'].stateValues.controlVectors)[0][1][1].tree).not.eq(1);
-      expect((stateVariables['/g3/curve'].stateValues.controlVectors)[0][1][0].tree).not.eq(2);
-      expect((stateVariables['/g3/curve'].stateValues.controlVectors)[0][1][1].tree).not.eq(1);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0][1][0]).not.eq(2);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0][1][1]).not.eq(1);
+      expect((stateVariables['/g2/curve'].stateValues.controlVectors)[0][1][0]).not.eq(2);
+      expect((stateVariables['/g2/curve'].stateValues.controlVectors)[0][1][1]).not.eq(1);
+      expect((stateVariables['/g3/curve'].stateValues.controlVectors)[0][1][0]).not.eq(2);
+      expect((stateVariables['/g3/curve'].stateValues.controlVectors)[0][1][1]).not.eq(1);
     });
 
     cy.log('move through point')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: [-3, -4]
+
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 0,
+          throughPoint: [-3, -4]
+        }
       })
 
       throughPoints[0] = [-3, -4]
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+      console.log(stateVariables);
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -206,40 +217,45 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir2`).should('have.value', '1');
 
     cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: [4, -2]
+        }
+      })
+
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: [4, -2]
-      })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
       })
 
-      let v00 = (stateVariables['/_curve1'].stateValues.controlVectors)[1][0][0].tree;
-      let v01 = (stateVariables['/_curve1'].stateValues.controlVectors)[1][0][1].tree;
+      let v00 = (stateVariables['/_curve1'].stateValues.controlVectors)[1][0][0];
+      let v01 = (stateVariables['/_curve1'].stateValues.controlVectors)[1][0][1];
       expect(v00).not.eq(4);
       expect(v01).not.eq(-2);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1][1][0].tree).eq(-v00);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1][1][1].tree).eq(-v01);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1][1][0]).eq(-v00);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1][1][1]).eq(-v01);
 
     });
   })
@@ -325,17 +341,17 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -351,29 +367,33 @@ describe('Curve Tag Bezier Tests', function () {
     let controlVectors = [[[-2, -1], [2, 1]]]
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[0] = "symmetric";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -384,28 +404,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = [-3, -4]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -419,29 +444,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir2a`).should('have.value', '2');
     cy.get(`#\\/dir2b`).should('have.value', '2');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[4, -2], [-4, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[1] = "symmetric";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -457,33 +487,42 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '3');
     cy.get(`#\\/dir3b`).should('have.value', '3');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [[1, 0], [0, -2]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "both";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -499,29 +538,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir2a`).should('have.value', '4');
     cy.get(`#\\/dir2b`).should('have.value', '4');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[-4, -5]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[1] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -537,29 +581,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '5');
     cy.get(`#\\/dir3b`).should('have.value', '5');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [null, [6, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -571,38 +620,51 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[1] = [7, -6]
       throughPoints[2] = [3, 9]
       throughPoints[3] = [-4, 8]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -699,19 +761,19 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -721,28 +783,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = [[-2, -1], [2, 1]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -753,28 +820,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = [-3, -4]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -784,27 +856,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[4, -2], [-4, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -820,33 +897,42 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '3');
     cy.get(`#\\/dir3b`).should('have.value', '3');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [[1, 0], [0, -2]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "both";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -862,29 +948,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir2a`).should('have.value', '4');
     cy.get(`#\\/dir2b`).should('have.value', '4');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[-4, -5]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[1] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -900,29 +991,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '5');
     cy.get(`#\\/dir3b`).should('have.value', '5');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [null, [6, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -943,19 +1039,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[3] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -978,19 +1074,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[0] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1001,38 +1097,51 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[1] = [7, -6]
       throughPoints[2] = [3, 9]
       throughPoints[3] = [-4, 8]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1129,19 +1238,19 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1155,24 +1264,28 @@ describe('Curve Tag Bezier Tests', function () {
 
       controlVectors[0] = [[-2, -1], [2, 1]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1187,24 +1300,28 @@ describe('Curve Tag Bezier Tests', function () {
 
       throughPoints[0] = [-3, -4]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1217,29 +1334,37 @@ describe('Curve Tag Bezier Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[4, -2], [3, 5]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors[1][1]
+        }
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1258,26 +1383,30 @@ describe('Curve Tag Bezier Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [[1, 0], [-1, -0]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
 
       directions[2] = "symmetric";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1296,26 +1425,30 @@ describe('Curve Tag Bezier Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[-4, -5]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
 
       directions[1] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1334,26 +1467,30 @@ describe('Curve Tag Bezier Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [null, [6, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
 
       directions[2] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1375,19 +1512,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[3] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1410,19 +1547,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[0] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1440,32 +1577,44 @@ describe('Curve Tag Bezier Tests', function () {
       throughPoints[2] = [3, 9]
       throughPoints[3] = [-4, 8]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1477,6 +1626,9 @@ describe('Curve Tag Bezier Tests', function () {
   })
 
 
+  // Not sure if this test is still useful
+  // now that we don't have usedDefault sent from the core worker
+  // Is there a reason to send that information?
   it('check use default bug is fixed', () => {
 
     cy.window().then(async (win) => {
@@ -1502,10 +1654,10 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_controlvectors1'].stateValues.direction).eq('symmetric')
-      expect(stateVariables['/_controlvectors1'].state.direction.usedDefault).be.true
+      // expect(stateVariables['/_controlvectors1'].state.direction.usedDefault).be.true
 
       expect(stateVariables['/cv1a'].stateValues.direction).eq('symmetric')
-      expect(stateVariables['/cv1a'].state.direction.usedDefault).be.true
+      // expect(stateVariables['/cv1a'].state.direction.usedDefault).be.true
     })
 
 
@@ -1517,10 +1669,10 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_controlvectors1'].stateValues.direction).eq('both')
-      expect(stateVariables['/_controlvectors1'].state.direction.usedDefault).not.be.true
+      // expect(stateVariables['/_controlvectors1'].state.direction.usedDefault).not.be.true
 
       expect(stateVariables['/cv1a'].stateValues.direction).eq('both')
-      expect(stateVariables['/cv1a'].state.direction.usedDefault).not.be.true
+      // expect(stateVariables['/cv1a'].state.direction.usedDefault).not.be.true
     })
 
 
@@ -1547,10 +1699,10 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_controlvectors1'].stateValues.direction).eq('symmetric')
-      expect(stateVariables['/_controlvectors1'].state.direction.usedDefault).be.true
+      // expect(stateVariables['/_controlvectors1'].state.direction.usedDefault).be.true
 
       expect(stateVariables['/cv1a'].stateValues.direction).eq('symmetric')
-      expect(stateVariables['/cv1a'].state.direction.usedDefault).be.true
+      // expect(stateVariables['/cv1a'].state.direction.usedDefault).be.true
     })
 
 
@@ -1562,10 +1714,10 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_controlvectors1'].stateValues.direction).eq('none')
-      expect(stateVariables['/_controlvectors1'].state.direction.usedDefault).not.be.true
+      // expect(stateVariables['/_controlvectors1'].state.direction.usedDefault).not.be.true
 
       expect(stateVariables['/cv1a'].stateValues.direction).eq('none')
-      expect(stateVariables['/cv1a'].state.direction.usedDefault).not.be.true
+      // expect(stateVariables['/cv1a'].state.direction.usedDefault).not.be.true
     })
 
 
@@ -1662,19 +1814,19 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1684,28 +1836,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = [[-2, -1], [2, 1]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1716,28 +1873,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = [-3, -4]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1747,27 +1909,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[4, -2], [-4, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1783,33 +1950,42 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '3');
     cy.get(`#\\/dir3b`).should('have.value', '3');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [[1, 0], [0, -2]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "both";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1825,29 +2001,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir2a`).should('have.value', '4');
     cy.get(`#\\/dir2b`).should('have.value', '4');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[-4, -5]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[1] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1863,29 +2044,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '5');
     cy.get(`#\\/dir3b`).should('have.value', '5');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [null, [6, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1906,19 +2092,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[3] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1941,19 +2127,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[0] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -1964,38 +2150,51 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[1] = [7, -6]
       throughPoints[2] = [3, 9]
       throughPoints[3] = [-4, 8]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2097,19 +2296,19 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2119,28 +2318,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = [[-2, -1], [2, 1]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2151,28 +2355,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = [-3, -4]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2182,27 +2391,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[4, -2], [-4, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2218,33 +2432,42 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '3');
     cy.get(`#\\/dir3b`).should('have.value', '3');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [[1, 0], [0, -2]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "both";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2260,29 +2483,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir2a`).should('have.value', '4');
     cy.get(`#\\/dir2b`).should('have.value', '4');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[-4, -5]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[1] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2298,29 +2526,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '5');
     cy.get(`#\\/dir3b`).should('have.value', '5');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [null, [6, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2341,19 +2574,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[3] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2376,19 +2609,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[0] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2399,38 +2632,51 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[1] = [7, -6]
       throughPoints[2] = [3, 9]
       throughPoints[3] = [-4, 8]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2532,24 +2778,24 @@ describe('Curve Tag Bezier Tests', function () {
 
       let cv2 = (stateVariables["/_curve1"].stateValues.controlVectors)[1][0];
 
-      controlVectors[1][0][0] = cv2[0].tree;
-      controlVectors[1][0][1] = cv2[1].tree;
+      controlVectors[1][0][0] = cv2[0];
+      controlVectors[1][0][1] = cv2[1];
       controlVectors[1][1][0] = -controlVectors[1][0][0];
       controlVectors[1][1][1] = -controlVectors[1][0][1];
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2559,28 +2805,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = [[-2, -1], [2, 1]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2591,28 +2842,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[3] = [-3, -4]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2622,27 +2878,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[3] = [[4, -2], [-4, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [3, 0],
-        controlVector: controlVectors[3][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [3, 0],
+          controlVector: controlVectors[3][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2658,33 +2919,42 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '3');
     cy.get(`#\\/dir3b`).should('have.value', '3');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [[1, 0], [0, -2]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "both";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2700,29 +2970,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir2a`).should('have.value', '4');
     cy.get(`#\\/dir2b`).should('have.value', '4');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[-4, -5]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[1] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2738,29 +3013,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '5');
     cy.get(`#\\/dir3b`).should('have.value', '5');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [null, [6, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2781,19 +3061,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[3] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2816,19 +3096,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[0] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2839,38 +3119,51 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[1] = [7, -6]
       throughPoints[2] = [3, 9]
       throughPoints[3] = [-4, 8]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2971,19 +3264,19 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -2993,28 +3286,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = [[-2, -1], [2, 1]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3025,28 +3323,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = [-3, -4]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3056,32 +3359,41 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vectors on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[4, -2], [3, 5]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors[1][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3097,29 +3409,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '2');
     cy.get(`#\\/dir3b`).should('have.value', '2');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [[1, 0], [-1, -0]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "symmetric";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3135,29 +3452,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir2a`).should('have.value', '4');
     cy.get(`#\\/dir2b`).should('have.value', '4');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[-4, -5]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[1] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3173,29 +3495,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '5');
     cy.get(`#\\/dir3b`).should('have.value', '5');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [null, [6, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3217,19 +3544,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[3] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3252,19 +3579,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[0] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3276,38 +3603,51 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[1] = [7, -6]
       throughPoints[2] = [3, 9]
       throughPoints[3] = [-4, 8]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3409,19 +3749,19 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3431,28 +3771,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = [[-2, -1], [2, 1]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3463,28 +3808,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = [-3, -4]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3494,32 +3844,41 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vectors on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[4, -2], [3, 5]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors[1][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3535,29 +3894,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '2');
     cy.get(`#\\/dir3b`).should('have.value', '2');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [[1, 0], [-1, -0]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "symmetric";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3573,29 +3937,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir2a`).should('have.value', '4');
     cy.get(`#\\/dir2b`).should('have.value', '4');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[-4, -5]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[1] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3611,29 +3980,34 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get(`#\\/dir3a`).should('have.value', '5');
     cy.get(`#\\/dir3b`).should('have.value', '5');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [null, [6, 2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3655,19 +4029,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[3] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3690,19 +4064,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[0] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3714,38 +4088,51 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[1] = [7, -6]
       throughPoints[2] = [3, 9]
       throughPoints[3] = [-4, 8]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3847,19 +4234,19 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3869,28 +4256,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = [[-2, -1], [2, 1]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3901,28 +4293,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = [-3, -4]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3932,27 +4329,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move previous control vector on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[4, -2]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -3963,27 +4365,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move next control vector on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [null, [8, 7]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4004,19 +4411,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[1] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4027,27 +4434,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move new next control vector on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [null, [-1, 6]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors[1][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4068,19 +4480,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[2] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4091,27 +4503,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move new previous control vector on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[2] = [[-3, -2], null]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4132,19 +4549,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[1] = "symmetric";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4155,27 +4572,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move new next symmetric vector on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[4, 9], [-4, -9]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4186,27 +4608,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move other end of new next symmetric vector on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[1] = [[6, -2], [-6, 2]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors[1][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4227,19 +4654,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[3] = "previous";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4250,27 +4677,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move new previous control vector on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[3] = [[1, -1], null]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [3, 0],
-        controlVector: controlVectors[3][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [3, 0],
+          controlVector: controlVectors[3][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4292,19 +4724,19 @@ describe('Curve Tag Bezier Tests', function () {
 
       directions[0] = "next";
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4315,27 +4747,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move new next next vector on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors[0] = [null, [8, -3]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4346,38 +4783,51 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[1] = [7, -6]
       throughPoints[2] = [3, 9]
       throughPoints[3] = [-4, 8]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4448,19 +4898,19 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4471,26 +4921,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through point on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: [1.1, 8.7]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: [1.1, 8.7]
+        }
       })
       throughPoints[1] = [1, 9];
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4501,28 +4956,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vector on curve1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = [[-2, -1], [2, 1]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4533,28 +4993,29 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move original point determining through point')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: -3.2, y: 4.9 }
       })
 
+      let stateVariables = await win.returnAllStateVariables1();
+
       throughPoints[2] = [-3, 5];
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4564,26 +5025,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: [-7.4, 1.6]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: [-7.4, 1.6]
+        }
       })
       throughPoints[0] = [-7, 2];
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4594,26 +5060,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through point on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: [-4.6, -9.3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: [-4.6, -9.3]
+        }
       })
       throughPoints[3] = [-5, -9];
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -4652,51 +5123,59 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0].tree[1]).greaterThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0].tree[2]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1].tree[1]).lessThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1].tree[2]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2].tree[1]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2].tree[2]).lessThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3].tree[1]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3].tree[2]).lessThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4].tree[1]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4].tree[2]).greaterThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5].tree[1]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5].tree[2]).greaterThan(0);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[0]).eqls([1, 2]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[1]).eqls([3, 4]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[2]).eqls([-5, 6]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[3]).eqls([2, -3]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0][1]).greaterThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0][2]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1][1]).lessThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1][2]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2][1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2][2]).lessThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3][1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3][2]).lessThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4][1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4][2]).greaterThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5][1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5][2]).greaterThan(0);
     });
 
     cy.log('move control vectors')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInd: 3,
-        controlVector: [7, -6]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInd: 3,
+          controlVector: [7, -6]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInd: 2,
-        controlVector: [-6, -5]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInd: 2,
+          controlVector: [-6, -5]
+        }
       })
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0].tree[1]).greaterThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0].tree[2]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1].tree[1]).lessThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1].tree[2]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2].tree[1]).lessThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2].tree[2]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3].tree[1]).greaterThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3].tree[2]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4].tree[1]).lessThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4].tree[2]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5].tree[1]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5].tree[2]).greaterThan(0);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[0]).eqls([1, 2]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[1]).eqls([3, 4]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[2]).eqls([-5, 6]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[3]).eqls([2, -3]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0][1]).greaterThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0][2]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1][1]).lessThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1][2]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2][1]).lessThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2][2]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3][1]).greaterThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3][2]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4][1]).lessThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4][2]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5][1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5][2]).greaterThan(0);
     });
 
   })
@@ -4729,43 +5208,51 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0].map(x => x.tree)).eqls([3, 1]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1].map(x => x.tree)).eqls([-4, 1]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2].map(x => x.tree)).eqls([1, -2]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3].map(x => x.tree)).eqls([5, -6]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4].map(x => x.tree)).eqls([-5, 6]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5].map(x => x.tree)).eqls([-2, 3]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[0]).eqls([1, 2]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[1]).eqls([3, 4]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[2]).eqls([-5, 6]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[3]).eqls([2, -3]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0]).eqls([3, 1]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1]).eqls([-4, 1]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2]).eqls([1, -2]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3]).eqls([5, -6]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4]).eqls([-5, 6]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5]).eqls([-2, 3]);
 
     });
 
     cy.log('move control vector close to angles')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInd: 3,
-        controlVector: [7, 0.2]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInd: 3,
+          controlVector: [7, 0.2]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInd: 2,
-        controlVector: [0.1, -6]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInd: 2,
+          controlVector: [0.1, -6]
+        }
       })
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0].map(x => x.tree)).eqls([3, 1]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1].map(x => x.tree)).eqls([-4, 1]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2].tree[1]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2].tree[2]).lessThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3].tree[1]).greaterThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3].tree[2]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4].tree[1]).lessThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4].tree[2]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5].map(x => x.tree)).eqls([-2, 3]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[0]).eqls([1, 2]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[1]).eqls([3, 4]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[2]).eqls([-5, 6]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[3]).eqls([2, -3]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0]).eqls([3, 1]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1]).eqls([-4, 1]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2][1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2][2]).lessThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3][1]).greaterThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3][2]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4][1]).lessThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4][2]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5]).eqls([-2, 3]);
     });
 
   })
@@ -4798,67 +5285,83 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0].map(x => x.tree)).eqls([3, 1]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1].map(x => x.tree)).eqls([-4, 1]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2].map(x => x.tree)).eqls([4, -1]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3].map(x => x.tree)).eqls([5, -6]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4].map(x => x.tree)).eqls([-5, 6]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5].map(x => x.tree)).eqls([-2, 3]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[0]).eqls([1, 2]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[1]).eqls([3, 4]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[2]).eqls([-5, 6]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[3]).eqls([2, -3]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0]).eqls([3, 1]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1]).eqls([-4, 1]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2]).eqls([4, -1]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3]).eqls([5, -6]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4]).eqls([-5, 6]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5]).eqls([-2, 3]);
 
     });
 
     cy.log('move control vectors close to angles')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInd: 3,
-        controlVector: [7, 0.125]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInd: 3,
+          controlVector: [7, 0.125]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInd: 2,
-        controlVector: [0.125, -6]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInd: 2,
+          controlVector: [0.125, -6]
+        }
       })
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0].map(x => x.tree)).eqls([3, 1]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1].tree[1]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1].tree[2]).greaterThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2].tree[1]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2].tree[2]).lessThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3].tree[1]).greaterThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3].tree[2]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4].tree[1]).lessThan(0);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4].tree[2]).closeTo(0, 1E-12);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5].map(x => x.tree)).eqls([-2, 3]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[0]).eqls([1, 2]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[1]).eqls([3, 4]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[2]).eqls([-5, 6]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[3]).eqls([2, -3]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0]).eqls([3, 1]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1][1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1][2]).greaterThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2][1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2][2]).lessThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3][1]).greaterThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3][2]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4][1]).lessThan(0);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4][2]).closeTo(0, 1E-12);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5]).eqls([-2, 3]);
     });
 
     cy.log('move control vectors opposite sides')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInd: 3,
-        controlVector: [-7, 0.125]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInd: 3,
+          controlVector: [-7, 0.125]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInd: 2,
-        controlVector: [0.125, 6]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInd: 2,
+          controlVector: [0.125, 6]
+        }
       })
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([1, 2]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([3, 4]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([-5, 6]);
-      expect(stateVariables['/_curve1'].stateValues.throughPoints[3].map(x => x.tree)).eqls([2, -3]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0].map(x => x.tree)).eqls([3, 1]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1].map(x => x.tree)).eqls([-0.125, -6]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2].map(x => x.tree)).eqls([0.125, 6]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3].map(x => x.tree)).eqls([-7, 0.125]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4].map(x => x.tree)).eqls([7, -0.125]);
-      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5].map(x => x.tree)).eqls([-2, 3]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[0]).eqls([1, 2]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[1]).eqls([3, 4]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[2]).eqls([-5, 6]);
+      expect(stateVariables['/_curve1'].stateValues.throughPoints[3]).eqls([2, -3]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[0]).eqls([3, 1]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[1]).eqls([-0.125, -6]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[2]).eqls([0.125, 6]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[3]).eqls([-7, 0.125]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[4]).eqls([7, -0.125]);
+      expect((stateVariables['/_curve1'].stateValues.controlVectors)[5]).eqls([-2, 3]);
     });
 
   })
@@ -4941,26 +5444,26 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve1a'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve2'],
         throughPoints: throughPoints2,
         directions,
         controlVectors: controlVectors2,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve2a'],
         throughPoints: throughPoints2,
         directions,
@@ -4971,48 +5474,65 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points on all four curves')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       throughPoints1 = [[7, 2], [1, -3], [2, 9], [-4, -3]];
       throughPoints2 = [[7, 2], [-3, 1], [2, 9], [-3, -4]];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints1[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints1[0]
+        }
       });
-      await stateVariables['/curve1a'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints1[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/curve1a",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints1[1]
+        }
       });
-      await stateVariables['/_curve2'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints2[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve2",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints2[2]
+        }
       });
-      await stateVariables['/curve2a'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints2[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/curve2a",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints2[3]
+        }
       });
 
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve1a'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve2'],
         throughPoints: throughPoints2,
         directions,
         controlVectors: controlVectors2,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve2a'],
         throughPoints: throughPoints2,
         directions,
@@ -5024,7 +5544,6 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vectors on all four curves')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors1 = [
         [[-1, 5], [1, -5]],
@@ -5039,51 +5558,73 @@ describe('Curve Tag Bezier Tests', function () {
         [[-2, 3], [2, -3]],
       ];
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors1[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors1[0][1]
+        }
       })
 
-      await stateVariables['/curve1a'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors1[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/curve1a",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors1[1][1]
+        }
       })
 
-      await stateVariables['/_curve2'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors2[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve2",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors2[2][0]
+        }
       })
-      await stateVariables['/curve2a'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors2[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/curve2a",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors2[2][1]
+        }
       })
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [3, 0],
-        controlVector: controlVectors1[3][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [3, 0],
+          controlVector: controlVectors1[3][0]
+        }
       })
 
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve1a'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve2'],
         throughPoints: throughPoints2,
         directions,
         controlVectors: controlVectors2,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve2a'],
         throughPoints: throughPoints2,
         directions,
@@ -5095,48 +5636,65 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points on all four curves again')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       throughPoints1 = [[-1, 9], [7, 5], [-8, 1], [6, -7]];
       throughPoints2 = [[-1, 9], [5, 7], [-8, 1], [-7, 6]];
 
-      await stateVariables['/curve2a'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints2[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/curve2a",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints2[0]
+        }
       });
-      await stateVariables['/_curve2'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints2[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve2",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints2[1]
+        }
       });
-      await stateVariables['/curve1a'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints1[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/curve1a",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints1[2]
+        }
       });
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints1[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints1[3]
+        }
       });
 
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve1a'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve2'],
         throughPoints: throughPoints2,
         directions,
         controlVectors: controlVectors2,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve2a'],
         throughPoints: throughPoints2,
         directions,
@@ -5148,7 +5706,6 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vectors on all four curves again')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors1 = [
         [[4, -1], [-4, 1]],
@@ -5163,51 +5720,73 @@ describe('Curve Tag Bezier Tests', function () {
         [[-5, 4], [5, -4]],
       ];
 
-      await stateVariables['/curve2a'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors2[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/curve2a",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors2[0][1]
+        }
       })
 
-      await stateVariables['/_curve2'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors2[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve2",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors2[1][1]
+        }
       })
 
-      await stateVariables['/curve1a'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors1[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/curve1a",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors1[2][0]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors1[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors1[2][1]
+        }
       })
 
-      await stateVariables['/curve2a'].moveControlVector({
-        controlVectorInds: [3, 0],
-        controlVector: controlVectors2[3][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/curve2a",
+        args: {
+          controlVectorInds: [3, 0],
+          controlVector: controlVectors2[3][0]
+        }
       })
 
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve1a'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve2'],
         throughPoints: throughPoints2,
         directions,
         controlVectors: controlVectors2,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve2a'],
         throughPoints: throughPoints2,
         directions,
@@ -5316,26 +5895,26 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve1a'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve2'],
         throughPoints: throughPoints2,
         directions,
         controlVectors: controlVectors2,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve2a'],
         throughPoints: throughPoints2,
         directions,
@@ -5346,48 +5925,64 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points on all four curves')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       throughPoints1 = [[7, 2], [1, -3], [2, 9], [-4, -3]];
       throughPoints2 = [[7, 2], [-3, 1], [2, 9], [-3, -4]];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints1[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints1[0]
+        }
       });
-      await stateVariables['/curve1a'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints1[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/curve1a",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints1[1]
+        }
       });
-      await stateVariables['/_curve2'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints2[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve2",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints2[2]
+        }
       });
-      await stateVariables['/curve2a'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints2[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/curve2a",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints2[3]
+        }
       });
 
+      let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve1a'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve2'],
         throughPoints: throughPoints2,
         directions,
         controlVectors: controlVectors2,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve2a'],
         throughPoints: throughPoints2,
         directions,
@@ -5399,7 +5994,6 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vectors on all four curves')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors1 = [
         [[-1, 5], [1, -5]],
@@ -5414,51 +6008,73 @@ describe('Curve Tag Bezier Tests', function () {
         [[-2, 3], [2, -3]],
       ];
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors1[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors1[0][1]
+        }
       })
 
-      await stateVariables['/curve1a'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors1[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/curve1a",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors1[1][1]
+        }
       })
 
-      await stateVariables['/_curve2'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors2[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve2",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors2[2][0]
+        }
       })
-      await stateVariables['/curve2a'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors2[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/curve2a",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors2[2][1]
+        }
       })
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [3, 0],
-        controlVector: controlVectors1[3][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [3, 0],
+          controlVector: controlVectors1[3][0]
+        }
       })
 
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve1a'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve2'],
         throughPoints: throughPoints2,
         directions,
         controlVectors: controlVectors2,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve2a'],
         throughPoints: throughPoints2,
         directions,
@@ -5470,48 +6086,65 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move through points on all four curves again')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       throughPoints1 = [[-1, 9], [7, 5], [-8, 1], [6, -7]];
       throughPoints2 = [[-1, 9], [5, 7], [-8, 1], [-7, 6]];
 
-      await stateVariables['/curve2a'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints2[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/curve2a",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints2[0]
+        }
       });
-      await stateVariables['/_curve2'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints2[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve2",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints2[1]
+        }
       });
-      await stateVariables['/curve1a'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints1[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/curve1a",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints1[2]
+        }
       });
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints1[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints1[3]
+        }
       });
 
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve1a'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve2'],
         throughPoints: throughPoints2,
         directions,
         controlVectors: controlVectors2,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve2a'],
         throughPoints: throughPoints2,
         directions,
@@ -5523,7 +6156,6 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vectors on all four curves again')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors1 = [
         [[4, -1], [-4, 1]],
@@ -5538,51 +6170,73 @@ describe('Curve Tag Bezier Tests', function () {
         [[-5, 4], [5, -4]],
       ];
 
-      await stateVariables['/curve2a'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors2[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/curve2a",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors2[0][1]
+        }
       })
 
-      await stateVariables['/_curve2'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors2[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve2",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors2[1][1]
+        }
       })
 
-      await stateVariables['/curve1a'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors1[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/curve1a",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors1[2][0]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors1[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors1[2][1]
+        }
       })
 
-      await stateVariables['/curve2a'].moveControlVector({
-        controlVectorInds: [3, 0],
-        controlVector: controlVectors2[3][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/curve2a",
+        args: {
+          controlVectorInds: [3, 0],
+          controlVector: controlVectors2[3][0]
+        }
       })
 
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve1a'],
         throughPoints: throughPoints1,
         directions,
         controlVectors: controlVectors1,
       })
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve2'],
         throughPoints: throughPoints2,
         directions,
         controlVectors: controlVectors2,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/curve2a'],
         throughPoints: throughPoints2,
         directions,
@@ -5672,17 +6326,17 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -5692,34 +6346,47 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[-4, -1], [8, 9], [-3, 7], [-4, -1]];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -5729,34 +6396,47 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[5, 6], [-1, -2], [6, -5], [5, 6]];
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -5766,34 +6446,47 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[4, -4], [-7, 7], [3, 3], [4, -4]];
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -5803,26 +6496,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fourth point on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [7, 0];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -5832,26 +6530,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fourth point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [-6, 9];
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -5861,26 +6564,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fourth point on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [8, 2];
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -5913,40 +6621,57 @@ describe('Curve Tag Bezier Tests', function () {
       [[-9, -4], [9, 4]],
     ];
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 0],
-        controlVector: controlVectors[0][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 0],
+          controlVector: controlVectors[0][0]
+        }
       })
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [3, 0],
-        controlVector: controlVectors[3][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [3, 0],
+          controlVector: controlVectors[3][0]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions = ["symmetric", "symmetric", "symmetric", "symmetric"];
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -5957,7 +6682,6 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vectors again')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors = [
         [[5, -6], [-5, 6]],
@@ -5966,36 +6690,54 @@ describe('Curve Tag Bezier Tests', function () {
         [[7, 1], [-7, -1]],
       ];
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors[1][1]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [3, 1],
-        controlVector: controlVectors[3][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [3, 1],
+          controlVector: controlVectors[3][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -6084,17 +6826,17 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6104,34 +6846,47 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[-4, -1], [8, 9], [-3, 7], [-4, -1]];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6141,34 +6896,47 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[5, 6], [-1, -2], [6, -5], [5, 6]];
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6178,34 +6946,47 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[4, -4], [-7, 7], [3, 3], [4, -4]];
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6215,26 +6996,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fourth point on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [7, 0];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6244,26 +7030,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fourth point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [-6, 9];
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6273,26 +7064,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fourth point on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [8, 2];
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6325,40 +7121,57 @@ describe('Curve Tag Bezier Tests', function () {
       [[-9, -4], [9, 4]],
     ];
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 0],
-        controlVector: controlVectors[0][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 0],
+          controlVector: controlVectors[0][0]
+        }
       })
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [3, 0],
-        controlVector: controlVectors[3][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [3, 0],
+          controlVector: controlVectors[3][0]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions = ["symmetric", "symmetric", "symmetric", "symmetric"];
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -6369,7 +7182,6 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vectors again')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors = [
         [[5, -6], [-5, 6]],
@@ -6378,36 +7190,54 @@ describe('Curve Tag Bezier Tests', function () {
         [[7, 1], [-7, -1]],
       ];
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors[1][1]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [3, 1],
-        controlVector: controlVectors[3][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [3, 1],
+          controlVector: controlVectors[3][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -6505,17 +7335,17 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6525,34 +7355,47 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[-4, -1], [8, 9], [-3, 7], [-4, -1], [-3, 2]];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6562,34 +7405,47 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[5, 6], [-1, -2], [6, -5], [5, 6], [6, 2]];
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6599,34 +7455,47 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[4, -4], [-7, 7], [3, 3], [4, -4], [5, 2]];
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6636,27 +7505,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fourth point on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [7, 0];
       throughPoints[4] = [8, 2];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6666,27 +7540,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fourth point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [-6, 9];
       throughPoints[4] = [-5, 2];
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6696,27 +7575,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fourth point on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [8, 2];
       throughPoints[4] = [9, 2];
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6726,27 +7610,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fifth point on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [-8, 2];
       throughPoints[4] = [-7, 9];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 4,
-        throughPoint: throughPoints[4]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 4,
+          throughPoint: throughPoints[4]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6756,27 +7645,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fifth point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [-1, 2];
       throughPoints[4] = [0, 9];
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 4,
-        throughPoint: throughPoints[4]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 4,
+          throughPoint: throughPoints[4]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6786,27 +7680,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move fifth point on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = [4, 2];
       throughPoints[4] = [5, 4];
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 4,
-        throughPoint: throughPoints[4]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 4,
+          throughPoint: throughPoints[4]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions
@@ -6844,44 +7743,65 @@ describe('Curve Tag Bezier Tests', function () {
       [[6, 9], [-6, -9]],
     ];
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 0],
-        controlVector: controlVectors[0][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 0],
+          controlVector: controlVectors[0][0]
+        }
       })
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [3, 0],
-        controlVector: controlVectors[3][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [3, 0],
+          controlVector: controlVectors[3][0]
+        }
       })
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [4, 0],
-        controlVector: controlVectors[4][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [4, 0],
+          controlVector: controlVectors[4][0]
+        }
       })
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       directions = ["symmetric", "symmetric", "symmetric", "symmetric", "symmetric"];
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -6892,7 +7812,6 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move control vectors again')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors = [
         [[5, -6], [-5, 6]],
@@ -6902,40 +7821,63 @@ describe('Curve Tag Bezier Tests', function () {
         [[-3, -2], [3, 2]],
       ];
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors[1][1]
+        }
       })
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [3, 1],
-        controlVector: controlVectors[3][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [3, 1],
+          controlVector: controlVectors[3][1]
+        }
       })
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [4, 1],
-        controlVector: controlVectors[4][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [4, 1],
+          controlVector: controlVectors[4][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -6971,15 +7913,15 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -6988,33 +7930,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[-4, 6], [8, 9], [-3, 7], [-4, 6], [5, 7], [-5, 7],
       [-4, 6], [3, 1], [5, 0], [-4, 6]]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7023,33 +7978,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[5, 6], [-1, -2], [6, -5], [5, 6], [5, 7], [-5, 7],
       [5, 6], [3, 1], [5, 0], [5, 6]]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7058,33 +8026,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[4, -4], [-7, 7], [3, 3], [4, -4], [5, 7], [-5, 7],
       [4, -4], [3, 1], [5, 0], [4, -4]]
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7095,33 +8076,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move second three points on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[9, 1], [-7, 7], [3, 3], [9, 1], [-8, -2], [7, -3],
       [9, 1], [3, 1], [5, 0], [9, 1]]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 4,
-        throughPoint: throughPoints[4]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 4,
+          throughPoint: throughPoints[4]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 5,
-        throughPoint: throughPoints[5]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 5,
+          throughPoint: throughPoints[5]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7130,33 +8124,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move second three points on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[0, 2], [-7, 7], [3, 3], [0, 2], [1, -3], [-2, -4],
       [0, 2], [3, 1], [5, 0], [0, 2]]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 4,
-        throughPoint: throughPoints[4]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 4,
+          throughPoint: throughPoints[4]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 5,
-        throughPoint: throughPoints[5]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 5,
+          throughPoint: throughPoints[5]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7165,33 +8172,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move second three points on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[-5, -6], [-7, 7], [3, 3], [-5, -6], [-7, 8], [9, 0],
       [-5, -6], [3, 1], [5, 0], [-5, -6]]
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 4,
-        throughPoint: throughPoints[4]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 4,
+          throughPoint: throughPoints[4]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 5,
-        throughPoint: throughPoints[5]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 5,
+          throughPoint: throughPoints[5]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7201,33 +8221,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move third three points on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[-9, 8], [-7, 7], [3, 3], [-9, 8], [-7, 8], [9, 0],
       [-9, 8], [7, -6], [-5, -4], [-9, 8]]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 6,
-        throughPoint: throughPoints[6]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 6,
+          throughPoint: throughPoints[6]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 7,
-        throughPoint: throughPoints[7]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 7,
+          throughPoint: throughPoints[7]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 8,
-        throughPoint: throughPoints[8]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 8,
+          throughPoint: throughPoints[8]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7236,33 +8269,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move third three points on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[2, 4], [-7, 7], [3, 3], [2, 4], [-7, 8], [9, 0],
       [2, 4], [3, -5], [5, -6], [2, 4]]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 6,
-        throughPoint: throughPoints[6]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 6,
+          throughPoint: throughPoints[6]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 7,
-        throughPoint: throughPoints[7]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 7,
+          throughPoint: throughPoints[7]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 8,
-        throughPoint: throughPoints[8]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 8,
+          throughPoint: throughPoints[8]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7271,33 +8317,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move third three points on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[3, -6], [-7, 7], [3, 3], [3, -6], [-7, 8], [9, 0],
       [3, -6], [9, 2], [-7, -1], [3, -6]]
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 6,
-        throughPoint: throughPoints[6]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 6,
+          throughPoint: throughPoints[6]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 7,
-        throughPoint: throughPoints[7]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 7,
+          throughPoint: throughPoints[7]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 8,
-        throughPoint: throughPoints[8]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 8,
+          throughPoint: throughPoints[8]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7308,24 +8367,29 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move last point on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = throughPoints[6] = throughPoints[9] = [-6, -8];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 9,
-        throughPoint: throughPoints[9]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 9,
+          throughPoint: throughPoints[9]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7335,24 +8399,29 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move last point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = throughPoints[6] = throughPoints[9] = [0, 3];
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 9,
-        throughPoint: throughPoints[9]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 9,
+          throughPoint: throughPoints[9]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7362,24 +8431,29 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move last point on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = throughPoints[3] = throughPoints[6] = throughPoints[9] = [2, -5];
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 9,
-        throughPoint: throughPoints[9]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 9,
+          throughPoint: throughPoints[9]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7414,15 +8488,15 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7431,33 +8505,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[-4, 6], [8, 9], [-3, 7], [-5, 5], [5, 7], [-5, 7],
       [-6, 4], [3, 1], [5, 0], [-7, 3]]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7466,33 +8553,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[5, 6], [-1, -2], [6, -5], [4, 5], [5, 7], [-5, 7],
       [3, 4], [3, 1], [5, 0], [2, 3]]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7501,33 +8601,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first three points on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[4, -4], [-7, 7], [3, 3], [3, -5], [5, 7], [-5, 7],
       [2, -6], [3, 1], [5, 0], [1, -7]]
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7538,33 +8651,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move second three points on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[10, 2], [-7, 7], [3, 3], [9, 1], [-8, -2], [7, -3],
       [8, 0], [3, 1], [5, 0], [7, -1]]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 4,
-        throughPoint: throughPoints[4]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 4,
+          throughPoint: throughPoints[4]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 5,
-        throughPoint: throughPoints[5]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 5,
+          throughPoint: throughPoints[5]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7573,33 +8699,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move second three points on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[1, 3], [-7, 7], [3, 3], [0, 2], [1, -3], [-2, -4],
       [-1, 1], [3, 1], [5, 0], [-2, 0]]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 4,
-        throughPoint: throughPoints[4]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 4,
+          throughPoint: throughPoints[4]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 5,
-        throughPoint: throughPoints[5]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 5,
+          throughPoint: throughPoints[5]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7608,33 +8747,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move second three points on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[-4, -5], [-7, 7], [3, 3], [-5, -6], [-7, 8], [9, 0],
       [-6, -7], [3, 1], [5, 0], [-7, -8]]
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 4,
-        throughPoint: throughPoints[4]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 4,
+          throughPoint: throughPoints[4]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 5,
-        throughPoint: throughPoints[5]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 5,
+          throughPoint: throughPoints[5]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7644,33 +8796,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move third three points on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[-7, 10], [-7, 7], [3, 3], [-8, 9], [-7, 8], [9, 0],
       [-9, 8], [7, -6], [-5, -4], [-10, 7]]
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 6,
-        throughPoint: throughPoints[6]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 6,
+          throughPoint: throughPoints[6]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 7,
-        throughPoint: throughPoints[7]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 7,
+          throughPoint: throughPoints[7]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 8,
-        throughPoint: throughPoints[8]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 8,
+          throughPoint: throughPoints[8]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7679,33 +8844,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move third three points on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[4, 6], [-7, 7], [3, 3], [3, 5], [-7, 8], [9, 0],
       [2, 4], [3, -5], [5, -6], [1, 3]]
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 6,
-        throughPoint: throughPoints[6]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 6,
+          throughPoint: throughPoints[6]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 7,
-        throughPoint: throughPoints[7]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 7,
+          throughPoint: throughPoints[7]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 8,
-        throughPoint: throughPoints[8]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 8,
+          throughPoint: throughPoints[8]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7714,33 +8892,46 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move third three points on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[5, -4], [-7, 7], [3, 3], [4, -5], [-7, 8], [9, 0],
       [3, -6], [9, 2], [-7, -1], [2, -7]]
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 6,
-        throughPoint: throughPoints[6]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 6,
+          throughPoint: throughPoints[6]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 7,
-        throughPoint: throughPoints[7]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 7,
+          throughPoint: throughPoints[7]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 8,
-        throughPoint: throughPoints[8]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 8,
+          throughPoint: throughPoints[8]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7751,27 +8942,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move last point on curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = [-3, -5];
       throughPoints[3] = [-4, -6];
       throughPoints[6] = [-5, -7];
       throughPoints[9] = [-6, -8];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 9,
-        throughPoint: throughPoints[9]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 9,
+          throughPoint: throughPoints[9]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7781,27 +8977,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move last point on curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = [3, 6];
       throughPoints[3] = [2, 5];
       throughPoints[6] = [1, 4];
       throughPoints[9] = [0, 3];
 
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 9,
-        throughPoint: throughPoints[9]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 9,
+          throughPoint: throughPoints[9]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7811,27 +9012,32 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move last point on curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints[0] = [5, -2];
       throughPoints[3] = [4, -3];
       throughPoints[6] = [3, -4];
       throughPoints[9] = [2, -5];
 
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 9,
-        throughPoint: throughPoints[9]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 9,
+          throughPoint: throughPoints[9]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -7874,17 +9080,17 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         controlVectors,
@@ -7894,34 +9100,43 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first and second control vectors of curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors = [
         [[4, -2], [-4, 2]],
         [[3, 5], [-3, -5]],
         [[-4, 2], [4, -2]],
       ];
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 0],
-        controlVector: controlVectors[0][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 0],
+          controlVector: controlVectors[0][0]
+        }
       })
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         controlVectors,
@@ -7931,34 +9146,43 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first and second control vectors of curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors = [
         [[-7, 9], [7, -9]],
         [[6, 1], [-6, -1]],
         [[7, -9], [-7, 9]],
       ];
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [1, 1],
-        controlVector: controlVectors[1][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: controlVectors[1][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         controlVectors,
@@ -7969,34 +9193,43 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move first and second control vectors of curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors = [
         [[-5, 1], [5, -1]],
         [[-2, -3], [2, 3]],
         [[5, -1], [-5, 1]],
       ];
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [1, 0],
-        controlVector: controlVectors[1][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: controlVectors[1][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         controlVectors,
@@ -8007,29 +9240,34 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move last control vector of curve 1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors = [
         [[9, 10], [-9, -10]],
         [[-2, -3], [2, 3]],
         [[-9, -10], [9, 10]],
       ];
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         controlVectors,
@@ -8040,29 +9278,34 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move last control vector of curve 2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors = [
         [[-3, -7], [3, 7]],
         [[-2, -3], [2, 3]],
         [[3, 7], [-3, -7]],
       ];
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         controlVectors,
@@ -8073,29 +9316,34 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move last control vector of curve 3')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       controlVectors = [
         [[4, 6], [-4, -6]],
         [[-2, -3], [2, 3]],
         [[-4, -6], [4, 6]],
       ];
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         controlVectors,
@@ -8166,24 +9414,24 @@ describe('Curve Tag Bezier Tests', function () {
 
       let cv3 = (stateVariables["/_curve1"].stateValues.controlVectors)[2][0];
 
-      controlVectors[0][0][0] = controlVectors[2][0][0] = cv3[0].tree;
-      controlVectors[0][0][1] = controlVectors[2][0][1] = cv3[1].tree;
+      controlVectors[0][0][0] = controlVectors[2][0][0] = cv3[0];
+      controlVectors[0][0][1] = controlVectors[2][0][1] = cv3[1];
       controlVectors[0][1][0] = controlVectors[2][1][0] = -controlVectors[0][0][0];
       controlVectors[0][1][1] = controlVectors[2][1][1] = -controlVectors[0][0][1];
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8194,26 +9442,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("can't move first control vector of curve 1")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 0],
-        controlVector: [9, 2]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 0],
+          controlVector: [9, 2]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8224,26 +9477,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("can't move first control vector of curve 2")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [0, 0],
-        controlVector: [-7, 6]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [0, 0],
+          controlVector: [-7, 6]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8253,26 +9511,31 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("can't move first control vector of curve 3")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: [91, 11]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: [91, 11]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8289,29 +9552,34 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move first control vector of curve 1")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       directions[2] = "symmetric";
       controlVectors[0] = controlVectors[2] = [[3, 7], [-3, -7]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 0],
-        controlVector: controlVectors[0][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 0],
+          controlVector: controlVectors[0][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8321,28 +9589,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move first control vector of curve 2")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = controlVectors[2] = [[-5, 9], [5, -9]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8352,28 +9625,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move first control vector of curve 3")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = controlVectors[2] = [[-4, -3], [4, 3]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: controlVectors[0][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: controlVectors[0][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8383,28 +9661,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move third control vector of curve 1")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = controlVectors[2] = [[1, 9], [-1, -9]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8414,28 +9697,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move third control vector of curve 2")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = controlVectors[2] = [[-2, 8], [2, -8]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8445,28 +9733,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move third control vector of curve 3")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = controlVectors[2] = [[3, -7], [-3, 7]]
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8531,19 +9824,19 @@ describe('Curve Tag Bezier Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8553,36 +9846,53 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log('move points')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       throughPoints = [[-5, 7], [8, 3], [-2, -4], [6, -1]];
 
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 0,
-        throughPoint: throughPoints[0]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 0,
+          throughPoint: throughPoints[0]
+        }
       })
-      await stateVariables['/g2/curve'].moveThroughPoint({
-        throughPointInd: 1,
-        throughPoint: throughPoints[1]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g2/curve",
+        args: {
+          throughPointInd: 1,
+          throughPoint: throughPoints[1]
+        }
       })
-      await stateVariables['/g3/curve'].moveThroughPoint({
-        throughPointInd: 2,
-        throughPoint: throughPoints[2]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/g3/curve",
+        args: {
+          throughPointInd: 2,
+          throughPoint: throughPoints[2]
+        }
       })
-      await stateVariables['/_curve1'].moveThroughPoint({
-        throughPointInd: 3,
-        throughPoint: throughPoints[3]
+      await win.callAction1({
+        actionName: "moveThroughPoint",
+        componentName: "/_curve1",
+        args: {
+          throughPointInd: 3,
+          throughPoint: throughPoints[3]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
       })
@@ -8591,29 +9901,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move first control vector of curve 1")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-
 
       controlVectors[0] = [[7, -7], [-7, 7]]
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [0, 0],
-        controlVector: [-9, -7]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [0, 0],
+          controlVector: [-9, -7]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8623,28 +9937,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move first control vector of curve 2")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[0] = [[-1, 1], [1, -1]]
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [0, 1],
-        controlVector: [5, -1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: [5, -1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8654,28 +9973,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move second control vector of curve 3")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[1] = [[6, -2], [2, 6]],
 
-        await stateVariables['/g3/curve'].moveControlVector({
-          controlVectorInds: [1, 0],
-          controlVector: controlVectors[1][0]
+        await win.callAction1({
+          actionName: "moveControlVector",
+          componentName: "/g3/curve",
+          args: {
+            controlVectorInds: [1, 0],
+            controlVector: controlVectors[1][0]
+          }
         })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8685,28 +10009,33 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move second control vector of curve 1")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[1] = [[-7, -8], [8, -7]],
 
-        await stateVariables['/_curve1'].moveControlVector({
-          controlVectorInds: [1, 1],
-          controlVector: controlVectors[1][1]
+        await win.callAction1({
+          actionName: "moveControlVector",
+          componentName: "/_curve1",
+          args: {
+            controlVectorInds: [1, 1],
+            controlVector: controlVectors[1][1]
+          }
         })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8716,29 +10045,34 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move third control vector of curve 2")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[2] = [[-3, 5], [3, -5]];
       controlVectors[3] = [[5, -3], [-5, 3]];
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [2, 0],
-        controlVector: controlVectors[2][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: controlVectors[2][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8748,29 +10082,34 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move third control vector of curve 3")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[2] = [[7, 6], [-7, -6]];
       controlVectors[3] = [[6, 7], [-6, -7]];
 
-      await stateVariables['/g3/curve'].moveControlVector({
-        controlVectorInds: [2, 1],
-        controlVector: controlVectors[2][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g3/curve",
+        args: {
+          controlVectorInds: [2, 1],
+          controlVector: controlVectors[2][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8780,29 +10119,34 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move fourth control vector of curve 1")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[2] = [[-1, -2], [1, 2]];
       controlVectors[3] = [[-2, -1], [2, 1]];
 
-      await stateVariables['/_curve1'].moveControlVector({
-        controlVectorInds: [3, 0],
-        controlVector: controlVectors[3][0]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/_curve1",
+        args: {
+          controlVectorInds: [3, 0],
+          controlVector: controlVectors[3][0]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
@@ -8812,29 +10156,34 @@ describe('Curve Tag Bezier Tests', function () {
 
     cy.log("move fourth control vector of curve 2")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       controlVectors[2] = [[1, -9], [-1, 9]];
       controlVectors[3] = [[-9, 1], [9, -1]];
 
-      await stateVariables['/g2/curve'].moveControlVector({
-        controlVectorInds: [3, 1],
-        controlVector: controlVectors[3][1]
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/g2/curve",
+        args: {
+          controlVectorInds: [3, 1],
+          controlVector: controlVectors[3][1]
+        }
       })
 
-      await checkBezierCurve({
+      let stateVariables = await win.returnAllStateVariables1();
+
+      checkBezierCurve({
         curve: stateVariables['/_curve1'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g2/curve'],
         throughPoints,
         directions,
         controlVectors,
       })
-      await checkBezierCurve({
+      checkBezierCurve({
         curve: stateVariables['/g3/curve'],
         throughPoints,
         directions,
