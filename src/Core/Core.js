@@ -7869,6 +7869,10 @@ export default class Core {
 
     newStateVariableValuesProcessed.push(newStateVariableValues);
 
+    // always update the renderers from the update instructions themselves,
+    // as even if changes were prevented, the renderers need to be given that information
+    // so they can revert if the showed the changes before hearing back from core
+    this.updateInfo.componentsToUpdateRenderers.push(...updateInstructions.map(x => x.componentName))
 
     // use set to create deduplicated list of components to update renderers
     let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];

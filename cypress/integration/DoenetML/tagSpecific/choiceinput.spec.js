@@ -550,7 +550,7 @@ describe('ChoiceInput Tag Tests', function () {
 
   });
 
-  it('bind value to choiceinput', () => {
+  it('bind value to textinput', () => {
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -697,7 +697,7 @@ describe('ChoiceInput Tag Tests', function () {
     })
   });
 
-  it('bind value to choiceinput, select multiple', () => {
+  it('bind value to textinput, select multiple', () => {
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -854,6 +854,77 @@ describe('ChoiceInput Tag Tests', function () {
       checkChoices(selectedChoices, inputText)
 
     })
+  });
+
+  it('bind value to fixed text, choiceinput reverts to fixed value', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput bindValueTo="$alwaysMonkey" name="ci1">
+      <choice>cat</choice>
+      <choice>dog</choice>
+      <choice>monkey</choice>
+    </choiceinput>
+
+    <p>Fixed to be: <text name="alwaysMonkey" fixed>monkey</text></p>
+
+    <copy name="copy" inline target="ci1" assignNames="ci2" />
+
+    <p>Selected values: <aslist>
+    <copy prop='selectedvalue' target="ci1" />
+    <copy prop='selectedvalue' target="copy" />
+    </aslist></p>
+    <p>Selected indices: <aslist>
+    <copy prop='selectedindex' target="ci1" />
+    <copy prop='selectedindex' target="copy" />
+    </aslist></p>
+
+    <p>Check for core round trip: <booleaninput name="bi" /> <copy prop="value" target="bi" assignNames="b" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    function checkStillMonkey() {
+      for (let i = 1; i <= 3; i++) {
+        if (i === 3) {
+          cy.get(`#\\/ci1_choice${i}_input`).should('be.checked')
+        } else {
+          cy.get(`#\\/ci1_choice${i}_input`).should('not.be.checked')
+        }
+      }
+      cy.get(`#\\/ci2`).should('have.value', '3')
+      cy.get('#\\/_p2').should('have.text', `Selected values: monkey, monkey`)
+      cy.get('#\\/_p3').should('have.text', `Selected indices: 3, 3`)
+    }
+
+
+    checkStillMonkey();
+
+    cy.get(`#\\/ci1_choice1_input`).click();
+    cy.get(`#\\/bi_input`).click();
+    cy.get('#\\/b').should('have.text', "true")
+    checkStillMonkey();
+
+    cy.get(`#\\/ci1_choice2_input`).click();
+    cy.get(`#\\/bi_input`).click();
+    cy.get('#\\/b').should('have.text', "false")
+    checkStillMonkey();
+
+    cy.get(`#\\/ci2`).select(`1`);
+    cy.get(`#\\/bi_input`).click();
+    cy.get('#\\/b').should('have.text', "true")
+    checkStillMonkey();
+
+    cy.get(`#\\/ci2`).select(`2`);
+    cy.get(`#\\/bi_input`).click();
+    cy.get('#\\/b').should('have.text', "false")
+    checkStillMonkey();
+
+
   });
 
   it('preselect choices', () => {

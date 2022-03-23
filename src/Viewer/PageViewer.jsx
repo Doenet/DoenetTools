@@ -59,7 +59,7 @@ export default function PageViewer(props) {
           })
 
         } else {
-          // since value was change from the time the update was created
+          // since value was changed from the time the update was created
           // don't ignore the remaining pending changes in updatesToIgnore
           // as we changed the state used to determine they could be ignored
           set(rendererUpdatesToIgnore(rendererName), {});
