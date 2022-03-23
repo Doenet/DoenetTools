@@ -613,7 +613,7 @@ export default class SectioningComponent extends BlockComponent {
     }
   }
 
-  async revealSection() {
+  async revealSection({ actionId }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -622,6 +622,7 @@ export default class SectioningComponent extends BlockComponent {
         stateVariable: "open",
         value: true
       }],
+      actionId,
       event: {
         verb: "viewed",
         object: {
@@ -632,7 +633,7 @@ export default class SectioningComponent extends BlockComponent {
     })
   }
 
-  async closeSection() {
+  async closeSection({ actionId }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -641,6 +642,7 @@ export default class SectioningComponent extends BlockComponent {
         stateVariable: "open",
         value: false
       }],
+      actionId,
       event: {
         verb: "closed",
         object: {

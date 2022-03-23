@@ -208,7 +208,7 @@ export default class Solution extends BlockComponent {
   }
 
 
-  async revealSolution() {
+  async revealSolution({ actionId }) {
 
     let { scoredItemNumber, scoredComponent } = await this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName);
 
@@ -250,14 +250,14 @@ export default class Solution extends BlockComponent {
     }
 
     return await this.coreFunctions.performUpdate({
-      updateInstructions,
+      updateInstructions, actionId,
       event,
       overrideReadOnly: true,
     })
 
   }
 
-  async closeSolution() {
+  async closeSolution({ actionId }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -266,6 +266,7 @@ export default class Solution extends BlockComponent {
         stateVariable: "open",
         value: false
       }],
+      actionId,
       event: {
         verb: "closed",
         object: {

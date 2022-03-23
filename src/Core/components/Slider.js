@@ -632,7 +632,7 @@ export default class Slider extends BaseComponent {
   }
 
 
-  async changeValue({ value, transient }) {
+  async changeValue({ value, transient, actionId }) {
     if (!await this.stateValues.disabled) {
       if (transient) {
         return await this.coreFunctions.performUpdate({
@@ -642,7 +642,8 @@ export default class Slider extends BaseComponent {
             stateVariable: "value",
             value
           }],
-          transient
+          transient,
+          actionId
         });
       } else {
         return await this.coreFunctions.performUpdate({
@@ -652,6 +653,7 @@ export default class Slider extends BaseComponent {
             stateVariable: "value",
             value
           }],
+          actionId,
           event: {
             verb: "selected",
             object: {

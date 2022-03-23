@@ -429,7 +429,7 @@ export default class AnimateFromSequence extends BaseComponent {
     return stateVariableDefinitions;
   }
 
-  async changedAnimationOn({ stateValues, previousValues }) {
+  async changedAnimationOn({ stateValues, previousValues, actionId }) {
 
     let updateInstructions = [];
 
@@ -499,6 +499,7 @@ export default class AnimateFromSequence extends BaseComponent {
 
         await this.coreFunctions.performUpdate({
           updateInstructions,
+          actionId,
           event: {
             verb: "played",
             object: {
@@ -628,7 +629,7 @@ export default class AnimateFromSequence extends BaseComponent {
 
   }
 
-  async advanceAnimation({ previousAnimationId }) {
+  async advanceAnimation({ previousAnimationId, actionId }) {
 
     // especially given delays in posting messages,
     // it's possible that advanceAnimation is called from
@@ -698,6 +699,7 @@ export default class AnimateFromSequence extends BaseComponent {
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
     });
 
     if (continueAnimation) {
@@ -714,36 +716,39 @@ export default class AnimateFromSequence extends BaseComponent {
     }
   }
 
-  startAnimation() {
+  startAnimation({actionId}) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "animationOn",
         value: true,
-      }]
+      }],
+      actionId,
     })
   }
 
-  stopAnimation() {
+  stopAnimation({actionId}) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "animationOn",
         value: false,
-      }]
+      }],
+      actionId
     })
   }
 
-  async toggleAnimation() {
+  async toggleAnimation({actionId}) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "animationOn",
         value: !(await this.stateValues.animationOn),
-      }]
+      }],
+      actionId,
     })
   }
 

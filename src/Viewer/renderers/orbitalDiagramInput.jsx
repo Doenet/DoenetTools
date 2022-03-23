@@ -27,7 +27,7 @@ export default function orbitalDiagramInput(props) {
   function setSelectedRow(index) {
     callAction({
       action: actions.selectRow,
-      args: Number(index) + 1
+      args: { index: Number(index) + 1 }
     });
   }
 
@@ -35,19 +35,19 @@ export default function orbitalDiagramInput(props) {
     if (rowNum !== undefined) {
       callAction({
         action: actions.selectRow,
-        args: Number(rowNum) + 1
+        args: { index: Number(rowNum) + 1 }
       });
     }
     callAction({
       action: actions.selectBox,
-      args: Number(index) + 1
+      args: { index: Number(index) + 1 }
     });
   }
 
   function updateRowText(newValue) {
     callAction({
       action: actions.updateRowText,
-      args: newValue
+      args: { newValue }
     });
   }
 

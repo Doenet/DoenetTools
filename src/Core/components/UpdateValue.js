@@ -384,7 +384,7 @@ export default class UpdateValue extends InlineComponent {
   }
 
 
-  async updateValue() {
+  async updateValue({ actionId }) {
 
     let targets = await this.stateValues.targets;
     let newValue = await this.stateValues.newValue;
@@ -416,6 +416,7 @@ export default class UpdateValue extends InlineComponent {
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "selected",
         object: {

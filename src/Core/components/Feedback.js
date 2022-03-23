@@ -168,7 +168,7 @@ export default class Feedback extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  async updateHide() {
+  async updateHide({actionId}) {
     let updateInstructions = [{
       updateType: "updateValue",
       componentName: this.componentName,
@@ -176,7 +176,7 @@ export default class Feedback extends BlockComponent {
       value: await this.stateValues.hideWhenUpdated,
     }]
 
-    return await this.coreFunctions.performUpdate({ updateInstructions });
+    return await this.coreFunctions.performUpdate({ updateInstructions, actionId });
   }
 
   actions = {

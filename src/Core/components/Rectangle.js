@@ -60,7 +60,7 @@ export default class Rectangle extends Polygon {
     stateVariableDefinitions.essentialVertex = {
       isArray: true,
       entryPrefixes: ["essentialVertexX"],
-      defaultValueByArrayKey: () =>  me.fromAst(0),
+      defaultValueByArrayKey: () => me.fromAst(0),
       hasEssential: true,
       returnArraySizeDependencies: () => ({
         nVerticesSpecified: {
@@ -1125,7 +1125,7 @@ export default class Rectangle extends Polygon {
     return stateVariableDefinitions;
   }
 
-  async movePolygon({ pointCoords, transient, sourceInformation }) {
+  async movePolygon({ pointCoords, transient, actionId }) {
     let updateInstructions = [];
 
     let vertexComponents = {};
@@ -1223,11 +1223,13 @@ export default class Rectangle extends Polygon {
     if (transient) {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
-        transient
+        transient,
+        actionId
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
+        actionId,
         event: {
           verb: "interacted",
           object: {

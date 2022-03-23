@@ -974,7 +974,7 @@ export default class Spreadsheet extends BlockComponent {
   }
 
 
-  async onChange({ changes, source }) {
+  async onChange({ changes, source, actionId }) {
 
     if (source !== "loadData") {
       let cellChanges = {};
@@ -990,6 +990,7 @@ export default class Spreadsheet extends BlockComponent {
           stateVariable: "cells",
           value: cellChanges,
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {

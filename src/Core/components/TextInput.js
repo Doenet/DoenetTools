@@ -227,9 +227,9 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: text,
-          sourceInformation: { actionId }
         }],
         transient: true,
+        actionId,
       })
     }
   }
@@ -245,7 +245,6 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "value",
           value: immediateValue,
-          sourceInformation: { actionId }
         },
         // in case value ended up being a different value than requested
         // we set immediate value to whatever was the result
@@ -283,6 +282,7 @@ export default class Textinput extends Input {
 
         await this.coreFunctions.performUpdate({
           updateInstructions,
+          actionId,
           event
         });
 
