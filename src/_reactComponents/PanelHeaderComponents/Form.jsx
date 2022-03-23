@@ -6,6 +6,7 @@ import styled from 'styled-components';
 const FormInput = styled.input `
   margin: 0px -${props => props.formWidth}px 0px 0px;
   height: 24px;
+  width: ${props => props.inputWidth};
   border: ${props => props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)'};
   border-radius: var(--mainBorderRadius);
   position: relative;
@@ -63,7 +64,7 @@ const Label = styled.p `
 `;
 
 const Container = styled.div `
-  /* display: ${props => props.align}; */
+  display: ${props => props.align};
   width: 235px;
   align-items: center;
 `;
@@ -75,7 +76,7 @@ const Container = styled.div `
 export default function Form(props) {
     const [text, setText] = useState(props.value ? props.value : "");
     const [cancelShown, setCancelShown] = useState('hidden');
-    const [formWidth, setformWidth] = useState(props.formWidth ? props.formWidth : '0px');
+    const [formWidth, setFormWidth] = useState(props.formWidth ? props.formWidth : '0px');
     const labelVisible = props.label ? 'static' : 'none';
     const align = props.vertical ? 'static' : 'flex';
     const alert = props.alert ? props.alert : null;
@@ -90,7 +91,10 @@ export default function Form(props) {
       useEffect(()=>{
         if(formRef && props.submitButton)  {
           let button = document.querySelector('#submitButton');
-         setTimeout(function() { setformWidth(button.clientWidth); }, 1000);
+          let buttonWidth = button.clientWidth;
+         setTimeout(function() { setFormWidth((235 - buttonWidth) + 'px'); }, 1000);
+         console.log(buttonWidth);
+        //  console.log((240 - buttonWidth) + 'px');
 
         }
 
@@ -186,15 +190,15 @@ export default function Form(props) {
   return (
     <Container align={align}>
       <Label labelVisible={labelVisible} align={align}>{label}</Label>
-      <>
+      <div>
         <FormInput
           id="textarea"
           value={text}
           placeholder={placeholder}
           type="text"
           ref={inputRef}
-          formWidth={formWidth}
           inputWidth={inputWidth}
+          formWidth={formWidth}
           onKeyUp={() => {
             changeTextTerm();
           }}
@@ -217,7 +221,7 @@ export default function Form(props) {
         >
           {props.submitButton ? props.submitButton : 'Submit'}
         </SubmitButton>
-      </>
+      </div>
     </Container>
   );
 };

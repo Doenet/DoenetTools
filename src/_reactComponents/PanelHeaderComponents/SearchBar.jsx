@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 
 const SearchBar = styled.input `
-    margin: 0px;
+    margin: 0px -${props => props.inputWidth}px 0px 0px;
     height: 24px;
     border: ${props => props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)'};
     border-radius: var(--mainBorderRadius);
@@ -69,10 +69,21 @@ export default function Searchbar(props) {
     const [cancelShown, setCancelShown] = useState('hidden');
     const labelVisible = props.label ? 'static' : 'none';
     const align = props.vertical ? 'static' : 'flex';
+    const [inputWidth, setInputWidth] = useState('0px');
     const marginLeft = props.noSearchButton ? 80 : 26;
     const alert = props.alert ? props.alert : null;
 
-    const searchBarRef = useRef(0);
+    const searchBarRef = useRef(0)
+    useEffect(()=>{
+      if(searchBarRef && props.cancelShown)  {
+        let cancelButton = document.querySelector('#cancelButton');
+        let cancelButtonWidth = cancelButton.clientWidth;
+       setTimeout(function() { setInputWidth(cancelButtonWidth.clientWidth); }, 1000);
+      //  console.log((240 - buttonWidth) + 'px');
+
+      }
+
+    },[searchBarRef,props])
 
     var searchIcon = {
         margin: '6px 0px 0px 6px',
@@ -98,12 +109,6 @@ export default function Searchbar(props) {
     if (props.width) {
         width = props.width;
     };
-
-    // Get help with cancel button placement
-    // console.log(this.style.getPropertyValue('width'));
-    console.log(searchBarRef);
-    let cancelLeftMargin = Number(searchBarRef.width.split("px")[0]) - 54 + "px";
-    console.log(cancelLeftMargin);
 
     if (props.noSearchButton) {
         searchButton = '';
@@ -165,13 +170,15 @@ export default function Searchbar(props) {
     };
 
     return (
-        <Container align={align} ref={searchBarRef}>
+        <Container align={align}>
             <Label labelVisible={labelVisible} align={align}>{label}</Label>
             <div style={{display: "table-cell"}} >
                 <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
                 <CancelButton 
+                    id="cancelButton"
+                    ref={searchBarRef}
                     cancelShown={cancelShown}
-                    cancelLeftMargin={cancelLeftMargin}
+                    // cancelLeftMargin={cancelLeftMargin}
                     onClick={() => { clearInput() }} >
                     <FontAwesomeIcon icon={faTimes}/>
                 </CancelButton>
