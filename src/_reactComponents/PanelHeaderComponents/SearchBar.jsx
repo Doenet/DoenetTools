@@ -20,12 +20,12 @@ const SearchBar = styled.input `
 
 const CancelButton = styled.button `
     float: right;
-    margin: 6px 0px 0px ${props => props.cancelLeftMargin};
+    margin: 6px 0px 0px ${props => props.marginLeft}px;
     // margin: '6px 0px 0px 172px',
     position: absolute;
     z-index: 2;
     border: 0px;
-    background-color: #FFF;
+    background-color: white;
     visibility: ${props => props.cancelShown};
     color: #000;
     overflow: hidden;
@@ -38,7 +38,7 @@ const SubmitButton = styled.button `
     margin: 0px 0px 0px -60px;
     z-index: 2;
     height: 28px;
-    border: var(--mainBorder);
+    border: ${props => props.alert ? '2px solid var(--mainRed)' : "var(--mainBorder)"};
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
     color: ${props => props.disabled ? 'black' : 'white'};
     border-radius: 0px 5px 5px 0px;
@@ -48,7 +48,7 @@ const SubmitButton = styled.button `
 
     &:hover {
         color: black;
-        background-color: ${props => props.alert ? 'var(--lightRed)' : (props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)')};
+        background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
     }
 `;
 
@@ -69,16 +69,16 @@ export default function Searchbar(props) {
     const [cancelShown, setCancelShown] = useState('hidden');
     const labelVisible = props.label ? 'static' : 'none';
     const align = props.vertical ? 'static' : 'flex';
-    const [inputWidth, setInputWidth] = useState('0px');
-    const marginLeft = props.noSearchButton ? 80 : 26;
+    // const [inputWidth, setInputWidth] = useState('0px');
+    const [marginLeft, setMarginLeft] = useState(props.noSearchButton ? 80 : 26);
     const alert = props.alert ? props.alert : null;
 
     const searchBarRef = useRef(0)
     useEffect(()=>{
-      if(searchBarRef && props.cancelShown)  {
-        let cancelButton = document.querySelector('#cancelButton');
-        let cancelButtonWidth = cancelButton.clientWidth;
-       setTimeout(function() { setInputWidth(cancelButtonWidth.clientWidth); }, 1000);
+      if(searchBarRef)  {
+        let searchBar = document.querySelector('#searchbar');
+        let inputWidth = searchBar.clientWidth;
+       setTimeout(function() { setMarginLeft(inputWidth - (props.noSearchButton ? 23 : 77) - (props.width ? 90 : 0)); }, 1000);
       //  console.log((240 - buttonWidth) + 'px');
 
       }
@@ -101,6 +101,7 @@ export default function Searchbar(props) {
     var searchButton = 
     <SubmitButton
         disabled={disable}
+        alert={alert}
         onClick={searchSubmitAction}>
         Search
     </SubmitButton>
@@ -175,15 +176,15 @@ export default function Searchbar(props) {
             <div style={{display: "table-cell"}} >
                 <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
                 <CancelButton 
-                    id="cancelButton"
                     ref={searchBarRef}
                     cancelShown={cancelShown}
+                    marginLeft={marginLeft}
                     // cancelLeftMargin={cancelLeftMargin}
                     onClick={() => { clearInput() }} >
                     <FontAwesomeIcon icon={faTimes}/>
                 </CancelButton>
                 <SearchBar
-                    id="search" 
+                    id="searchbar" 
                     type="text" 
                     width={width}
                     placeholder={placeholder} 
