@@ -8,7 +8,7 @@ import {
   useRecoilState,
   useSetRecoilState,
 } from 'recoil';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import Toast from './Toast';
 import ContentPanel from './Panels/NewContentPanel';
 import axios from 'axios';
@@ -168,7 +168,29 @@ export default function ToolRoot() {
   mainPanel = (
     <Suspense
       key={MainPanelKey}
-      fallback={<LoadingFallback>loading...</LoadingFallback>}
+      fallback={
+        <LoadingFallback>
+          <Svg>
+            <DonutG>
+              <Circle
+                id="donut" 
+                fill="rgb(238,161,119)" 
+                r="50" 
+              />
+              <Circle
+                id="donut-topping"
+                fill="rgb(109,68,69)"
+                r="40"
+              />
+              <Circle 
+                id="donut-hole"  
+                fill="hsl(0, 0%, 99%)"
+                r="16"
+              />
+            </DonutG>
+          </Svg>
+        </LoadingFallback>
+      }
     >
       {React.createElement(
         LazyPanelObj[toolRootMenusAndPanels.currentMainPanel],
@@ -948,4 +970,45 @@ const LoadingFallback = styled.div`
   font-size: 2em;
   width: 100%;
   height: 100%;
+`;
+
+const spinningDonut = keyframes `
+  0%
+  {
+    transform: scale( 1 );
+  }
+  20%
+  {
+    transform: scale( 1.1 );
+  }
+  40%
+  {
+    transform: scale( 1 );
+  }
+  60%
+  {
+    transform: scale( 1.1 );
+  }
+  80%
+  {
+    transform: scale( 1 );
+  }
+  100%
+  {
+    transform: scale( 1 );
+  }
+`;
+const Svg = styled.svg`
+`;
+const DonutG = styled.g`
+  position: relative;
+  animation: ${spinningDonut} 1s infinite;
+  transform: translate(279, 394.5);
+  &:after {
+    position: absolute;
+  }
+`;
+const Circle = styled.circle`
+  cx: 150;
+  cy: 75;
 `;
