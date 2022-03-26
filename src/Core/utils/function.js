@@ -194,7 +194,7 @@ export function returnInterpolatedFunction({ xs, coeffs, interpolationPoints, do
 
   let minx = -Infinity, maxx = Infinity;
   if (domain !== null) {
-    let domain = domain[0];
+    domain = domain[0];
     if (domain !== undefined) {
       try {
         minx = domain[0].evaluate_to_constant();

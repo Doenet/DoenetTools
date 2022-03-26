@@ -4020,6 +4020,11 @@ function computeSplineParamCoeffs({ dependencyValues }) {
 function returnReturnDerivativesOfInterpolatedFunction(dependencyValues) {
 
   let xs = dependencyValues.xs;
+
+  if(!xs) {
+    return x => NaN
+  }
+
   let coeffs = dependencyValues.coeffs;
   let variable1Trans = dependencyValues.variables[0].subscripts_to_strings().tree;
 

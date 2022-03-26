@@ -81,6 +81,8 @@ export default class EquilibriumCurve extends Curve {
           }
         }
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
   }

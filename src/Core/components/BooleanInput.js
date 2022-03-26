@@ -172,6 +172,8 @@ export default class BooleanInput extends Input {
       });
 
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

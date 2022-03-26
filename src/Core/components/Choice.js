@@ -89,9 +89,14 @@ export default class Choice extends InlineComponent {
       }),
       definition({ dependencyValues }) {
 
-        let selected = dependencyValues.childIndicesSelected.includes(
-          dependencyValues.countAmongSiblings
-        );
+        let selected
+        if (dependencyValues.childIndicesSelected) {
+          selected = dependencyValues.childIndicesSelected.includes(
+            dependencyValues.countAmongSiblings
+          );
+        } else {
+          selected = false;
+        }
 
         return { setValue: { selected } }
 

@@ -486,7 +486,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
       }
     }
 
-    return { success: true, instructions: [] }
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

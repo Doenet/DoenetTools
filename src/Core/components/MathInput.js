@@ -473,6 +473,8 @@ export default class MathInput extends Input {
         transient: true,
         actionId,
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -552,8 +554,12 @@ export default class MathInput extends Input {
           componentName: this.componentName,
         });
 
+      } else {
+        this.coreFunctions.resolveAction({ actionId });
       }
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

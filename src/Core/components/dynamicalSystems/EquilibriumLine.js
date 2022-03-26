@@ -81,6 +81,8 @@ export default class EquilibriumLine extends Line {
           }
         }
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
   }
