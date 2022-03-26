@@ -146,6 +146,7 @@ describe('Document Tag Tests', function () {
       cy.get('#\\/docCa').should('have.text', '0.333');
 
       cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([1, 0, 0, 0, 0])
       })
 
@@ -154,6 +155,7 @@ describe('Document Tag Tests', function () {
       cy.get('#\\/docCa').should('have.text', '0.333');
 
       cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 0, 0, 0])
       })
 
@@ -162,6 +164,7 @@ describe('Document Tag Tests', function () {
       cy.get('#\\/docCa').should('have.text', '0.667');
 
       cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 0, 0])
       })
 
@@ -171,6 +174,7 @@ describe('Document Tag Tests', function () {
       cy.get('#\\/docCa').should('have.text', '0.667');
 
       cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 1, 0])
       })
 
@@ -180,6 +184,7 @@ describe('Document Tag Tests', function () {
       cy.get('#\\/docCa').should('have.text', '1');
 
       cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_document1"].stateValues.itemCreditAchieved).eqls([1, 1, 1, 1, 1])
       })
 
