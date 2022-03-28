@@ -28,16 +28,27 @@ if ($success){
   $doenetId = include "randomId.php";
   $label = 'Untitled';
 
-$doenetId = include "randomId.php";
-$jsonDefinition = null;
-$sortOrder = 'a'; //replace with position function
+  $jsonDefinition = null;
+  $sortOrder = 'a'; //replace with position function
 
 //Defaults for each item type
 if ($itemType == 'section'){
   $jsonDefinition = '{"isIncludedInStudentNavigation":true}';
 }else if($itemType == 'activity'){
   //TODO: make a doenetId for the blank page
-  $jsonDefinition = '{"order": {"type":"order", "behavior":"sequence","content":[{"type":"page", "label":"Page 1","draftCid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku", "versions":[]}]}, "files":[]}';
+  // $jsonDefinition = '{"order": {"type":"order", "behavior":"sequence","content":[{"type":"page", "label":"Page 1","draftCid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku", "versions":[]}]}, "files":[]}';
+  $pageDoenetId = include "randomId.php";
+  $pageJsonDefinition = '{"type":"page","label":"Untitled", "doenetId":"'.$pageDoenetId.'","draftCid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku", "cid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"}';
+  $jsonDefinition = '{"type":"activity","title":"Untitled","order":{"type":"order","doenetId":"'.$doenetId.'","behavior":"sequence","content":["'.$pageDoenetId.'"]},"variantControl": {"nVariants": 100,"seeds": ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94","95","96","97","98","99","100"]},"itemWeights": [1],"cid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku","files":[]}';
+  $sql = "
+INSERT INTO course_content_page
+(doenetId,
+activityDoenetId,
+jsonDefinition)
+VALUES
+('$pageDoenetId','$doenetId','$pageJsonDefinition')
+";
+$result = $conn->query($sql); 
 }else if($itemType == 'bank'){
   $jsonDefinition = '{}';
 }else{
