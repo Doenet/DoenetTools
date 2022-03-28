@@ -314,6 +314,9 @@ export default class Circle extends Curve {
 
           if (dependencyValuesByKey[arrayKey].centerAttr !== null) {
             prescribedCenter[arrayKey] = dependencyValuesByKey[arrayKey].centerAttr.stateValues["x" + varEnding];
+            if(!prescribedCenter[arrayKey]) {
+              prescribedCenter[arrayKey] = me.fromAst('\uff3f');
+            }
           }
         }
 
@@ -2132,7 +2135,7 @@ export default class Circle extends Curve {
   }
 
 
-  async moveCircle({ center, radius, throughAngles, transient }) {
+  async moveCircle({ center, radius, throughAngles, transient, actionId }) {
 
     let instructions = [];
 
@@ -2187,11 +2190,13 @@ export default class Circle extends Curve {
     if (transient) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: instructions,
-        transient
+        transient,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions: instructions,
+        actionId,
         event: {
           verb: "interacted",
           object: {

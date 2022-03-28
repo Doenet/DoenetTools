@@ -28,7 +28,7 @@ const rendererUpdatesToIgnore = atomFamily({
 export default function PageViewer(props) {
   const toast = useToast();
   const updateRendererSVsWithRecoil = useRecoilCallback(({ snapshot, set }) => async ({
-    coreId, componentName, stateValues, childrenInstructions, sourceOfUpdate, baseStateVariable
+    coreId, componentName, stateValues, childrenInstructions, sourceOfUpdate, baseStateVariable, actionId
   }) => {
 
     let ignoreUpdate = false;
@@ -37,12 +37,10 @@ export default function PageViewer(props) {
 
     if (baseStateVariable) {
 
-      let sourceActionId = sourceOfUpdate?.sourceInformation?.[componentName]?.actionId;
-
       let updatesToIgnore = snapshot.getLoadable(rendererUpdatesToIgnore(rendererName)).contents;
 
       if (Object.keys(updatesToIgnore).length > 0) {
-        let valueFromRenderer = updatesToIgnore[sourceActionId];
+        let valueFromRenderer = updatesToIgnore[actionId];
         let valueFromCore = stateValues[baseStateVariable];
         if (valueFromRenderer === valueFromCore
           || (
@@ -56,7 +54,7 @@ export default function PageViewer(props) {
           ignoreUpdate = true;
           set(rendererUpdatesToIgnore(rendererName), was => {
             let newUpdatesToIgnore = { ...was };
-            delete newUpdatesToIgnore[sourceActionId];
+            delete newUpdatesToIgnore[actionId];
             return newUpdatesToIgnore;
           })
 
@@ -130,6 +128,10 @@ export default function PageViewer(props) {
 
   const [saveStatesWorker, setSaveStatesWorker] = useState(null);
 
+  const preventMoreAnimations = useRef(false);
+  const animationInfo = useRef({});
+
+  const resolveActionPromises = useRef({});
 
   useEffect(() => {
 
@@ -142,6 +144,10 @@ export default function PageViewer(props) {
         } else {
           updateRenderers(e.data.args)
         }
+      } else if (e.data.messageType === "requestAnimationFrame") {
+        requestAnimationFrame(e.data.args);
+      } else if (e.data.messageType === "cancelAnimationFrame") {
+        cancelAnimationFrame(e.data.args);
       } else if (e.data.messageType === "coreCreated") {
         coreCreated.current = true;
         setStage('coreCreated');
@@ -188,8 +194,8 @@ export default function PageViewer(props) {
 
       }
 
-      window["callAction" + pageId] = function ({ actionName, componentName, args }) {
-        callAction({
+      window["callAction" + pageId] = async function ({ actionName, componentName, args }) {
+        await callAction({
           action: { actionName, componentName },
           args
         })
@@ -201,19 +207,31 @@ export default function PageViewer(props) {
   }, [pageId])
 
 
-  function callAction({ action, args, baseVariableValue, name, rendererType }) {
+  useEffect(() => {
+    return () => {
+      preventMoreAnimations.current = true;
+      for (let id in animationInfo.current) {
+        cancelAnimationFrame(id);
+      }
+      animationInfo.current = {};
+    }
+  }, []);
+
+
+  async function callAction({ action, args, baseVariableValue, componentName, rendererType }) {
 
     if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore) {
-      if (baseVariableValue !== undefined && name) {
-        let actionId = nanoid();
+      let actionId = nanoid();
+      args = { ...args };
+      args.actionId = actionId;
+
+      if (baseVariableValue !== undefined && componentName) {
         updateRendererUpdatesToIgnore({
           coreId: coreId.current,
-          componentName: name,
+          componentName,
           baseVariableValue,
           actionId
         })
-        args = { ...args };
-        args.actionId = actionId;
       }
 
       let actionArgs = {
@@ -231,6 +249,11 @@ export default function PageViewer(props) {
         actionsBeforeCoreCreated.current.push(actionArgs);
         // console.log('actions before core created', actionsBeforeCoreCreated.current)
       }
+
+      return new Promise((resolve, reject) => {
+        resolveActionPromises.current[actionId] = resolve;
+      })
+
     }
   }
 
@@ -291,7 +314,7 @@ export default function PageViewer(props) {
   }
 
   //offscreen then postpone that one
-  function updateRenderers(updateInstructions) {
+  function updateRenderers({ updateInstructions, actionId }) {
 
     for (let instruction of updateInstructions) {
 
@@ -305,14 +328,19 @@ export default function PageViewer(props) {
             stateValues,
             childrenInstructions,
             sourceOfUpdate: instruction.sourceOfUpdate,
-            baseStateVariable: rendererClasses.current[rendererType]?.baseStateVariable
+            baseStateVariable: rendererClasses.current[rendererType]?.baseStateVariable,
+            actionId,
           })
 
         }
       }
     }
 
-
+    if (actionId) {
+      console.log(`resolving actionId ${actionId}`);
+      resolveActionPromises.current[actionId]?.();
+      delete resolveActionPromises.current[actionId]
+    }
   }
 
 
@@ -674,6 +702,54 @@ export default function PageViewer(props) {
     saveStatesWorker.terminate();
     setSaveStatesWorker(null);
   }
+
+  function requestAnimationFrame({ action, actionArgs, delay, animationId }) {
+    if (!preventMoreAnimations.current) {
+
+      // create new animationId
+
+      if (delay) {
+        // set a time out to call actual request animation frame after a delay
+        let timeoutId = window.setTimeout(
+          () => _requestAnimationFrame({ action, actionArgs, animationId }),
+          delay);
+        animationInfo.current[animationId] = { timeoutId };
+      } else {
+        // call actual request animation frame right away
+        animationInfo.current[animationId] = {};
+        _requestAnimationFrame({ action, actionArgs, animationId });
+      }
+    }
+  }
+
+  function _requestAnimationFrame({ action, actionArgs, animationId }) {
+
+    let animationFrameID = window.requestAnimationFrame(() => callAction({
+      action,
+      args: actionArgs
+    }))
+
+    let animationInfoObj = animationInfo.current[animationId];
+    delete animationInfoObj.timeoutId;
+    animationInfoObj.animationFrameID = animationFrameID;
+  }
+
+
+  async function cancelAnimationFrame(animationId) {
+
+    let animationInfoObj = animationInfo.current[animationId];
+    let timeoutId = animationInfoObj.timeoutId;
+    if (timeoutId !== undefined) {
+      window.clearTimeout(timeoutId);
+    }
+    let animationFrameID = animationInfoObj.animationFrameID;
+    if (animationFrameID !== undefined) {
+      window.cancelAnimationFrame(animationFrameID);
+    }
+    delete animationInfo.current[animationId];
+
+  }
+
 
 
   if (errMsg !== null) {

@@ -139,7 +139,6 @@ export default class BooleanInput extends Input {
         componentName: this.componentName,
         stateVariable: "value",
         value: boolean,
-        sourceInformation: { actionId }
       }];
 
       let event = {
@@ -165,6 +164,7 @@ export default class BooleanInput extends Input {
       await this.coreFunctions.performUpdate({
         updateInstructions,
         event,
+        actionId,
       });
 
       return await this.coreFunctions.triggerChainedActions({

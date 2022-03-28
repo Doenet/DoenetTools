@@ -220,7 +220,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async addRow() {
+  async addRow({ actionId }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = oldRows;
@@ -261,6 +261,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -276,7 +277,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async removeRow() {
+  async removeRow({ actionId }) {
 
     let oldRows = await this.stateValues.rows;
     let selectedRowIndex0 = await this.stateValues.selectedRowIndex - 1;
@@ -306,6 +307,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
         stateVariable: "selectedBoxIndex",
         value: 0,
       }],
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -320,7 +322,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async addBox() {
+  async addBox({ actionId }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = oldRows;
@@ -358,6 +360,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -372,7 +375,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async removeBox() {
+  async removeBox({ actionId }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = oldRows;
@@ -409,6 +412,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -425,7 +429,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async addUpArrow() {
+  async addUpArrow({ actionId }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = oldRows;
@@ -457,6 +461,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -471,7 +476,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async addDownArrow() {
+  async addDownArrow({ actionId }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = oldRows;
@@ -502,6 +507,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -516,7 +522,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async removeArrow() {
+  async removeArrow({ actionId }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = oldRows;
@@ -548,6 +554,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -562,7 +569,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async updateRowText(newValue) {
+  async updateRowText({ newValue, actionId }) {
 
     let oldRows = await this.stateValues.rows;
     let newRows = oldRows;
@@ -585,6 +592,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -599,7 +607,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async selectRow(index) {
+  async selectRow({ index, actionId }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -608,6 +616,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
         stateVariable: "selectedRowIndex",
         value: index,
       }],
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -622,7 +631,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
-  async selectBox(index) {
+  async selectBox({ index, actionId }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -631,6 +640,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
         stateVariable: "selectedBoxIndex",
         value: index,
       }],
+      actionId,
       event: {
         verb: "interacted",
         object: {

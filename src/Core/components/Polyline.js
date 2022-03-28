@@ -483,7 +483,7 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  async movePolyline({ pointCoords, transient, sourceInformation }) {
+  async movePolyline({ pointCoords, transient, sourceInformation, actionId }) {
 
     let vertexComponents = {};
     for (let ind in pointCoords) {
@@ -501,6 +501,7 @@ export default class Polyline extends GraphicalComponent {
           sourceInformation
         }],
         transient,
+        actionId,
       });
     } else {
 
@@ -512,6 +513,7 @@ export default class Polyline extends GraphicalComponent {
           value: vertexComponents,
           sourceInformation
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {

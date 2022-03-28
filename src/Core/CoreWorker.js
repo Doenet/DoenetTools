@@ -65,7 +65,7 @@ async function createCore(args) {
   //   console.log(`waiting to create core, ${i}=${tot}`);
   // }
 
-  
+
   core = new Core(args)
   core.getInitializedPromise().then(() => {
     // console.log('actions to process', queuedRequestActions)
@@ -91,7 +91,7 @@ async function returnAllStateVariables(core) {
     for (let vName in component.state) {
       compObj.stateValues[vName] = removeFunctionsMathExpressionClass(await component.state[vName].value);
     }
-    compObj.activeChildren = component.activeChildren.map(x => x.componentName ? x.componentName : x)
+    compObj.activeChildren = component.activeChildren.map(x => x.componentName ? { componentName: x.componentName, componentType: x.componentType } : x)
   }
   return componentsObj;
 }

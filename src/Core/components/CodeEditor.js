@@ -288,7 +288,7 @@ export default class CodeEditor extends BlockComponent {
   }
 
 
-  updateImmediateValue({ text }) {
+  updateImmediateValue({ text, actionId }) {
     if (!this.stateValues.disabled) {
       return this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -296,12 +296,13 @@ export default class CodeEditor extends BlockComponent {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: text,
-        }]
+        }],
+        actionId
       })
     }
   }
 
-  updateValue() {
+  updateValue({actionId}) {
     //Only update when value is out of date
     if (!this.stateValues.disabled &&
       this.stateValues.immediateValue !== this.stateValues.value
@@ -347,6 +348,7 @@ export default class CodeEditor extends BlockComponent {
 
       return this.coreFunctions.performUpdate({
         updateInstructions,
+        actionId,
         event
       }).then(() => {
         this.coreFunctions.triggerChainedActions({

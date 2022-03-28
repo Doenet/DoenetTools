@@ -27,7 +27,7 @@ export default class Endpoint extends Point {
   }
 
 
-  async switchPoint() {
+  async switchPoint({actionId,}) {
     if (await this.stateValues.switchable) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -36,6 +36,7 @@ export default class Endpoint extends Point {
           stateVariable: "open",
           value: !await this.stateValues.open,
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {

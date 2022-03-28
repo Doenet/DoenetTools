@@ -55,7 +55,6 @@ export default class Core {
     this.triggerChainedActions = this.triggerChainedActions.bind(this);
     this.requestRecordEvent = this.requestRecordEvent.bind(this);
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
-    this._requestAnimationFrame = this._requestAnimationFrame.bind(this);
     this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
     this.calculateScoredItemNumberOfContainer = this.calculateScoredItemNumberOfContainer.bind(this);
 
@@ -101,8 +100,6 @@ export default class Core {
     this.cumulativeStateVariableChanges = JSON.parse(JSON.stringify(stateVariableChanges, serializeFunctions.serializedComponentsReplacer), serializeFunctions.serializedComponentsReviver);
 
 
-    this.animationIDs = {};
-    this.lastAnimationID = 0;
     this.requestedVariantIndex = requestedVariantIndex;
     this.requestedVariant = requestedVariant;
     if (!this.requestedVariant) {
@@ -391,7 +388,7 @@ export default class Core {
         rendererStatesToUpdate: results.rendererStatesToUpdate,
       }]
 
-      this.postUpdateRenderers(updateInstructions, true)
+      this.postUpdateRenderers({ updateInstructions }, true)
 
       await this.processStateVariableTriggers();
 
@@ -432,7 +429,7 @@ export default class Core {
   }
 
 
-  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, recreatedComponents = {} }) {
+  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, actionId, recreatedComponents = {} }) {
 
     let deletedRenderers = [];
 
@@ -597,7 +594,7 @@ export default class Core {
       updateInstructions.splice(0, 0, instruction);
     }
 
-    this.postUpdateRenderers(updateInstructions)
+    this.postUpdateRenderers({ updateInstructions, actionId })
 
   }
 
@@ -680,6 +677,7 @@ export default class Core {
 
     let rendererInstructions = {
       componentName: componentName,
+      effectiveName: component.componentOrAdaptedName,
       componentType: component.componentType,
       rendererType: component.rendererType,
       actions: requestActions
@@ -7799,7 +7797,7 @@ export default class Core {
 
   }
 
-  async performUpdate({ updateInstructions, transient = false, event }) {
+  async performUpdate({ updateInstructions, actionId, event }) {
 
     let newStateVariableValues = {};
     let newStateVariableValuesProcessed = [];
@@ -7879,7 +7877,8 @@ export default class Core {
     await this.updateRendererInstructions({
       componentNamesToUpdate,
       sourceOfUpdate: { sourceInformation, local: true },
-      recreatedComponents: this.updateInfo.recreatedComponents
+      recreatedComponents: this.updateInfo.recreatedComponents,
+      actionId,
     });
 
     await this.processStateVariableTriggers();
@@ -9540,58 +9539,19 @@ export default class Core {
     ))();
   }
 
-  requestAnimationFrame(animationFunction, delay) {
-    if (!this.preventMoreAnimations) {
-
-      // // create new animationID
-      // let animationID = ++this.lastAnimationID;
-
-      // if (delay) {
-      //   // set a time out to call actual request animation frame after a delay
-      //   let timeoutID = window.setTimeout(
-      //     x => this._requestAnimationFrame(animationFunction, animationID),
-      //     delay);
-      //   this.animationIDs[animationID] = { timeoutID: timeoutID };
-      //   return animationID;
-      // } else {
-      //   // call actual request animation frame right away
-      //   this.animationIDs[animationID] = {};
-      //   return this._requestAnimationFrame(animationFunction, animationID);
-      // }
-    }
+  requestAnimationFrame(args) {
+    postMessage({
+      messageType: "requestAnimationFrame",
+      args
+    });
   }
 
-  _requestAnimationFrame(animationFunction, animationID) {
-    // let animationFrameID = window.requestAnimationFrame(animationFunction);
-    // let animationIDObj = this.animationIDs[animationID];
-    // delete animationIDObj.timeoutID;
-    // animationIDObj.animationFrameID = animationFrameID;
-    // return animationID;
+  cancelAnimationFrame(args) {
+    postMessage({
+      messageType: "cancelAnimationFrame",
+      args
+    });
   }
-
-
-  async cancelAnimationFrame(animationID) {
-    // let animationIDObj = this.animationIDs[animationID];
-    // let timeoutID = animationIDObj.timeoutID;
-    // if (timeoutID !== undefined) {
-    //   window.clearTimeout(timeoutID);
-    // }
-    // let animationFrameID = animationIDObj.animationFrameID;
-    // if (animationFrameID !== undefined) {
-    //   window.cancelAnimationFrame(animationFrameID);
-    // }
-    // delete this.animationIDs[animationID];
-
-  }
-
-  componentWillUnmount() {
-    this.preventMoreAnimations = true;
-    for (let id in this.animationIDs) {
-      this.coreFunctions.cancelAnimationFrame(id);
-    }
-    this.animationIDs = {};
-  }
-
 }
 
 

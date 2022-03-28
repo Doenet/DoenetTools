@@ -111,7 +111,7 @@ export default class Hint extends BlockComponent {
 
   }
 
-  async revealHint() {
+  async revealHint({actionId}) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -120,6 +120,7 @@ export default class Hint extends BlockComponent {
         stateVariable: "open",
         value: true
       }],
+      actionId,
       event: {
         verb: "viewed",
         object: {
@@ -130,7 +131,7 @@ export default class Hint extends BlockComponent {
     });
   }
 
-  async closeHint() {
+  async closeHint({actionId}) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -139,6 +140,7 @@ export default class Hint extends BlockComponent {
         stateVariable: "open",
         value: false
       }],
+      actionId,
       event: {
         verb: "closed",
         object: {

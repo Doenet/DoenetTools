@@ -1357,7 +1357,7 @@ export default class Copy extends CompositeComponent {
       replacementSource = (await component.stateValues.replacementSources)[sourceNum];
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let assignNames = await component.stateValues.effectiveAssignNames;
 
@@ -1442,6 +1442,7 @@ export default class Copy extends CompositeComponent {
       parentCreatesNewNamespace: newNamespace,
       indOffset: numNonStringReplacementsSoFar,
       componentInfoObjects,
+      originalNamesAreConsistent: newNamespace && !assignNames
     });
 
     // console.log(`ending serializedReplacements for ${component.componentName}`);

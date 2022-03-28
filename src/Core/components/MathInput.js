@@ -469,9 +469,9 @@ export default class MathInput extends Input {
           componentName: this.componentName,
           stateVariable: "rawRendererValue",
           value: rawRendererValue,
-          sourceInformation: { actionId }
         }],
         transient: true,
+        actionId,
       });
     }
   }
@@ -487,7 +487,6 @@ export default class MathInput extends Input {
           componentName: this.componentName,
           stateVariable: "value",
           value: immediateValue,
-          sourceInformation: { actionId }
         },
         // in case value ended up being a different value than requested
         // we set immediate value to whatever was the result
@@ -545,6 +544,7 @@ export default class MathInput extends Input {
 
         await this.coreFunctions.performUpdate({
           updateInstructions,
+          actionId,
           event,
         });
 
