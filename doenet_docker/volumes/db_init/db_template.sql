@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-03-10 20:42:14 +0000
+# Generation Time: 2022-03-28 19:48:00 +0000
 # ************************************************************
 
 
@@ -18,6 +18,24 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table activity_pages
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `activity_pages`;
+
+CREATE TABLE `activity_pages` (
+  `activityDoenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `draftCid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+  `isDeleted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`activityDoenetId`,`doenetId`),
+  KEY `doenetId` (`doenetId`),
+  CONSTRAINT `activity_pages_ibfk_1` FOREIGN KEY (`activityDoenetId`) REFERENCES `course_content` (`doenetId`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 
 # Dump of table activity_state
@@ -128,6 +146,37 @@ CREATE TABLE `content` (
   KEY `doenetId` (`doenetId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+
+
+# Dump of table content_interactions
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `content_interactions`;
+
+CREATE TABLE `content_interactions` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `stateVariables` mediumtext COLLATE utf8_unicode_ci,
+  `variant` text COLLATE utf8_unicode_ci NOT NULL,
+  `attemptNumber` int(11) DEFAULT NULL,
+  `interactionSource` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `should_be_unique` (`userId`,`doenetId`,`attemptNumber`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+LOCK TABLES `content_interactions` WRITE;
+/*!40000 ALTER TABLE `content_interactions` DISABLE KEYS */;
+
+INSERT INTO `content_interactions` (`id`, `userId`, `deviceName`, `doenetId`, `contentId`, `stateVariables`, `variant`, `attemptNumber`, `interactionSource`, `timestamp`)
+VALUES
+	(1,'devuserid','Rubber fig','jCig69KJ8-Vg8n29eI_IT','e0ed824db15dea742250f59c536a03de0cdc3c5fb4127a1100c0710cb241eed2','{\"/__mathinput_KXh6glTyP5\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":\"ï¼¿\"},\"rawRendererValue\":\"ï¼¿\"},\"/__math_d9bmzOvKly\":{\"expressionWithCodes\":{\"objectType\":\"math-expression\",\"tree\":2}},\"/_answer1\":{\"justSubmitted\":true,\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":\"ï¼¿\"},\"mergeObject\":true},\"submittedResponsesComponentType\":[\"math\"],\"creditAchievedDependenciesAtSubmit\":\"n54ElwqKNsTmUihVxGz6Hx0Mcfo=\",\"nSubmissions\":2,\"hasBeenCorrect\":true},\"/__award_XTZPmlFGuS\":{\"awarded\":true,\"creditAchieved\":1,\"fractionSatisfied\":1}}','{\"index\":14,\"name\":\"n\",\"meta\":{\"createdBy\":\"/_document1\",\"subvariantsSpecified\":false},\"subvariants\":[]}',2,NULL,'2022-03-11 16:47:18');
+
+/*!40000 ALTER TABLE `content_interactions` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table course
