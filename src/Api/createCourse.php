@@ -66,6 +66,8 @@ $response_arr = array(
   "message"=>$message,
   "courseId"=>$courseId,
   "permissionsAndSettings"=>$permissionsAndSettings,
+  "image" => $course_pic,
+  "color" => "none",
   );
 
 
