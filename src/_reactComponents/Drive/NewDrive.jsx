@@ -71,17 +71,25 @@ const loadAssignmentAtomFamily = atomFamily({
       });
       let assignment = { ...data.assignment };
 
-      if (assignment.assignedDate){
-        assignment.assignedDate = UTCDateStringToDate(assignment.assignedDate).toLocaleString();
+      if (assignment.assignedDate) {
+        assignment.assignedDate = UTCDateStringToDate(
+          assignment.assignedDate,
+        ).toLocaleString();
       }
-      if (assignment.dueDate){
-        assignment.dueDate = UTCDateStringToDate(assignment.dueDate).toLocaleString();
+      if (assignment.dueDate) {
+        assignment.dueDate = UTCDateStringToDate(
+          assignment.dueDate,
+        ).toLocaleString();
       }
-      if (assignment.pinnedAfterDate){
-        assignment.pinnedAfterDate = UTCDateStringToDate(assignment.pinnedAfterDate).toLocaleString();
+      if (assignment.pinnedAfterDate) {
+        assignment.pinnedAfterDate = UTCDateStringToDate(
+          assignment.pinnedAfterDate,
+        ).toLocaleString();
       }
-      if (assignment.pinnedUntilDate){
-        assignment.pinnedUntilDate = UTCDateStringToDate(assignment.pinnedUntilDate).toLocaleString();
+      if (assignment.pinnedUntilDate) {
+        assignment.pinnedUntilDate = UTCDateStringToDate(
+          assignment.pinnedUntilDate,
+        ).toLocaleString();
       }
 
       return assignment;
@@ -784,7 +792,7 @@ export const fetchCoursesQuery = atom({
   default: selector({
     key: 'fetchCoursesQuery/Default',
     get: async () => {
-      const { data:oldData } = await axios.get(`/api/loadAvailableDrives.php`);
+      const { data: oldData } = await axios.get(`/api/loadAvailableDrives.php`);
       // console.log("oldData",oldData);
       return oldData;
     },
@@ -883,8 +891,9 @@ export const fetchDrivesSelector = selector({
       set(fetchCoursesQuery, newDriveData);
 
       const payload = { params };
-      axios.get('/api/addDrive.php', payload)
-      .then((resp)=>console.log(">>>resp",resp.data))
+      axios
+        .get('/api/addDrive.php', payload)
+        .then((resp) => console.log('>>>resp', resp.data));
     } else if (labelTypeDriveIdColorImage.type === 'new course drive') {
       newDrive = {
         driveId: labelTypeDriveIdColorImage.newDriveId,
@@ -1793,9 +1802,7 @@ export const clearDriveAndItemSelections = selector({
       set(drivecardSelectedNodesAtom, []);
     }
   },
-  get: () => {
-
-  }
+  get: () => {},
 });
 
 //key: driveInstanceId
