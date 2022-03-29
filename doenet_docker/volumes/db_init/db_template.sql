@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-03-28 19:48:00 +0000
+# Generation Time: 2022-03-29 11:55:39 +0000
 # ************************************************************
 
 
@@ -28,8 +28,8 @@ DROP TABLE IF EXISTS `activity_pages`;
 CREATE TABLE `activity_pages` (
   `activityDoenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `draftCid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+  `draftCid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
+  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
   `isDeleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`activityDoenetId`,`doenetId`),
   KEY `doenetId` (`doenetId`),

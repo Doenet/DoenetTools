@@ -246,6 +246,7 @@ export const useCourse = (courseId) => {
           console.log('activityData', data);
           newDoenetId = data.doenetId;
           set(authorItemByDoenetId(data.doenetId), data.itemEntered);
+          set(authorItemByDoenetId(data.pageDoenetId), data.pageEntered);
           set(authorCourseItemOrderByCourseId(courseId), data.order);
         } else if (itemType == 'bank') {
           let { data } = await axios.get('/api/createCourseItem.php', {
