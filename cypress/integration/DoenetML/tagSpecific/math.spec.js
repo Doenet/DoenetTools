@@ -11,11 +11,12 @@ function cesc(s) {
 describe('Math Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
   it('1+1', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -34,15 +35,15 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('2')
     })
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 1, 1]);
-      expect(components['/_math2'].stateValues.value.tree).eq(2);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(['+', 1, 1]);
+      expect(stateVariables['/_math2'].stateValues.value.tree).eq(2);
     })
   })
 
   it('string math string', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -63,17 +64,17 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
-      expect(components['/_math2'].stateValues.value.tree).eqls(['+', 'x', 1])
-      expect(components['/_math3'].stateValues.value.tree).eqls(["+", 5, ["*", 3, ["+", "x", 1]]])
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
+      expect(stateVariables['/_math2'].stateValues.value.tree).eqls(['+', 'x', 1])
+      expect(stateVariables['/_math3'].stateValues.value.tree).eqls(["+", 5, ["*", 3, ["+", "x", 1]]])
 
     })
   })
 
   it('hidden string copy/math string', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -94,19 +95,19 @@ describe('Math Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacement = components['/_copy1'].replacements[0];
-      expect((await components['/_math1'].stateValues.value).tree).eqls(['+', 'x', 1])
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacement = stateVariables['/_copy1'].replacements[0];
+      expect((stateVariables['/_math1'].stateValues.value).tree).eqls(['+', 'x', 1])
       expect((await replacement.stateValues.value).tree).eqls(['+', 'x', 1])
-      expect((await components['/_math2'].stateValues.value).tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
-      expect(await components['/_math1'].stateValues.hide).eq(true)
+      expect((stateVariables['/_math2'].stateValues.value).tree).eqls(["+", ["*", 3, ["+", "x", 1]], 5])
+      expect(stateVariables['/_math1'].stateValues.hide).eq(true)
       expect(await replacement.stateValues.hide).eq(true);
-      expect(await components['/_math2'].stateValues.hide).eq(false)
+      expect(stateVariables['/_math2'].stateValues.hide).eq(false)
     })
   })
 
   it('math underscore when no value', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -120,7 +121,7 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('＿')
     });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>b</text>
@@ -133,7 +134,7 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('＿')
     });
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>c</text>
@@ -148,7 +149,7 @@ describe('Math Tag Tests', function () {
   })
 
   it('format latex', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -167,14 +168,14 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eqls(['/', 'x', 'z'])
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(['/', 'x', 'z'])
     })
   })
 
   it('copy latex property', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -192,9 +193,9 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/_math1').find('.mjx-char').eq(1).invoke('text').then((text) => {
       expect(text.trim()).equal('y')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacement = components['/_copy1'].replacements[0];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacement = stateVariables['/_copy1'].replacements[0];
       cy.get(cesc('#' + replacement.componentName)).should('have.text', '\\frac{x}{y}');
 
     })
@@ -202,7 +203,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('math with internal and external copies', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -219,9 +220,9 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('2x+z')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacement = components['/a2'].replacements[0];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacement = stateVariables['/a2'].replacements[0];
       cy.get(cesc('#' + replacement.componentName)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('2x+z')
       })
@@ -230,7 +231,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('point adapts into a math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -247,19 +248,19 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let point = components['/_copy1'].replacements[0];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let point = stateVariables['/_copy1'].replacements[0];
       let coords = point.adapterUsed;
-      expect(components['/_math1'].stateValues.value.tree).eq(5);
-      expect(components['/_math1'].activeChildren[1].componentName).equal(coords.componentName);
+      expect(stateVariables['/_math1'].stateValues.value.tree).eq(5);
+      expect(stateVariables['/_math1'].activeChildren[1].componentName).equal(coords.componentName);
       expect(coords.adaptedFrom.componentName).eq(point.componentName);
     })
 
   });
 
   it('adjacent string children in math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -278,33 +279,37 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
       // string children are originally 1 and 3
-      expect(components['/_math1'].activeChildren[0]).eq("2");
-      expect(components['/_math1'].activeChildren[1]).eq("3");
-      expect(components['/_math1'].stateValues.value.tree).eq(6);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(6);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
+      expect(stateVariables['/_math1'].activeChildren[0]).eq("2");
+      expect(stateVariables['/_math1'].activeChildren[1]).eq("3");
+      expect(stateVariables['/_math1'].stateValues.value.tree).eq(6);
+      expect(stateVariables['/_point1'].stateValues.xs[0].tree).eq(6);
+      expect(stateVariables['/_point1'].stateValues.xs[1].tree).eq(3);
     });
 
     cy.log("Move point to (7,9)");
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       console.log(`move point1`)
-      await components['/_point1'].movePoint({ x: 7, y: 9 });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 7, y: 9 }
+      });
       console.log(`point moved`)
       // second child takes value, third is blank
-      expect(components['/_math1'].activeChildren[0]).eq("7");
-      expect(components['/_math1'].activeChildren[1]).eq("");
-      expect(components['/_math1'].stateValues.value.tree).eq(7);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(7);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
+      expect(stateVariables['/_math1'].activeChildren[0]).eq("7");
+      expect(stateVariables['/_math1'].activeChildren[1]).eq("");
+      expect(stateVariables['/_math1'].stateValues.value.tree).eq(7);
+      expect(stateVariables['/_point1'].stateValues.xs[0].tree).eq(7);
+      expect(stateVariables['/_point1'].stateValues.xs[1].tree).eq(9);
     });
   });
 
   it('math displayed rounded to 10 significant digits by default', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -324,16 +329,16 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eq(1.000000000000001);
-      expect(components['/_math2'].stateValues.value.tree).eqls(
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).eq(1.000000000000001);
+      expect(stateVariables['/_math2'].stateValues.value.tree).eqls(
         ['+', ['*', 0.30000000000000004, 'x'], ['*', 4, 'pi']]);
     });
   });
 
   it('mutual references of format', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>q</text>
@@ -442,7 +447,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('simplify math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -490,20 +495,20 @@ describe('Math Tag Tests', function () {
     ]
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eqls(originalTree);
-      expect(components['/_math2'].stateValues.value.tree).eqls(originalTree);
-      expect(components['/_math3'].stateValues.value.tree).eqls(["+", ["*", 4, ["^", "x", 2]], -2])
-      expect(components['/_math4'].stateValues.value.tree).eqls(["+", ["*", 4, ["^", "x", 2]], -2])
-      expect(components['/_math5'].stateValues.value.tree).eqls([
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(originalTree);
+      expect(stateVariables['/_math2'].stateValues.value.tree).eqls(originalTree);
+      expect(stateVariables['/_math3'].stateValues.value.tree).eqls(["+", ["*", 4, ["^", "x", 2]], -2])
+      expect(stateVariables['/_math4'].stateValues.value.tree).eqls(["+", ["*", 4, ["^", "x", 2]], -2])
+      expect(stateVariables['/_math5'].stateValues.value.tree).eqls([
         '+',
         ['*', -2, ['^', 'x', 2]],
         ['^', 'x', 2],
         ['*', 5, ['^', 'x', 2]],
         -2
       ]);
-      expect(components['/_math6'].stateValues.value.tree).eqls([
+      expect(stateVariables['/_math6'].stateValues.value.tree).eqls([
         '+',
         ['^', 'x', 2],
         1,
@@ -516,7 +521,7 @@ describe('Math Tag Tests', function () {
   })
 
   it('expand math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -545,7 +550,7 @@ describe('Math Tag Tests', function () {
   })
 
   it('create vectors and intervals', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -574,30 +579,30 @@ describe('Math Tag Tests', function () {
     });
 
     cy.log('Different internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eqls(["list",
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(["list",
         ["tuple", 1, 2, 3],
         ["tuple", 4, 5],
         ["array", 6, 7],
         ["interval", ["tuple", 8, 9], ["tuple", false, true]],
         ["interval", ["tuple", 10, 11], ["tuple", true, false]],
       ]);
-      expect(components['/_math2'].stateValues.value.tree).eqls(["list",
+      expect(stateVariables['/_math2'].stateValues.value.tree).eqls(["list",
         ["vector", 1, 2, 3],
         ["vector", 4, 5],
         ["array", 6, 7],
         ["interval", ["tuple", 8, 9], ["tuple", false, true]],
         ["interval", ["tuple", 10, 11], ["tuple", true, false]],
       ]);
-      expect(components['/_math3'].stateValues.value.tree).eqls(["list",
+      expect(stateVariables['/_math3'].stateValues.value.tree).eqls(["list",
         ["tuple", 1, 2, 3],
         ["interval", ["tuple", 4, 5], ["tuple", false, false]],
         ["interval", ["tuple", 6, 7], ["tuple", true, true]],
         ["interval", ["tuple", 8, 9], ["tuple", false, true]],
         ["interval", ["tuple", 10, 11], ["tuple", true, false]],
       ]);
-      expect(components['/_math4'].stateValues.value.tree).eqls(["list",
+      expect(stateVariables['/_math4'].stateValues.value.tree).eqls(["list",
         ["vector", 1, 2, 3],
         ["vector", 4, 5],
         ["interval", ["tuple", 6, 7], ["tuple", true, true]],
@@ -609,7 +614,7 @@ describe('Math Tag Tests', function () {
   })
 
   it('display small numbers as zero', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -637,23 +642,23 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-15, 'y']]);
-      expect(components['/_math2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-15, 'y']]);
-      expect(components['/_math3'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-13, 'y']]);
-      expect(components['/_math4'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-13, 'y']]);
-      expect(components['/_math1'].stateValues.displaySmallAsZero).eq(0);
-      expect(components['/_math2'].stateValues.displaySmallAsZero).eq(1E-14);
-      expect(components['/_math3'].stateValues.displaySmallAsZero).eq(1E-14);
-      expect(components['/_math4'].stateValues.displaySmallAsZero).eq(1E-12);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-15, 'y']]);
+      expect(stateVariables['/_math2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-15, 'y']]);
+      expect(stateVariables['/_math3'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-13, 'y']]);
+      expect(stateVariables['/_math4'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-13, 'y']]);
+      expect(stateVariables['/_math1'].stateValues.displaySmallAsZero).eq(0);
+      expect(stateVariables['/_math2'].stateValues.displaySmallAsZero).eq(1E-14);
+      expect(stateVariables['/_math3'].stateValues.displaySmallAsZero).eq(1E-14);
+      expect(stateVariables['/_math4'].stateValues.displaySmallAsZero).eq(1E-12);
     });
 
 
   });
 
   it('display digits and decimals', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -696,31 +701,31 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('31.384x+4π')
     })
     cy.log('Test internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eq(621802.3520303639)
-      expect(components['/_math2'].stateValues.value.tree).eqls(
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).eq(621802.3520303639)
+      expect(stateVariables['/_math2'].stateValues.value.tree).eqls(
         ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
-      expect(components['/dig5a'].stateValues.value.tree).eq(621802.3520303639)
-      expect(components['/dig5b'].stateValues.value.tree).eqls(
+      expect(stateVariables['/dig5a'].stateValues.value.tree).eq(621802.3520303639)
+      expect(stateVariables['/dig5b'].stateValues.value.tree).eqls(
         ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
-      expect(components['/dec5a'].stateValues.value.tree).eq(621802.3520303639)
-      expect(components['/dec5b'].stateValues.value.tree).eqls(
+      expect(stateVariables['/dec5a'].stateValues.value.tree).eq(621802.3520303639)
+      expect(stateVariables['/dec5b'].stateValues.value.tree).eqls(
         ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
-      expect(components['/dig5dec1a'].stateValues.value.tree).eq(621802.3520303639)
-      expect(components['/dig5dec1b'].stateValues.value.tree).eqls(
+      expect(stateVariables['/dig5dec1a'].stateValues.value.tree).eq(621802.3520303639)
+      expect(stateVariables['/dig5dec1b'].stateValues.value.tree).eqls(
         ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
-      expect(components['/_math1'].stateValues.valueForDisplay.tree).eq(621802.352)
-      expect(components['/_math2'].stateValues.valueForDisplay.tree).eqls(
+      expect(stateVariables['/_math1'].stateValues.valueForDisplay.tree).eq(621802.352)
+      expect(stateVariables['/_math2'].stateValues.valueForDisplay.tree).eqls(
         ['+', ['*', 31.38352054, 'x'], ['*', 4, 'pi']]);
-      expect(components['/dig5a'].stateValues.valueForDisplay.tree).eq(621800)
-      expect(components['/dig5b'].stateValues.valueForDisplay.tree).eqls(
+      expect(stateVariables['/dig5a'].stateValues.valueForDisplay.tree).eq(621800)
+      expect(stateVariables['/dig5b'].stateValues.valueForDisplay.tree).eqls(
         ['+', ['*', 31.384, 'x'], ['*', 4, 'pi']]);
-      expect(components['/dec5a'].stateValues.valueForDisplay.tree).eq(621802.35203)
-      expect(components['/dec5b'].stateValues.valueForDisplay.tree).eqls(
+      expect(stateVariables['/dec5a'].stateValues.valueForDisplay.tree).eq(621802.35203)
+      expect(stateVariables['/dec5b'].stateValues.valueForDisplay.tree).eqls(
         ['+', ['*', 31.38352, 'x'], ['*', 4, 'pi']]);
-      expect(components['/dig5dec1a'].stateValues.valueForDisplay.tree).eq(621800)
-      expect(components['/dig5dec1b'].stateValues.valueForDisplay.tree).eqls(
+      expect(stateVariables['/dig5dec1a'].stateValues.valueForDisplay.tree).eq(621800)
+      expect(stateVariables['/dig5dec1b'].stateValues.valueForDisplay.tree).eqls(
         ['+', ['*', 31.384, 'x'], ['*', 4, 'pi']]);
 
     });
@@ -729,7 +734,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('dynamic rounding', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -797,7 +802,7 @@ describe('Math Tag Tests', function () {
 
 
   it('function symbols', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -833,14 +838,14 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eqls(["apply", "f", "x"]);
-      expect(components['/_math2'].stateValues.value.tree).eqls(["apply", "g", "t"]);
-      expect(components['/_math3'].stateValues.value.tree).eqls(["*", "h", "z"]);
-      expect(components['/_math4'].stateValues.value.tree).eqls(["*", "f", "x"]);
-      expect(components['/_math5'].stateValues.value.tree).eqls(["apply", "g", "t"]);
-      expect(components['/_math6'].stateValues.value.tree).eqls(["apply", "h", "z"]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(["apply", "f", "x"]);
+      expect(stateVariables['/_math2'].stateValues.value.tree).eqls(["apply", "g", "t"]);
+      expect(stateVariables['/_math3'].stateValues.value.tree).eqls(["*", "h", "z"]);
+      expect(stateVariables['/_math4'].stateValues.value.tree).eqls(["*", "f", "x"]);
+      expect(stateVariables['/_math5'].stateValues.value.tree).eqls(["apply", "g", "t"]);
+      expect(stateVariables['/_math6'].stateValues.value.tree).eqls(["apply", "h", "z"]);
 
     });
 
@@ -848,7 +853,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('copy and overwrite function symbols', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -885,14 +890,14 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/m1'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["*", "m", "x"]]);
-      expect(components['/m2'].stateValues.value.tree).eqls(["+", ["*", "f", "x"], ["apply", "m", "x"]]);
-      expect(components['/m3'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["apply", "m", "x"]]);
-      expect(components['/m4'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["apply", "m", "x"]]);
-      expect(components['/m5'].stateValues.value.tree).eqls(["+", ["*", "f", "x"], ["apply", "m", "x"]]);
-      expect(components['/m6'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["*", "m", "x"]]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/m1'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["*", "m", "x"]]);
+      expect(stateVariables['/m2'].stateValues.value.tree).eqls(["+", ["*", "f", "x"], ["apply", "m", "x"]]);
+      expect(stateVariables['/m3'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["apply", "m", "x"]]);
+      expect(stateVariables['/m4'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["apply", "m", "x"]]);
+      expect(stateVariables['/m5'].stateValues.value.tree).eqls(["+", ["*", "f", "x"], ["apply", "m", "x"]]);
+      expect(stateVariables['/m6'].stateValues.value.tree).eqls(["+", ["apply", "f", "x"], ["*", "m", "x"]]);
 
     });
 
@@ -900,7 +905,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('targetsAreFunctionSymbols', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -915,10 +920,10 @@ describe('Math Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = components["/f"].stateValues.value.tree;
-      let x = components["/x"].stateValues.value.tree;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = stateVariables["/f"].stateValues.value.tree;
+      let x = stateVariables["/x"].stateValues.value.tree;
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -935,12 +940,12 @@ describe('Math Tag Tests', function () {
       })
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_math1'].stateValues.value.tree).eqls(["*", f, x]);
-        expect(components['/_math2'].stateValues.value.tree).eqls(["*", x, f]);
-        expect(components['/_math3'].stateValues.value.tree).eqls(["apply", f, x]);
-        expect(components['/_math4'].stateValues.value.tree).eqls(["*", x, f]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_math1'].stateValues.value.tree).eqls(["*", f, x]);
+        expect(stateVariables['/_math2'].stateValues.value.tree).eqls(["*", x, f]);
+        expect(stateVariables['/_math3'].stateValues.value.tree).eqls(["apply", f, x]);
+        expect(stateVariables['/_math4'].stateValues.value.tree).eqls(["*", x, f]);
 
       });
     })
@@ -949,7 +954,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('copy and overwrite targetsAreFunctionSymbols', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -966,9 +971,9 @@ describe('Math Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let f = components["/f"].stateValues.value.tree;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = stateVariables["/f"].stateValues.value.tree;
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -992,14 +997,14 @@ describe('Math Tag Tests', function () {
 
 
       cy.log('Test internal values')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/m1'].stateValues.value.tree).eqls(["*", f, "x"]);
-        expect(components['/m2'].stateValues.value.tree).eqls(["apply", f, "x"]);
-        expect(components['/m3'].stateValues.value.tree).eqls(["*", f, "x"]);
-        expect(components['/m4'].stateValues.value.tree).eqls(["apply", f, "x"]);
-        expect(components['/m5'].stateValues.value.tree).eqls(["*", f, "x"]);
-        expect(components['/m6'].stateValues.value.tree).eqls(["apply", f, "x"]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/m1'].stateValues.value.tree).eqls(["*", f, "x"]);
+        expect(stateVariables['/m2'].stateValues.value.tree).eqls(["apply", f, "x"]);
+        expect(stateVariables['/m3'].stateValues.value.tree).eqls(["*", f, "x"]);
+        expect(stateVariables['/m4'].stateValues.value.tree).eqls(["apply", f, "x"]);
+        expect(stateVariables['/m5'].stateValues.value.tree).eqls(["*", f, "x"]);
+        expect(stateVariables['/m6'].stateValues.value.tree).eqls(["apply", f, "x"]);
 
       });
     })
@@ -1008,7 +1013,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('split symbols', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1076,29 +1081,29 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/m1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
-      expect(components['/m2'].stateValues.value.tree).eqls("xyz");
-      expect(components['/m3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
-      expect(components['/m4'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
-      expect(components['/m5'].stateValues.value.tree).eqls("xyx");
-      expect(components['/m6'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
-      expect(components['/m7'].stateValues.value.tree).eqls(["*", "x", ["_", "y", "u"], "v"]);
-      expect(components['/m8'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
-      expect(components['/m9'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
-      expect(components['/m10'].stateValues.value.tree).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
-      expect(components['/m11'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
-      expect(components['/m12'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
-      expect(components['/m13'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
-      expect(components['/m14'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/m1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables['/m2'].stateValues.value.tree).eqls("xyz");
+      expect(stateVariables['/m3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables['/m4'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
+      expect(stateVariables['/m5'].stateValues.value.tree).eqls("xyx");
+      expect(stateVariables['/m6'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
+      expect(stateVariables['/m7'].stateValues.value.tree).eqls(["*", "x", ["_", "y", "u"], "v"]);
+      expect(stateVariables['/m8'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(stateVariables['/m9'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m10'].stateValues.value.tree).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
+      expect(stateVariables['/m11'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
+      expect(stateVariables['/m12'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(stateVariables['/m13'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m14'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
 
     });
 
   });
 
   it('split symbols, latex', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1218,42 +1223,42 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/m1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
-      expect(components['/m2'].stateValues.value.tree).eqls("xyz");
-      expect(components['/m2a'].stateValues.value.tree).eqls("xyz");
-      expect(components['/m2b'].stateValues.value.tree).eqls("xyz");
-      expect(components['/m3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
-      expect(components['/m4'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
-      expect(components['/m5'].stateValues.value.tree).eqls("xyx");
-      expect(components['/m5a'].stateValues.value.tree).eqls("xyx");
-      expect(components['/m5b'].stateValues.value.tree).eqls("xyx");
-      expect(components['/m6'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
-      expect(components['/m7'].stateValues.value.tree).eqls(["*", "x", ["_", "y", "u"], "v"]);
-      expect(components['/m8'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
-      expect(components['/m8a'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
-      expect(components['/m9'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
-      expect(components['/m9a'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
-      expect(components['/m10'].stateValues.value.tree).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
-      expect(components['/m10a'].stateValues.value.tree).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
-      expect(components['/m11'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
-      expect(components['/m11a'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
-      expect(components['/m11b'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
-      expect(components['/m12'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
-      expect(components['/m12a'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
-      expect(components['/m13'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
-      expect(components['/m13a'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
-      expect(components['/m14'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
-      expect(components['/m14a'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
-      expect(components['/m14b'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/m1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables['/m2'].stateValues.value.tree).eqls("xyz");
+      expect(stateVariables['/m2a'].stateValues.value.tree).eqls("xyz");
+      expect(stateVariables['/m2b'].stateValues.value.tree).eqls("xyz");
+      expect(stateVariables['/m3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables['/m4'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
+      expect(stateVariables['/m5'].stateValues.value.tree).eqls("xyx");
+      expect(stateVariables['/m5a'].stateValues.value.tree).eqls("xyx");
+      expect(stateVariables['/m5b'].stateValues.value.tree).eqls("xyx");
+      expect(stateVariables['/m6'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
+      expect(stateVariables['/m7'].stateValues.value.tree).eqls(["*", "x", ["_", "y", "u"], "v"]);
+      expect(stateVariables['/m8'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(stateVariables['/m8a'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(stateVariables['/m9'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m9a'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m10'].stateValues.value.tree).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
+      expect(stateVariables['/m10a'].stateValues.value.tree).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
+      expect(stateVariables['/m11'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
+      expect(stateVariables['/m11a'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
+      expect(stateVariables['/m11b'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
+      expect(stateVariables['/m12'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(stateVariables['/m12a'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(stateVariables['/m13'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m13a'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m14'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
+      expect(stateVariables['/m14a'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
+      expect(stateVariables['/m14b'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
 
     });
 
   });
 
   it('copy and overwrite split symbols', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1291,21 +1296,21 @@ describe('Math Tag Tests', function () {
 
 
     cy.log('Test internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/m1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
-      expect(components['/m2'].stateValues.value.tree).eqls("xyz");
-      expect(components['/m3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
-      expect(components['/m4'].stateValues.value.tree).eqls("xyz");
-      expect(components['/m5'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
-      expect(components['/m6'].stateValues.value.tree).eqls("xyz");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/m1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables['/m2'].stateValues.value.tree).eqls("xyz");
+      expect(stateVariables['/m3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables['/m4'].stateValues.value.tree).eqls("xyz");
+      expect(stateVariables['/m5'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables['/m6'].stateValues.value.tree).eqls("xyz");
 
     });
 
   });
 
   it('merge lists with other containers', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1333,19 +1338,19 @@ describe('Math Tag Tests', function () {
     })
 
     cy.log('Test internal values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/set'].stateValues.value.tree).eqls(["set", "a", "b", "c"]);
-      // expect(components['/tuple'].stateValues.value.tree).eqls(["tuple", "a", "b", "c"]);
-      expect(components['/combinedSet'].stateValues.value.tree).eqls(["set", "a", "b", "c", "d", "e", "f"]);
-      expect(components['/combinedTuple'].stateValues.value.tree).eqls(["tuple", "a", "b", "c", "d", "e", "f"]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/set'].stateValues.value.tree).eqls(["set", "a", "b", "c"]);
+      // expect(stateVariables['/tuple'].stateValues.value.tree).eqls(["tuple", "a", "b", "c"]);
+      expect(stateVariables['/combinedSet'].stateValues.value.tree).eqls(["set", "a", "b", "c", "d", "e", "f"]);
+      expect(stateVariables['/combinedTuple'].stateValues.value.tree).eqls(["tuple", "a", "b", "c", "d", "e", "f"]);
 
     });
 
   });
 
   it('components of math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1404,28 +1409,28 @@ describe('Math Tag Tests', function () {
         })
       }
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect(components["/nDim1"].stateValues.value).eq(xs.length)
-        expect(components["/nDim2"].stateValues.value).eq(xs.length)
+        expect(stateVariables["/nDim1"].stateValues.value).eq(xs.length)
+        expect(stateVariables["/nDim2"].stateValues.value).eq(xs.length)
 
         let m3Operator = operator === "tuple" ? "vector" : operator;
 
-        expect(components["/m"].stateValues.value.tree).eqls([operator, ...xs])
-        expect(components["/m2"].stateValues.value.tree).eqls([operator, ...xs])
-        expect(components["/m3"].stateValues.value.tree).eqls([m3Operator, ...xs])
+        expect(stateVariables["/m"].stateValues.value.tree).eqls([operator, ...xs])
+        expect(stateVariables["/m2"].stateValues.value.tree).eqls([operator, ...xs])
+        expect(stateVariables["/m3"].stateValues.value.tree).eqls([m3Operator, ...xs])
 
         for (let [ind, x] of xs.entries()) {
           let comp = indToComp[ind];
           if (comp) {
-            expect(components[`/${comp}`].stateValues.value.tree).eqls(x);
-            expect(components[`/${comp}_2`].stateValues.value.tree).eqls(x);
-            expect(components[`/${comp}_3`].stateValues.value.tree).eqls(x);
+            expect(stateVariables[`/${comp}`].stateValues.value.tree).eqls(x);
+            expect(stateVariables[`/${comp}_2`].stateValues.value.tree).eqls(x);
+            expect(stateVariables[`/${comp}_3`].stateValues.value.tree).eqls(x);
           }
-          expect(components[`/x${ind + 1}`].stateValues.value.tree).eqls(x);
-          expect(components[`/x${ind + 1}_2`].stateValues.value.tree).eqls(x);
-          expect(components[`/x${ind + 1}_3`].stateValues.value.tree).eqls(x);
+          expect(stateVariables[`/x${ind + 1}`].stateValues.value.tree).eqls(x);
+          expect(stateVariables[`/x${ind + 1}_2`].stateValues.value.tree).eqls(x);
+          expect(stateVariables[`/x${ind + 1}_3`].stateValues.value.tree).eqls(x);
         }
 
       });
@@ -1495,7 +1500,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('group composite replacements inside math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1523,12 +1528,12 @@ describe('Math Tag Tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('a+b')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/groupByDefault"].stateValues.value.tree).eqls(["tuple", "a", "b"])
-      expect(components["/dontGroup"].stateValues.value.tree).eqls(["*", "a", "b"])
-      expect(components["/dontGroupDueToString"].stateValues.value.tree).eqls(["+", "a", "b"])
+      expect(stateVariables["/groupByDefault"].stateValues.value.tree).eqls(["tuple", "a", "b"])
+      expect(stateVariables["/dontGroup"].stateValues.value.tree).eqls(["*", "a", "b"])
+      expect(stateVariables["/dontGroupDueToString"].stateValues.value.tree).eqls(["+", "a", "b"])
 
 
 
@@ -1540,7 +1545,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('math inherits unordered of children', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1558,13 +1563,13 @@ describe('Math Tag Tests', function () {
 
     cy.window().then(async (win) => {
 
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/unordered1"].stateValues.unordered).eq(true);
-      expect(await components["/unordered2"].stateValues.unordered).eq(true);
-      expect(await components["/unordered3"].stateValues.unordered).eq(true);
-      expect(await components["/ordered1"].stateValues.unordered).eq(false);
-      expect(await components["/ordered2"].stateValues.unordered).eq(false);
-      expect(await components["/ordered3"].stateValues.unordered).eq(false);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/unordered1"].stateValues.unordered).eq(true);
+      expect(stateVariables["/unordered2"].stateValues.unordered).eq(true);
+      expect(stateVariables["/unordered3"].stateValues.unordered).eq(true);
+      expect(stateVariables["/ordered1"].stateValues.unordered).eq(false);
+      expect(stateVariables["/ordered2"].stateValues.unordered).eq(false);
+      expect(stateVariables["/ordered3"].stateValues.unordered).eq(false);
 
 
     });
@@ -1573,7 +1578,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('copy math and overwrite unordered', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1599,19 +1604,19 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/unordered1"].stateValues.unordered).eq(true);
-      expect(await components["/unordered2"].stateValues.unordered).eq(true);
-      expect(await components["/unordered3"].stateValues.unordered).eq(true);
-      expect(await components["/unordered4"].stateValues.unordered).eq(true);
-      expect(await components["/unordered5"].stateValues.unordered).eq(true);
-      expect(await components["/unordered6"].stateValues.unordered).eq(true);
-      expect(await components["/ordered1"].stateValues.unordered).eq(false);
-      expect(await components["/ordered2"].stateValues.unordered).eq(false);
-      expect(await components["/ordered3"].stateValues.unordered).eq(false);
-      expect(await components["/ordered4"].stateValues.unordered).eq(false);
-      expect(await components["/ordered5"].stateValues.unordered).eq(false);
-      expect(await components["/ordered6"].stateValues.unordered).eq(false);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/unordered1"].stateValues.unordered).eq(true);
+      expect(stateVariables["/unordered2"].stateValues.unordered).eq(true);
+      expect(stateVariables["/unordered3"].stateValues.unordered).eq(true);
+      expect(stateVariables["/unordered4"].stateValues.unordered).eq(true);
+      expect(stateVariables["/unordered5"].stateValues.unordered).eq(true);
+      expect(stateVariables["/unordered6"].stateValues.unordered).eq(true);
+      expect(stateVariables["/ordered1"].stateValues.unordered).eq(false);
+      expect(stateVariables["/ordered2"].stateValues.unordered).eq(false);
+      expect(stateVariables["/ordered3"].stateValues.unordered).eq(false);
+      expect(stateVariables["/ordered4"].stateValues.unordered).eq(false);
+      expect(stateVariables["/ordered5"].stateValues.unordered).eq(false);
+      expect(stateVariables["/ordered6"].stateValues.unordered).eq(false);
 
 
     });
@@ -1620,7 +1625,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('copy math and overwrite unordered, change dynamically', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1641,53 +1646,53 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/p1/m1"].stateValues.unordered).eq(true);
-      expect(await components["/p1/m2"].stateValues.unordered).eq(false);
-      expect(await components["/p1/m3"].stateValues.unordered).eq(true);
-      expect(await components["/p2/m1"].stateValues.unordered).eq(true);
-      expect(await components["/p2/m2"].stateValues.unordered).eq(false);
-      expect(await components["/p2/m3"].stateValues.unordered).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/p1/m1"].stateValues.unordered).eq(true);
+      expect(stateVariables["/p1/m2"].stateValues.unordered).eq(false);
+      expect(stateVariables["/p1/m3"].stateValues.unordered).eq(true);
+      expect(stateVariables["/p2/m1"].stateValues.unordered).eq(true);
+      expect(stateVariables["/p2/m2"].stateValues.unordered).eq(false);
+      expect(stateVariables["/p2/m3"].stateValues.unordered).eq(true);
 
     });
 
     cy.get('#\\/b1_input').click();
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/p1/m1"].stateValues.unordered).eq(false);
-      expect(await components["/p1/m2"].stateValues.unordered).eq(false);
-      expect(await components["/p1/m3"].stateValues.unordered).eq(true);
-      expect(await components["/p2/m1"].stateValues.unordered).eq(false);
-      expect(await components["/p2/m2"].stateValues.unordered).eq(false);
-      expect(await components["/p2/m3"].stateValues.unordered).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/p1/m1"].stateValues.unordered).eq(false);
+      expect(stateVariables["/p1/m2"].stateValues.unordered).eq(false);
+      expect(stateVariables["/p1/m3"].stateValues.unordered).eq(true);
+      expect(stateVariables["/p2/m1"].stateValues.unordered).eq(false);
+      expect(stateVariables["/p2/m2"].stateValues.unordered).eq(false);
+      expect(stateVariables["/p2/m3"].stateValues.unordered).eq(true);
     });
 
     cy.get('#\\/b2_input').click();
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/p1/m1"].stateValues.unordered).eq(false);
-      expect(await components["/p1/m2"].stateValues.unordered).eq(true);
-      expect(await components["/p1/m3"].stateValues.unordered).eq(true);
-      expect(await components["/p2/m1"].stateValues.unordered).eq(false);
-      expect(await components["/p2/m2"].stateValues.unordered).eq(true);
-      expect(await components["/p2/m3"].stateValues.unordered).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/p1/m1"].stateValues.unordered).eq(false);
+      expect(stateVariables["/p1/m2"].stateValues.unordered).eq(true);
+      expect(stateVariables["/p1/m3"].stateValues.unordered).eq(true);
+      expect(stateVariables["/p2/m1"].stateValues.unordered).eq(false);
+      expect(stateVariables["/p2/m2"].stateValues.unordered).eq(true);
+      expect(stateVariables["/p2/m3"].stateValues.unordered).eq(true);
     });
 
     cy.get('#\\/b3_input').click();
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/p1/m1"].stateValues.unordered).eq(false);
-      expect(await components["/p1/m2"].stateValues.unordered).eq(true);
-      expect(await components["/p1/m3"].stateValues.unordered).eq(false);
-      expect(await components["/p2/m1"].stateValues.unordered).eq(false);
-      expect(await components["/p2/m2"].stateValues.unordered).eq(true);
-      expect(await components["/p2/m3"].stateValues.unordered).eq(false);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/p1/m1"].stateValues.unordered).eq(false);
+      expect(stateVariables["/p1/m2"].stateValues.unordered).eq(true);
+      expect(stateVariables["/p1/m3"].stateValues.unordered).eq(false);
+      expect(stateVariables["/p2/m1"].stateValues.unordered).eq(false);
+      expect(stateVariables["/p2/m2"].stateValues.unordered).eq(true);
+      expect(stateVariables["/p2/m3"].stateValues.unordered).eq(false);
     });
 
   });
 
   it('shrink vector dimensions in inverse direction', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1712,7 +1717,7 @@ describe('Math Tag Tests', function () {
   });
 
   it('change one vector component in inverse direction does not affect other', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1729,30 +1734,34 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/n').should('have.text', '1');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
-      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
+      expect((stateVariables['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
     })
 
     cy.log('move dependent point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/Q"].movePoint({ x: -2, y: 3 })
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/Q",
+        args: { x: -2, y: 3 }
+      })
     })
 
     cy.get('#\\/n').should('have.text', '-0.5');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
-      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
+      expect((stateVariables['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
     })
 
 
   });
 
   it('change one vector component in inverse direction does not affect other, original in math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1774,15 +1783,19 @@ describe('Math Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
-      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
+      expect((stateVariables['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
     })
 
     cy.log('move dependent point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/Q"].movePoint({ x: -2, y: 3 })
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/Q",
+        args: { x: -2, y: 3 }
+      })
     })
 
     cy.get('#\\/n').should('have.text', '-0.5');
@@ -1791,16 +1804,16 @@ describe('Math Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
-      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
+      expect((stateVariables['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
     })
 
 
   });
 
   it('change one vector component in inverse direction does not affect other, through mathinput', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1823,15 +1836,19 @@ describe('Math Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
-      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs).map(x => x.tree)).eqls([3, 1])
+      expect((stateVariables['/Q'].stateValues.xs).map(x => x.tree)).eqls([1, 1])
     })
 
     cy.log('move dependent point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/Q"].movePoint({ x: -2, y: 3 })
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/Q",
+        args: { x: -2, y: 3 }
+      })
     })
 
     cy.get('#\\/n').should('have.text', '-0.5');
@@ -1840,9 +1857,9 @@ describe('Math Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
-      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs).map(x => x.tree)).eqls([0, 3])
+      expect((stateVariables['/Q'].stateValues.xs).map(x => x.tree)).eqls([-2, 3])
     })
 
     cy.log('enter value in mathinput')
@@ -1854,16 +1871,16 @@ describe('Math Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/P'].stateValues.xs).map(x => x.tree)).eqls([6, 9])
-      expect((await components['/Q'].stateValues.xs).map(x => x.tree)).eqls([4, 9])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs).map(x => x.tree)).eqls([6, 9])
+      expect((stateVariables['/Q'].stateValues.xs).map(x => x.tree)).eqls([4, 9])
     })
 
 
   });
 
   it('copy value prop copies attributes', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
@@ -1916,7 +1933,7 @@ describe('Math Tag Tests', function () {
 
   // TODO: fix so doesn't break when copy the math, not just copy its value
   it('set vector component to undefined', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>

@@ -11,6 +11,7 @@ function cesc(s) {
 describe('Paginator Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
@@ -53,7 +54,7 @@ describe('Paginator Tag Tests', function () {
   
     `
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -67,26 +68,26 @@ describe('Paginator Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinput1Name = stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
       let mathinput1DisplayAnchor = cesc('#' + mathinput1Name) + " .mq-editable-field";
       let answer1Correct = cesc('#' + mathinput1Name + "_correct");
       let answer1Incorrect = cesc('#' + mathinput1Name + "_incorrect");
 
-      let mathinput4Name = components["/_answer4"].stateValues.inputChildren[0].componentName;
+      let mathinput4Name = stateVariables["/_answer4"].stateValues.inputChildren[0].componentName;
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let mathinput4DisplayAnchor = cesc('#' + mathinput4Name) + " .mq-editable-field";
       let answer4Correct = cesc('#' + mathinput4Name + "_correct");
       let answer4Incorrect = cesc('#' + mathinput4Name + "_incorrect");
 
-      expect(components["/_section2"]).eq(undefined);
-      expect(components["/_textinput1"]).eq(undefined);
-      expect(components["/_section3"]).eq(undefined);
-      expect(components["/_mathinput2"]).eq(undefined);
-      expect(components["/_mathinput3"]).eq(undefined);
+      expect(stateVariables["/_section2"]).eq(undefined);
+      expect(stateVariables["/_textinput1"]).eq(undefined);
+      expect(stateVariables["/_section3"]).eq(undefined);
+      expect(stateVariables["/_mathinput2"]).eq(undefined);
+      expect(stateVariables["/_mathinput3"]).eq(undefined);
 
 
       cy.get(cesc('#/ca')).should('have.text', '0');
@@ -135,11 +136,11 @@ describe('Paginator Tag Tests', function () {
 
       cy.get(mathinput1Anchor).should('not.exist');
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
-        expect(components["/_section3"]).eq(undefined);
-        expect(components["/_answer2"]).eq(undefined);
-        expect(components["/_answer3"]).eq(undefined);
+        expect(stateVariables["/_section3"]).eq(undefined);
+        expect(stateVariables["/_answer2"]).eq(undefined);
+        expect(stateVariables["/_answer3"]).eq(undefined);
       })
 
       cy.get(mathinput4Anchor).type("{end}{backspace}3{enter}", { force: true })
@@ -164,11 +165,11 @@ describe('Paginator Tag Tests', function () {
 
       cy.get(cesc('#/name')).should('not.exist');
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
-        expect(components["/_section3"]).eq(undefined);
-        expect(components["/_answer2"]).eq(undefined);
-        expect(components["/_answer3"]).eq(undefined);
+        expect(stateVariables["/_section3"]).eq(undefined);
+        expect(stateVariables["/_answer2"]).eq(undefined);
+        expect(stateVariables["/_answer3"]).eq(undefined);
       })
 
       cy.log('back to second page')
@@ -215,7 +216,7 @@ describe('Paginator Tag Tests', function () {
         // cy.task('log', JSON.stringify(Object.keys(components)))
         // console.log(JSON.stringify(Object.keys(components)))
         // for (let i = 0; i < 10; i++) {
-        //   if (components["/_answer2"] === undefined) {
+        //   if (stateVariables["/_answer2"] === undefined) {
         //     cy.task('log', 'undefined')
         //     cy.window().then((w) => {
         //       components = Object.assign({}, w.state.components);
@@ -228,15 +229,15 @@ describe('Paginator Tag Tests', function () {
         //     break;
         //   }
         // }
-        // expect(components["/_answer2"]).not.eq(undefined);
+        // expect(stateVariables["/_answer2"]).not.eq(undefined);
 
-        let mathinput2Name = (await components["/_answer2"].stateValues.inputChildren)[0].componentName;
+        let mathinput2Name = (stateVariables["/_answer2"].stateValues.inputChildren)[0].componentName;
         let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
         let mathinput2DisplayAnchor = cesc('#' + mathinput2Name) + " .mq-editable-field";
         let answer2Correct = cesc('#' + mathinput2Name + "_correct");
         let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
 
-        let mathinput3Name = (await components["/_answer3"].stateValues.inputChildren)[0].componentName;
+        let mathinput3Name = (stateVariables["/_answer3"].stateValues.inputChildren)[0].componentName;
         let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
         let mathinput3DisplayAnchor = cesc('#' + mathinput3Name) + " .mq-editable-field";
         let answer3Correct = cesc('#' + mathinput3Name + "_correct");
@@ -320,7 +321,7 @@ describe('Paginator Tag Tests', function () {
 
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>b</text>
@@ -329,7 +330,7 @@ describe('Paginator Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -345,17 +346,17 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/_title2')).should('not.exist');
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/_section1"]).eq(undefined);
-      expect(components["/_answer1"]).eq(undefined);
-      expect(components["/_section3"]).eq(undefined);
-      expect(components["/_answer2"]).eq(undefined);
-      expect(components["/_answer3"]).eq(undefined);
+      expect(stateVariables["/_section1"]).eq(undefined);
+      expect(stateVariables["/_answer1"]).eq(undefined);
+      expect(stateVariables["/_section3"]).eq(undefined);
+      expect(stateVariables["/_answer2"]).eq(undefined);
+      expect(stateVariables["/_answer3"]).eq(undefined);
 
 
-      let mathinput4Name = components["/_answer4"].stateValues.inputChildren[0].componentName;
+      let mathinput4Name = stateVariables["/_answer4"].stateValues.inputChildren[0].componentName;
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let mathinput4DisplayAnchor = cesc('#' + mathinput4Name) + " .mq-editable-field";
       let answer4Correct = cesc('#' + mathinput4Name + "_correct");
@@ -394,24 +395,24 @@ describe('Paginator Tag Tests', function () {
         expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
       })
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
 
-        let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+        let mathinput2Name = stateVariables["/_answer2"].stateValues.inputChildren[0].componentName;
         let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
         let mathinput2DisplayAnchor = cesc('#' + mathinput2Name) + " .mq-editable-field";
         let answer2Correct = cesc('#' + mathinput2Name + "_correct");
         let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
         let answer2Submit = cesc('#' + mathinput2Name + "_submit");
 
-        let mathinput3Name = components["/_answer3"].stateValues.inputChildren[0].componentName;
+        let mathinput3Name = stateVariables["/_answer3"].stateValues.inputChildren[0].componentName;
         let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
         let mathinput3DisplayAnchor = cesc('#' + mathinput3Name) + " .mq-editable-field";
         let answer3Correct = cesc('#' + mathinput3Name + "_correct");
         let answer3Incorrect = cesc('#' + mathinput3Name + "_incorrect");
 
-        expect(components["/_section1"]).eq(undefined);
-        expect(components["/_answer1"]).eq(undefined);
+        expect(stateVariables["/_section1"]).eq(undefined);
+        expect(stateVariables["/_answer1"]).eq(undefined);
 
         cy.get(answer2Incorrect).should('be.visible')
         cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
@@ -472,10 +473,10 @@ describe('Paginator Tag Tests', function () {
           expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
         })
 
-        cy.window().then((win) => {
-          let components = Object.assign({}, win.state.components);
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
 
-          let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+          let mathinput1Name = stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
           let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
           let mathinput1DisplayAnchor = cesc('#' + mathinput1Name) + " .mq-editable-field";
           let answer1Correct = cesc('#' + mathinput1Name + "_correct");
@@ -573,7 +574,7 @@ describe('Paginator Tag Tests', function () {
 
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>b</text>
@@ -582,7 +583,7 @@ describe('Paginator Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -596,29 +597,29 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/_title2')).should('have.text', 'Page 3')
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/_section1"]).eq(undefined);
-      expect(components["/_answer1"]).eq(undefined);
-      expect(components["/_section2"]).eq(undefined);
-      expect(components["/name"]).eq(undefined);
+      expect(stateVariables["/_section1"]).eq(undefined);
+      expect(stateVariables["/_answer1"]).eq(undefined);
+      expect(stateVariables["/_section2"]).eq(undefined);
+      expect(stateVariables["/name"]).eq(undefined);
 
 
-      let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+      let mathinput2Name = stateVariables["/_answer2"].stateValues.inputChildren[0].componentName;
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2DisplayAnchor = cesc('#' + mathinput2Name) + " .mq-editable-field";
       let answer2Correct = cesc('#' + mathinput2Name + "_correct");
       let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
       let answer2Submit = cesc('#' + mathinput2Name + "_submit");
 
-      let mathinput3Name = components["/_answer3"].stateValues.inputChildren[0].componentName;
+      let mathinput3Name = stateVariables["/_answer3"].stateValues.inputChildren[0].componentName;
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3DisplayAnchor = cesc('#' + mathinput3Name) + " .mq-editable-field";
       let answer3Correct = cesc('#' + mathinput3Name + "_correct");
       let answer3Incorrect = cesc('#' + mathinput3Name + "_incorrect");
 
-      let mathinput4Name = components["/_answer4"].stateValues.inputChildren[0].componentName;
+      let mathinput4Name = stateVariables["/_answer4"].stateValues.inputChildren[0].componentName;
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let mathinput4DisplayAnchor = cesc('#' + mathinput4Name) + " .mq-editable-field";
       let answer4Correct = cesc('#' + mathinput4Name + "_correct");
@@ -678,10 +679,10 @@ describe('Paginator Tag Tests', function () {
 
 
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
 
-        let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+        let mathinput1Name = stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
         let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
         let mathinput1DisplayAnchor = cesc('#' + mathinput1Name) + " .mq-editable-field";
         let answer1Correct = cesc('#' + mathinput1Name + "_correct");
@@ -740,7 +741,7 @@ describe('Paginator Tag Tests', function () {
     <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
   
     `
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -754,24 +755,24 @@ describe('Paginator Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinput1Name = stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
       let answer1Correct = cesc('#' + mathinput1Name + "_correct");
       let answer1Incorrect = cesc('#' + mathinput1Name + "_incorrect");
 
-      let mathinput4Name = components["/_answer4"].stateValues.inputChildren[0].componentName;
+      let mathinput4Name = stateVariables["/_answer4"].stateValues.inputChildren[0].componentName;
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let answer4Correct = cesc('#' + mathinput4Name + "_correct");
       let answer4Incorrect = cesc('#' + mathinput4Name + "_incorrect");
 
-      expect(components["/_section2"]).eq(undefined);
-      expect(components["/_textinput1"]).eq(undefined);
-      expect(components["/_section3"]).eq(undefined);
-      expect(components["/_mathinput2"]).eq(undefined);
-      expect(components["/_mathinput3"]).eq(undefined);
+      expect(stateVariables["/_section2"]).eq(undefined);
+      expect(stateVariables["/_textinput1"]).eq(undefined);
+      expect(stateVariables["/_section3"]).eq(undefined);
+      expect(stateVariables["/_mathinput2"]).eq(undefined);
+      expect(stateVariables["/_mathinput3"]).eq(undefined);
 
 
       cy.get(cesc('#/ca')).should('have.text', '0');
@@ -805,11 +806,11 @@ describe('Paginator Tag Tests', function () {
 
       cy.get(mathinput1Anchor).should('not.exist');
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
-        expect(components["/_section3"]).eq(undefined);
-        expect(components["/_answer2"]).eq(undefined);
-        expect(components["/_answer3"]).eq(undefined);
+        expect(stateVariables["/_section3"]).eq(undefined);
+        expect(stateVariables["/_answer2"]).eq(undefined);
+        expect(stateVariables["/_answer3"]).eq(undefined);
       })
 
       cy.get(mathinput4Anchor).type("{end}{backspace}3{enter}", { force: true })
@@ -829,11 +830,11 @@ describe('Paginator Tag Tests', function () {
 
       cy.get(cesc('#/name')).should('not.exist');
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
-        expect(components["/_section3"]).eq(undefined);
-        expect(components["/_answer2"]).eq(undefined);
-        expect(components["/_answer3"]).eq(undefined);
+        expect(stateVariables["/_section3"]).eq(undefined);
+        expect(stateVariables["/_answer2"]).eq(undefined);
+        expect(stateVariables["/_answer3"]).eq(undefined);
       })
 
       cy.log('back to second page')
@@ -864,12 +865,12 @@ describe('Paginator Tag Tests', function () {
       cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
 
-        let mathinput2Name = (await components["/_answer2"].stateValues.inputChildren)[0].componentName;
+        let mathinput2Name = (stateVariables["/_answer2"].stateValues.inputChildren)[0].componentName;
         let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
         let answer2Correct = cesc('#' + mathinput2Name + "_correct");
         let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
 
-        let mathinput3Name = (await components["/_answer3"].stateValues.inputChildren)[0].componentName;
+        let mathinput3Name = (stateVariables["/_answer3"].stateValues.inputChildren)[0].componentName;
         let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
         let answer3Correct = cesc('#' + mathinput3Name + "_correct");
         let answer3Incorrect = cesc('#' + mathinput3Name + "_incorrect");
@@ -899,7 +900,7 @@ describe('Paginator Tag Tests', function () {
 
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>b</text>
@@ -908,7 +909,7 @@ describe('Paginator Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -926,17 +927,17 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/_p3')).should('have.text', "Hello, Me!")
     cy.get(cesc('#/ca')).should('have.text', '1');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/_section1"]).eq(undefined);
-      expect(components["/_answer1"]).eq(undefined);
-      expect(components["/_section3"]).eq(undefined);
-      expect(components["/_answer2"]).eq(undefined);
-      expect(components["/_answer3"]).eq(undefined);
+      expect(stateVariables["/_section1"]).eq(undefined);
+      expect(stateVariables["/_answer1"]).eq(undefined);
+      expect(stateVariables["/_section3"]).eq(undefined);
+      expect(stateVariables["/_answer2"]).eq(undefined);
+      expect(stateVariables["/_answer3"]).eq(undefined);
 
 
-      let mathinput4Name = components["/_answer4"].stateValues.inputChildren[0].componentName;
+      let mathinput4Name = stateVariables["/_answer4"].stateValues.inputChildren[0].componentName;
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let answer4Correct = cesc('#' + mathinput4Name + "_correct");
       let answer4Incorrect = cesc('#' + mathinput4Name + "_incorrect");
@@ -958,21 +959,21 @@ describe('Paginator Tag Tests', function () {
 
       cy.get(cesc('#/ca')).should('have.text', '0.667');
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         components = Object.assign({}, win.state.components);
 
-        let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+        let mathinput2Name = stateVariables["/_answer2"].stateValues.inputChildren[0].componentName;
         let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
         let answer2Correct = cesc('#' + mathinput2Name + "_correct");
         let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
 
-        let mathinput3Name = components["/_answer3"].stateValues.inputChildren[0].componentName;
+        let mathinput3Name = stateVariables["/_answer3"].stateValues.inputChildren[0].componentName;
         let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
         let answer3Correct = cesc('#' + mathinput3Name + "_correct");
         let answer3Incorrect = cesc('#' + mathinput3Name + "_incorrect");
 
-        expect(components["/_section1"]).eq(undefined);
-        expect(components["/_answer1"]).eq(undefined);
+        expect(stateVariables["/_section1"]).eq(undefined);
+        expect(stateVariables["/_answer1"]).eq(undefined);
 
 
         cy.get(answer2Incorrect).should('be.visible');
@@ -1009,10 +1010,10 @@ describe('Paginator Tag Tests', function () {
 
         cy.get(cesc('#/ca')).should('have.text', '0.5');
 
-        cy.window().then((win) => {
-          let components = Object.assign({}, win.state.components);
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
 
-          let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+          let mathinput1Name = stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
           let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
           let answer1Correct = cesc('#' + mathinput1Name + "_correct");
           let answer1Incorrect = cesc('#' + mathinput1Name + "_incorrect");
@@ -1050,7 +1051,7 @@ describe('Paginator Tag Tests', function () {
   
     `
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -1064,10 +1065,10 @@ describe('Paginator Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let textinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+      let textinput1Name = stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
       let textinput1Anchor = cesc('#' + textinput1Name) + "_input";
       let textinput1DisplayAnchor = cesc('#' + textinput1Name) + " .mq-editable-field";
       let answer1Submit = cesc('#' + textinput1Name + "_submit");
@@ -1089,10 +1090,10 @@ describe('Paginator Tag Tests', function () {
 
       cy.wait(200);
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
 
-        let textinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+        let textinput2Name = stateVariables["/_answer2"].stateValues.inputChildren[0].componentName;
         let textinput2Anchor = cesc('#' + textinput2Name) + "_input";
         let textinput2DisplayAnchor = cesc('#' + textinput2Name) + " .mq-editable-field";
         let answer2Submit = cesc('#' + textinput2Name + "_submit");
@@ -1106,10 +1107,10 @@ describe('Paginator Tag Tests', function () {
         cy.get(cesc('#/_problem3_title')).should('have.text', 'Problem 3')
         cy.get(cesc('#/ca')).should('have.text', '0.167');
 
-        cy.window().then((win) => {
-          let components = Object.assign({}, win.state.components);
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
 
-          let textinput3Name = components["/_answer3"].stateValues.inputChildren[0].componentName;
+          let textinput3Name = stateVariables["/_answer3"].stateValues.inputChildren[0].componentName;
           let textinput3Anchor = cesc('#' + textinput3Name) + "_input";
           let textinput3DisplayAnchor = cesc('#' + textinput3Name) + " .mq-editable-field";
           let answer3Submit = cesc('#' + textinput3Name + "_submit");
@@ -1167,7 +1168,7 @@ describe('Paginator Tag Tests', function () {
 
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>b</text>
@@ -1176,7 +1177,7 @@ describe('Paginator Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -1352,7 +1353,7 @@ describe('Paginator Tag Tests', function () {
     <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
         requestedVariant: {
@@ -1404,7 +1405,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/problem2/_title1')).should('have.text', 'Problem F')
     cy.get(cesc('#/ca')).should('have.text', '0.1')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>b</text>
@@ -1412,7 +1413,7 @@ describe('Paginator Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -1428,7 +1429,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '0.3')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>b</text>
@@ -1436,7 +1437,7 @@ describe('Paginator Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -1461,7 +1462,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '0.3')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>b</text>
@@ -1469,7 +1470,7 @@ describe('Paginator Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -1496,7 +1497,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '0.3')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>b</text>
@@ -1504,7 +1505,7 @@ describe('Paginator Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -1534,7 +1535,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '0.3')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>b</text>
@@ -1542,7 +1543,7 @@ describe('Paginator Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -1581,7 +1582,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '0.7')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>b</text>
@@ -1589,7 +1590,7 @@ describe('Paginator Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -1629,7 +1630,7 @@ describe('Paginator Tag Tests', function () {
     <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
         requestedVariant: {
@@ -1650,9 +1651,9 @@ describe('Paginator Tag Tests', function () {
 
     cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
     cy.get(cesc('#/ca')).should('have.text', '0')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let choices = [...components['/problem1/_choiceinput1'].stateValues.choiceTexts];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let choices = [...stateVariables['/problem1/_choiceinput1'].stateValues.choiceTexts];
       let mouseInd = choices.indexOf("squeak") + 1;
       cy.get(cesc(`#/problem1/_choiceinput1_choice${mouseInd}_input`)).click();
     })
@@ -1662,7 +1663,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '0.333')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>b</text>
@@ -1670,7 +1671,7 @@ describe('Paginator Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -1686,9 +1687,9 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
     cy.get(cesc('#/ca')).should('have.text', '0.333')
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinput2Name = components["/problem2/derivativeProblem/_answer1"].stateValues.inputChildren[0].componentName;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinput2Name = stateVariables["/problem2/derivativeProblem/_answer1"].stateValues.inputChildren[0].componentName;
 
       let mathinput2Anchor = cesc(`#${mathinput2Name}`) + " textarea";
       let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
@@ -1704,7 +1705,7 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/ca')).should('have.text', '0.667')
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -1712,7 +1713,7 @@ describe('Paginator Tag Tests', function () {
       });
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML
         }, "*");
@@ -1739,7 +1740,7 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/ca')).should('have.text', '1')
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -1747,7 +1748,7 @@ describe('Paginator Tag Tests', function () {
       });
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML
         }, "*");
@@ -1799,7 +1800,7 @@ describe('Paginator Tag Tests', function () {
     <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
         requestedVariant: {
@@ -1820,9 +1821,9 @@ describe('Paginator Tag Tests', function () {
 
     cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
     cy.get(cesc('#/ca')).should('have.text', '0')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let choices = [...components['/problem1/_choiceinput1'].stateValues.choiceTexts];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let choices = [...stateVariables['/problem1/_choiceinput1'].stateValues.choiceTexts];
       let mouseInd = choices.indexOf("squeak") + 1;
       cy.get(cesc(`#/problem1/_choiceinput1_choice${mouseInd}_input`)).click();
     })
@@ -1832,7 +1833,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '0.333')
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>b</text>
@@ -1840,7 +1841,7 @@ describe('Paginator Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -1856,9 +1857,9 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
     cy.get(cesc('#/ca')).should('have.text', '0.333')
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinput2Name = components["/problem2/derivativeProblem/_answer1"].stateValues.inputChildren[0].componentName;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinput2Name = stateVariables["/problem2/derivativeProblem/_answer1"].stateValues.inputChildren[0].componentName;
 
       let mathinput2Anchor = cesc(`#${mathinput2Name}`) + " textarea";
       let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
@@ -1874,7 +1875,7 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/ca')).should('have.text', '0.667')
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -1882,7 +1883,7 @@ describe('Paginator Tag Tests', function () {
       });
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML
         }, "*");
@@ -1909,7 +1910,7 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/ca')).should('have.text', '1')
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -1917,7 +1918,7 @@ describe('Paginator Tag Tests', function () {
       });
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML
         }, "*");
@@ -1971,7 +1972,7 @@ describe('Paginator Tag Tests', function () {
     <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -1987,11 +1988,11 @@ describe('Paginator Tag Tests', function () {
 
     cy.get(cesc('#/_title1')).should('have.text', 'Type a number')
     cy.get(cesc('#/ca')).should('have.text', '0')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let a = components["/a"].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let a = stateVariables["/a"].stateValues.value;
 
-      let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinput1Name = stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
       let mathinput1Anchor = cesc(`#${mathinput1Name}`) + " textarea";
       let mathinput1Correct = cesc(`#${mathinput1Name}_correct`);
 
@@ -2007,11 +2008,11 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '0.5')
 
     cy.wait(100);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let b = components["/b"].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let b = stateVariables["/b"].stateValues.value;
 
-      let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+      let mathinput2Name = stateVariables["/_answer2"].stateValues.inputChildren[0].componentName;
       let mathinput2Anchor = cesc(`#${mathinput2Name}`) + " textarea";
       let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
 
@@ -2021,7 +2022,7 @@ describe('Paginator Tag Tests', function () {
 
     })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>b</text>
@@ -2029,7 +2030,7 @@ describe('Paginator Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -2039,10 +2040,10 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/_title2')).should('have.text', 'Type a letter')
     cy.get(cesc('#/ca')).should('have.text', '1')
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+      let mathinput2Name = stateVariables["/_answer2"].stateValues.inputChildren[0].componentName;
       let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
 
       cy.get(mathinput2Correct).should('be.visible');
@@ -2054,10 +2055,10 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '1')
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+      let mathinput1Name = stateVariables["/_answer1"].stateValues.inputChildren[0].componentName;
       let mathinput1Correct = cesc(`#${mathinput1Name}_correct`);
 
       cy.get(mathinput1Correct).should('be.visible');
@@ -2093,7 +2094,7 @@ describe('Paginator Tag Tests', function () {
     <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -2220,7 +2221,7 @@ describe('Paginator Tag Tests', function () {
     <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -2328,7 +2329,7 @@ describe('Paginator Tag Tests', function () {
       doenetMLWithSelects, doenetMLWithSelects
     ]
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: ''
       }, "*");
@@ -2340,7 +2341,7 @@ describe('Paginator Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: allDoenetMLs[0],
       }, "*");
@@ -2359,7 +2360,7 @@ describe('Paginator Tag Tests', function () {
         cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `
         <text>b</text>
@@ -2367,7 +2368,7 @@ describe('Paginator Tag Tests', function () {
         });
         cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           win.postMessage({
             doenetML: allDoenetMLs[attemptNumber - 1]
           }, "*");
@@ -2385,12 +2386,12 @@ describe('Paginator Tag Tests', function () {
       cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect(components["/_document1"].stateValues.generatedVariantInfo.index).eq(attemptNumber)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.index).eq(attemptNumber)
 
-        if (components["/problem1/a"]) {
+        if (stateVariables["/problem1/a"]) {
           problemOrder = [1, 2];
         } else {
           problemOrder = [2, 1];
@@ -2416,33 +2417,33 @@ describe('Paginator Tag Tests', function () {
               cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}`)
               cy.wait(10);
 
-              cy.window().then((win) => {
+              cy.window().then(async (win) => {
                 components = Object.assign({}, win.state.components);
 
-                thisProbInfo.a = components[`${thisProbName}/a`].stateValues.value;
-                thisProbInfo.v = components[`${thisProbName}/v`].stateValues.value;
-                thisProbInfo.o1m = components[`${thisProbName}/o1/m`].stateValues.value;
-                thisProbInfo.o1t = components[`${thisProbName}/o1/t`].stateValues.value;
-                thisProbInfo.o2m = components[`${thisProbName}/o2/m`].stateValues.value;
-                thisProbInfo.o2t = components[`${thisProbName}/o2/t`].stateValues.value;
+                thisProbInfo.a = stateVariables[`${thisProbName}/a`].stateValues.value;
+                thisProbInfo.v = stateVariables[`${thisProbName}/v`].stateValues.value;
+                thisProbInfo.o1m = stateVariables[`${thisProbName}/o1/m`].stateValues.value;
+                thisProbInfo.o1t = stateVariables[`${thisProbName}/o1/t`].stateValues.value;
+                thisProbInfo.o2m = stateVariables[`${thisProbName}/o2/m`].stateValues.value;
+                thisProbInfo.o2t = stateVariables[`${thisProbName}/o2/t`].stateValues.value;
 
-                let mathinput1Name = components[`${thisProbName}/ans1`].stateValues.inputChildren[0].componentName;
+                let mathinput1Name = stateVariables[`${thisProbName}/ans1`].stateValues.inputChildren[0].componentName;
                 let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
                 let answer1Correct = cesc('#' + mathinput1Name + "_correct");
 
-                let mathinput2Name = components[`${thisProbName}/ans2`].stateValues.inputChildren[0].componentName;
+                let mathinput2Name = stateVariables[`${thisProbName}/ans2`].stateValues.inputChildren[0].componentName;
                 let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
                 let answer2Correct = cesc('#' + mathinput2Name + "_correct");
 
-                let textinput3Name = components[`${thisProbName}/ans3`].stateValues.inputChildren[0].componentName;
+                let textinput3Name = stateVariables[`${thisProbName}/ans3`].stateValues.inputChildren[0].componentName;
                 let textinput3Anchor = cesc('#' + textinput3Name) + "_input";
                 let answer3Correct = cesc('#' + textinput3Name + "_correct");
 
-                let mathinput4Name = components[`${thisProbName}/ans4`].stateValues.inputChildren[0].componentName;
+                let mathinput4Name = stateVariables[`${thisProbName}/ans4`].stateValues.inputChildren[0].componentName;
                 let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
                 let answer4Correct = cesc('#' + mathinput4Name + "_correct");
 
-                let textinput5Name = components[`${thisProbName}/ans5`].stateValues.inputChildren[0].componentName;
+                let textinput5Name = stateVariables[`${thisProbName}/ans5`].stateValues.inputChildren[0].componentName;
                 let textinput5Anchor = cesc('#' + textinput5Name) + "_input";
                 let answer5Correct = cesc('#' + textinput5Name + "_correct");
 
@@ -2467,13 +2468,13 @@ describe('Paginator Tag Tests', function () {
               cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Animal sounds`)
               cy.wait(10);
 
-              cy.window().then((win) => {
+              cy.window().then(async (win) => {
                 components = Object.assign({}, win.state.components);
 
-                thisProbInfo.animal = components[`${thisProbName}/animal`].stateValues.value;
-                thisProbInfo.sound = components[`${thisProbName}/sound`].stateValues.value;
+                thisProbInfo.animal = stateVariables[`${thisProbName}/animal`].stateValues.value;
+                thisProbInfo.sound = stateVariables[`${thisProbName}/sound`].stateValues.value;
 
-                thisProbInfo.choices = [...components[`${thisProbName}/_choiceinput1`].stateValues.choiceTexts];
+                thisProbInfo.choices = [...stateVariables[`${thisProbName}/_choiceinput1`].stateValues.choiceTexts];
                 thisProbInfo.animalInd = thisProbInfo.choices.indexOf(thisProbInfo.sound) + 1;
                 cy.get(cesc(`#${thisProbName}/_choiceinput1_choice${thisProbInfo.animalInd}_input`)).click();
 
@@ -2492,7 +2493,7 @@ describe('Paginator Tag Tests', function () {
 
       cy.wait(100)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -2500,7 +2501,7 @@ describe('Paginator Tag Tests', function () {
       });
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: allDoenetMLs[attemptNumber - 1]
         }, "*");
@@ -2526,30 +2527,30 @@ describe('Paginator Tag Tests', function () {
             cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}`)
             cy.wait(10);
 
-            cy.window().then((win) => {
-              let components = Object.assign({}, win.state.components);
+            cy.window().then(async (win) => {
+              let stateVariables = await win.returnAllStateVariables1();
 
-              expect(components[`${thisProbName}/a`].stateValues.value.toString()).eq(thisProbInfo.a.toString())
-              expect(components[`${thisProbName}/v`].stateValues.value.toString()).eq(thisProbInfo.v.toString())
-              expect(components[`${thisProbName}/o1/m`].stateValues.value.toString()).eq(thisProbInfo.o1m.toString())
-              expect(components[`${thisProbName}/o1/t`].stateValues.value.toString()).eq(thisProbInfo.o1t.toString())
-              expect(components[`${thisProbName}/o2/m`].stateValues.value.toString()).eq(thisProbInfo.o2m.toString())
-              expect(components[`${thisProbName}/o2/t`].stateValues.value.toString()).eq(thisProbInfo.o2t.toString())
+              expect(stateVariables[`${thisProbName}/a`].stateValues.value.toString()).eq(thisProbInfo.a.toString())
+              expect(stateVariables[`${thisProbName}/v`].stateValues.value.toString()).eq(thisProbInfo.v.toString())
+              expect(stateVariables[`${thisProbName}/o1/m`].stateValues.value.toString()).eq(thisProbInfo.o1m.toString())
+              expect(stateVariables[`${thisProbName}/o1/t`].stateValues.value.toString()).eq(thisProbInfo.o1t.toString())
+              expect(stateVariables[`${thisProbName}/o2/m`].stateValues.value.toString()).eq(thisProbInfo.o2m.toString())
+              expect(stateVariables[`${thisProbName}/o2/t`].stateValues.value.toString()).eq(thisProbInfo.o2t.toString())
 
 
-              let mathinput1Name = components[`${thisProbName}/ans1`].stateValues.inputChildren[0].componentName;
+              let mathinput1Name = stateVariables[`${thisProbName}/ans1`].stateValues.inputChildren[0].componentName;
               let answer1Correct = cesc('#' + mathinput1Name + "_correct");
 
-              let mathinput2Name = components[`${thisProbName}/ans2`].stateValues.inputChildren[0].componentName;
+              let mathinput2Name = stateVariables[`${thisProbName}/ans2`].stateValues.inputChildren[0].componentName;
               let answer2Correct = cesc('#' + mathinput2Name + "_correct");
 
-              let textinput3Name = components[`${thisProbName}/ans3`].stateValues.inputChildren[0].componentName;
+              let textinput3Name = stateVariables[`${thisProbName}/ans3`].stateValues.inputChildren[0].componentName;
               let answer3Correct = cesc('#' + textinput3Name + "_correct");
 
-              let mathinput4Name = components[`${thisProbName}/ans4`].stateValues.inputChildren[0].componentName;
+              let mathinput4Name = stateVariables[`${thisProbName}/ans4`].stateValues.inputChildren[0].componentName;
               let answer4Correct = cesc('#' + mathinput4Name + "_correct");
 
-              let textinput5Name = components[`${thisProbName}/ans5`].stateValues.inputChildren[0].componentName;
+              let textinput5Name = stateVariables[`${thisProbName}/ans5`].stateValues.inputChildren[0].componentName;
               let answer5Correct = cesc('#' + textinput5Name + "_correct");
 
 
@@ -2570,12 +2571,12 @@ describe('Paginator Tag Tests', function () {
 
             cy.wait(10);
 
-            cy.window().then((win) => {
-              let components = Object.assign({}, win.state.components);
+            cy.window().then(async (win) => {
+              let stateVariables = await win.returnAllStateVariables1();
 
-              expect(components[`${thisProbName}/animal`].stateValues.value).eq(thisProbInfo.animal)
-              expect(components[`${thisProbName}/sound`].stateValues.value).eq(thisProbInfo.sound)
-              expect(components[`${thisProbName}/_choiceinput1`].stateValues.choiceTexts).eqls(thisProbInfo.choices)
+              expect(stateVariables[`${thisProbName}/animal`].stateValues.value).eq(thisProbInfo.animal)
+              expect(stateVariables[`${thisProbName}/sound`].stateValues.value).eq(thisProbInfo.sound)
+              expect(stateVariables[`${thisProbName}/_choiceinput1`].stateValues.choiceTexts).eqls(thisProbInfo.choices)
               expect(thisProbInfo.choices.indexOf(thisProbInfo.sound) + 1).eq(thisProbInfo.animalInd)
               cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
             })
@@ -2587,7 +2588,7 @@ describe('Paginator Tag Tests', function () {
       }
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -2595,7 +2596,7 @@ describe('Paginator Tag Tests', function () {
       });
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: allDoenetMLs[attemptNumber - 1]
         }, "*");
@@ -2621,30 +2622,30 @@ describe('Paginator Tag Tests', function () {
             cy.get(cesc(`#${thisProbName}/_problem1_title`)).should('have.text', `Problem ${ind + 1}`)
             cy.wait(10);
 
-            cy.window().then((win) => {
-              let components = Object.assign({}, win.state.components);
+            cy.window().then(async (win) => {
+              let stateVariables = await win.returnAllStateVariables1();
 
-              expect(components[`${thisProbName}/a`].stateValues.value.toString()).eq(thisProbInfo.a.toString())
-              expect(components[`${thisProbName}/v`].stateValues.value.toString()).eq(thisProbInfo.v.toString())
-              expect(components[`${thisProbName}/o1/m`].stateValues.value.toString()).eq(thisProbInfo.o1m.toString())
-              expect(components[`${thisProbName}/o1/t`].stateValues.value.toString()).eq(thisProbInfo.o1t.toString())
-              expect(components[`${thisProbName}/o2/m`].stateValues.value.toString()).eq(thisProbInfo.o2m.toString())
-              expect(components[`${thisProbName}/o2/t`].stateValues.value.toString()).eq(thisProbInfo.o2t.toString())
+              expect(stateVariables[`${thisProbName}/a`].stateValues.value.toString()).eq(thisProbInfo.a.toString())
+              expect(stateVariables[`${thisProbName}/v`].stateValues.value.toString()).eq(thisProbInfo.v.toString())
+              expect(stateVariables[`${thisProbName}/o1/m`].stateValues.value.toString()).eq(thisProbInfo.o1m.toString())
+              expect(stateVariables[`${thisProbName}/o1/t`].stateValues.value.toString()).eq(thisProbInfo.o1t.toString())
+              expect(stateVariables[`${thisProbName}/o2/m`].stateValues.value.toString()).eq(thisProbInfo.o2m.toString())
+              expect(stateVariables[`${thisProbName}/o2/t`].stateValues.value.toString()).eq(thisProbInfo.o2t.toString())
 
 
-              let mathinput1Name = components[`${thisProbName}/ans1`].stateValues.inputChildren[0].componentName;
+              let mathinput1Name = stateVariables[`${thisProbName}/ans1`].stateValues.inputChildren[0].componentName;
               let answer1Correct = cesc('#' + mathinput1Name + "_correct");
 
-              let mathinput2Name = components[`${thisProbName}/ans2`].stateValues.inputChildren[0].componentName;
+              let mathinput2Name = stateVariables[`${thisProbName}/ans2`].stateValues.inputChildren[0].componentName;
               let answer2Correct = cesc('#' + mathinput2Name + "_correct");
 
-              let textinput3Name = components[`${thisProbName}/ans3`].stateValues.inputChildren[0].componentName;
+              let textinput3Name = stateVariables[`${thisProbName}/ans3`].stateValues.inputChildren[0].componentName;
               let answer3Correct = cesc('#' + textinput3Name + "_correct");
 
-              let mathinput4Name = components[`${thisProbName}/ans4`].stateValues.inputChildren[0].componentName;
+              let mathinput4Name = stateVariables[`${thisProbName}/ans4`].stateValues.inputChildren[0].componentName;
               let answer4Correct = cesc('#' + mathinput4Name + "_correct");
 
-              let textinput5Name = components[`${thisProbName}/ans5`].stateValues.inputChildren[0].componentName;
+              let textinput5Name = stateVariables[`${thisProbName}/ans5`].stateValues.inputChildren[0].componentName;
               let answer5Correct = cesc('#' + textinput5Name + "_correct");
 
 
@@ -2665,12 +2666,12 @@ describe('Paginator Tag Tests', function () {
 
             cy.wait(10);
 
-            cy.window().then((win) => {
-              let components = Object.assign({}, win.state.components);
+            cy.window().then(async (win) => {
+              let stateVariables = await win.returnAllStateVariables1();
 
-              expect(components[`${thisProbName}/animal`].stateValues.value).eq(thisProbInfo.animal)
-              expect(components[`${thisProbName}/sound`].stateValues.value).eq(thisProbInfo.sound)
-              expect(components[`${thisProbName}/_choiceinput1`].stateValues.choiceTexts).eqls(thisProbInfo.choices)
+              expect(stateVariables[`${thisProbName}/animal`].stateValues.value).eq(thisProbInfo.animal)
+              expect(stateVariables[`${thisProbName}/sound`].stateValues.value).eq(thisProbInfo.sound)
+              expect(stateVariables[`${thisProbName}/_choiceinput1`].stateValues.choiceTexts).eqls(thisProbInfo.choices)
               expect(thisProbInfo.choices.indexOf(thisProbInfo.sound) + 1).eq(thisProbInfo.animalInd)
               cy.get(cesc(`#${thisProbName}/_choiceinput1_correct`)).should('be.visible');
             })
@@ -2742,7 +2743,7 @@ describe('Paginator Tag Tests', function () {
   
     `
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: ''
       }, "*");
@@ -2754,7 +2755,7 @@ describe('Paginator Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
       }, "*");
@@ -2765,17 +2766,17 @@ describe('Paginator Tag Tests', function () {
     cy.get('#\\/problem1_title').should('have.text', 'Problem 1')
     cy.get('#\\/ca').should('have.text', '0')
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n = components["/problem1/n"].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let n = stateVariables["/problem1/n"].stateValues.value;
 
-      let mathinput1Name = components[`/problem1/_answer${n}`].stateValues.inputChildren[0].componentName;
+      let mathinput1Name = stateVariables[`/problem1/_answer${n}`].stateValues.inputChildren[0].componentName;
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
       let mathinput1DisplayAnchor = cesc('#' + mathinput1Name) + " .mq-editable-field";
       let answer1Correct = cesc('#' + mathinput1Name + "_correct");
       let answer1Submit = cesc('#' + mathinput1Name + "_submit");
 
-      let mathinput2Name = components[`/problem1/a${n}`].stateValues.inputChildren[0].componentName;
+      let mathinput2Name = stateVariables[`/problem1/a${n}`].stateValues.inputChildren[0].componentName;
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2DisplayAnchor = cesc('#' + mathinput2Name) + " .mq-editable-field";
       let answer2Correct = cesc('#' + mathinput2Name + "_correct");
@@ -2823,15 +2824,15 @@ describe('Paginator Tag Tests', function () {
       cy.get('#\\/problem2_title').should('have.text', 'Problem 2')
       cy.get('#\\/ca').should('have.text', '0.5')
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
 
-        let mathinput3Name = components[`/problem2/_answer1`].stateValues.inputChildren[0].componentName;
+        let mathinput3Name = stateVariables[`/problem2/_answer1`].stateValues.inputChildren[0].componentName;
         let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
         let mathinput3DisplayAnchor = cesc('#' + mathinput3Name) + " .mq-editable-field";
         let answer3Correct = cesc('#' + mathinput3Name + "_correct");
 
-        let mathinput4Name = components[`/problem2/_answer3`].stateValues.inputChildren[0].componentName;
+        let mathinput4Name = stateVariables[`/problem2/_answer3`].stateValues.inputChildren[0].componentName;
         let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
         let mathinput4DisplayAnchor = cesc('#' + mathinput4Name) + " .mq-editable-field";
         let answer4Correct = cesc('#' + mathinput4Name + "_correct");
@@ -2888,7 +2889,7 @@ describe('Paginator Tag Tests', function () {
         cy.get('#\\/ca').should('have.text', '1')
 
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           win.postMessage({
             doenetML: '<text>b</text>',
           }, "*");
@@ -2898,7 +2899,7 @@ describe('Paginator Tag Tests', function () {
 
 
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           win.postMessage({
             doenetML,
           }, "*");

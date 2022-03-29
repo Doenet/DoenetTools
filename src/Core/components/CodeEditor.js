@@ -299,10 +299,12 @@ export default class CodeEditor extends BlockComponent {
         }],
         actionId
       })
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  updateValue({actionId}) {
+  updateValue({ actionId }) {
     //Only update when value is out of date
     if (!this.stateValues.disabled &&
       this.stateValues.immediateValue !== this.stateValues.value
@@ -364,6 +366,8 @@ export default class CodeEditor extends BlockComponent {
         }
       });
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

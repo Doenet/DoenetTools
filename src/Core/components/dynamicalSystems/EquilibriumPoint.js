@@ -81,6 +81,8 @@ export default class EquilibriumPoint extends Point {
           }
         }
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
   }

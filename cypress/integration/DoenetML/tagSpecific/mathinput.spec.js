@@ -921,7 +921,7 @@ describe('MathInput Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML }, "*");
     });
@@ -996,14 +996,14 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('reload page')
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: "<text>b</text>" }, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
     
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML }, "*");
     });

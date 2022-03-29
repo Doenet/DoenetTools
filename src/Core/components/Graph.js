@@ -733,6 +733,8 @@ export default class Graph extends BlockComponent {
         }],
         actionId,
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -759,6 +761,8 @@ export default class Graph extends BlockComponent {
         actionId
       });
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
   }

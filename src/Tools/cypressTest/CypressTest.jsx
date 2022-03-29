@@ -284,9 +284,8 @@ function Test() {
         Test Viewer and Core
       </h3>
         {controls}
-        {viewer}
-
       </div>
+      {viewer}
 
     </>
   )

@@ -1,11 +1,12 @@
 describe('Group Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
   it('nested groups, copied', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -84,7 +85,7 @@ describe('Group Tag Tests', function () {
   })
 
   it('nested groups, initially unresolved, reffed', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 
@@ -173,7 +174,7 @@ describe('Group Tag Tests', function () {
   })
 
   it('group with a map that begins zero length, copied multiple times', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -280,7 +281,7 @@ describe('Group Tag Tests', function () {
   });
 
   it('group with mutual references', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -336,7 +337,7 @@ describe('Group Tag Tests', function () {
   });
 
   it('fixed propagated when copy group', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -364,40 +365,48 @@ describe('Group Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Initial values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/g'].stateValues.fixed).eq(false);
-      expect(components['/g/A'].stateValues.fixed).eq(false);
-      expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
-      expect(components['/g2'].stateValues.fixed).eq(true);
-      expect(components['/g2/A'].stateValues.fixed).eq(true);
-      expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
-      expect(components['/g3'].stateValues.fixed).eq(false);
-      expect(components['/g3/A'].stateValues.fixed).eq(false);
-      expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
-      expect(components['/g4'].stateValues.fixed).eq(false);
-      expect(components['/g4/A'].stateValues.fixed).eq(false);
-      expect(components['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/g'].stateValues.fixed).eq(false);
+      expect(stateVariables['/g/A'].stateValues.fixed).eq(false);
+      expect(stateVariables['/g/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(stateVariables['/g2'].stateValues.fixed).eq(true);
+      expect(stateVariables['/g2/A'].stateValues.fixed).eq(true);
+      expect(stateVariables['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(stateVariables['/g3'].stateValues.fixed).eq(false);
+      expect(stateVariables['/g3/A'].stateValues.fixed).eq(false);
+      expect(stateVariables['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(stateVariables['/g4'].stateValues.fixed).eq(false);
+      expect(stateVariables['/g4/A'].stateValues.fixed).eq(false);
+      expect(stateVariables['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
     })
 
     cy.log('move first point')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/g/A'].movePoint({ x: 3, y: 4 })
-      expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(components['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g/A",
+        args: { x: 3, y: 4 }
+      })
+      expect(stateVariables['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(stateVariables['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(stateVariables['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(stateVariables['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
     })
 
     cy.log(`can't move second point as fixed`)
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/g2/A'].movePoint({ x: 5, y: 6 })
-      expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(components['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g2/A",
+        args: { x: 5, y: 6 }
+      })
+      expect(stateVariables['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(stateVariables['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(stateVariables['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(stateVariables['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
     })
 
     // TODO: this used to be immobile but not it is
@@ -405,22 +414,30 @@ describe('Group Tag Tests', function () {
     // cy.log(`can't move third point as depends on fixed second point`)
     cy.log(`for now, can move third point as depends on directly on xs of first point`)
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/g3/A'].movePoint({ x: 7, y: 8 })
-      expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(components['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g3/A",
+        args: { x: 7, y: 8 }
+      })
+      expect(stateVariables['/g/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
+      expect(stateVariables['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
+      expect(stateVariables['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
+      expect(stateVariables['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
     })
 
     cy.log(`can move fourth point`)
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/g4/A'].movePoint({ x: 9, y: 0 })
-      expect(components['/g/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(components['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(components['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(components['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([9, 0])
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g4/A",
+        args: { x: 9, y: 0 }
+      })
+      expect(stateVariables['/g/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
+      expect(stateVariables['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
+      expect(stateVariables['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
+      expect(stateVariables['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([9, 0])
     })
 
 
@@ -428,7 +445,7 @@ describe('Group Tag Tests', function () {
   })
 
   it('disabled propagated when copy group', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -455,51 +472,51 @@ describe('Group Tag Tests', function () {
     cy.get('#\\/g4\\/ti_input').should('not.be.disabled')
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/g'].stateValues.disabled).eq(false);
-      expect(components['/g/ti'].stateValues.disabled).eq(false);
-      expect(components['/g/ti'].stateValues.value).eq("hello")
-      expect(components['/g2'].stateValues.disabled).eq(true);
-      expect(components['/g2/ti'].stateValues.disabled).eq(true);
-      expect(components['/g2/ti'].stateValues.value).eq("hello")
-      expect(components['/g3'].stateValues.disabled).eq(false);
-      expect(components['/g3/ti'].stateValues.disabled).eq(false);
-      expect(components['/g3/ti'].stateValues.value).eq("hello")
-      expect(components['/g4'].stateValues.disabled).eq(false);
-      expect(components['/g4/ti'].stateValues.disabled).eq(false);
-      expect(components['/g4/ti'].stateValues.value).eq("hello")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/g'].stateValues.disabled).eq(false);
+      expect(stateVariables['/g/ti'].stateValues.disabled).eq(false);
+      expect(stateVariables['/g/ti'].stateValues.value).eq("hello")
+      expect(stateVariables['/g2'].stateValues.disabled).eq(true);
+      expect(stateVariables['/g2/ti'].stateValues.disabled).eq(true);
+      expect(stateVariables['/g2/ti'].stateValues.value).eq("hello")
+      expect(stateVariables['/g3'].stateValues.disabled).eq(false);
+      expect(stateVariables['/g3/ti'].stateValues.disabled).eq(false);
+      expect(stateVariables['/g3/ti'].stateValues.value).eq("hello")
+      expect(stateVariables['/g4'].stateValues.disabled).eq(false);
+      expect(stateVariables['/g4/ti'].stateValues.disabled).eq(false);
+      expect(stateVariables['/g4/ti'].stateValues.value).eq("hello")
     })
 
     cy.log('type in first textinput')
     cy.get('#\\/g\\/ti_input').clear().type("bye{enter}")
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/g/ti'].stateValues.value).eq("bye")
-      expect(components['/g2/ti'].stateValues.value).eq("bye")
-      expect(components['/g3/ti'].stateValues.value).eq("bye")
-      expect(components['/g4/ti'].stateValues.value).eq("hello")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/g/ti'].stateValues.value).eq("bye")
+      expect(stateVariables['/g2/ti'].stateValues.value).eq("bye")
+      expect(stateVariables['/g3/ti'].stateValues.value).eq("bye")
+      expect(stateVariables['/g4/ti'].stateValues.value).eq("hello")
     })
 
     cy.log('type in third textinput')
     cy.get('#\\/g3\\/ti_input').clear().type("this{enter}")
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/g/ti'].stateValues.value).eq("this")
-      expect(components['/g2/ti'].stateValues.value).eq("this")
-      expect(components['/g3/ti'].stateValues.value).eq("this")
-      expect(components['/g4/ti'].stateValues.value).eq("hello")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/g/ti'].stateValues.value).eq("this")
+      expect(stateVariables['/g2/ti'].stateValues.value).eq("this")
+      expect(stateVariables['/g3/ti'].stateValues.value).eq("this")
+      expect(stateVariables['/g4/ti'].stateValues.value).eq("hello")
     })
 
 
     cy.log('type in fourth textinput')
     cy.get('#\\/g4\\/ti_input').clear().type("that{enter}")
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/g/ti'].stateValues.value).eq("this")
-      expect(components['/g2/ti'].stateValues.value).eq("this")
-      expect(components['/g3/ti'].stateValues.value).eq("this")
-      expect(components['/g4/ti'].stateValues.value).eq("that")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/g/ti'].stateValues.value).eq("this")
+      expect(stateVariables['/g2/ti'].stateValues.value).eq("this")
+      expect(stateVariables['/g3/ti'].stateValues.value).eq("this")
+      expect(stateVariables['/g4/ti'].stateValues.value).eq("that")
     })
 
 

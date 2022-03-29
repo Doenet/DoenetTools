@@ -1,6 +1,7 @@
 describe('factor polynomial tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
@@ -9,7 +10,7 @@ describe('factor polynomial tests', function () {
   // we can handle components that change type
   // (due to the multiple conditionalContents that are copied)
   it('factor x^2-1', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -201,7 +202,7 @@ describe('factor polynomial tests', function () {
   });
 
   it('factor 4x^2-4', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -341,7 +342,7 @@ describe('factor polynomial tests', function () {
   });
 
   it('factor (6z-4)(5z+10)', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -454,7 +455,7 @@ describe('factor polynomial tests', function () {
   });
 
   it('factor (3q+2r)(6s+8t)', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -572,7 +573,7 @@ describe('factor polynomial tests', function () {
   });
 
   it('factor (2x+4)^2', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>

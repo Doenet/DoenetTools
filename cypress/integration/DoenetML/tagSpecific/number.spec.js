@@ -12,11 +12,12 @@ function cesc(s) {
 describe('Number Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
   it('1+1', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -27,9 +28,9 @@ describe('Number Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let number0 = components['/_copy1'].replacements[0];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let number0 = stateVariables['/_copy1'].replacements[0];
       let number0Anchor = cesc('#' + number0.componentName);
 
       cy.log('Test value displayed in browser')
@@ -37,16 +38,16 @@ describe('Number Tag Tests', function () {
       cy.get('#\\/_number1').should('have.text', '2')
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
         expect(number0.stateValues.value).eq(2);
-        expect(components['/_number1'].stateValues.value).eq(2);
+        expect(stateVariables['/_number1'].stateValues.value).eq(2);
       })
     })
   })
 
   it(`number that isn't a number`, () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -57,9 +58,9 @@ describe('Number Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let number0 = components['/_copy1'].replacements[0];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let number0 = stateVariables['/_copy1'].replacements[0];
       let number0Anchor = cesc('#' + number0.componentName);
 
       cy.log('Test value displayed in browser')
@@ -68,16 +69,16 @@ describe('Number Tag Tests', function () {
 
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
         assert.isNaN(number0.stateValues.value);
-        assert.isNaN(components['/_number1'].stateValues.value);
+        assert.isNaN(stateVariables['/_number1'].stateValues.value);
       })
     })
   })
 
   it(`number becomes non-numeric through inverse`, () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -99,7 +100,7 @@ describe('Number Tag Tests', function () {
   })
 
   it('number in math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -115,15 +116,15 @@ describe('Number Tag Tests', function () {
     })
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 'x', 3])
-      expect(components['/_number1'].stateValues.value).to.eq(3);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(['+', 'x', 3])
+      expect(stateVariables['/_number1'].stateValues.value).to.eq(3);
     })
   });
 
   it('math in number', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -137,16 +138,16 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/_number1').should('have.text', '8')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eqls(['+', 5, 3]);
-      expect(components['/_math2'].stateValues.value.tree).eq(3);
-      expect(components['/_number1'].stateValues.value).eq(8);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(['+', 5, 3]);
+      expect(stateVariables['/_math2'].stateValues.value.tree).eq(3);
+      expect(stateVariables['/_number1'].stateValues.value).eq(8);
     })
   });
 
   it('number converts to decimals', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -167,15 +168,15 @@ describe('Number Tag Tests', function () {
     })
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).closeTo(num, 1E-14);
-      expect(components['/_number1'].stateValues.value).closeTo(num, 1E-14);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value.tree).closeTo(num, 1E-14);
+      expect(stateVariables['/_number1'].stateValues.value).closeTo(num, 1E-14);
     })
   });
 
   it('rounding', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -229,34 +230,34 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/n3bm .mjx-mrow').eq(0).should('have.text', '0')
     cy.get('#\\/n3cm .mjx-mrow').eq(0).should('have.text', '0')
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/n1'].stateValues.value).eq(234234823.34235235324);
-      expect(components['/n1a'].stateValues.value).eq(234234823.34235235324);
-      expect(components['/n1b'].stateValues.value).eq(234234823.34235235324);
-      expect(components['/n1c'].stateValues.value).eq(234234823.34235235324);
-      expect(components['/n1am'].activeChildren[0].stateValues.value.tree).eq(234234823.34235235324);
-      expect(components['/n1bm'].activeChildren[0].stateValues.value.tree).eq(234234823.34235235324);
-      expect(components['/n1cm'].activeChildren[0].stateValues.value.tree).eq(234234823.34235235324);
-      expect(components['/n2'].stateValues.value).eq(5.4285023408250342);
-      expect(components['/n2a'].stateValues.value).eq(5.4285023408250342);
-      expect(components['/n2b'].stateValues.value).eq(5.4285023408250342);
-      expect(components['/n2c'].stateValues.value).eq(5.4285023408250342);
-      expect(components['/n2am'].activeChildren[0].stateValues.value.tree).eq(5.4285023408250342);
-      expect(components['/n2bm'].activeChildren[0].stateValues.value.tree).eq(5.4285023408250342);
-      expect(components['/n2cm'].activeChildren[0].stateValues.value.tree).eq(5.4285023408250342);
-      expect(components['/n3'].stateValues.value).eq(0.000000000000005023481340324);
-      expect(components['/n3a'].stateValues.value).eq(0.000000000000005023481340324);
-      expect(components['/n3b'].stateValues.value).eq(0.000000000000005023481340324);
-      expect(components['/n3c'].stateValues.value).eq(0.000000000000005023481340324);
-      expect(components['/n3am'].activeChildren[0].stateValues.value.tree).eq(0.000000000000005023481340324);
-      expect(components['/n3bm'].activeChildren[0].stateValues.value.tree).eq(0.000000000000005023481340324);
-      expect(components['/n3cm'].activeChildren[0].stateValues.value.tree).eq(0.000000000000005023481340324);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/n1'].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables['/n1a'].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables['/n1b'].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables['/n1c'].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables['/n1am'].activeChildren[0].stateValues.value.tree).eq(234234823.34235235324);
+      expect(stateVariables['/n1bm'].activeChildren[0].stateValues.value.tree).eq(234234823.34235235324);
+      expect(stateVariables['/n1cm'].activeChildren[0].stateValues.value.tree).eq(234234823.34235235324);
+      expect(stateVariables['/n2'].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables['/n2a'].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables['/n2b'].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables['/n2c'].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables['/n2am'].activeChildren[0].stateValues.value.tree).eq(5.4285023408250342);
+      expect(stateVariables['/n2bm'].activeChildren[0].stateValues.value.tree).eq(5.4285023408250342);
+      expect(stateVariables['/n2cm'].activeChildren[0].stateValues.value.tree).eq(5.4285023408250342);
+      expect(stateVariables['/n3'].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables['/n3a'].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables['/n3b'].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables['/n3c'].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables['/n3am'].activeChildren[0].stateValues.value.tree).eq(0.000000000000005023481340324);
+      expect(stateVariables['/n3bm'].activeChildren[0].stateValues.value.tree).eq(0.000000000000005023481340324);
+      expect(stateVariables['/n3cm'].activeChildren[0].stateValues.value.tree).eq(0.000000000000005023481340324);
     })
   })
 
   it('dynamic rounding', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -308,7 +309,7 @@ describe('Number Tag Tests', function () {
   })
 
   it('infinity and nan', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -368,39 +369,39 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/nan7').should('have.text', 'NaN')
     cy.get('#\\/nan8').should('have.text', 'NaN')
  
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/inf1'].stateValues.value).eq(Infinity);
-      expect(components['/inf2'].stateValues.value).eq(Infinity);
-      expect(components['/inf3'].stateValues.value).eq(Infinity);
-      expect(components['/inf4'].stateValues.value).eq(Infinity);
-      expect(components['/inf5'].stateValues.value).eq(Infinity);
-      expect(components['/inf6'].stateValues.value).eq(Infinity);
-      expect(components['/inf7'].stateValues.value).eq(Infinity);
-      expect(components['/inf8'].stateValues.value).eq(Infinity);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/inf1'].stateValues.value).eq(Infinity);
+      expect(stateVariables['/inf2'].stateValues.value).eq(Infinity);
+      expect(stateVariables['/inf3'].stateValues.value).eq(Infinity);
+      expect(stateVariables['/inf4'].stateValues.value).eq(Infinity);
+      expect(stateVariables['/inf5'].stateValues.value).eq(Infinity);
+      expect(stateVariables['/inf6'].stateValues.value).eq(Infinity);
+      expect(stateVariables['/inf7'].stateValues.value).eq(Infinity);
+      expect(stateVariables['/inf8'].stateValues.value).eq(Infinity);
 
 
-      expect(components['/ninf1'].stateValues.value).eq(-Infinity);
-      expect(components['/ninf2'].stateValues.value).eq(-Infinity);
-      expect(components['/ninf3'].stateValues.value).eq(-Infinity);
-      expect(components['/ninf4'].stateValues.value).eq(-Infinity);
-      expect(components['/ninf5'].stateValues.value).eq(-Infinity);
-      expect(components['/ninf6'].stateValues.value).eq(-Infinity);
+      expect(stateVariables['/ninf1'].stateValues.value).eq(-Infinity);
+      expect(stateVariables['/ninf2'].stateValues.value).eq(-Infinity);
+      expect(stateVariables['/ninf3'].stateValues.value).eq(-Infinity);
+      expect(stateVariables['/ninf4'].stateValues.value).eq(-Infinity);
+      expect(stateVariables['/ninf5'].stateValues.value).eq(-Infinity);
+      expect(stateVariables['/ninf6'].stateValues.value).eq(-Infinity);
 
-      expect(components['/nan1'].stateValues.value).eqls(NaN);
-      expect(components['/nan2'].stateValues.value).eqls(NaN);
-      expect(components['/nan3'].stateValues.value).eqls(NaN);
-      expect(components['/nan4'].stateValues.value).eqls(NaN);
-      expect(components['/nan5'].stateValues.value).eqls(NaN);
-      expect(components['/nan6'].stateValues.value).eqls(NaN);
-      expect(components['/nan7'].stateValues.value).eqls(NaN);
-      expect(components['/nan8'].stateValues.value).eqls(NaN);
+      expect(stateVariables['/nan1'].stateValues.value).eqls(NaN);
+      expect(stateVariables['/nan2'].stateValues.value).eqls(NaN);
+      expect(stateVariables['/nan3'].stateValues.value).eqls(NaN);
+      expect(stateVariables['/nan4'].stateValues.value).eqls(NaN);
+      expect(stateVariables['/nan5'].stateValues.value).eqls(NaN);
+      expect(stateVariables['/nan6'].stateValues.value).eqls(NaN);
+      expect(stateVariables['/nan7'].stateValues.value).eqls(NaN);
+      expect(stateVariables['/nan8'].stateValues.value).eqls(NaN);
 
     })
   })
 
   it('copy value prop copies attributes', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>

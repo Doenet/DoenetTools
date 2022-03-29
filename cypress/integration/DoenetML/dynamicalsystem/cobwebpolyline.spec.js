@@ -11,6 +11,7 @@ function cesc(s) {
 describe('CobwebPolyline Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
@@ -113,7 +114,7 @@ describe('CobwebPolyline Tag Tests', function () {
 
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/graph1/cobweb",
         args: {
@@ -151,7 +152,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.log('Move second point to wrong location');
 
       cy.window().then(async (win) => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -195,7 +196,7 @@ describe('CobwebPolyline Tag Tests', function () {
 
       // Note: move to second wrong point to make sure submit button reappears
       cy.window().then(async (win) => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -236,7 +237,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.log('Move second point to correct location');
 
       cy.window().then(async () => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -324,7 +325,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.log('Move third point to correct location');
 
       cy.window().then(async () => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -380,7 +381,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get("#\\/cr4 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
       cy.window().then(async (win) => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -442,7 +443,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.log('Move fourth point to correct location');
 
       cy.window().then(async () => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -599,7 +600,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get("#\\/cr5 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
       cy.window().then(async () => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -668,7 +669,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get("#\\/cr6 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
       cy.window().then(async () => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -744,7 +745,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.log('Move sixth point correct location');
 
       cy.window().then(async () => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -820,7 +821,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get("#\\/cr7 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
       cy.window().then(async () => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -902,7 +903,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.log('Move seventh point correct location');
 
       cy.window().then(async () => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -984,7 +985,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get("#\\/cr8 .mjx-mrow").should('contain.text', `(${xCenter},${yCenter})`)
 
       cy.window().then(async () => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePolyline",
           componentName: "/graph1/cobweb",
           args: {
@@ -1101,7 +1102,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/gradedApplet/startFeedback')).should('be.visible')
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/gradedApplet/cobwebApplet/cobwebPolyline",
         args: {
@@ -1134,7 +1135,7 @@ describe('CobwebPolyline Tag Tests', function () {
 
     let x1 = f(1);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/gradedApplet/cobwebApplet/cobwebPolyline",
         args: {
@@ -1194,7 +1195,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/gradedApplet/cobwebApplet/cobwebPolyline",
         args: {
@@ -1223,7 +1224,7 @@ describe('CobwebPolyline Tag Tests', function () {
 
     let x2 = f(x1);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/gradedApplet/cobwebApplet/cobwebPolyline",
         args: {
@@ -1251,7 +1252,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).should('be.visible')
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/gradedApplet/cobwebApplet/cobwebPolyline",
         args: {
@@ -1280,7 +1281,7 @@ describe('CobwebPolyline Tag Tests', function () {
 
     let x3 = f(x2);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/gradedApplet/cobwebApplet/cobwebPolyline",
         args: {
@@ -1318,7 +1319,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/gradedApplet/cobwebApplet/cobwebPolyline",
         args: {
@@ -1356,7 +1357,7 @@ describe('CobwebPolyline Tag Tests', function () {
 
     let x4 = f(x3);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePolyline",
         componentName: "/gradedApplet/cobwebApplet/cobwebPolyline",
         args: {
@@ -1415,7 +1416,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/cobwebTutorial/P1",
         args: { x: 0.9, y: -0.1 }
@@ -1433,7 +1434,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/cobwebTutorial/v1",
         args: {
@@ -1454,7 +1455,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/cobwebTutorial/h1",
         args: {
@@ -1470,7 +1471,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/cobwebTutorial/P2",
         args: { x: -0.1, y: 1.7 }
@@ -1488,7 +1489,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/cobwebTutorial/P3",
         args: { x: 1.8, y: 0 }
@@ -1507,7 +1508,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/cobwebTutorial/v2",
         args: {
@@ -1528,7 +1529,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/cobwebTutorial/h2",
         args: {
@@ -1546,7 +1547,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/cobwebTutorial/P4",
         args: { x: 0.1, y: 2.5 }
@@ -1575,7 +1576,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/cobwebTutorial/P1",
         args: { x: 0.9, y: -0.1 }
@@ -1593,7 +1594,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/cobwebTutorial/v1",
         args: {
@@ -1614,7 +1615,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/cobwebTutorial/h1",
         args: {
@@ -1632,7 +1633,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/cobwebTutorial/P2",
         args: { x: -0.1, y: 1.7 }
@@ -1650,7 +1651,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/cobwebTutorial/P3",
         args: { x: 1.8, y: 0 }
@@ -1669,7 +1670,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/cobwebTutorial/v2",
         args: {
@@ -1690,7 +1691,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/cobwebTutorial/h2",
         args: {
@@ -1708,7 +1709,7 @@ describe('CobwebPolyline Tag Tests', function () {
     cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/cobwebTutorial/P4",
         args: { x: 0.1, y: 2.5 }

@@ -3,13 +3,14 @@ import me from 'math-expressions';
 describe('SampleRandomNumbers Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
 
 
   it('no parameters, sample single uniform random number from 0 to 1', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -30,10 +31,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.map(x => x.replacements[0].replacements[0].stateValues.value)
+      let samples = stateVariables["/_map1"].replacements.map(x => x.replacements[0].replacements[0].stateValues.value)
 
       expect(samples.length).eq(100);
 
@@ -48,15 +49,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(0.5, 0.05);
       expect(varX).closeTo(1 / 12, 0.005)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(0.5, 1E-10)
       expect(firstSample.stateValues.variance).closeTo(1 / 12, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt(1 / 12), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.map(x => x.replacements[0].replacements[0].stateValues.value)
+      let copiedSamples = stateVariables["/_copy1"].replacements.map(x => x.replacements[0].replacements[0].stateValues.value)
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -65,7 +66,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
 
   it('sample five uniform random numbers from 0 to 8, only to specified', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -86,10 +87,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       for (let sample of samples) {
@@ -103,15 +104,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(4, 0.5);
       expect(varX).closeTo(8 ** 2 / 12, 0.5)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(4, 1E-10)
       expect(firstSample.stateValues.variance).closeTo(8 ** 2 / 12, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt(8 ** 2 / 12), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -119,7 +120,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample five uniform random numbers from -5 to -4, only from specified', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -140,10 +141,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       for (let sample of samples) {
@@ -157,15 +158,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(-4.5, 0.05);
       expect(varX).closeTo(1 / 12, 0.005)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(-4.5, 1E-10)
       expect(firstSample.stateValues.variance).closeTo(1 / 12, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt(1 / 12), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -173,7 +174,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample ten uniform random numbers from -4 to -2', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -194,10 +195,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       for (let sample of samples) {
@@ -211,15 +212,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(-3, 0.5);
       expect(varX).closeTo(2 ** 2 / 12, 0.5)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(-3, 1E-10)
       expect(firstSample.stateValues.variance).closeTo(2 ** 2 / 12, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt(2 ** 2 / 12), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -227,7 +228,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample ten uniform random numbers from -2 to -4', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -248,10 +249,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       for (let sample of samples) {
@@ -265,15 +266,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(-3, 0.5);
       expect(varX).closeTo(2 ** 2 / 12, 0.5)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(-3, 1E-10)
       expect(firstSample.stateValues.variance).closeTo(2 ** 2 / 12, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt(2 ** 2 / 12), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -281,7 +282,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample twenty continuous standard normals, no parameters', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -302,10 +303,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       let meanX = me.math.mean(samples);
@@ -314,15 +315,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(0, 0.1);
       expect(varX).closeTo(1, 0.1)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(0, 1E-10)
       expect(firstSample.stateValues.variance).closeTo(1, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt(1), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -330,7 +331,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample five continuous standard normals, unspecified mean 0, standard deviation 10', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -351,10 +352,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       let meanX = me.math.mean(samples);
@@ -363,15 +364,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(0, 2);
       expect(varX).closeTo(100, 10)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(0, 1E-10)
       expect(firstSample.stateValues.variance).closeTo(100, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt(100), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -379,7 +380,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample single continuous standard normal, mean -50, unspecified standard deviation 1', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -400,10 +401,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       let meanX = me.math.mean(samples);
@@ -412,15 +413,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(-50, 0.1);
       expect(varX).closeTo(1, 0.1)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(-50, 1E-10)
       expect(firstSample.stateValues.variance).closeTo(1, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt(1), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -428,7 +429,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample twenty continuous standard normals, mean 100, standard deviation 10', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -449,10 +450,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       let meanX = me.math.mean(samples);
@@ -461,15 +462,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(100, 2);
       expect(varX).closeTo(100, 10)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(100, 1E-10)
       expect(firstSample.stateValues.variance).closeTo(100, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt(100), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -477,7 +478,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample twenty continuous standard normals, mean -3, variance 0.01', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -498,10 +499,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       let meanX = me.math.mean(samples);
@@ -510,15 +511,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(-3, 0.1);
       expect(varX).closeTo(0.01, 0.001)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(-3, 1E-10)
       expect(firstSample.stateValues.variance).closeTo(0.01, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt(0.01), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -526,7 +527,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample single discrete uniform, no parameters, integer from 0 to 1', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -547,10 +548,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       for (let sample of samples) {
@@ -563,15 +564,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(0.5, 0.05);
       expect(varX).closeTo((2 ** 2 - 1) / 12, 0.05)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(0.5, 1E-10)
       expect(firstSample.stateValues.variance).closeTo((2 ** 2 - 1) / 12, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt((2 ** 2 - 1) / 12), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -579,7 +580,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample single discrete uniform, from 0.5 to 5.5, only to specified', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -600,10 +601,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       for (let sample of samples) {
@@ -616,15 +617,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(3, 0.2);
       expect(varX).closeTo((6 ** 2 - 1) / 12, 0.5)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(3, 1E-10)
       expect(firstSample.stateValues.variance).closeTo((6 ** 2 - 1) / 12, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt((6 ** 2 - 1) / 12), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -632,7 +633,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample single discrete uniform, from 8.5 to 9.5, only from specified', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -653,10 +654,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       for (let sample of samples) {
@@ -669,15 +670,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(9, 0.05);
       expect(varX).closeTo((2 ** 2 - 1) / 12, 0.05)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(9, 1E-10)
       expect(firstSample.stateValues.variance).closeTo((2 ** 2 - 1) / 12, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt((2 ** 2 - 1) / 12), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -686,7 +687,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
 
   it('sample five integers from -3 to 5', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -707,10 +708,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       for (let sample of samples) {
@@ -723,15 +724,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(1, 0.3);
       expect(varX).closeTo((9 ** 2 - 1) / 12, 1)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(1, 1E-10)
       expect(firstSample.stateValues.variance).closeTo((9 ** 2 - 1) / 12, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt((9 ** 2 - 1) / 12), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -739,7 +740,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample five integers from 5 to -3 gives nothing', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -760,16 +761,16 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(0);
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -778,7 +779,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
 
   it('sample 10 odd integers from -3 to 5', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -799,10 +800,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let samples = components["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let samples = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(samples.length).eq(100);
 
       for (let sample of samples) {
@@ -815,15 +816,15 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(meanX).closeTo(1, 0.3);
       expect(varX).closeTo((5 ** 2 - 1) * 2 ** 2 / 12, 1)
 
-      let firstSample = components["/_map1"].replacements[0].replacements[0]
+      let firstSample = stateVariables["/_map1"].replacements[0].replacements[0]
       expect(firstSample.stateValues.mean).closeTo(1, 1E-10)
       expect(firstSample.stateValues.variance).closeTo((5 ** 2 - 1) * 2 ** 2 / 12, 1E-10)
       expect(firstSample.stateValues.standardDeviation).closeTo(Math.sqrt((5 ** 2 - 1) * 2 ** 2 / 12), 1E-10)
 
-      let copiedSamples = components["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
+      let copiedSamples = stateVariables["/_copy1"].replacements.reduce((a, c) => [...a, ...c.replacements[0].replacements.map(y => y.stateValues.value)], [])
       expect(copiedSamples).eqls(samples)
 
-      let copiedCopiedSamples = components["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
+      let copiedCopiedSamples = stateVariables["/p"].activeChildren[0].activeChildren.map(x => x.stateValues.value)
       expect(copiedCopiedSamples).eqls(samples)
 
 
@@ -831,7 +832,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it("sampled number does change dynamically", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -856,10 +857,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
     let sample1numbersb, sample2numbersb;
     let sample1numbersc, sample2numbersc;
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let sample1replacements = components['/sample1'].replacements;
-      let sample2replacements = components['/sample2'].replacements;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let sample1replacements = stateVariables['/sample1'].replacements;
+      let sample2replacements = stateVariables['/sample2'].replacements;
       expect(sample1replacements.length).eq(50);
       expect(sample2replacements.length).eq(180);
       sample1numbers = sample1replacements.map(x => x.stateValues.value);
@@ -882,10 +883,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.get('#\\/numberOfSamples textarea').type(`{end}{backspace}{backspace}70{enter}`, { force: true });
     cy.get('#\\/numberOfSamples2 textarea').type(`{end}{backspace}{backspace}{backspace}160{enter}`, { force: true });
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let sample1replacements = components['/sample1'].replacements;
-      let sample2replacements = components['/sample2'].replacements.slice(0, components['/sample2'].replacements.length - components["/sample2"].replacementsToWithhold);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let sample1replacements = stateVariables['/sample1'].replacements;
+      let sample2replacements = stateVariables['/sample2'].replacements.slice(0, stateVariables['/sample2'].replacements.length - stateVariables["/sample2"].replacementsToWithhold);
       expect(sample1replacements.length).eq(70);
       expect(sample2replacements.length).eq(160);
       sample1numbersb = sample1replacements.map(x => x.stateValues.value);
@@ -915,10 +916,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.get('#\\/maxnum textarea').type(`{end}{backspace}{backspace}4{enter}`, { force: true });
     cy.get('#\\/standardDeviation textarea').type(`{end}{backspace}{backspace}18{enter}`, { force: true });
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let sample1replacements = components['/sample1'].replacements;
-      let sample2replacements = components['/sample2'].replacements.slice(0, components['/sample2'].replacements.length - components["/sample2"].replacementsToWithhold);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let sample1replacements = stateVariables['/sample1'].replacements;
+      let sample2replacements = stateVariables['/sample2'].replacements.slice(0, stateVariables['/sample2'].replacements.length - stateVariables["/sample2"].replacementsToWithhold);
       expect(sample1replacements.length).eq(70);
       expect(sample2replacements.length).eq(160);
       sample1numbersc = sample1replacements.map(x => x.stateValues.value);
@@ -939,7 +940,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it("random number doesn't resample in dynamic map", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -974,260 +975,260 @@ describe('SampleRandomNumbers Tag Tests', function () {
     let samplednumbers = [];
 
     cy.log("initially nothing")
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p2'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p3'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("sample one number");
     cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let n1 = stateVariables['/a/n'].stateValues.value;
       samplednumbers.push(n1);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p1'].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p2'].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p3'].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
       for (let ind = 0; ind < 1; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
       }
     })
 
 
     cy.log("go back to nothing")
     cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p2'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p3'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("get same number back");
     cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let n1 = stateVariables['/a/n'].stateValues.value;
       expect(n1).eq(samplednumbers[0]);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p1'].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p2'].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p3'].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
+      expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(1);
 
       for (let ind = 0; ind < 1; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
       }
     })
 
 
     cy.log("get two more samples");
     cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}3{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
-      let n2 = components['/b/n'].stateValues.value;
-      let n3 = components['/c/n'].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let n1 = stateVariables['/a/n'].stateValues.value;
+      let n2 = stateVariables['/b/n'].stateValues.value;
+      let n3 = stateVariables['/c/n'].stateValues.value;
       expect(n1).eq(samplednumbers[0]);
       samplednumbers.push(n2);
       samplednumbers.push(n3);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(stateVariables['/p1'].activeChildren[0].activeChildren.length).eq(3);
+      expect(stateVariables['/p2'].activeChildren[0].activeChildren.length).eq(3);
+      expect(stateVariables['/p3'].activeChildren[0].activeChildren.length).eq(3);
+      expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
+      expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(3);
       for (let ind = 0; ind < 3; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
       }
     })
 
     cy.log("go back to nothing")
     cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p2'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p3'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
 
     cy.log("get first two numbers back");
     cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}2{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
-      let n2 = components['/b/n'].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let n1 = stateVariables['/a/n'].stateValues.value;
+      let n2 = stateVariables['/b/n'].stateValues.value;
       expect(n1).eq(samplednumbers[0]);
       expect(n2).eq(samplednumbers[1]);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(stateVariables['/p1'].activeChildren[0].activeChildren.length).eq(2);
+      expect(stateVariables['/p2'].activeChildren[0].activeChildren.length).eq(2);
+      expect(stateVariables['/p3'].activeChildren[0].activeChildren.length).eq(2);
+      expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
+      expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(2);
 
       for (let ind = 0; ind < 2; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
       }
     })
 
     cy.log("get six total samples");
     cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
-      let n2 = components['/b/n'].stateValues.value;
-      let n3 = components['/c/n'].stateValues.value;
-      let n4 = components['/d/n'].stateValues.value;
-      let n5 = components['/e/n'].stateValues.value;
-      let n6 = components['/f/n'].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let n1 = stateVariables['/a/n'].stateValues.value;
+      let n2 = stateVariables['/b/n'].stateValues.value;
+      let n3 = stateVariables['/c/n'].stateValues.value;
+      let n4 = stateVariables['/d/n'].stateValues.value;
+      let n5 = stateVariables['/e/n'].stateValues.value;
+      let n6 = stateVariables['/f/n'].stateValues.value;
       expect(n1).eq(samplednumbers[0]);
       expect(n2).eq(samplednumbers[1]);
       expect(n3).eq(samplednumbers[2]);
       samplednumbers.push(n4);
       samplednumbers.push(n5);
       samplednumbers.push(n6);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p1'].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p2'].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p3'].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       for (let ind = 0; ind < 6; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
       }
     })
 
     cy.log("go back to nothing")
     cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p2'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p3'].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
+      expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(0);
     });
 
     cy.log("get all six back");
     cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let n1 = components['/a/n'].stateValues.value;
-      let n2 = components['/b/n'].stateValues.value;
-      let n3 = components['/c/n'].stateValues.value;
-      let n4 = components['/d/n'].stateValues.value;
-      let n5 = components['/e/n'].stateValues.value;
-      let n6 = components['/f/n'].stateValues.value;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let n1 = stateVariables['/a/n'].stateValues.value;
+      let n2 = stateVariables['/b/n'].stateValues.value;
+      let n3 = stateVariables['/c/n'].stateValues.value;
+      let n4 = stateVariables['/d/n'].stateValues.value;
+      let n5 = stateVariables['/e/n'].stateValues.value;
+      let n6 = stateVariables['/f/n'].stateValues.value;
       expect(n1).eq(samplednumbers[0]);
       expect(n2).eq(samplednumbers[1]);
       expect(n3).eq(samplednumbers[2]);
       expect(n4).eq(samplednumbers[3]);
       expect(n5).eq(samplednumbers[4]);
       expect(n6).eq(samplednumbers[5]);
-      expect(components['/p1'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p2'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p3'].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
-      expect(components['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p1'].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p2'].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p3'].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
+      expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren.length).eq(6);
       for (let ind = 0; ind < 6; ind++) {
-        expect(components['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
-        expect(components['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p1'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p2'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p3'].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p4'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p5'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p6'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p7'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p8'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
+        expect(stateVariables['/p9'].replacements[0].activeChildren[0].activeChildren[ind].stateValues.value).eq(samplednumbers[ind]);
       }
     })
 
@@ -1235,7 +1236,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample single discrete uniform number, assign name', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1253,22 +1254,22 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let u = components['/u'];
-      let u2 = components['/u2'];
+      let u = stateVariables['/u'];
+      let u2 = stateVariables['/u2'];
 
       expect(options.includes(u.stateValues.value)).eq(true);
       expect(u.stateValues.value).eq(u2.stateValues.value);
 
-      let v = components['/v'];
-      let v2 = components['/v2'];
+      let v = stateVariables['/v'];
+      let v2 = stateVariables['/v2'];
       expect(options.includes(v.stateValues.value)).eq(true);
       expect(v.stateValues.value).eq(v2.stateValues.value);
 
-      let w = components['/w'];
-      let w2 = components['/w2'];
+      let w = stateVariables['/w'];
+      let w2 = stateVariables['/w2'];
       expect(options.includes(w.stateValues.value)).eq(true);
       expect(w.stateValues.value).eq(w2.stateValues.value);
 
@@ -1277,7 +1278,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample multiple uniform random numbers, assign names', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1313,25 +1314,25 @@ describe('SampleRandomNumbers Tag Tests', function () {
       cy.get("#\\/w2").should('have.text', results[2]);
 
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let u = components['/u'];
-      let u2 = components['/u2'];
+      let u = stateVariables['/u'];
+      let u2 = stateVariables['/u2'];
       expect(u.stateValues.value).closeTo(results[0], 1E-8)
       expect(u2.stateValues.value).closeTo(results[0], 1E-8);
 
-      let v = components['/v'];
-      let v2 = components['/v2'];
+      let v = stateVariables['/v'];
+      let v2 = stateVariables['/v2'];
       expect(v.stateValues.value).closeTo(results[1], 1E-8);
       expect(v2.stateValues.value).closeTo(results[1], 1E-8);
 
-      let w = components['/w'];
-      let w2 = components['/w2'];
+      let w = stateVariables['/w'];
+      let w2 = stateVariables['/w2'];
       expect(w.stateValues.value).closeTo(results[2], 1E-8);
       expect(w2.stateValues.value).closeTo(results[2], 1E-8);
 
-      let s = components['/s'];
+      let s = stateVariables['/s'];
       expect(s.replacements.length).eq(6);
       for (let ind = 0; ind < 6; ind++) {
         let r = s.replacements[ind];
@@ -1343,7 +1344,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
   it('sample multiple uniform random numbers, assign names, newNamespace', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1379,25 +1380,25 @@ describe('SampleRandomNumbers Tag Tests', function () {
       cy.get("#\\/w2").should('have.text', results[2]);
 
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let u = components['/s/u'];
-      let u2 = components['/u2'];
+      let u = stateVariables['/s/u'];
+      let u2 = stateVariables['/u2'];
       expect(u.stateValues.value).closeTo(results[0], 1E-8)
       expect(u2.stateValues.value).closeTo(results[0], 1E-8);
 
-      let v = components['/s/v'];
-      let v2 = components['/v2'];
+      let v = stateVariables['/s/v'];
+      let v2 = stateVariables['/v2'];
       expect(v.stateValues.value).closeTo(results[1], 1E-8);
       expect(v2.stateValues.value).closeTo(results[1], 1E-8);
 
-      let w = components['/s/w'];
-      let w2 = components['/w2'];
+      let w = stateVariables['/s/w'];
+      let w2 = stateVariables['/w2'];
       expect(w.stateValues.value).closeTo(results[2], 1E-8);
       expect(w2.stateValues.value).closeTo(results[2], 1E-8);
 
-      let s = components['/s'];
+      let s = stateVariables['/s'];
       expect(s.replacements.length).eq(6);
       for (let ind = 0; ind < 6; ind++) {
         let r = s.replacements[ind];
@@ -1410,7 +1411,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
 
   it("copying parameters", () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1572,14 +1573,14 @@ describe('SampleRandomNumbers Tag Tests', function () {
     let specifiedStep = 1;
 
     cy.log("initial values")
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
         numberOfSamples, specifiedType,
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
-        sampleComponent: components["/samples"],
+        sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 0.1,
         allowedErrorInVariance: 0.1
       })
@@ -1591,14 +1592,14 @@ describe('SampleRandomNumbers Tag Tests', function () {
       numberOfSamples = 50;
     })
     cy.get(`#\\/nSamples textarea`).type("{end}{backspace}{backspace}50{enter}", { force: true })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
         numberOfSamples, specifiedType,
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
-        sampleComponent: components["/samples"],
+        sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 0.1,
         allowedErrorInVariance: 0.1,
         checkAllSamples: false
@@ -1612,14 +1613,14 @@ describe('SampleRandomNumbers Tag Tests', function () {
     })
     cy.get(`#\\/specifiedFrom textarea`).type("{end}{backspace}{backspace}-3{enter}", { force: true })
     cy.get(`#\\/specifiedTo textarea`).type("{end}{backspace}{backspace}0{enter}", { force: true })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
         numberOfSamples, specifiedType,
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
-        sampleComponent: components["/samples"],
+        sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 0.1,
         allowedErrorInVariance: 0.1,
         checkAllSamples: false
@@ -1632,14 +1633,14 @@ describe('SampleRandomNumbers Tag Tests', function () {
       specifiedType = "discreteUniform";
     })
     cy.get(`#\\/type_input`).clear().type("discreteUniform{enter}")
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
         numberOfSamples, specifiedType,
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
-        sampleComponent: components["/samples"],
+        sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 0.4,
         allowedErrorInVariance: 0.2,
         checkAllSamples: false
@@ -1655,14 +1656,14 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.get(`#\\/specifiedFrom textarea`).type("{end}{backspace}{backspace}3{enter}", { force: true })
     cy.get(`#\\/specifiedTo textarea`).type("{end}{backspace}{backspace}-8{enter}", { force: true })
     cy.get(`#\\/specifiedStep textarea`).type("{end}{backspace}{backspace}-4{enter}", { force: true })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
         numberOfSamples, specifiedType,
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
-        sampleComponent: components["/samples"],
+        sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 1,
         allowedErrorInVariance: 2,
         checkAllSamples: false
@@ -1675,14 +1676,14 @@ describe('SampleRandomNumbers Tag Tests', function () {
       specifiedType = "gaussian";
     })
     cy.get(`#\\/type_input`).clear().type("gaussian{enter}")
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
         numberOfSamples, specifiedType,
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
-        sampleComponent: components["/samples"],
+        sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 0.3,
         allowedErrorInVariance: 0.5,
         checkAllSamples: false
@@ -1696,14 +1697,14 @@ describe('SampleRandomNumbers Tag Tests', function () {
     })
     cy.get(`#\\/specifiedMean textarea`).type("{end}{backspace}{backspace}-11{enter}", { force: true })
     cy.get(`#\\/specifiedVariance textarea`).type("{end}{backspace}{backspace}3{enter}", { force: true })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
         numberOfSamples, specifiedType,
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
-        sampleComponent: components["/samples"],
+        sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 0.3,
         allowedErrorInVariance: 1,
         checkAllSamples: false
@@ -1715,14 +1716,14 @@ describe('SampleRandomNumbers Tag Tests', function () {
       numberOfSamples = 200;
     })
     cy.get(`#\\/nSamples textarea`).type("{end}{backspace}{backspace}200{enter}", { force: true })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
         numberOfSamples, specifiedType,
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
-        sampleComponent: components["/samples"],
+        sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 0.2,
         allowedErrorInVariance: 0.8,
         checkAllSamples: false
@@ -1734,14 +1735,14 @@ describe('SampleRandomNumbers Tag Tests', function () {
       numberOfSamples = 20;
     })
     cy.get(`#\\/nSamples textarea`).type("{end}{backspace}{enter}", { force: true })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
       checkSamples({
         numberOfSamples, specifiedType,
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
-        sampleComponent: components["/samples"],
+        sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 1,
         allowedErrorInVariance: 2,
         checkAllSamples: true

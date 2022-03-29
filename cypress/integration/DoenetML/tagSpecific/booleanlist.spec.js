@@ -1,12 +1,13 @@
 describe('BooleanList Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
 
   it('booleanlist within booleanlists', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><booleanlist hide="true">false true false</booleanlist></p>
@@ -34,7 +35,7 @@ describe('BooleanList Tag Tests', function () {
   })
 
   it('booleanlist with booleanlist children, test inverse', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -71,30 +72,30 @@ describe('BooleanList Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[0]).eq(true);
-      expect(components['/_booleanlist1'].stateValues.booleans[1]).eq(false);
-      expect(components['/_booleanlist1'].stateValues.booleans[2]).eq(false);
-      expect(components['/_booleanlist1'].stateValues.booleans[3]).eq(false);
-      expect(components['/_booleanlist1'].stateValues.booleans[4]).eq(false);
-      expect(components['/_booleanlist1'].stateValues.booleans[5]).eq(true);
-      expect(components['/_booleanlist1'].stateValues.booleans[6]).eq(false);
-      expect(components['/_booleanlist1'].stateValues.booleans[7]).eq(false);
-      expect(components['/_booleanlist1'].stateValues.booleans[8]).eq(true);
-      expect((await components['/_booleanlist2'].stateValues.booleans)[0]).eq(false);
-      expect(components['/_booleanlist2'].stateValues.booleans[1]).eq(false);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[0]).eq(false);
-      expect(components['/_booleanlist3'].stateValues.booleans[1]).eq(true);
-      expect(components['/_booleanlist3'].stateValues.booleans[2]).eq(false);
-      expect(components['/_booleanlist3'].stateValues.booleans[3]).eq(false);
-      expect(components['/_booleanlist3'].stateValues.booleans[4]).eq(true);
-      expect((await components['/_booleanlist4'].stateValues.booleans)[0]).eq(false);
-      expect(components['/_booleanlist4'].stateValues.booleans[1]).eq(true);
-      expect(components['/_booleanlist4'].stateValues.booleans[2]).eq(false);
-      expect((await components['/_booleanlist5'].stateValues.booleans)[0]).eq(true);
-      expect(components['/_booleanlist5'].stateValues.booleans[1]).eq(false);
-      expect((await components['/_booleanlist6'].stateValues.booleans)[0]).eq(false);
-      expect(components['/_booleanlist6'].stateValues.booleans[1]).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[0]).eq(true);
+      expect(stateVariables['/_booleanlist1'].stateValues.booleans[1]).eq(false);
+      expect(stateVariables['/_booleanlist1'].stateValues.booleans[2]).eq(false);
+      expect(stateVariables['/_booleanlist1'].stateValues.booleans[3]).eq(false);
+      expect(stateVariables['/_booleanlist1'].stateValues.booleans[4]).eq(false);
+      expect(stateVariables['/_booleanlist1'].stateValues.booleans[5]).eq(true);
+      expect(stateVariables['/_booleanlist1'].stateValues.booleans[6]).eq(false);
+      expect(stateVariables['/_booleanlist1'].stateValues.booleans[7]).eq(false);
+      expect(stateVariables['/_booleanlist1'].stateValues.booleans[8]).eq(true);
+      expect((stateVariables['/_booleanlist2'].stateValues.booleans)[0]).eq(false);
+      expect(stateVariables['/_booleanlist2'].stateValues.booleans[1]).eq(false);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[0]).eq(false);
+      expect(stateVariables['/_booleanlist3'].stateValues.booleans[1]).eq(true);
+      expect(stateVariables['/_booleanlist3'].stateValues.booleans[2]).eq(false);
+      expect(stateVariables['/_booleanlist3'].stateValues.booleans[3]).eq(false);
+      expect(stateVariables['/_booleanlist3'].stateValues.booleans[4]).eq(true);
+      expect((stateVariables['/_booleanlist4'].stateValues.booleans)[0]).eq(false);
+      expect(stateVariables['/_booleanlist4'].stateValues.booleans[1]).eq(true);
+      expect(stateVariables['/_booleanlist4'].stateValues.booleans[2]).eq(false);
+      expect((stateVariables['/_booleanlist5'].stateValues.booleans)[0]).eq(true);
+      expect(stateVariables['/_booleanlist5'].stateValues.booleans[1]).eq(false);
+      expect((stateVariables['/_booleanlist6'].stateValues.booleans)[0]).eq(false);
+      expect(stateVariables['/_booleanlist6'].stateValues.booleans[1]).eq(true);
     })
 
     cy.log('change values')
@@ -114,36 +115,36 @@ describe('BooleanList Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[0]).eq(false);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[1]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[2]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[3]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[4]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[5]).eq(false);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[6]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[7]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[8]).eq(false);
-      expect((await components['/_booleanlist2'].stateValues.booleans)[0]).eq(true);
-      expect((await components['/_booleanlist2'].stateValues.booleans)[1]).eq(true);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[0]).eq(true);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[1]).eq(false);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[2]).eq(true);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[3]).eq(true);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[4]).eq(false);
-      expect((await components['/_booleanlist4'].stateValues.booleans)[0]).eq(true);
-      expect((await components['/_booleanlist4'].stateValues.booleans)[1]).eq(false);
-      expect((await components['/_booleanlist4'].stateValues.booleans)[2]).eq(true);
-      expect((await components['/_booleanlist5'].stateValues.booleans)[0]).eq(false);
-      expect((await components['/_booleanlist5'].stateValues.booleans)[1]).eq(true);
-      expect((await components['/_booleanlist6'].stateValues.booleans)[0]).eq(true);
-      expect((await components['/_booleanlist6'].stateValues.booleans)[1]).eq(false);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[0]).eq(false);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[1]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[2]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[3]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[4]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[5]).eq(false);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[6]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[7]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[8]).eq(false);
+      expect((stateVariables['/_booleanlist2'].stateValues.booleans)[0]).eq(true);
+      expect((stateVariables['/_booleanlist2'].stateValues.booleans)[1]).eq(true);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[0]).eq(true);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[1]).eq(false);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[2]).eq(true);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[3]).eq(true);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[4]).eq(false);
+      expect((stateVariables['/_booleanlist4'].stateValues.booleans)[0]).eq(true);
+      expect((stateVariables['/_booleanlist4'].stateValues.booleans)[1]).eq(false);
+      expect((stateVariables['/_booleanlist4'].stateValues.booleans)[2]).eq(true);
+      expect((stateVariables['/_booleanlist5'].stateValues.booleans)[0]).eq(false);
+      expect((stateVariables['/_booleanlist5'].stateValues.booleans)[1]).eq(true);
+      expect((stateVariables['/_booleanlist6'].stateValues.booleans)[0]).eq(true);
+      expect((stateVariables['/_booleanlist6'].stateValues.booleans)[1]).eq(false);
     })
 
   })
 
   it('booleanlist with booleanlist children and sugar, test inverse', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
@@ -180,30 +181,30 @@ describe('BooleanList Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[0]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[1]).eq(false);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[2]).eq(false);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[3]).eq(false);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[4]).eq(false);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[5]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[6]).eq(false);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[7]).eq(false);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[8]).eq(true);
-      expect((await components['/_booleanlist2'].stateValues.booleans)[0]).eq(false);
-      expect((await components['/_booleanlist2'].stateValues.booleans)[1]).eq(false);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[0]).eq(false);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[1]).eq(true);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[2]).eq(false);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[3]).eq(false);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[4]).eq(true);
-      expect((await components['/_booleanlist4'].stateValues.booleans)[0]).eq(false);
-      expect((await components['/_booleanlist4'].stateValues.booleans)[1]).eq(true);
-      expect((await components['/_booleanlist4'].stateValues.booleans)[2]).eq(false);
-      expect((await components['/_booleanlist5'].stateValues.booleans)[0]).eq(true);
-      expect((await components['/_booleanlist5'].stateValues.booleans)[1]).eq(false);
-      expect((await components['/_booleanlist6'].stateValues.booleans)[0]).eq(false);
-      expect((await components['/_booleanlist6'].stateValues.booleans)[1]).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[0]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[1]).eq(false);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[2]).eq(false);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[3]).eq(false);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[4]).eq(false);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[5]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[6]).eq(false);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[7]).eq(false);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[8]).eq(true);
+      expect((stateVariables['/_booleanlist2'].stateValues.booleans)[0]).eq(false);
+      expect((stateVariables['/_booleanlist2'].stateValues.booleans)[1]).eq(false);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[0]).eq(false);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[1]).eq(true);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[2]).eq(false);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[3]).eq(false);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[4]).eq(true);
+      expect((stateVariables['/_booleanlist4'].stateValues.booleans)[0]).eq(false);
+      expect((stateVariables['/_booleanlist4'].stateValues.booleans)[1]).eq(true);
+      expect((stateVariables['/_booleanlist4'].stateValues.booleans)[2]).eq(false);
+      expect((stateVariables['/_booleanlist5'].stateValues.booleans)[0]).eq(true);
+      expect((stateVariables['/_booleanlist5'].stateValues.booleans)[1]).eq(false);
+      expect((stateVariables['/_booleanlist6'].stateValues.booleans)[0]).eq(false);
+      expect((stateVariables['/_booleanlist6'].stateValues.booleans)[1]).eq(true);
     })
 
     cy.log('change values')
@@ -223,30 +224,30 @@ describe('BooleanList Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[0]).eq(false);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[1]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[2]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[3]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[4]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[5]).eq(false);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[6]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[7]).eq(true);
-      expect((await components['/_booleanlist1'].stateValues.booleans)[8]).eq(false);
-      expect((await components['/_booleanlist2'].stateValues.booleans)[0]).eq(true);
-      expect((await components['/_booleanlist2'].stateValues.booleans)[1]).eq(true);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[0]).eq(true);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[1]).eq(false);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[2]).eq(true);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[3]).eq(true);
-      expect((await components['/_booleanlist3'].stateValues.booleans)[4]).eq(false);
-      expect((await components['/_booleanlist4'].stateValues.booleans)[0]).eq(true);
-      expect((await components['/_booleanlist4'].stateValues.booleans)[1]).eq(false);
-      expect((await components['/_booleanlist4'].stateValues.booleans)[2]).eq(true);
-      expect((await components['/_booleanlist5'].stateValues.booleans)[0]).eq(false);
-      expect((await components['/_booleanlist5'].stateValues.booleans)[1]).eq(true);
-      expect((await components['/_booleanlist6'].stateValues.booleans)[0]).eq(true);
-      expect((await components['/_booleanlist6'].stateValues.booleans)[1]).eq(false);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[0]).eq(false);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[1]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[2]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[3]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[4]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[5]).eq(false);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[6]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[7]).eq(true);
+      expect((stateVariables['/_booleanlist1'].stateValues.booleans)[8]).eq(false);
+      expect((stateVariables['/_booleanlist2'].stateValues.booleans)[0]).eq(true);
+      expect((stateVariables['/_booleanlist2'].stateValues.booleans)[1]).eq(true);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[0]).eq(true);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[1]).eq(false);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[2]).eq(true);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[3]).eq(true);
+      expect((stateVariables['/_booleanlist3'].stateValues.booleans)[4]).eq(false);
+      expect((stateVariables['/_booleanlist4'].stateValues.booleans)[0]).eq(true);
+      expect((stateVariables['/_booleanlist4'].stateValues.booleans)[1]).eq(false);
+      expect((stateVariables['/_booleanlist4'].stateValues.booleans)[2]).eq(true);
+      expect((stateVariables['/_booleanlist5'].stateValues.booleans)[0]).eq(false);
+      expect((stateVariables['/_booleanlist5'].stateValues.booleans)[1]).eq(true);
+      expect((stateVariables['/_booleanlist6'].stateValues.booleans)[0]).eq(true);
+      expect((stateVariables['/_booleanlist6'].stateValues.booleans)[1]).eq(false);
     })
   })
 
@@ -281,13 +282,13 @@ describe('BooleanList Tag Tests', function () {
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(await components['/bl1'].stateValues.booleans).eqls([true, true, false, true, false]);
-        expect(await components['/bl2'].stateValues.booleans).eqls([true, true, false]);
-        expect(await components['/bl3'].stateValues.booleans).eqls([true, true, false, true, false]);
-        expect(await components['/bl4'].stateValues.booleans).eqls([true, true, false]);
-        expect(await components['/bl5'].stateValues.booleans).eqls([true, true, false, true]);
-        expect(await components['/bl6'].stateValues.booleans).eqls([true, true, false, true, false]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/bl1'].stateValues.booleans).eqls([true, true, false, true, false]);
+        expect(stateVariables['/bl2'].stateValues.booleans).eqls([true, true, false]);
+        expect(stateVariables['/bl3'].stateValues.booleans).eqls([true, true, false, true, false]);
+        expect(stateVariables['/bl4'].stateValues.booleans).eqls([true, true, false]);
+        expect(stateVariables['/bl5'].stateValues.booleans).eqls([true, true, false, true]);
+        expect(stateVariables['/bl6'].stateValues.booleans).eqls([true, true, false, true, false]);
 
       })
     })

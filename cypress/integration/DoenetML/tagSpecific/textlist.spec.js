@@ -11,12 +11,13 @@ function cesc(s) {
 describe('TextList Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
 
   it('textlist within textlists', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><textlist hide="true">a b c</textlist></p>
@@ -47,7 +48,7 @@ describe('TextList Tag Tests', function () {
   })
 
   it('textlist with textlist children, test inverse', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -93,31 +94,31 @@ describe('TextList Tag Tests', function () {
     cy.get("#\\/_textinput9_input").should('have.value', 'j')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_textlist1'].stateValues.texts[0]).eq('a');
-      expect(components['/_textlist1'].stateValues.texts[1]).eq('q');
-      expect(components['/_textlist1'].stateValues.texts[2]).eq('r');
-      expect(components['/_textlist1'].stateValues.texts[3]).eq('h');
-      expect(components['/_textlist1'].stateValues.texts[4]).eq('b');
-      expect(components['/_textlist1'].stateValues.texts[5]).eq('u');
-      expect(components['/_textlist1'].stateValues.texts[6]).eq('v');
-      expect(components['/_textlist1'].stateValues.texts[7]).eq('i');
-      expect(components['/_textlist1'].stateValues.texts[8]).eq('j');
-      expect(components['/_textlist2'].stateValues.texts[0]).eq('q');
-      expect(components['/_textlist2'].stateValues.texts[1]).eq('r');
-      expect(components['/_textlist3'].stateValues.texts[0]).eq('b');
-      expect(components['/_textlist3'].stateValues.texts[1]).eq('u');
-      expect(components['/_textlist3'].stateValues.texts[2]).eq('v');
-      expect(components['/_textlist3'].stateValues.texts[3]).eq('i');
-      expect(components['/_textlist3'].stateValues.texts[4]).eq('j');
-      expect(components['/_textlist4'].stateValues.texts[0]).eq('b');
-      expect(components['/_textlist4'].stateValues.texts[1]).eq('u');
-      expect(components['/_textlist4'].stateValues.texts[2]).eq('v');
-      expect(components['/_textlist5'].stateValues.texts[0]).eq('u');
-      expect(components['/_textlist5'].stateValues.texts[1]).eq('v');
-      expect(components['/_textlist6'].stateValues.texts[0]).eq('i');
-      expect(components['/_textlist6'].stateValues.texts[1]).eq('j');
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_textlist1'].stateValues.texts[0]).eq('a');
+      expect(stateVariables['/_textlist1'].stateValues.texts[1]).eq('q');
+      expect(stateVariables['/_textlist1'].stateValues.texts[2]).eq('r');
+      expect(stateVariables['/_textlist1'].stateValues.texts[3]).eq('h');
+      expect(stateVariables['/_textlist1'].stateValues.texts[4]).eq('b');
+      expect(stateVariables['/_textlist1'].stateValues.texts[5]).eq('u');
+      expect(stateVariables['/_textlist1'].stateValues.texts[6]).eq('v');
+      expect(stateVariables['/_textlist1'].stateValues.texts[7]).eq('i');
+      expect(stateVariables['/_textlist1'].stateValues.texts[8]).eq('j');
+      expect(stateVariables['/_textlist2'].stateValues.texts[0]).eq('q');
+      expect(stateVariables['/_textlist2'].stateValues.texts[1]).eq('r');
+      expect(stateVariables['/_textlist3'].stateValues.texts[0]).eq('b');
+      expect(stateVariables['/_textlist3'].stateValues.texts[1]).eq('u');
+      expect(stateVariables['/_textlist3'].stateValues.texts[2]).eq('v');
+      expect(stateVariables['/_textlist3'].stateValues.texts[3]).eq('i');
+      expect(stateVariables['/_textlist3'].stateValues.texts[4]).eq('j');
+      expect(stateVariables['/_textlist4'].stateValues.texts[0]).eq('b');
+      expect(stateVariables['/_textlist4'].stateValues.texts[1]).eq('u');
+      expect(stateVariables['/_textlist4'].stateValues.texts[2]).eq('v');
+      expect(stateVariables['/_textlist5'].stateValues.texts[0]).eq('u');
+      expect(stateVariables['/_textlist5'].stateValues.texts[1]).eq('v');
+      expect(stateVariables['/_textlist6'].stateValues.texts[0]).eq('i');
+      expect(stateVariables['/_textlist6'].stateValues.texts[1]).eq('j');
     })
 
     cy.log('change values')
@@ -147,38 +148,38 @@ describe('TextList Tag Tests', function () {
     cy.get("#\\/_textinput9_input").should('have.value', '9')
 
     cy.log('Test internal values are set to the correct values')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_textlist1'].stateValues.texts[0]).eq('1');
-      expect(components['/_textlist1'].stateValues.texts[1]).eq('2');
-      expect(components['/_textlist1'].stateValues.texts[2]).eq('3');
-      expect(components['/_textlist1'].stateValues.texts[3]).eq('4');
-      expect(components['/_textlist1'].stateValues.texts[4]).eq('5');
-      expect(components['/_textlist1'].stateValues.texts[5]).eq('6');
-      expect(components['/_textlist1'].stateValues.texts[6]).eq('7');
-      expect(components['/_textlist1'].stateValues.texts[7]).eq('8');
-      expect(components['/_textlist1'].stateValues.texts[8]).eq('9');
-      expect(components['/_textlist2'].stateValues.texts[0]).eq('2');
-      expect(components['/_textlist2'].stateValues.texts[1]).eq('3');
-      expect(components['/_textlist3'].stateValues.texts[0]).eq('5');
-      expect(components['/_textlist3'].stateValues.texts[1]).eq('6');
-      expect(components['/_textlist3'].stateValues.texts[2]).eq('7');
-      expect(components['/_textlist3'].stateValues.texts[3]).eq('8');
-      expect(components['/_textlist3'].stateValues.texts[4]).eq('9');
-      expect(components['/_textlist4'].stateValues.texts[0]).eq('5');
-      expect(components['/_textlist4'].stateValues.texts[1]).eq('6');
-      expect(components['/_textlist4'].stateValues.texts[2]).eq('7');
-      expect(components['/_textlist5'].stateValues.texts[0]).eq('6');
-      expect(components['/_textlist5'].stateValues.texts[1]).eq('7');
-      expect(components['/_textlist6'].stateValues.texts[0]).eq('8');
-      expect(components['/_textlist6'].stateValues.texts[1]).eq('9');
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_textlist1'].stateValues.texts[0]).eq('1');
+      expect(stateVariables['/_textlist1'].stateValues.texts[1]).eq('2');
+      expect(stateVariables['/_textlist1'].stateValues.texts[2]).eq('3');
+      expect(stateVariables['/_textlist1'].stateValues.texts[3]).eq('4');
+      expect(stateVariables['/_textlist1'].stateValues.texts[4]).eq('5');
+      expect(stateVariables['/_textlist1'].stateValues.texts[5]).eq('6');
+      expect(stateVariables['/_textlist1'].stateValues.texts[6]).eq('7');
+      expect(stateVariables['/_textlist1'].stateValues.texts[7]).eq('8');
+      expect(stateVariables['/_textlist1'].stateValues.texts[8]).eq('9');
+      expect(stateVariables['/_textlist2'].stateValues.texts[0]).eq('2');
+      expect(stateVariables['/_textlist2'].stateValues.texts[1]).eq('3');
+      expect(stateVariables['/_textlist3'].stateValues.texts[0]).eq('5');
+      expect(stateVariables['/_textlist3'].stateValues.texts[1]).eq('6');
+      expect(stateVariables['/_textlist3'].stateValues.texts[2]).eq('7');
+      expect(stateVariables['/_textlist3'].stateValues.texts[3]).eq('8');
+      expect(stateVariables['/_textlist3'].stateValues.texts[4]).eq('9');
+      expect(stateVariables['/_textlist4'].stateValues.texts[0]).eq('5');
+      expect(stateVariables['/_textlist4'].stateValues.texts[1]).eq('6');
+      expect(stateVariables['/_textlist4'].stateValues.texts[2]).eq('7');
+      expect(stateVariables['/_textlist5'].stateValues.texts[0]).eq('6');
+      expect(stateVariables['/_textlist5'].stateValues.texts[1]).eq('7');
+      expect(stateVariables['/_textlist6'].stateValues.texts[0]).eq('8');
+      expect(stateVariables['/_textlist6'].stateValues.texts[1]).eq('9');
     })
 
 
   })
 
   it('textlist does not force composite replacement, even in boolean', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -226,13 +227,13 @@ describe('TextList Tag Tests', function () {
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(await components['/tl1'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
-        expect(await components['/tl2'].stateValues.texts).eqls(["a", "b", "c"]);
-        expect(await components['/tl3'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
-        expect(await components['/tl4'].stateValues.texts).eqls(["a", "b", "c"]);
-        expect(await components['/tl5'].stateValues.texts).eqls(["a", "b", "c", "d"]);
-        expect(await components['/tl6'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/tl1'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
+        expect(stateVariables['/tl2'].stateValues.texts).eqls(["a", "b", "c"]);
+        expect(stateVariables['/tl3'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
+        expect(stateVariables['/tl4'].stateValues.texts).eqls(["a", "b", "c"]);
+        expect(stateVariables['/tl5'].stateValues.texts).eqls(["a", "b", "c", "d"]);
+        expect(stateVariables['/tl6'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
 
       })
     })

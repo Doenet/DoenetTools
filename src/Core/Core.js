@@ -46,18 +46,6 @@ export default class Core {
     // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
     this.flags = flags;
 
-    this.executeProcesses = this.executeProcesses.bind(this);
-    this.requestUpdate = this.requestUpdate.bind(this);
-    this.performUpdate = this.performUpdate.bind(this);
-    this.requestAction = this.requestAction.bind(this);
-    this.performAction = this.performAction.bind(this);
-    this.recordSolutionView = this.recordSolutionView.bind(this);
-    this.triggerChainedActions = this.triggerChainedActions.bind(this);
-    this.requestRecordEvent = this.requestRecordEvent.bind(this);
-    this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
-    this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
-    this.calculateScoredItemNumberOfContainer = this.calculateScoredItemNumberOfContainer.bind(this);
-
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
 
@@ -67,16 +55,17 @@ export default class Core {
 
 
     this.coreFunctions = {
-      requestUpdate: this.requestUpdate,
-      performUpdate: this.performUpdate,
-      requestAction: this.requestAction,
-      performAction: this.performAction,
-      triggerChainedActions: this.triggerChainedActions,
-      requestRecordEvent: this.requestRecordEvent,
-      requestAnimationFrame: this.requestAnimationFrame,
-      cancelAnimationFrame: this.cancelAnimationFrame,
-      calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer,
-      recordSolutionView: this.recordSolutionView,
+      requestUpdate: this.requestUpdate.bind(this),
+      performUpdate: this.performUpdate.bind(this),
+      requestAction: this.requestAction.bind(this),
+      performAction: this.performAction.bind(this),
+      resolveAction: this.resolveAction.bind(this),
+      triggerChainedActions: this.triggerChainedActions.bind(this),
+      requestRecordEvent: this.requestRecordEvent.bind(this),
+      requestAnimationFrame: this.requestAnimationFrame.bind(this),
+      cancelAnimationFrame: this.cancelAnimationFrame.bind(this),
+      calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer.bind(this),
+      recordSolutionView: this.recordSolutionView.bind(this),
     }
 
     this.updateInfo = {
@@ -3456,6 +3445,7 @@ export default class Core {
                 componentName: component.componentName,
                 actionName: chainInfo.triggeredAction,
                 stateVariableDefiningChain: varName,
+                args: {},
               });
             } else {
               // target was already chained
@@ -7708,6 +7698,13 @@ export default class Core {
 
   }
 
+  resolveAction({ actionId }) {
+    postMessage({
+      messageType: "resolveAction",
+      args: { actionId }
+    })
+  }
+
   async triggerChainedActions({ componentName }) {
 
     for (let cName in this.updateInfo.componentsToUpdateActionChaining) {
@@ -7869,6 +7866,10 @@ export default class Core {
 
     newStateVariableValuesProcessed.push(newStateVariableValues);
 
+    // always update the renderers from the update instructions themselves,
+    // as even if changes were prevented, the renderers need to be given that information
+    // so they can revert if the showed the changes before hearing back from core
+    this.updateInfo.componentsToUpdateRenderers.push(...updateInstructions.map(x => x.componentName))
 
     // use set to create deduplicated list of components to update renderers
     let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];

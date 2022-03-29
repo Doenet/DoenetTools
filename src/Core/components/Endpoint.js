@@ -27,7 +27,7 @@ export default class Endpoint extends Point {
   }
 
 
-  async switchPoint({actionId,}) {
+  async switchPoint({ actionId, }) {
     if (await this.stateValues.switchable) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -48,6 +48,8 @@ export default class Endpoint extends Point {
           }
         }
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
   }

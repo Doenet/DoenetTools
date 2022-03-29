@@ -231,6 +231,8 @@ export default class Textinput extends Input {
         transient: true,
         actionId,
       })
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -293,6 +295,9 @@ export default class Textinput extends Input {
       }
 
     }
+    
+    this.coreFunctions.resolveAction({ actionId });
+    
   }
 
 }

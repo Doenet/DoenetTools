@@ -2,12 +2,13 @@
 describe('Boolean Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
 
   it('basic boolean evaluation', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -102,7 +103,7 @@ describe('Boolean Tag Tests', function () {
     }
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       for (let i = 1; i <= nTrues; i++) {
         expect(stateVariables[`/t${i}`].stateValues.value).to.be.true
       }
@@ -114,7 +115,7 @@ describe('Boolean Tag Tests', function () {
   })
 
   it('boolean based on math', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <mathinput prefill="0" />
@@ -139,7 +140,7 @@ describe('Boolean Tag Tests', function () {
   })
 
   it('boolean from computation', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <mathinput prefill="1" name="i" />
@@ -179,7 +180,7 @@ describe('Boolean Tag Tests', function () {
   })
 
   it('boolean with lists', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <boolean name="t1"><math>1,2</math> = <mathlist>1 2</mathlist></boolean>
@@ -264,7 +265,7 @@ describe('Boolean Tag Tests', function () {
   })
 
   it('boolean with texts', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <boolean name="t1"><text>hello there</text> = hello there</boolean>
@@ -299,7 +300,7 @@ describe('Boolean Tag Tests', function () {
   })
 
   it('math errors and invalid targets are not equal', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 
@@ -329,7 +330,7 @@ describe('Boolean Tag Tests', function () {
   })
 
   it('boolean with number strings for text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -382,7 +383,7 @@ describe('Boolean Tag Tests', function () {
   })
 
   it('boolean adapts to text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -444,7 +445,7 @@ describe('Boolean Tag Tests', function () {
   })
 
   it('boolean does not adapt while number adapts', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -462,7 +463,7 @@ describe('Boolean Tag Tests', function () {
 
 
   it('overwrite properties when copying', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>

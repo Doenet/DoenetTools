@@ -1,6 +1,7 @@
 describe('Triangle Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
@@ -22,15 +23,15 @@ describe('Triangle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       let v1x = 0, v1y = 1;
       let v2x = 1, v2y = 0;
       let v3x = 0, v3y = 0;
 
       let vertices = [
-        components["/vertex1"].replacements[0],
-        components["/vertex2"].replacements[0],
-        components["/vertex3"].replacements[0],
+        stateVariables["/vertex1"].replacements[0],
+        stateVariables["/vertex2"].replacements[0],
+        stateVariables["/vertex3"].replacements[0],
       ]
 
       cy.window().then(async (win) => {
@@ -38,27 +39,31 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < 3; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
       })
 
       cy.log('move triangle up and to the right')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let moveX = 3;
         let moveY = 2;
 
         let desiredVertices = [];
-        for (let i = 0; i < components['/_triangle1'].stateValues.nVertices; i++) {
+        for (let i = 0; i < stateVariables['/_triangle1'].stateValues.nVertices; i++) {
           desiredVertices.push([
-            components['/_triangle1'].stateValues.vertices[i][0].add(moveX),
-            components['/_triangle1'].stateValues.vertices[i][1].add(moveY)
+            stateVariables['/_triangle1'].stateValues.vertices[i][0].add(moveX),
+            stateVariables['/_triangle1'].stateValues.vertices[i][1].add(moveY)
           ])
         }
 
-        await components['/_triangle1'].movePolygon({ pointCoords: desiredVertices });
+        await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/_triangle1",
+        args: { pointCoords: desiredVertices }
+      });
 
         v1x += moveX;
         v2x += moveX;
@@ -71,7 +76,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < vertices.length; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -80,7 +85,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move each point')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         v1x = 7, v2x = -5, v3x = -1;
         v1y = -4, v2y = -9, v3y = 8;
@@ -93,7 +98,7 @@ describe('Triangle Tag Tests', function () {
         }
 
         for (let i = 0; i < 3; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -118,15 +123,15 @@ describe('Triangle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       let v1x = 0, v1y = 1;
       let v2x = 1, v2y = 0;
       let v3x = 0, v3y = 0;
 
       let vertices = [
-        components["/vertex1"].replacements[0],
-        components["/vertex2"].replacements[0],
-        components["/vertex3"].replacements[0],
+        stateVariables["/vertex1"].replacements[0],
+        stateVariables["/vertex2"].replacements[0],
+        stateVariables["/vertex3"].replacements[0],
       ]
 
       cy.window().then(async (win) => {
@@ -134,27 +139,31 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < 3; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
       })
 
       cy.log('move triangle up and to the right')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let moveX = 3;
         let moveY = 2;
 
         let desiredVertices = [];
-        for (let i = 0; i < components['/_triangle1'].stateValues.nVertices; i++) {
+        for (let i = 0; i < stateVariables['/_triangle1'].stateValues.nVertices; i++) {
           desiredVertices.push([
-            components['/_triangle1'].stateValues.vertices[i][0].add(moveX),
-            components['/_triangle1'].stateValues.vertices[i][1].add(moveY)
+            stateVariables['/_triangle1'].stateValues.vertices[i][0].add(moveX),
+            stateVariables['/_triangle1'].stateValues.vertices[i][1].add(moveY)
           ])
         }
 
-        await components['/_triangle1'].movePolygon({ pointCoords: desiredVertices });
+        await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/_triangle1",
+        args: { pointCoords: desiredVertices }
+      });
 
         v1x += moveX;
         v2x += moveX;
@@ -167,7 +176,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < vertices.length; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -176,7 +185,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move each point')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         v1x = 7, v2x = -5, v3x = -1;
         v1y = -4, v2y = -9, v3y = 8;
@@ -189,7 +198,7 @@ describe('Triangle Tag Tests', function () {
         }
 
         for (let i = 0; i < 3; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -214,15 +223,15 @@ describe('Triangle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       let v1x = -8, v1y = 5;
       let v2x = 1, v2y = 0;
       let v3x = 0, v3y = 0;
 
       let vertices = [
-        components["/vertex1"].replacements[0],
-        components["/vertex2"].replacements[0],
-        components["/vertex3"].replacements[0],
+        stateVariables["/vertex1"].replacements[0],
+        stateVariables["/vertex2"].replacements[0],
+        stateVariables["/vertex3"].replacements[0],
       ]
 
       cy.window().then(async (win) => {
@@ -230,27 +239,31 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < 3; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
       })
 
       cy.log('move triangle up and to the right')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let moveX = 3;
         let moveY = 2;
 
         let desiredVertices = [];
-        for (let i = 0; i < components['/_triangle1'].stateValues.nVertices; i++) {
+        for (let i = 0; i < stateVariables['/_triangle1'].stateValues.nVertices; i++) {
           desiredVertices.push([
-            components['/_triangle1'].stateValues.vertices[i][0].add(moveX),
-            components['/_triangle1'].stateValues.vertices[i][1].add(moveY)
+            stateVariables['/_triangle1'].stateValues.vertices[i][0].add(moveX),
+            stateVariables['/_triangle1'].stateValues.vertices[i][1].add(moveY)
           ])
         }
 
-        await components['/_triangle1'].movePolygon({ pointCoords: desiredVertices });
+        await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/_triangle1",
+        args: { pointCoords: desiredVertices }
+      });
 
         v1x += moveX;
         v2x += moveX;
@@ -263,7 +276,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < vertices.length; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -272,7 +285,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move each point')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         v1x = 7, v2x = -5, v3x = -1;
         v1y = -4, v2y = -9, v3y = 8;
@@ -285,7 +298,7 @@ describe('Triangle Tag Tests', function () {
         }
 
         for (let i = 0; i < 3; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -310,15 +323,15 @@ describe('Triangle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       let v1x = -8, v1y = 5;
       let v2x = 6, v2y = 2;
       let v3x = 0, v3y = 0;
 
       let vertices = [
-        components["/vertex1"].replacements[0],
-        components["/vertex2"].replacements[0],
-        components["/vertex3"].replacements[0],
+        stateVariables["/vertex1"].replacements[0],
+        stateVariables["/vertex2"].replacements[0],
+        stateVariables["/vertex3"].replacements[0],
       ]
 
       cy.window().then(async (win) => {
@@ -326,27 +339,31 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < 3; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
       })
 
       cy.log('move triangle up and to the right')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let moveX = 3;
         let moveY = 2;
 
         let desiredVertices = [];
-        for (let i = 0; i < components['/_triangle1'].stateValues.nVertices; i++) {
+        for (let i = 0; i < stateVariables['/_triangle1'].stateValues.nVertices; i++) {
           desiredVertices.push([
-            components['/_triangle1'].stateValues.vertices[i][0].add(moveX),
-            components['/_triangle1'].stateValues.vertices[i][1].add(moveY)
+            stateVariables['/_triangle1'].stateValues.vertices[i][0].add(moveX),
+            stateVariables['/_triangle1'].stateValues.vertices[i][1].add(moveY)
           ])
         }
 
-        await components['/_triangle1'].movePolygon({ pointCoords: desiredVertices });
+        await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/_triangle1",
+        args: { pointCoords: desiredVertices }
+      });
 
         v1x += moveX;
         v2x += moveX;
@@ -359,7 +376,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < vertices.length; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -368,7 +385,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move each point')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         v1x = 7, v2x = -5, v3x = -1;
         v1y = -4, v2y = -9, v3y = 8;
@@ -381,7 +398,7 @@ describe('Triangle Tag Tests', function () {
         }
 
         for (let i = 0; i < 3; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -406,15 +423,15 @@ describe('Triangle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       let v1x = -8, v1y = 5;
       let v2x = 6, v2y = 2;
       let v3x = 5, v3y = -4;
 
       let vertices = [
-        components["/vertex1"].replacements[0],
-        components["/vertex2"].replacements[0],
-        components["/vertex3"].replacements[0],
+        stateVariables["/vertex1"].replacements[0],
+        stateVariables["/vertex2"].replacements[0],
+        stateVariables["/vertex3"].replacements[0],
       ]
 
       cy.window().then(async (win) => {
@@ -422,27 +439,31 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < 3; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
       })
 
       cy.log('move triangle up and to the right')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let moveX = 3;
         let moveY = 2;
 
         let desiredVertices = [];
-        for (let i = 0; i < components['/_triangle1'].stateValues.nVertices; i++) {
+        for (let i = 0; i < stateVariables['/_triangle1'].stateValues.nVertices; i++) {
           desiredVertices.push([
-            components['/_triangle1'].stateValues.vertices[i][0].add(moveX),
-            components['/_triangle1'].stateValues.vertices[i][1].add(moveY)
+            stateVariables['/_triangle1'].stateValues.vertices[i][0].add(moveX),
+            stateVariables['/_triangle1'].stateValues.vertices[i][1].add(moveY)
           ])
         }
 
-        await components['/_triangle1'].movePolygon({ pointCoords: desiredVertices });
+        await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/_triangle1",
+        args: { pointCoords: desiredVertices }
+      });
 
         v1x += moveX;
         v2x += moveX;
@@ -455,7 +476,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < vertices.length; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -464,7 +485,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move each point')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         v1x = 7, v2x = -5, v3x = -1;
         v1y = -4, v2y = -9, v3y = 8;
@@ -477,7 +498,7 @@ describe('Triangle Tag Tests', function () {
         }
 
         for (let i = 0; i < 3; i++) {
-          expect((await components['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
+          expect((stateVariables['/_triangle1'].stateValues.vertices)[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect((await vertices[i].stateValues.coords).tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -527,23 +548,23 @@ describe('Triangle Tag Tests', function () {
       let v3s = [[v0x3, v0y3], [v1x3, v1y3], [v2x1, v2y1]];
       let v4s = [[v0x4, v0y4], [v1x4, v1y4], [v2x4, v2y4]];
 
-      expect((await components['/g1/t1'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v1s);
-      expect((await components['/g2/t1'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v1s);
+      expect((stateVariables['/g1/t1'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v1s);
+      expect((stateVariables['/g2/t1'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v1s);
 
-      expect((await components['/g1/t2'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v2s);
-      expect((await components['/g2/t2'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v2s);
+      expect((stateVariables['/g1/t2'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v2s);
+      expect((stateVariables['/g2/t2'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v2s);
 
-      expect((await components['/g1/t3'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v3s);
-      expect((await components['/g2/t3'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v3s);
+      expect((stateVariables['/g1/t3'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v3s);
+      expect((stateVariables['/g2/t3'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v3s);
 
-      expect((await components['/g1/t4'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v4s);
-      expect((await components['/g2/t4'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v4s);
+      expect((stateVariables['/g1/t4'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v4s);
+      expect((stateVariables['/g2/t4'].stateValues.vertices).map(y => y.map(x => x.tree))).eqls(v4s);
 
     }
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let v0x1 = 0, v0y1 = 1, v1x1 = 1, v1y1 = 0, v2x1 = 0, v2y1 = 0;
       let v0x2 = 3, v0y2 = -2;
@@ -562,7 +583,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move g1/t1 up and to the right')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let dx = 3, dy = 2;
 
@@ -573,7 +594,11 @@ describe('Triangle Tag Tests', function () {
         v1y1 += dy;
         v2y1 += dy;
 
-        await components['/g1/t1'].movePolygon({ pointCoords: [[v0x1, v0y1], [v1x1, v1y1], [v2x1, v2y1]] });
+        await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g1/t1",
+        args: { pointCoords: [[v0x1, v0y1], [v1x1, v1y1], [v2x1, v2y1]] }
+      });
 
 
         await checkTransformedTrianglesValues({
@@ -588,7 +613,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move vertices of g2/t1 independently')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         v0x1 = 7;
         v1x1 = -5;
@@ -597,9 +622,9 @@ describe('Triangle Tag Tests', function () {
         v1y1 = -9;
         v2y1 = 8;
 
-        await components['/g2/t1'].movePolygon({ pointCoords: { 0: [v0x1, v0y1] } })
-        await components['/g2/t1'].movePolygon({ pointCoords: { 1: [v1x1, v1y1] } })
-        await components['/g2/t1'].movePolygon({ pointCoords: { 2: [v2x1, v2y1] } })
+        await stateVariables['/g2/t1'].movePolygon({ pointCoords: { 0: [v0x1, v0y1] } })
+        await stateVariables['/g2/t1'].movePolygon({ pointCoords: { 1: [v1x1, v1y1] } })
+        await stateVariables['/g2/t1'].movePolygon({ pointCoords: { 2: [v2x1, v2y1] } })
 
         await checkTransformedTrianglesValues({
           components,
@@ -614,7 +639,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move g2/t2 up and to the left')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let dx = -4, dy = 1;
 
@@ -625,7 +650,11 @@ describe('Triangle Tag Tests', function () {
         v1y1 += dy;
         v2y1 += dy;
 
-        await components['/g2/t2'].movePolygon({ pointCoords: [[v0x2, v0y2], [v1x1, v1y1], [v2x1, v2y1]] });
+        await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g2/t2",
+        args: { pointCoords: [[v0x2, v0y2], [v1x1, v1y1], [v2x1, v2y1]] }
+      });
 
 
         await checkTransformedTrianglesValues({
@@ -639,7 +668,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move vertices of g1/t2 independently')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         v0x2 = 1;
         v1x1 = 5;
@@ -648,9 +677,9 @@ describe('Triangle Tag Tests', function () {
         v1y1 = 4;
         v2y1 = -5;
 
-        await components['/g1/t2'].movePolygon({ pointCoords: { 0: [v0x2, v0y2] } })
-        await components['/g1/t2'].movePolygon({ pointCoords: { 1: [v1x1, v1y1] } })
-        await components['/g1/t2'].movePolygon({ pointCoords: { 2: [v2x1, v2y1] } })
+        await stateVariables['/g1/t2'].movePolygon({ pointCoords: { 0: [v0x2, v0y2] } })
+        await stateVariables['/g1/t2'].movePolygon({ pointCoords: { 1: [v1x1, v1y1] } })
+        await stateVariables['/g1/t2'].movePolygon({ pointCoords: { 2: [v2x1, v2y1] } })
 
         await checkTransformedTrianglesValues({
           components,
@@ -664,7 +693,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move g1/t3 down and to the right')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let dx = 4, dy = -5;
 
@@ -675,7 +704,11 @@ describe('Triangle Tag Tests', function () {
         v1y3 += dy;
         v2y1 += dy;
 
-        await components['/g1/t3'].movePolygon({ pointCoords: [[v0x3, v0y3], [v1x3, v1y3], [v2x1, v2y1]] });
+        await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g1/t3",
+        args: { pointCoords: [[v0x3, v0y3], [v1x3, v1y3], [v2x1, v2y1]] }
+      });
 
 
         await checkTransformedTrianglesValues({
@@ -691,7 +724,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move vertices of g2/t3 independently')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         v0x3 = 0;
         v1x3 = 8;
@@ -700,9 +733,9 @@ describe('Triangle Tag Tests', function () {
         v1y3 = -6;
         v2y1 = -5;
 
-        await components['/g2/t3'].movePolygon({ pointCoords: { 0: [v0x3, v0y3] } })
-        await components['/g2/t3'].movePolygon({ pointCoords: { 1: [v1x3, v1y3] } })
-        await components['/g2/t3'].movePolygon({ pointCoords: { 2: [v2x1, v2y1] } })
+        await stateVariables['/g2/t3'].movePolygon({ pointCoords: { 0: [v0x3, v0y3] } })
+        await stateVariables['/g2/t3'].movePolygon({ pointCoords: { 1: [v1x3, v1y3] } })
+        await stateVariables['/g2/t3'].movePolygon({ pointCoords: { 2: [v2x1, v2y1] } })
 
         await checkTransformedTrianglesValues({
           components,
@@ -718,7 +751,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move g2/t4 down and to the left')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let dx = -7, dy = -8;
 
@@ -729,7 +762,11 @@ describe('Triangle Tag Tests', function () {
         v1y4 += dy;
         v2y4 += dy;
 
-        await components['/g2/t4'].movePolygon({ pointCoords: [[v0x4, v0y4], [v1x4, v1y4], [v2x4, v2y4]] });
+        await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g2/t4",
+        args: { pointCoords: [[v0x4, v0y4], [v1x4, v1y4], [v2x4, v2y4]] }
+      });
 
 
         await checkTransformedTrianglesValues({
@@ -743,7 +780,7 @@ describe('Triangle Tag Tests', function () {
 
       cy.log('move vertices of g1/t4 independently')
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         v0x4 = -7;
         v1x4 = 0;
@@ -752,9 +789,9 @@ describe('Triangle Tag Tests', function () {
         v1y4 = -8;
         v2y4 = 6;
 
-        await components['/g1/t4'].movePolygon({ pointCoords: { 0: [v0x4, v0y4] } })
-        await components['/g1/t4'].movePolygon({ pointCoords: { 1: [v1x4, v1y4] } })
-        await components['/g1/t4'].movePolygon({ pointCoords: { 2: [v2x4, v2y4] } })
+        await stateVariables['/g1/t4'].movePolygon({ pointCoords: { 0: [v0x4, v0y4] } })
+        await stateVariables['/g1/t4'].movePolygon({ pointCoords: { 1: [v1x4, v1y4] } })
+        await stateVariables['/g1/t4'].movePolygon({ pointCoords: { 2: [v2x4, v2y4] } })
 
         await checkTransformedTrianglesValues({
           components,
@@ -788,70 +825,98 @@ describe('Triangle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([0, 0]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([6, 0]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 6]);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([0, 0]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([6, 0]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 6]);
+      expect(stateVariables['/_point1'].stateValues.xs[0].tree).eq(3);
+      expect(stateVariables['/_point1'].stateValues.xs[1].tree).eq(3);
 
 
     })
 
     cy.log("move point upper left")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: -3, y: 8 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(6);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -3, y: 8 }
+      });
+      expect(stateVariables['/_point1'].stateValues.xs[0].tree).eq(0);
+      expect(stateVariables['/_point1'].stateValues.xs[1].tree).eq(6);
     })
 
     cy.log("move point to left")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: -5, y: 4 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -5, y: 4 }
+      });
+      expect(stateVariables['/_point1'].stateValues.xs[0].tree).eq(0);
+      expect(stateVariables['/_point1'].stateValues.xs[1].tree).eq(4);
     })
 
     cy.log("move point to lower left")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: -7, y: -3 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -7, y: -3 }
+      });
+      expect(stateVariables['/_point1'].stateValues.xs[0].tree).eq(0);
+      expect(stateVariables['/_point1'].stateValues.xs[1].tree).eq(0);
     })
 
     cy.log("move point to lower right")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: 8, y: -8 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(6);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 8, y: -8 }
+      });
+      expect(stateVariables['/_point1'].stateValues.xs[0].tree).eq(6);
+      expect(stateVariables['/_point1'].stateValues.xs[1].tree).eq(0);
     })
 
     cy.log("move point to right")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: 8, y: 4 });
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(5, 1E-14);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(1, 1E-14);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 8, y: 4 }
+      });
+      expect(stateVariables['/_point1'].stateValues.xs[0].tree).closeTo(5, 1E-14);
+      expect(stateVariables['/_point1'].stateValues.xs[1].tree).closeTo(1, 1E-14);
     })
 
     cy.log("move point to middle")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: 1.5, y: 3.5 });
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(2, 1E-14);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(4, 1E-14);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 1.5, y: 3.5 }
+      });
+      expect(stateVariables['/_point1'].stateValues.xs[0].tree).closeTo(2, 1E-14);
+      expect(stateVariables['/_point1'].stateValues.xs[1].tree).closeTo(4, 1E-14);
     })
 
     cy.log("move point a little left")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_point1'].movePoint({ x: 1, y: 3 });
-      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(0, 1E-14);
-      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(3, 1E-14);
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 1, y: 3 }
+      });
+      expect(stateVariables['/_point1'].stateValues.xs[0].tree).closeTo(0, 1E-14);
+      expect(stateVariables['/_point1'].stateValues.xs[1].tree).closeTo(3, 1E-14);
     })
 
 
@@ -878,18 +943,18 @@ describe('Triangle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([1, 2]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([3, 4]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 6]);
-      expect((await components['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([2, 1]);
-      expect((await components['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([4, 3]);
-      expect((await components['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([6, -5]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([1, 2]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([3, 4]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 6]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([2, 1]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([4, 3]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([6, -5]);
     })
 
     cy.log('move first triangle verticies')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let x1 = 8, y1 = -1;
       let x2 = 0, y2 = -5;
@@ -901,20 +966,24 @@ describe('Triangle Tag Tests', function () {
         [x3, y3],
       ];
 
-      await components['/_triangle1'].movePolygon({ pointCoords: vertices });
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/_triangle1",
+        args: { pointCoords: vertices }
+      });
 
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([x1, y1]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([x2, y2]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([x3, y3]);
-      expect((await components['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([y1, x1]);
-      expect((await components['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([y2, x2]);
-      expect((await components['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([y3, x3]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([x1, y1]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([x2, y2]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([x3, y3]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([y1, x1]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([y2, x2]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([y3, x3]);
 
     })
 
     cy.log('move second triangle verticies')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let x1 = -5, y1 = 2;
       let x2 = -8, y2 = 9;
@@ -926,14 +995,18 @@ describe('Triangle Tag Tests', function () {
         [y3, x3],
       ];
 
-      await components['/_triangle2'].movePolygon({ pointCoords: vertices });
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/_triangle2",
+        args: { pointCoords: vertices }
+      });
 
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([x1, y1]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([x2, y2]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([x3, y3]);
-      expect((await components['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([y1, x1]);
-      expect((await components['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([y2, x2]);
-      expect((await components['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([y3, x3]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([x1, y1]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([x2, y2]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([x3, y3]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([y1, x1]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([y2, x2]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([y3, x3]);
 
     })
 
@@ -960,18 +1033,18 @@ describe('Triangle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([1, 2]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([1, 0]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 0]);
-      expect((await components['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([2, 1]);
-      expect((await components['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([0, 1]);
-      expect((await components['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([1, 2]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([1, 0]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 0]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([2, 1]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([0, 1]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 0]);
     })
 
     cy.log('move first triangle verticies')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let x1 = 8, y1 = -1;
       let x2 = 0, y2 = -5;
@@ -983,20 +1056,24 @@ describe('Triangle Tag Tests', function () {
         [x3, y3],
       ];
 
-      await components['/_triangle1'].movePolygon({ pointCoords: vertices });
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/_triangle1",
+        args: { pointCoords: vertices }
+      });
 
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([x1, y1]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([x2, y2]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([x3, y3]);
-      expect((await components['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([y1, x1]);
-      expect((await components['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([y2, x2]);
-      expect((await components['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([y3, x3]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([x1, y1]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([x2, y2]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([x3, y3]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([y1, x1]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([y2, x2]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([y3, x3]);
 
     })
 
     cy.log('move second triangle verticies')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       let x1 = -5, y1 = 2;
       let x2 = -8, y2 = 9;
@@ -1008,14 +1085,18 @@ describe('Triangle Tag Tests', function () {
         [y3, x3],
       ];
 
-      await components['/_triangle2'].movePolygon({ pointCoords: vertices });
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/_triangle2",
+        args: { pointCoords: vertices }
+      });
 
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([x1, y1]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([x2, y2]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([x3, y3]);
-      expect((await components['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([y1, x1]);
-      expect((await components['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([y2, x2]);
-      expect((await components['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([y3, x3]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([x1, y1]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([x2, y2]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([x3, y3]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[0].map(x => x.tree)).eqls([y1, x1]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[1].map(x => x.tree)).eqls([y2, x2]);
+      expect((stateVariables['/_triangle2'].stateValues.vertices)[2].map(x => x.tree)).eqls([y3, x3]);
 
     })
 
@@ -1040,37 +1121,37 @@ describe('Triangle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([5, 3]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([3, 5]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([5, 3]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([3, 5]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move first vertex')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_triangle1'].movePolygon({ pointCoords: { 0: [-1, 4] } });
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-1, 4]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([4, -1]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_triangle1'].movePolygon({ pointCoords: { 0: [-1, 4] } });
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-1, 4]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([4, -1]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move second vertex')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_triangle1'].movePolygon({ pointCoords: { 1: [7, -8] } });
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_triangle1'].movePolygon({ pointCoords: { 1: [7, -8] } });
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move third vertex')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_triangle1'].movePolygon({ pointCoords: { 2: [0, 6] } });
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_triangle1'].movePolygon({ pointCoords: { 2: [0, 6] } });
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 6]);
     })
 
   })
@@ -1088,37 +1169,37 @@ describe('Triangle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([5, 3]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([3, 5]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([5, 3]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([3, 5]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move first vertex')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_triangle1'].movePolygon({ pointCoords: { 0: [-1, 4] } });
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-1, 4]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([4, -1]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_triangle1'].movePolygon({ pointCoords: { 0: [-1, 4] } });
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-1, 4]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([4, -1]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move second vertex')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_triangle1'].movePolygon({ pointCoords: { 1: [7, -8] } });
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_triangle1'].movePolygon({ pointCoords: { 1: [7, -8] } });
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move third vertex')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_triangle1'].movePolygon({ pointCoords: { 2: [0, 6] } });
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_triangle1'].movePolygon({ pointCoords: { 2: [0, 6] } });
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 6]);
     })
 
   })
@@ -1136,37 +1217,37 @@ describe('Triangle Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([0, 1]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([1, 0]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([0, 1]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([1, 0]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 0]);
     })
 
     cy.log('move first vertex')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_triangle1'].movePolygon({ pointCoords: { 0: [-1, 4] } });
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-1, 4]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([4, -1]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_triangle1'].movePolygon({ pointCoords: { 0: [-1, 4] } });
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-1, 4]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([4, -1]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 0]);
     })
 
     cy.log('move second vertex')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_triangle1'].movePolygon({ pointCoords: { 1: [7, -8] } });
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_triangle1'].movePolygon({ pointCoords: { 1: [7, -8] } });
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 0]);
     })
 
     cy.log('move third vertex')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/_triangle1'].movePolygon({ pointCoords: { 2: [0, 6] } });
-      expect((await components['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
-      expect((await components['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
-      expect((await components['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      await stateVariables['/_triangle1'].movePolygon({ pointCoords: { 2: [0, 6] } });
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[0].map(x => x.tree)).eqls([-8, 7]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[1].map(x => x.tree)).eqls([7, -8]);
+      expect((stateVariables['/_triangle1'].stateValues.vertices)[2].map(x => x.tree)).eqls([0, 6]);
     })
 
   })

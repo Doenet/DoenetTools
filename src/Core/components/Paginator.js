@@ -270,6 +270,7 @@ export class Paginator extends Template {
     }
 
     if (!Number.isInteger(number)) {
+      this.coreFunctions.resolveAction({ actionId });
       return;
     }
 

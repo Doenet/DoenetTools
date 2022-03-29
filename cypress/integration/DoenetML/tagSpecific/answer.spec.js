@@ -11,6 +11,7 @@ function cesc(s) {
 describe('Answer Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
@@ -3583,8 +3584,8 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['\uFF3F']);
-        expect(await stateVariables['/s/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['\uFF3F']);
+        expect(stateVariables['/s/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinputName].stateValues.value).eq('\uFF3F');
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eq('\uFF3F');
       });
@@ -3609,8 +3610,8 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls([['+', 'x', 'y']]);
-        expect(await stateVariables['/s/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls([['+', 'x', 'y']]);
+        expect(stateVariables['/s/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinputName].stateValues.value).eqls(['+', 'x', 'y']);
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eq('\uFF3F');
       });
@@ -3634,8 +3635,8 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls([['+', 'x', 'y']]);
-        expect((await stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls([['+', 'x', 'y']]);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls([['+', 'x', 'y']]);
+        expect((stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls([['+', 'x', 'y']]);
         expect(stateVariables[mathinputName].stateValues.value).eqls(['+', 'x', 'y']);
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eqls(['+', 'x', 'y']);
       });
@@ -3659,8 +3660,8 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['x']);
-        expect((await stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls([['+', 'x', 'y']]);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['x']);
+        expect((stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls([['+', 'x', 'y']]);
         expect(stateVariables[mathinputName].stateValues.value).eqls('x');
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eqls(['+', 'x', 'y']);
       });
@@ -3685,8 +3686,8 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['x']);
-        expect((await stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['x']);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['x']);
+        expect((stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['x']);
         expect(stateVariables[mathinputName].stateValues.value).eqls('x');
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eqls('x');
       });
@@ -3710,8 +3711,8 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['y']);
-        expect((await stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['x']);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['y']);
+        expect((stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['x']);
         expect(stateVariables[mathinputName].stateValues.value).eqls('y');
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eqls('x');
       });
@@ -3735,8 +3736,8 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['y']);
-        expect((await stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['y']);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['y']);
+        expect((stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['y']);
         expect(stateVariables[mathinputName].stateValues.value).eqls('y');
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eqls('y');
       });
@@ -3809,23 +3810,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F', '\uFF3F']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('\uFF3F')
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls('\uFF3F')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('\uFF3F')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls('\uFF3F')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
       expect(stateVariables['/_mathinput1'].stateValues.value).eq('\uFF3F');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eq('\uFF3F');
       expect(stateVariables['/_mathinput2'].stateValues.value).eq('\uFF3F');
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect((await stateVariables['/cr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/cr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/cr2'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/crsa'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/crsb'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/crsa'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/crsb'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -3889,23 +3890,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(["+", 'x', 'y']);
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eq('\uFF3F');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect((await stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -3967,23 +3968,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(["+", 'x', 'y']);
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls(["+", 'x', 'y']);
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/srsa'].stateValues.value).eqls(["+", 'x', 'y'])
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -4049,23 +4050,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('x');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls(["+", 'x', 'y']);
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('x')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/srsa'].stateValues.value).eqls(["+", 'x', 'y'])
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -4128,23 +4129,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('x');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('x');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('x')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('x')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -4208,23 +4209,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('y');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('x');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('y')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('x')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -4284,23 +4285,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('y');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('y');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('y')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('y')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4375,23 +4376,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F', '\uFF3F']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('\uFF3F')
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls('\uFF3F')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('\uFF3F')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls('\uFF3F')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
       expect(stateVariables['/_mathinput1'].stateValues.value).eq('\uFF3F');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eq('\uFF3F');
       expect(stateVariables['/_mathinput2'].stateValues.value).eq('\uFF3F');
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect((await stateVariables['/cr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/cr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/cr2'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/crsa'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/crsb'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/crsa'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/crsb'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4445,23 +4446,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(["+", 'x', 'y']);
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eq('\uFF3F');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect((await stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4516,23 +4517,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(["+", 'x', 'y']);
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls(["+", 'x', 'y']);
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/srsa'].stateValues.value).eqls(["+", 'x', 'y'])
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -4587,23 +4588,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('x');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls(["+", 'x', 'y']);
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('x')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/srsa'].stateValues.value).eqls(["+", 'x', 'y'])
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -4659,23 +4660,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('x');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('x');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('x')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('x')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -4729,23 +4730,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('y');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('x');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('y')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('x')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -4799,23 +4800,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('y');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('y');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('y')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('y')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4873,23 +4874,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['', '']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
       expect(stateVariables['/_textinput1'].stateValues.value).eq('');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('\uFF3F');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect(await stateVariables['/cr'].stateValues.value).eq('')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('')
-      expect(await stateVariables['/sr'].stateValues.value).eq('')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('')
+      expect(stateVariables['/cr'].stateValues.value).eq('')
+      expect(stateVariables['/cr1'].stateValues.value).eq('')
+      expect(stateVariables['/cr2'].stateValues.value).eq('')
+      expect(stateVariables['/crsa'].stateValues.value).eq('')
+      expect(stateVariables['/crsb'].stateValues.value).eq('')
+      expect(stateVariables['/sr'].stateValues.value).eq('')
+      expect(stateVariables['/sr1'].stateValues.value).eq('')
+      expect(stateVariables['/sr2'].stateValues.value).eq('')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4920,23 +4921,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['rain', 'snow']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
-      expect(await stateVariables['/_textinput1'].stateValues.value).eq('rain');
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_textinput1'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('\uFF3F');
-      expect(await stateVariables['/_textinput2'].stateValues.value).eq('snow');
+      expect(stateVariables['/_textinput2'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect(await stateVariables['/cr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr'].stateValues.value).eq('')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('')
+      expect(stateVariables['/cr'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsa'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsb'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr'].stateValues.value).eq('')
+      expect(stateVariables['/sr1'].stateValues.value).eq('')
+      expect(stateVariables['/sr2'].stateValues.value).eq('')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4967,23 +4968,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['rain', 'snow']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'snow'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('rain');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('snow');
-      expect(await stateVariables['/cr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsa'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsb'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr2'].stateValues.value).eq('snow')
       expect(stateVariables['/srsa'].stateValues.value).eq('rain')
       expect(stateVariables['/srsb'].stateValues.value).eq('snow')
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -5016,23 +5017,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['rain', 'rain']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'snow'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('rain');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('snow');
-      expect(await stateVariables['/cr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsa'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsb'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr2'].stateValues.value).eq('snow')
       expect(stateVariables['/srsa'].stateValues.value).eq('rain')
       expect(stateVariables['/srsb'].stateValues.value).eq('snow')
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -5062,23 +5063,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['rain', 'rain']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'rain'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('rain');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('rain');
-      expect(await stateVariables['/cr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsa'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsb'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr2'].stateValues.value).eq('rain')
       expect(stateVariables['/srsa'].stateValues.value).eq('rain')
       expect(stateVariables['/srsb'].stateValues.value).eq('rain')
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -5110,23 +5111,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['snow', 'rain']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'rain'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('rain');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('rain');
-      expect(await stateVariables['/cr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsa'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsb'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr2'].stateValues.value).eq('rain')
       expect(stateVariables['/srsa'].stateValues.value).eq('rain')
       expect(stateVariables['/srsb'].stateValues.value).eq('rain')
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -5156,23 +5157,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['snow', 'rain']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'rain'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('snow');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('rain');
-      expect(await stateVariables['/cr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsa'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsb'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr2'].stateValues.value).eq('rain')
       expect(stateVariables['/srsa'].stateValues.value).eq('snow')
       expect(stateVariables['/srsb'].stateValues.value).eq('rain')
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -5204,23 +5205,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['snow', 'snow']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'rain'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('snow');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('rain');
-      expect(await stateVariables['/cr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsa'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsb'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr2'].stateValues.value).eq('rain')
       expect(stateVariables['/srsa'].stateValues.value).eq('snow')
       expect(stateVariables['/srsb'].stateValues.value).eq('rain')
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -5251,23 +5252,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['snow', 'snow']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'snow'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('snow');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('snow');
-      expect(await stateVariables['/cr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsa'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsb'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr2'].stateValues.value).eq('snow')
       expect(stateVariables['/srsa'].stateValues.value).eq('snow')
       expect(stateVariables['/srsb'].stateValues.value).eq('snow')
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -5301,23 +5302,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['fog', 'hail']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('fog')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('hail')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('fog')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('hail')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'snow'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('fog');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('snow');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('hail');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('snow');
-      expect(await stateVariables['/cr'].stateValues.value).eq('fog')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('fog')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('hail')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('fog')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('hail')
-      expect(await stateVariables['/sr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr'].stateValues.value).eq('fog')
+      expect(stateVariables['/cr1'].stateValues.value).eq('fog')
+      expect(stateVariables['/cr2'].stateValues.value).eq('hail')
+      expect(stateVariables['/crsa'].stateValues.value).eq('fog')
+      expect(stateVariables['/crsb'].stateValues.value).eq('hail')
+      expect(stateVariables['/sr'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr2'].stateValues.value).eq('snow')
       expect(stateVariables['/srsa'].stateValues.value).eq('snow')
       expect(stateVariables['/srsb'].stateValues.value).eq('snow')
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -5348,23 +5349,23 @@ describe('Answer Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['fog', 'hail']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('fog')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('hail')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('fog')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('hail')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['fog', 'hail'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('fog')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('hail')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('fog')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('hail')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('fog');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('fog');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('hail');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('hail');
-      expect(await stateVariables['/cr'].stateValues.value).eq('fog')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('fog')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('hail')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('fog')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('hail')
-      expect(await stateVariables['/sr'].stateValues.value).eq('fog')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('fog')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('hail')
+      expect(stateVariables['/cr'].stateValues.value).eq('fog')
+      expect(stateVariables['/cr1'].stateValues.value).eq('fog')
+      expect(stateVariables['/cr2'].stateValues.value).eq('hail')
+      expect(stateVariables['/crsa'].stateValues.value).eq('fog')
+      expect(stateVariables['/crsb'].stateValues.value).eq('hail')
+      expect(stateVariables['/sr'].stateValues.value).eq('fog')
+      expect(stateVariables['/sr1'].stateValues.value).eq('fog')
+      expect(stateVariables['/sr2'].stateValues.value).eq('hail')
       expect(stateVariables['/srsa'].stateValues.value).eq('fog')
       expect(stateVariables['/srsb'].stateValues.value).eq('hail')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -5634,18 +5635,18 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/a/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
-        expect(await stateVariables["/a/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
+        expect(stateVariables["/a/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput1Name].stateValues.value).eq('\uFF3F');
         // expect(stateVariables[mathinput1Name].stateValues.submittedValue).eq('\uFF3F');
         expect(stateVariables["/b/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
-        expect(await stateVariables["/b/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
+        expect(stateVariables["/b/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput2Name].stateValues.value).eq('\uFF3F');
         // expect(stateVariables[mathinput2Name].stateValues.submittedValue).eq('\uFF3F');
         expect(stateVariables["/c/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
-        expect(await stateVariables["/c/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
+        expect(stateVariables["/c/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput3Name].stateValues.value).eq('\uFF3F');
         // expect(stateVariables[mathinput3Name].stateValues.submittedValue).eq('\uFF3F');
       });
@@ -5691,18 +5692,18 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/a/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['x']);
-        expect(await stateVariables["/a/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['x']);
+        expect(stateVariables["/a/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput1Name].stateValues.value).eq('x');
         // expect(stateVariables[mathinput1Name].stateValues.submittedValue).eq('\uFF3F');
         expect(stateVariables["/b/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 2]]);
-        expect(await stateVariables["/b/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 2]]);
+        expect(stateVariables["/b/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput2Name].stateValues.value).eqls(['^', 'x', 2]);
         // expect(stateVariables[mathinput2Name].stateValues.submittedValue).eq('\uFF3F');
         expect(stateVariables["/c/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 3]]);
-        expect(await stateVariables["/c/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 3]]);
+        expect(stateVariables["/c/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput3Name].stateValues.value).eqls(['^', 'x', 3]);
         // expect(stateVariables[mathinput3Name].stateValues.submittedValue).eq('\uFF3F');
       });
@@ -5748,18 +5749,18 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/a/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['x']);
-        expect((await stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['x']);
+        expect((stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['x']);
+        expect((stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['x']);
         expect(stateVariables[mathinput1Name].stateValues.value).eq('x');
         // expect(stateVariables[mathinput1Name].stateValues.submittedValue).eq('x');
         expect(stateVariables["/b/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 2]]);
-        expect((await stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 2]]);
+        expect((stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 2]]);
+        expect((stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 2]]);
         expect(stateVariables[mathinput2Name].stateValues.value).eqls(['^', 'x', 2]);
         // expect(stateVariables[mathinput2Name].stateValues.submittedValue).eqls(['^', 'x', 2]);
         expect(stateVariables["/c/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 3]]);
-        expect((await stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 3]]);
+        expect((stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 3]]);
+        expect((stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 3]]);
         expect(stateVariables[mathinput3Name].stateValues.value).eqls(['^', 'x', 3]);
         // expect(stateVariables[mathinput3Name].stateValues.submittedValue).eqls(['^', 'x', 3]);
       });
@@ -5808,18 +5809,18 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/a/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['u']);
-        expect((await stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['x']);
+        expect((stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['u']);
+        expect((stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['x']);
         expect(stateVariables[mathinput1Name].stateValues.value).eq('u');
         // expect(stateVariables[mathinput1Name].stateValues.submittedValue).eq('x');
         expect(stateVariables["/b/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['v']);
-        expect((await stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 2]]);
+        expect((stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['v']);
+        expect((stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 2]]);
         expect(stateVariables[mathinput2Name].stateValues.value).eq('v');
         // expect(stateVariables[mathinput2Name].stateValues.submittedValue).eqls(['^', 'x', 2]);
         expect(stateVariables["/c/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['w']);
-        expect((await stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 3]]);
+        expect((stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['w']);
+        expect((stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 3]]);
         expect(stateVariables[mathinput3Name].stateValues.value).eq('w');
         // expect(stateVariables[mathinput3Name].stateValues.submittedValue).eqls(['^', 'x', 3]);
       });
@@ -5866,18 +5867,18 @@ describe('Answer Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/a/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['u']);
-        expect((await stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['u']);
+        expect((stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['u']);
+        expect((stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['u']);
         expect(stateVariables[mathinput1Name].stateValues.value).eq('u');
         // expect(stateVariables[mathinput1Name].stateValues.submittedValue).eq('u');
         expect(stateVariables["/b/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['v']);
-        expect((await stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls(['v']);
+        expect((stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['v']);
+        expect((stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls(['v']);
         expect(stateVariables[mathinput2Name].stateValues.value).eq('v');
         // expect(stateVariables[mathinput2Name].stateValues.submittedValue).eq('v');
         expect(stateVariables["/c/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['w']);
-        expect((await stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls(['w']);
+        expect((stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['w']);
+        expect((stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls(['w']);
         expect(stateVariables[mathinput3Name].stateValues.value).eq('w');
         // expect(stateVariables[mathinput3Name].stateValues.submittedValue).eq('w');
       });
@@ -13421,10 +13422,10 @@ describe('Answer Tag Tests', function () {
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
 
         expect(stateVariables["/ans"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award1"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
-        expect(await stateVariables["/_award2"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award2"].state.fractionSatisfied.value).eq(0);
+        expect(stateVariables["/_award1"].state.creditAchieved.value).eq(0);
+        expect(stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
+        expect(stateVariables["/_award2"].state.creditAchieved.value).eq(0);
+        expect(stateVariables["/_award2"].state.fractionSatisfied.value).eq(0);
 
 
       })
@@ -13463,10 +13464,10 @@ describe('Answer Tag Tests', function () {
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
 
         expect(stateVariables["/ans"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award1"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
-        expect(await stateVariables["/_award2"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award2"].state.fractionSatisfied.value).eq(0);
+        expect(stateVariables["/_award1"].state.creditAchieved.value).eq(0);
+        expect(stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
+        expect(stateVariables["/_award2"].state.creditAchieved.value).eq(0);
+        expect(stateVariables["/_award2"].state.fractionSatisfied.value).eq(0);
 
       })
 
@@ -13506,12 +13507,12 @@ describe('Answer Tag Tests', function () {
 
         expect(stateVariables["/_award1"].state.creditAchievedIfSubmit.value).eq(1);
         expect(stateVariables["/_award1"].state.fractionSatisfiedIfSubmit.value).eq(1);
-        expect(await stateVariables["/_award1"].state.creditAchieved.value).eq(1);
-        expect(await stateVariables["/_award1"].state.fractionSatisfied.value).eq(1);
+        expect(stateVariables["/_award1"].state.creditAchieved.value).eq(1);
+        expect(stateVariables["/_award1"].state.fractionSatisfied.value).eq(1);
         expect(stateVariables["/_award2"].state.creditAchievedIfSubmit.value).eq(0.5);
         expect(stateVariables["/_award2"].state.fractionSatisfiedIfSubmit.value).eq(1);
-        expect(await stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
-        expect(await stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
+        expect(stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
         expect(stateVariables["/ans"].state.creditAchievedIfSubmit.value).eq(1);
         expect(stateVariables["/ans"].state.creditAchieved.value).eq(1);
 
@@ -13551,10 +13552,10 @@ describe('Answer Tag Tests', function () {
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
 
         expect(stateVariables["/ans"].state.creditAchieved.value).eq(1);
-        expect(await stateVariables["/_award1"].state.creditAchieved.value).eq(1);
-        expect(await stateVariables["/_award1"].state.fractionSatisfied.value).eq(1);
-        expect(await stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
-        expect(await stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
+        expect(stateVariables["/_award1"].state.creditAchieved.value).eq(1);
+        expect(stateVariables["/_award1"].state.fractionSatisfied.value).eq(1);
+        expect(stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
 
       })
 
@@ -13594,12 +13595,12 @@ describe('Answer Tag Tests', function () {
 
         expect(stateVariables["/_award1"].state.creditAchievedIfSubmit.value).eq(0);
         expect(stateVariables["/_award1"].state.fractionSatisfiedIfSubmit.value).eq(0);
-        expect(await stateVariables["/_award1"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
+        expect(stateVariables["/_award1"].state.creditAchieved.value).eq(0);
+        expect(stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
         expect(stateVariables["/_award2"].state.creditAchievedIfSubmit.value).eq(0.5);
         expect(stateVariables["/_award2"].state.fractionSatisfiedIfSubmit.value).eq(1);
-        expect(await stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
-        expect(await stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
+        expect(stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
         expect(stateVariables["/ans"].state.creditAchievedIfSubmit.value).eq(0.5);
         expect(stateVariables["/ans"].state.creditAchieved.value).eq(0.5);
 

@@ -2,15 +2,16 @@
 describe('Component Size Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
-  it('width of image from string', () => {
+  it.only('width of image from string', () => {
 
     let widthStrings = [
       "350", "350 px", "350px", "350 pixel", "  350  pixels ",
       "65%", "65 %", "  65   %",
-      "10in", "10 inches", "10 inch",
+      "8in", "8 inches", "8 inch",
       "100mm", "100millimeters", "100 millimeter",
       "10cm", "10centimeters", "10 centimeter",
       "100pt"
@@ -26,14 +27,14 @@ describe('Component Size Tag Tests', function () {
     let sizes = [
       350, 350, 350, 350, 350,
       65, 65, 65,
-      960, 960, 960,
+      768, 768, 768,
       377.95296, 377.95296, 377.95296,
       377.95296, 377.95296, 377.95296,
       133.3333333333
     ]
 
     for (let [ind, widthString] of widthStrings.entries()) {
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
     <document name="doc">
@@ -47,6 +48,11 @@ describe('Component Size Tag Tests', function () {
     </document>
     `}, "*");
       });
+
+
+      // after multiple iterations, it slows down to a halt
+      // Is it due to garbage collecting from creating new cores each iteration?
+      cy.wait(20000)
 
 
       cy.get('#\\/_text1').should('have.text', `${ind}`)
@@ -88,10 +94,10 @@ describe('Component Size Tag Tests', function () {
 
       cy.get('#\\/absExtract').should('have.text', isAbsolutes[ind].toString());
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/ae'].stateValues.width.size).closeTo(sizes[ind], 1E-6)
-        expect(components['/ae'].stateValues.width.isAbsolute).eq(isAbsolutes[ind])
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/ae'].stateValues.width.size).closeTo(sizes[ind], 1E-6)
+        expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(isAbsolutes[ind])
 
       })
 
@@ -101,7 +107,7 @@ describe('Component Size Tag Tests', function () {
   })
 
   it('changing absolute width of image', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 
@@ -118,7 +124,9 @@ describe('Component Size Tag Tests', function () {
     });
 
 
-    cy.get('#\\/ae').should('have.css', 'width', '500px')
+    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+      expect(parseFloat(text)).closeTo(500, 1);
+    })
 
     cy.get('#\\/w').should('have.text', '500px');
     cy.get('#\\/wNum').should('have.text', '500');
@@ -128,55 +136,62 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/wExtract').should('have.text', '500');
     cy.get('#\\/absExtract').should('have.text', "true");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(500, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(500, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
     })
 
     cy.log(`changed prescribed width`)
     cy.get('#\\/wPrescribed textarea').type("{end}{backspace}{backspace}{backspace}312{enter}", { force: true });
 
-    cy.get('#\\/ae').should('have.css', 'width', '312px')
 
     cy.get('#\\/w').should('have.text', '312px');
     cy.get('#\\/wNum').should('have.text', '312');
+
+    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+      expect(parseFloat(text)).closeTo(312, 1);
+    })
+
     cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('312');
     })
     cy.get('#\\/wExtract').should('have.text', '312');
     cy.get('#\\/absExtract').should('have.text', "true");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(312, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(312, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
     })
 
 
     cy.log(`changed width from inverse direction`)
     cy.get('#\\/w2 textarea').type("{end}{backspace}{backspace}{backspace}476{enter}", { force: true });
 
-    cy.get('#\\/ae').should('have.css', 'width', '476px')
-
     cy.get('#\\/w').should('have.text', '476px');
     cy.get('#\\/wNum').should('have.text', '476');
+
+    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+      expect(parseFloat(text)).closeTo(476, 1);
+    })
+
     cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('476');
     })
     cy.get('#\\/wExtract').should('have.text', '476');
     cy.get('#\\/absExtract').should('have.text', "true");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(476, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(476, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
     })
 
   })
 
   it('changing relative width of image', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 <document name="doc">
@@ -209,14 +224,17 @@ describe('Component Size Tag Tests', function () {
     cy.get('#\\/wExtract').should('have.text', '50');
     cy.get('#\\/absExtract').should('have.text', "false");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(50, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(false)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(50, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(false)
     })
 
     cy.log(`changed prescribed width`)
-    cy.get('#\\/wPrescribed textarea').type("{end}{backspace}{backspace}31{enter}", { force: true });
+    cy.get('#\\/wPrescribed textarea').type("{end}{backspace}{backspace}{backspace}31{enter}", { force: true });
+
+    cy.get('#\\/w').should('have.text', '31%');
+    cy.get('#\\/wNum').should('have.text', '31');
 
     cy.get('#\\/doc').invoke('width').then(docWidth => {
       let expectedWidthPixels = 31 * docWidth / 100;
@@ -225,23 +243,24 @@ describe('Component Size Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/w').should('have.text', '31%');
-    cy.get('#\\/wNum').should('have.text', '31');
     cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('31');
     })
     cy.get('#\\/wExtract').should('have.text', '31');
     cy.get('#\\/absExtract').should('have.text', "false");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(31, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(false)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(31, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(false)
     })
 
 
     cy.log(`changed width from inverse direction`)
     cy.get('#\\/w2 textarea').type("{end}{backspace}{backspace}76{enter}", { force: true });
+
+    cy.get('#\\/w').should('have.text', '76%');
+    cy.get('#\\/wNum').should('have.text', '76');
 
     cy.get('#\\/doc').invoke('width').then(docWidth => {
       let expectedWidthPixels = 76 * docWidth / 100;
@@ -250,24 +269,22 @@ describe('Component Size Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/w').should('have.text', '76%');
-    cy.get('#\\/wNum').should('have.text', '76');
     cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('76');
     })
     cy.get('#\\/wExtract').should('have.text', '76');
     cy.get('#\\/absExtract').should('have.text', "false");
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(76, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(false)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(76, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(false)
     })
 
   })
 
   it('height of image depends on width', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 <p><mathinput name="wPrescribed" prefill="500" /></p>
@@ -280,69 +297,86 @@ describe('Component Size Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/ae').should('have.css', 'width', '500px')
-    cy.get('#\\/ae').should('have.css', 'height', '250px')
+
+    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+      expect(parseFloat(text)).closeTo(500, 1);
+    })
+    cy.get('#\\/ae').invoke('css', 'height').then(text => {
+      expect(parseFloat(text)).closeTo(250, 1);
+    })
 
     cy.get('#\\/w').should('have.text', '500px');
     cy.get('#\\/h').should('have.text', '250px');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(500, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
-      expect(components['/ae'].stateValues.height.size).closeTo(250, 1E-6)
-      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(500, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(stateVariables['/ae'].stateValues.height.size).closeTo(250, 1E-6)
+      expect(stateVariables['/ae'].stateValues.height.isAbsolute).eq(true)
     })
 
     cy.log(`changed prescribed width`)
-    cy.get('#\\/wPrescribed textarea').type("{end}{backspace}{backspace}{backspace}312{enter}", { force: true });
-
-    cy.get('#\\/ae').should('have.css', 'width', '312px')
-    cy.get('#\\/ae').should('have.css', 'height', '156px')
+    cy.get('#\\/wPrescribed textarea').type("{end}{backspace}{backspace}{backspace}{backspace}312{enter}", { force: true });
 
     cy.get('#\\/w').should('have.text', '312px');
     cy.get('#\\/h').should('have.text', '156px');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(312, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
-      expect(components['/ae'].stateValues.height.size).closeTo(156, 1E-6)
-      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
+    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+      expect(parseFloat(text)).closeTo(312, 1);
+    })
+    cy.get('#\\/ae').invoke('css', 'height').then(text => {
+      expect(parseFloat(text)).closeTo(156, 1);
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(312, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(stateVariables['/ae'].stateValues.height.size).closeTo(156, 1E-6)
+      expect(stateVariables['/ae'].stateValues.height.isAbsolute).eq(true)
     })
 
     cy.log(`changed width from inverse direction`)
-    cy.get('#\\/w2 textarea').type("{end}{backspace}{backspace}{backspace}476{enter}", { force: true });
-
-    cy.get('#\\/ae').should('have.css', 'width', '476px')
-    cy.get('#\\/ae').should('have.css', 'height', '238px')
+    cy.get('#\\/w2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}476{enter}", { force: true });
 
     cy.get('#\\/w').should('have.text', '476px');
     cy.get('#\\/h').should('have.text', '238px');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(476, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
-      expect(components['/ae'].stateValues.height.size).closeTo(238, 1E-6)
-      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
+    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+      expect(parseFloat(text)).closeTo(476, 1);
+    })
+    cy.get('#\\/ae').invoke('css', 'height').then(text => {
+      expect(parseFloat(text)).closeTo(238, 1);
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(476, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(stateVariables['/ae'].stateValues.height.size).closeTo(238, 1E-6)
+      expect(stateVariables['/ae'].stateValues.height.isAbsolute).eq(true)
     })
 
     cy.log(`changed height from inverse direction`)
-    cy.get('#\\/h2 textarea').type("{end}{backspace}{backspace}{backspace}321{enter}", { force: true });
-
-    cy.get('#\\/ae').should('have.css', 'width', '642px')
-    cy.get('#\\/ae').should('have.css', 'height', '321px')
+    cy.get('#\\/h2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}321{enter}", { force: true });
 
     cy.get('#\\/w').should('have.text', '642px');
     cy.get('#\\/h').should('have.text', '321px');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/ae'].stateValues.width.size).closeTo(642, 1E-6)
-      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
-      expect(components['/ae'].stateValues.height.size).closeTo(321, 1E-6)
-      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
+    cy.get('#\\/ae').invoke('css', 'width').then(text => {
+      expect(parseFloat(text)).closeTo(642, 1);
+    })
+    cy.get('#\\/ae').invoke('css', 'height').then(text => {
+      expect(parseFloat(text)).closeTo(321, 1);
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/ae'].stateValues.width.size).closeTo(642, 1E-6)
+      expect(stateVariables['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(stateVariables['/ae'].stateValues.height.size).closeTo(321, 1E-6)
+      expect(stateVariables['/ae'].stateValues.height.isAbsolute).eq(true)
     })
 
   })
