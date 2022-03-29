@@ -9,6 +9,14 @@ function cesc(s) {
   return s;
 }
 
+function nInDOM(n) {
+  if (n < 0) {
+    return `−${Math.abs(n)}`
+  } else {
+    return String(n);
+  }
+}
+
 describe('FunctionIterates Tag Tests', function () {
 
   beforeEach(() => {
@@ -56,9 +64,9 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/l1/iter"].stateValues.value.tree).eqls(["*", 3, "a", "v"])
-      expect(stateVariables["/l2/iter"].stateValues.value.tree).eqls(["*", 3, "v", ["^", "a", 2]])
-      expect(stateVariables["/l3/iter"].stateValues.value.tree).eqls(["*", 3, "v", ["^", "a", 3]])
+      expect(stateVariables["/l1/iter"].stateValues.value).eqls(["*", 3, "a", "v"])
+      expect(stateVariables["/l2/iter"].stateValues.value).eqls(["*", 3, "v", ["^", "a", 2]])
+      expect(stateVariables["/l3/iter"].stateValues.value).eqls(["*", 3, "v", ["^", "a", 3]])
     })
 
     cy.log('change function, nIterates, and initial')
@@ -66,6 +74,7 @@ describe('FunctionIterates Tag Tests', function () {
     cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
     cy.get('#\\/u textarea').type("{end}{backspace}{backspace}w{enter}", { force: true });
 
+    cy.get('#\\/l1').should('contain.text', 'f1(u)=bw2')
 
     cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=bw2')
@@ -82,14 +91,16 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/l1/iter"].stateValues.value.tree).eqls(["*", "b", ["^", "w", 2]])
-      expect(stateVariables["/l2/iter"].stateValues.value.tree).eqls(["*", ["^", "b", 3], ["^", "w", 4]])
-      expect(stateVariables["/l3/iter"].stateValues.value.tree).eqls(["*", ["^", "b", 7], ["^", "w", 8]])
-      expect(stateVariables["/l4/iter"].stateValues.value.tree).eqls(["*", ["^", "b", 15], ["^", "w", 16]])
+      expect(stateVariables["/l1/iter"].stateValues.value).eqls(["*", "b", ["^", "w", 2]])
+      expect(stateVariables["/l2/iter"].stateValues.value).eqls(["*", ["^", "b", 3], ["^", "w", 4]])
+      expect(stateVariables["/l3/iter"].stateValues.value).eqls(["*", ["^", "b", 7], ["^", "w", 8]])
+      expect(stateVariables["/l4/iter"].stateValues.value).eqls(["*", ["^", "b", 15], ["^", "w", 16]])
     })
 
     cy.log('change variable')
     cy.get('#\\/x textarea').type("{end}{backspace}y{enter}", { force: true });
+
+    cy.get('#\\/l1').should('contain.text', 'f1(u)=bx2')
 
     cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=bx2')
@@ -106,15 +117,17 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/l1/iter"].stateValues.value.tree).eqls(["*", "b", ["^", "x", 2]])
-      expect(stateVariables["/l2/iter"].stateValues.value.tree).eqls(["*", "b", ["^", "x", 2]])
-      expect(stateVariables["/l3/iter"].stateValues.value.tree).eqls(["*", "b", ["^", "x", 2]])
-      expect(stateVariables["/l4/iter"].stateValues.value.tree).eqls(["*", "b", ["^", "x", 2]])
+      expect(stateVariables["/l1/iter"].stateValues.value).eqls(["*", "b", ["^", "x", 2]])
+      expect(stateVariables["/l2/iter"].stateValues.value).eqls(["*", "b", ["^", "x", 2]])
+      expect(stateVariables["/l3/iter"].stateValues.value).eqls(["*", "b", ["^", "x", 2]])
+      expect(stateVariables["/l4/iter"].stateValues.value).eqls(["*", "b", ["^", "x", 2]])
     })
 
     cy.log('change function to match variable')
     cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}y+q{enter}", { force: true });
     cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
+
+    cy.get('#\\/l5').should('contain.text', 'f5(u)=5q+w')
 
     cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=q+w')
@@ -134,11 +147,11 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/l1/iter"].stateValues.value.tree).eqls(["+", "q", "w"])
-      expect(stateVariables["/l2/iter"].stateValues.value.tree).eqls(["+", ["*", 2, "q"], "w"])
-      expect(stateVariables["/l3/iter"].stateValues.value.tree).eqls(["+", ["*", 3, "q"], "w"])
-      expect(stateVariables["/l4/iter"].stateValues.value.tree).eqls(["+", ["*", 4, "q"], "w"])
-      expect(stateVariables["/l5/iter"].stateValues.value.tree).eqls(["+", ["*", 5, "q"], "w"])
+      expect(stateVariables["/l1/iter"].stateValues.value).eqls(["+", "q", "w"])
+      expect(stateVariables["/l2/iter"].stateValues.value).eqls(["+", ["*", 2, "q"], "w"])
+      expect(stateVariables["/l3/iter"].stateValues.value).eqls(["+", ["*", 3, "q"], "w"])
+      expect(stateVariables["/l4/iter"].stateValues.value).eqls(["+", ["*", 4, "q"], "w"])
+      expect(stateVariables["/l5/iter"].stateValues.value).eqls(["+", ["*", 5, "q"], "w"])
     })
 
   })
@@ -180,9 +193,9 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/l1/iter"].stateValues.value.tree).eqls(6)
-      expect(stateVariables["/l2/iter"].stateValues.value.tree).eqls(18)
-      expect(stateVariables["/l3/iter"].stateValues.value.tree).eqls(54)
+      expect(stateVariables["/l1/iter"].stateValues.value).eqls(6)
+      expect(stateVariables["/l2/iter"].stateValues.value).eqls(18)
+      expect(stateVariables["/l3/iter"].stateValues.value).eqls(54)
     })
 
     cy.log('change function, nIterates, and initial')
@@ -190,6 +203,7 @@ describe('FunctionIterates Tag Tests', function () {
     cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
     cy.get('#\\/u textarea').type("{end}{backspace}{backspace}1/4{enter}", { force: true });
 
+    cy.get('#\\/l1').should('contain.text', 'f1(u)=0.125')
 
     cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=0.125')
@@ -206,14 +220,16 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/l1/iter"].stateValues.value.tree).eqls(0.125)
-      expect(stateVariables["/l2/iter"].stateValues.value.tree).eqls(0.03125)
-      expect(stateVariables["/l3/iter"].stateValues.value.tree).eqls(0.001953125)
-      expect(stateVariables["/l4/iter"].stateValues.value.tree).eqls(0.00000762939453125)
+      expect(stateVariables["/l1/iter"].stateValues.value).eqls(0.125)
+      expect(stateVariables["/l2/iter"].stateValues.value).eqls(0.03125)
+      expect(stateVariables["/l3/iter"].stateValues.value).eqls(0.001953125)
+      expect(stateVariables["/l4/iter"].stateValues.value).eqls(0.00000762939453125)
     })
 
     cy.log('change variable')
     cy.get('#\\/x textarea').type("{end}{backspace}y{enter}", { force: true });
+
+    cy.get('#\\/l1').should('contain.text', 'f1(u)=NaN')
 
     cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=NaN')
@@ -230,15 +246,17 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/l1/iter"].stateValues.value.tree).eqls(NaN)
-      expect(stateVariables["/l2/iter"].stateValues.value.tree).eqls(NaN)
-      expect(stateVariables["/l3/iter"].stateValues.value.tree).eqls(NaN)
-      expect(stateVariables["/l4/iter"].stateValues.value.tree).eqls(NaN)
+      expect(stateVariables["/l1/iter"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/l2/iter"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/l3/iter"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/l4/iter"].stateValues.value).eqls(NaN)
     })
 
     cy.log('change function to match variable')
     cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}y+5{enter}", { force: true });
     cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
+
+    cy.get('#\\/l5').should('contain.text', 'f5(u)=25.25')
 
     cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f1(u)=5.25')
@@ -258,11 +276,11 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/l1/iter"].stateValues.value.tree).eqls(5.25)
-      expect(stateVariables["/l2/iter"].stateValues.value.tree).eqls(10.25)
-      expect(stateVariables["/l3/iter"].stateValues.value.tree).eqls(15.25)
-      expect(stateVariables["/l4/iter"].stateValues.value.tree).eqls(20.25)
-      expect(stateVariables["/l5/iter"].stateValues.value.tree).eqls(25.25)
+      expect(stateVariables["/l1/iter"].stateValues.value).eqls(5.25)
+      expect(stateVariables["/l2/iter"].stateValues.value).eqls(10.25)
+      expect(stateVariables["/l3/iter"].stateValues.value).eqls(15.25)
+      expect(stateVariables["/l4/iter"].stateValues.value).eqls(20.25)
+      expect(stateVariables["/l5/iter"].stateValues.value).eqls(25.25)
     })
 
   })
@@ -279,6 +297,7 @@ describe('FunctionIterates Tag Tests', function () {
 
   <functionIterates function="$f" initialValue="$u" nIterates="$n" name="fis" />
   <p>Iterates: <aslist><copy prop="iterates" target="fis" name="iterates" /></aslist></p>
+  <copy prop="value" target="n" assignNames="n2" />
 
   `}, "*");
     });
@@ -302,7 +321,7 @@ describe('FunctionIterates Tag Tests', function () {
           x = me.math.multiply(A, x);
           let x1 = me.math.subset(x, me.math.index(0, 0));
           let x2 = me.math.subset(x, me.math.index(1, 0));
-          expect(stateVariables["/iterates"].replacements[i].stateValues.value.tree).eqls(["vector", x1, x2])
+          expect(stateVariables[iterNames[i]].stateValues.value).eqls(["vector", x1, x2])
           cy.get(iterAnchors[i]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.replace(/−/g, '-')).equal(`(${x1},${x2})`)
           })
@@ -324,6 +343,8 @@ describe('FunctionIterates Tag Tests', function () {
     cy.get('#\\/u textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}-8, 9{enter}", { force: true })
     cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true })
 
+    cy.get('#\\/n2').should('contain.text', '5')
+
     checkIterates({ a: -4, b: 7, c: 6, d: -1, u1: -8, u2: 9, n: 5 })
 
 
@@ -343,6 +364,9 @@ describe('FunctionIterates Tag Tests', function () {
 
   <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic simplify expand>$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
   
+  <copy prop="value" target="vars" assignNames="vars2" />
+  <copy prop="value" target="fformula" assignNames="fformula2" />
+  <copy prop="value" target="u" assignNames="u2" />
 
   `}, "*");
     });
@@ -357,9 +381,9 @@ describe('FunctionIterates Tag Tests', function () {
       let iterAnchors = iterNames.map(x => cesc('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(2);
-      expect(stateVariables[iterNames[0]].stateValues.value.tree).eqls(["vector", 2, 3]);
-      expect(stateVariables[iterNames[1]].stateValues.value.tree).eqls(["vector", 6, 5]);
-      expect(stateVariables[iterNames[2]].stateValues.value.tree).eqls(["vector", 30, 11]);
+      expect(stateVariables[iterNames[0]].stateValues.value).eqls(["vector", 2, 3]);
+      expect(stateVariables[iterNames[1]].stateValues.value).eqls(["vector", 6, 5]);
+      expect(stateVariables[iterNames[2]].stateValues.value).eqls(["vector", 30, 11]);
 
       cy.get(iterAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-')).equal(`(2,3)`)
@@ -377,6 +401,8 @@ describe('FunctionIterates Tag Tests', function () {
     cy.log(`add component to function`)
     cy.get('#\\/fformula textarea').type("{end}{leftArrow}z, x-z{enter}", { force: true });
 
+    cy.get('#\\/fformula2').should('contain.text', 'x+yz,')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -384,9 +410,9 @@ describe('FunctionIterates Tag Tests', function () {
       let iterAnchors = iterNames.map(x => cesc('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(0);
-      expect(stateVariables[iterNames[0]].stateValues.value.tree).eqls("\uff3f");
-      expect(stateVariables[iterNames[1]].stateValues.value.tree).eqls("\uff3f");
-      expect(stateVariables[iterNames[2]].stateValues.value.tree).eqls("\uff3f");
+      expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
+      expect(stateVariables[iterNames[1]].stateValues.value).eqls("\uff3f");
+      expect(stateVariables[iterNames[2]].stateValues.value).eqls("\uff3f");
 
       cy.get(iterAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-')).equal("\uff3f")
@@ -403,6 +429,7 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.log(`add variable to function`)
     cy.get('#\\/vars textarea').type("{end}, z{enter}", { force: true });
+    cy.get('#\\/vars2').should('contain.text', 'x,y,z')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -411,9 +438,9 @@ describe('FunctionIterates Tag Tests', function () {
       let iterAnchors = iterNames.map(x => cesc('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
-      expect(stateVariables[iterNames[0]].stateValues.value.tree).eqls("\uff3f");
-      expect(stateVariables[iterNames[1]].stateValues.value.tree).eqls("\uff3f");
-      expect(stateVariables[iterNames[2]].stateValues.value.tree).eqls("\uff3f");
+      expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
+      expect(stateVariables[iterNames[1]].stateValues.value).eqls("\uff3f");
+      expect(stateVariables[iterNames[2]].stateValues.value).eqls("\uff3f");
 
       cy.get(iterAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-')).equal("\uff3f")
@@ -430,8 +457,9 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.log(`add component to initial condition`)
     cy.get('#\\/u textarea').type("{end}{leftArrow}, -4{enter}", { force: true });
+    cy.get('#\\/u2').should('contain.text', '2,1,')
 
-    
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -439,9 +467,9 @@ describe('FunctionIterates Tag Tests', function () {
       let iterAnchors = iterNames.map(x => cesc('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
-      expect(stateVariables[iterNames[0]].stateValues.value.tree).eqls(["vector", 2, -2, 6]);
-      expect(stateVariables[iterNames[1]].stateValues.value.tree).eqls(["vector", -4, -10, -4]);
-      expect(stateVariables[iterNames[2]].stateValues.value.tree).eqls(["vector", 40, 36, 0]);
+      expect(stateVariables[iterNames[0]].stateValues.value).eqls(["vector", 2, -2, 6]);
+      expect(stateVariables[iterNames[1]].stateValues.value).eqls(["vector", -4, -10, -4]);
+      expect(stateVariables[iterNames[2]].stateValues.value).eqls(["vector", 40, 36, 0]);
 
       cy.get(iterAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-')).equal(`(2,-2,6)`)
@@ -471,7 +499,9 @@ describe('FunctionIterates Tag Tests', function () {
 
 
   <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
-  
+  <copy prop="value" target="u" assignNames="u2" />
+  <copy prop="value" target="fformula" assignNames="fformula2" />
+  <copy prop="value" target="vars" assignNames="vars2" />
 
   `}, "*");
     });
@@ -486,9 +516,9 @@ describe('FunctionIterates Tag Tests', function () {
       let iterAnchors = iterNames.map(x => cesc('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(2);
-      expect(stateVariables[iterNames[0]].stateValues.value.tree).eqls(["vector", 2, 3]);
-      expect(stateVariables[iterNames[1]].stateValues.value.tree).eqls(["vector", 6, 5]);
-      expect(stateVariables[iterNames[2]].stateValues.value.tree).eqls(["vector", 30, 11]);
+      expect(stateVariables[iterNames[0]].stateValues.value).eqls(["vector", 2, 3]);
+      expect(stateVariables[iterNames[1]].stateValues.value).eqls(["vector", 6, 5]);
+      expect(stateVariables[iterNames[2]].stateValues.value).eqls(["vector", 30, 11]);
 
       cy.get(iterAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-')).equal(`(2,3)`)
@@ -505,7 +535,8 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.log(`non-numeric initial condition`)
     cy.get('#\\/u textarea').type("{end}{leftArrow}a{enter}", { force: true });
-    
+    cy.get('#\\/u2').should('contain.text', "(2,1a)")
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -530,6 +561,7 @@ describe('FunctionIterates Tag Tests', function () {
     cy.log(`add component to function`)
     cy.get('#\\/u textarea').type("{backspace}{enter}", { force: true });
     cy.get('#\\/fformula textarea').type("{end}{leftArrow}z, x-z{enter}", { force: true });
+    cy.get('#\\/fformula2').should('contain.text', "x+yz,")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -538,9 +570,9 @@ describe('FunctionIterates Tag Tests', function () {
       let iterAnchors = iterNames.map(x => cesc('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(0);
-      expect(stateVariables[iterNames[0]].stateValues.value.tree).eqls("\uff3f");
-      expect(stateVariables[iterNames[1]].stateValues.value.tree).eqls("\uff3f");
-      expect(stateVariables[iterNames[2]].stateValues.value.tree).eqls("\uff3f");
+      expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
+      expect(stateVariables[iterNames[1]].stateValues.value).eqls("\uff3f");
+      expect(stateVariables[iterNames[2]].stateValues.value).eqls("\uff3f");
 
       cy.get(iterAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-')).equal("\uff3f")
@@ -557,6 +589,7 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.log(`add variable to function`)
     cy.get('#\\/vars textarea').type("{end}, z{enter}", { force: true });
+    cy.get('#\\/vars2').should('contain.text', "x,y,z")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -565,9 +598,9 @@ describe('FunctionIterates Tag Tests', function () {
       let iterAnchors = iterNames.map(x => cesc('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
-      expect(stateVariables[iterNames[0]].stateValues.value.tree).eqls("\uff3f");
-      expect(stateVariables[iterNames[1]].stateValues.value.tree).eqls("\uff3f");
-      expect(stateVariables[iterNames[2]].stateValues.value.tree).eqls("\uff3f");
+      expect(stateVariables[iterNames[0]].stateValues.value).eqls("\uff3f");
+      expect(stateVariables[iterNames[1]].stateValues.value).eqls("\uff3f");
+      expect(stateVariables[iterNames[2]].stateValues.value).eqls("\uff3f");
 
       cy.get(iterAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-')).equal("\uff3f")
@@ -584,8 +617,9 @@ describe('FunctionIterates Tag Tests', function () {
 
     cy.log(`add component to initial condition`)
     cy.get('#\\/u textarea').type("{end}{leftArrow}, -4{enter}", { force: true });
+    cy.get('#\\/u2').should('contain.text', "(2,1,")
 
-    
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -593,9 +627,9 @@ describe('FunctionIterates Tag Tests', function () {
       let iterAnchors = iterNames.map(x => cesc('#' + x))
 
       expect(stateVariables["/fis"].stateValues.nDimensions).eq(3);
-      expect(stateVariables[iterNames[0]].stateValues.value.tree).eqls(["vector", 2, -2, 6]);
-      expect(stateVariables[iterNames[1]].stateValues.value.tree).eqls(["vector", -4, -10, -4]);
-      expect(stateVariables[iterNames[2]].stateValues.value.tree).eqls(["vector", 40, 36, 0]);
+      expect(stateVariables[iterNames[0]].stateValues.value).eqls(["vector", 2, -2, 6]);
+      expect(stateVariables[iterNames[1]].stateValues.value).eqls(["vector", -4, -10, -4]);
+      expect(stateVariables[iterNames[2]].stateValues.value).eqls(["vector", 40, 36, 0]);
 
       cy.get(iterAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-')).equal(`(2,-2,6)`)

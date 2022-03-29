@@ -165,6 +165,8 @@ export default function PageViewer(props) {
       } else if (e.data.messageType === "sendToast") {
         console.log(`Sending toast message: ${e.data.args.message}`);
         toast(e.data.args.message, e.data.args.toastType)
+      } else if (e.data.messageType === "resolveAction") {
+        resolveAction(e.data.args)
       } else if (e.data.messageType === "returnAllStateVariables") {
         console.log(e.data.args)
         resolveAllStateVariables.current(e.data.args);
@@ -336,6 +338,11 @@ export default function PageViewer(props) {
       }
     }
 
+    resolveAction({ actionId });
+
+  }
+
+  function resolveAction({ actionId }) {
     if (actionId) {
       console.log(`resolving actionId ${actionId}`);
       resolveActionPromises.current[actionId]?.();
