@@ -32,9 +32,9 @@ describe('Numberlist Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_numberlist1'].activeChildren[0].stateValues.value).eq(5);
-      expect(stateVariables['/_numberlist1'].activeChildren[1].stateValues.value).eq(2);
-      expect(stateVariables['/_numberlist1'].activeChildren[2].stateValues.value).closeTo(Math.PI, 14);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[0].componentName].stateValues.value).eq(5);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[1].componentName].stateValues.value).eq(2);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[2].componentName].stateValues.value).closeTo(Math.PI, 14);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[0]).eq(5);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[1]).eq(2);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[2]).closeTo(Math.PI, 14);
@@ -58,9 +58,9 @@ describe('Numberlist Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_numberlist1'].activeChildren[0].stateValues.value).eq(5);
-      assert.isNaN(stateVariables['/_numberlist1'].activeChildren[1].stateValues.value);
-      expect(stateVariables['/_numberlist1'].activeChildren[2].stateValues.value).eq(2);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[0].componentName].stateValues.value).eq(5);
+      assert.isNaN(stateVariables[stateVariables['/_numberlist1'].activeChildren[1].componentName].stateValues.value);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[2].componentName].stateValues.value).eq(2);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[0]).eq(5);
       assert.isNaN((stateVariables['/_numberlist1'].stateValues.numbers)[1]);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[2]).eq(2);
@@ -87,8 +87,8 @@ describe('Numberlist Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_numberlist1'].activeChildren[0].stateValues.value).eq(5);
-      expect(stateVariables['/_numberlist1'].activeChildren[1].stateValues.value).eq(2);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[0].componentName].stateValues.value).eq(5);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[1].componentName].stateValues.value).eq(2);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[0]).eq(5);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[1]).eq(2);
     })
@@ -115,11 +115,11 @@ describe('Numberlist Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_numberlist1'].activeChildren[0].stateValues.value).eq(-1);
-      expect(stateVariables['/_numberlist1'].activeChildren[1].stateValues.value).eq(4);
-      expect(stateVariables['/_numberlist1'].activeChildren[2].stateValues.value).eq(5);
-      expect(stateVariables['/_numberlist1'].activeChildren[3].stateValues.value).eq(9);
-      expect(stateVariables['/_numberlist1'].activeChildren[4].stateValues.value).eq(2);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[0].componentName].stateValues.value).eq(-1);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[1].componentName].stateValues.value).eq(4);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[2].componentName].stateValues.value).eq(5);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[3].componentName].stateValues.value).eq(9);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[4].componentName].stateValues.value).eq(2);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[0]).eq(-1);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[1]).eq(4);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[2]).eq(5);
@@ -148,8 +148,8 @@ describe('Numberlist Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_numberlist1'].activeChildren[0].stateValues.value).eq(5);
-      expect(stateVariables['/_numberlist1'].activeChildren[1].stateValues.value).eq(2);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[0].componentName].stateValues.value).eq(5);
+      expect(stateVariables[stateVariables['/_numberlist1'].activeChildren[1].componentName].stateValues.value).eq(2);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[0]).eq(5);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[1]).eq(2);
     })
@@ -451,6 +451,8 @@ describe('Numberlist Tag Tests', function () {
 
           cy.log('Test internal values are set to the correct values')
           cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
+            let numbers = (stateVariables['/_numberlist1'].stateValues.numbers);
             for (let i in mapping) {
               expect(numbers[i]).eq(mv(i));
             }
@@ -557,16 +559,16 @@ describe('Numberlist Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let numberlist1a = stateVariables["/numberlist1a"].replacements[0];
-      let numberlist3 = stateVariables["/numberlist3"].replacements[0];
+      let numberlist1a = stateVariables[stateVariables["/numberlist1a"].replacements[0].componentName];
+      let numberlist3 = stateVariables[stateVariables["/numberlist3"].replacements[0].componentName];
       expect((stateVariables['/_numberlist1'].stateValues.numbers).length).eq(3);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[0]).eq(1);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[1]).eq(2);
       expect((stateVariables['/_numberlist1'].stateValues.numbers)[2]).eq(3);
-      expect((await numberlist1a.stateValues.numbers).length).eq(3);
-      expect((await numberlist1a.stateValues.numbers)[0]).eq(1);
-      expect((await numberlist1a.stateValues.numbers)[1]).eq(2);
-      expect((await numberlist1a.stateValues.numbers)[2]).eq(3);
+      expect((numberlist1a.stateValues.numbers).length).eq(3);
+      expect((numberlist1a.stateValues.numbers)[0]).eq(1);
+      expect((numberlist1a.stateValues.numbers)[1]).eq(2);
+      expect((numberlist1a.stateValues.numbers)[2]).eq(3);
       expect((stateVariables['/_numberlist2'].stateValues.numbers).length).eq(8);
       expect((stateVariables['/_numberlist2'].stateValues.numbers)[0]).eq(4);
       expect((stateVariables['/_numberlist2'].stateValues.numbers)[1]).eq(1);
@@ -576,13 +578,13 @@ describe('Numberlist Tag Tests', function () {
       expect((stateVariables['/_numberlist2'].stateValues.numbers)[5]).eq(1);
       expect((stateVariables['/_numberlist2'].stateValues.numbers)[6]).eq(2);
       expect((stateVariables['/_numberlist2'].stateValues.numbers)[7]).eq(3);
-      expect((await numberlist3.stateValues.numbers).length).eq(6);
-      expect((await numberlist3.stateValues.numbers)[0]).eq(4);
-      expect((await numberlist3.stateValues.numbers)[1]).eq(1);
-      expect((await numberlist3.stateValues.numbers)[2]).eq(2);
-      expect((await numberlist3.stateValues.numbers)[3]).eq(3);
-      expect((await numberlist3.stateValues.numbers)[4]).eq(5);
-      expect((await numberlist3.stateValues.numbers)[5]).eq(1);
+      expect((numberlist3.stateValues.numbers).length).eq(6);
+      expect((numberlist3.stateValues.numbers)[0]).eq(4);
+      expect((numberlist3.stateValues.numbers)[1]).eq(1);
+      expect((numberlist3.stateValues.numbers)[2]).eq(2);
+      expect((numberlist3.stateValues.numbers)[3]).eq(3);
+      expect((numberlist3.stateValues.numbers)[4]).eq(5);
+      expect((numberlist3.stateValues.numbers)[5]).eq(1);
 
     })
 

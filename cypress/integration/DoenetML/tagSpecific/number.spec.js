@@ -30,8 +30,8 @@ describe('Number Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let number0 = stateVariables['/_copy1'].replacements[0];
-      let number0Anchor = cesc('#' + number0.componentName);
+      let number0Name = stateVariables['/_copy1'].replacements[0].componentName;
+      let number0Anchor = cesc('#' + number0Name);
 
       cy.log('Test value displayed in browser')
       cy.get(number0Anchor).should('have.text', '2')
@@ -40,7 +40,7 @@ describe('Number Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(number0.stateValues.value).eq(2);
+        expect(stateVariables[number0Name].stateValues.value).eq(2);
         expect(stateVariables['/_number1'].stateValues.value).eq(2);
       })
     })
@@ -60,8 +60,8 @@ describe('Number Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let number0 = stateVariables['/_copy1'].replacements[0];
-      let number0Anchor = cesc('#' + number0.componentName);
+      let number0Name = stateVariables['/_copy1'].replacements[0].componentName;
+      let number0Anchor = cesc('#' + number0Name);
 
       cy.log('Test value displayed in browser')
       cy.get(number0Anchor).should('have.text', 'NaN')
@@ -71,7 +71,7 @@ describe('Number Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        assert.isNaN(number0.stateValues.value);
+        assert.isNaN(stateVariables[number0Name].stateValues.value);
         assert.isNaN(stateVariables['/_number1'].stateValues.value);
       })
     })
@@ -118,7 +118,7 @@ describe('Number Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(['+', 'x', 3])
+      expect(stateVariables['/_math1'].stateValues.value).eqls(['+', 'x', 3])
       expect(stateVariables['/_number1'].stateValues.value).to.eq(3);
     })
   });
@@ -140,8 +140,8 @@ describe('Number Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(['+', 5, 3]);
-      expect(stateVariables['/_math2'].stateValues.value.tree).eq(3);
+      expect(stateVariables['/_math1'].stateValues.value).eqls(['+', 5, 3]);
+      expect(stateVariables['/_math2'].stateValues.value).eq(3);
       expect(stateVariables['/_number1'].stateValues.value).eq(8);
     })
   });
@@ -170,7 +170,7 @@ describe('Number Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_math1'].stateValues.value.tree).closeTo(num, 1E-14);
+      expect(stateVariables['/_math1'].stateValues.value).closeTo(num, 1E-14);
       expect(stateVariables['/_number1'].stateValues.value).closeTo(num, 1E-14);
     })
   });
@@ -236,23 +236,23 @@ describe('Number Tag Tests', function () {
       expect(stateVariables['/n1a'].stateValues.value).eq(234234823.34235235324);
       expect(stateVariables['/n1b'].stateValues.value).eq(234234823.34235235324);
       expect(stateVariables['/n1c'].stateValues.value).eq(234234823.34235235324);
-      expect(stateVariables['/n1am'].activeChildren[0].stateValues.value.tree).eq(234234823.34235235324);
-      expect(stateVariables['/n1bm'].activeChildren[0].stateValues.value.tree).eq(234234823.34235235324);
-      expect(stateVariables['/n1cm'].activeChildren[0].stateValues.value.tree).eq(234234823.34235235324);
+      expect(stateVariables[stateVariables['/n1am'].activeChildren[0].componentName].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables[stateVariables['/n1bm'].activeChildren[0].componentName].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables[stateVariables['/n1cm'].activeChildren[0].componentName].stateValues.value).eq(234234823.34235235324);
       expect(stateVariables['/n2'].stateValues.value).eq(5.4285023408250342);
       expect(stateVariables['/n2a'].stateValues.value).eq(5.4285023408250342);
       expect(stateVariables['/n2b'].stateValues.value).eq(5.4285023408250342);
       expect(stateVariables['/n2c'].stateValues.value).eq(5.4285023408250342);
-      expect(stateVariables['/n2am'].activeChildren[0].stateValues.value.tree).eq(5.4285023408250342);
-      expect(stateVariables['/n2bm'].activeChildren[0].stateValues.value.tree).eq(5.4285023408250342);
-      expect(stateVariables['/n2cm'].activeChildren[0].stateValues.value.tree).eq(5.4285023408250342);
+      expect(stateVariables[stateVariables['/n2am'].activeChildren[0].componentName].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables[stateVariables['/n2bm'].activeChildren[0].componentName].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables[stateVariables['/n2cm'].activeChildren[0].componentName].stateValues.value).eq(5.4285023408250342);
       expect(stateVariables['/n3'].stateValues.value).eq(0.000000000000005023481340324);
       expect(stateVariables['/n3a'].stateValues.value).eq(0.000000000000005023481340324);
       expect(stateVariables['/n3b'].stateValues.value).eq(0.000000000000005023481340324);
       expect(stateVariables['/n3c'].stateValues.value).eq(0.000000000000005023481340324);
-      expect(stateVariables['/n3am'].activeChildren[0].stateValues.value.tree).eq(0.000000000000005023481340324);
-      expect(stateVariables['/n3bm'].activeChildren[0].stateValues.value.tree).eq(0.000000000000005023481340324);
-      expect(stateVariables['/n3cm'].activeChildren[0].stateValues.value.tree).eq(0.000000000000005023481340324);
+      expect(stateVariables[stateVariables['/n3am'].activeChildren[0].componentName].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables[stateVariables['/n3bm'].activeChildren[0].componentName].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables[stateVariables['/n3cm'].activeChildren[0].componentName].stateValues.value).eq(0.000000000000005023481340324);
     })
   })
 
@@ -284,6 +284,8 @@ describe('Number Tag Tests', function () {
     cy.log('invalid precision means no rounding')
     cy.get('#\\/ndigits textarea').type("{end}{backspace}{backspace}x{enter}", { force: true });
     cy.get('#\\/ndecimals textarea').type("{end}{backspace}{backspace}y{enter}", { force: true });
+    cy.get('#\\/na').should('contain.text', '35203423.023523')
+    cy.get('#\\/nb').should('contain.text', '35203423.023523')
     cy.get('#\\/na').invoke('text').then(text => {
       expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
     })
@@ -301,6 +303,7 @@ describe('Number Tag Tests', function () {
     cy.log('negative precision, no rounding for displayDigits')
     cy.get('#\\/ndigits textarea').type("{end}{backspace}-3{enter}", { force: true });
     cy.get('#\\/ndecimals textarea').type("{end}{backspace}-3{enter}", { force: true });
+    cy.get('#\\/na').should('contain.text', '35203423.023523')
     cy.get('#\\/na').invoke('text').then(text => {
       expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
     })
