@@ -903,7 +903,7 @@ export default function attempt() {
         {
           name: 'No Search Button',
           propPreview: '<SearchBar noSearchButton />',
-          propCode: { noSearchButton },
+          propCode: { noSearchButton, width: "menu" },
           description: 'Removes button from search bar',
         },
         {
@@ -956,7 +956,7 @@ export default function attempt() {
         },
         {
           name: 'Disabled',
-          propPreview: '<Increment disabled />',
+          propPreview: '<SearchBar disabled />',
           propCode: { disabled },
           description: 'Makes button not able to be used.',
         },

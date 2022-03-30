@@ -74,4 +74,4 @@ export default function CollapseSection(props) {
           </SectionContent>
       </Section>
   );
-}
+};
