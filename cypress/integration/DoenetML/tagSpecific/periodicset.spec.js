@@ -863,7 +863,7 @@ describe('PeriodicSet Tag Tests', function () {
 
   });
 
-  it.only('display periodic set as list', () => {
+  it('display periodic set as list', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -882,7 +882,7 @@ describe('PeriodicSet Tag Tests', function () {
 
     <p>As list with specified min/max: <copy prop="asList" target="pset2" assignNames="l2" /></p>
 
-
+    <p><copy prop="value" target="offsets" assignNames="offsets2" /></p>
 
     `}, "*");
     });
@@ -916,7 +916,7 @@ describe('PeriodicSet Tag Tests', function () {
     })
 
     cy.get('#\\/offsets textarea').type('{end},3{enter}', { force: true });
-    cy.get("#\\/l1").should('contain.text', '…,−6,−4,1,3,8,10,…')
+    cy.get('#\\/offsets2').should('contain.text', '1,3')
     cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,−6,−4,1,3,8,10,…')
     })
@@ -925,7 +925,7 @@ describe('PeriodicSet Tag Tests', function () {
     })
 
     cy.get('#\\/offsets textarea').type('{end}{backspace}{backspace}{leftArrow}3,{enter}', { force: true });
-    cy.get("#\\/l2").should('contain.text', '…,22,24,29,31,36,38,43,45,…')
+    cy.get('#\\/offsets2').should('contain.text', '3,1')
     cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,−6,−4,1,3,8,10,…')
     })
@@ -934,11 +934,8 @@ describe('PeriodicSet Tag Tests', function () {
     })
 
     cy.get('#\\/offsets textarea').type('{end},8{enter}', { force: true });
-    cy.get("#\\/l2").should('contain.text', '…,22,24,29,31,36,38,43,45,…')
-
-
-
-
+    cy.get('#\\/offsets2').should('contain.text', '3,1,8')
+    
     cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,−6,−4,1,3,8,10,…')
     })
@@ -947,6 +944,7 @@ describe('PeriodicSet Tag Tests', function () {
     })
 
     cy.get('#\\/offsets textarea').type('{end},79{enter}', { force: true });
+    cy.get('#\\/offsets2').should('contain.text', '3,1,8,79')
     cy.get("#\\/l1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('…,−6,−5,−4,1,2,3,8,9,10,…')
     })

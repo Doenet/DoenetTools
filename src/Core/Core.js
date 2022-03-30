@@ -7690,6 +7690,9 @@ export default class Core {
         if (event) {
           this.requestRecordEvent(event);
         }
+        if(!args) {
+          args = {};
+        }
         return await action(args);
       }
     }

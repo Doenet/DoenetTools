@@ -590,7 +590,7 @@ export default class SectioningComponent extends BlockComponent {
     closeSection: this.closeSection.bind(this),
   }
 
-  async submitAllAnswers() {
+  async submitAllAnswers({ actionId }) {
 
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
@@ -611,6 +611,9 @@ export default class SectioningComponent extends BlockComponent {
         })
       }
     }
+
+    this.coreFunctions.resolveAction({ actionId });
+
   }
 
   async revealSection({ actionId }) {
