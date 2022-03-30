@@ -3,6 +3,8 @@ import ActivityViewer from '../../Viewer/ActivityViewer.jsx';
 import PageViewer from '../../Viewer/PageViewer.jsx';
 import testCodeDoenetML from './testCode.doenet';
 import testActivityDefinition from './testActivityDefinition.json';
+import { MathJaxContext } from "better-react-mathjax";
+import { mathjaxConfig } from '../../Core/utils/math.js';
 
 function Test() {
   // console.log("===Test")
@@ -279,12 +281,18 @@ function Test() {
 
   return (
     <>
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
       <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
         Test Viewer and Core
       </h3>
         {controls}
       </div>
       {viewer}
+      </MathJaxContext>
     </>
   )
 }

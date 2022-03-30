@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {doenetMLToSerializedComponents} from  '../../Core/utils/serializedStateProcessing';
-import {parseAndCompile} from '../../Parser/parser'
+import { doenetMLToSerializedComponents } from '../../Core/utils/serializedStateProcessing';
+import { parseAndCompile } from '../../Parser/parser'
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
 import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton.jsx';
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.jsx';
+import { MathJaxContext } from 'better-react-mathjax';
+import { mathjaxConfig } from '../../Core/utils/math';
 
 
 // serializeFunctions.expandDoenetMLsToFullSerializedComponents({
@@ -22,7 +24,13 @@ import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/Acti
 
 
 ReactDOM.render(
-  <ActionButtonGroup vertical><ActionButton alert/><ActionButton alert/></ActionButtonGroup>,
+  <MathJaxContext
+    version={2}
+    config={mathjaxConfig}
+    onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+  >
+    <ActionButtonGroup vertical><ActionButton alert/><ActionButton alert/></ActionButtonGroup>
+  </MathJaxContext>,
   document.getElementById('root'),
 );
 
