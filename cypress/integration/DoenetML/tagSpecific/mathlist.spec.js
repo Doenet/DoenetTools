@@ -45,10 +45,10 @@ describe('MathList Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables['/_mathlist1'].activeChildren[0].stateValues.value.tree).eq('a');
-        expect(stateVariables['/_mathlist1'].activeChildren[1].stateValues.value.tree).eqls(['+', 1, 1]);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eqls(['+', 1, 1]);
+        expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[0].componentName].stateValues.value).eq('a');
+        expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[1].componentName].stateValues.value).eqls(['+', 1, 1]);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eqls(['+', 1, 1]);
       })
     })
   })
@@ -87,12 +87,12 @@ describe('MathList Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables['/_mathlist1'].activeChildren[0].stateValues.value.tree).eq('a');
-        expect(stateVariables['/_mathlist1'].activeChildren[1].stateValues.value.tree).eq('＿');
-        expect(stateVariables['/_mathlist1'].activeChildren[2].stateValues.value.tree).eqls(['+', 1, 1]);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eq('＿');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eqls(['+', 1, 1]);
+        expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[0].componentName].stateValues.value).eq('a');
+        expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[1].componentName].stateValues.value).eq('＿');
+        expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[2].componentName].stateValues.value).eqls(['+', 1, 1]);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eq('＿');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eqls(['+', 1, 1]);
       })
     })
   })
@@ -107,82 +107,77 @@ describe('MathList Tag Tests', function () {
     <number name="n1">7</number>
     <number name="n2">11</number></p>
     <p><point xs="$m1 $m2/$n1 $n1 $n1-$n2 $n1 -$n2 $n1 - $n2 $n1$m1$m2 ($n1+$m1)/($n2$m2)" /></p>
-    <p><aslist><copy prop="xs" target="_point1" /></aslist></p>
+    <p><aslist><copy prop="xs" target="_point1" assignNames="x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11" /></aslist></p>
     ` }, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/x1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/x2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3y7')
+    })
+    cy.get('#\\/x3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('7')
+    })
+    cy.get('#\\/x4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−4')
+    })
+    cy.get('#\\/x5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('7')
+    })
+    cy.get('#\\/x6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−11')
+    })
+    cy.get('#\\/x7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('7')
+    })
+    cy.get('#\\/x8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    })
+    cy.get('#\\/x9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('11')
+    })
+    cy.get('#\\/x10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('21xy')
+    })
+    cy.get('#\\/x11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+733y')
+    })
+    cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let aslistAnchors = stateVariables['/_aslist1'].activeChildren.map(x => cesc('#' + x.componentName))
+      let xs = stateVariables["/_point1"].stateValues.xs;
 
+      expect(xs.length).eq(11);
+      expect(xs[0]).eq('x');
+      expect(stateVariables["/x1"].stateValues.value).eq('x');
+      expect(xs[1]).eqls(['/', ['*', 3, 'y'], 7]);
+      expect(stateVariables["/x2"].stateValues.value).eqls(['/', ['*', 3, 'y'], 7]);
+      expect(xs[2]).eqls(7);
+      expect(stateVariables["/x3"].stateValues.value).eqls(7);
+      expect(xs[3]).eqls(-4);
+      expect(stateVariables["/x4"].stateValues.value).eqls(-4);
+      expect(xs[4]).eqls(7);
+      expect(stateVariables["/x5"].stateValues.value).eqls(7);
+      expect(xs[5]).eqls(-11);
+      expect(stateVariables["/x6"].stateValues.value).eqls(-11);
+      expect(xs[6]).eqls(7);
+      expect(stateVariables["/x7"].stateValues.value).eqls(7);
+      expect(xs[7]).eqls('\uff3f');
+      expect(stateVariables["/x8"].stateValues.value).eqls('\uff3f');
+      expect(xs[8]).eqls(11);
+      expect(stateVariables["/x9"].stateValues.value).eqls(11);
+      expect(xs[9]).eqls(['*', 21, 'x', 'y']);
+      expect(stateVariables["/x10"].stateValues.value).eqls(['*', 21, 'x', 'y']);
+      expect(xs[10]).eqls(['/', ['+', 'x', 7], ['*', 33, 'y']]);
+      expect(stateVariables["/x11"].stateValues.value).eqls(['/', ['+', 'x', 7], ['*', 33, 'y']]);
 
-      cy.log('Test value displayed in browser')
-      cy.get(aslistAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x')
-      })
-      cy.get(aslistAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('3y7')
-      })
-      cy.get(aslistAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('7')
-      })
-      cy.get(aslistAnchors[3]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−4')
-      })
-      cy.get(aslistAnchors[4]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('7')
-      })
-      cy.get(aslistAnchors[5]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('−11')
-      })
-      cy.get(aslistAnchors[6]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('7')
-      })
-      cy.get(aslistAnchors[7]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      })
-      cy.get(aslistAnchors[8]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('11')
-      })
-      cy.get(aslistAnchors[9]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('21xy')
-      })
-      cy.get(aslistAnchors[10]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('x+733y')
-      })
-      cy.log('Test internal values are set to the correct values')
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        let xs1 = stateVariables["/_point1"].attributes.xs.component;
-
-        expect(xs1.activeChildren.length).eq(11);
-        expect(xs1.activeChildren[0].stateValues.value.tree).eq('x');
-        expect((await xs1.stateValues.maths)[0].tree).eq('x');
-        expect(xs1.activeChildren[1].stateValues.value.tree).eqls(['/', ['*', 3, 'y'], 7]);
-        expect((await xs1.stateValues.maths)[1].tree).eqls(['/', ['*', 3, 'y'], 7]);
-        expect(xs1.activeChildren[2].stateValues.value.tree).eqls(7);
-        expect((await xs1.stateValues.maths)[2].tree).eqls(7);
-        expect(xs1.activeChildren[3].stateValues.value.tree).eqls(['+', 7, ['-', 11]]);
-        expect((await xs1.stateValues.maths)[3].tree).eqls(['+', 7, ['-', 11]]);
-        expect(xs1.activeChildren[4].stateValues.value.tree).eqls(7);
-        expect((await xs1.stateValues.maths)[4].tree).eqls(7);
-        expect(xs1.activeChildren[5].stateValues.value.tree).eqls(['-', 11]);
-        expect((await xs1.stateValues.maths)[5].tree).eqls(['-', 11]);
-        expect(xs1.activeChildren[6].stateValues.value.tree).eqls(7);
-        expect((await xs1.stateValues.maths)[6].tree).eqls(7);
-        expect(xs1.activeChildren[7].stateValues.value.tree).eqls('\uff3f');
-        expect((await xs1.stateValues.maths)[7].tree).eqls('\uff3f');
-        expect(xs1.activeChildren[8].stateValues.value.tree).eqls(11);
-        expect((await xs1.stateValues.maths)[8].tree).eqls(11);
-        expect(xs1.activeChildren[9].stateValues.value.tree).eqls(['*', 7, 'x', 3, 'y']);
-        expect((await xs1.stateValues.maths)[9].tree).eqls(['*', 7, 'x', 3, 'y']);
-        expect(xs1.activeChildren[10].stateValues.value.tree).eqls(['/', ['+', 7, 'x'], ['*', 11, 3, 'y']]);
-        expect((await xs1.stateValues.maths)[10].tree).eqls(['/', ['+', 7, 'x'], ['*', 11, 3, 'y']]);
-
-      })
     })
+
   })
 
   it('mathlist with math children', () => {
@@ -207,8 +202,6 @@ describe('MathList Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let math3aAnchor = cesc('#' + stateVariables['/_mathlist2'].activeChildren[0].componentName)
-
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('a')
       })
@@ -225,15 +218,17 @@ describe('MathList Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_mathlist1'].activeChildren.length).eq(2);
-        expect(stateVariables['/_mathlist1'].activeChildren[0].stateValues.value.tree).eq('a');
-        expect(stateVariables['/_mathlist1'].activeChildren[1].stateValues.value.tree).eqls(['+', 1, 1]);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eqls(['+', 1, 1]);
+        expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[0].componentName].stateValues.value).eq('a');
+        expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[1].componentName].stateValues.value).eqls(['+', 1, 1]);
+        expect(stateVariables['/_mathlist1'].stateValues.maths.length).eq(2);
+        expect(stateVariables['/_mathlist1'].stateValues.maths[0]).eq('a');
+        expect(stateVariables['/_mathlist1'].stateValues.maths[1]).eqls(['+', 1, 1]);
         expect(stateVariables['/_mathlist2'].activeChildren.length).eq(2);
-        expect(stateVariables['/_mathlist2'].activeChildren[0].stateValues.value.tree).eq('a');
-        expect(stateVariables['/_mathlist2'].activeChildren[1].stateValues.value.tree).eqls(['+', 1, 1]);
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[0].tree).eq('a');
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[1].tree).eqls(['+', 1, 1]);
+        expect(stateVariables[stateVariables['/_mathlist2'].activeChildren[0].componentName].stateValues.value).eq('a');
+        expect(stateVariables[stateVariables['/_mathlist2'].activeChildren[1].componentName].stateValues.value).eqls(['+', 1, 1]);
+        expect(stateVariables['/_mathlist2'].stateValues.maths.length).eq(2);
+        expect(stateVariables['/_mathlist2'].stateValues.maths[0]).eq('a');
+        expect(stateVariables['/_mathlist2'].stateValues.maths[1]).eqls(['+', 1, 1]);
       })
     })
   })
@@ -274,14 +269,14 @@ describe('MathList Tag Tests', function () {
       })
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
-        expect(stateVariables['/_mathlist1'].activeChildren[0].stateValues.value.tree).eq('a');
-        expect(stateVariables['/_mathlist1'].activeChildren[1].stateValues.value.tree).eq('q');
-        expect(stateVariables['/_mathlist1'].activeChildren[2].stateValues.value.tree).eqls(['+', 1, 1]);
-        expect(stateVariables['/_mathlist1'].activeChildren[3].stateValues.value.tree).eq('h');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eq('q');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eqls(['+', 1, 1]);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[3].tree).eq('h');
+        expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[0].componentName].stateValues.value).eq('a');
+        expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[1].componentName].stateValues.value).eq('q');
+        expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[2].componentName].stateValues.value).eqls(['+', 1, 1]);
+        expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[3].componentName].stateValues.value).eq('h');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eq('q');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eqls(['+', 1, 1]);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[3]).eq('h');
       })
     })
   })
@@ -304,42 +299,35 @@ describe('MathList Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
 
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('a')
+    })
+    cy.get('#\\/_number1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('a')
+    })
+    cy.get('#\\/_number2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
+    })
+
+    cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let numberAdapterName = stateVariables['/_number1'].adapterUsed.componentName;
-      let numberAdapterAnchor = cesc('#' + numberAdapterName);
-      let numberAdapterName2 = stateVariables['/_number2'].adapterUsed.componentName;
-      let numberAdapterAnchor2 = cesc('#' + numberAdapterName2);
-
-      cy.log('Test value displayed in browser')
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('a')
-      })
-      cy.get(numberAdapterAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      })
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('a')
-      })
-      cy.get(numberAdapterAnchor2).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('2')
-      })
-
-      cy.log('Test internal values are set to the correct values')
-      cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables['/_mathlist1'].activeChildren.length).eq(2);
-        expect(stateVariables['/_mathlist1'].activeChildren[0].stateValues.value.tree).eq('a');
-        expect(stateVariables['/_mathlist1'].activeChildren[1].stateValues.number).eq(2);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eq(2);
-        expect(stateVariables['/_mathlist2'].activeChildren.length).eq(2);
-        expect(stateVariables['/_mathlist2'].activeChildren[0].stateValues.value.tree).eq('a');
-        expect(stateVariables['/_mathlist2'].activeChildren[1].stateValues.number).eq(2);
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[0].tree).eq('a');
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[1].tree).eq(2);
-      })
+      expect(stateVariables['/_mathlist1'].activeChildren.length).eq(2);
+      expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[0].componentName].stateValues.value).eq('a');
+      expect(stateVariables[stateVariables['/_mathlist1'].activeChildren[1].componentName].stateValues.number).eq(2);
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eq(2);
+      expect(stateVariables['/_mathlist2'].activeChildren.length).eq(2);
+      expect(stateVariables[stateVariables['/_mathlist2'].activeChildren[0].componentName].stateValues.value).eq('a');
+      expect(stateVariables[stateVariables['/_mathlist2'].activeChildren[1].componentName].stateValues.number).eq(2);
+      expect((stateVariables['/_mathlist2'].stateValues.maths)[0]).eq('a');
+      expect((stateVariables['/_mathlist2'].stateValues.maths)[1]).eq(2);
     })
+
   })
 
   it('mathlist with mathlist children, test inverse', () => {
@@ -422,29 +410,29 @@ describe('MathList Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eq('q');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eq('r');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[3].tree).eq('h');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[4].tree).eq('b');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[5].tree).eq('u');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[6].tree).eq('v');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[7].tree).eq('i');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[8].tree).eq('j');
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[0].tree).eq('q');
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[1].tree).eq('r');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[0].tree).eq('b');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[1].tree).eq('u');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[2].tree).eq('v');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[3].tree).eq('i');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[4].tree).eq('j');
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[0].tree).eq('b');
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[1].tree).eq('u');
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[2].tree).eq('v');
-        expect((stateVariables['/_mathlist5'].stateValues.maths)[0].tree).eq('u');
-        expect((stateVariables['/_mathlist5'].stateValues.maths)[1].tree).eq('v');
-        expect((stateVariables['/_mathlist6'].stateValues.maths)[0].tree).eq('i');
-        expect((stateVariables['/_mathlist6'].stateValues.maths)[1].tree).eq('j');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eq('q');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eq('r');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[3]).eq('h');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[4]).eq('b');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[5]).eq('u');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[6]).eq('v');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[7]).eq('i');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[8]).eq('j');
+        expect((stateVariables['/_mathlist2'].stateValues.maths)[0]).eq('q');
+        expect((stateVariables['/_mathlist2'].stateValues.maths)[1]).eq('r');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[0]).eq('b');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[1]).eq('u');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[2]).eq('v');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[3]).eq('i');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[4]).eq('j');
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[0]).eq('b');
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[1]).eq('u');
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[2]).eq('v');
+        expect((stateVariables['/_mathlist5'].stateValues.maths)[0]).eq('u');
+        expect((stateVariables['/_mathlist5'].stateValues.maths)[1]).eq('v');
+        expect((stateVariables['/_mathlist6'].stateValues.maths)[0]).eq('i');
+        expect((stateVariables['/_mathlist6'].stateValues.maths)[1]).eq('j');
       })
 
       cy.log('change values')
@@ -459,6 +447,7 @@ describe('MathList Tag Tests', function () {
       cy.get("#\\/_mathinput8 textarea").type("{end}{backspace}8{enter}", { force: true })
       cy.get("#\\/_mathinput9 textarea").type("{end}{backspace}9{enter}", { force: true })
 
+      cy.get(child8Anchor).should('contain.text', '9');
 
       cy.log('Test value displayed in browser')
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -492,29 +481,29 @@ describe('MathList Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq(1);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eq(2);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eq(3);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[3].tree).eq(4);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[4].tree).eq(5);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[5].tree).eq(6);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[6].tree).eq(7);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[7].tree).eq(8);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[8].tree).eq(9);
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[0].tree).eq(2);
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[1].tree).eq(3);
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[0].tree).eq(5);
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[1].tree).eq(6);
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[2].tree).eq(7);
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[3].tree).eq(8);
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[4].tree).eq(9);
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[0].tree).eq(5);
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[1].tree).eq(6);
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[2].tree).eq(7);
-        expect((stateVariables['/_mathlist5'].stateValues.maths)[0].tree).eq(6);
-        expect((stateVariables['/_mathlist5'].stateValues.maths)[1].tree).eq(7);
-        expect((stateVariables['/_mathlist6'].stateValues.maths)[0].tree).eq(8);
-        expect((stateVariables['/_mathlist6'].stateValues.maths)[1].tree).eq(9);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq(1);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eq(2);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eq(3);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[3]).eq(4);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[4]).eq(5);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[5]).eq(6);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[6]).eq(7);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[7]).eq(8);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[8]).eq(9);
+        expect((stateVariables['/_mathlist2'].stateValues.maths)[0]).eq(2);
+        expect((stateVariables['/_mathlist2'].stateValues.maths)[1]).eq(3);
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[0]).eq(5);
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[1]).eq(6);
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[2]).eq(7);
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[3]).eq(8);
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[4]).eq(9);
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[0]).eq(5);
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[1]).eq(6);
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[2]).eq(7);
+        expect((stateVariables['/_mathlist5'].stateValues.maths)[0]).eq(6);
+        expect((stateVariables['/_mathlist5'].stateValues.maths)[1]).eq(7);
+        expect((stateVariables['/_mathlist6'].stateValues.maths)[0]).eq(8);
+        expect((stateVariables['/_mathlist6'].stateValues.maths)[1]).eq(9);
       })
 
 
@@ -605,29 +594,29 @@ describe('MathList Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eq('q');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eq('r');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[3].tree).eq('h');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[4].tree).eq('b');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[5].tree).eq('u');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[6].tree).eq('v');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[7].tree).eq('i');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[8].tree).eq('j');
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[0].tree).eq('q');
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[1].tree).eq('r');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[0].tree).eq('b');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[1].tree).eq('u');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[2].tree).eq('v');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[3].tree).eq('i');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[4].tree).eq('j');
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[0].tree).eq('b');
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[1].tree).eq('u');
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[2].tree).eq('v');
-        expect((stateVariables['/_mathlist5'].stateValues.maths)[0].tree).eq('u');
-        expect((stateVariables['/_mathlist5'].stateValues.maths)[1].tree).eq('v');
-        expect((stateVariables['/_mathlist6'].stateValues.maths)[0].tree).eq('i');
-        expect((stateVariables['/_mathlist6'].stateValues.maths)[1].tree).eq('j');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eq('q');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eq('r');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[3]).eq('h');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[4]).eq('b');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[5]).eq('u');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[6]).eq('v');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[7]).eq('i');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[8]).eq('j');
+        expect((stateVariables['/_mathlist2'].stateValues.maths)[0]).eq('q');
+        expect((stateVariables['/_mathlist2'].stateValues.maths)[1]).eq('r');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[0]).eq('b');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[1]).eq('u');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[2]).eq('v');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[3]).eq('i');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[4]).eq('j');
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[0]).eq('b');
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[1]).eq('u');
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[2]).eq('v');
+        expect((stateVariables['/_mathlist5'].stateValues.maths)[0]).eq('u');
+        expect((stateVariables['/_mathlist5'].stateValues.maths)[1]).eq('v');
+        expect((stateVariables['/_mathlist6'].stateValues.maths)[0]).eq('i');
+        expect((stateVariables['/_mathlist6'].stateValues.maths)[1]).eq('j');
       })
 
       cy.log('change values')
@@ -642,6 +631,7 @@ describe('MathList Tag Tests', function () {
       cy.get("#\\/_mathinput8 textarea").type("{end}{backspace}8{enter}", { force: true })
       cy.get("#\\/_mathinput9 textarea").type("{end}{backspace}9{enter}", { force: true })
 
+      cy.get(child8Anchor).should('contain.text', '9')
 
       cy.log('Test value displayed in browser')
       cy.get(child0Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -675,29 +665,29 @@ describe('MathList Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq(1);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eq(2);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eq(3);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[3].tree).eq(4);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[4].tree).eq(5);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[5].tree).eq(6);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[6].tree).eq(7);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[7].tree).eq(8);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[8].tree).eq(9);
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[0].tree).eq(2);
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[1].tree).eq(3);
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[0].tree).eq(5);
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[1].tree).eq(6);
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[2].tree).eq(7);
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[3].tree).eq(8);
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[4].tree).eq(9);
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[0].tree).eq(5);
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[1].tree).eq(6);
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[2].tree).eq(7);
-        expect((stateVariables['/_mathlist5'].stateValues.maths)[0].tree).eq(6);
-        expect((stateVariables['/_mathlist5'].stateValues.maths)[1].tree).eq(7);
-        expect((stateVariables['/_mathlist6'].stateValues.maths)[0].tree).eq(8);
-        expect((stateVariables['/_mathlist6'].stateValues.maths)[1].tree).eq(9);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq(1);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eq(2);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eq(3);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[3]).eq(4);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[4]).eq(5);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[5]).eq(6);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[6]).eq(7);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[7]).eq(8);
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[8]).eq(9);
+        expect((stateVariables['/_mathlist2'].stateValues.maths)[0]).eq(2);
+        expect((stateVariables['/_mathlist2'].stateValues.maths)[1]).eq(3);
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[0]).eq(5);
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[1]).eq(6);
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[2]).eq(7);
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[3]).eq(8);
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[4]).eq(9);
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[0]).eq(5);
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[1]).eq(6);
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[2]).eq(7);
+        expect((stateVariables['/_mathlist5'].stateValues.maths)[0]).eq(6);
+        expect((stateVariables['/_mathlist5'].stateValues.maths)[1]).eq(7);
+        expect((stateVariables['/_mathlist6'].stateValues.maths)[0]).eq(8);
+        expect((stateVariables['/_mathlist6'].stateValues.maths)[1]).eq(9);
       })
 
 
@@ -766,9 +756,9 @@ describe('MathList Tag Tests', function () {
       let ca8 = cesc('#' + child8Name);
       let child9Name = stateVariables['/mid2'].activeChildren[0].componentName;
       let ca9 = cesc('#' + child9Name);
-      let child10Name = stateVariables['/mid2'].activeChildren[1].activeChildren[0].componentName;
+      let child10Name = stateVariables[stateVariables['/mid2'].activeChildren[1].componentName].activeChildren[0].componentName;
       let ca10 = cesc('#' + child10Name);
-      let child11Name = stateVariables['/mid2'].activeChildren[1].activeChildren[1].componentName;
+      let child11Name = stateVariables[stateVariables['/mid2'].activeChildren[1].componentName].activeChildren[1].componentName;
       let ca11 = cesc('#' + child11Name);
 
 
@@ -796,7 +786,7 @@ describe('MathList Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         for (let i in mapping) {
-          expect(maths[i].tree).eq(mv(i));
+          expect(maths[i]).eq(mv(i));
         }
       })
 
@@ -806,6 +796,7 @@ describe('MathList Tag Tests', function () {
         cy.window().then(async (win) => {
           vals[mapping[changeInd]] = Number(changeInd);
           cy.get(mathinputAnchors[changeInd]).type("{end}{backspace}" + changeInd + "{enter}", { force: true });
+          cy.get(childAnchors[changeInd]).should('contain.text', String(mv(changeInd)))
 
           cy.log('Test value displayed in browser')
 
@@ -817,8 +808,11 @@ describe('MathList Tag Tests', function () {
 
           cy.log('Test internal values are set to the correct values')
           cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
+            let maths = (stateVariables['/_mathlist1'].stateValues.maths);
+
             for (let i in mapping) {
-              expect(maths[i].tree).eq(mv(i));
+              expect(maths[i]).eq(mv(i));
             }
           })
 
@@ -917,31 +911,31 @@ describe('MathList Tag Tests', function () {
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect((stateVariables['/_mathlist1'].stateValues.maths).length).eq(7);
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eq('q');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eq('r');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[3].tree).eq('h');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[4].tree).eq('b');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[5].tree).eq('u');
-        expect((stateVariables['/_mathlist1'].stateValues.maths)[6].tree).eq('i');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eq('q');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eq('r');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[3]).eq('h');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[4]).eq('b');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[5]).eq('u');
+        expect((stateVariables['/_mathlist1'].stateValues.maths)[6]).eq('i');
         expect((stateVariables['/_mathlist2'].stateValues.maths).length).eq(2);
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[0].tree).eq('q');
-        expect((stateVariables['/_mathlist2'].stateValues.maths)[1].tree).eq('r');
+        expect((stateVariables['/_mathlist2'].stateValues.maths)[0]).eq('q');
+        expect((stateVariables['/_mathlist2'].stateValues.maths)[1]).eq('r');
         expect((stateVariables['/_mathlist3'].stateValues.maths).length).eq(4);
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[0].tree).eq('b');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[1].tree).eq('u');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[2].tree).eq('i');
-        expect((stateVariables['/_mathlist3'].stateValues.maths)[3].tree).eq('j');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[0]).eq('b');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[1]).eq('u');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[2]).eq('i');
+        expect((stateVariables['/_mathlist3'].stateValues.maths)[3]).eq('j');
         expect((stateVariables['/_mathlist4'].stateValues.maths).length).eq(2);
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[0].tree).eq('b');
-        expect((stateVariables['/_mathlist4'].stateValues.maths)[1].tree).eq('u');
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[0]).eq('b');
+        expect((stateVariables['/_mathlist4'].stateValues.maths)[1]).eq('u');
         expect((stateVariables['/_mathlist5'].stateValues.maths).length).eq(2);
-        expect((stateVariables['/_mathlist5'].stateValues.maths)[0].tree).eq('u');
-        expect((stateVariables['/_mathlist5'].stateValues.maths)[1].tree).eq('v');
+        expect((stateVariables['/_mathlist5'].stateValues.maths)[0]).eq('u');
+        expect((stateVariables['/_mathlist5'].stateValues.maths)[1]).eq('v');
         expect((stateVariables['/_mathlist6'].stateValues.maths).length).eq(3);
-        expect((stateVariables['/_mathlist6'].stateValues.maths)[0].tree).eq('i');
-        expect((stateVariables['/_mathlist6'].stateValues.maths)[1].tree).eq('j');
-        expect((stateVariables['/_mathlist6'].stateValues.maths)[2].tree).eq('k');
+        expect((stateVariables['/_mathlist6'].stateValues.maths)[0]).eq('i');
+        expect((stateVariables['/_mathlist6'].stateValues.maths)[1]).eq('j');
+        expect((stateVariables['/_mathlist6'].stateValues.maths)[2]).eq('k');
       })
     })
   })
@@ -1064,17 +1058,16 @@ describe('MathList Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect((stateVariables['/ml1'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c', 'd', 'e']);
-        expect((stateVariables['/ml2'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c']);
-        expect((stateVariables['/ml3'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c', 'd', 'e']);
-        expect((stateVariables['/ml4'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c']);
-        expect((stateVariables['/ml5'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c', 'd']);
-        expect((stateVariables['/ml6'].stateValues.maths).map(x => x.tree)).eqls(['a', 'b', 'c', 'd', 'e']);
+        expect((stateVariables['/ml1'].stateValues.maths)).eqls(['a', 'b', 'c', 'd', 'e']);
+        expect((stateVariables['/ml2'].stateValues.maths)).eqls(['a', 'b', 'c']);
+        expect((stateVariables['/ml3'].stateValues.maths)).eqls(['a', 'b', 'c', 'd', 'e']);
+        expect((stateVariables['/ml4'].stateValues.maths)).eqls(['a', 'b', 'c']);
+        expect((stateVariables['/ml5'].stateValues.maths)).eqls(['a', 'b', 'c', 'd']);
+        expect((stateVariables['/ml6'].stateValues.maths)).eqls(['a', 'b', 'c', 'd', 'e']);
 
       })
     })
   })
-
 
   it('mathlist with merge math list', () => {
     cy.window().then(async (win) => {
@@ -1118,17 +1111,19 @@ describe('MathList Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_mathlist1'].stateValues.maths).length).eq(4);
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eqls(['list', 'b', 'c', 'd']);
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eqls(['list', 'e', 'f']);
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[3].tree).eq('g');
-      expect(stateVariables['/_mathlist1'].stateValues.math3.tree).eqls(['list', 'e', 'f']);
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eqls(['list', 'b', 'c', 'd']);
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eqls(['list', 'e', 'f']);
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[3]).eq('g');
+      expect(stateVariables['/_mathlist1'].stateValues.math3).eqls(['list', 'e', 'f']);
       expect(stateVariables['/_mathlist1'].stateValues.math5).eq(undefined);
 
     })
 
     cy.log('merge math lists')
     cy.get('#\\/_booleaninput1_input').click();
+
+    cy.get('#\\/_p2 .mjx-mrow').should('contain.text', 'c')
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1154,21 +1149,22 @@ describe('MathList Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_mathlist1'].stateValues.maths).length).eq(7);
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eq('b');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eq('c');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[3].tree).eq('d');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[4].tree).eq('e');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[5].tree).eq('f');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[6].tree).eq('g');
-      expect(stateVariables['/_mathlist1'].stateValues.math3.tree).eq('c');
-      expect(stateVariables['/_mathlist1'].stateValues.math5.tree).eq('e');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eq('b');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eq('c');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[3]).eq('d');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[4]).eq('e');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[5]).eq('f');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[6]).eq('g');
+      expect(stateVariables['/_mathlist1'].stateValues.math3).eq('c');
+      expect(stateVariables['/_mathlist1'].stateValues.math5).eq('e');
 
     })
 
 
     cy.log('stop merging again')
     cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/_p2 .mjx-mrow').should('contain.text', 'e,f')
 
     cy.log('Test value displayed in browser')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1192,11 +1188,11 @@ describe('MathList Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_mathlist1'].stateValues.maths).length).eq(4);
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eqls(['list', 'b', 'c', 'd']);
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eqls(['list', 'e', 'f']);
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[3].tree).eq('g');
-      expect(stateVariables['/_mathlist1'].stateValues.math3.tree).eqls(['list', 'e', 'f']);
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eqls(['list', 'b', 'c', 'd']);
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eqls(['list', 'e', 'f']);
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[3]).eq('g');
+      expect(stateVariables['/_mathlist1'].stateValues.math3).eqls(['list', 'e', 'f']);
       expect(stateVariables['/_mathlist1'].stateValues.math5).eq(undefined);
 
     })
@@ -1234,13 +1230,13 @@ describe('MathList Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_mathlist1'].stateValues.maths).length).eq(5);
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eq('b');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eq('c');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[3].tree).eq('d');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[4].tree).eq('e');
-      expect(stateVariables['/_mathlist1'].stateValues.math3.tree).eq('c')
-      expect(stateVariables['/_mathlist1'].stateValues.math5.tree).eq('e');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eq('b');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eq('c');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[3]).eq('d');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[4]).eq('e');
+      expect(stateVariables['/_mathlist1'].stateValues.math3).eq('c')
+      expect(stateVariables['/_mathlist1'].stateValues.math5).eq('e');
 
     })
 
@@ -1329,32 +1325,32 @@ describe('MathList Tag Tests', function () {
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let mathlist1a = stateVariables["/mathlist1a"].replacements[0];
-      let mathlist3 = stateVariables["/mathlist3"].replacements[0];
+      let mathlist1a = stateVariables[stateVariables["/mathlist1a"].replacements[0].componentName];
+      let mathlist3 = stateVariables[stateVariables["/mathlist3"].replacements[0].componentName];
       expect((stateVariables['/_mathlist1'].stateValues.maths).length).eq(3);
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[0].tree).eq('a');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[1].tree).eq('b');
-      expect((stateVariables['/_mathlist1'].stateValues.maths)[2].tree).eq('c');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[0]).eq('a');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[1]).eq('b');
+      expect((stateVariables['/_mathlist1'].stateValues.maths)[2]).eq('c');
       expect((await mathlist1a.stateValues.maths).length).eq(3);
-      expect((await mathlist1a.stateValues.maths)[0].tree).eq('a');
-      expect((await mathlist1a.stateValues.maths)[1].tree).eq('b');
-      expect((await mathlist1a.stateValues.maths)[2].tree).eq('c');
+      expect((await mathlist1a.stateValues.maths)[0]).eq('a');
+      expect((await mathlist1a.stateValues.maths)[1]).eq('b');
+      expect((await mathlist1a.stateValues.maths)[2]).eq('c');
       expect((stateVariables['/_mathlist2'].stateValues.maths).length).eq(8);
-      expect((stateVariables['/_mathlist2'].stateValues.maths)[0].tree).eq('x');
-      expect((stateVariables['/_mathlist2'].stateValues.maths)[1].tree).eq('a');
-      expect((stateVariables['/_mathlist2'].stateValues.maths)[2].tree).eq('b');
-      expect((stateVariables['/_mathlist2'].stateValues.maths)[3].tree).eq('c');
-      expect((stateVariables['/_mathlist2'].stateValues.maths)[4].tree).eq('y');
-      expect((stateVariables['/_mathlist2'].stateValues.maths)[5].tree).eq('a');
-      expect((stateVariables['/_mathlist2'].stateValues.maths)[6].tree).eq('b');
-      expect((stateVariables['/_mathlist2'].stateValues.maths)[7].tree).eq('c');
+      expect((stateVariables['/_mathlist2'].stateValues.maths)[0]).eq('x');
+      expect((stateVariables['/_mathlist2'].stateValues.maths)[1]).eq('a');
+      expect((stateVariables['/_mathlist2'].stateValues.maths)[2]).eq('b');
+      expect((stateVariables['/_mathlist2'].stateValues.maths)[3]).eq('c');
+      expect((stateVariables['/_mathlist2'].stateValues.maths)[4]).eq('y');
+      expect((stateVariables['/_mathlist2'].stateValues.maths)[5]).eq('a');
+      expect((stateVariables['/_mathlist2'].stateValues.maths)[6]).eq('b');
+      expect((stateVariables['/_mathlist2'].stateValues.maths)[7]).eq('c');
       expect((await mathlist3.stateValues.maths).length).eq(6);
-      expect((await mathlist3.stateValues.maths)[0].tree).eq('x');
-      expect((await mathlist3.stateValues.maths)[1].tree).eq('a');
-      expect((await mathlist3.stateValues.maths)[2].tree).eq('b');
-      expect((await mathlist3.stateValues.maths)[3].tree).eq('c');
-      expect((await mathlist3.stateValues.maths)[4].tree).eq('y');
-      expect((await mathlist3.stateValues.maths)[5].tree).eq('a');
+      expect((await mathlist3.stateValues.maths)[0]).eq('x');
+      expect((await mathlist3.stateValues.maths)[1]).eq('a');
+      expect((await mathlist3.stateValues.maths)[2]).eq('b');
+      expect((await mathlist3.stateValues.maths)[3]).eq('c');
+      expect((await mathlist3.stateValues.maths)[4]).eq('y');
+      expect((await mathlist3.stateValues.maths)[5]).eq('a');
 
     })
 

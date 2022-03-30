@@ -197,6 +197,9 @@ describe('Group Tag Tests', function () {
     <copy name="copygroupthroughp" target="p1" assignNames="p4" />
     <copy name="copygroupthroughp2" target="copygroupthroughp" assignNames="p5" />
     <copy name="copygroupthroughp3" target="copygroupthroughp2" assignNames="p6" />
+
+    <copy prop="value" target="count" assignNames="count2" />
+    <copy prop="value" target="to" assignNames="to2" />
     `}, "*");
     });
 
@@ -210,6 +213,7 @@ describe('Group Tag Tests', function () {
 
     cy.log('make sequence length 1');
     cy.get('#\\/count textarea').type('{end}{backspace}1{enter}', { force: true });
+    cy.get('#\\/count2').should('contain.text', '1');
 
     for (let i = 1; i <= 6; i++) {
       cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -221,6 +225,7 @@ describe('Group Tag Tests', function () {
 
     cy.log('make sequence length 0 again');
     cy.get('#\\/count textarea').type('{end}{backspace}0{enter}', { force: true });
+    cy.get('#\\/count2').should('contain.text', '0');
     for (let i = 1; i <= 6; i++) {
       cy.get(`#\\/p${i}`).should('have.text', '')
     }
@@ -228,6 +233,7 @@ describe('Group Tag Tests', function () {
 
     cy.log('make sequence length 2');
     cy.get('#\\/count textarea').type('{end}{backspace}2{enter}', { force: true });
+    cy.get('#\\/count2').should('contain.text', '2');
 
     for (let i = 1; i <= 6; i++) {
       cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -243,6 +249,7 @@ describe('Group Tag Tests', function () {
     cy.log('change limits');
     cy.get('#\\/from textarea').type('{end}{backspace}3{enter}', { force: true });
     cy.get('#\\/to textarea').type('{end}{backspace}5{enter}', { force: true });
+    cy.get('#\\/to2').should('contain.text', '5');
 
     for (let i = 1; i <= 6; i++) {
       cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -257,12 +264,14 @@ describe('Group Tag Tests', function () {
 
     cy.log('make sequence length 0 once again');
     cy.get('#\\/count textarea').type('{end}{backspace}0{enter}', { force: true });
+    cy.get('#\\/count2').should('contain.text', '0');
     for (let i = 1; i <= 6; i++) {
       cy.get(`#\\/p${i}`).should('have.text', '')
     }
 
     cy.log('make sequence length 3');
     cy.get('#\\/count textarea').type('{end}{backspace}3{enter}', { force: true });
+    cy.get('#\\/count2').should('contain.text', '3');
 
 
     for (let i = 1; i <= 6; i++) {
@@ -305,6 +314,9 @@ describe('Group Tag Tests', function () {
     <copy name="c7" assignNames="p7" target="c4" />
     <copy name="c8" assignNames="p8" target="c5" />
     <copy name="c9" assignNames="p9" target="c6" />
+
+    <copy prop="value" target="var2" assignNames="var2b" />
+
     `}, "*");
     });
 
@@ -323,6 +335,7 @@ describe('Group Tag Tests', function () {
     cy.log('change variables');
     cy.get('#\\/var1 textarea').type('{end}{backspace}u{enter}', { force: true });
     cy.get('#\\/var2 textarea').type('{end}{backspace}v{enter}', { force: true });
+    cy.get('#\\/var2b').should('contain.text', 'v')
 
     for (let i = 1; i <= 9; i++) {
       cy.get(`#\\/p${i}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -369,44 +382,44 @@ describe('Group Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g'].stateValues.fixed).eq(false);
       expect(stateVariables['/g/A'].stateValues.fixed).eq(false);
-      expect(stateVariables['/g/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(stateVariables['/g/A'].stateValues.xs).eqls([1, 2])
       expect(stateVariables['/g2'].stateValues.fixed).eq(true);
       expect(stateVariables['/g2/A'].stateValues.fixed).eq(true);
-      expect(stateVariables['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(stateVariables['/g2/A'].stateValues.xs).eqls([1, 2])
       expect(stateVariables['/g3'].stateValues.fixed).eq(false);
       expect(stateVariables['/g3/A'].stateValues.fixed).eq(false);
-      expect(stateVariables['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(stateVariables['/g3/A'].stateValues.xs).eqls([1, 2])
       expect(stateVariables['/g4'].stateValues.fixed).eq(false);
       expect(stateVariables['/g4/A'].stateValues.fixed).eq(false);
-      expect(stateVariables['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(stateVariables['/g4/A'].stateValues.xs).eqls([1, 2])
     })
 
     cy.log('move first point')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/g/A",
         args: { x: 3, y: 4 }
       })
-      expect(stateVariables['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(stateVariables['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(stateVariables['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(stateVariables['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/g/A'].stateValues.xs).eqls([3, 4])
+      expect(stateVariables['/g2/A'].stateValues.xs).eqls([3, 4])
+      expect(stateVariables['/g3/A'].stateValues.xs).eqls([3, 4])
+      expect(stateVariables['/g4/A'].stateValues.xs).eqls([1, 2])
     })
 
     cy.log(`can't move second point as fixed`)
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: 5, y: 6 }
       })
-      expect(stateVariables['/g/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(stateVariables['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(stateVariables['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([3, 4])
-      expect(stateVariables['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/g/A'].stateValues.xs).eqls([3, 4])
+      expect(stateVariables['/g2/A'].stateValues.xs).eqls([3, 4])
+      expect(stateVariables['/g3/A'].stateValues.xs).eqls([3, 4])
+      expect(stateVariables['/g4/A'].stateValues.xs).eqls([1, 2])
     })
 
     // TODO: this used to be immobile but not it is
@@ -414,30 +427,30 @@ describe('Group Tag Tests', function () {
     // cy.log(`can't move third point as depends on fixed second point`)
     cy.log(`for now, can move third point as depends on directly on xs of first point`)
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: 7, y: 8 }
       })
-      expect(stateVariables['/g/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(stateVariables['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(stateVariables['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(stateVariables['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/g/A'].stateValues.xs).eqls([7, 8])
+      expect(stateVariables['/g2/A'].stateValues.xs).eqls([7, 8])
+      expect(stateVariables['/g3/A'].stateValues.xs).eqls([7, 8])
+      expect(stateVariables['/g4/A'].stateValues.xs).eqls([1, 2])
     })
 
     cy.log(`can move fourth point`)
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: 9, y: 0 }
       })
-      expect(stateVariables['/g/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(stateVariables['/g2/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(stateVariables['/g3/A'].stateValues.xs.map(x => x.tree)).eqls([7, 8])
-      expect(stateVariables['/g4/A'].stateValues.xs.map(x => x.tree)).eqls([9, 0])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/g/A'].stateValues.xs).eqls([7, 8])
+      expect(stateVariables['/g2/A'].stateValues.xs).eqls([7, 8])
+      expect(stateVariables['/g3/A'].stateValues.xs).eqls([7, 8])
+      expect(stateVariables['/g4/A'].stateValues.xs).eqls([9, 0])
     })
 
 
@@ -451,6 +464,7 @@ describe('Group Tag Tests', function () {
     <text>a</text>
       <group name="g" newNamespace>
         <textinput name="ti" prefill="hello" />
+        <copy prop="value" target="ti" assignNames="t" />
       </group>
 
       <copy target="g" disabled assignNames="g2" />
@@ -490,6 +504,8 @@ describe('Group Tag Tests', function () {
 
     cy.log('type in first textinput')
     cy.get('#\\/g\\/ti_input').clear().type("bye{enter}")
+    cy.get('#\\/g\\/t').should('contain.text', 'bye')
+    
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g/ti'].stateValues.value).eq("bye")
@@ -500,6 +516,7 @@ describe('Group Tag Tests', function () {
 
     cy.log('type in third textinput')
     cy.get('#\\/g3\\/ti_input').clear().type("this{enter}")
+    cy.get('#\\/g3\\/t').should('contain.text', 'this')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g/ti'].stateValues.value).eq("this")
@@ -511,6 +528,7 @@ describe('Group Tag Tests', function () {
 
     cy.log('type in fourth textinput')
     cy.get('#\\/g4\\/ti_input').clear().type("that{enter}")
+    cy.get('#\\/g4\\/t').should('contain.text', 'that')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g/ti'].stateValues.value).eq("this")

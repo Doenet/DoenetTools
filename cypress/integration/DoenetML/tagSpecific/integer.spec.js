@@ -30,8 +30,8 @@ describe('Integer Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let integer0 = stateVariables['/_copy1'].replacements[0];
-      let integer0Anchor = cesc('#' + integer0.componentName);
+      let integer0Name = stateVariables['/_copy1'].replacements[0].componentName;
+      let integer0Anchor = cesc('#' + integer0Name);
 
       cy.log('Test value displayed in browser')
       cy.get(integer0Anchor).should('have.text', '2')
@@ -40,7 +40,7 @@ describe('Integer Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(integer0.stateValues.value).eq(2);
+        expect(stateVariables[integer0Name].stateValues.value).eq(2);
         expect(stateVariables['/_integer1'].stateValues.value).eq(2);
       })
     })
@@ -60,8 +60,8 @@ describe('Integer Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let integer0 = stateVariables['/_copy1'].replacements[0];
-      let integer0Anchor = cesc('#' + integer0.componentName);
+      let integer0Name = stateVariables['/_copy1'].replacements[0].componentName;
+      let integer0Anchor = cesc('#' + integer0Name);
 
       cy.log('Test value displayed in browser')
       cy.get(integer0Anchor).should('have.text', 'NaN')
@@ -71,7 +71,7 @@ describe('Integer Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        assert.isNaN(integer0.stateValues.value);
+        assert.isNaN(stateVariables[integer0Name].stateValues.value);
         assert.isNaN(stateVariables['/_integer1'].stateValues.value);
       })
     })

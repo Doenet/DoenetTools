@@ -350,6 +350,7 @@ export default class Document extends BaseComponent {
     }
 
     stateVariableDefinitions.justSubmitted = {
+      forRenderer: true,
       returnDependencies: () => ({
         answerDescendants: {
           dependencyType: "stateVariable",
@@ -367,6 +368,7 @@ export default class Document extends BaseComponent {
     }
 
     stateVariableDefinitions.showCorrectness = {
+      forRenderer: true,
       returnDependencies: () => ({
         showCorrectnessFlag: {
           dependencyType: "flag",
@@ -388,6 +390,7 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.creditAchieved = {
       public: true,
       componentType: "number",
+      forRenderer: true,
       defaultValue: 0,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigitsForCreditAchieved",
@@ -569,7 +572,7 @@ export default class Document extends BaseComponent {
     submitAllAnswers: this.submitAllAnswers.bind(this),
   }
 
-  async submitAllAnswers() {
+  async submitAllAnswers({ actionId }) {
 
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
@@ -588,6 +591,9 @@ export default class Document extends BaseComponent {
         })
       }
     }
+
+    this.coreFunctions.resolveAction({ actionId });
+
   }
 
   static async setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,

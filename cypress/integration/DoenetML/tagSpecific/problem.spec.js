@@ -1951,7 +1951,7 @@ describe('Problem Tag Tests', function () {
           <text name="color">yellow</text>
           </option>
       </select>
-      <p>Enter $(fruit/name): 
+      <p>Enter <copy target="fruit/name" assignNames="fruitName" />: 
         <answer type="text">
           <textinput name="input1" />
           <award>$(fruit/name)</award>
@@ -1968,21 +1968,23 @@ describe('Problem Tag Tests', function () {
     <p>Credit achieved: <copy prop="creditAchieved" target="_document1" assignNames="ca" /></p>
     `
 
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    
+    // TODO: determined index 2 is apple
+    // find better way to ensure get apple or look up generated variant
+
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
         requestedVariant: {
-          subvariants: [{
-            index: [1],
-          }]
+          index: 2,
         }
       }, "*");
     });
-
-    // at least right now, this turns on Allow Local Page State
-    cy.get('h3 > button').click();
-    cy.get(':nth-child(11) > label > input').click()
-    cy.get('h3 > button').click();
 
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -1995,13 +1997,10 @@ describe('Problem Tag Tests', function () {
 
     cy.get(cesc('#/problem1/input2_submit')).should('be.visible');
 
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-      <text>b</text>
-      `}, "*");
-    });
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.wait(2000); // wait to make sure debounce save happened
+
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -2015,7 +2014,8 @@ describe('Problem Tag Tests', function () {
     cy.get(cesc('#/problem1/input2_submit')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0')
 
-    cy.get(cesc('#/problem1/input1_input')).clear().type('apple{enter}');
+    cy.get(cesc('#/problem1/input1_input')).clear().type('apple');
+    cy.get(cesc('#/problem1/input1_submit')).click();
     cy.get(cesc('#/problem1/input1_correct')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.5')
 
@@ -2023,13 +2023,10 @@ describe('Problem Tag Tests', function () {
     cy.get(cesc('#/problem1/input2_incorrect')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.5')
 
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-      <text>b</text>
-      `}, "*");
-    });
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.wait(2000); // wait to make sure debounce save happened
+    
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -2043,18 +2040,15 @@ describe('Problem Tag Tests', function () {
     cy.get(cesc('#/problem1/input2_incorrect')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.5')
 
-    cy.get(cesc('#/problem1/input2_input')).clear().type('red{enter}');
+    cy.get(cesc('#/problem1/input2_input')).clear().type('red');
+    cy.get(cesc('#/problem1/input2_submit')).click();
     cy.get(cesc('#/problem1/input2_correct')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '1')
 
 
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-      <text>b</text>
-      `}, "*");
-    });
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+    cy.wait(2000); // wait to make sure debounce save happened
+    
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
