@@ -28,7 +28,7 @@ export default function DriveInfoCap(){
 
  
  if (image != 'none'){
-  image = 'url(/media/drive_pictures/' + image + ')';
+  image = '/media/drive_pictures/' + image;
   console.log('there is an image??');
  }
  if (color != 'none'){
@@ -36,8 +36,8 @@ export default function DriveInfoCap(){
  }
  
  return <>
-    <div style={{position: 'relative', paddingBottom: '135px'}}>
-    <img style={{position: "absolute", height: "135px", objectFit: 'cover', backgroundColor: color, backgroundImage: image}}   width='240px' />
+    <div style={{display: 'flex', justifyContent: 'center', alignItems:'center' }}>
+      <img src={image} height='135px' width="100%"/>
     </div>
     <div style={{padding:'8px'}}>
     <div>{label}</div>
