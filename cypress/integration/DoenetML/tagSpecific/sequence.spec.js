@@ -30,7 +30,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(10);
       for (let i = 0; i < 10; i++) {
         expect(children[i].stateValues.value).eq(i + 1);
@@ -51,7 +51,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(10);
       for (let i = 0; i < 10; i++) {
         expect(children[i].stateValues.value).eq(i - 4);
@@ -72,7 +72,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(3);
       for (let i = 0; i < 3; i++) {
         expect(children[i].stateValues.value).eq(3 + i - 2);
@@ -93,7 +93,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(10);
       for (let i = 0; i < 10; i++) {
         expect(children[i].stateValues.value).eq(1 + i * (-2));
@@ -114,7 +114,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(children[i].stateValues.value).eq(1 + i);
@@ -135,7 +135,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       for (let i = 0; i < 8; i++) {
         expect(children[i].stateValues.value).eq(-3 + i);
@@ -156,7 +156,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       for (let i = 0; i < 8; i++) {
         expect(children[i].stateValues.value).eq(-3 + i);
@@ -177,7 +177,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       for (let i = 0; i < 8; i++) {
         expect(children[i].stateValues.value).eq(i + 1);
@@ -198,10 +198,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       for (let i = 0; i < 8; i++) {
-        expect(children[i].stateValues.value.tree).eq(i + 1);
+        expect(children[i].stateValues.value).eq(i + 1);
       }
     })
   });
@@ -219,7 +219,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(10);
       for (let i = 0; i < 10; i++) {
         expect(children[i].stateValues.value).eq(2 + i * (-4));
@@ -240,7 +240,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(3);
       for (let i = 0; i < 3; i++) {
         expect(children[i].stateValues.value).eq(11 + i);
@@ -261,7 +261,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(7);
       for (let i = 0; i < 7; i++) {
         expect(children[i].stateValues.value).eq(21 + 3 * (i - 6));
@@ -282,7 +282,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(Math.abs(children[i].stateValues.value - (1 + i * 0.1))).lessThan(1E-14)
@@ -303,10 +303,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
-        expect(Math.abs(children[i].stateValues.value.tree - (1 + i * 0.1))).lessThan(1E-14)
+        expect(Math.abs(children[i].stateValues.value - (1 + i * 0.1))).lessThan(1E-14)
       }
     })
   });
@@ -324,7 +324,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(4);
       for (let i = 0; i < 4; i++) {
         expect(children[i].stateValues.value).eq(-8 + (i - 3));
@@ -345,7 +345,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(6);
       for (let i = 0; i < 6; i++) {
         expect(children[i].stateValues.value).eq(1 + 5 * i);
@@ -366,7 +366,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(4);
       for (let i = 0; i < 4; i++) {
         expect(children[i].stateValues.value).eq(9 - 2 * i);
@@ -389,7 +389,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(4);
       for (let i = 0; i < 4; i++) {
         expect(Math.abs(children[i].stateValues.value - sequence[i])).lessThan(1E-14);
@@ -412,10 +412,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(4);
       for (let i = 0; i < 4; i++) {
-        expect(Math.abs(children[i].stateValues.value.tree - sequence[i])).lessThan(1E-14);
+        expect(Math.abs(children[i].stateValues.value - sequence[i])).lessThan(1E-14);
       }
     })
   });
@@ -433,7 +433,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(6);
       for (let i = 0; i < 6; i++) {
         expect(children[i].stateValues.value).eq(-5 + 2 * i);
@@ -454,7 +454,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(children[i].stateValues.value).eq(8 - 2 * i);
@@ -475,7 +475,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(children[i].stateValues.value).eq(8 - 2 * (i - 4));
@@ -496,7 +496,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(5);
       expect(children[0].stateValues.value).eq('c');
       expect(children[1].stateValues.value).eq('f');
@@ -519,7 +519,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(5);
       expect(children[0].stateValues.value).eq('Y');
       expect(children[1].stateValues.value).eq('U');
@@ -542,7 +542,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(4);
       expect(children[0].stateValues.value).eq('az');
       expect(children[1].stateValues.value).eq('bc');
@@ -564,7 +564,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(6);
       expect(children[0].stateValues.value).eq('b');
       expect(children[1].stateValues.value).eq('e');
@@ -588,7 +588,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(10);
       expect(children[0].stateValues.value).eq('a');
       expect(children[1].stateValues.value).eq('b');
@@ -616,12 +616,12 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(4);
-      expect(children[0].stateValues.value.tree).eqls(['*', 3, 'x']);
-      expect(children[1].stateValues.value.tree).eqls(['+', ['*', 2, 'x'], 'y']);
-      expect(children[2].stateValues.value.tree).eqls(['+', 'x', ['*', 2, 'y']]);
-      expect(children[3].stateValues.value.tree).eqls(['*', 3, 'y']);
+      expect(children[0].stateValues.value).eqls(['*', 3, 'x']);
+      expect(children[1].stateValues.value).eqls(['+', ['*', 2, 'x'], 'y']);
+      expect(children[2].stateValues.value).eqls(['+', 'x', ['*', 2, 'y']]);
+      expect(children[3].stateValues.value).eqls(['*', 3, 'y']);
     })
   });
 
@@ -633,6 +633,7 @@ describe('Sequence Tag Tests', function () {
     <aslist><sequence from="-1" length="10" exclude="$exclude2  0 6" />
     </aslist>
     <p>Also exclude: <mathinput name="exclude2" /></p>
+    <p><copy prop="value" target="exclude2" assignNames="exclude2a" /></p>
     `}, "*");
     });
 
@@ -640,7 +641,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -654,9 +655,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 7")
     cy.get('#\\/exclude2 textarea').type(`{end}{backspace}7{enter}`, { force: true });
+    cy.get('#\\/exclude2a').should('contain.text', '7')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -670,9 +672,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 6 twice")
     cy.get('#\\/exclude2 textarea').type(`{end}{backspace}6{enter}`, { force: true });
+    cy.get('#\\/exclude2a').should('contain.text', '6')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -686,9 +689,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 12")
     cy.get('#\\/exclude2 textarea').type(`{end}{backspace}12{enter}`, { force: true });
+    cy.get('#\\/exclude2a').should('contain.text', '12')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -703,9 +707,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 3")
     cy.get('#\\/exclude2 textarea').type(`{end}{backspace}{backspace}3{enter}`, { force: true });
+    cy.get('#\\/exclude2a').should('contain.text', '3')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -720,9 +725,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("don't exclude anything else")
     cy.get('#\\/exclude2 textarea').type(`{end}{backspace}{enter}`, { force: true });
+    cy.get('#\\/exclude2a').should('not.contain.text', '3')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -752,7 +758,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
         expect(Math.abs(children[i].stateValues.value - sequence[i])).lessThan(1E-14);
@@ -770,6 +776,7 @@ describe('Sequence Tag Tests', function () {
     <aslist><sequence type="letters" length="10" exclude="$e  b f" />
     </aslist>
     <p>Also exclude: <textinput name="e" /></p>
+    <p><copy prop="value" target="e" assignNames="ea" /></p>
     `}, "*");
     });
 
@@ -777,7 +784,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -791,9 +798,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude i")
     cy.get('#\\/e_input').clear().type(`i{enter}`);
+    cy.get('#\\/ea').should('contain.text', 'i')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -807,9 +815,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude f twice")
     cy.get('#\\/e_input').clear().type(`f{enter}`);
+    cy.get('#\\/ea').should('contain.text', 'f')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -823,9 +832,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude l")
     cy.get('#\\/e_input').clear().type(`l{enter}`);
+    cy.get('#\\/ea').should('contain.text', 'l')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -840,9 +850,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude C")
     cy.get('#\\/e_input').clear().type(`C{enter}`);
+    cy.get('#\\/ea').should('contain.text', 'C')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -857,9 +868,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("don't exclude anything else")
     cy.get('#\\/e_input').clear().type(`{enter}`);
+    cy.get('#\\/ea').should('have.text', '')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
@@ -882,6 +894,7 @@ describe('Sequence Tag Tests', function () {
       <sequence type="math" length="10" from="x" step="x" exclude="2x 6x  $e" />
     </aslist>
     <p>Also exclude: <mathinput name="e" /></p>
+    <p><copy prop="value" target="e" assignNames="ea" /></p>
     `}, "*");
     });
 
@@ -890,62 +903,65 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
         if (i == 1 || i == 5) {
           continue;
         }
-        expect(me.fromAst(children[ind].stateValues.value.tree).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
+        expect(me.fromAst(children[ind].stateValues.value).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
         ind++
       }
     })
 
     cy.log("also exclude 9x")
     cy.get('#\\/e textarea').type(`{end}{backspace}9x{enter}`, { force: true });
+    cy.get('#\\/ea').should('contain.text', '9x')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
         if (i == 1 || i == 5 || i == 8) {
           continue;
         }
-        expect(me.fromAst(children[ind].stateValues.value.tree).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
+        expect(me.fromAst(children[ind].stateValues.value).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
         ind++
       }
     })
 
     cy.log("also exclude 6x twice")
     cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}6x{enter}`, { force: true });
+    cy.get('#\\/ea').should('contain.text', '6x')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
         if (i == 1 || i == 5) {
           continue;
         }
-        expect(me.fromAst(children[ind].stateValues.value.tree).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
+        expect(me.fromAst(children[ind].stateValues.value).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
         ind++
       }
     })
 
     cy.log("also exclude 12x")
     cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}12x{enter}`, { force: true });
+    cy.get('#\\/ea').should('contain.text', '12x')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
         if (i == 1 || i == 5) {
           continue;
         }
-        expect(me.fromAst(children[ind].stateValues.value.tree).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
+        expect(me.fromAst(children[ind].stateValues.value).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
         ind++
       }
     })
@@ -953,16 +969,17 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("also exclude 3x")
     cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}{backspace}3x{enter}`, { force: true });
+    cy.get('#\\/ea').should('contain.text', '3x')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(7);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
         if (i == 1 || i == 5 || i == 2) {
           continue;
         }
-        expect(me.fromAst(children[ind].stateValues.value.tree).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
+        expect(me.fromAst(children[ind].stateValues.value).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
         ind++
       }
     })
@@ -970,16 +987,17 @@ describe('Sequence Tag Tests', function () {
 
     cy.log("don't exclude anything else")
     cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}{enter}`, { force: true });
+    cy.get('#\\/ea').should('not.contain.text', '3x')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       let ind = 0;
       for (let i = 0; i < 10; i++) {
         if (i == 1 || i == 5) {
           continue;
         }
-        expect(me.fromAst(children[ind].stateValues.value.tree).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
+        expect(me.fromAst(children[ind].stateValues.value).equals(me.fromText((1 + i).toString() + "x"))).eq(true);
         ind++
       }
     })
@@ -1002,10 +1020,10 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(5);
       for (let i = 0; i < 5; i++) {
-        expect(Math.abs(children[i].stateValues.value.tree - sequence[i])).lessThan(1E-14);
+        expect(Math.abs(children[i].stateValues.value - sequence[i])).lessThan(1E-14);
       }
     })
 
@@ -1039,7 +1057,7 @@ describe('Sequence Tag Tests', function () {
     cy.log("Don't round internaly")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacements = stateVariables['/_sequence1'].replacements;
+      let replacements = stateVariables['/_sequence1'].replacements.map(x => stateVariables[x.componentName]);
 
       for (let i = 0; i < 11; i++) {
         expect(replacements[i].stateValues.value).eq(0.1 * i);
@@ -1079,7 +1097,7 @@ describe('Sequence Tag Tests', function () {
     })
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let replacements = stateVariables['/_sequence1'].replacements;
+      let replacements = stateVariables['/_sequence1'].replacements.map(x => stateVariables[x.componentName]);
       for (let i = 0; i < 9; i++) {
         expect(replacements[i].stateValues.value).eq(i + 5);
       }
@@ -1093,6 +1111,7 @@ describe('Sequence Tag Tests', function () {
   <text>a</text>
   <mathinput name="n"/>
   <aslist><sequence from="2" to="$n" /></aslist>
+  <p><copy prop="value" target="n" assignNames="n2" /></p>
     `}, "*");
     });
 
@@ -1107,6 +1126,7 @@ describe('Sequence Tag Tests', function () {
     })
 
     cy.get('#\\/n textarea').type("2{enter}", { force: true });
+    cy.get('#\\/n2').should('contain.text', '2');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1348,7 +1368,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(8);
       for (let i = 0; i < 8; i++) {
         expect(children[i].stateValues.value).eq(-3 + i);
@@ -1376,7 +1396,7 @@ describe('Sequence Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let children = stateVariables['/_aslist1'].activeChildren;
+      let children = stateVariables['/_aslist1'].activeChildren.map(x => stateVariables[x.componentName]);
       expect(children.length).eq(nums.length);
       for (let [ind, child] of children.entries()) {
         expect(child.stateValues.value).eq(nums[ind]);
