@@ -35,7 +35,7 @@ if ($result->num_rows > 0) {
 	$row = $result->fetch_assoc();
 	$canEditContent = $row['canEditContent'];
 }
-$activityDoenetIds = [];
+$containingDoenetIds = [];
 	//Can the user edit content?
 	//Yes then all items and json
 	//No then no Recipies, no banks and no unused files
@@ -72,8 +72,8 @@ $activityDoenetIds = [];
 					"isPublic"=>$row['isPublic'],
 				);
 
-				if ($row['contentType'] == 'activity'){
-					array_push($activityDoenetIds,$row['doenetId']);
+				if ($row['contentType'] == 'activity' || $row['contentType'] == 'bank'){
+					array_push($containingDoenetIds,$row['doenetId']);
 				}
 				
 				$json = json_decode($row['json'],true);
@@ -86,15 +86,15 @@ $activityDoenetIds = [];
 
 				array_push($items,$item);
 			}
-			foreach($activityDoenetIds as $aDoenetId){
+			foreach($containingDoenetIds as $containingDoenetId){
 				$sql = "
 				SELECT 
 				doenetId,
 				cid,
 				draftCid,
 				label
-				FROM activity_pages
-				WHERE activityDoenetId = '$aDoenetId'
+				FROM pages
+				WHERE containingDoenetId = '$containingDoenetId'
 				AND isDeleted = '0'
 				";
 				$result = $conn->query($sql);

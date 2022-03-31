@@ -16,7 +16,6 @@ export function useInitCourseItems(courseId) {
         const { data } = await axios.get('/api/getCourseItems.php', {
           params: { courseId },
         });
-        // console.log('data', data);
         let doenetIds = data.items.map((item) => item.doenetId);
         set(authorCourseItemOrderByCourseId(courseId), doenetIds);
         data.items.map((item) => {

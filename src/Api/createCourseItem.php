@@ -69,7 +69,7 @@ if ($success){
         $conn->query($sql);
 
         $sql = "
-        INSERT INTO activity_pages (activityDoenetId,doenetId) 
+        INSERT INTO pages (containingDoenetId,doenetId) 
           VALUES('$doenetId','$pageDoenetId');
         ";
         $conn->query($sql);

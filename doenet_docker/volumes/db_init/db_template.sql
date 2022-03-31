@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-03-31 13:44:31 +0000
+# Generation Time: 2022-03-31 21:35:22 +0000
 # ************************************************************
 
 
@@ -18,25 +18,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
-
-# Dump of table activity_pages
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `activity_pages`;
-
-CREATE TABLE `activity_pages` (
-  `activityDoenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `draftCid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
-  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
-  `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled',
-  `isDeleted` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`activityDoenetId`,`doenetId`),
-  KEY `doenetId` (`doenetId`),
-  CONSTRAINT `activity_pages_ibfk_1` FOREIGN KEY (`activityDoenetId`) REFERENCES `course_content` (`doenetId`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
 
 
 # Dump of table activity_state
@@ -512,6 +493,25 @@ CREATE TABLE `page_state` (
   UNIQUE KEY `userId-doenetId-pageId-attemptNumber` (`userId`,`doenetId`,`pageId`,`attemptNumber`),
   KEY `saveId` (`saveId`),
   KEY `cid` (`cid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+# Dump of table pages
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `pages`;
+
+CREATE TABLE `pages` (
+  `containingDoenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `draftCid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
+  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
+  `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled',
+  `isDeleted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`containingDoenetId`,`doenetId`),
+  KEY `doenetId` (`doenetId`),
+  CONSTRAINT `pages_ibfk_1` FOREIGN KEY (`containingDoenetId`) REFERENCES `course_content` (`doenetId`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 

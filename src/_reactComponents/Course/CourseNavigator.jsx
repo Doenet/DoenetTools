@@ -167,10 +167,11 @@ function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
 }
 
 function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
+  // console.log("Activity itemInfo",itemInfo)
   if (itemInfo.isOpen){
     return <>
     <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}/>
-    <Order key={`Order${doenetId}`} orderInfo={itemInfo.order} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
+    <Order key={`Order${doenetId}`} orderInfo={itemInfo.order} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
      </>
   }else{
     return <>
@@ -197,16 +198,17 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
 
   if (recoilOrderInfo.isOpen){
     return <>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={behavior} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel + 1}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={behavior} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
     {contentJSX}
     </>
   }else{
-    return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={behavior} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel + 1}/>
+    return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={behavior} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
   }
 }
 
 function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentLevel,number=null}){
   let recoilPageInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  // console.log("Page recoilPageInfo",recoilPageInfo,"doenetId",doenetId)
   //TODO: numbered
   return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} />
 }
