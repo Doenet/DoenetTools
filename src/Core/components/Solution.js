@@ -1,13 +1,6 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Solution extends BlockComponent {
-  constructor(args) {
-    super(args);
-
-    this.revealSolution = this.revealSolution.bind(this);
-    this.finishRevealSolution = this.finishRevealSolution.bind(this);
-
-  }
   static componentType = "solution";
   static renderChildren = true;
 

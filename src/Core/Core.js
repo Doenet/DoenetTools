@@ -79,7 +79,6 @@ export default class Core {
       unresolvedByDependent: {},
       deletedStateVariables: {},
       deletedComponents: {},
-      recreatedComponents: {},
       // parentsToUpdateDescendants: new Set(),
       compositesBeingExpanded: [],
       // stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
@@ -418,7 +417,7 @@ export default class Core {
   }
 
 
-  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, actionId, recreatedComponents = {} }) {
+  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, actionId }) {
 
     let deletedRenderers = [];
 
@@ -450,7 +449,7 @@ export default class Core {
           for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
             if (indicesToRender.includes(ind)) {
               if (child.rendererType) {
-                currentChildIdentifiers.push(`componentName:${child.componentName}`)
+                currentChildIdentifiers.push(`nameType:${child.componentName};${child.componentType}`)
                 renderedInd++;
               } else if (typeof child === "string") {
                 currentChildIdentifiers.push(`string${renderedInd}:${child}`)
@@ -470,7 +469,7 @@ export default class Core {
         let previousChildIdentifiers = [];
         for (let [ind, child] of previousChildRenderers.entries()) {
           if (child.componentName) {
-            previousChildIdentifiers.push(`componentName:${child.componentName}`)
+            previousChildIdentifiers.push(`nameType:${child.componentName};${child.componentType}`)
           } else if (typeof child === "string") {
             previousChildIdentifiers.push(`string${ind}:${child}`)
           } else if (typeof child === "number") {
@@ -1252,9 +1251,6 @@ export default class Core {
     });
 
     // in case component with same name was deleted before, delete from deleteComponents and deletedStateVariable
-    if (this.updateInfo.deletedComponents[componentName]) {
-      this.updateInfo.recreatedComponents[componentName] = true;
-    }
     delete this.updateInfo.deletedComponents[componentName];
     delete this.updateInfo.deletedStateVariables[componentName];
 
@@ -7881,7 +7877,6 @@ export default class Core {
     await this.updateRendererInstructions({
       componentNamesToUpdate,
       sourceOfUpdate: { sourceInformation, local: true },
-      recreatedComponents: this.updateInfo.recreatedComponents,
       actionId,
     });
 
@@ -9500,7 +9495,7 @@ export default class Core {
       });
 
 
-      if (resp.status) {
+      if (resp.status === null) {
         let message = `Cannot show solution due to error.  Are you connected to the internet?`;
         postMessage({
           messageType: "sendToast",

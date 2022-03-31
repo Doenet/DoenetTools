@@ -38,6 +38,13 @@ export default function Math(props) {
   // instead, we want to be able to put the mathInput inside mathjax
   // This is just a stopgap solution that works in a few simple cases!!!
 
+
+  // Note: when a component type gets switched, sometimes state variables change before renderer
+  // so protect against case where the latexWithInputChildren is gone but renderer is still math
+  if(!SVs.latexWithInputChildren) {
+    return null;
+  }
+
   let latexOrInputChildren = SVs.latexWithInputChildren.map(
     x => typeof x === "number" ? this.children[x] : beginDelim + x + endDelim
   )
