@@ -9500,7 +9500,7 @@ export default class Core {
       });
 
 
-      if (resp.status) {
+      if (resp.status === null) {
         let message = `Cannot show solution due to error.  Are you connected to the internet?`;
         postMessage({
           messageType: "sendToast",

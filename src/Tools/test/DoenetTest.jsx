@@ -234,6 +234,7 @@ function Test() {
       key={"pageviewer" + updateNumber}
       doenetML={doenetML}
       // cid={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
+      updateDataOnContentChange={true}
       flags={{
         showCorrectness,
         readOnly,
