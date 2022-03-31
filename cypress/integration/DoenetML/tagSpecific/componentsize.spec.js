@@ -6,7 +6,7 @@ describe('Component Size Tag Tests', function () {
     cy.visit('/cypressTest')
   })
 
-  it.only('width of image from string', () => {
+  it('width of image from string', () => {
 
     let widthStrings = [
       "350", "350 px", "350px", "350 pixel", "  350  pixels ",
@@ -34,6 +34,8 @@ describe('Component Size Tag Tests', function () {
     ]
 
     for (let [ind, widthString] of widthStrings.entries()) {
+      cy.reload();
+
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
@@ -49,10 +51,6 @@ describe('Component Size Tag Tests', function () {
     `}, "*");
       });
 
-
-      // after multiple iterations, it slows down to a halt
-      // Is it due to garbage collecting from creating new cores each iteration?
-      cy.wait(20000)
 
 
       cy.get('#\\/_text1').should('have.text', `${ind}`)

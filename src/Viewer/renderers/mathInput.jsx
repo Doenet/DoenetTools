@@ -19,14 +19,17 @@ import {
 } from '../../Tools/_framework/Footers/MathInputSelector';
 
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { rendererState } from './useDoenetRenderer';
 
 export default function MathInput(props) {
-  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction } =
+  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } =
     useDoenetRender(props);
 
   MathInput.baseStateVariable = 'rawRendererValue';
 
   const [mathField, setMathField] = useState(null);
+
+  const setRendererState =  useSetRecoilState(rendererState(rendererName));
 
   let rendererValue = useRef(null);
 
@@ -127,6 +130,12 @@ export default function MathInput(props) {
   const onChangeHandler = (text) => {
     if (text !== rendererValue.current) {
       rendererValue.current = text;
+
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
 
       callAction({
         action: actions.updateRawValue,

@@ -2651,7 +2651,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it.only('copy of template source maintained when withheld', () => {
+  it('copy of template source maintained when withheld', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `

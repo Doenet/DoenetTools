@@ -1327,7 +1327,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}xy`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}xy`, { force: true, delay: 50 });
 
     cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
     cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
@@ -1721,7 +1721,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{end}{rightarrow}{backspace}{backspace}{backspace}{backspace}{backspace}xy`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`{end}{rightarrow}{backspace}{backspace}{backspace}{backspace}{backspace}xy`, { force: true, delay: 50 });
 
     cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
     cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
@@ -1964,7 +1964,10 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{end}{backspace}y`, { force: true });
+    // Note: had to add a larger delay in typing 
+    // or MathJax consistently didn't correctly update the second immediate value.
+    // Not sure what is going on here.
+    cy.get('#\\/mi1 textarea').type(`{end}{backspace}y`, { force: true, delay: 40 });
 
     cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'y')
     cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'y')
@@ -3420,7 +3423,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/a textarea').type('{home}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{backspace}5{enter}', { force: true });
     cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{backspace}8{enter}', { force: true });
-    cy.get('#\\/c textarea').type('{end}{leftArrow}{leftArrow}3{enter}', { force: true });
+    cy.get('#\\/c textarea').type('{end}{leftArrow}{leftArrow}3{enter}', { force: true, delay: 100 });
     cy.get('#\\/d2 textarea').type('{ctrl+home}{rightArrow}{backspace}6{enter}', { force: true }).blur();
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(5.7295')
@@ -5476,6 +5479,73 @@ describe('MathInput Tag Tests', function () {
     });
 
   });
+
+  it('check ignoreUpdate bug 1', () => {
+    // if set core to delay 1 second on updates
+    // then the refresh on blur (from the focus field recoil atoms changing)
+    // would cause rendererValue.current to be changed to the old SV value
+    // as the update wouldn't be ignored
+  
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p>n: <mathinput name="n" prefill="10" /></p>
+  <p>Value of n: <copy prop="value" target="n" assignNames="n2" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    // by highlighting and typing a number, we make sure the rendererValue changes directly 
+    // from 10 to 20 and back to 10 (without other changes that would hide the bug)
+    cy.get('#\\/n textarea').type("{home}{shift+rightArrow}2", {force: true}).blur();
+    cy.get('#\\/n2').should('contain.text', "20");
+
+    cy.get('#\\/n textarea').type("{home}{shift+rightArrow}1", {force: true}).blur();
+    cy.get('#\\/n2').should('contain.text', "10");
+
+
+  });
+
+
+  it('check ignoreUpdate bug 1', () => {
+    // if set core to delay 1 second on updates
+    // the extra update from focusing another mathinput wasn't being ignored
+    // leading rendererValue to get out of sync
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>c: <mathinput name="c" prefill="x" /></p>
+    <p>c2: <copy prop="value" target="c" assignNames="c2" /></p>
+    <p>d: <mathinput name="d" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    cy.get('#\\/c textarea').type('{end}y{enter}', { force: true });
+    cy.get('#\\/d textarea').focus();
+
+    cy.get('#\\/c2').should('contain.text', 'xy')
+    cy.get('#\\/c .mq-editable-field').should('contain.text', 'xy')
+    cy.get('#\\/c2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("xy");
+    })
+
+    // need next update to go back to x for the bug to be revealed
+    cy.get('#\\/c textarea').type('{end}{backspace}{enter}', { force: true });
+    cy.get('#\\/c2').should('not.contain.text', 'xy')
+    cy.get('#\\/c .mq-editable-field').should('contain.text', 'x')
+    cy.get('#\\/c2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("x");
+    })
+  })
 
 
 });

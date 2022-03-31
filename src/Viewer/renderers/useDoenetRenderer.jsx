@@ -89,5 +89,5 @@ export default function useDoenetRenderer(props, initializeChildrenOnConstructio
     return props.callAction(argObj);
   }
 
-  return { name: effectiveName, SVs: stateValues, actions, children, sourceOfUpdate, ignoreUpdate, initializeChildren: () => { }, callAction };
+  return { name: effectiveName, SVs: stateValues, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, initializeChildren: () => { }, callAction };
 }

@@ -535,7 +535,7 @@ describe('Function curve Tag Tests', function () {
     }
   });
 
-  it.only('constrain to function, different scales from graph', () => {
+  it('constrain to function, different scales from graph', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -581,7 +581,7 @@ describe('Function curve Tag Tests', function () {
 
   });
 
-  it.only('constrain to function, different scales from graph 2 ', () => {
+  it('constrain to function, different scales from graph 2 ', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -668,7 +668,7 @@ describe('Function curve Tag Tests', function () {
 
   });
 
-  it.only('constrain to inverse function', () => {
+  it('constrain to inverse function', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -743,7 +743,7 @@ describe('Function curve Tag Tests', function () {
 
   });
 
-  it.only('constrain to inverse function, nearest point as curve', () => {
+  it('constrain to inverse function, nearest point as curve', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -845,7 +845,7 @@ describe('Function curve Tag Tests', function () {
     }
   });
 
-  it.only('constrain to inverse function, different scales from graph', () => {
+  it('constrain to inverse function, different scales from graph', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -891,7 +891,7 @@ describe('Function curve Tag Tests', function () {
 
   });
 
-  it.only('constrain to inverse function, different scales from graph 2 ', () => {
+  it('constrain to inverse function, different scales from graph 2 ', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
