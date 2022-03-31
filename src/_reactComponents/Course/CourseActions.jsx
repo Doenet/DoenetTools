@@ -16,11 +16,35 @@ export function useInitCourseItems(courseId) {
         const { data } = await axios.get('/api/getCourseItems.php', {
           params: { courseId },
         });
-        console.log('data', data);
+        // console.log('data', data);
         let doenetIds = data.items.map((item) => item.doenetId);
         set(authorCourseItemOrderByCourseId(courseId), doenetIds);
         data.items.map((item) => {
           set(authorItemByDoenetId(item.doenetId), item);
+          //add orders to recoil if activity
+          function findOrderDoenetIds(orderObj){
+            let orderDoenetIds = [];
+            //TODO: Guard for no order here
+            orderDoenetIds.push(orderObj.doenetId);
+            for (let orderItem of orderObj.content){
+              if (orderItem?.contentType == 'order'){
+                let moreOrderDoenetIds = findOrderDoenetIds(orderItem);
+                orderDoenetIds = [...orderDoenetIds,...moreOrderDoenetIds];
+              }
+            }
+            return orderDoenetIds;
+          }
+          if (item.contentType == 'activity'){
+            let orderDoenetIds = findOrderDoenetIds(item.order);
+            for (let orderDoenetId of orderDoenetIds){
+                set(authorItemByDoenetId(orderDoenetId), {
+                  doenetId: orderDoenetId, 
+                  containerDoenetId:item.doenetId,
+                  isOpen:false,
+                  isSelected:false,
+                });
+            }
+          }
         });
       },
     [],

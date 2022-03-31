@@ -123,7 +123,7 @@ function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisi
   
   let items = [];
   authorItemOrder.map((doenetId)=>
-    items.push(<Item key={`itemcomponent${doenetId}`} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} />)
+    items.push(<Item key={`itemcomponent${doenetId}`} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={0} />)
   )
     
   return <>
@@ -132,60 +132,76 @@ function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisi
   </>
 }
 
-function Item({courseId,doenetId,numberOfVisibleColumns}){
+function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel}){
+  //TODO: Investigate if contentType should be a selector and these three would subscribe to item info
   let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
-  // console.log("itemInfo",itemInfo)
-
 
   if (itemInfo.contentType == 'section'){
-    return <Section key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} />
+    return <Section key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }else if (itemInfo.contentType == 'bank'){
-    return <Bank key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} />
+    return <Bank key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }else if (itemInfo.contentType == 'activity'){
-    return <Activity key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} />
+    return <Activity key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }
-  // console.log("ERROR",itemInfo)
-  // return <div key={`Item${doenetId}`}>ERROR: No Row Type {itemInfo.contentType}</div>
+
   return null;
 }
 
-function Section({courseId,doenetId,itemInfo,numberOfVisibleColumns}){
- 
-  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} />
+function Section({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
+  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
 }
 
-function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns}){
-
-  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faLayerGroup} label={itemInfo.label} doenetId={doenetId}  isSelected={itemInfo.isSelected} />
+function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
+  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faLayerGroup} label={itemInfo.label} doenetId={doenetId}  isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
 }
 
-function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns}){
-
-  let temporaryId = '123';
-//TODO: Update this logic based on itemInfo structure
-//TODO: Only numbered if order is sequential
+function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
   if (itemInfo.isOpen){
     return <>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen}  isSelected={itemInfo.isSelected}/>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} hasToggle={true} isOpen={true}/>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={1} />
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={2} hasToggle={true} isOpen={false}/>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={itemInfo.label} doenetId={temporaryId} indentLevel={1} numbered={3} />
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}/>
+    <Order key={`Order${doenetId}`} orderInfo={itemInfo.order} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
      </>
   }else{
     return <>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen}  isSelected={itemInfo.isSelected}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen}  isSelected={itemInfo.isSelected} indentLevel={indentLevel}/>
      </>
   }
-
-  
 }
 
+function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,orderInfo}){
+  let {behavior,doenetId,content} = orderInfo;
+  let recoilOrderInfo = useRecoilValue(authorItemByDoenetId(doenetId));
 
+   let contentJSX = [];
+   if (behavior == 'sequence'){
+      contentJSX = content.map((pageOrOrder)=>{
+        if (pageOrOrder?.contentType == 'order'){
+          return <Order key={`Order${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+        }else{
+          return <Page key={`Page${doenetId}`} courseId={courseId} doenetId={pageOrOrder.doenetId} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+        }
+      })
+    }
+
+  if (recoilOrderInfo.isOpen){
+    return <>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={behavior} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel + 1}/>
+    {contentJSX}
+    </>
+  }else{
+    return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={behavior} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel + 1}/>
+  }
+}
+
+function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentLevel}){
+  let recoilPageInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  //TODO: numbered
+  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label="temp" doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={1} isSelected={recoilPageInfo.isSelected} />
+}
 
 //singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
 function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
-
+  
 
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set})=>()=>{
