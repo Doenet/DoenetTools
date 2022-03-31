@@ -111,8 +111,8 @@ export default function Point(props) {
     }
 
     if (SVs.draggable && !SVs.fixed) {
-      jsxPointAttributes.highlightFillColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray"); //FIXME
-      jsxPointAttributes.highlightStrokeColor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"); //FIXME
+      jsxPointAttributes.highlightFillColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray"); 
+      jsxPointAttributes.highlightStrokeColor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"); 
       jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
     } else {
       jsxPointAttributes.highlightFillColor = fillColor;
@@ -262,8 +262,8 @@ export default function Point(props) {
       }
 
       if (SVs.draggable && !SVs.fixed) {
-        pointJXG.current.visProp.highlightfillcolor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray"); //FIXME
-        pointJXG.current.visProp.highlightstrokecolor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"); //FIXME
+        pointJXG.current.visProp.highlightfillcolor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray"); 
+        pointJXG.current.visProp.highlightstrokecolor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"); 
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
         pointJXG.current.visProp.fixed = false;
       } else {
