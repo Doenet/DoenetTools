@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-03-29 11:55:39 +0000
+# Generation Time: 2022-03-31 01:04:21 +0000
 # ************************************************************
 
 
@@ -30,6 +30,7 @@ CREATE TABLE `activity_pages` (
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `draftCid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
   `cid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
+  `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled',
   `isDeleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`activityDoenetId`,`doenetId`),
   KEY `doenetId` (`doenetId`),
@@ -46,7 +47,7 @@ DROP TABLE IF EXISTS `activity_state`;
 CREATE TABLE `activity_state` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) NOT NULL,
   `saveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
@@ -69,8 +70,8 @@ DROP TABLE IF EXISTS `assignment`;
 
 CREATE TABLE `assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `pinnedAfterDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means shows immediately',
   `pinnedUntilDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never stops being pinned',
@@ -113,7 +114,7 @@ DROP TABLE IF EXISTS `class_times`;
 
 CREATE TABLE `class_times` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `driveId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `dotwIndex` int(1) NOT NULL,
   `startTime` time NOT NULL,
   `endTime` time NOT NULL,
@@ -130,7 +131,7 @@ DROP TABLE IF EXISTS `content`;
 
 CREATE TABLE `content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `cid` char(64) COLLATE utf8_unicode_ci DEFAULT '0',
   `versionId` char(21) COLLATE utf8_unicode_ci DEFAULT '0',
   `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -157,7 +158,7 @@ CREATE TABLE `content_interactions` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `stateVariables` mediumtext COLLATE utf8_unicode_ci,
   `variant` text COLLATE utf8_unicode_ci NOT NULL,
@@ -186,7 +187,7 @@ DROP TABLE IF EXISTS `course`;
 
 CREATE TABLE `course` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `courseId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'Untitled',
   `isPublic` tinyint(1) DEFAULT '0' COMMENT 'Course is findable in search and drive_content isPublic content is available',
   `isDeleted` tinyint(1) DEFAULT '0',
@@ -206,10 +207,10 @@ DROP TABLE IF EXISTS `course_content`;
 CREATE TABLE `course_content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `contentType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `courseId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `doenetId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `parentDoenetId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `creationDate` timestamp NULL DEFAULT NULL,
   `isDeleted` int(1) NOT NULL DEFAULT '0',
@@ -232,7 +233,7 @@ DROP TABLE IF EXISTS `course_grade_category`;
 
 CREATE TABLE `course_grade_category` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `courseId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `gradeCategory` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `totalPointsOrPercent` float NOT NULL DEFAULT '0',
   `numberToDrop` int(11) NOT NULL DEFAULT '0',
@@ -251,7 +252,7 @@ DROP TABLE IF EXISTS `course_user`;
 CREATE TABLE `course_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `courseId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `canViewCourse` tinyint(1) DEFAULT '0',
   `canViewContentSource` tinyint(1) DEFAULT '0',
   `canEditContent` tinyint(1) DEFAULT '0',
@@ -280,7 +281,7 @@ DROP TABLE IF EXISTS `drive`;
 
 CREATE TABLE `drive` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `driveType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `isShared` tinyint(1) DEFAULT '0',
@@ -303,9 +304,9 @@ DROP TABLE IF EXISTS `drive_content`;
 
 CREATE TABLE `drive_content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `itemId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `parentFolderId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentFolderId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `creationDate` timestamp NULL DEFAULT NULL,
   `isDeleted` int(1) NOT NULL DEFAULT '0',
@@ -332,7 +333,7 @@ DROP TABLE IF EXISTS `drive_user`;
 CREATE TABLE `drive_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `canEditContent` tinyint(1) DEFAULT '0',
   `canViewDrive` tinyint(1) DEFAULT '0',
   `canDeleteDrive` tinyint(1) DEFAULT '0',
@@ -360,7 +361,7 @@ DROP TABLE IF EXISTS `enrollment`;
 
 CREATE TABLE `enrollment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `firstName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lastName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -422,7 +423,7 @@ CREATE TABLE `event` (
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `verb` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) DEFAULT NULL,
   `variant` text COLLATE utf8_unicode_ci NOT NULL,
   `object` mediumtext COLLATE utf8_unicode_ci,
@@ -498,7 +499,7 @@ CREATE TABLE `page_state` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
   `pageId` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `attemptNumber` int(11) DEFAULT NULL,
@@ -524,7 +525,7 @@ CREATE TABLE `support_files` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT '0',
   `cid` char(80) COLLATE utf8_unicode_ci DEFAULT '0',
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `fileType` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `description` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `asFileName` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -585,9 +586,9 @@ DROP TABLE IF EXISTS `user_assignment`;
 
 CREATE TABLE `user_assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'NULL means no group',
-  `doenetIdOverride` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no override',
+  `doenetIdOverride` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no override',
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
   `numberOfAttemptsAllowedOverride` int(11) DEFAULT NULL,
   `groupId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
@@ -609,7 +610,7 @@ DROP TABLE IF EXISTS `user_assignment_attempt`;
 
 CREATE TABLE `user_assignment_attempt` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `attemptNumber` int(11) NOT NULL DEFAULT '1',
   `credit` double DEFAULT NULL,
@@ -629,7 +630,7 @@ DROP TABLE IF EXISTS `user_assignment_attempt_item`;
 
 CREATE TABLE `user_assignment_attempt_item` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) NOT NULL,
   `itemNumber` int(11) NOT NULL COMMENT 'The number of the scored item found in the Doenet code.',
@@ -651,7 +652,7 @@ DROP TABLE IF EXISTS `user_assignment_attempt_item_submission`;
 
 CREATE TABLE `user_assignment_attempt_item_submission` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) NOT NULL,
   `itemNumber` int(11) NOT NULL,
