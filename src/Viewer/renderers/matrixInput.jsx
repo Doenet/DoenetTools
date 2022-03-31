@@ -41,7 +41,7 @@ const Matrix = styled.div`
 `
 
 export default function MatrixInput(props) {
-  let { name, SVs, actions, children, ignoreUpdate, callAction } = useDoenetRender(props);
+  let { name, SVs, actions, children, callAction } = useDoenetRender(props);
 
   let validationState = useRef(null);
 

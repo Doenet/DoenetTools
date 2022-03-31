@@ -13,11 +13,12 @@ function cesc(s) {
 describe('Collection assignName Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
   it('name points and coords off a graph', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -149,16 +150,20 @@ describe('Collection assignName Tests', function () {
     })
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/a1'].stateValues.xs.map(x => x.tree)).eqls([1, 2]);
-      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/a1'].stateValues.xs.map(x => x.tree)).eqls([1, 2]);
+      expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
     })
 
     cy.log('Move point a');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/a'].movePoint({ x: 5, y: -5 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/a",
+        args: { x: 5, y: -5 }
+      });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -244,8 +249,12 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point b');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/b'].movePoint({ x: 9, y: 8 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/b",
+        args: { x: 9, y: 8 }
+      });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -331,8 +340,12 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point a1');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/a1'].movePoint({ x: 7, y: 0 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/a1",
+        args: { x: 7, y: 0 }
+      });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
@@ -418,8 +431,12 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point b1');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/b1'].movePoint({ x: 4, y: 1 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/b1",
+        args: { x: 4, y: 1 }
+      });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
@@ -505,7 +522,7 @@ describe('Collection assignName Tests', function () {
   })
 
   it('name points and coords off a graph, extra names', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -654,16 +671,20 @@ describe('Collection assignName Tests', function () {
     cy.get('#\\/pv4').should('have.text', 'v4: ')
     cy.get('#\\/px4').should('have.text', 'x4: ')
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/a1'].stateValues.xs.map(x => x.tree)).eqls([1, 2]);
-      expect(components['/b1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/a1'].stateValues.xs.map(x => x.tree)).eqls([1, 2]);
+      expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
     })
 
     cy.log('Move point a');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/a'].movePoint({ x: 5, y: -5 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/a",
+        args: { x: 5, y: -5 }
+      });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -757,8 +778,12 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point b');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/b'].movePoint({ x: 9, y: 8 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/b",
+        args: { x: 9, y: 8 }
+      });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -853,8 +878,12 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point a1');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/a1'].movePoint({ x: 7, y: 0 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/a1",
+        args: { x: 7, y: 0 }
+      });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
@@ -949,8 +978,12 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point b1');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/b1'].movePoint({ x: 4, y: 1 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/b1",
+        args: { x: 4, y: 1 }
+      });
 
       cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(7,0)')
@@ -1045,7 +1078,7 @@ describe('Collection assignName Tests', function () {
   })
 
   it('sequentially name points and coords off lines', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1261,18 +1294,22 @@ describe('Collection assignName Tests', function () {
       expect(text.trim()).equal('1')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-      expect(components['/b'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-      expect(components['/c'].stateValues.xs.map(x => x.tree)).eqls([4, 3]);
-      expect(components['/d'].stateValues.xs.map(x => x.tree)).eqls([2, 1]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/a'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+      expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+      expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([4, 3]);
+      expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([2, 1]);
     })
 
     cy.log('Move point a');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/a'].movePoint({ x: 5, y: -5 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/a",
+        args: { x: 5, y: -5 }
+      });
 
       cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -1435,8 +1472,12 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point b');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/b'].movePoint({ x: 7, y: 8 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/b",
+        args: { x: 7, y: 8 }
+      });
 
       cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -1599,8 +1640,12 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point c');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/c'].movePoint({ x: -3, y: -6 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/c",
+        args: { x: -3, y: -6 }
+      });
 
       cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -1763,8 +1808,12 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point d');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/d'].movePoint({ x: -9, y: 4 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/d",
+        args: { x: -9, y: 4 }
+      });
 
       cy.get('#\\/ashadow').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -1927,7 +1976,7 @@ describe('Collection assignName Tests', function () {
   })
 
   it('name points off a dynamic graph', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2280,10 +2329,22 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point all three points');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/p1'].movePoint({ x: 1, y: 2 });
-      await components['/p2'].movePoint({ x: 3, y: 4 });
-      await components['/p3'].movePoint({ x: 5, y: 6 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p1",
+        args: { x: 1, y: 2 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p2",
+        args: { x: 3, y: 4 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p3",
+        args: { x: 5, y: 6 }
+      });
 
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2685,13 +2746,37 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point all six points');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/q1'].movePoint({ x: -1, y: -9 });
-      await components['/q2'].movePoint({ x: -2, y: -8 });
-      await components['/q3'].movePoint({ x: -3, y: -7 });
-      await components['/q4'].movePoint({ x: -4, y: -6 });
-      await components['/q5'].movePoint({ x: -5, y: -5 });
-      await components['/q6'].movePoint({ x: -6, y: -4 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q1",
+        args: { x: -1, y: -9 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q2",
+        args: { x: -2, y: -8 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q3",
+        args: { x: -3, y: -7 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q4",
+        args: { x: -4, y: -6 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q5",
+        args: { x: -5, y: -5 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q6",
+        args: { x: -6, y: -4 }
+      });
 
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2919,7 +3004,7 @@ describe('Collection assignName Tests', function () {
     cy.get('#\\/n1 textarea').type('{end}{backspace}1{enter}', { force: true })
     cy.get('#\\/n2 textarea').type('{end}{backspace}3{enter}', { force: true })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−9)')
@@ -3129,11 +3214,27 @@ describe('Collection assignName Tests', function () {
 
     cy.window().then(async (win) => {
 
-      let components = Object.assign({}, win.state.components);
-      await components['/p1'].movePoint({ x: 4, y: -5 });
-      await components['/p2'].movePoint({ x: 3, y: -6 });
-      await components['/p3'].movePoint({ x: 2, y: -7 });
-      await components['/p4'].movePoint({ x: 1, y: -8 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p1",
+        args: { x: 4, y: -5 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p2",
+        args: { x: 3, y: -6 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p3",
+        args: { x: 2, y: -7 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p4",
+        args: { x: 1, y: -8 }
+      });
 
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3344,7 +3445,7 @@ describe('Collection assignName Tests', function () {
     cy.get('#\\/n1 textarea').type('{end}{backspace}4{enter}', { force: true })
     cy.get('#\\/n2 textarea').type('{end}{backspace}2{enter}', { force: true })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−5)')
@@ -3603,13 +3704,37 @@ describe('Collection assignName Tests', function () {
     cy.log('Move point all six points again');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/q1'].movePoint({ x: -4, y: 6 });
-      await components['/q2'].movePoint({ x: -5, y: 5 });
-      await components['/q3'].movePoint({ x: -6, y: 4 });
-      await components['/q4'].movePoint({ x: -7, y: 3 });
-      await components['/q5'].movePoint({ x: -8, y: 2 });
-      await components['/q6'].movePoint({ x: -9, y: 1 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q1",
+        args: { x: -4, y: 6 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q2",
+        args: { x: -5, y: 5 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q3",
+        args: { x: -6, y: 4 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q4",
+        args: { x: -7, y: 3 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q5",
+        args: { x: -8, y: 2 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/q6",
+        args: { x: -9, y: 1 }
+      });
 
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3841,7 +3966,7 @@ describe('Collection assignName Tests', function () {
     cy.get('#\\/n1 textarea').type('{end}{backspace}0{enter}', { force: true })
     cy.get('#\\/n2 textarea').type('{end}{backspace}3{enter}', { force: true })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−8,2)')
@@ -4031,7 +4156,7 @@ describe('Collection assignName Tests', function () {
     cy.log('3 and 3 points');
     cy.get('#\\/n1 textarea').type('{end}{backspace}3{enter}', { force: true })
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,6)')
@@ -4261,7 +4386,7 @@ describe('Collection assignName Tests', function () {
   })
 
   it('name points off a dynamic list with changing dimensions', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -4517,10 +4642,22 @@ describe('Collection assignName Tests', function () {
     // move points
     cy.log('Move points');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/pa1/_point1'].movePoint({ x: 3, y: 9 });
-      await components['/pb1/_point1'].movePoint({ x: -6, y: -5, z: 4 });
-      await components['/pb2/_point1'].movePoint({ x: 8, y: 0, z: 7 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/pa1/_point1",
+        args: { x: 3, y: 9 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/pb1/_point1",
+        args: { x: -6, y: -5, z: 4 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/pb2/_point1",
+        args: { x: 8, y: 0, z: 7 }
+      });
 
       points1 = [[3, 9]];
       points2 = [[-6, -5, 4], [8, 0, 7]];
@@ -4541,10 +4678,22 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move points');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/pa1/_point1'].movePoint({ x: -1, y: 7, z: -9 });
-      await components['/pb1/_point1'].movePoint({ x: 5, y: 4 });
-      await components['/pb2/_point1'].movePoint({ x: 3, y: 2 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/pa1/_point1",
+        args: { x: -1, y: 7, z: -9 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/pb1/_point1",
+        args: { x: 5, y: 4 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/pb2/_point1",
+        args: { x: 3, y: 2 }
+      });
 
       points1 = [[-1, 7, -9]];
       points2 = [[5, 4], [3, 2]];
@@ -4566,10 +4715,22 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move points');
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components['/pa1/_point1'].movePoint({ x: 9, y: -8, z: 7 });
-      await components['/pa2/_point1'].movePoint({ x: -6, y: 5, z: -4 });
-      await components['/pb1/_point1'].movePoint({ x: 3, y: -2 });
+      let stateVariables = await win.returnAllStateVariables1();
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/pa1/_point1",
+        args: { x: 9, y: -8, z: 7 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/pa2/_point1",
+        args: { x: -6, y: 5, z: -4 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/pb1/_point1",
+        args: { x: 3, y: -2 }
+      });
 
       points1 = [[9, -8, 7], [-6, 5, -4]];
       points2 = [[3, -2]];

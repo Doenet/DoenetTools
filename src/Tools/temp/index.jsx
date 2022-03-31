@@ -1,10 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {doenetMLToSerializedComponents} from  '../../Core/utils/serializedStateProcessing';
-import {parseAndCompile} from '../../Parser/parser'
+import { doenetMLToSerializedComponents } from '../../Core/utils/serializedStateProcessing';
+import { parseAndCompile } from '../../Parser/parser'
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
-import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems';
+import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton.jsx';
+import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.jsx';
+import { MathJaxContext } from 'better-react-mathjax';
+import { mathjaxConfig } from '../../Core/utils/math';
+
 
 // serializeFunctions.expandDoenetMLsToFullSerializedComponents({
 //     contentIds: [],
@@ -19,21 +23,13 @@ import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedIt
 // })
 
 ReactDOM.render(
-  <RelatedItems 
-    width="100px" 
-    size="8"
-    options={
-      [
-        <option value='Keagan'>Keagan</option>,
-        <option value='Keagan'>Keagan</option>,
-        <option value='Keagan'>Keagan</option>
-      ]
-    }
-    onChange={(data) => console.log(data)}
-    onBlur={(e) => console.log(e.target.value)}
-    disabled
+  <MathJaxContext
+    version={2}
+    config={mathjaxConfig}
+    onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
   >
-  </RelatedItems>,
+    <ActionButtonGroup vertical><ActionButton alert/><ActionButton alert/></ActionButtonGroup>
+  </MathJaxContext>,
   document.getElementById('root'),
 );
 

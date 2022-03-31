@@ -3,14 +3,14 @@ import me from 'math-expressions';
 describe('Evaluate Tag Tests', function () {
 
   beforeEach(() => {
-
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
 
 
   it('evaluate numeric and symbolic', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -95,23 +95,28 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('0')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["apply", "sin", 0]);
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["apply", "sin", 0]);
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["apply", "sin", 0]);
-      expect(components['/result_numeric'].stateValues.value.tree).eq(0);
-      expect(components['/result_numeric2'].activeChildren[0].stateValues.value.tree).eq(0);
-      expect(components['/result_numeric3'].stateValues.value.tree).eq(0);
-      expect(components['/result_force_symbolic'].stateValues.value.tree).eqls(["apply", "sin", 0]);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", 0]);
-      expect(components['/result_force_numeric'].stateValues.value.tree).eq(0);
-      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree).eq(0);
+    let result_symbolic2_name;
+    let result_numeric2_name;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["apply", "sin", 0]);
+      result_symbolic2_name = stateVariables['/result_symbolic2'].activeChildren[0].componentName;
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["apply", "sin", 0]);
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["apply", "sin", 0]);
+      expect(stateVariables['/result_numeric'].stateValues.value).eq(0);
+      result_numeric2_name = stateVariables['/result_numeric2'].activeChildren[0].componentName;
+      expect(stateVariables[result_numeric2_name].stateValues.value).eq(0);
+      expect(stateVariables['/result_numeric3'].stateValues.value).eq(0);
+      expect(stateVariables['/result_force_symbolic'].stateValues.value).eqls(["apply", "sin", 0]);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["apply", "sin", 0]);
+      expect(stateVariables['/result_force_numeric'].stateValues.value).eq(0);
+      expect(stateVariables['/result_force_numeric_symbolic'].stateValues.value).eq(0);
     })
 
 
     cy.log('evaluate at pi')
     cy.get('#\\/input textarea').type("{end}{backspace}pi{enter}", { force: true });
+    cy.get('#\\/result_symbolic').should('contain.text', 'sin(π)')
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(π)')
     })
@@ -143,23 +148,24 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
-      expect(components['/result_numeric'].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_numeric2'].activeChildren[0].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_numeric3'].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_force_symbolic'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
-      expect(components['/result_force_numeric'].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree).closeTo(0, 1E-10);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["apply", "sin", "pi"]);
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["apply", "sin", "pi"]);
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["apply", "sin", "pi"]);
+      expect(stateVariables['/result_numeric'].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables[result_numeric2_name].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables['/result_numeric3'].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables['/result_force_symbolic'].stateValues.value).eqls(["apply", "sin", "pi"]);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["apply", "sin", "pi"]);
+      expect(stateVariables['/result_force_numeric'].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables['/result_force_numeric_symbolic'].stateValues.value).closeTo(0, 1E-10);
     })
 
 
     cy.log('change variable')
     cy.get('#\\/variable textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/result_symbolic').should('contain.text', 'sin(x)')
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(x)')
     })
@@ -192,23 +198,24 @@ describe('Evaluate Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["apply", "sin", "x"])
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["apply", "sin", "x"])
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["apply", "sin", "x"])
-      assert.isNaN(components['/result_numeric'].stateValues.value.tree);
-      assert.isNaN(components['/result_numeric2'].activeChildren[0].stateValues.value.tree);
-      assert.isNaN(components['/result_numeric3'].stateValues.value.tree);
-      expect(components['/result_force_symbolic'].stateValues.value.tree).eqls(["apply", "sin", "x"]);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", "x"]);
-      assert.isNaN(components['/result_force_numeric'].stateValues.value.tree);
-      assert.isNaN(components['/result_force_numeric_symbolic'].stateValues.value.tree);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["apply", "sin", "x"])
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["apply", "sin", "x"])
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["apply", "sin", "x"])
+      assert.isNaN(stateVariables['/result_numeric'].stateValues.value);
+      assert.isNaN(stateVariables[result_numeric2_name].stateValues.value);
+      assert.isNaN(stateVariables['/result_numeric3'].stateValues.value);
+      expect(stateVariables['/result_force_symbolic'].stateValues.value).eqls(["apply", "sin", "x"]);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["apply", "sin", "x"]);
+      assert.isNaN(stateVariables['/result_force_numeric'].stateValues.value);
+      assert.isNaN(stateVariables['/result_force_numeric_symbolic'].stateValues.value);
 
     })
 
     cy.log('change formula to match variable')
     cy.get('#\\/formula textarea').type("{end}{backspace}{backspace}y{enter}", { force: true });
+    cy.get('#\\/result_symbolic').should('contain.text', 'sin(π)')
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(π)')
     })
@@ -240,24 +247,24 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim().slice(0, 9)).eq(Math.sin(Math.PI).toString().slice(0, 9))
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
-      expect(components['/result_numeric'].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_numeric2'].activeChildren[0].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_numeric3'].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_force_symbolic'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", "pi"]);
-      expect(components['/result_force_numeric'].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree).closeTo(0, 1E-10);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["apply", "sin", "pi"]);
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["apply", "sin", "pi"]);
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["apply", "sin", "pi"]);
+      expect(stateVariables['/result_numeric'].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables[result_numeric2_name].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables['/result_numeric3'].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables['/result_force_symbolic'].stateValues.value).eqls(["apply", "sin", "pi"]);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["apply", "sin", "pi"]);
+      expect(stateVariables['/result_force_numeric'].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables['/result_force_numeric_symbolic'].stateValues.value).closeTo(0, 1E-10);
     })
 
   })
 
   it('user-defined function', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -282,24 +289,28 @@ describe('Evaluate Tag Tests', function () {
 
     cy.log('change function')
     cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}bx^2{enter}", { force: true });
+    cy.get('#\\/result').should('contain.text', 'f(u)=f(3v)=9bv2')
     cy.get('#\\/result').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(u)=f(3v)=9bv2')
     })
 
     cy.log('change u')
     cy.get('#\\/u textarea').type("{end}{backspace}{backspace}cq^2{enter}", { force: true });
+    cy.get('#\\/result').should('contain.text', 'f(u)=f(cq2)=bc2q4')
     cy.get('#\\/result').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(u)=f(cq2)=bc2q4')
     })
 
     cy.log('change variable')
     cy.get('#\\/x textarea').type("{end}{backspace}y{enter}", { force: true });
+    cy.get('#\\/result').should('contain.text', 'f(u)=f(cq2)=bx2')
     cy.get('#\\/result').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(u)=f(cq2)=bx2')
     })
 
     cy.log('change function to match variable')
     cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}ay+by^2{enter}", { force: true });
+    cy.get('#\\/result').should('contain.text', 'f(u)=f(cq2)=acq2+bc2q4')
     cy.get('#\\/result').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(u)=f(cq2)=acq2+bc2q4')
     })
@@ -310,7 +321,7 @@ describe('Evaluate Tag Tests', function () {
     // catch bug where child dependency was not recalculated
     // when a skipComponentNames = true
     // and the number of active children did not change
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -332,26 +343,27 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('＿')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/eval'].stateValues.value.tree).eq('＿');
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/eval'].stateValues.value).eq('＿');
     })
 
     cy.log('submit answer')
     cy.get('#\\/_mathinput1 textarea').type("4{enter}", { force: true });
+    cy.get('#\\/eval').should('contain.text', '1+4')
     cy.get('#\\/eval').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+4')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/eval'].stateValues.value.tree).eqls(["+", 1, 4]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/eval'].stateValues.value).eqls(["+", 1, 4]);
     })
 
   })
 
   it('rounding on display', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -550,6 +562,7 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/input textarea').type("{end}{backspace}pi{enter}", { force: true });
 
 
+    cy.get('#\\/ef2').should('contain.text', '0');
     cy.get('#\\/ef1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
     })
@@ -682,7 +695,7 @@ describe('Evaluate Tag Tests', function () {
   })
 
   it('rounding on display, overwrite on copy', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -882,7 +895,7 @@ describe('Evaluate Tag Tests', function () {
 
     cy.get('#\\/input textarea').type("{end}{backspace}pi{enter}", { force: true });
 
-
+    cy.get('#\\/ef2').should('contain.text', '0');
     cy.get('#\\/ef1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
     })
@@ -1018,7 +1031,7 @@ describe('Evaluate Tag Tests', function () {
 
 
   it('rounding on display, ovewrite on copy functions', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1217,6 +1230,7 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/input textarea').type("{end}{backspace}pi{enter}", { force: true });
 
 
+    cy.get('#\\/ef2').should('contain.text', '0');
     cy.get('#\\/ef1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().slice(0, 3)).eq(Math.sin(Math.PI).toString().slice(0, 3))
     })
@@ -1345,12 +1359,11 @@ describe('Evaluate Tag Tests', function () {
 
 
 
-
   })
 
 
   it('evaluate numeric and symbolic for function of two variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1421,22 +1434,28 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('0')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["apply", "sin", ['+', 0, 0]]);
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["apply", "sin", ['+', 0, 0]]);
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["apply", "sin", ['+', 0, 0]]);
-      expect(components['/result_numeric'].stateValues.value.tree).eq(0);
-      expect(components['/result_numeric2'].activeChildren[0].stateValues.value.tree).eq(0);
-      expect(components['/result_numeric3'].stateValues.value.tree).eq(0);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", ['+', 0, 0]]);
-      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree).eq(0);
+
+    let result_symbolic2_name;
+    let result_numeric2_name;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["apply", "sin", ['+', 0, 0]]);
+      result_symbolic2_name = stateVariables['/result_symbolic2'].activeChildren[0].componentName;
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["apply", "sin", ['+', 0, 0]]);
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["apply", "sin", ['+', 0, 0]]);
+      expect(stateVariables['/result_numeric'].stateValues.value).eq(0);
+      result_numeric2_name = stateVariables['/result_numeric2'].activeChildren[0].componentName;
+      expect(stateVariables[result_numeric2_name].stateValues.value).eq(0);
+      expect(stateVariables['/result_numeric3'].stateValues.value).eq(0);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["apply", "sin", ['+', 0, 0]]);
+      expect(stateVariables['/result_force_numeric_symbolic'].stateValues.value).eq(0);
     })
 
 
     cy.log('evaluate at (pi, 2pi)')
     cy.get('#\\/input1 textarea').type("{end}{backspace}pi{enter}", { force: true });
     cy.get('#\\/input2 textarea').type("{end}{backspace}2pi{enter}", { force: true });
+    cy.get('#\\/result_symbolic').should('contain.text', 'sin(π+2π)')
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(π+2π)')
     })
@@ -1462,22 +1481,23 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim().slice(0, 9)).eq(Math.sin(3 * Math.PI).toString().slice(0, 9))
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
-      expect(components['/result_numeric'].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_numeric2'].activeChildren[0].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_numeric3'].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
-      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree).closeTo(0, 1E-10);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
+      expect(stateVariables['/result_numeric'].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables[result_numeric2_name].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables['/result_numeric3'].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
+      expect(stateVariables['/result_force_numeric_symbolic'].stateValues.value).closeTo(0, 1E-10);
     })
 
 
     cy.log('change variable')
     cy.get('#\\/variable1 textarea').type("{end}{backspace}u{enter}", { force: true });
     cy.get('#\\/variable2 textarea').type("{end}{backspace}v{enter}", { force: true });
+    cy.get('#\\/result_symbolic').should('contain.text', 'sin(x+y)')
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(x+y)')
     })
@@ -1504,21 +1524,22 @@ describe('Evaluate Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["apply", "sin", ["+", "x", "y"]])
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["apply", "sin", ["+", "x", "y"]])
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["apply", "sin", ["+", "x", "y"]])
-      assert.isNaN(components['/result_numeric'].stateValues.value.tree);
-      assert.isNaN(components['/result_numeric2'].activeChildren[0].stateValues.value.tree);
-      assert.isNaN(components['/result_numeric3'].stateValues.value.tree);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", ["+", "x", "y"]]);
-      assert.isNaN(components['/result_force_numeric_symbolic'].stateValues.value.tree);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["apply", "sin", ["+", "x", "y"]])
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["apply", "sin", ["+", "x", "y"]])
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["apply", "sin", ["+", "x", "y"]])
+      assert.isNaN(stateVariables['/result_numeric'].stateValues.value);
+      assert.isNaN(stateVariables[result_numeric2_name].stateValues.value);
+      assert.isNaN(stateVariables['/result_numeric3'].stateValues.value);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["apply", "sin", ["+", "x", "y"]]);
+      assert.isNaN(stateVariables['/result_force_numeric_symbolic'].stateValues.value);
 
     })
 
     cy.log('change formula to use new variables')
     cy.get('#\\/formula textarea').type("{end}{backspace}{backspace}{backspace}{backspace}u+v{enter}", { force: true });
+    cy.get('#\\/result_symbolic').should('contain.text', 'sin(π+2π)')
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(π+2π)')
     })
@@ -1544,23 +1565,23 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim().slice(0, 9)).eq(Math.sin(3 * Math.PI).toString().slice(0, 9))
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
-      expect(components['/result_numeric'].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_numeric2'].activeChildren[0].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_numeric3'].stateValues.value.tree).closeTo(0, 1E-10);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
-      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree).closeTo(0, 1E-10);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
+      expect(stateVariables['/result_numeric'].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables[result_numeric2_name].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables['/result_numeric3'].stateValues.value).closeTo(0, 1E-10);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["apply", "sin", ["+", "pi", ['*', 2, 'pi']]]);
+      expect(stateVariables['/result_force_numeric_symbolic'].stateValues.value).closeTo(0, 1E-10);
     })
 
 
   })
 
   it('function of multiple variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1593,16 +1614,19 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result1'].stateValues.value.tree).eqls(0);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(0);
-      expect(components['/result3'].stateValues.value.tree).eqls(0);
+    let result2Name;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result1'].stateValues.value).eqls(0);
+      result2Name = stateVariables['/result2'].activeChildren[0].componentName;
+      expect(stateVariables[result2Name].stateValues.value).eqls(0);
+      expect(stateVariables['/result3'].stateValues.value).eqls(0);
     })
 
     cy.log('evaluate at (pi, pi/2)')
     cy.get('#\\/input textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}pi,pi/2{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '−1')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−1')
     })
@@ -1612,16 +1636,17 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−1')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result1'].stateValues.value.tree).eqls(-1);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(-1);
-      expect(components['/result3'].stateValues.value.tree).eqls(-1);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result1'].stateValues.value).eqls(-1);
+      expect(stateVariables[result2Name].stateValues.value).eqls(-1);
+      expect(stateVariables['/result3'].stateValues.value).eqls(-1);
     })
 
     cy.log('change variables to 3D')
     cy.get('#\\/variablesOrig textarea').type("{end},z{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '＿')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
@@ -1631,17 +1656,18 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result1'].stateValues.value.tree).eqls('＿');
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls('＿');
-      expect(components['/result3'].stateValues.value.tree).eqls('＿');
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result1'].stateValues.value).eqls('＿');
+      expect(stateVariables[result2Name].stateValues.value).eqls('＿');
+      expect(stateVariables['/result3'].stateValues.value).eqls('＿');
     })
 
 
     cy.log('change input to 3D')
     cy.get('#\\/input textarea').type("{end}{leftArrow},3{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '−1')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−1')
     })
@@ -1651,16 +1677,17 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−1')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result1'].stateValues.value.tree).eqls(-1);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(-1);
-      expect(components['/result3'].stateValues.value.tree).eqls(-1);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result1'].stateValues.value).eqls(-1);
+      expect(stateVariables[result2Name].stateValues.value).eqls(-1);
+      expect(stateVariables['/result3'].stateValues.value).eqls(-1);
     })
 
     cy.log('change formula to use all variables')
     cy.get('#\\/formula textarea').type("z{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '−3')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−3')
     })
@@ -1670,16 +1697,17 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−3')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result1'].stateValues.value.tree).eqls(-3);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(-3);
-      expect(components['/result3'].stateValues.value.tree).eqls(-3);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result1'].stateValues.value).eqls(-3);
+      expect(stateVariables[result2Name].stateValues.value).eqls(-3);
+      expect(stateVariables['/result3'].stateValues.value).eqls(-3);
     })
 
     cy.log('add fourth variable to formula')
     cy.get('#\\/formula textarea').type("{end}{leftArrow}/w{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '3sin(π+π2w)')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3sin(π+π2w)')
     })
@@ -1689,17 +1717,18 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('3sin(π+π2w)')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result1'].stateValues.value.tree).eqls(['*', 3, ['apply', 'sin', ['+', 'pi', ['/', 'pi', ['*', 2, 'w']]]]]);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(['*', 3, ['apply', 'sin', ['+', 'pi', ['/', 'pi', ['*', 2, 'w']]]]]);
-      expect(components['/result3'].stateValues.value.tree).eqls(['*', 3, ['apply', 'sin', ['+', 'pi', ['/', 'pi', ['*', 2, 'w']]]]]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result1'].stateValues.value).eqls(['*', 3, ['apply', 'sin', ['+', 'pi', ['/', 'pi', ['*', 2, 'w']]]]]);
+      expect(stateVariables[result2Name].stateValues.value).eqls(['*', 3, ['apply', 'sin', ['+', 'pi', ['/', 'pi', ['*', 2, 'w']]]]]);
+      expect(stateVariables['/result3'].stateValues.value).eqls(['*', 3, ['apply', 'sin', ['+', 'pi', ['/', 'pi', ['*', 2, 'w']]]]]);
     })
 
 
     cy.log('add 4th input')
     cy.get('#\\/input textarea').type("{end}{leftArrow},3{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '＿')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
@@ -1709,16 +1738,17 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result1'].stateValues.value.tree).eqls('＿');
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls('＿');
-      expect(components['/result3'].stateValues.value.tree).eqls('＿');
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result1'].stateValues.value).eqls('＿');
+      expect(stateVariables[result2Name].stateValues.value).eqls('＿');
+      expect(stateVariables['/result3'].stateValues.value).eqls('＿');
     })
 
     cy.log('add 4th variable')
     cy.get('#\\/variablesOrig textarea').type("{end},w{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '−32')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−32')
     })
@@ -1728,18 +1758,18 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−32')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result1'].stateValues.value.tree).eqls(['/', -3, 2]);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(['/', -3, 2]);
-      expect(components['/result3'].stateValues.value.tree).eqls(['/', -3, 2]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result1'].stateValues.value).eqls(['/', -3, 2]);
+      expect(stateVariables[result2Name].stateValues.value).eqls(['/', -3, 2]);
+      expect(stateVariables['/result3'].stateValues.value).eqls(['/', -3, 2]);
     })
 
 
   })
 
   it('different input forms for function of two variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1869,28 +1899,29 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result7d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿2＿3')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result1a'].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result1b'].activeChildren[0].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result2a'].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result2b'].activeChildren[0].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result3a'].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result3b'].activeChildren[0].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result4a'].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result4b'].activeChildren[0].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result4c'].activeChildren[0].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result5a'].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result5b'].activeChildren[0].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result5c'].activeChildren[0].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result5d'].stateValues.value.tree).eqls(['/', ['^', '＿', 2], ['^', '＿', 3]]);
-      expect(components['/result6a'].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result6b'].activeChildren[0].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result6c'].activeChildren[0].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result7a'].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result7b'].activeChildren[0].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result7c'].activeChildren[0].stateValues.value.tree).eqls(['/', 4, 27]);
-      expect(components['/result7d'].stateValues.value.tree).eqls(['/', ['^', '＿', 2], ['^', '＿', 3]]);
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result1a'].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables[stateVariables['/result1b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables['/result2a'].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables[stateVariables['/result2b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables['/result3a'].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables[stateVariables['/result3b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables['/result4a'].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables[stateVariables['/result4b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables[stateVariables['/result4c'].activeChildren[0].componentName].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables['/result5a'].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables[stateVariables['/result5b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables[stateVariables['/result5c'].activeChildren[0].componentName].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables['/result5d'].stateValues.value).eqls(['/', ['^', '＿', 2], ['^', '＿', 3]]);
+      expect(stateVariables['/result6a'].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables[stateVariables['/result6b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables[stateVariables['/result6c'].activeChildren[0].componentName].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables['/result7a'].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables[stateVariables['/result7b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables[stateVariables['/result7c'].activeChildren[0].componentName].stateValues.value).eqls(['/', 4, 27]);
+      expect(stateVariables['/result7d'].stateValues.value).eqls(['/', ['^', '＿', 2], ['^', '＿', 3]]);
     })
 
     cy.log(`change inputs`);
@@ -1900,10 +1931,16 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/input4b textarea').type('{end}{backspace}5', { force: true }).blur()
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-
-      await components["/A"].movePoint({ x: -3, y: 7 })
-      await components["/B"].movePoint({ x: 5, y: -9 })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: -3, y: 7 }
+      })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: 5, y: -9 }
+      })
 
       cy.get('#\\/result1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9125')
@@ -1944,28 +1981,28 @@ describe('Evaluate Tag Tests', function () {
       cy.get('#\\/result5d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿2＿3')
       })
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/result1a'].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result1b'].activeChildren[0].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result2a'].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result2b'].activeChildren[0].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result3a'].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result3b'].activeChildren[0].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result4a'].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result4b'].activeChildren[0].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result4c'].activeChildren[0].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result5a'].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result5b'].activeChildren[0].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result5c'].activeChildren[0].stateValues.value.tree).eqls(['/', 9, 125]);
-        expect(components['/result5d'].stateValues.value.tree).eqls(['/', ['^', '＿', 2], ['^', '＿', 3]]);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/result1a'].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables[stateVariables['/result1b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables['/result2a'].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables[stateVariables['/result2b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables['/result3a'].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables[stateVariables['/result3b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables['/result4a'].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables[stateVariables['/result4b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables[stateVariables['/result4c'].activeChildren[0].componentName].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables['/result5a'].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables[stateVariables['/result5b'].activeChildren[0].componentName].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables[stateVariables['/result5c'].activeChildren[0].componentName].stateValues.value).eqls(['/', 9, 125]);
+        expect(stateVariables['/result5d'].stateValues.value).eqls(['/', ['^', '＿', 2], ['^', '＿', 3]]);
       })
 
     })
   })
 
   it('evaluate numeric and symbolic for vector-valued function of two variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2036,16 +2073,20 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('(0,1)')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ['+', 0, 0]], ["apply", "cos", ["+", 0, ["-", 0]]]]);
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["vector", ["apply", "sin", ['+', 0, 0]], ["apply", "cos", ["+", 0, ["-", 0]]]]);
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ['+', 0, 0]], ["apply", "cos", ["+", 0, ["-", 0]]]]);
-      expect(components['/result_numeric'].stateValues.value.tree).eqls(["vector", 0, 1]);
-      expect(components['/result_numeric2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 0, 1]);
-      expect(components['/result_numeric3'].stateValues.value.tree).eqls(["vector", 0, 1]);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ['+', 0, 0]], ["apply", "cos", ["+", 0, ["-", 0]]]]);
-      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree).eqls(["vector", 0, 1]);
+    let result_symbolic2_name;
+    let result_numeric2_name;
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["vector", ["apply", "sin", ['+', 0, 0]], ["apply", "cos", ["+", 0, ["-", 0]]]]);
+      result_symbolic2_name = stateVariables['/result_symbolic2'].activeChildren[0].componentName;
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["vector", ["apply", "sin", ['+', 0, 0]], ["apply", "cos", ["+", 0, ["-", 0]]]]);
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["vector", ["apply", "sin", ['+', 0, 0]], ["apply", "cos", ["+", 0, ["-", 0]]]]);
+      expect(stateVariables['/result_numeric'].stateValues.value).eqls(["vector", 0, 1]);
+      result_numeric2_name = stateVariables['/result_numeric2'].activeChildren[0].componentName;
+      expect(stateVariables[result_numeric2_name].stateValues.value).eqls(["vector", 0, 1]);
+      expect(stateVariables['/result_numeric3'].stateValues.value).eqls(["vector", 0, 1]);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["vector", ["apply", "sin", ['+', 0, 0]], ["apply", "cos", ["+", 0, ["-", 0]]]]);
+      expect(stateVariables['/result_force_numeric_symbolic'].stateValues.value).eqls(["vector", 0, 1]);
     })
 
 
@@ -2053,6 +2094,7 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/input1 textarea').type("{end}{backspace}pi{enter}", { force: true });
     cy.get('#\\/input2 textarea').type("{end}{backspace}2pi{enter}", { force: true });
 
+    cy.get('#\\/result_symbolic').should('contain.text','(sin(π+2π),cos(π−2π))')
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(sin(π+2π),cos(π−2π))')
     })
@@ -2078,22 +2120,23 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('(0,−1)')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
-      expect(components['/result_numeric'].stateValues.value.tree.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
-      expect(components['/result_numeric2'].activeChildren[0].stateValues.value.tree.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
-      expect(components['/result_numeric3'].stateValues.value.tree.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
-      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
+      expect(stateVariables['/result_numeric'].stateValues.value.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
+      expect(stateVariables[result_numeric2_name].stateValues.value.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
+      expect(stateVariables['/result_numeric3'].stateValues.value.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
+      expect(stateVariables['/result_force_numeric_symbolic'].stateValues.value.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
     })
 
 
     cy.log('change variable')
     cy.get('#\\/variable1 textarea').type("{end}{backspace}u{enter}", { force: true });
     cy.get('#\\/variable2 textarea').type("{end}{backspace}v{enter}", { force: true });
+    cy.get('#\\/result_symbolic').should('contain.text','(sin(x+y),cos(x−y))')
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(sin(x+y),cos(x−y))')
     })
@@ -2120,25 +2163,26 @@ describe('Evaluate Tag Tests', function () {
     })
 
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "x", "y"]], ["apply", "cos", ["+", "x", ['-', "y"]]]])
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "x", "y"]], ["apply", "cos", ["+", "x", ['-', "y"]]]])
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "x", "y"]], ["apply", "cos", ["+", "x", ['-', "y"]]]])
-      assert.isNaN(components['/result_numeric'].stateValues.value.get_component(0).tree);
-      assert.isNaN(components['/result_numeric'].stateValues.value.get_component(1).tree);
-      assert.isNaN(components['/result_numeric2'].activeChildren[0].stateValues.value.get_component(0).tree);
-      assert.isNaN(components['/result_numeric2'].activeChildren[0].stateValues.value.get_component(1).tree);
-      assert.isNaN(components['/result_numeric3'].stateValues.value.get_component(0).tree);
-      assert.isNaN(components['/result_numeric3'].stateValues.value.get_component(1).tree);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "x", "y"]], ["apply", "cos", ["+", "x", ['-', "y"]]]]);
-      assert.isNaN(components['/result_force_numeric_symbolic'].stateValues.value.get_component(0).tree);
-      assert.isNaN(components['/result_force_numeric_symbolic'].stateValues.value.get_component(1).tree);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "x", "y"]], ["apply", "cos", ["+", "x", ['-', "y"]]]])
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "x", "y"]], ["apply", "cos", ["+", "x", ['-', "y"]]]])
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "x", "y"]], ["apply", "cos", ["+", "x", ['-', "y"]]]])
+      assert.isNaN(stateVariables['/result_numeric'].stateValues.value[1]);
+      assert.isNaN(stateVariables['/result_numeric'].stateValues.value[2]);
+      assert.isNaN(stateVariables[result_numeric2_name].stateValues.value[1]);
+      assert.isNaN(stateVariables[result_numeric2_name].stateValues.value[2]);
+      assert.isNaN(stateVariables['/result_numeric3'].stateValues.value[1]);
+      assert.isNaN(stateVariables['/result_numeric3'].stateValues.value[2]);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "x", "y"]], ["apply", "cos", ["+", "x", ['-', "y"]]]]);
+      assert.isNaN(stateVariables['/result_force_numeric_symbolic'].stateValues.value[1]);
+      assert.isNaN(stateVariables['/result_force_numeric_symbolic'].stateValues.value[2]);
 
     })
 
     cy.log('change formula to use new variables')
     cy.get('#\\/formula textarea').type("{end}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}u-v{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}u+v{enter}", { force: true });
+    cy.get('#\\/result_symbolic').should('contain.text','(sin(π+2π),cos(π−2π))')
 
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(sin(π+2π),cos(π−2π))')
@@ -2165,22 +2209,22 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('(0,−1)')
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result_symbolic'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
-      expect(components['/result_symbolic2'].activeChildren[0].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
-      expect(components['/result_symbolic3'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
-      expect(components['/result_numeric'].stateValues.value.tree.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
-      expect(components['/result_numeric2'].activeChildren[0].stateValues.value.tree.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
-      expect(components['/result_numeric3'].stateValues.value.tree.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
-      expect(components['/result_force_symbolic_numeric'].stateValues.value.tree).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
-      expect(components['/result_force_numeric_symbolic'].stateValues.value.tree.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result_symbolic'].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
+      expect(stateVariables[result_symbolic2_name].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
+      expect(stateVariables['/result_symbolic3'].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
+      expect(stateVariables['/result_numeric'].stateValues.value.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
+      expect(stateVariables[result_numeric2_name].stateValues.value.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
+      expect(stateVariables['/result_numeric3'].stateValues.value.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
+      expect(stateVariables['/result_force_symbolic_numeric'].stateValues.value).eqls(["vector", ["apply", "sin", ["+", "pi", ['*', 2, 'pi']]], ["apply", "cos", ["+", "pi", ['-', ['*', 2, 'pi']]]]]);
+      expect(stateVariables['/result_force_numeric_symbolic'].stateValues.value.map(x => typeof x === "number" && me.math.round(x, 10) === 0 ? 0 : x)).eqls(["vector", 0, -1]);
     })
 
   })
 
   it('vector-valued function of multiple variables', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2213,18 +2257,21 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(0,0)')
     })
+    let result2Name;
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/f"].stateValues.nInputs).eq(2);
-      expect(await components["/f"].stateValues.nOutputs).eq(2);
-      expect(components['/result1'].stateValues.value.tree).eqls(["vector", 0, 0]);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 0, 0]);
-      expect(components['/result3'].stateValues.value.tree).eqls(["vector", 0, 0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/f"].stateValues.nInputs).eq(2);
+      expect(stateVariables["/f"].stateValues.nOutputs).eq(2);
+      expect(stateVariables['/result1'].stateValues.value).eqls(["vector", 0, 0]);
+      result2Name = stateVariables['/result2'].activeChildren[0].componentName;
+      expect(stateVariables[result2Name].stateValues.value).eqls(["vector", 0, 0]);
+      expect(stateVariables['/result3'].stateValues.value).eqls(["vector", 0, 0]);
     })
 
     cy.log('evaluate at (7,3)')
     cy.get('#\\/input textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}7,3{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '(10,4)')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(10,4)')
     })
@@ -2235,17 +2282,18 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('(10,4)')
     })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/f"].stateValues.nInputs).eq(2);
-      expect(await components["/f"].stateValues.nOutputs).eq(2);
-      expect(components['/result1'].stateValues.value.tree).eqls(["vector", 10, 4]);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 10, 4]);
-      expect(components['/result3'].stateValues.value.tree).eqls(["vector", 10, 4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/f"].stateValues.nInputs).eq(2);
+      expect(stateVariables["/f"].stateValues.nOutputs).eq(2);
+      expect(stateVariables['/result1'].stateValues.value).eqls(["vector", 10, 4]);
+      expect(stateVariables[result2Name].stateValues.value).eqls(["vector", 10, 4]);
+      expect(stateVariables['/result3'].stateValues.value).eqls(["vector", 10, 4]);
     })
 
     cy.log('change variables to 3D')
     cy.get('#\\/variablesOrig textarea').type("{end},z{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '＿')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
@@ -2256,18 +2304,19 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('＿')
     })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/f"].stateValues.nInputs).eq(3);
-      expect(await components["/f"].stateValues.nOutputs).eq(2);
-      expect(components['/result1'].stateValues.value.tree).eqls('＿');
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls('＿');
-      expect(components['/result3'].stateValues.value.tree).eqls('＿');
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/f"].stateValues.nInputs).eq(3);
+      expect(stateVariables["/f"].stateValues.nOutputs).eq(2);
+      expect(stateVariables['/result1'].stateValues.value).eqls('＿');
+      expect(stateVariables[result2Name].stateValues.value).eqls('＿');
+      expect(stateVariables['/result3'].stateValues.value).eqls('＿');
     })
 
 
     cy.log('change input to 3D')
     cy.get('#\\/input textarea').type("{end}{leftArrow},2{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '(10,4)')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(10,4)')
     })
@@ -2278,17 +2327,18 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('(10,4)')
     })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/f"].stateValues.nInputs).eq(3);
-      expect(await components["/f"].stateValues.nOutputs).eq(2);
-      expect(components['/result1'].stateValues.value.tree).eqls(["vector", 10, 4]);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 10, 4]);
-      expect(components['/result3'].stateValues.value.tree).eqls(["vector", 10, 4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/f"].stateValues.nInputs).eq(3);
+      expect(stateVariables["/f"].stateValues.nOutputs).eq(2);
+      expect(stateVariables['/result1'].stateValues.value).eqls(["vector", 10, 4]);
+      expect(stateVariables[result2Name].stateValues.value).eqls(["vector", 10, 4]);
+      expect(stateVariables['/result3'].stateValues.value).eqls(["vector", 10, 4]);
     })
 
     cy.log('change formula to use all variables')
     cy.get('#\\/formula textarea').type("{rightArrow}z{end}{leftArrow}z{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '(17,1)')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(17,1)')
     })
@@ -2299,18 +2349,19 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('(17,1)')
     })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/f"].stateValues.nInputs).eq(3);
-      expect(await components["/f"].stateValues.nOutputs).eq(2);
-      expect(components['/result1'].stateValues.value.tree).eqls(["vector", 17, 1]);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 17, 1]);
-      expect(components['/result3'].stateValues.value.tree).eqls(["vector", 17, 1]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/f"].stateValues.nInputs).eq(3);
+      expect(stateVariables["/f"].stateValues.nOutputs).eq(2);
+      expect(stateVariables['/result1'].stateValues.value).eqls(["vector", 17, 1]);
+      expect(stateVariables[result2Name].stateValues.value).eqls(["vector", 17, 1]);
+      expect(stateVariables['/result3'].stateValues.value).eqls(["vector", 17, 1]);
     })
 
 
     cy.log('add third dimension')
     cy.get('#\\/formula textarea').type("{end},xyz{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '(17,1,42)')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(17,1,42)')
     })
@@ -2321,17 +2372,18 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('(17,1,42)')
     })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/f"].stateValues.nInputs).eq(3);
-      expect(await components["/f"].stateValues.nOutputs).eq(3);
-      expect(components['/result1'].stateValues.value.tree).eqls(["vector", 17, 1, 42]);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 17, 1, 42]);
-      expect(components['/result3'].stateValues.value.tree).eqls(["vector", 17, 1, 42]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/f"].stateValues.nInputs).eq(3);
+      expect(stateVariables["/f"].stateValues.nOutputs).eq(3);
+      expect(stateVariables['/result1'].stateValues.value).eqls(["vector", 17, 1, 42]);
+      expect(stateVariables[result2Name].stateValues.value).eqls(["vector", 17, 1, 42]);
+      expect(stateVariables['/result3'].stateValues.value).eqls(["vector", 17, 1, 42]);
     })
 
     cy.log('add fourth variable and 4th dimension to formula')
     cy.get('#\\/formula textarea').type("{end}w,w{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '(17,1,42w,w)')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(17,1,42w,w)')
     })
@@ -2342,18 +2394,19 @@ describe('Evaluate Tag Tests', function () {
       expect(text.trim()).equal('(17,1,42w,w)')
     })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(await components["/f"].stateValues.nInputs).eq(3);
-      expect(await components["/f"].stateValues.nOutputs).eq(4);
-      expect(components['/result1'].stateValues.value.tree).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);
-      expect(components['/result3'].stateValues.value.tree).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/f"].stateValues.nInputs).eq(3);
+      expect(stateVariables["/f"].stateValues.nOutputs).eq(4);
+      expect(stateVariables['/result1'].stateValues.value).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);
+      expect(stateVariables[result2Name].stateValues.value).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);
+      expect(stateVariables['/result3'].stateValues.value).eqls(["vector", 17, 1, ['*', 42, 'w'], 'w']);
     })
 
 
     cy.log('add 4th input')
     cy.get('#\\/input textarea').type("{end}{leftArrow},5{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '＿')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
@@ -2363,16 +2416,17 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result1'].stateValues.value.tree).eqls('＿');
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls('＿');
-      expect(components['/result3'].stateValues.value.tree).eqls('＿');
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result1'].stateValues.value).eqls('＿');
+      expect(stateVariables[result2Name].stateValues.value).eqls('＿');
+      expect(stateVariables['/result3'].stateValues.value).eqls('＿');
     })
 
     cy.log('add 4th variable')
     cy.get('#\\/variablesOrig textarea').type("{end},w{enter}", { force: true });
 
+    cy.get('#\\/result1').should('contain.text', '(17,1,210,5)')
     cy.get('#\\/result1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(17,1,210,5)')
     })
@@ -2382,18 +2436,18 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/result3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(17,1,210,5)')
     })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/result1'].stateValues.value.tree).eqls(["vector", 17, 1, 210, 5]);
-      expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 17, 1, 210, 5]);
-      expect(components['/result3'].stateValues.value.tree).eqls(["vector", 17, 1, 210, 5]);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/result1'].stateValues.value).eqls(["vector", 17, 1, 210, 5]);
+      expect(stateVariables[result2Name].stateValues.value).eqls(["vector", 17, 1, 210, 5]);
+      expect(stateVariables['/result3'].stateValues.value).eqls(["vector", 17, 1, 210, 5]);
     })
 
 
   })
 
   it('change variables of symbolic function', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2429,7 +2483,7 @@ describe('Evaluate Tag Tests', function () {
   })
 
   it('change variables of numeric function', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2457,7 +2511,7 @@ describe('Evaluate Tag Tests', function () {
   })
 
   it('change variables of interpolated function', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>

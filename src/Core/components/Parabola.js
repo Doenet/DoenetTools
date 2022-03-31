@@ -1153,6 +1153,11 @@ export default class Parabola extends Curve {
       forRenderer: true,
       isArray: true,
       entryPrefixes: ["f"],
+      additionalStateVariablesDefined: [{
+        variableName: "fDefinitions",
+        isArray: true,
+        forRenderer: true,
+      }],
       returnArraySizeDependencies: () => ({}),
       returnArraySize: () => [1],
       returnArrayDependenciesByKey() {
@@ -1179,7 +1184,20 @@ export default class Parabola extends Curve {
           return globalDependencyValues.a * x * x + globalDependencyValues.b * x + globalDependencyValues.c
         }
 
-        return { setValue: { fs: [f] } }
+        return {
+          setValue: {
+            fs: [f],
+            fDefinitions: [{
+              functionType: "formula",
+              formula: ['+', ['*', globalDependencyValues.a, 'x', 'x'], ['*', globalDependencyValues.b, 'x'], globalDependencyValues.c],
+              variables: ["x"],
+              nInputs: 1,
+              nOutputs: 1,
+              domain: null,
+
+            }]
+          }
+        }
 
       }
     }

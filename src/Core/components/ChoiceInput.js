@@ -1022,6 +1022,8 @@ export default class Choiceinput extends Input {
         componentName: this.componentName,
       });
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

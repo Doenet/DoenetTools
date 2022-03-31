@@ -1,12 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
 
 import useDoenetRender from './useDoenetRenderer';
-
-//TODO: this.doenetSvData.createSubmitAllButton
 
 export default function Section(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
@@ -16,23 +14,45 @@ export default function Section(props) {
     return null;
   }
 
+  let validationState = useRef(null);
+
+  const updateValidationState = () => {
+    validationState.current = 'unvalidated';
+    if (SVs.justSubmitted) {
+      if (SVs.creditAchieved === 1) {
+        validationState.current = 'correct';
+      } else if (SVs.creditAchieved === 0) {
+        validationState.current = 'incorrect';
+      } else {
+        validationState.current = 'partialcorrect';
+      }
+    }
+  };
+
+  let submitAllAnswers = () => callAction({
+    action: actions.submitAllAnswers
+  })
+
+  let title;
   // BADBADBAD: need to redo how getting the title child
   // getting it using the internal guts of componentInstructions
   // is just asking for trouble
   if (SVs.titleChildName) {
-    let titleChildInd;
     for (let [ind, child] of children.entries()) {
       //child might be a string
       if (child.props?.componentInstructions.componentName === SVs.titleChildName) {
-        titleChildInd = ind;
-        children.splice(titleChildInd, 1); // remove title
+        title = children[ind];
+        children.splice(ind, 1); // remove title
         break;
       }
     }
     
   }
 
-  let title = SVs.title;
+  if(!title) {
+    title = SVs.title;
+  }
+  
   let heading = null;
   let headingId = name + "_title";
 
@@ -61,8 +81,91 @@ export default function Section(props) {
 
   let checkworkComponent = null;
 
-  //TODO checkwork
+  if (SVs.createSubmitAllButton) {
+  
+    updateValidationState();
 
+  
+    let checkWorkStyle = {
+      height: "23px",
+      display: "inline-block",
+      backgroundColor: "rgb(2, 117, 216)",
+      padding: "1px 6px 1px 6px",
+      color: "white",
+      fontWeight: "bold",
+      marginBottom: "30px",  //Space after check work
+    }
+
+    let checkWorkText = "Check Work";
+    if (!SVs.showCorrectness) {
+      checkWorkText = "Submit Response";
+    }
+    checkworkComponent = (
+      <button id={name + "_submit"}
+        tabIndex="0"
+        style={checkWorkStyle}
+        onClick={submitAllAnswers}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            submitAllAnswers();
+          }
+        }}
+      >
+        <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+    &nbsp;
+        {checkWorkText}
+      </button>);
+
+    if (SVs.showCorrectness) {
+      if (validationState.current === "correct") {
+        checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+        checkworkComponent = (
+          <span id={name + "_correct"}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faCheck} />
+        &nbsp;
+        Correct
+          </span>);
+      } else if (validationState.current === "incorrect") {
+        checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+        checkworkComponent = (
+          <span id={name + "_incorrect"}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faTimes} />
+        &nbsp;
+        Incorrect
+          </span>);
+      } else if (validationState.current === "partialcorrect") {
+        checkWorkStyle.backgroundColor = "#efab34";
+        let percent = Math.round(SVs.creditAchieved * 100);
+        let partialCreditContents = `${percent}% Correct`;
+
+        checkworkComponent = (
+          <span id={name + "_partial"}
+            style={checkWorkStyle}
+          >
+            {partialCreditContents}
+          </span>);
+      }
+    } else {
+      // showCorrectness is false
+      if (validationState.current !== "unvalidated") {
+        checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkworkComponent = (
+          <span id={name + "_saved"}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faCloud} />
+        &nbsp;
+        Response Saved
+          </span>);
+      }
+    }
+
+    checkworkComponent = <div>{checkworkComponent}</div>
+  }
 
 
   let content = <>

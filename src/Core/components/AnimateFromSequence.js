@@ -529,6 +529,8 @@ export default class AnimateFromSequence extends BaseComponent {
           actionArgs: { previousAnimationId: this.animationId }
         })
 
+      } else {
+        this.coreFunctions.resolveAction({ actionId });
       }
     } else {
       if (previousValues.animationOn) {
@@ -549,6 +551,8 @@ export default class AnimateFromSequence extends BaseComponent {
             endIndex: await this.stateValues.selectedIndex,
           }
         })
+      } else {
+        this.coreFunctions.resolveAction({ actionId });
       }
     }
 
@@ -635,6 +639,7 @@ export default class AnimateFromSequence extends BaseComponent {
     // it's possible that advanceAnimation is called from
     // a animationId that was supposed to have been canceled
     if (previousAnimationId === this.canceledAnimationId) {
+      this.coreFunctions.resolveAction({ actionId });
       return;
     }
 
@@ -716,7 +721,7 @@ export default class AnimateFromSequence extends BaseComponent {
     }
   }
 
-  startAnimation({actionId}) {
+  startAnimation({ actionId }) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
@@ -728,7 +733,7 @@ export default class AnimateFromSequence extends BaseComponent {
     })
   }
 
-  stopAnimation({actionId}) {
+  stopAnimation({ actionId }) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
@@ -740,7 +745,7 @@ export default class AnimateFromSequence extends BaseComponent {
     })
   }
 
-  async toggleAnimation({actionId}) {
+  async toggleAnimation({ actionId }) {
     this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",

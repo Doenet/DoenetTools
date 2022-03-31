@@ -1814,10 +1814,12 @@ export class MatrixInput extends Input {
         transient,
         actionId,
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  async updateNumRows({ numRows,actionId }) {
+  async updateNumRows({ numRows, actionId }) {
     if (!await this.stateValues.disabled) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -1828,6 +1830,8 @@ export class MatrixInput extends Input {
         }],
         actionId,
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -1843,6 +1847,8 @@ export class MatrixInput extends Input {
         }],
         actionId
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -2669,6 +2675,8 @@ export default class MatrixComponentInput extends BaseComponent {
         }],
         actionId,
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -2752,6 +2760,8 @@ export default class MatrixComponentInput extends BaseComponent {
         })
       }
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

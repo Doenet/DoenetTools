@@ -313,6 +313,8 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           result: cellChanges
         }
       })
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
 

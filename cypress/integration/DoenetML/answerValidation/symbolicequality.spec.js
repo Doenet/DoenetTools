@@ -11,11 +11,12 @@ function cesc(s) {
 describe('Symbolic equality tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
   it('symbolic equality match with no simplification', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -45,30 +46,30 @@ describe('Symbolic equality tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
+      let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
       let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
       let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputChildren[0].componentName
+      let mathinput3Name = stateVariables['/_answer3'].stateValues.inputChildren[0].componentName
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
       let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
       let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputChildren[0].componentName
+      let mathinput4Name = stateVariables['/_answer4'].stateValues.inputChildren[0].componentName
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
       let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
@@ -90,12 +91,12 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput4SubmitAnchor).click();
       cy.get(mathinput4IncorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer3'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer4'].stateValues.creditAchieved).eq(0);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer3'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer4'].stateValues.creditAchieved).eq(0);
       });
 
       cy.log("The sum isn't correct for symbolic")
@@ -108,12 +109,12 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput4Anchor).type('4{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer3'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer4'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer3'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer4'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("3+1")
@@ -126,12 +127,12 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3+1{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer3'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer4'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer3'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer4'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("1+3")
@@ -144,12 +145,12 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1+3{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer3'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer4'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer3'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer4'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("1+1+1+1")
@@ -162,12 +163,12 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1+1+1+1{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer3'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer4'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer3'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer4'].stateValues.creditAchieved).eq(1);
       });
     })
 
@@ -175,7 +176,7 @@ describe('Symbolic equality tests', function () {
   });
 
   it('symbolic equality match with no simplification 2', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -195,16 +196,16 @@ describe('Symbolic equality tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
+      let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -217,10 +218,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('1x-0y+-3s{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Plus negative to subtraction")
@@ -229,10 +230,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x-0y-3s{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Parentheses")
@@ -241,10 +242,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x-0y+(-3s){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Positive zero")
@@ -253,10 +254,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x+0y-3s{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Remove zero term")
@@ -265,10 +266,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x-3s{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Remove one coefficient")
@@ -277,10 +278,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x-0y-3s{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Reorder terms")
@@ -289,16 +290,16 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-0y+1x-3s{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
     })
   });
 
   it('symbolic equality match with simplifying numbers, preserving order', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -318,16 +319,16 @@ describe('Symbolic equality tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
+      let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -340,10 +341,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Simplify numbers")
@@ -352,10 +353,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x^2{rightArrow}+5+x^2{rightArrow}+3x^2{rightArrow}+11{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Permute adjacent numbers")
@@ -364,10 +365,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+4+7{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Permute adjacent variable terms")
@@ -376,10 +377,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+3x^2{rightArrow}+x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Combine adjacent variable terms")
@@ -388,10 +389,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Combine all numbers")
@@ -400,10 +401,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}-0x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Combine all terms")
@@ -412,16 +413,16 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}5x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
     })
   });
 
   it('symbolic equality match with simplifying numbers', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -441,16 +442,16 @@ describe('Symbolic equality tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
+      let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -463,10 +464,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Simplify numbers")
@@ -475,10 +476,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Permute terms")
@@ -487,10 +488,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}7+1x^2{rightArrow}-0x^2{rightArrow}+3+3x^2{rightArrow}+4+2+x^2{rightArrow}{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Combine variable terms")
@@ -499,10 +500,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Combine adjacent variable terms")
@@ -511,10 +512,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Combine all terms")
@@ -523,17 +524,17 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}5x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
     })
 
   });
 
   it('symbolic equality match with full simplification', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -553,16 +554,16 @@ describe('Symbolic equality tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
+      let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -575,10 +576,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('6x^2{rightArrow} -3x +8x-4 + (2x-3)(4-x){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Combine terms")
@@ -587,10 +588,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}6x^2{rightArrow} + 5x-4 + (2x-3)(4-x){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Permute terms and factors")
@@ -599,10 +600,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-4 + 6x^2{rightArrow} + (4-x)(-3+2x) + 5x{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Expand polynomial")
@@ -611,10 +612,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}6x^2{rightArrow} + 5x-4-2x^2{rightArrow}+11x-12{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Expand and simplify")
@@ -623,10 +624,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}4x^2{rightArrow} + 16x-16{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Factor polynomial")
@@ -635,16 +636,16 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3x+4)(2x -1) + (2x-3)(4-x){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
     })
   });
 
   it('symbolic equality match with expand and full simplification', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>a</text></p>
@@ -664,16 +665,16 @@ describe('Symbolic equality tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
+      let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -686,10 +687,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('(2x-3)(4-x) + sin(x)^2{rightArrow}+cos(x)^2{rightArrow}{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Expand polynomial")
@@ -698,10 +699,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-2x^2{rightArrow}+11x-12 + sin(x)^2{rightArrow}+cos(x)^2{rightArrow}{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
 
       cy.log("Simplify trig")
@@ -710,10 +711,10 @@ describe('Symbolic equality tests', function () {
       cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2x-3)(4-x) + 1{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer2'].stateValues.creditAchieved).eq(1);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
       });
     })
   });

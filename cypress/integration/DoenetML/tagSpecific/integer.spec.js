@@ -12,11 +12,12 @@ function cesc(s) {
 describe('Integer Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
   it('1.2+1.1', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -27,26 +28,26 @@ describe('Integer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let integer0 = components['/_copy1'].replacements[0];
-      let integer0Anchor = cesc('#' + integer0.componentName);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let integer0Name = stateVariables['/_copy1'].replacements[0].componentName;
+      let integer0Anchor = cesc('#' + integer0Name);
 
       cy.log('Test value displayed in browser')
       cy.get(integer0Anchor).should('have.text', '2')
       cy.get('#\\/_integer1').should('have.text', '2')
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(integer0.stateValues.value).eq(2);
-        expect(components['/_integer1'].stateValues.value).eq(2);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[integer0Name].stateValues.value).eq(2);
+        expect(stateVariables['/_integer1'].stateValues.value).eq(2);
       })
     })
   })
 
   it(`non-numeric value`, () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -57,10 +58,10 @@ describe('Integer Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let integer0 = components['/_copy1'].replacements[0];
-      let integer0Anchor = cesc('#' + integer0.componentName);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let integer0Name = stateVariables['/_copy1'].replacements[0].componentName;
+      let integer0Anchor = cesc('#' + integer0Name);
 
       cy.log('Test value displayed in browser')
       cy.get(integer0Anchor).should('have.text', 'NaN')
@@ -68,16 +69,16 @@ describe('Integer Tag Tests', function () {
 
 
       cy.log('Test internal values are set to the correct values')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        assert.isNaN(integer0.stateValues.value);
-        assert.isNaN(components['/_integer1'].stateValues.value);
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        assert.isNaN(stateVariables[integer0Name].stateValues.value);
+        assert.isNaN(stateVariables['/_integer1'].stateValues.value);
       })
     })
   })
 
   it(`entering non-integer values dynamically`, () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
@@ -112,7 +113,7 @@ describe('Integer Tag Tests', function () {
   })
 
   it(`entering non-integer through inverse`, () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>

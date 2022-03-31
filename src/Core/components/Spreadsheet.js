@@ -1000,6 +1000,8 @@ export default class Spreadsheet extends BlockComponent {
           result: cellChanges
         }
       })
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
 

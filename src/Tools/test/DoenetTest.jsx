@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ActivityViewer from '../../Viewer/ActivityViewer.jsx';
+import PageViewer from '../../Viewer/PageViewer.jsx';
 import testCodeDoenetML from './testCode.doenet';
 import testActivityDefinition from './testActivityDefinition.json';
+import { MathJaxContext } from "better-react-mathjax";
+import { mathjaxConfig } from '../../Core/utils/math.js';
 
 function Test() {
   // console.log("===Test")
@@ -223,64 +226,74 @@ function Test() {
   }
 
 
-  let resultingActivityDefinition;
+  let viewer;
 
   console.log(`useTestCode: ${useTestCode}`)
   if (useTestCode) {
-    resultingActivityDefinition = {
-      "type": "activity",
-      "version": "0.0.1alpha",
-      "title": "My activity",
-      "order": {
-        "type": "order",
-        "behavior": "sequence",
-        "content": [
-          {
-            "type": "page",
-            "doenetML": doenetML
-          },
-        ]
-      }
-    }
+    viewer = <PageViewer
+      key={"pageviewer" + updateNumber}
+      doenetML={doenetML}
+      // cid={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
+      updateDataOnContentChange={true}
+      flags={{
+        showCorrectness,
+        readOnly,
+        solutionDisplayMode,
+        showFeedback,
+        showHints,
+        allowLoadState,
+        allowSaveState,
+        allowLocalState,
+        allowSaveSubmissions,
+        allowSaveEvents,
+      }}
+      attemptNumber={attemptNumber}
+      requestedVariant={requestedVariant.current}
+      unbundledCore={!bundledCore}
+      doenetId="doenetIdFromTest"
+      pageIsActive={true}
+    />
 
   } else {
-    resultingActivityDefinition = activityDefinition;
+    viewer = <ActivityViewer
+      key={"activityViewer" + updateNumber}
+      activityDefinition={activityDefinition}
+      // cid={"bafkreigruw4fxnisjul3oer255qd5mqxaqmbp7j2rywmkzoyg7wfoxzduq"}
+      updateDataOnContentChange={true}
+      flags={{
+        showCorrectness,
+        readOnly,
+        solutionDisplayMode,
+        showFeedback,
+        showHints,
+        allowLoadState,
+        allowSaveState,
+        allowLocalState,
+        allowSaveSubmissions,
+        allowSaveEvents,
+      }}
+      attemptNumber={attemptNumber}
+      requestedVariant={requestedVariant.current}
+      unbundledCore={!bundledCore}
+      doenetId="doenetIdFromTest"
+    />
   }
 
 
   return (
     <>
+      <MathJaxContext
+        version={2}
+        config={mathjaxConfig}
+        onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+      >
       <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
         Test Viewer and Core
       </h3>
         {controls}
       </div>
-      <ActivityViewer
-        key={"activityViewer" + updateNumber}
-        // doenetML={doenetML}
-        activityDefinition={resultingActivityDefinition}
-        // cid={"bafkreigruw4fxnisjul3oer255qd5mqxaqmbp7j2rywmkzoyg7wfoxzduq"}
-        updateDataOnContentChange={true}
-        flags={{
-          showCorrectness,
-          readOnly,
-          solutionDisplayMode,
-          showFeedback,
-          showHints,
-          allowLoadState,
-          allowSaveState,
-          allowLocalState,
-          allowSaveSubmissions,
-          allowSaveEvents,
-        }}
-        attemptNumber={attemptNumber}
-        requestedVariant={requestedVariant.current}
-        unbundledCore={!bundledCore}
-        doenetId="doenetIdFromTest"
-      // collaborate={true}
-      // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
-      // functionsSuppliedByChild = {this.functionsSuppliedByChild}
-      />
+      {viewer}
+      </MathJaxContext>
     </>
   )
 }

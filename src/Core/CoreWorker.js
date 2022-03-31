@@ -92,6 +92,12 @@ async function returnAllStateVariables(core) {
       compObj.stateValues[vName] = removeFunctionsMathExpressionClass(await component.state[vName].value);
     }
     compObj.activeChildren = component.activeChildren.map(x => x.componentName ? { componentName: x.componentName, componentType: x.componentType } : x)
+    if (component.replacements) {
+      compObj.replacements = component.replacements.map(x => x.componentName ? { componentName: x.componentName, componentType: x.componentType } : x)
+      if(component.replacementsToWithhold !== undefined) {
+        compObj.replacementsToWithhold = component.replacementsToWithhold;
+      }
+    }
   }
   return componentsObj;
 }

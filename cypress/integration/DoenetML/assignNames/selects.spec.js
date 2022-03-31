@@ -12,11 +12,12 @@ function cesc(s) {
 describe('selects assignName Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
   it('assignNamesShifts in selects', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -52,16 +53,16 @@ describe('selects assignName Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let selectedIndices = components["/_select1"].stateValues.selectedIndices;
+      let selectedIndices = stateVariables["/_select1"].stateValues.selectedIndices;
 
       let cNames = ["/a","/b", "/c", "/d", "/e", "/f"];
 
       for(let [j, index] of selectedIndices.entries()) {
 
-        let comp = components[cNames[j]];
+        let comp = stateVariables[cNames[j]];
         let anchor = cesc('#' + cNames[j]);
         let cType = index === 6 ? "number" : "text";
 

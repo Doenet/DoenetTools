@@ -20,6 +20,7 @@ function nInDOM(n) {
 describe('Ray Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
@@ -38,7 +39,7 @@ describe('Ray Tag Tests', function () {
     cy.get(`#${cesc(directionInDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables[rayName].stateValues.endpoint).eqls([endpointx, endpointy]);
       expect(stateVariables[rayName].stateValues.through).eqls([throughx, throughy]);
       expect(stateVariables[rayName].stateValues.direction).eqls([directionx, directiony]);
@@ -102,7 +103,7 @@ describe('Ray Tag Tests', function () {
       throughy += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/_ray1",
         args: {
@@ -127,7 +128,7 @@ describe('Ray Tag Tests', function () {
       endpointy += moveY;
       throughy += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/endpoint",
         args: { x: endpointx, y: endpointy }
@@ -145,7 +146,7 @@ describe('Ray Tag Tests', function () {
       throughx = -3;
       throughy = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/through",
         args: { x: throughx, y: throughy }
@@ -172,7 +173,7 @@ describe('Ray Tag Tests', function () {
       let directionthroughy = directionEndpointShifty + directiony;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/direction",
         args: {
@@ -240,7 +241,7 @@ describe('Ray Tag Tests', function () {
       throughy += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/_ray1",
         args: {
@@ -265,7 +266,7 @@ describe('Ray Tag Tests', function () {
       endpointy += moveY;
       throughy += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/endpoint",
         args: { x: endpointx, y: endpointy }
@@ -283,7 +284,7 @@ describe('Ray Tag Tests', function () {
       throughx = -3;
       throughy = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/through",
         args: { x: throughx, y: throughy }
@@ -310,7 +311,7 @@ describe('Ray Tag Tests', function () {
       let directionthroughy = directionEndpointShifty + directiony;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/direction",
         args: {
@@ -380,7 +381,7 @@ describe('Ray Tag Tests', function () {
       throughy += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/_ray1",
         args: {
@@ -405,7 +406,7 @@ describe('Ray Tag Tests', function () {
       endpointy += moveY;
       throughy += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/endpoint",
         args: { x: endpointx, y: endpointy }
@@ -423,7 +424,7 @@ describe('Ray Tag Tests', function () {
       throughx = -3;
       throughy = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/through",
         args: { x: throughx, y: throughy }
@@ -450,7 +451,7 @@ describe('Ray Tag Tests', function () {
       let directionthroughy = directionEndpointShifty + directiony;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/direction",
         args: {
@@ -519,7 +520,7 @@ describe('Ray Tag Tests', function () {
       throughy += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/_ray1",
         args: {
@@ -544,7 +545,7 @@ describe('Ray Tag Tests', function () {
       endpointy += moveY;
       throughy += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/through",
         args: { x: throughx, y: throughy }
@@ -562,7 +563,7 @@ describe('Ray Tag Tests', function () {
       endpointx = -3;
       endpointy = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/endpoint",
         args: { x: endpointx, y: endpointy }
@@ -589,7 +590,7 @@ describe('Ray Tag Tests', function () {
       let directionthroughy = directionEndpointShifty + directiony;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/direction",
         args: {
@@ -657,7 +658,7 @@ describe('Ray Tag Tests', function () {
       throughy += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/_ray1",
         args: {
@@ -678,7 +679,7 @@ describe('Ray Tag Tests', function () {
       throughx = -5;
       throughy = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/through",
         args: { x: throughx, y: throughy }
@@ -696,7 +697,7 @@ describe('Ray Tag Tests', function () {
       endpointx = -3;
       endpointy = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/endpoint",
         args: { x: endpointx, y: endpointy }
@@ -722,7 +723,7 @@ describe('Ray Tag Tests', function () {
       let directionthroughx = directionEndpointShiftx + directionx;
       let directionthroughy = directionEndpointShifty + directiony;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/direction",
         args: {
@@ -790,7 +791,7 @@ describe('Ray Tag Tests', function () {
       throughy += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/_ray1",
         args: {
@@ -811,7 +812,7 @@ describe('Ray Tag Tests', function () {
       throughx = -5;
       throughy = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/through",
         args: { x: throughx, y: throughy }
@@ -829,7 +830,7 @@ describe('Ray Tag Tests', function () {
       endpointx = -3;
       endpointy = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/endpoint",
         args: { x: endpointx, y: endpointy }
@@ -855,7 +856,7 @@ describe('Ray Tag Tests', function () {
       let directionthroughx = directionEndpointShiftx + directionx;
       let directionthroughy = directionEndpointShifty + directiony;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/direction",
         args: {
@@ -923,7 +924,7 @@ describe('Ray Tag Tests', function () {
       throughy += moveY;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/_ray1",
         args: {
@@ -948,7 +949,7 @@ describe('Ray Tag Tests', function () {
       endpointy += moveY;
       throughy += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/endpoint",
         args: { x: endpointx, y: endpointy }
@@ -966,7 +967,7 @@ describe('Ray Tag Tests', function () {
       throughx = -3;
       throughy = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/through",
         args: { x: throughx, y: throughy }
@@ -993,7 +994,7 @@ describe('Ray Tag Tests', function () {
       let directionthroughy = directionEndpointShifty + directiony;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: "/direction",
         args: {
@@ -1049,7 +1050,7 @@ describe('Ray Tag Tests', function () {
     cy.log("initial state")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let v1tx = -1;
       let v1ty = 2;
       let v1hx = -2;
@@ -1086,7 +1087,7 @@ describe('Ray Tag Tests', function () {
       let v1hx = 4;
       let v1hy = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g1/ray1",
         args: {
@@ -1107,7 +1108,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of ray1s) {
           expect(stateVariables[name].stateValues.endpoint).eqls([v1tx, v1ty]);
@@ -1132,7 +1133,7 @@ describe('Ray Tag Tests', function () {
       let v1hx = -2;
       let v1hy = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g2/ray1",
         args: {
@@ -1152,7 +1153,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of ray1s) {
           expect(stateVariables[name].stateValues.endpoint).eqls([v1tx, v1ty]);
@@ -1177,7 +1178,7 @@ describe('Ray Tag Tests', function () {
       let v1hx = 6;
       let v1hy = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g3/ray1",
         args: {
@@ -1197,7 +1198,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of ray1s) {
           expect(stateVariables[name].stateValues.endpoint).eqls([v1tx, v1ty]);
@@ -1222,7 +1223,7 @@ describe('Ray Tag Tests', function () {
       let v2hx = 3;
       let v2hy = 5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g1/ray2",
         args: {
@@ -1243,7 +1244,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/dir2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of ray1s) {
           expect(stateVariables[name].stateValues.endpoint).eqls([v1tx, v1ty]);
@@ -1268,7 +1269,7 @@ describe('Ray Tag Tests', function () {
       let v2hx = 1;
       let v2hy = -7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g2/ray2",
         args: {
@@ -1289,7 +1290,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/dir2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of ray1s) {
           expect(stateVariables[name].stateValues.endpoint).eqls([v1tx, v1ty]);
@@ -1308,14 +1309,14 @@ describe('Ray Tag Tests', function () {
 
     cy.log('move ray8')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let v2tx = -3;
       let v2ty = -6;
       let v2hx = 5;
       let v2hy = -9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g3/ray2",
         args: {
@@ -1336,7 +1337,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/dir2 .mjx-mrow').should('contain.text', `(${nInDOM(v2hx - v2tx)},${nInDOM(v2hy - v2ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of ray1s) {
           expect(stateVariables[name].stateValues.endpoint).eqls([v1tx, v1ty]);
@@ -1361,7 +1362,7 @@ describe('Ray Tag Tests', function () {
       let v3hx = -1;
       let v3hy = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g1/ray3",
         args: {
@@ -1382,7 +1383,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/dir3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of ray1s) {
           expect(stateVariables[name].stateValues.endpoint).eqls([v1tx, v1ty]);
@@ -1407,7 +1408,7 @@ describe('Ray Tag Tests', function () {
       let v3hx = -7;
       let v3hy = -2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g2/ray3",
         args: {
@@ -1428,7 +1429,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/dir3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of ray1s) {
           expect(stateVariables[name].stateValues.endpoint).eqls([v1tx, v1ty]);
@@ -1453,7 +1454,7 @@ describe('Ray Tag Tests', function () {
       let v3hx = 5;
       let v3hy = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g3/ray3",
         args: {
@@ -1475,7 +1476,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/dir3 .mjx-mrow').should('contain.text', `(${nInDOM(v3hx - v3tx)},${nInDOM(v3hy - v3ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let name of ray1s) {
           expect(stateVariables[name].stateValues.endpoint).eqls([v1tx, v1ty]);
@@ -1530,7 +1531,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log("initial state")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let ray_tx = 0;
       let ray_ty = 0;
       let ray_hx = 1;
@@ -1571,7 +1572,7 @@ describe('Ray Tag Tests', function () {
           let ray_hx = hxs[i];
           let ray_hy = hys[i];
 
-          win.callAction({
+          win.callAction1({
             actionName: "moveRay",
             componentName: rays[i],
             args: {
@@ -1590,7 +1591,7 @@ describe('Ray Tag Tests', function () {
           cy.get('#\\/dir1a .mjx-mrow').should('contain.text', `(${nInDOM(direction_x)},${nInDOM(direction_y)})`)
 
           cy.window().then(async (win) => {
-            let stateVariables = await win.returnAllStateVariables();
+            let stateVariables = await win.returnAllStateVariables1();
             for (let name of rays) {
               expect(stateVariables[name].stateValues.endpoint).eqls([ray_tx, ray_ty]);
               expect(stateVariables[name].stateValues.through).eqls([ray_hx, ray_hy]);
@@ -1634,7 +1635,7 @@ describe('Ray Tag Tests', function () {
           let ray_hy = ray_ty + direction_y;
 
 
-          win.callAction({
+          win.callAction1({
             actionName: "moveVector",
             componentName: directions[i],
             args: {
@@ -1647,7 +1648,7 @@ describe('Ray Tag Tests', function () {
           cy.get('#\\/dir1a .mjx-mrow').should('contain.text', `(${nInDOM(direction_x)},${nInDOM(direction_y)})`)
 
           cy.window().then(async (win) => {
-            let stateVariables = await win.returnAllStateVariables();
+            let stateVariables = await win.returnAllStateVariables1();
 
             for (let name of rays) {
               expect(stateVariables[name].stateValues.endpoint).eqls([ray_tx, ray_ty]);
@@ -1692,7 +1693,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log('check initial values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([1, 2]);
       expect(stateVariables['/_ray1'].stateValues.through).eqls([3, 4]);
       expect(stateVariables['/_point3'].stateValues.xs[0]).eq(1);
@@ -1701,7 +1702,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log('move ray to 45 degrees')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/_ray1',
         args: {
@@ -1715,7 +1716,7 @@ describe('Ray Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([-4, 4]);
       expect(stateVariables['/_ray1'].stateValues.through).eqls([4, -4]);
@@ -1739,7 +1740,7 @@ describe('Ray Tag Tests', function () {
       let yorig = 1;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -1756,7 +1757,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
       })
@@ -1767,7 +1768,7 @@ describe('Ray Tag Tests', function () {
       let xorig = 9;
       let yorig = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -1783,7 +1784,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
@@ -1796,7 +1797,7 @@ describe('Ray Tag Tests', function () {
       let yorig = 7;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -1812,7 +1813,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
@@ -1848,7 +1849,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log('check initial values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([1, 2]);
       expect(stateVariables['/_ray1'].stateValues.through).eqls([3, 4]);
       expect(stateVariables['/_point3'].stateValues.xs[0]).eq(-5);
@@ -1857,7 +1858,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log('move ray to 45 degrees')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/_ray1',
         args: {
@@ -1870,7 +1871,7 @@ describe('Ray Tag Tests', function () {
     cy.get('#\\/dir1 .mjx-mrow').should('contain.text', `(${nInDOM(8)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([-4, 4]);
       expect(stateVariables['/_ray1'].stateValues.through).eqls([4, -4]);
       expect(stateVariables['/_point3'].stateValues.xs[0]).eq(-5)
@@ -1882,7 +1883,7 @@ describe('Ray Tag Tests', function () {
       let xorig = 3.3;
       let yorig = -3.6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -1899,7 +1900,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
@@ -1911,7 +1912,7 @@ describe('Ray Tag Tests', function () {
       let xorig = 4.3;
       let yorig = -4.6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -1928,7 +1929,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 100) / 100)},${nInDOM(Math.round(p5y * 100) / 100)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
@@ -1940,7 +1941,7 @@ describe('Ray Tag Tests', function () {
       let xorig = -2.4;
       let yorig = 2.8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -1956,7 +1957,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 10) / 10)},${nInDOM(Math.round(p5y * 10) / 10)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
@@ -1968,7 +1969,7 @@ describe('Ray Tag Tests', function () {
       let xorig = -4.2;
       let yorig = 4.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -1985,7 +1986,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(p5x, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(p5y, 1E-12);
@@ -1998,7 +1999,7 @@ describe('Ray Tag Tests', function () {
       let xorig = -4.4;
       let yorig = 4.5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -2007,7 +2008,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(-4.4)},${nInDOM(4.5)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point3'].stateValues.xs[0]).closeTo(-4.4, 1E-12);
         expect(stateVariables['/_point3'].stateValues.xs[1]).closeTo(4.5, 1E-12);
@@ -2039,7 +2040,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log(`point on ray, close to origin`);
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = stateVariables['/P'].stateValues.xs[0];
       let y = stateVariables['/P'].stateValues.xs[1];
 
@@ -2051,7 +2052,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log(`move point`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -100, y: 0.05 }
@@ -2062,7 +2063,7 @@ describe('Ray Tag Tests', function () {
 
     cy.window().then(async (win) => {
 
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = stateVariables['/P'].stateValues.xs[0];
       let y = stateVariables['/P'].stateValues.xs[1];
       expect(y).lessThan(0.05);
@@ -2072,7 +2073,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log(`move point past end`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -100, y: 0.1 }
@@ -2082,7 +2083,7 @@ describe('Ray Tag Tests', function () {
     cy.get('#\\/Pa .mjx-mrow').should('contain.text', `0.05`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = stateVariables['/P'].stateValues.xs[0];
       let y = stateVariables['/P'].stateValues.xs[1];
       expect(y).eq(0.05);
@@ -2114,7 +2115,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log('check initial values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/original'].stateValues.endpoint).eqls([0, 0]);
       expect(stateVariables['/original'].stateValues.through).eqls([1, 3]);
       expect(stateVariables['/multiplied'].stateValues.endpoint).eqls([0, 0]);
@@ -2123,7 +2124,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log('move original ray')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/original',
         args: {
@@ -2135,7 +2136,7 @@ describe('Ray Tag Tests', function () {
     cy.get('#\\/o2 .mjx-mrow').should('contain.text', `(${nInDOM(-5)},${nInDOM(1)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/original'].stateValues.endpoint).eqls([0, 0]);
       expect(stateVariables['/original'].stateValues.through).eqls([-5, 1]);
       expect(stateVariables['/multiplied'].stateValues.endpoint).eqls([0, 0]);
@@ -2144,7 +2145,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log('move multiplied ray')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/multiplied',
         args: {
@@ -2156,7 +2157,7 @@ describe('Ray Tag Tests', function () {
     cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(6)},${nInDOM(-8)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/original'].stateValues.endpoint).eqls([0, 0]);
       expect(stateVariables['/original'].stateValues.through).eqls([3, -4]);
       expect(stateVariables['/multiplied'].stateValues.endpoint).eqls([0, 0]);
@@ -2169,7 +2170,7 @@ describe('Ray Tag Tests', function () {
     cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(-9)},${nInDOM(12)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/original'].stateValues.endpoint).eqls([0, 0]);
       expect(stateVariables['/original'].stateValues.through).eqls([3, -4]);
       expect(stateVariables['/multiplied'].stateValues.endpoint).eqls([0, 0]);
@@ -2178,7 +2179,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log('move multiplied ray again')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/multiplied',
         args: {
@@ -2190,7 +2191,7 @@ describe('Ray Tag Tests', function () {
     cy.get('#\\/m2 .mjx-mrow').should('contain.text', `(${nInDOM(-6)},${nInDOM(-3)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/original'].stateValues.endpoint).eqls([0, 0]);
       expect(stateVariables['/original'].stateValues.through).eqls([2, 1]);
       expect(stateVariables['/multiplied'].stateValues.endpoint).eqls([0, 0]);
@@ -2222,7 +2223,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log("initial positions")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/v'].stateValues.endpoint).eqls([tx, ty]);
       expect(stateVariables['/v'].stateValues.through).eqls([hx, hy]);
@@ -2239,7 +2240,7 @@ describe('Ray Tag Tests', function () {
 
       tx = 3, ty = -1, hx = -4, hy = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/v',
         args: {
@@ -2250,7 +2251,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v'].stateValues.endpoint).eqls([tx, ty]);
         expect(stateVariables['/v'].stateValues.through).eqls([hx, hy]);
@@ -2268,7 +2269,7 @@ describe('Ray Tag Tests', function () {
 
       hx = 2, hy = 9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/vh",
         args: { x: hx, y: hy }
@@ -2277,7 +2278,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v'].stateValues.endpoint).eqls([tx, ty]);
         expect(stateVariables['/v'].stateValues.through).eqls([hx, hy]);
@@ -2296,7 +2297,7 @@ describe('Ray Tag Tests', function () {
 
       tx = -3, ty = 10;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/vt",
         args: { x: tx, y: ty }
@@ -2305,7 +2306,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v'].stateValues.endpoint).eqls([tx, ty]);
         expect(stateVariables['/v'].stateValues.through).eqls([hx, hy]);
@@ -2324,7 +2325,7 @@ describe('Ray Tag Tests', function () {
 
       hx = -6, ty = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/c",
         args: { x: hx, y: ty }
@@ -2333,7 +2334,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/v'].stateValues.endpoint).eqls([tx, ty]);
         expect(stateVariables['/v'].stateValues.through).eqls([hx, hy]);
@@ -2485,7 +2486,7 @@ describe('Ray Tag Tests', function () {
 
     cy.log("Initial configuration")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
       expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -2606,32 +2607,32 @@ describe('Ray Tag Tests', function () {
       tvhd = [-1, -6];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vt',
         args: { endpointcoords: tvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vh',
         args: { endpointcoords: tvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vd',
         args: { endpointcoords: tvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vth',
         args: { endpointcoords: tvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vtd',
         args: { endpointcoords: tvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vhd',
         args: { endpointcoords: tvhd }
@@ -2648,7 +2649,7 @@ describe('Ray Tag Tests', function () {
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -2770,32 +2771,32 @@ describe('Ray Tag Tests', function () {
       hvhd = [-4, 8];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vt',
         args: { throughcoords: hvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vh',
         args: { throughcoords: hvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vd',
         args: { throughcoords: hvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vth',
         args: { throughcoords: hvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vtd',
         args: { throughcoords: hvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vhd',
         args: { throughcoords: hvhd }
@@ -2813,7 +2814,7 @@ describe('Ray Tag Tests', function () {
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -2932,17 +2933,17 @@ describe('Ray Tag Tests', function () {
       tvtd = [-1, 5];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tvt",
         args: { x: tvt[0], y: tvt[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tvth",
         args: { x: tvth[0], y: tvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tvtd",
         args: { x: tvtd[0], y: tvtd[1] }
@@ -2958,7 +2959,7 @@ describe('Ray Tag Tests', function () {
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/tvth'].stateValues.coords).simplify().tree).eqls(["vector", ...tvth]);
@@ -3021,17 +3022,17 @@ describe('Ray Tag Tests', function () {
       hvth = [-8, -3];
       hvhd = [7, -6];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hvh",
         args: { x: hvh[0], y: hvh[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hvth",
         args: { x: hvth[0], y: hvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hvhd",
         args: { x: hvhd[0], y: hvhd[1] }
@@ -3047,7 +3048,7 @@ describe('Ray Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
         expect(me.fromAst(stateVariables['/hvth'].stateValues.coords).simplify().tree).eqls(["vector", ...hvth]);
@@ -3110,17 +3111,17 @@ describe('Ray Tag Tests', function () {
       dvtd = [-6, 8];
       dvhd = [3, -7];
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/dvd",
         args: { x: dvd[0], y: dvd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/dvtd",
         args: { x: dvtd[0], y: dvtd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/dvhd",
         args: { x: dvhd[0], y: dvhd[1] }
@@ -3137,7 +3138,7 @@ describe('Ray Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/dvd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvd]);
         expect(me.fromAst(stateVariables['/dvtd'].stateValues.coords).simplify().tree).eqls(["vector", ...dvtd]);
@@ -3205,32 +3206,32 @@ describe('Ray Tag Tests', function () {
       tvhd = [-3, 4];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvt",
         args: { x: tvt[0], y: tvt[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvh",
         args: { x: tvh[0], y: tvh[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvd",
         args: { x: tvd[0], y: tvd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvth",
         args: { x: tvth[0], y: tvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvtd",
         args: { x: tvtd[0], y: tvtd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvhd",
         args: { x: tvhd[0], y: tvhd[1] }
@@ -3252,7 +3253,7 @@ describe('Ray Tag Tests', function () {
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -3373,32 +3374,32 @@ describe('Ray Tag Tests', function () {
       hvhd = [-4, 4];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvt",
         args: { x: hvt[0], y: hvt[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvh",
         args: { x: hvh[0], y: hvh[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvd",
         args: { x: hvd[0], y: hvd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvth",
         args: { x: hvth[0], y: hvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvtd",
         args: { x: hvtd[0], y: hvtd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvhd",
         args: { x: hvhd[0], y: hvhd[1] }
@@ -3418,7 +3419,7 @@ describe('Ray Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -3538,32 +3539,32 @@ describe('Ray Tag Tests', function () {
       dvtd = [9, -8];
       dvhd = [1, 2];
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvt',
         args: { headcoords: dvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvh',
         args: { headcoords: dvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvd',
         args: { headcoords: dvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvth',
         args: { headcoords: dvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvtd',
         args: { headcoords: dvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvhd',
         args: { headcoords: dvhd }
@@ -3582,7 +3583,7 @@ describe('Ray Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -3703,32 +3704,32 @@ describe('Ray Tag Tests', function () {
       tvtd = [-4, -8];
       tvhd = [-1, 6];
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vt2',
         args: { endpointcoords: tvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vh2',
         args: { endpointcoords: tvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vd2',
         args: { endpointcoords: tvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vth2',
         args: { endpointcoords: tvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vtd2',
         args: { endpointcoords: tvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vhd2',
         args: { endpointcoords: tvhd }
@@ -3746,7 +3747,7 @@ describe('Ray Tag Tests', function () {
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -3867,32 +3868,32 @@ describe('Ray Tag Tests', function () {
       hvhd = [-8, -4];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vt2',
         args: { throughcoords: hvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vh2',
         args: { throughcoords: hvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vd2',
         args: { throughcoords: hvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vth2',
         args: { throughcoords: hvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vtd2',
         args: { throughcoords: hvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/vhd2',
         args: { throughcoords: hvhd }
@@ -3910,7 +3911,7 @@ describe('Ray Tag Tests', function () {
       dvhd = [hvhd[0] - tvhd[0], hvhd[1] - tvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -4031,32 +4032,32 @@ describe('Ray Tag Tests', function () {
       tvhd = [-6, 6];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvt2",
         args: { x: tvt[0], y: tvt[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvh2",
         args: { x: tvh[0], y: tvh[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvd2",
         args: { x: tvd[0], y: tvd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvth2",
         args: { x: tvth[0], y: tvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvtd2",
         args: { x: tvtd[0], y: tvtd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/tfvhd2",
         args: { x: tvhd[0], y: tvhd[1] }
@@ -4078,7 +4079,7 @@ describe('Ray Tag Tests', function () {
       hvtd = [tvtd[0] + dvtd[0], tvtd[1] + dvtd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -4199,32 +4200,32 @@ describe('Ray Tag Tests', function () {
       hvhd = [-1, 5];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvt2",
         args: { x: hvt[0], y: hvt[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvh2",
         args: { x: hvh[0], y: hvh[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvd2",
         args: { x: hvd[0], y: hvd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvth2",
         args: { x: hvth[0], y: hvth[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvtd2",
         args: { x: hvtd[0], y: hvtd[1] }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/hfvhd2",
         args: { x: hvhd[0], y: hvhd[1] }
@@ -4244,7 +4245,7 @@ describe('Ray Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -4365,32 +4366,32 @@ describe('Ray Tag Tests', function () {
       dvhd = [-5, 3];
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvt2',
         args: { headcoords: dvt }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvh2',
         args: { headcoords: dvh }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvd2',
         args: { headcoords: dvd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvth2',
         args: { headcoords: dvth }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvtd2',
         args: { headcoords: dvtd }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "moveVector",
         componentName: '/dfvhd2',
         args: { headcoords: dvhd }
@@ -4409,7 +4410,7 @@ describe('Ray Tag Tests', function () {
       tvhd = [hvhd[0] - dvhd[0], hvhd[1] - dvhd[1]];
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/tvt'].stateValues.coords).simplify().tree).eqls(["vector", ...tvt]);
         expect(me.fromAst(stateVariables['/hvh'].stateValues.coords).simplify().tree).eqls(["vector", ...hvh]);
@@ -4549,7 +4550,7 @@ describe('Ray Tag Tests', function () {
     let x3 = -1, y3 = 4;
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([x1, y1]);
       expect(stateVariables['/_ray1'].stateValues.through).eqls([x2, y2]);
       expect(stateVariables['/_ray2'].stateValues.endpoint).eqls([x3, y3]);
@@ -4565,7 +4566,7 @@ describe('Ray Tag Tests', function () {
       x2 = 7;
       y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v1h",
         args: { x: x2, y: y2 }
@@ -4575,7 +4576,7 @@ describe('Ray Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([x1, y1]);
         expect(stateVariables['/_ray1'].stateValues.through).eqls([x2, y2]);
         expect(stateVariables['/_ray2'].stateValues.endpoint).eqls([x3, y3]);
@@ -4591,7 +4592,7 @@ describe('Ray Tag Tests', function () {
       x1 = -1;
       y1 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v1t",
         args: { x: x1, y: y1 }
@@ -4601,7 +4602,7 @@ describe('Ray Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([x1, y1]);
         expect(stateVariables['/_ray1'].stateValues.through).eqls([x2, y2]);
         expect(stateVariables['/_ray2'].stateValues.endpoint).eqls([x3, y3]);
@@ -4617,7 +4618,7 @@ describe('Ray Tag Tests', function () {
       x3 = 9;
       y3 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v2t",
         args: { x: x3, y: y3 }
@@ -4626,7 +4627,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/v2t').should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([x1, y1]);
         expect(stateVariables['/_ray1'].stateValues.through).eqls([x2, y2]);
         expect(stateVariables['/_ray2'].stateValues.endpoint).eqls([x3, y3]);
@@ -4641,7 +4642,7 @@ describe('Ray Tag Tests', function () {
 
       x2 = 3;
       y2 = 2;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v2h",
         args: { x: x2, y: y2 }
@@ -4650,7 +4651,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/v2h').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([x1, y1]);
         expect(stateVariables['/_ray1'].stateValues.through).eqls([x2, y2]);
         expect(stateVariables['/_ray2'].stateValues.endpoint).eqls([x3, y3]);
@@ -4665,7 +4666,7 @@ describe('Ray Tag Tests', function () {
 
       x1 = -5;
       y1 = 8;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v3h",
         args: { x: x1, y: y1 }
@@ -4674,7 +4675,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/v3h').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([x1, y1]);
         expect(stateVariables['/_ray1'].stateValues.through).eqls([x2, y2]);
         expect(stateVariables['/_ray2'].stateValues.endpoint).eqls([x3, y3]);
@@ -4690,7 +4691,7 @@ describe('Ray Tag Tests', function () {
       x3 = 0;
       y3 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/v3t",
         args: { x: x3, y: y3 }
@@ -4699,7 +4700,7 @@ describe('Ray Tag Tests', function () {
       cy.get('#\\/v3t').should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([x1, y1]);
         expect(stateVariables['/_ray1'].stateValues.through).eqls([x2, y2]);
         expect(stateVariables['/_ray2'].stateValues.endpoint).eqls([x3, y3]);
@@ -4727,7 +4728,7 @@ describe('Ray Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let endpointx = 4;
       let endpointy = 1;
       let throughx = -4;
@@ -4751,7 +4752,7 @@ describe('Ray Tag Tests', function () {
       let directionx = throughx - endpointx;
       let directiony = throughy - endpointy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/_ray1',
         args: { endpointcoords: [endpointx, endpointy] }
@@ -4760,7 +4761,7 @@ describe('Ray Tag Tests', function () {
       cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([endpointx, endpointy]);
         expect(stateVariables['/_ray1'].stateValues.through).eqls([throughx, throughy]);
         expect(stateVariables['/_ray1'].stateValues.direction).eqls([directionx, directiony]);
@@ -4786,7 +4787,7 @@ describe('Ray Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let endpointx = 4;
       let endpointy = 1;
       let throughx = -4;
@@ -4810,7 +4811,7 @@ describe('Ray Tag Tests', function () {
       let directionx = throughx - endpointx;
       let directiony = throughy - endpointy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/_ray1',
         args: { throughcoords: [throughx, throughy] }
@@ -4819,7 +4820,7 @@ describe('Ray Tag Tests', function () {
       cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([endpointx, endpointy]);
         expect(stateVariables['/_ray1'].stateValues.through).eqls([throughx, throughy]);
         expect(stateVariables['/_ray1'].stateValues.direction).eqls([directionx, directiony]);
@@ -4845,7 +4846,7 @@ describe('Ray Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let endpointx = 0;
       let endpointy = 0;
       let throughx = -8;
@@ -4869,7 +4870,7 @@ describe('Ray Tag Tests', function () {
       let directionx = throughx - endpointx;
       let directiony = throughy - endpointy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: '/_ray1',
         args: { endpointcoords: [endpointx, endpointy] }
@@ -4878,7 +4879,7 @@ describe('Ray Tag Tests', function () {
       cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(directionx)},${nInDOM(directiony)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_ray1'].stateValues.endpoint).eqls([endpointx, endpointy]);
         expect(stateVariables['/_ray1'].stateValues.through).eqls([throughx, throughy]);
         expect(stateVariables['/_ray1'].stateValues.direction).eqls([directionx, directiony]);
@@ -4930,7 +4931,7 @@ describe('Ray Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/v1"].stateValues.through).eqls([3, 4])
       expect(stateVariables["/v1"].stateValues.endpoint).eqls([3, 4])
       expect(stateVariables["/v1"].stateValues.direction).eqls([0, 0])
@@ -4958,7 +4959,7 @@ describe('Ray Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v1",
         args: { throughcoords: [1, 2] }
@@ -4967,7 +4968,7 @@ describe('Ray Tag Tests', function () {
       cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v1"].stateValues.through).eqls([1, 2])
         expect(stateVariables["/v1"].stateValues.endpoint).eqls([1, 2])
         expect(stateVariables["/v1"].stateValues.direction).eqls([0, 0])
@@ -4975,7 +4976,7 @@ describe('Ray Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v1",
         args: { endpointcoords: [-4, 5] }
@@ -4983,7 +4984,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v1"].stateValues.through).eqls([-4, 5])
         expect(stateVariables["/v1"].stateValues.endpoint).eqls([-4, 5])
         expect(stateVariables["/v1"].stateValues.direction).eqls([0, 0])
@@ -4991,7 +4992,7 @@ describe('Ray Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v3",
         args: { throughcoords: [1, 2] }
@@ -4999,7 +5000,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v3"].stateValues.through).eqls([1, 2])
         expect(stateVariables["/v3"].stateValues.endpoint).eqls([1, 2])
         expect(stateVariables["/v3"].stateValues.direction).eqls([0, 0])
@@ -5007,7 +5008,7 @@ describe('Ray Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v3",
         args: { endpointcoords: [-4, 5] }
@@ -5015,7 +5016,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(5)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v3"].stateValues.through).eqls([-4, 5])
         expect(stateVariables["/v3"].stateValues.endpoint).eqls([-4, 5])
         expect(stateVariables["/v3"].stateValues.direction).eqls([0, 0])
@@ -5024,7 +5025,7 @@ describe('Ray Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v2",
         args: { throughcoords: [1, 2] }
@@ -5032,7 +5033,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v2"].stateValues.through).eqls([1, 2])
         expect(stateVariables["/v2"].stateValues.endpoint).eqls([0, 0])
         expect(stateVariables["/v2"].stateValues.direction).eqls([1, 2])
@@ -5040,7 +5041,7 @@ describe('Ray Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v2",
         args: { endpointcoords: [5, 7] }
@@ -5048,7 +5049,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v2"].stateValues.through).eqls([-4, -5])
         expect(stateVariables["/v2"].stateValues.endpoint).eqls([0, 0])
         expect(stateVariables["/v2"].stateValues.direction).eqls([-4, -5])
@@ -5056,14 +5057,14 @@ describe('Ray Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v5",
         args: { throughcoords: [1, 2] }
       })
       cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v5"].stateValues.through).eqls([1, 2])
         expect(stateVariables["/v5"].stateValues.endpoint).eqls([0, 0])
         expect(stateVariables["/v5"].stateValues.direction).eqls([1, 2])
@@ -5071,14 +5072,14 @@ describe('Ray Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v5",
         args: { endpointcoords: [5, 7] }
       })
       cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(-4)},${nInDOM(-5)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v5"].stateValues.through).eqls([-4, -5])
         expect(stateVariables["/v5"].stateValues.endpoint).eqls([0, 0])
         expect(stateVariables["/v5"].stateValues.direction).eqls([-4, -5])
@@ -5087,14 +5088,14 @@ describe('Ray Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v4",
         args: { throughcoords: [-1, 1] }
       })
       cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v4"].stateValues.through).eqls([-8, -6])
         expect(stateVariables["/v4"].stateValues.endpoint).eqls([-4, -3])
         expect(stateVariables["/v4"].stateValues.direction).eqls([-4, -3])
@@ -5103,7 +5104,7 @@ describe('Ray Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v4",
         args: { endpointcoords: [-10, -2] }
@@ -5114,7 +5115,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v4"].stateValues.through).eqls([4, -8])
         expect(stateVariables["/v4"].stateValues.endpoint).eqls([2, -4])
         expect(stateVariables["/v4"].stateValues.direction).eqls([2, -4])
@@ -5122,7 +5123,7 @@ describe('Ray Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v6",
         args: { throughcoords: [-1, 1] }
@@ -5130,7 +5131,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(-8)},${nInDOM(-6)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v6"].stateValues.through).eqls([-8, -6])
         expect(stateVariables["/v6"].stateValues.endpoint).eqls([-4, -3])
         expect(stateVariables["/v6"].stateValues.direction).eqls([-4, -3])
@@ -5138,7 +5139,7 @@ describe('Ray Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/v6",
         args: { endpointcoords: [-10, -2] }
@@ -5149,7 +5150,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(4)},${nInDOM(-8)})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/v6"].stateValues.through).eqls([4, -8])
         expect(stateVariables["/v6"].stateValues.endpoint).eqls([2, -4])
         expect(stateVariables["/v6"].stateValues.direction).eqls([2, -4])
@@ -5219,7 +5220,7 @@ describe('Ray Tag Tests', function () {
     let directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       for (let i = 0; i < 7; i++) {
         for (let j = 0; j < 2; j++) {
@@ -5242,7 +5243,7 @@ describe('Ray Tag Tests', function () {
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g0/v0",
         args: { endpointcoords: endpoints[0] }
@@ -5250,7 +5251,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v0t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[0][0])},${nInDOM(endpoints[0][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5273,7 +5274,7 @@ describe('Ray Tag Tests', function () {
       throughs[3] = [endpoints[3][0] + directions[0][0], endpoints[3][1] + directions[0][1]]
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g1/v0",
         args: { throughcoords: throughs[0] }
@@ -5281,7 +5282,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v0h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[0][0])},${nInDOM(throughs[0][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5302,7 +5303,7 @@ describe('Ray Tag Tests', function () {
 
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g0/v1",
         args: { throughcoords: throughs[1] }
@@ -5310,7 +5311,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[1][0])},${nInDOM(throughs[1][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5334,7 +5335,7 @@ describe('Ray Tag Tests', function () {
       throughs[5] = [endpoints[5][0] + directions[5][0], endpoints[5][1] + directions[5][1]]
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g1/v1",
         args: { endpointcoords: endpoints[1] }
@@ -5342,7 +5343,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v1t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[1][0])},${nInDOM(endpoints[1][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5363,7 +5364,7 @@ describe('Ray Tag Tests', function () {
 
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g0/v2",
         args: { endpointcoords: endpoints[2] }
@@ -5371,7 +5372,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v2t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[2][0])},${nInDOM(endpoints[2][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5392,7 +5393,7 @@ describe('Ray Tag Tests', function () {
 
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g1/v2",
         args: { throughcoords: throughs[2] }
@@ -5400,7 +5401,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v2h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[2][0])},${nInDOM(throughs[2][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5423,7 +5424,7 @@ describe('Ray Tag Tests', function () {
       throughs[0] = [endpoints[0][0] + directions[3][0], endpoints[0][1] + directions[3][1]]
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g0/v3",
         args: { throughcoords: throughs[3] }
@@ -5431,7 +5432,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v3h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[3][0])},${nInDOM(throughs[3][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5455,7 +5456,7 @@ describe('Ray Tag Tests', function () {
       throughs[0] = [endpoints[0][0] + directions[3][0], endpoints[0][1] + directions[3][1]]
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g1/v3",
         args: { endpointcoords: endpoints[3] }
@@ -5463,7 +5464,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v3t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[3][0])},${nInDOM(endpoints[3][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5486,7 +5487,7 @@ describe('Ray Tag Tests', function () {
 
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g0/v4",
         args: { endpointcoords: endpoints[4] }
@@ -5494,7 +5495,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v4t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[4][0])},${nInDOM(endpoints[4][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5516,7 +5517,7 @@ describe('Ray Tag Tests', function () {
 
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g1/v4",
         args: { throughcoords: throughs[4] }
@@ -5524,7 +5525,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v4h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[4][0])},${nInDOM(throughs[4][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5547,7 +5548,7 @@ describe('Ray Tag Tests', function () {
       endpoints[6] = [throughs[6][0] - directions[5][0], throughs[6][1] - directions[5][1]]
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g0/v5",
         args: { throughcoords: throughs[5] }
@@ -5555,7 +5556,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v5h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[5][0])},${nInDOM(throughs[5][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5581,7 +5582,7 @@ describe('Ray Tag Tests', function () {
       endpoints[6] = [throughs[6][0] - directions[5][0], throughs[6][1] - directions[5][1]]
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g1/v5",
         args: { endpointcoords: endpoints[5] }
@@ -5589,7 +5590,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v5t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[5][0])},${nInDOM(endpoints[5][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5613,7 +5614,7 @@ describe('Ray Tag Tests', function () {
       throughs[5] = [endpoints[5][0] + directions[6][0], endpoints[5][1] + directions[6][1]]
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g0/v6",
         args: { endpointcoords: endpoints[6] }
@@ -5621,7 +5622,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v6t .mjx-mrow").should('contain.text', `(${nInDOM(endpoints[6][0])},${nInDOM(endpoints[6][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {
@@ -5645,7 +5646,7 @@ describe('Ray Tag Tests', function () {
       throughs[5] = [endpoints[5][0] + directions[6][0], endpoints[5][1] + directions[6][1]]
       directions = throughs.map((v, i) => [v[0] - endpoints[i][0], v[1] - endpoints[i][1]])
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveRay",
         componentName: "/g1/v6",
         args: { throughcoords: throughs[6] }
@@ -5653,7 +5654,7 @@ describe('Ray Tag Tests', function () {
 
       cy.get("#\\/v6h .mjx-mrow").should('contain.text', `(${nInDOM(throughs[6][0])},${nInDOM(throughs[6][1])})`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let i = 0; i < 7; i++) {
           for (let j = 0; j < 2; j++) {

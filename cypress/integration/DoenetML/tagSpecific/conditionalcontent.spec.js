@@ -11,6 +11,7 @@ function cesc(s) {
 describe('Conditional Content Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
@@ -18,7 +19,7 @@ describe('Conditional Content Tag Tests', function () {
   // tests without cases or else
 
   it('inline content containing sign of number', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -48,21 +49,26 @@ describe('Conditional Content Tag Tests', function () {
     });
 
     cy.get('#\\/n textarea').type("10{enter}", { force: true });
+
+    cy.get('p#\\/_p1').should('contain.text', 'a positive number.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a positive number.')
     });
 
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-5/9{enter}", { force: true });
+    cy.get('p#\\/_p1').should('contain.text', 'a negative number.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a negative number.')
     });
 
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
+    cy.get('p#\\/_p1').should('contain.text', 'zero.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed zero.')
     });
 
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
+    cy.get('p#\\/_p1').should('contain.text', 'something else.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
     });
@@ -70,7 +76,7 @@ describe('Conditional Content Tag Tests', function () {
   })
 
   it('inline content containing sign of number, use XML entities', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -100,21 +106,25 @@ describe('Conditional Content Tag Tests', function () {
     });
 
     cy.get('#\\/n textarea').type("10{enter}", { force: true });
+    cy.get('p#\\/_p1').should('contain.text', 'a positive number.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a positive number.')
     });
 
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-5/9{enter}", { force: true });
+    cy.get('p#\\/_p1').should('contain.text', 'a negative number.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a negative number.')
     });
 
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
+    cy.get('p#\\/_p1').should('contain.text', 'zero.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed zero.')
     });
 
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
+    cy.get('p#\\/_p1').should('contain.text', 'something else.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
     });
@@ -122,7 +132,7 @@ describe('Conditional Content Tag Tests', function () {
   })
 
   it('block content containing sign of number', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -161,6 +171,7 @@ describe('Conditional Content Tag Tests', function () {
     });
 
     cy.get('#\\/n textarea').type("10{enter}", { force: true });
+    cy.get('#\\/_section1 p').should('contain.text', 'a positive number.')
     cy.get('#\\/_section1 p').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a positive number.')
     });
@@ -169,6 +180,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_section4 p').should('not.exist');
 
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-5/9{enter}", { force: true });
+    cy.get('#\\/_section2 p').should('contain.text', 'a negative number.')
     cy.get('#\\/_section1 p').should('not.exist');
     cy.get('#\\/_section2 p').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a negative number.')
@@ -177,6 +189,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_section4 p').should('not.exist');
 
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
+    cy.get('#\\/_section3 p').should('contain.text', 'zero.')
     cy.get('#\\/_section1 p').should('not.exist');
     cy.get('#\\/_section2 p').should('not.exist');
     cy.get('#\\/_section3 p').invoke('text').then((text) => {
@@ -185,6 +198,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_section4 p').should('not.exist');
 
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
+    cy.get('#\\/_section4 p').should('contain.text', 'something else.')
     cy.get('#\\/_section1 p').should('not.exist');
     cy.get('#\\/_section2 p').should('not.exist');
     cy.get('#\\/_section3 p').should('not.exist');
@@ -195,7 +209,7 @@ describe('Conditional Content Tag Tests', function () {
   })
 
   it('conditional text used as correct answer', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -276,7 +290,7 @@ describe('Conditional Content Tag Tests', function () {
   })
 
   it('conditional math used as correct answer', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -332,7 +346,7 @@ describe('Conditional Content Tag Tests', function () {
   })
 
   it('include blank string between tags', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -355,7 +369,7 @@ describe('Conditional Content Tag Tests', function () {
   })
 
   it('assignNames skips strings but strings still displayed', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -417,7 +431,7 @@ describe('Conditional Content Tag Tests', function () {
 
 
   it('case/else with single text, assign sub on copy', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -462,7 +476,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'cat');
 
     cy.log('enter 10')
-    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: mouse');
     cy.get('#\\/pa1').should('have.text', 'a1: mouse');
@@ -473,8 +487,8 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/b').should('have.text', 'mouse');
     cy.get('#\\/b1').should('have.text', 'mouse');
 
-    cy.log('enter -11')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
+    cy.log('enter -1')
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-1{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: dog');
     cy.get('#\\/pa1').should('have.text', 'a1: dog');
@@ -486,7 +500,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'dog');
 
     cy.log('enter x')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}x{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: mouse');
     cy.get('#\\/pa1').should('have.text', 'a1: mouse');
@@ -500,7 +514,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('case/else with single text, initially assign sub', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -583,7 +597,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('case/else with single text with multiple matches, assign sub on copy', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -693,7 +707,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('case/else with single text, assign sub on copy, copy condition to restrict to one', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -776,7 +790,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('case/else with text, math, and optional', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1035,7 +1049,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('case/else with text, math, and optional, new namespace', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1161,7 +1175,7 @@ describe('Conditional Content Tag Tests', function () {
 
 
     cy.log('enter 10')
-    cy.get('#\\/n textarea').type("{end}{backspace}10{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
 
     cy.get('#\\/s1\\/a').should('have.text', 'mouse');
     cy.get('#\\/a1').should('have.text', 'mouse');
@@ -1203,8 +1217,8 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/i').should('not.exist');
     cy.get('#\\/i1').should('not.exist');
 
-    cy.log('enter -11')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
+    cy.log('enter -1')
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-1{enter}", { force: true })
 
 
     cy.get('#\\/s1\\/a').should('have.text', 'dog');
@@ -1249,7 +1263,7 @@ describe('Conditional Content Tag Tests', function () {
 
 
     cy.log('enter x')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}x{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/s1\\/a').should('have.text', 'mouse');
     cy.get('#\\/a1').should('have.text', 'mouse');
@@ -1294,7 +1308,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('references to internal and external components', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1303,7 +1317,7 @@ describe('Conditional Content Tag Tests', function () {
     <text name="x3">mouse</text>
 
     <mathinput name="n" />
-    <p>original: <conditionalContent assignNames="(a b c)" maximumNumberToShow="1">
+    <p>original: <conditionalContent assignNames="((a) (b) c)" maximumNumberToShow="1">
       <case condition="$n<0" >
         <copy target="x1" />
         <copy target="y1" />
@@ -1331,7 +1345,7 @@ describe('Conditional Content Tag Tests', function () {
     <copy assignNames="cc" target="c" />
 
     <p>Whole thing repeated</p>
-    <copy target="_conditionalcontent1" assignNames="(d e f)" />
+    <copy target="_conditionalcontent1" assignNames="((d) (e) f)" />
 
     <p>Selected options repeated from copy</p>
     <copy assignNames="dd" target="d" />
@@ -1344,140 +1358,111 @@ describe('Conditional Content Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let aAnchor = cesc('#' + components["/a"].replacements[0].componentName);
-      let bAnchor = cesc('#' + components["/b"].replacements[0].componentName);
-      let dAnchor = cesc('#' + components["/d"].replacements[0].componentName);
-      let eAnchor = cesc('#' + components["/e"].replacements[0].componentName);
+    cy.get(`#\\/a`).should('have.text', 'mouse')
+    cy.get(`#\\/b`).should('have.text', 'bush')
+    cy.get(`#\\/c`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6cz')
+    })
+    cy.get(`#\\/aa`).should('have.text', 'mouse')
+    cy.get(`#\\/bb`).should('have.text', 'bush')
+    cy.get(`#\\/cc`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6cz')
+    })
 
-      cy.get(aAnchor).should('have.text', 'mouse')
-      cy.get(bAnchor).should('have.text', 'bush')
-      cy.get(`#\\/c`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('6cz')
-      })
-      cy.get(`#\\/aa`).should('have.text', 'mouse')
-      cy.get(`#\\/bb`).should('have.text', 'bush')
-      cy.get(`#\\/cc`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('6cz')
-      })
-
-      cy.get(dAnchor).should('have.text', 'mouse')
-      cy.get(eAnchor).should('have.text', 'bush')
-      cy.get(`#\\/f`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('6cz')
-      })
-      cy.get(`#\\/dd`).should('have.text', 'mouse')
-      cy.get(`#\\/ee`).should('have.text', 'bush')
-      cy.get(`#\\/ff`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('6cz')
-      })
-    });
+    cy.get(`#\\/d`).should('have.text', 'mouse')
+    cy.get(`#\\/e`).should('have.text', 'bush')
+    cy.get(`#\\/f`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6cz')
+    })
+    cy.get(`#\\/dd`).should('have.text', 'mouse')
+    cy.get(`#\\/ee`).should('have.text', 'bush')
+    cy.get(`#\\/ff`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6cz')
+    })
 
     cy.log('enter 1')
     cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let aAnchor = cesc('#' + components["/a"].replacements[0].componentName);
-      let bAnchor = cesc('#' + components["/b"].replacements[0].componentName);
-      let dAnchor = cesc('#' + components["/d"].replacements[0].componentName);
-      let eAnchor = cesc('#' + components["/e"].replacements[0].componentName);
+    cy.get(`#\\/a`).should('have.text', 'cat')
+    cy.get(`#\\/b`).should('have.text', 'shrub')
+    cy.get(`#\\/c`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5by')
+    })
+    cy.get(`#\\/aa`).should('have.text', 'cat')
+    cy.get(`#\\/bb`).should('have.text', 'shrub')
+    cy.get(`#\\/cc`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5by')
+    })
 
-      cy.get(aAnchor).should('have.text', 'cat')
-      cy.get(bAnchor).should('have.text', 'shrub')
-      cy.get(`#\\/c`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5by')
-      })
-      cy.get(`#\\/aa`).should('have.text', 'cat')
-      cy.get(`#\\/bb`).should('have.text', 'shrub')
-      cy.get(`#\\/cc`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5by')
-      })
+    cy.get(`#\\/d`).should('have.text', 'cat')
+    cy.get(`#\\/e`).should('have.text', 'shrub')
+    cy.get(`#\\/f`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5by')
+    })
+    cy.get(`#\\/dd`).should('have.text', 'cat')
+    cy.get(`#\\/ee`).should('have.text', 'shrub')
+    cy.get(`#\\/ff`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5by')
+    })
 
-      cy.get(dAnchor).should('have.text', 'cat')
-      cy.get(eAnchor).should('have.text', 'shrub')
-      cy.get(`#\\/f`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5by')
-      })
-      cy.get(`#\\/dd`).should('have.text', 'cat')
-      cy.get(`#\\/ee`).should('have.text', 'shrub')
-      cy.get(`#\\/ff`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('5by')
-      })
-    });
 
 
     cy.log('enter -1')
     cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let aAnchor = cesc('#' + components["/a"].replacements[0].componentName);
-      let bAnchor = cesc('#' + components["/b"].replacements[0].componentName);
-      let dAnchor = cesc('#' + components["/d"].replacements[0].componentName);
-      let eAnchor = cesc('#' + components["/e"].replacements[0].componentName);
+    cy.get(`#\\/a`).should('have.text', 'dog')
+    cy.get(`#\\/b`).should('have.text', 'tree')
+    cy.get(`#\\/c`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4ax')
+    })
+    cy.get(`#\\/aa`).should('have.text', 'dog')
+    cy.get(`#\\/bb`).should('have.text', 'tree')
+    cy.get(`#\\/cc`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4ax')
+    })
 
-      cy.get(aAnchor).should('have.text', 'dog')
-      cy.get(bAnchor).should('have.text', 'tree')
-      cy.get(`#\\/c`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4ax')
-      })
-      cy.get(`#\\/aa`).should('have.text', 'dog')
-      cy.get(`#\\/bb`).should('have.text', 'tree')
-      cy.get(`#\\/cc`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4ax')
-      })
+    cy.get(`#\\/d`).should('have.text', 'dog')
+    cy.get(`#\\/e`).should('have.text', 'tree')
+    cy.get(`#\\/f`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4ax')
+    })
+    cy.get(`#\\/dd`).should('have.text', 'dog')
+    cy.get(`#\\/ee`).should('have.text', 'tree')
+    cy.get(`#\\/ff`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4ax')
+    })
 
-      cy.get(dAnchor).should('have.text', 'dog')
-      cy.get(eAnchor).should('have.text', 'tree')
-      cy.get(`#\\/f`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4ax')
-      })
-      cy.get(`#\\/dd`).should('have.text', 'dog')
-      cy.get(`#\\/ee`).should('have.text', 'tree')
-      cy.get(`#\\/ff`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('4ax')
-      })
-    });
 
     cy.log('enter 10')
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let aAnchor = cesc('#' + components["/a"].replacements[0].componentName);
-      let bAnchor = cesc('#' + components["/b"].replacements[0].componentName);
-      let dAnchor = cesc('#' + components["/d"].replacements[0].componentName);
-      let eAnchor = cesc('#' + components["/e"].replacements[0].componentName);
+    cy.get(`#\\/a`).should('have.text', 'mouse')
+    cy.get(`#\\/b`).should('have.text', 'bush')
+    cy.get(`#\\/c`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6cz')
+    })
+    cy.get(`#\\/aa`).should('have.text', 'mouse')
+    cy.get(`#\\/bb`).should('have.text', 'bush')
+    cy.get(`#\\/cc`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6cz')
+    })
 
-      cy.get(aAnchor).should('have.text', 'mouse')
-      cy.get(bAnchor).should('have.text', 'bush')
-      cy.get(`#\\/c`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('6cz')
-      })
-      cy.get(`#\\/aa`).should('have.text', 'mouse')
-      cy.get(`#\\/bb`).should('have.text', 'bush')
-      cy.get(`#\\/cc`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('6cz')
-      })
+    cy.get(`#\\/d`).should('have.text', 'mouse')
+    cy.get(`#\\/e`).should('have.text', 'bush')
+    cy.get(`#\\/f`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6cz')
+    })
+    cy.get(`#\\/dd`).should('have.text', 'mouse')
+    cy.get(`#\\/ee`).should('have.text', 'bush')
+    cy.get(`#\\/ff`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6cz')
+    })
 
-      cy.get(dAnchor).should('have.text', 'mouse')
-      cy.get(eAnchor).should('have.text', 'bush')
-      cy.get(`#\\/f`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('6cz')
-      })
-      cy.get(`#\\/dd`).should('have.text', 'mouse')
-      cy.get(`#\\/ee`).should('have.text', 'bush')
-      cy.get(`#\\/ff`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('6cz')
-      })
-    });
 
   });
 
   it('references to internal and external components, new namespace', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1568,7 +1553,7 @@ describe('Conditional Content Tag Tests', function () {
 
 
     cy.log('enter 1')
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}1{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'cat')
     cy.get(`#\\/a\\/plant`).should('have.text', 'shrub')
@@ -1607,7 +1592,7 @@ describe('Conditional Content Tag Tests', function () {
     })
 
     cy.log('enter -1')
-    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'dog')
     cy.get(`#\\/a\\/plant`).should('have.text', 'tree')
@@ -1647,7 +1632,7 @@ describe('Conditional Content Tag Tests', function () {
 
 
     cy.log('enter 10')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}10{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'mouse')
     cy.get(`#\\/a\\/plant`).should('have.text', 'bush')
@@ -1689,7 +1674,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('references to internal and external components, multiple layers of new namespaces', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1780,7 +1765,7 @@ describe('Conditional Content Tag Tests', function () {
 
 
     cy.log('enter 1')
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}1{enter}", { force: true })
 
     cy.get(`#\\/s\\/a\\/animal`).should('have.text', 'cat')
     cy.get(`#\\/s\\/a\\/plant`).should('have.text', 'shrub')
@@ -1819,7 +1804,7 @@ describe('Conditional Content Tag Tests', function () {
     })
 
     cy.log('enter -1')
-    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
 
     cy.get(`#\\/s\\/a\\/animal`).should('have.text', 'dog')
     cy.get(`#\\/s\\/a\\/plant`).should('have.text', 'tree')
@@ -1859,7 +1844,7 @@ describe('Conditional Content Tag Tests', function () {
 
 
     cy.log('enter 10')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}10{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}10{enter}", { force: true })
 
     cy.get(`#\\/s\\/a\\/animal`).should('have.text', 'mouse')
     cy.get(`#\\/s\\/a\\/plant`).should('have.text', 'bush')
@@ -1905,7 +1890,7 @@ describe('Conditional Content Tag Tests', function () {
     // not sure why would want to do this, as give inconsistent behavior
     // depending on which option is chosen
     // but, we handle it gracefully
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -1996,7 +1981,7 @@ describe('Conditional Content Tag Tests', function () {
 
 
     cy.log('enter 1')
-    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}1{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'cat')
     cy.get(`#\\/a\\/plant`).should('have.text', 'shrub')
@@ -2036,18 +2021,18 @@ describe('Conditional Content Tag Tests', function () {
 
 
     cy.log('enter -1')
-    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let aReplacements = components["/a"].replacements;
-      let theAnimalAnchor = cesc("#" + aReplacements[1].replacements[0].componentName)
-      let thePlantAnchor = cesc("#" + aReplacements[3].replacements[0].componentName)
-      let thePAnchor = cesc("#" + aReplacements[5].componentName)
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let p1Chidren = stateVariables["/_p1"].activeChildren;
+      let theAnimalAnchor = cesc("#" + p1Chidren[2].componentName)
+      let thePlantAnchor = cesc("#" + p1Chidren[4].componentName)
+      let thePAnchor = cesc("#" + p1Chidren[6].componentName)
 
-      let bReplacements = components["/b"].replacements;
-      let theAnimalCopyAnchor = cesc("#" + bReplacements[1].replacements[0].componentName)
-      let thePlantCopyAnchor = cesc("#" + bReplacements[3].replacements[0].componentName)
-      let thePCopyAnchor = cesc("#" + bReplacements[5].componentName)
+      let repeatChildren = stateVariables["/_p1"].activeChildren;
+      let theAnimalCopyAnchor = cesc("#" + repeatChildren[2].componentName)
+      let thePlantCopyAnchor = cesc("#" + repeatChildren[4].componentName)
+      let thePCopyAnchor = cesc("#" + repeatChildren[6].componentName)
 
       cy.get(`#\\/a\\/animal`).should('not.exist')
       cy.get(`#\\/a\\/plant`).should('not.exist')
@@ -2147,7 +2132,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('dynamic internal references', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2226,7 +2211,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('dynamic internal references, assign pieces', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2304,7 +2289,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('copy case', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2346,7 +2331,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'positive');
 
     cy.log('enter -1')
-    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
 
     cy.get('#\\/_p1').should('have.text', 'non-positive');
     cy.get('#\\/_p3').should('have.text', 'non-positive');
@@ -2354,7 +2339,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'negative');
 
     cy.log('enter 0')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}0{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}0{enter}", { force: true })
 
     cy.get('#\\/_p1').should('have.text', 'non-positive');
     cy.get('#\\/_p3').should('have.text', 'non-positive');
@@ -2364,7 +2349,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('copy else', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2405,7 +2390,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'oops');
 
     cy.log('enter -1')
-    cy.get('#\\/n textarea').type("{end}{backspace}-1{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
 
     cy.get('#\\/_p1').should('have.text', 'bye');
     cy.get('#\\/_p3').should('have.text', 'bye');
@@ -2413,7 +2398,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'hello');
 
     cy.log('enter 0')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}0{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}0{enter}", { force: true })
 
     cy.get('#\\/_p1').should('have.text', 'bye');
     cy.get('#\\/_p3').should('have.text', 'bye');
@@ -2423,7 +2408,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('conditionalcontents hide dynamically', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -2489,7 +2474,7 @@ describe('Conditional Content Tag Tests', function () {
   });
 
   it('string and blank strings in case and else', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2556,7 +2541,7 @@ describe('Conditional Content Tag Tests', function () {
   })
 
   it('copy with invalid target gets expanded', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -2575,19 +2560,18 @@ describe('Conditional Content Tag Tests', function () {
 
     cy.get('#\\/_document1').should('have.text', '\n  a\n  1\n  before\n  nothing: \n  after\n  ')
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/a/nothing"].isExpanded).eq(true)
-      expect(components["/a/nothing"].replacements).eqls([])
-      expect(components["/_document1"].activeChildren.filter(x => x.componentType === "copy")).eqls([])
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      // don't currently have a way to check for isExpanded or replacements
+      // expect(stateVariables["/a/nothing"].isExpanded).eq(true)
+      // expect(stateVariables["/a/nothing"].replacements).eqls([])
+      expect(stateVariables["/_document1"].activeChildren.filter(x => x.componentType === "copy")).eqls([])
     });
 
   })
 
-
-  
   it('use original names if no assignNames', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>

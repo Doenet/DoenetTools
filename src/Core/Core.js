@@ -46,18 +46,6 @@ export default class Core {
     // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
     this.flags = flags;
 
-    this.executeProcesses = this.executeProcesses.bind(this);
-    this.requestUpdate = this.requestUpdate.bind(this);
-    this.performUpdate = this.performUpdate.bind(this);
-    this.requestAction = this.requestAction.bind(this);
-    this.performAction = this.performAction.bind(this);
-    this.recordSolutionView = this.recordSolutionView.bind(this);
-    this.triggerChainedActions = this.triggerChainedActions.bind(this);
-    this.requestRecordEvent = this.requestRecordEvent.bind(this);
-    this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
-    this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
-    this.calculateScoredItemNumberOfContainer = this.calculateScoredItemNumberOfContainer.bind(this);
-
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
 
@@ -67,16 +55,17 @@ export default class Core {
 
 
     this.coreFunctions = {
-      requestUpdate: this.requestUpdate,
-      performUpdate: this.performUpdate,
-      requestAction: this.requestAction,
-      performAction: this.performAction,
-      triggerChainedActions: this.triggerChainedActions,
-      requestRecordEvent: this.requestRecordEvent,
-      requestAnimationFrame: this.requestAnimationFrame,
-      cancelAnimationFrame: this.cancelAnimationFrame,
-      calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer,
-      recordSolutionView: this.recordSolutionView,
+      requestUpdate: this.requestUpdate.bind(this),
+      performUpdate: this.performUpdate.bind(this),
+      requestAction: this.requestAction.bind(this),
+      performAction: this.performAction.bind(this),
+      resolveAction: this.resolveAction.bind(this),
+      triggerChainedActions: this.triggerChainedActions.bind(this),
+      requestRecordEvent: this.requestRecordEvent.bind(this),
+      requestAnimationFrame: this.requestAnimationFrame.bind(this),
+      cancelAnimationFrame: this.cancelAnimationFrame.bind(this),
+      calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer.bind(this),
+      recordSolutionView: this.recordSolutionView.bind(this),
     }
 
     this.updateInfo = {
@@ -90,7 +79,6 @@ export default class Core {
       unresolvedByDependent: {},
       deletedStateVariables: {},
       deletedComponents: {},
-      recreatedComponents: {},
       // parentsToUpdateDescendants: new Set(),
       compositesBeingExpanded: [],
       // stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
@@ -429,7 +417,7 @@ export default class Core {
   }
 
 
-  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, actionId, recreatedComponents = {} }) {
+  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, actionId }) {
 
     let deletedRenderers = [];
 
@@ -461,7 +449,7 @@ export default class Core {
           for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
             if (indicesToRender.includes(ind)) {
               if (child.rendererType) {
-                currentChildIdentifiers.push(`componentName:${child.componentName}`)
+                currentChildIdentifiers.push(`nameType:${child.componentName};${child.componentType}`)
                 renderedInd++;
               } else if (typeof child === "string") {
                 currentChildIdentifiers.push(`string${renderedInd}:${child}`)
@@ -481,7 +469,7 @@ export default class Core {
         let previousChildIdentifiers = [];
         for (let [ind, child] of previousChildRenderers.entries()) {
           if (child.componentName) {
-            previousChildIdentifiers.push(`componentName:${child.componentName}`)
+            previousChildIdentifiers.push(`nameType:${child.componentName};${child.componentType}`)
           } else if (typeof child === "string") {
             previousChildIdentifiers.push(`string${ind}:${child}`)
           } else if (typeof child === "number") {
@@ -1263,9 +1251,6 @@ export default class Core {
     });
 
     // in case component with same name was deleted before, delete from deleteComponents and deletedStateVariable
-    if (this.updateInfo.deletedComponents[componentName]) {
-      this.updateInfo.recreatedComponents[componentName] = true;
-    }
     delete this.updateInfo.deletedComponents[componentName];
     delete this.updateInfo.deletedStateVariables[componentName];
 
@@ -3456,6 +3441,7 @@ export default class Core {
                 componentName: component.componentName,
                 actionName: chainInfo.triggeredAction,
                 stateVariableDefiningChain: varName,
+                args: {},
               });
             } else {
               // target was already chained
@@ -7700,12 +7686,22 @@ export default class Core {
         if (event) {
           this.requestRecordEvent(event);
         }
+        if(!args) {
+          args = {};
+        }
         return await action(args);
       }
     }
 
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
 
+  }
+
+  resolveAction({ actionId }) {
+    postMessage({
+      messageType: "resolveAction",
+      args: { actionId }
+    })
   }
 
   async triggerChainedActions({ componentName }) {
@@ -7869,6 +7865,10 @@ export default class Core {
 
     newStateVariableValuesProcessed.push(newStateVariableValues);
 
+    // always update the renderers from the update instructions themselves,
+    // as even if changes were prevented, the renderers need to be given that information
+    // so they can revert if the showed the changes before hearing back from core
+    this.updateInfo.componentsToUpdateRenderers.push(...updateInstructions.map(x => x.componentName))
 
     // use set to create deduplicated list of components to update renderers
     let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
@@ -7877,7 +7877,6 @@ export default class Core {
     await this.updateRendererInstructions({
       componentNamesToUpdate,
       sourceOfUpdate: { sourceInformation, local: true },
-      recreatedComponents: this.updateInfo.recreatedComponents,
       actionId,
     });
 
@@ -9496,7 +9495,7 @@ export default class Core {
       });
 
 
-      if (resp.status) {
+      if (resp.status === null) {
         let message = `Cannot show solution due to error.  Are you connected to the internet?`;
         postMessage({
           messageType: "sendToast",
