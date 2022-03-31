@@ -178,7 +178,7 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
         if (pageOrOrder?.contentType == 'order'){
           return <Order key={`Order${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
         }else{
-          return <Page key={`Page${doenetId}`} courseId={courseId} doenetId={pageOrOrder.doenetId} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+          return <Page key={`Page${doenetId}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
         }
       })
     }
@@ -196,7 +196,7 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
 function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentLevel}){
   let recoilPageInfo = useRecoilValue(authorItemByDoenetId(doenetId));
   //TODO: numbered
-  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label="temp" doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={1} isSelected={recoilPageInfo.isSelected} />
+  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={1} isSelected={recoilPageInfo.isSelected} />
 }
 
 //singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]

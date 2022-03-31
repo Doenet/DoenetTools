@@ -93,7 +93,8 @@ $activityDoenetIds = [];
 				SELECT 
 				doenetId,
 				cid,
-				draftCid
+				draftCid,
+				label
 				FROM activity_pages
 				WHERE activityDoenetId = '$aDoenetId'
 				AND isDeleted = '0'
