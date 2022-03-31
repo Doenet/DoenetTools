@@ -171,23 +171,61 @@ export default function ToolRoot() {
       fallback={
         <LoadingFallback>
           <Svg>
-            <DonutG>
+            <DonutG1>
               <Circle
                 id="donut" 
                 fill="rgb(238,161,119)" 
-                r="50" 
+                r="60" 
               />
               <Circle
                 id="donut-topping"
                 fill="rgb(109,68,69)"
-                r="40"
+                r="48"
               />
               <Circle 
                 id="donut-hole"  
                 fill="hsl(0, 0%, 99%)"
-                r="16"
+                r="19"
               />
-            </DonutG>
+            </DonutG1>
+          </Svg>
+          <Svg>
+            <DonutG2>
+              <Circle
+                id="donut" 
+                fill="rgb(238,161,119)" 
+                r="60" 
+              />
+              <Circle
+                id="donut-topping"
+                fill="rgb(109,68,69)"
+                r="48"
+              />
+              <Circle 
+                id="donut-hole"  
+                fill="hsl(0, 0%, 99%)"
+                r="19"
+              />
+            </DonutG2>
+          </Svg>
+          <Svg>
+            <DonutG3>
+              <Circle
+                id="donut" 
+                fill="rgb(238,161,119)" 
+                r="60" 
+              />
+              <Circle
+                id="donut-topping"
+                fill="rgb(109,68,69)"
+                r="48"
+              />
+              <Circle 
+                id="donut-hole"  
+                fill="hsl(0, 0%, 99%)"
+                r="19"
+              />
+            </DonutG3>
           </Svg>
         </LoadingFallback>
       }
@@ -240,7 +278,13 @@ export default function ToolRoot() {
         headerControls.push(
           <Suspense
             key={key}
-            fallback={<LoadingFallback>loading...</LoadingFallback>}
+            fallback={
+              <LoadingFallback>
+                <BreadcrumbContainer>
+                  <BreadcrumbOutline/>
+                </BreadcrumbContainer>
+              </LoadingFallback>
+            }
           >
             {React.createElement(controlObj, { key: { key } })}
           </Suspense>,
@@ -961,6 +1005,7 @@ function RootController(props) {
   return null;
 }
 
+
 const LoadingFallback = styled.div`
   background-color: hsl(0, 0%, 99%);
   border-radius: 4px;
@@ -972,43 +1017,99 @@ const LoadingFallback = styled.div`
   height: 100%;
 `;
 
-const spinningDonut = keyframes `
-  0%
-  {
-    transform: scale( 1 );
-  }
-  20%
-  {
-    transform: scale( 1.1 );
-  }
-  40%
-  {
-    transform: scale( 1 );
-  }
-  60%
-  {
-    transform: scale( 1.1 );
-  }
-  80%
-  {
-    transform: scale( 1 );
-  }
-  100%
-  {
-    transform: scale( 1 );
-  }
+const bouncingDonut = keyframes `
+  from { transform: translate3d(0, 0px, 0);}
+  to { transform: translate3d(0, 20px, 0);}
 `;
+
 const Svg = styled.svg`
+  width: 130px;
+  height: 140px;
+  align-items: center;
+  margin: 25px;
 `;
-const DonutG = styled.g`
+
+const DonutG1 = styled.g`
   position: relative;
-  animation: ${spinningDonut} 1s infinite;
+  animation: ${bouncingDonut} 0.5s ease 0s infinite;
+  animation-direction: alternate;
   transform: translate(279, 394.5);
   &:after {
     position: absolute;
   }
 `;
-const Circle = styled.circle`
-  cx: 150;
-  cy: 75;
+
+const DonutG2 = styled.g`
+  position: relative;
+  animation: ${bouncingDonut} 0.5s ease 0.15s infinite;
+  animation-direction: alternate;
+  transform: translate(279, 394.5);
+  &:after {
+    position: absolute;
+  }
 `;
+
+const DonutG3 = styled.g`
+  position: relative;
+  animation: ${bouncingDonut} 0.5s ease 0.25s infinite;
+  animation-direction: alternate;
+  transform: translate(279, 394.5);
+  &:after {
+    position: absolute;
+  }
+`;
+
+const Circle = styled.circle`
+  cx: 65;
+  cy: 60;
+`;
+
+const BreadcrumbContainer = styled.ul`
+  list-style: none;
+  overflow: hidden;
+  height: 21px;
+  display: flex;
+  margin-left: -35px;
+`;
+
+const shimmerAnimation = keyframes `
+  from {
+    background-position: -468px 0
+  }
+  to {
+    background-position: 468px 0
+  }
+`;
+
+const BreadcrumbOutline = styled.li`
+  float: left;
+  border-radius: 15px;
+  padding: 0px 30px 0px 30px;
+  /* background: var(--mainGray); */
+  /* background-color: #F5F5F5; */
+  color: black;
+
+  animation-duration: 3s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: ${shimmerAnimation};
+  animation-timing-function: linear;
+  background: #f6f7f8;
+  background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  background-size: 1000px 640px;
+  position: relative;
+`;
+
+// const Shimmer = styled.div `
+//   animation-duration: 1s;
+//   animation-fill-mode: forwards;
+//   animation-iteration-count: infinite;
+//   animation-name: ${shimmerAnimation};
+//   animation-timing-function: linear;
+//   background: #f6f7f8;
+//   background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+//   background-size: 800px 104px;
+//   width: 100vw;
+//   height: 100vh;
+//   position: relative;
+// `;
