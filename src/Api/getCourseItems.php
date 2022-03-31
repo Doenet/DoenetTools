@@ -62,13 +62,11 @@ $activityDoenetIds = [];
 		if ($result->num_rows > 0) {
 			while($row = $result->fetch_assoc()){
 				$item = array(
-					"contentType"=>$row['contentType'],
 					"doenetId"=>$row['doenetId'],
-					"cid"=>$row['cid'],
+					"contentType"=>$row['contentType'],
 					"parentDoenetId"=>$row['parentDoenetId'],
 					"label"=>$row['label'],
 					"creationDate"=>$row['creationDate'],
-					"isDeleted"=>$row['isDeleted'],
 					"isAssigned"=>$row['isAssigned'],
 					"isGloballyAssigned"=>$row['isGloballyAssigned'],
 					"isPublic"=>$row['isPublic'],
@@ -83,7 +81,7 @@ $activityDoenetIds = [];
 				$item = array_merge($json,$item);
 				
 
-				$item['isOpen'] = false;
+				$item['isOpen'] = false; 
 				$item['isSelected'] = false;
 
 				array_push($items,$item);
@@ -109,7 +107,7 @@ $activityDoenetIds = [];
 							"draftCid"=>$row['draftCid'],
 							"label"=>$row['label']
 						);
-						$item['isSelected'] = false;
+						$item['isSelected'] = false; //Note: no isOpen
 						array_push($items,$item);
 
 					}

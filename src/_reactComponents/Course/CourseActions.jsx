@@ -172,7 +172,7 @@ export const useCreateCourse = () => {
     });
 
     set(coursePermissionsAndSettings, permissionsAndSettings);
-    set(courseInfoByCourseId(courseId), { courseId, image, color });
+    // set(courseInfoByCourseId(courseId), { courseId, image, color });
   });
 
   return { createCourse };
@@ -257,7 +257,6 @@ export const useCourse = (courseId) => {
         }
         //Get selection information to know previous doenetId by order
         if (itemType == 'activity') {
-          console.log('Activity');
 
           let { data } = await axios.get('/api/createCourseItem.php', {
             params: {
@@ -267,7 +266,7 @@ export const useCourse = (courseId) => {
               placeInFolderFlag,
             },
           });
-          console.log('activityData', data);
+          // console.log('activityData', data);
           newDoenetId = data.doenetId;
           set(authorItemByDoenetId(data.doenetId), data.itemEntered);
           set(authorItemByDoenetId(data.pageDoenetId), data.pageEntered);
@@ -285,7 +284,6 @@ export const useCourse = (courseId) => {
           newDoenetId = data.doenetId;
           set(authorItemByDoenetId(data.doenetId), data.itemEntered);
           set(authorCourseItemOrderByCourseId(courseId), data.order);
-          console.log('bank');
         } else if (itemType == 'section') {
           let { data } = await axios.get('/api/createCourseItem.php', {
             params: {

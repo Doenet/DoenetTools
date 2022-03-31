@@ -37,10 +37,10 @@ if ($itemType == 'section'){
 }else if($itemType == 'activity'){
   $pageDoenetId = include "randomId.php";
   $orderDoenetId = include "randomId.php";
-  $jsonDefinition = '{"type":"activity","title":"Untitled","order":{"type":"order","doenetId":"'.$orderDoenetId.'","behavior":"sequence","content":["'.$pageDoenetId.'"]},"variantControl": {"nVariants": 100,"seeds": ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94","95","96","97","98","99","100"]},"itemWeights": [1],"cid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku","files":[]}';
+  $jsonDefinition = '{"type":"activity","order":{"type":"order","doenetId":"'.$orderDoenetId.'","behavior":"sequence","content":["'.$pageDoenetId.'"]},"variantControl": {"nVariants": 100,"seeds": ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94","95","96","97","98","99","100"]},"itemWeights": [1],"cid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku","files":[]}';
 
 }else if($itemType == 'bank'){
-  $jsonDefinition = '{}';
+  $jsonDefinition = '{"type":"bank","pages":[]}';
 }else{
   $success = FALSE;
   $message = "Not able to make type $itemType";
@@ -60,12 +60,11 @@ if ($success){
         courseId,
         doenetId,
         parentDoenetId,
-        label,
         creationDate,
         sortOrder,
         jsonDefinition)
         VALUES
-        ('$itemType','$courseId','$doenetId','$previousDoenetId','$label',NOW(),'$sortOrder','$jsonDefinition');
+        ('$itemType','$courseId','$doenetId','$previousDoenetId',NOW(),'$sortOrder','$jsonDefinition');
         ";
         $conn->query($sql);
 
@@ -123,8 +122,8 @@ contentType,
 parentDoenetId,
 label,
 creationDate,
-isDeleted,
 isAssigned,
+isGloballyAssigned,
 isPublic,
 CAST(jsonDefinition as CHAR) AS json
 FROM course_content
@@ -136,12 +135,12 @@ $row = $result->fetch_assoc();
 
 $itemEntered = array(
   "doenetId"=>$row['doenetId'],
-  "contentType"=>$row['contentType'],
+  "contentType"=>$row['contentType'],//TODO: should be type
   "parentDoenetId"=>$row['parentDoenetId'],
   "label"=>$row['label'],
   "creationDate"=>$row['creationDate'],
-  "isDeleted"=>$row['isDeleted'],
   "isAssigned"=>$row['isAssigned'],
+  "isGloballyAssigned"=>$row['isGloballyAssigned'],
   "isPublic"=>$row['isPublic'],
 );
 

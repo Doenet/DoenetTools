@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-03-31 01:04:21 +0000
+# Generation Time: 2022-03-31 13:44:31 +0000
 # ************************************************************
 
 
@@ -211,7 +211,7 @@ CREATE TABLE `course_content` (
   `doenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `parentDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled',
   `creationDate` timestamp NULL DEFAULT NULL,
   `isDeleted` int(1) NOT NULL DEFAULT '0',
   `isAssigned` int(1) NOT NULL DEFAULT '0' COMMENT 'The content or folder shows to the student',
