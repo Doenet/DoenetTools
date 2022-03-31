@@ -7,19 +7,24 @@ const FONT_SIZES = [8, 9, 10, 11, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96];
 
 const Container = styled.div`
   display: flex;
-  width: fit-content;
+  justify-content: space-between;
+  align-items: center;
+  height: 24px;
+  width: 235px;
   margin: 0;
+  border-radius: 5px;
+  border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+
 `;
 
 const IncreaseButton = styled.button`
   background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
-  border-radius: 0px 5px 5px 0px;
-  border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
-  border-left: none;
-  height: 24px;
-  width: 34px;
+  border-radius: 0px 2px 2px 0px;
+  height: 100%;
+  width: 25px;
   color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
+  border: none;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
     color: black;
@@ -29,32 +34,27 @@ const IncreaseButton = styled.button`
 
 const DecreaseButton = styled.button`
   background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
-  border-radius: 5px 0px 0px 5px;
-  border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
-  border-right: none;
-  height: 24px;
-  width: 34px;
+  border-radius: 2px 0px 0px 2px;
+  height: 100%;
+  width: 25px;
   color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
+  border: none;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
     color: black;
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
-
   }
 `;
 
 const TextField = styled.input`
-  border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
-  border-left: none;
-  border-right: none;
   z-index: 0;
-  height: 18px;
-  width: 80px;
+  width: 100%;
   text-align: center;
   resize: none;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'default')};
   outline: none;
+  border: none;
 `;
 
 const Label = styled.div`
