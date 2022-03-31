@@ -22,7 +22,6 @@ import { mathjaxConfig } from '../../Core/utils/math';
 //     contentIdsToDoenetMLs
 // })
 
-
 ReactDOM.render(
   <MathJaxContext
     version={2}
@@ -33,6 +32,8 @@ ReactDOM.render(
   </MathJaxContext>,
   document.getElementById('root'),
 );
+
+options.push(<option value='Keagan'>Keagan</option>);
 
 
 // const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"

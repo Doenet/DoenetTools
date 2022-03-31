@@ -58,8 +58,12 @@ export default function MainPanel({
     const atomArray = await snapshot.getPromise(mainPanelClickAtom);
     // console.log(">>>mpOnClick",atomArray)
     for (let obj of atomArray) {
-      set(obj.atom, obj.value);
-      // console.log(">>>obj",obj)
+      if (typeof obj === 'function'){
+        obj();
+      }else{
+        set(obj.atom, obj.value);
+      }
+    // console.log(">>>obj",obj)
     }
   });
   const controls = [];

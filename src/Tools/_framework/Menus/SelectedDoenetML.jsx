@@ -890,34 +890,39 @@ export function AssignmentSettings({ role, doenetId }) {
       <div>
         <label>
           Grade Category
-          <input
-            required
-            type="select"
-            name="gradeCategory"
-            value={gradeCategory}
-            onBlur={() => {
-              if (aInfo.gradeCategory !== gradeCategory) {
-                aInfoRef.current.gradeCategory = gradeCategory;
+          <DropdownMenu
+            width="menu"
+            valueIndex={
+              {
+                gateway: 1,
+                exams: 2,
+                quizzes: 3,
+                'problem sets': 4,
+                projects: 5,
+                participation: 6,
+              }[gradeCategory]
+            }
+            items={[
+              ['gateway', 'gateway'],
+              ['exams', 'exams'],
+              ['quizzes', 'qizzes'],
+              ['problem sets', 'problem sets'],
+              ['projects', 'projects'],
+              ['participation', 'participation'],
+            ]}
+            onChange={({ value: val }) => {
+              console.log('on change');
+              if (aInfo.gradeCategory !== val) {
+                aInfoRef.current.gradeCategory = val;
+                setGradeCategory(val);
                 updateAssignment({
                   doenetId,
                   keyToUpdate: 'gradeCategory',
-                  value: gradeCategory,
+                  value: val,
                   description: 'Grade Category',
                 });
               }
             }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && aInfo.gradeCategory !== gradeCategory) {
-                aInfoRef.current.gradeCategory = gradeCategory;
-                updateAssignment({
-                  doenetId,
-                  keyToUpdate: 'gradeCategory',
-                  value: gradeCategory,
-                  description: 'Grade Category',
-                });
-              }
-            }}
-            onChange={(e) => setGradeCategory(e.currentTarget.value)}
           />
         </label>
       </div>

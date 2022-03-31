@@ -14,10 +14,9 @@ export default function DriveInfoCap(){
 
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-if (!course){
+if (!course || Object.keys(course).length == 0){
   return null;
 }
-
 let roles = [...course.roleLabels];
 let color = course.color;
 let image = course.image;

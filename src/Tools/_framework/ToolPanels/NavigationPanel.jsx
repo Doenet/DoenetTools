@@ -19,6 +19,8 @@ import Drive, {
   clearDriveAndItemSelections,
   folderDictionary,
 } from '../../../_reactComponents/Drive/NewDrive';
+
+import CourseNavigator from '../../../_reactComponents/Course/CourseNavigator';
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
@@ -203,7 +205,7 @@ export default function NavigationPanel() {
       <DropTargetsProvider>
         <Suspense fallback={<div>loading Drive...</div>}>
           <Container>
-            <Drive
+            <CourseNavigator
               path={path}
               filterCallback={filterCallback}
               columnTypes={columnTypes}

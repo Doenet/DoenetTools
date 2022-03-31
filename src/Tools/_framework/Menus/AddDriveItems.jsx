@@ -2,50 +2,44 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import useSockets, { itemType } from '../../../_reactComponents/Sockets';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import { useCourse } from '../../../_reactComponents/Course/CourseActions';
 
 export default function AddDriveItems() {
-  const [driveId, parentFolderId] = useRecoilValue(
+  const [courseId, parentFolderId] = useRecoilValue(
     searchParamAtomFamily('path'),
   ).split(':');
-  const { addItem } = useSockets('drive');
+  let { create } = useCourse(courseId);
+  //TODO: add selection information
+
   return (
     <ButtonGroup vertical>
       <Button
         width="menu"
         onClick={() =>
-          addItem({
-            driveIdFolderId: { driveId, folderId: parentFolderId },
-            type: itemType.DOENETML,
-          })
+          create({itemType:"activity",previousDoenetId:"testid",placeInFolderFlag:false})
         }
-        value="Add DoenetML"
+        value="Add Activity"
       >
-        Add DoenetML
+        Add Activity
       </Button>
       <Button
         width="menu"
         onClick={() =>
-          addItem({
-            driveIdFolderId: { driveId, folderId: parentFolderId },
-            type: itemType.COLLECTION,
-          })
+          create({itemType:"bank",previousDoenetId:"testid",placeInFolderFlag:false})
         }
-        value="Add Collection"
+        value="Add Bank"
       />
       <Button
         width="menu"
         onClick={() =>
-          addItem({
-            driveIdFolderId: { driveId, folderId: parentFolderId },
-            type: itemType.FOLDER,
-          })
+          create({itemType:"section",previousDoenetId:"testid",placeInFolderFlag:false})
+
         }
-        value="Add Folder"
+        value="Add Section"
       >
-        Add Folder
+        Add Section
       </Button>
       
     </ButtonGroup>
