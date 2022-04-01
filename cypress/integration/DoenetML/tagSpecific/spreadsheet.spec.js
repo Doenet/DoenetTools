@@ -24,6 +24,11 @@ describe('Spreadsheet Tag Tests', function () {
         doenetML: `
   <spreadsheet minNumRows="4" minNumColumns="4" />
   <text>a</text>
+  <p>
+    <copy prop="cellA1" target="_spreadsheet1" assignNames="A1a" />
+    <copy prop="cellB3" target="_spreadsheet1" assignNames="B3a" />
+    <copy prop="cellD2" target="_spreadsheet1" assignNames="D2a" />
+  </p>
   `}, "*");
     });
 
@@ -37,6 +42,7 @@ describe('Spreadsheet Tag Tests', function () {
     })
     cy.log("enter text in B3");
     enterSpreadsheetText({ row: 3, column: 2, text: "hello" });
+    cy.get('#\\/B3a').should('have.text', 'hello')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[2][1]).eq("hello");
@@ -44,6 +50,7 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("delete text in B3");
     enterSpreadsheetText({ row: 3, column: 2, clear: true });
+    cy.get('#\\/B3a').should('have.text', '')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[2][1]).eq("");
@@ -51,6 +58,7 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text in A1");
     enterSpreadsheetText({ row: 1, column: 1, text: "first" });
+    cy.get('#\\/A1a').should('have.text', 'first')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq("first");
@@ -59,6 +67,7 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text in D2");
     enterSpreadsheetText({ row: 2, column: 4, text: "right" });
+    cy.get('#\\/D2a').should('have.text', 'right')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq("first");
@@ -126,8 +135,8 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("enter text in new cell C1");
     enterSpreadsheetText({ row: 1, column: 3, text: "third" });
-    cy.get('#\\/t1').should('have.text', 'new')
     cy.get('#\\/t2').should('have.text', 'third')
+    cy.get('#\\/t1').should('have.text', 'new')
     cy.get('#\\/t3').should('have.text', 'hello')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -147,9 +156,9 @@ describe('Spreadsheet Tag Tests', function () {
 
     cy.log("delete text in C3");
     enterSpreadsheetText({ row: 3, column: 3, clear: true });
+    cy.get('#\\/t3').should('have.text', '')
     cy.get('#\\/t1').should('have.text', 'new')
     cy.get('#\\/t2').should('have.text', 'third')
-    cy.get('#\\/t3').should('have.text', '')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq("new");
@@ -286,7 +295,6 @@ describe('Spreadsheet Tag Tests', function () {
 
 
         cy.window().then(async (win) => {
-          let stateVariables = await win.returnAllStateVariables1();
 
           // have to use a different valueInd variable
           // since the code is run asynchronously
@@ -297,29 +305,54 @@ describe('Spreadsheet Tag Tests', function () {
           cy.get('#\\/t4').should('have.text', allCellValues[4][valueInd2])
           cy.get('#\\/t5').should('have.text', allCellValues[5][valueInd2])
 
-          for (let cellNum in cellNames) {
-            for (let ind in cellNames[cellNum]) {
-              expect(stateVariables[cellNames[cellNum][ind]].stateValues.text).eq(allCellValues[cellNum][valueInd2]);
-            }
-          }
+          cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
 
-          for (let ssNum in spreadsheetNames) {
-            for (let ssInd in spreadsheetNames[ssNum]) {
-              let ssName = spreadsheetNames[ssNum][ssInd];
-              for (let cellNum in cellLocations) {
-                let cLoc = cellLocations[cellNum][ssNum];
-                if (cellNum < 6 || ssNum == (valueInd2 > 2)) {
-                  expect(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1]).eq(allCellValues[cellNum][valueInd2]);
-                } else {
-                  if (ssNum === '1') {
-                    expect(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1]).eq("");
-                  } else {
-                    expect(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1]).eq(allCellValues[cellNum][2]);
+            for (let cellNum in cellNames) {
+              for (let ind in cellNames[cellNum]) {
+                expect(stateVariables[cellNames[cellNum][ind]].stateValues.text).eq(allCellValues[cellNum][valueInd2]);
+              }
+            }
+
+            cy.waitUntil(() => cy.window().then(async (win) => {
+              let stateVariables = await win.returnAllStateVariables1();
+              for (let ssNum in spreadsheetNames) {
+                for (let ssInd in spreadsheetNames[ssNum]) {
+                  let ssName = spreadsheetNames[ssNum][ssInd];
+                  for (let cellNum in cellLocations) {
+                    let cLoc = cellLocations[cellNum][ssNum];
+                    if (cellNum < 6 || ssNum == (valueInd2 > 2)) {
+
+                      if (stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== allCellValues[cellNum][valueInd2]) {
+                        return false;
+                      }
+
+                      // expect(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1]).eq(allCellValues[cellNum][valueInd2]);
+                    } else {
+
+                      if (ssNum === '1') {
+                        if (stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== "") {
+                          return false;
+                        }
+                      } else {
+                        if (stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== allCellValues[cellNum][2]) {
+                          return false;
+                        }
+                      }
+                      // if (ssNum === '1') {
+                      //   expect(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1]).eq("");
+                      // } else {
+                      //   expect(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1]).eq(allCellValues[cellNum][2]);
+                      // }
+                    }
                   }
                 }
               }
-            }
-          }
+              return true;
+            }), {
+              errorMsg: "Time out waiting for spreadsheet to have correct content."
+            })
+          })
         })
       }
     }
@@ -443,7 +476,6 @@ describe('Spreadsheet Tag Tests', function () {
         }
 
         cy.window().then(async (win) => {
-          let stateVariables = await win.returnAllStateVariables1();
 
           // have to use a different valueInd variable
           // since the code is run asynchronously
@@ -454,29 +486,46 @@ describe('Spreadsheet Tag Tests', function () {
           cy.get('#\\/t4').should('have.text', allCellValues[4][valueInd2])
           cy.get('#\\/t5').should('have.text', allCellValues[5][valueInd2])
 
-          for (let cellNum in cellNames) {
-            for (let ind in cellNames[cellNum]) {
-              expect(stateVariables[cellNames[cellNum][ind]].stateValues.text).eq(allCellValues[cellNum][valueInd2]);
-            }
-          }
+          cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
 
-          for (let ssNum in spreadsheetNames) {
-            for (let ssInd in spreadsheetNames[ssNum]) {
-              let ssName = spreadsheetNames[ssNum][ssInd];
-              for (let cellNum in cellLocations) {
-                let cLoc = cellLocations[cellNum][ssNum];
-                if (cellNum < 6 || ssNum == (valueInd2 > 2)) {
-                  expect(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1]).eq(allCellValues[cellNum][valueInd2]);
-                } else {
-                  if (ssNum === '1') {
-                    expect(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1]).eq("");
-                  } else {
-                    expect(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1]).eq(allCellValues[cellNum][2]);
+            for (let cellNum in cellNames) {
+              for (let ind in cellNames[cellNum]) {
+                expect(stateVariables[cellNames[cellNum][ind]].stateValues.text).eq(allCellValues[cellNum][valueInd2]);
+              }
+            }
+
+            cy.waitUntil(() => cy.window().then(async (win) => {
+              let stateVariables = await win.returnAllStateVariables1();
+              for (let ssNum in spreadsheetNames) {
+                for (let ssInd in spreadsheetNames[ssNum]) {
+                  let ssName = spreadsheetNames[ssNum][ssInd];
+                  for (let cellNum in cellLocations) {
+                    let cLoc = cellLocations[cellNum][ssNum];
+                    if (cellNum < 6 || ssNum == (valueInd2 > 2)) {
+                      if(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== allCellValues[cellNum][valueInd2]) {
+                        return false;
+                      }
+                    } else {
+                      if (ssNum === '1') {
+                        if(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== "") {
+                          return false;
+                        }
+                      } else {
+                        if(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== allCellValues[cellNum][2]) {
+                          return false;
+                        }
+                      }
+                    }
                   }
                 }
               }
-            }
-          }
+
+              return true;
+            }), {
+              errorMsg: "Time out waiting for spreadsheet to have correct content."
+            })
+          })
         })
       }
     }
@@ -490,6 +539,7 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t7"><copy prop="cellA7" target="_spreadsheet1" /></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell colnum="D">D1</cell></row>
   <row><cell colnum="2">B2</cell><cell>C2</cell></row>
@@ -535,6 +585,8 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 7; ind++) {
       enterSpreadsheetText({ row: ind, column: 1, text: `row${ind}` });
     }
+    cy.get('#\\/t7').should('have.text', 'row7')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 7; ind++) {
@@ -553,6 +605,7 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t7"><copy prop="cellG1" target="_spreadsheet1" /></extract>
   <spreadsheet>
   <column><cell>A1</cell><cell>A2</cell><cell rownum="D">A4</cell></column>
   <column><cell rownum="2">B2</cell><cell>B3</cell></column>
@@ -598,6 +651,8 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 7; ind++) {
       enterSpreadsheetText({ row: 1, column: ind, text: `column${ind}` });
     }
+    cy.get('#\\/t7').should('have.text', 'column7')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 7; ind++) {
@@ -616,6 +671,7 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <extract prop="text" assignNames="t1"><copy prop="cellC3" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t8"><copy prop="cellH5" target="_spreadsheet1" /></extract>
   <spreadsheet>
   <cellblock rownum="2" colnum="3">
     <row rownum="2"><cell>C3</cell><cell>D3</cell></row>
@@ -677,6 +733,8 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 8; ind++) {
       enterSpreadsheetText({ row: 5, column: ind, text: `column${ind}` });
     }
+    cy.get('#\\/t8').should('have.text', 'column8')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 8; ind++) {
@@ -696,6 +754,8 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellD3" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellB4" target="_spreadsheet2" /></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell>C1</cell></row>
   <column><cell rownum="2">A2</cell><cell>A3</cell><cell>A4</cell></column>
@@ -751,6 +811,8 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 4; ind++) {
       enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 3, column: ind, text: `column${ind}` });
     }
+    cy.get('#\\/t2').should('have.text', 'column4')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 4; ind++) {
@@ -767,6 +829,8 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 4; ind++) {
       enterSpreadsheetText({ id: "\\/_spreadsheet2", row: ind, column: 2, text: `row${ind}` });
     }
+    cy.get('#\\/t3').should('have.text', 'row4')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 4; ind++) {
@@ -787,6 +851,8 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellD2" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellE4" target="_spreadsheet2" /></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell>C1</cell></row>
   <column><cell rownum="2">A2</cell><cell>A3</cell><cell>A4</cell></column>
@@ -841,6 +907,8 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 4; ind++) {
       enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: ind, text: `column${ind}` });
     }
+    cy.get('#\\/t2').should('have.text', 'column4')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 4; ind++) {
@@ -863,6 +931,8 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 4; ind++) {
       enterSpreadsheetText({ id: "\\/_spreadsheet2", row: ind, column: 5, text: `row${ind}` });
     }
+    cy.get('#\\/t3').should('have.text', 'row4')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 4; ind++) {
@@ -891,6 +961,8 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellC2" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellD5" target="_spreadsheet2" /></extract>
   <spreadsheet minNumRows="3" minNumColumns="3">
   <cell>A1</cell><cell>B1</cell><cell>C1</cell>
   <cell rownum="2" colnum="1">A2</cell><cell>B2</cell><cell>C2</cell>
@@ -929,6 +1001,8 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 3; ind++) {
       enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: ind, text: `column${ind}` });
     }
+    cy.get('#\\/t2').should('have.text', 'column3')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 3; ind++) {
@@ -944,6 +1018,8 @@ describe('Spreadsheet Tag Tests', function () {
     for (let ind = 1; ind <= 5; ind++) {
       enterSpreadsheetText({ id: "\\/_spreadsheet2", row: ind, column: 4, text: `row${ind}` });
     }
+    cy.get('#\\/t3').should('have.text', 'row5')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 1; ind <= 5; ind++) {
@@ -964,6 +1040,8 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <extract prop="text" assignNames="t1"><copy prop="cellE1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellF2" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellE4" target="_spreadsheet2" /></extract>
   <spreadsheet>
   <cell colnum="5">alpha</cell>
   <cell>beta</cell>
@@ -1004,6 +1082,9 @@ describe('Spreadsheet Tag Tests', function () {
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 6, text: `b` });
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: 5, text: `c` });
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: 6, text: `d` });
+
+    cy.get('#\\/t2').should('have.text', 'd')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][4]).eq('a');
@@ -1027,6 +1108,9 @@ describe('Spreadsheet Tag Tests', function () {
     enterSpreadsheetText({ id: "\\/_spreadsheet2", row: 1, column: 5, text: `second` });
     enterSpreadsheetText({ id: "\\/_spreadsheet2", row: 4, column: 4, text: `third` });
     enterSpreadsheetText({ id: "\\/_spreadsheet2", row: 4, column: 5, text: `fourth` });
+
+    cy.get('#\\/t3').should('have.text', 'fourth')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][4]).eq('first');
@@ -1052,6 +1136,10 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellB3" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellA4" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t4"><copy prop="cellD2" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t5"><copy prop="cellA2" target="_spreadsheet1" /></extract>
   <spreadsheet minNumRows="4" minNumColumns="4">
   <cell>(1,2)</cell>
   <cell>hello</cell>
@@ -1091,11 +1179,11 @@ describe('Spreadsheet Tag Tests', function () {
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
       expect(stateVariables['/inAllCells'].activeChildren.length).eq(1);
-      expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs).eqls([1, 2]);
       expect(stateVariables['/inCellB3'].activeChildren.length).eq(0);
       expect(stateVariables['/inRow2'].activeChildren.length).eq(0);
       expect(stateVariables['/inColumn1'].activeChildren.length).eq(1);
-      expect(stateVariables['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2]);
+      expect(stateVariables[stateVariables['/inColumn1'].activeChildren[0].componentName].stateValues.xs).eqls([1, 2]);
       expect(stateVariables['/inRangeA2B4'].activeChildren.length).eq(0);
 
     })
@@ -1108,30 +1196,32 @@ describe('Spreadsheet Tag Tests', function () {
     //   expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
     //   expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
     //   expect(stateVariables['/inAllCells'].activeChildren.length).eq(1);
-    //   expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs[0].tree).eqls(['-', 3]);
-    //   expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs[1].tree).eq(7);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs[0]).eqls(['-', 3]);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs[1]).eq(7);
 
     // })
 
     cy.log('type in different coordinates');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 1, text: '(4,9)', clear: true });
+    cy.get('#\\/t1').should('have.text', '(4,9)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('(4,9)');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
       expect(stateVariables['/inAllCells'].activeChildren.length).eq(1);
-      expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([4, 9]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs).eqls([4, 9]);
       expect(stateVariables['/inCellB3'].activeChildren.length).eq(0);
       expect(stateVariables['/inRow2'].activeChildren.length).eq(0);
       expect(stateVariables['/inColumn1'].activeChildren.length).eq(1);
-      expect(stateVariables['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([4, 9]);
+      expect(stateVariables[stateVariables['/inColumn1'].activeChildren[0].componentName].stateValues.xs).eqls([4, 9]);
       expect(stateVariables['/inRangeA2B4'].activeChildren.length).eq(0);
 
     })
 
     cy.log('enter new point B3');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 3, column: 2, text: '(5,4)', clear: true });
+    cy.get('#\\/t2').should('have.text', '(5,4)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('(4,9)');
@@ -1139,15 +1229,15 @@ describe('Spreadsheet Tag Tests', function () {
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[2][1]).eq('(5,4)');
       expect(stateVariables['/inAllCells'].activeChildren.length).eq(2);
-      expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([4, 9]);
-      expect(stateVariables['/inAllCells'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs).eqls([4, 9]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[1].componentName].stateValues.xs).eqls([5, 4]);
       expect(stateVariables['/inCellB3'].activeChildren.length).eq(1);
-      expect(stateVariables['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inCellB3'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
       expect(stateVariables['/inRow2'].activeChildren.length).eq(0);
       expect(stateVariables['/inColumn1'].activeChildren.length).eq(1);
-      expect(stateVariables['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([4, 9]);
+      expect(stateVariables[stateVariables['/inColumn1'].activeChildren[0].componentName].stateValues.xs).eqls([4, 9]);
       expect(stateVariables['/inRangeA2B4'].activeChildren.length).eq(1);
-      expect(stateVariables['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inRangeA2B4'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
 
     })
 
@@ -1160,15 +1250,16 @@ describe('Spreadsheet Tag Tests', function () {
     //   expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
     //   expect(stateVariables['/_spreadsheet1'].stateValues.cells[2][1]).eq('( 0, 1 )');
     //   expect(stateVariables['/inAllCells'].activeChildren.length).eq(2);
-    //   expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs[0].tree).eq(4);
-    //   expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs[1].tree).eq(9);
-    //   expect(stateVariables['/inAllCells'].activeChildren[1].stateValues.xs[0].tree).eq(0);
-    //   expect(stateVariables['/inAllCells'].activeChildren[1].stateValues.xs[1].tree).eq(1);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs[0]).eq(4);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs[1]).eq(9);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[1].componentName].stateValues.xs[0]).eq(0);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[1].componentName].stateValues.xs[1]).eq(1);
     // })
 
 
     cy.log('enter random text on top of point in A1');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 1, text: ')x,-', clear: true });
+    cy.get('#\\/t1').should('have.text', ')x,-')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq(')x,-');
@@ -1176,18 +1267,19 @@ describe('Spreadsheet Tag Tests', function () {
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[2][1]).eq('(5,4)');
       expect(stateVariables['/inAllCells'].activeChildren.length).eq(1);
-      expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
       expect(stateVariables['/inCellB3'].activeChildren.length).eq(1);
-      expect(stateVariables['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inCellB3'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
       expect(stateVariables['/inRow2'].activeChildren.length).eq(0);
       expect(stateVariables['/inColumn1'].activeChildren.length).eq(0);
       expect(stateVariables['/inRangeA2B4'].activeChildren.length).eq(1);
-      expect(stateVariables['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inRangeA2B4'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
 
     })
 
     cy.log('enter new point in A4');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 4, column: 1, text: '(3,2)', clear: true });
+    cy.get('#\\/t3').should('have.text', '(3,2)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq(')x,-');
@@ -1196,21 +1288,22 @@ describe('Spreadsheet Tag Tests', function () {
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[2][1]).eq('(5,4)');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[3][0]).eq('(3,2)');
       expect(stateVariables['/inAllCells'].activeChildren.length).eq(2);
-      expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(stateVariables['/inAllCells'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[1].componentName].stateValues.xs).eqls([3, 2]);
       expect(stateVariables['/inCellB3'].activeChildren.length).eq(1);
-      expect(stateVariables['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inCellB3'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
       expect(stateVariables['/inRow2'].activeChildren.length).eq(0);
       expect(stateVariables['/inColumn1'].activeChildren.length).eq(1);
-      expect(stateVariables['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inColumn1'].activeChildren[0].componentName].stateValues.xs).eqls([3, 2]);
       expect(stateVariables['/inRangeA2B4'].activeChildren.length).eq(2);
-      expect(stateVariables['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(stateVariables['/inRangeA2B4'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inRangeA2B4'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inRangeA2B4'].activeChildren[1].componentName].stateValues.xs).eqls([3, 2]);
 
     })
 
     cy.log('enter point on top of text in A1');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 1, text: '(7,3)', clear: true });
+    cy.get('#\\/t1').should('have.text', '(7,3)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('(7,3)');
@@ -1219,24 +1312,25 @@ describe('Spreadsheet Tag Tests', function () {
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[2][1]).eq('(5,4)');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[3][0]).eq('(3,2)');
       expect(stateVariables['/inAllCells'].activeChildren.length).eq(3);
-      expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
-      expect(stateVariables['/inAllCells'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(stateVariables['/inAllCells'].activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs).eqls([7, 3]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[1].componentName].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[2].componentName].stateValues.xs).eqls([3, 2]);
       expect(stateVariables['/inCellB3'].activeChildren.length).eq(1);
-      expect(stateVariables['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inCellB3'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
       expect(stateVariables['/inRow2'].activeChildren.length).eq(0);
       expect(stateVariables['/inColumn1'].activeChildren.length).eq(2);
-      expect(stateVariables['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
-      expect(stateVariables['/inColumn1'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inColumn1'].activeChildren[0].componentName].stateValues.xs).eqls([7, 3]);
+      expect(stateVariables[stateVariables['/inColumn1'].activeChildren[1].componentName].stateValues.xs).eqls([3, 2]);
       expect(stateVariables['/inRangeA2B4'].activeChildren.length).eq(2);
-      expect(stateVariables['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(stateVariables['/inRangeA2B4'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inRangeA2B4'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inRangeA2B4'].activeChildren[1].componentName].stateValues.xs).eqls([3, 2]);
 
     })
 
 
     cy.log('non-numerical point added (but not graphed) in D2');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: 4, text: '(x,q)', clear: true });
+    cy.get('#\\/t4').should('have.text', '(x,q)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('(7,3)');
@@ -1246,26 +1340,27 @@ describe('Spreadsheet Tag Tests', function () {
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[3][0]).eq('(3,2)');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[1][3]).eq('(x,q)');
       expect(stateVariables['/inAllCells'].activeChildren.length).eq(4);
-      expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
-      expect(stateVariables['/inAllCells'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls(['x', 'q']);
-      expect(stateVariables['/inAllCells'].activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(stateVariables['/inAllCells'].activeChildren[3].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs).eqls([7, 3]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[1].componentName].stateValues.xs).eqls(['x', 'q']);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[2].componentName].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[3].componentName].stateValues.xs).eqls([3, 2]);
       expect(stateVariables['/inCellB3'].activeChildren.length).eq(1);
-      expect(stateVariables['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inCellB3'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
       expect(stateVariables['/inRow2'].activeChildren.length).eq(1);
-      expect(stateVariables['/inRow2'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls(['x', 'q']);
+      expect(stateVariables[stateVariables['/inRow2'].activeChildren[0].componentName].stateValues.xs).eqls(['x', 'q']);
       expect(stateVariables['/inColumn1'].activeChildren.length).eq(2);
-      expect(stateVariables['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
-      expect(stateVariables['/inColumn1'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inColumn1'].activeChildren[0].componentName].stateValues.xs).eqls([7, 3]);
+      expect(stateVariables[stateVariables['/inColumn1'].activeChildren[1].componentName].stateValues.xs).eqls([3, 2]);
       expect(stateVariables['/inRangeA2B4'].activeChildren.length).eq(2);
-      expect(stateVariables['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(stateVariables['/inRangeA2B4'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inRangeA2B4'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inRangeA2B4'].activeChildren[1].componentName].stateValues.xs).eqls([3, 2]);
 
     })
 
 
     cy.log('3D point added (but not graphed) in A2');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: 1, text: '(1,2,3)', clear: true });
+    cy.get('#\\/t5').should('have.text', '(1,2,3)')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq('(7,3)');
@@ -1276,24 +1371,24 @@ describe('Spreadsheet Tag Tests', function () {
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[1][3]).eq('(x,q)');
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[1][0]).eq('(1,2,3)');
       expect(stateVariables['/inAllCells'].activeChildren.length).eq(5);
-      expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
-      expect(stateVariables['/inAllCells'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([1, 2, 3]);
-      expect(stateVariables['/inAllCells'].activeChildren[2].stateValues.xs.map(x => x.tree)).eqls(['x', 'q']);
-      expect(stateVariables['/inAllCells'].activeChildren[3].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(stateVariables['/inAllCells'].activeChildren[4].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs).eqls([7, 3]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[1].componentName].stateValues.xs).eqls([1, 2, 3]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[2].componentName].stateValues.xs).eqls(['x', 'q']);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[3].componentName].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inAllCells'].activeChildren[4].componentName].stateValues.xs).eqls([3, 2]);
       expect(stateVariables['/inCellB3'].activeChildren.length).eq(1);
-      expect(stateVariables['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inCellB3'].activeChildren[0].componentName].stateValues.xs).eqls([5, 4]);
       expect(stateVariables['/inRow2'].activeChildren.length).eq(2);
-      expect(stateVariables['/inRow2'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2, 3]);
-      expect(stateVariables['/inRow2'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls(['x', 'q']);
+      expect(stateVariables[stateVariables['/inRow2'].activeChildren[0].componentName].stateValues.xs).eqls([1, 2, 3]);
+      expect(stateVariables[stateVariables['/inRow2'].activeChildren[1].componentName].stateValues.xs).eqls(['x', 'q']);
       expect(stateVariables['/inColumn1'].activeChildren.length).eq(3);
-      expect(stateVariables['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
-      expect(stateVariables['/inColumn1'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([1, 2, 3]);
-      expect(stateVariables['/inColumn1'].activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inColumn1'].activeChildren[0].componentName].stateValues.xs).eqls([7, 3]);
+      expect(stateVariables[stateVariables['/inColumn1'].activeChildren[1].componentName].stateValues.xs).eqls([1, 2, 3]);
+      expect(stateVariables[stateVariables['/inColumn1'].activeChildren[2].componentName].stateValues.xs).eqls([3, 2]);
       expect(stateVariables['/inRangeA2B4'].activeChildren.length).eq(3);
-      expect(stateVariables['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2, 3]);
-      expect(stateVariables['/inRangeA2B4'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-      expect(stateVariables['/inRangeA2B4'].activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(stateVariables[stateVariables['/inRangeA2B4'].activeChildren[0].componentName].stateValues.xs).eqls([1, 2, 3]);
+      expect(stateVariables[stateVariables['/inRangeA2B4'].activeChildren[1].componentName].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables[stateVariables['/inRangeA2B4'].activeChildren[2].componentName].stateValues.xs).eqls([3, 2]);
 
 
     })
@@ -1312,17 +1407,17 @@ describe('Spreadsheet Tag Tests', function () {
     //   expect(stateVariables['/_spreadsheet1'].stateValues.cells[1][3]).eq('(x,q)');
     //   expect(stateVariables['/_spreadsheet1'].stateValues.cells[1][0]).eq('(1,2,3)');
     //   expect(stateVariables['/inAllCells'].activeChildren.length).eq(5);
-    //   expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs[0].tree).eq(7);
-    //   expect(stateVariables['/inAllCells'].activeChildren[0].stateValues.xs[1].tree).eq(3);
-    //   expect(stateVariables['/inAllCells'].activeChildren[1].stateValues.xs[0].tree).eq(1);
-    //   expect(stateVariables['/inAllCells'].activeChildren[1].stateValues.xs[1].tree).eq(2);
-    //   expect(stateVariables['/inAllCells'].activeChildren[1].stateValues.xs[2].tree).eq(3);
-    //   expect(stateVariables['/inAllCells'].activeChildren[2].stateValues.xs[0].tree).eq(8);
-    //   expect(stateVariables['/inAllCells'].activeChildren[2].stateValues.xs[1].tree).eq(5);
-    //   expect(stateVariables['/inAllCells'].activeChildren[3].stateValues.xs[0].tree).eq(0);
-    //   expect(stateVariables['/inAllCells'].activeChildren[3].stateValues.xs[1].tree).eq(1);
-    //   expect(stateVariables['/inAllCells'].activeChildren[4].stateValues.xs[0].tree).eq('x');
-    //   expect(stateVariables['/inAllCells'].activeChildren[4].stateValues.xs[1].tree).eq('q');
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs[0]).eq(7);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[0].componentName].stateValues.xs[1]).eq(3);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[1].componentName].stateValues.xs[0]).eq(1);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[1].componentName].stateValues.xs[1]).eq(2);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[1].componentName].stateValues.xs[2]).eq(3);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[2].componentName].stateValues.xs[0]).eq(8);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[2].componentName].stateValues.xs[1]).eq(5);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[3].componentName].stateValues.xs[0]).eq(0);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[3].componentName].stateValues.xs[1]).eq(1);
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[4].componentName].stateValues.xs[0]).eq('x');
+    //   expect(stateVariables[stateVariables['/inAllCells'].activeChildren[4].componentName].stateValues.xs[1]).eq('q');
     // })
 
   })
@@ -1346,6 +1441,10 @@ describe('Spreadsheet Tag Tests', function () {
   </row>
   </spreadsheet>
   
+  <p>
+    <copy prop="cellD1" target="_spreadsheet1" assignNames="D1a" />
+  </p>
+
 
   `}, "*");
     });
@@ -1373,6 +1472,7 @@ describe('Spreadsheet Tag Tests', function () {
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 2, text: 'bye', clear: true });
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 3, text: 'ab', clear: true });
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 4, text: '1+q', clear: true });
+    cy.get('#\\/D1a').should('have.text', '1+q');
 
     cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq('x2')
@@ -2615,6 +2715,7 @@ describe('Spreadsheet Tag Tests', function () {
     enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 2, text: "7" });
 
 
+    cy.get('#\\/_text2').should('have.text', '5 + 7');
     cy.get('#\\/_p1').should('have.text', '5 A');
 
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2627,13 +2728,13 @@ describe('Spreadsheet Tag Tests', function () {
       expect(text.trim()).equal('12')
     })
     cy.get('#\\/_number2').should('have.text', '12')
-    cy.get('#\\/_text2').should('have.text', '5 + 7');
 
 
     cy.log("different variables in cells")
     enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "x" });
     enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 2, text: "y" });
 
+    cy.get('#\\/_text2').should('have.text', 'x + y');
     cy.get('#\\/_p1').should('have.text', 'x A');
 
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2646,13 +2747,13 @@ describe('Spreadsheet Tag Tests', function () {
       expect(text.trim()).equal('x+y')
     })
     cy.get('#\\/_number2').should('have.text', 'NaN')
-    cy.get('#\\/_text2').should('have.text', 'x + y');
 
 
     cy.log("non-valid math in one cell")
     enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "q(" });
     enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 2, text: "sin(w)" });
 
+    cy.get('#\\/_text2').should('have.text', 'q( + sin(w)');
     cy.get('#\\/_p1').should('have.text', 'q( A');
 
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2665,13 +2766,13 @@ describe('Spreadsheet Tag Tests', function () {
       expect(text.trim()).equal('＿+sin(w)')
     })
     cy.get('#\\/_number2').should('have.text', 'NaN')
-    cy.get('#\\/_text2').should('have.text', 'q( + sin(w)');
 
 
     cy.log("one cell is blank")
     enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 1, text: "", clear: true });
     enterSpreadsheetText({ id: "\\/_spreadsheet1", column: 1, row: 2, text: "5" });
 
+    cy.get('#\\/_text2').should('have.text', ' + 5');
     cy.get('#\\/_p1').should('have.text', ' A');
 
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2684,7 +2785,6 @@ describe('Spreadsheet Tag Tests', function () {
       expect(text.trim()).equal('＿+5')
     })
     cy.get('#\\/_number2').should('have.text', 'NaN')
-    cy.get('#\\/_text2').should('have.text', ' + 5');
 
   })
 
@@ -2726,9 +2826,9 @@ describe('Spreadsheet Tag Tests', function () {
     enterSpreadsheetText({ id: "\\/s", column: 2, row: 1, text: "B" });
     enterSpreadsheetText({ id: "\\/s", column: 2, row: 2, text: "C" });
 
+    cy.get('#\\/_row1').should('have.text', 'BHelloC');
     cy.get('#\\/c1').should('have.text', 'B');
     cy.get('#\\/c2').should('have.text', 'A');
-    cy.get('#\\/_row1').should('have.text', 'BHelloC');
     cy.get('#\\/_row2').should('have.text', 'ByeA');
 
   })
@@ -2765,7 +2865,7 @@ describe('Spreadsheet Tag Tests', function () {
       let B1 = x + A2;
       let B2 = A1 + C2;
 
-      expect(stateVariables['/x'].stateValues.value.tree).eq(x);
+      expect(stateVariables['/x'].stateValues.value).eq(x);
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq(A1.toString());
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][1]).eq(B1.toString());
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[1][0]).eq(A2.toString());
@@ -2788,7 +2888,7 @@ describe('Spreadsheet Tag Tests', function () {
       let B1 = x + A2;
       let B2 = A1 + C2;
 
-      expect(stateVariables['/x'].stateValues.value.tree).eq(x);
+      expect(stateVariables['/x'].stateValues.value).eq(x);
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq(A1.toString());
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][1]).eq(B1.toString());
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[1][0]).eq(A2.toString());
@@ -2811,7 +2911,7 @@ describe('Spreadsheet Tag Tests', function () {
       let C2 = B2 - A1;
       let A2 = B1 - x;
 
-      expect(stateVariables['/x'].stateValues.value.tree).eq(x);
+      expect(stateVariables['/x'].stateValues.value).eq(x);
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][0]).eq(A1.toString());
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[0][1]).eq(B1.toString());
       expect(stateVariables['/_spreadsheet1'].stateValues.cells[1][0]).eq(A2.toString());

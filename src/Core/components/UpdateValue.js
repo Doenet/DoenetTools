@@ -435,17 +435,17 @@ export default class UpdateValue extends InlineComponent {
     });
 
 
-
-
   }
 
-  async updateValueIfTriggerNewlyTrue({ stateValues, previousValues }) {
+  async updateValueIfTriggerNewlyTrue({ stateValues, previousValues, actionId }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
     if (await stateValues.triggerWhen && previousValues.triggerWhen === false &&
       !await this.stateValues.insideTriggerSet
     ) {
-      return await this.updateValue();
+      return await this.updateValue({ actionId });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

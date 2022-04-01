@@ -7686,7 +7686,7 @@ export default class Core {
         if (event) {
           this.requestRecordEvent(event);
         }
-        if(!args) {
+        if (!args) {
           args = {};
         }
         return await action(args);
@@ -7698,10 +7698,12 @@ export default class Core {
   }
 
   resolveAction({ actionId }) {
-    postMessage({
-      messageType: "resolveAction",
-      args: { actionId }
-    })
+    if (actionId) {
+      postMessage({
+        messageType: "resolveAction",
+        args: { actionId }
+      })
+    }
   }
 
   async triggerChainedActions({ componentName }) {
@@ -7793,7 +7795,33 @@ export default class Core {
 
   }
 
-  async performUpdate({ updateInstructions, actionId, event }) {
+  async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false }) {
+
+    if (this.flags.readOnly && !overrideReadOnly) {
+
+      let sourceInformation = {};
+
+      for (let instruction of updateInstructions) {
+
+        let componentSourceInformation = sourceInformation[instruction.componentName];
+        if (!componentSourceInformation) {
+          componentSourceInformation = sourceInformation[instruction.componentName] = {};
+        }
+
+        if (instruction.sourceInformation) {
+          Object.assign(componentSourceInformation, instruction.sourceInformation);
+        }
+      }
+
+      await this.updateRendererInstructions({
+        componentNamesToUpdate: updateInstructions.map(x => x.componentName),
+        sourceOfUpdate: { sourceInformation },
+        actionId,
+      });
+
+      return;
+
+    }
 
     let newStateVariableValues = {};
     let newStateVariableValuesProcessed = [];
