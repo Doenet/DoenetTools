@@ -6,6 +6,58 @@ import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVar
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
 import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton.jsx';
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.jsx';
+import styled, { keyframes } from 'styled-components';
+
+const movingGradient = keyframes `
+  0% { background-position: -250px 0; }
+  100% { background-position: 250px 0; }
+`;
+
+const Table = styled.table `
+  width: 850px;
+  border-radius: 5px;
+`;
+const Tr = styled.tr `
+  border-bottom: 2px solid black;
+  /* background-color: blue; */
+`;
+const Td = styled.td `
+  height: 40px;
+  vertical-align: middle;
+  padding: 8px;
+
+  &.Td2 {
+    width: 50px;
+  }
+
+  &.Td3 {
+    width: 400px;
+  }
+
+`;
+const TBody = styled.tbody ``;
+// const TdSpan = styled.span `
+//   display: block;
+// `;
+const Td2Span = styled.span `
+  display: block; 
+  background-color: rgba(0,0,0,.15);
+  width: 70px;
+  height: 16px;
+  border-radius: 5px;
+`;
+const Td3Span = styled.span `
+  display: block;
+  height: 14px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+  background-size: 500px 100px;
+  animation-name: ${movingGradient};
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+`;
 
 
 // serializeFunctions.expandDoenetMLsToFullSerializedComponents({
@@ -22,7 +74,34 @@ import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/Acti
 
 
 ReactDOM.render(
-  <ActionButtonGroup vertical label="What:" verticalLabel><ActionButton alert/><ActionButton alert/></ActionButtonGroup>,
+  <Table>
+    <TBody>
+      <Tr>
+        <Td className="Td2">
+          <Td2Span></Td2Span>
+        </Td>
+        <Td className="Td3">
+          <Td3Span></Td3Span>
+        </Td>
+      </Tr>
+      <Tr>
+        <Td className="Td2">
+          <Td2Span></Td2Span>
+        </Td>
+        <Td className="Td3">
+          <Td3Span></Td3Span>
+        </Td>
+      </Tr>
+      <Tr>
+        <Td className="Td2">
+          <Td2Span></Td2Span>
+        </Td>
+        <Td className="Td3">
+          <Td3Span></Td3Span>
+        </Td>
+      </Tr>
+    </TBody>
+  </Table>,
   document.getElementById('root'),
 );
 
