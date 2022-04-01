@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
+import { HashRouter as Router, Link, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
 //=== COMPONENT IMPORTS ===
@@ -1634,28 +1634,24 @@ export default function attempt() {
             {/* <SearchBar width='110px'/> */}
           </div>
           <h3>
-            <Link to={`/uiDocs/new_components`} style={{ color: 'black' }}>
+            <Link to={`/new_components`} style={{ color: 'black' }}>
               New Component Guidelines
             </Link>
           </h3>
           <List>
             {dataStructure.map(({ name, id }) => (
               <li key={id}>
-                <Link to={`/uiDocs/component/${id}`} style={{ color: 'black' }}>
+                <Link to={`/component/${id}`} style={{ color: 'black' }}>
                   {name}
                 </Link>
               </li>
             ))}
           </List>
         </NavBar>
-
         <Content>
-          <Route exact path="/uiDocs" component={Home}></Route>
-          <Route exact path={`/uiDocs/new_components`} component={New}></Route>
-          <Route
-            path={`/uiDocs/component/:componentId`}
-            component={Components}
-          ></Route>
+          <Route exact path="/" component={Home} />
+          <Route path={`/new_components`} component={New} />
+          <Route path={`/component/:componentId`} component={Components} />
         </Content>
       </div>
     </Router>
