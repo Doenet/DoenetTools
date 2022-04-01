@@ -6,7 +6,17 @@ import './homepage.css';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useSetRecoilState } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
+import DoenetDriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
 
+
+{/*<style>
+  .center {
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  }
+</style>*/}
 
 const Headings = styled.h1`
   line-height: 1.1em;
@@ -89,6 +99,18 @@ const Footer = styled.div`
   text-align: center;
 `;
 
+const Caption = styled.p`
+text-align: center;
+   display: block;
+    `;
+
+
+
+
+
+
+
+
 export default function HomePage(props) {
   // console.log(">>>===HomePage")
   let history = useHistory();
@@ -168,16 +190,8 @@ export default function HomePage(props) {
             </h4>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-            <DoenetImage src={'/media/profile_pictures/RandomlyGeneratedGraph.jpg'} width="175" />
+          <a href="https://www.doenet.org/#/content?tool=edit&doenetId=qyPDhmvsuwjwNGM9OPy3Q"><DoenetDriveCard image="RandomlyGeneratedGraph.jpg" label="Randomly-Generated Graphs" width="100px" /></a>
 
-            <DoenetImage src={'/media/profile_pictures/Cobwebbing.jpg'} width="175" />
-
-            <DoenetImage src={'/media/profile_pictures/DynamicContentInteractions.jpg'} width="175" />
-
-            <DoenetImage src={'/media/profile_pictures/BasicAnswerValidation.jpg'} width="175" />
-
-          </div>
           <Paragraph>
             {/*<div style={{ display: "flex", justifyContent: "space-evenly", padding: "100" }}>
               <Button onClick={() => navigate({ tool: "edit", params: { doenetID: "qyPDhmvsuwjwNGM9OPy3Q" }, page: "content" })} size="medium" value="Randomly-Generated Graphs" />
@@ -185,16 +199,34 @@ export default function HomePage(props) {
               <Button onClick={() => history.push('/content?tool=edit&doenetId=JXTxrd8XXjfEy9GuFPcy6')} size="medium" value="Dynamic Content Interactions" />
               <Button onClick={() => history.push('/content?tool=edit&doenetId=UdDWyNkqfF21O6Ew-Qh4O')} size="medium" value="Basics of Answer Validation" />
             </div>*/}
-            <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=qyPDhmvsuwjwNGM9OPy3Q">Randomly-Generated Graphs</a>
-              </button>
-              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=T-cgqOlqTxAJbicaXqtKg">Hands-On Exploratory Activities</a>
-              </button>
-              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=JXTxrd8XXjfEy9GuFPcy6" width="50">Dynamic Content Interactions</a>
-              </button>
-              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=UdDWyNkqfF21O6Ew-Qh4O" width="40">Basics of Answer Validation</a>
-              </button>
-            </div>
+            {/*<div style={{ display: "flex", justifyContent: "space-evenly" }}>
+              <div>
+                <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=qyPDhmvsuwjwNGM9OPy3Q"><DoenetImage src={'/media/profile_pictures/RandomlyGeneratedGraph.jpg'} width="185" />
+                  <Caption>Randomly-Generated Graphs</Caption></a>
+                </button>
+              </div>
+
+              <div>
+                <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=T-cgqOlqTxAJbicaXqtKg">
+                  <DoenetImage src={'/media/profile_pictures/Cobwebbing.jpg'} width="185" />
+                  <Caption>Hands-On Activities</Caption></a>
+                </button>
+              </div>
+
+              <div>
+                <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=JXTxrd8XXjfEy9GuFPcy6">
+                  <DoenetImage src={'/media/profile_pictures/DynamicContentInteractions.jpg'} width="185" />
+                  <Caption>Dynamic Content Interactions</Caption></a>
+                </button>
+              </div>
+
+              <div>
+                <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=UdDWyNkqfF21O6Ew-Qh4O">
+                  <DoenetImage src={'/media/profile_pictures/BasicAnswerValidation.jpg'} width="185" />
+                  <Caption>Basics of Answer Validation</Caption></a>
+                </button>
+          </div>
+          </div>*/}
           </Paragraph>
 
         </Paragraph>
@@ -206,29 +238,48 @@ export default function HomePage(props) {
         </Paragraph>
         <Paragraph>
           <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-            <DoenetImage src={'/media/profile_pictures/AnteaterDynamicalSystem.jpg'} width="175" />
-            {/*filler image use src={'/media/sample_pictures/AnteaterDynamicalSystem.jpg'}}*/}
-            <DoenetImage src={'/media/profile_pictures/SketchGaussianCurve.jpg'} width="175" />
-            {/*filler image use src={'/media/sample_pictures/SketchGaussianCurve.jpg'}}*/}
-            <DoenetImage src={'/media/profile_pictures/AverageRateOfChange.jpg'} width="175" />
-            {/*filler image use src={'/media/sample_pictures/AverageRateOfChange.jpg'}}*/}
-            <DoenetImage src={'/media/profile_pictures/RiemannSums.jpg'} width="175" />
-            {/*filler image use src={'/media/sample_pictures/RiemannSums.jpg'}}*/}
+            <div>
+              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD"><DoenetImage src={'/media/profile_pictures/AnteaterDynamicalSystem.jpg'} width="185" />
+                <Caption>Exploring an Anteater Dynamical System</Caption></a></button>
+            </div>
+            <div>
+              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq"><DoenetImage src={'/media/profile_pictures/SketchGaussianCurve.jpg'} width="185" /><Caption>Sketching the Derivative of a Gaussian</Caption></a></button>
+            </div>
+            <div>
+              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3"><DoenetImage src={'/media/profile_pictures/AverageRateOfChange.jpg'} width="185" /><Caption>Average Rate of Change, Squirrel and Owl</Caption></a></button>
+            </div>
+            <div>
+              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6"><DoenetImage src={'/media/profile_pictures/RiemannSums.jpg'} width="185" /><Caption>Sketching Riemann Sums, Varying Intervals</Caption></a></button>
+            </div>
           </div>
-          <Paragraph>
 
-            {/* <Button onClick={() => history.push('/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD')} size="medium" value="Exploring an Anteater Dynamical System" />
+
+
+          {/* <Button onClick={() => history.push('/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD')} size="medium" value="Exploring an Anteater Dynamical System" />
               <Button onClick={() => history.push('/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq')} size="medium" value="Sketching the Derivative of a Gaussian" />
               <Button onClick={() => history.push('/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3')} size="medium" value="Average Rate of Change, Squirrel and Owl" />
               <Button onClick={() => history.push('/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6')} size="medium" value="Average Rate of Change, Squirrel and Owl" /> */}
 
-            <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD">Exploring an anteater dynamical system</a></button>
-              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq">Sketching the derivative of a Gaussian</a></button>
-              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3">Average rate of change, squirrel and owl</a></button>
-              <button type="button"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6">Sketching Riemann Sums</a></button>
+          {/*<div style={{ display: "flex", justifyContent: "space-evenly" }}>
+              <button type="button" width="175"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD">Exploring a Dynamical System</a></button>
+              <button type="button" width="175"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq">Derivative of a Gaussian</a></button>
+              <button type="button" width="175"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3">Average Rate of Change</a></button>
+              <button type="button" width="175"><a href="https://www.doenet.org/#/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6">Sketching Riemann Sums</a></button>
+            </div>*/}
+          {/*<div style={{ display: "flex", justifyContent: "space-evenly" }}>
+              <a href="https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD">Exploring a Dynamical System</a>
+              <a href="https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq">Derivative of a Gaussian</a>
+              <a href="https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3">Average Rate of Change</a>
+              <a href="https://www.doenet.org/#/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6">Sketching Riemann Sums</a>
+          </div>*/}
+
+
+          <Paragraph>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <a href="">DoenetML Online Guide</a>
             </div>
           </Paragraph>
+
         </Paragraph>
 
 
