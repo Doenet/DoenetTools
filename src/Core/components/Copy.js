@@ -1149,7 +1149,7 @@ export default class Copy extends CompositeComponent {
     workspace, componentInfoObjects, compositeAttributesObj, flags
   }) {
 
-    if (!(component.attributes.componentType && component.attributes.componentType.primitive)
+    if (!component.attributes.componentType?.primitive
       && !component.sharedParameters.compositesMustHaveAReplacement
     ) {
 
@@ -1163,7 +1163,10 @@ export default class Copy extends CompositeComponent {
       replacementTypes = replacements.map(x => x.componentType);
 
       if (replacementTypes.length === 1 && replacementTypes[0] === "externalContent") {
-        replacementTypes = replacements[0].children.map(x => x.componentType)
+        // since looking for a particular componentType, filter out blank strings
+        replacementTypes = replacements[0].children
+          .filter(x => x.componentType || x.trim().length > 0)
+          .map(x => x.componentType)
       }
 
     } else {
