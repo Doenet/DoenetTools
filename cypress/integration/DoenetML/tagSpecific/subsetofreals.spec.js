@@ -1397,6 +1397,17 @@ describe('SubsetOfReals Tag Tests', function () {
       cy.get('#\\/s8 .mjx-mrow').should('contain.text', str)
       cy.get('#\\/s9 .mjx-mrow').should('contain.text', str)
 
+      cy.get('#\\/input0 .mq-editable-field').should('contain.text', str0)
+      cy.get('#\\/input1 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input2 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input3 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input4 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input5 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input6 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input7 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input8 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input9 .mq-editable-field').should('contain.text', str)
+
       cy.get('#\\/s1 .mjx-mrow').eq(0).should('have.text', str)
       cy.get('#\\/s2 .mjx-mrow').eq(0).should('have.text', str)
       cy.get('#\\/s3 .mjx-mrow').eq(0).should('have.text', str)

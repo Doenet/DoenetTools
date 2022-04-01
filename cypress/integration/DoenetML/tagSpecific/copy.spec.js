@@ -886,7 +886,9 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('be.visible')
 
       cy.log(`enter correct answer for problem 2`);
-      cy.get(mathinputAnchor).type('{end}{backspace}x{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{end}{backspace}x', { force: true });
+      cy.get(mathinputSubmitAnchor).should('be.visible')
+      cy.get(mathinputAnchor).type('{enter}', { force: true });
       cy.get(mathinputSubmitAnchor).should('not.exist')
       cy.get(mathinputCorrectAnchor).should('be.visible')
       cy.get(mathinputIncorrectAnchor).should('not.exist')
@@ -963,7 +965,9 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('be.visible')
 
       cy.log(`enter correct answer for problem 2`);
-      cy.get(mathinputAnchor).type('{end}{backspace}x{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{end}{backspace}x', { force: true });
+      cy.get(mathinputSubmitAnchor).should('be.visible')
+      cy.get(mathinputAnchor).type('{enter}', { force: true });
       cy.get(mathinputSubmitAnchor).should('not.exist')
       cy.get(mathinputCorrectAnchor).should('be.visible')
       cy.get(mathinputIncorrectAnchor).should('not.exist')
@@ -1021,7 +1025,9 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('be.visible')
 
       cy.log(`enter correct answer for problem 2`);
-      cy.get(mathinputAnchor).type('{end}{backspace}x{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{end}{backspace}x', { force: true });
+      cy.get(mathinputSubmitAnchor).should('be.visible')
+      cy.get(mathinputAnchor).type('{enter}', { force: true });
       cy.get(mathinputSubmitAnchor).should('not.exist')
       cy.get(mathinputCorrectAnchor).should('be.visible')
       cy.get(mathinputIncorrectAnchor).should('not.exist')
@@ -1100,7 +1106,9 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('be.visible')
 
       cy.log(`enter correct answer for problem 2`);
-      cy.get(mathinputAnchor).type('{end}{backspace}x{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{end}{backspace}x', { force: true });
+      cy.get(mathinputSubmitAnchor).should('be.visible')
+      cy.get(mathinputAnchor).type('{enter}', { force: true });
       cy.get(mathinputSubmitAnchor).should('not.exist')
       cy.get(mathinputCorrectAnchor).should('be.visible')
       cy.get(mathinputIncorrectAnchor).should('not.exist')
@@ -1158,7 +1166,9 @@ describe('Copy Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('be.visible')
 
       cy.log(`enter correct answer for problem 2`);
-      cy.get(mathinputAnchor).type('{end}{backspace}x{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{end}{backspace}x', { force: true });
+      cy.get(mathinputSubmitAnchor).should('be.visible')
+      cy.get(mathinputAnchor).type('{enter}', { force: true });
       cy.get(mathinputSubmitAnchor).should('not.exist')
       cy.get(mathinputCorrectAnchor).should('be.visible')
       cy.get(mathinputIncorrectAnchor).should('not.exist')
@@ -1393,7 +1403,7 @@ describe('Copy Tag Tests', function () {
     cy.log('stop simplifying copies')
     cy.get('#\\/s2_input').clear().type("none{enter}");
 
-    cy.get(`#\\/m`).should('contain.text', '2⋅4x')
+    cy.get(`#\\/m2`).should('contain.text', '2⋅2x')
 
     cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('2⋅4x')

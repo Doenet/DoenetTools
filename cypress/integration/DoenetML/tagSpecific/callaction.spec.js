@@ -96,6 +96,7 @@ describe('CallAction Tag Tests', function () {
       <point>(3,4)</point>
     </callAction>
     <callAction name="deletePoint" target="theGraphs/g" actionName="deleteChildren" label="delete point" number="1" />
+    <p><booleaninput name="bi" /><copy prop="value" target="bi" assignNames="b" /></p>
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -138,7 +139,7 @@ describe('CallAction Tag Tests', function () {
         expect(stateVariables[pointNames[1]].stateValues.xs).eqls([3, 4])
       }
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: g1.stateValues.graphicalDescendants[1].componentName,
         args: { x: -2, y: 5 }
@@ -185,7 +186,7 @@ describe('CallAction Tag Tests', function () {
         expect(stateVariables[pointNames[2]].stateValues.xs).eqls([3, 4])
       }
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: g2.stateValues.graphicalDescendants[2].componentName,
         args: { x: 7, y: -9 }
@@ -231,7 +232,7 @@ describe('CallAction Tag Tests', function () {
         expect(stateVariables[pointNames[1]].stateValues.xs).eqls([-2, 5])
       }
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: g3.stateValues.graphicalDescendants[1].componentName,
         args: { x: 1, y: 0 }
@@ -281,8 +282,10 @@ describe('CallAction Tag Tests', function () {
 
     cy.get('#\\/deletePoint_button').click();
 
-    // since nothing happens, we just wait a second
-    cy.wait(1000);
+    // since nothing happens, we wait for core to respond to booleaninput
+    cy.get('#\\/bi_input').click();
+    cy.get('#\\/b').should('have.text', 'true');
+
     cy.get('#\\/p1').should('contain.text', '(1,2)');
 
     cy.window().then(async (win) => {
@@ -391,7 +394,7 @@ describe('CallAction Tag Tests', function () {
         expect(stateVariables[pointNames[1]].stateValues.xs).eqls([3, 4])
 
 
-        win.callAction1({
+        await win.callAction1({
           actionName: "movePoint",
           componentName: pointNames[1],
           args: { x: -2, y: 5 }
@@ -492,7 +495,7 @@ describe('CallAction Tag Tests', function () {
       expect(stateVariables[pointNames[1]].stateValues.xs).eqls([3, 4])
 
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: pointNames[1],
         args: { x: -2, y: 5 }
@@ -541,7 +544,7 @@ describe('CallAction Tag Tests', function () {
       expect(stateVariables[pointNames[1]].stateValues.xs).eqls([-2, 5])
       expect(stateVariables[pointNames[2]].stateValues.xs).eqls([3, 4])
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: pointNames[2],
         args: { x: 7, y: -9 }
@@ -598,7 +601,7 @@ describe('CallAction Tag Tests', function () {
     cy.get('#\\/rs').should('not.exist');
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -1, y: -7 }
@@ -613,7 +616,7 @@ describe('CallAction Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 3, y: -4 }
@@ -627,28 +630,38 @@ describe('CallAction Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 1, y: 7 }
       });
       cy.get('#\\/P2').should('contain.text', '(1,7)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.waitUntil(() => cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
-        expect(numbers2.length).eq(5);
-        for (let num of numbers2) {
-          expect(Number.isInteger(num)).be.true;
-          expect(num).gte(1)
-          expect(num).lte(6)
+        if(numbers2.length !== 5) {
+          return false;
         }
-        expect(numbers2).not.eqls(numbers);
+        let foundChange = false;
+        for (let [i, num] of numbers2.entries()) {
+          if(!Number.isInteger(num) || num < 1 || num > 6 ) {
+            return false;
+          }
+          if(num !== numbers[i]) {
+            foundChange = true;
+          }
+        }
+        if(!foundChange) {
+          return false;
+        }
         numbers = numbers2;
-      })
+        return true;
+      }))
+
     })
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 5, y: 9 }
@@ -663,7 +676,7 @@ describe('CallAction Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -3, y: 4 }
@@ -678,7 +691,7 @@ describe('CallAction Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -6, y: 5 }
@@ -693,7 +706,7 @@ describe('CallAction Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 4, y: 2 }
@@ -701,21 +714,30 @@ describe('CallAction Tag Tests', function () {
 
       cy.get('#\\/P2').should('contain.text', '(4,2)')
 
-      cy.get('#\\/nums').invoke('text').then(text => {
+      cy.waitUntil(() => cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
-        expect(numbers2.length).eq(5);
-        for (let num of numbers2) {
-          expect(Number.isInteger(num)).be.true;
-          expect(num).gte(1)
-          expect(num).lte(6)
+        if(numbers2.length !== 5) {
+          return false;
         }
-        expect(numbers2).not.eqls(numbers);
+        let foundChange = false;
+        for (let [i, num] of numbers2.entries()) {
+          if(!Number.isInteger(num) || num < 1 || num > 6 ) {
+            return false;
+          }
+          if(num !== numbers[i]) {
+            foundChange = true;
+          }
+        }
+        if(!foundChange) {
+          return false;
+        }
         numbers = numbers2;
-      })
+        return true;
+      }))
     })
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 9, y: 7 }
@@ -776,7 +798,7 @@ describe('CallAction Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -1, y: -7 }
@@ -797,7 +819,7 @@ describe('CallAction Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 3, y: -4 }
@@ -819,7 +841,7 @@ describe('CallAction Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 1, y: 7 }
@@ -847,7 +869,7 @@ describe('CallAction Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 5, y: 9 }
@@ -868,7 +890,7 @@ describe('CallAction Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -3, y: 4 }
@@ -889,7 +911,7 @@ describe('CallAction Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -6, y: 5 }
@@ -909,7 +931,7 @@ describe('CallAction Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 4, y: 2 }
@@ -937,7 +959,7 @@ describe('CallAction Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 9, y: 7 }
@@ -1004,7 +1026,7 @@ describe('CallAction Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -1, y: -7 }
@@ -1032,7 +1054,7 @@ describe('CallAction Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 3, y: -4 }
@@ -1053,7 +1075,7 @@ describe('CallAction Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 1, y: 7 }
@@ -1074,7 +1096,7 @@ describe('CallAction Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 5, y: 9 }
@@ -1095,7 +1117,7 @@ describe('CallAction Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -3, y: -4 }
@@ -1123,7 +1145,7 @@ describe('CallAction Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -6, y: -5 }
@@ -1144,7 +1166,7 @@ describe('CallAction Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 4, y: 2 }
@@ -1165,7 +1187,7 @@ describe('CallAction Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 9, y: 7 }
@@ -1247,7 +1269,7 @@ describe('CallAction Tag Tests', function () {
       expect(stateVariables[pointNames[0]].stateValues.xs).eqls([1, 2])
       expect(stateVariables[pointNames[1]].stateValues.xs).eqls([3, 4])
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: pointNames[1],
         args: { x: -2, y: 5 }
@@ -1367,7 +1389,7 @@ describe('CallAction Tag Tests', function () {
         expect(stateVariables[pointNames[0]].stateValues.xs).eqls([1, 2])
         expect(stateVariables[pointNames[1]].stateValues.xs).eqls([3, 4])
 
-        win.callAction1({
+        await win.callAction1({
           actionName: "movePoint",
           componentName: pointNames[1],
           args: { x: -2, y: 5 }
@@ -1478,7 +1500,7 @@ describe('CallAction Tag Tests', function () {
       expect(stateVariables[pointNames[0]].stateValues.xs).eqls([1, 2])
       expect(stateVariables[pointNames[1]].stateValues.xs).eqls([3, 4])
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: pointNames[1],
         args: { x: -2, y: 5 }

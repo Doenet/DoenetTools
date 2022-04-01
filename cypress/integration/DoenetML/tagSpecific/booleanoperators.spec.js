@@ -108,9 +108,9 @@ describe('Boolean Operator Tag Tests', function () {
     <booleaninput />
     <booleaninput />
     <and>
-      <copy prop="value" target="_booleaninput1" assignNames="bv1" />
-      <copy prop="value" target="_booleaninput2" assignNames="bv2" />
-      <copy prop="value" target="_booleaninput3" assignNames="bv3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
     </and>
     <and>
       <copy prop="value" target="_booleaninput1" />
@@ -124,6 +124,11 @@ describe('Boolean Operator Tag Tests', function () {
       <copy prop="value" target="_booleaninput3" />
       false
     </and>
+    <p>
+      <copy prop="value" target="_booleaninput1" assignNames="bv1" />
+      <copy prop="value" target="_booleaninput2" assignNames="bv2" />
+      <copy prop="value" target="_booleaninput3" assignNames="bv3" />
+    </p>
     `}, "*");
     });
 
@@ -146,6 +151,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('check box 1')
     cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/bv1').should('have.text', "true");
     cy.get('#\\/_and1').should('have.text', "false");
     cy.get('#\\/_and2').should('have.text', "false");
     cy.get('#\\/_and3').should('have.text', "false");
@@ -164,6 +170,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('check box 2')
     cy.get('#\\/_booleaninput2_input').click();
+    cy.get('#\\/bv2').should('have.text', "true");
     cy.get('#\\/_and1').should('have.text', "false");
     cy.get('#\\/_and2').should('have.text', "false");
     cy.get('#\\/_and3').should('have.text', "false");
@@ -182,6 +189,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('check box 3')
     cy.get('#\\/_booleaninput3_input').click();
+    cy.get('#\\/bv3').should('have.text', "true");
     cy.get('#\\/_and1').should('have.text', "true");
     cy.get('#\\/_and2').should('have.text', "true");
     cy.get('#\\/_and3').should('have.text', "false");
@@ -208,9 +216,9 @@ describe('Boolean Operator Tag Tests', function () {
     <booleaninput />
     <booleaninput />
     <or>
-      <copy prop="value" target="_booleaninput1" assignNames="bv1" />
-      <copy prop="value" target="_booleaninput2" assignNames="bv2" />
-      <copy prop="value" target="_booleaninput3" assignNames="bv3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
     </or>
     <or>
       <copy prop="value" target="_booleaninput1" />
@@ -224,6 +232,11 @@ describe('Boolean Operator Tag Tests', function () {
       <copy prop="value" target="_booleaninput3" />
       false
     </or>
+    <p>
+      <copy prop="value" target="_booleaninput1" assignNames="bv1" />
+      <copy prop="value" target="_booleaninput2" assignNames="bv2" />
+      <copy prop="value" target="_booleaninput3" assignNames="bv3" />
+    </p>
     `}, "*");
     });
 
@@ -246,6 +259,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('check box 1')
     cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/bv1').should('have.text', "true");
     cy.get('#\\/_or1').should('have.text', "true");
     cy.get('#\\/_or2').should('have.text', "true");
     cy.get('#\\/_or3').should('have.text', "true");
@@ -264,6 +278,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('check box 2')
     cy.get('#\\/_booleaninput2_input').click();
+    cy.get('#\\/bv2').should('have.text', "true");
     cy.get('#\\/_or1').should('have.text', "true");
     cy.get('#\\/_or2').should('have.text', "true");
     cy.get('#\\/_or3').should('have.text', "true");
@@ -282,6 +297,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('check box 3')
     cy.get('#\\/_booleaninput3_input').click();
+    cy.get('#\\/bv3').should('have.text', "true");
     cy.get('#\\/_or1').should('have.text', "true");
     cy.get('#\\/_or2').should('have.text', "true");
     cy.get('#\\/_or3').should('have.text', "true");
@@ -300,6 +316,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('uncheck box 1')
     cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/bv1').should('have.text', "false");
     cy.get('#\\/_or1').should('have.text', "true");
     cy.get('#\\/_or2').should('have.text', "true");
     cy.get('#\\/_or3').should('have.text', "true");
@@ -318,6 +335,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('uncheck box 2')
     cy.get('#\\/_booleaninput2_input').click();
+    cy.get('#\\/bv2').should('have.text', "false");
     cy.get('#\\/_or1').should('have.text', "true");
     cy.get('#\\/_or2').should('have.text', "true");
     cy.get('#\\/_or3').should('have.text', "true");
@@ -336,6 +354,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('uncheck box 3')
     cy.get('#\\/_booleaninput3_input').click();
+    cy.get('#\\/bv3').should('have.text', "false");
     cy.get('#\\/_or1').should('have.text', "false");
     cy.get('#\\/_or2').should('have.text', "true");
     cy.get('#\\/_or3').should('have.text', "false");
@@ -363,9 +382,9 @@ describe('Boolean Operator Tag Tests', function () {
     <booleaninput />
     <booleaninput />
     <xor>
-      <copy prop="value" target="_booleaninput1" assignNames="bv1" />
-      <copy prop="value" target="_booleaninput2" assignNames="bv2" />
-      <copy prop="value" target="_booleaninput3" assignNames="bv3" />
+      <copy prop="value" target="_booleaninput1" />
+      <copy prop="value" target="_booleaninput2" />
+      <copy prop="value" target="_booleaninput3" />
     </xor>
     <xor>
       <copy prop="value" target="_booleaninput1" />
@@ -379,6 +398,11 @@ describe('Boolean Operator Tag Tests', function () {
       <copy prop="value" target="_booleaninput3" />
       false
     </xor>
+    <p>
+      <copy prop="value" target="_booleaninput1" assignNames="bv1" />
+      <copy prop="value" target="_booleaninput2" assignNames="bv2" />
+      <copy prop="value" target="_booleaninput3" assignNames="bv3" />
+    </p>
     `}, "*");
     });
 
@@ -401,6 +425,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('check box 1')
     cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/bv1').should('have.text', "true");
     cy.get('#\\/_xor1').should('have.text', "true");
     cy.get('#\\/_xor2').should('have.text', "false");
     cy.get('#\\/_xor3').should('have.text', "true");
@@ -419,6 +444,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('check box 2')
     cy.get('#\\/_booleaninput2_input').click();
+    cy.get('#\\/bv2').should('have.text', "true");
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.get('#\\/_xor2').should('have.text', "false");
     cy.get('#\\/_xor3').should('have.text', "false");
@@ -437,6 +463,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('check box 3')
     cy.get('#\\/_booleaninput3_input').click();
+    cy.get('#\\/bv3').should('have.text', "true");
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.get('#\\/_xor2').should('have.text', "false");
     cy.get('#\\/_xor3').should('have.text', "false");
@@ -455,6 +482,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('uncheck box 1')
     cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/bv1').should('have.text', "false");
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.get('#\\/_xor2').should('have.text', "false");
     cy.get('#\\/_xor3').should('have.text', "false");
@@ -473,6 +501,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('uncheck box 2')
     cy.get('#\\/_booleaninput2_input').click();
+    cy.get('#\\/bv2').should('have.text', "false");
     cy.get('#\\/_xor1').should('have.text', "true");
     cy.get('#\\/_xor2').should('have.text', "false");
     cy.get('#\\/_xor3').should('have.text', "true");
@@ -491,6 +520,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('uncheck box 3')
     cy.get('#\\/_booleaninput3_input').click();
+    cy.get('#\\/bv3').should('have.text', "false");
     cy.get('#\\/_xor1').should('have.text', "false");
     cy.get('#\\/_xor2').should('have.text', "true");
     cy.get('#\\/_xor3').should('have.text', "false");
@@ -520,6 +550,7 @@ describe('Boolean Operator Tag Tests', function () {
        (1,2)
       </point>
     </graph>
+    <copy prop="value" target="_booleaninput1" assignNames="bv1" />
     `}, "*");
     });
 
@@ -533,6 +564,7 @@ describe('Boolean Operator Tag Tests', function () {
 
     cy.log('check box to show point')
     cy.get('#\\/_booleaninput1_input').click();
+    cy.get('#\\/bv1').should('have.text', "true");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);

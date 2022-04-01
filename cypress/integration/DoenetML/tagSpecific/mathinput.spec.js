@@ -1967,7 +1967,7 @@ describe('MathInput Tag Tests', function () {
     // Note: had to add a larger delay in typing 
     // or MathJax consistently didn't correctly update the second immediate value.
     // Not sure what is going on here.
-    cy.get('#\\/mi1 textarea').type(`{end}{backspace}y`, { force: true, delay: 40 });
+    cy.get('#\\/mi1 textarea').type(`{end}{backspace}y`, { force: true, delay: 100 });
 
     cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'y')
     cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'y')

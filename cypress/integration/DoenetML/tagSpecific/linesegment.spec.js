@@ -823,7 +823,7 @@ describe('LineSegment Tag Tests', function () {
   <text>a</text>
   <number>3</number>
   <graph>
-  <linesegment "/>
+  <linesegment />
   </graph>
   <graph name="g1" newNamespace>
     <point>(-2,1)</point>

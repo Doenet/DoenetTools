@@ -1116,7 +1116,7 @@ describe('Collect Tag Tests', function () {
     cy.log("increase number of points back to 4")
     cy.get('#\\/length textarea').type(`{end}{backspace}4{enter}`, { force: true });
 
-    cy.get('#\\/y8').should('not.exist');
+    cy.get('#\\/y4').should('be.visible');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1148,6 +1148,7 @@ describe('Collect Tag Tests', function () {
     cy.log("decrease max number to 3")
     cy.get('#\\/maxnumber textarea').type(`{end}{backspace}{backspace}3{enter}`, { force: true });
 
+    cy.get('#\\/y4').should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1243,7 +1244,7 @@ describe('Collect Tag Tests', function () {
 
     cy.get('#\\/p_3e span:nth-of-type(1) textarea').type('x{enter}', { force: true });
 
-
+    cy.get('#\\/p_1 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
     // cy.get('#\\/p_original span:nth-of-type(1) input').should('have.value', 'x');
 
     cy.get('#\\/p_1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
@@ -1275,6 +1276,7 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/p_original > span:nth-of-type(4) textarea').type('{end}{backspace}u', { force: true }).blur();
     cy.get('#\\/p_original > span:nth-of-type(5) textarea').type('{end}{backspace}v', { force: true }).blur();
 
+    cy.get('#\\/p_1 > span:nth-of-type(5) .mjx-mrow').should('contain.text', 'v')
 
     // cy.get('#\\/p_original > span:nth-of-type(1) input').should('have.value', 'x');
 
@@ -1374,7 +1376,6 @@ describe('Collect Tag Tests', function () {
 
     // cy.get('#\\/p_original > span:nth-of-type(5) input').should('have.value', 'v');
 
-    cy.get('#\\/p_1 > span:nth-of-type(5) .mjx-mrow').should('contain.text', 'v')
     cy.get('#\\/p_1 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('v') })
     cy.get('#\\/p_1a > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('v') })
     cy.get('#\\/p_1b > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('v') })
@@ -1403,6 +1404,21 @@ describe('Collect Tag Tests', function () {
 
     cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
 
+    cy.get('#\\/p_1 > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+    cy.get('#\\/p_1a > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+    cy.get('#\\/p_1b > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+    cy.get('#\\/p_1c > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+    cy.get('#\\/p_1d > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+    cy.get('#\\/p_1e > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/p_2 > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+    cy.get('#\\/p_2a > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+    cy.get('#\\/p_2b > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+    cy.get('#\\/p_2c > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+    cy.get('#\\/p_2d > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+    cy.get('#\\/p_2e > span:nth-of-type(3) .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/p_1 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
 
     // cy.get('#\\/p_original > span:nth-of-type(1) input').should('have.value', 'x');
 
@@ -1456,6 +1472,7 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/p_3 > span:nth-of-type(1) textarea').type('{end}{backspace}a{enter}', { force: true });
     cy.get('#\\/p_3a > span:nth-of-type(2) textarea').type('{end}{backspace}b{enter}', { force: true });
 
+    cy.get('#\\/p_1 > span:nth-of-type(2) .mjx-mrow').should('contain.text', 'b')
 
     // cy.get('#\\/p_original > span:nth-of-type(1) input').should('have.value', 'a');
 
@@ -1508,6 +1525,7 @@ describe('Collect Tag Tests', function () {
 
     cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
 
+    cy.get('#\\/p_1 > span:nth-of-type(5) .mjx-mrow').should('contain.text', 'v')
 
     // cy.get('#\\/p_original > span:nth-of-type(1) input').should('have.value', 'a');
 
@@ -1634,6 +1652,7 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/p_3c > span:nth-of-type(4) textarea').type('{end}{backspace}d{enter}', { force: true });
     cy.get('#\\/p_3d > span:nth-of-type(5) textarea').type('{end}{backspace}e{enter}', { force: true });
 
+    cy.get('#\\/p_1 > span:nth-of-type(5) .mjx-mrow').should('contain.text', 'e')
 
     // cy.get('#\\/p_original > span:nth-of-type(1) input').should('have.value', 'a');
 

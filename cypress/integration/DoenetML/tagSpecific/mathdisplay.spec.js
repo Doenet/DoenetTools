@@ -105,8 +105,8 @@ describe('Math Display Tag Tests', function () {
     <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" target="n6/eq" />, equation <ref target="n6/eq" name="rn6" /></p>
     <p name="pz">z: <copy prop="equationTag" assignNames="etz" target="z" />, equation <ref target="z" name="rz" /></p>
     <p>
-      <copy prop="value" target="m" assignNames="m2" />
-      <copy prop="value" target="n" assignNames="n2" />
+      <copy prop="value" target="m" assignNames="ma" />
+      <copy prop="value" target="n" assignNames="na" />
     </p>
     `}, "*");
     });
@@ -202,27 +202,27 @@ describe('Math Display Tag Tests', function () {
 
 
     cy.get('#\\/m textarea').type(`{end}{backspace}4{enter}`, { force: true });
-    cy.get('#\\/m2').should('contain.text', '4')
+    cy.get('#\\/ma').should('contain.text', '4')
     checkEquationNumbering(4, 1)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}2{enter}`, { force: true });
-    cy.get('#\\/n2').should('contain.text', '2')
+    cy.get('#\\/na').should('contain.text', '2')
     checkEquationNumbering(4, 2)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/m2').should('contain.text', '0')
+    cy.get('#\\/ma').should('contain.text', '0')
     checkEquationNumbering(0, 2)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.get('#\\/n2').should('contain.text', '6')
+    cy.get('#\\/na').should('contain.text', '6')
     checkEquationNumbering(0, 6)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}3{enter}`, { force: true });
-    cy.get('#\\/m2').should('contain.text', '3')
+    cy.get('#\\/ma').should('contain.text', '3')
     checkEquationNumbering(3, 6)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.get('#\\/n2').should('contain.text', '1')
+    cy.get('#\\/na').should('contain.text', '1')
     checkEquationNumbering(3, 1)
 
 
@@ -360,8 +360,8 @@ describe('Math Display Tag Tests', function () {
     <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" target="n6/eq" />, equation <ref target="n6/eq" name="rn6" /></p>
     <p name="pz">z: <copy prop="equationTag" assignNames="etz" target="z" />, equation <ref target="z" name="rz" /></p>
     <p>
-      <copy prop="value" target="m" assignNames="m2" />
-      <copy prop="value" target="n" assignNames="n2" />
+      <copy prop="value" target="m" assignNames="ma" />
+      <copy prop="value" target="n" assignNames="na" />
     </p>
     `}, "*");
     });
@@ -463,27 +463,27 @@ describe('Math Display Tag Tests', function () {
 
 
     cy.get('#\\/m textarea').type(`{end}{backspace}4{enter}`, { force: true });
-    cy.get('#\\/m2').should('contain.text', '4')
+    cy.get('#\\/ma').should('contain.text', '4')
     checkEquationNumbering(4, 1)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}2{enter}`, { force: true });
-    cy.get('#\\/n2').should('contain.text', '2')
+    cy.get('#\\/na').should('contain.text', '2')
     checkEquationNumbering(4, 2)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/m2').should('contain.text', '0')
+    cy.get('#\\/ma').should('contain.text', '0')
     checkEquationNumbering(0, 2)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.get('#\\/n2').should('contain.text', '6')
+    cy.get('#\\/na').should('contain.text', '6')
     checkEquationNumbering(0, 6)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}3{enter}`, { force: true });
-    cy.get('#\\/m2').should('contain.text', '3')
+    cy.get('#\\/ma').should('contain.text', '3')
     checkEquationNumbering(3, 6)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.get('#\\/n2').should('contain.text', '1')
+    cy.get('#\\/na').should('contain.text', '1')
     checkEquationNumbering(3, 1)
 
 
@@ -529,8 +529,8 @@ describe('Math Display Tag Tests', function () {
     <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" target="n6/eq" />, equation <ref target="n6/eq" name="rn6" /></p>
     <p name="pz">z: <copy prop="equationTag" assignNames="etz" target="z" />, equation <ref target="z" name="rz" /></p>
     <p>
-      <copy prop="value" target="m" assignNames="m2" />
-      <copy prop="value" target="n" assignNames="n2" />
+      <copy prop="value" target="m" assignNames="ma" />
+      <copy prop="value" target="n" assignNames="na" />
     </p>
     `}, "*");
     });
@@ -664,27 +664,27 @@ describe('Math Display Tag Tests', function () {
 
 
     cy.get('#\\/m textarea').type(`{end}{backspace}4{enter}`, { force: true });
-    cy.get('#\\/m2').should('contain.text', '4')
+    cy.get('#\\/ma').should('contain.text', '4')
     checkEquationNumbering(4, 1)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}2{enter}`, { force: true });
-    cy.get('#\\/n2').should('contain.text', '2')
+    cy.get('#\\/na').should('contain.text', '2')
     checkEquationNumbering(4, 2)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}0{enter}`, { force: true });
-    cy.get('#\\/m2').should('contain.text', '0')
+    cy.get('#\\/ma').should('contain.text', '0')
     checkEquationNumbering(0, 2)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}6{enter}`, { force: true });
-    cy.get('#\\/n2').should('contain.text', '6')
+    cy.get('#\\/na').should('contain.text', '6')
     checkEquationNumbering(0, 6)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}3{enter}`, { force: true });
-    cy.get('#\\/m2').should('contain.text', '3')
+    cy.get('#\\/ma').should('contain.text', '3')
     checkEquationNumbering(3, 6)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}1{enter}`, { force: true });
-    cy.get('#\\/n2').should('contain.text', '1')
+    cy.get('#\\/na').should('contain.text', '1')
     checkEquationNumbering(3, 1)
 
 

@@ -59,7 +59,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle")
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [2, 3] }
@@ -91,7 +91,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("change radius")
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 5, y: 0 }
@@ -122,7 +122,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("change center")
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/centerPoint",
         args: { x: -6, y: -2 }
@@ -152,7 +152,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle2")
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph3/circle",
         args: { center: [-7, 9] }
@@ -183,7 +183,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle3")
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph4/circle",
         args: { center: [6, -8] }
@@ -263,7 +263,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle")
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [2, 4] }
@@ -298,7 +298,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("change radius")
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/radiusPoint",
         args: { x: 5, y: 0 }
@@ -331,7 +331,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("change center via defining point")
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/center",
         args: { x: -6, y: -2 }
@@ -365,7 +365,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("change center via reffed point")
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/centerPoint",
         args: { x: -7, y: 8 }
@@ -398,7 +398,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle2")
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph3/circle",
         args: { center: [9, -10] }
@@ -431,7 +431,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle3")
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph4/circle",
         args: { center: [-3, -4] }
@@ -514,7 +514,7 @@ describe('Circle Tag Tests', function () {
     cy.log("move circle")
     cy.window().then(async (win) => {
       let x = 3, y = 4, r = 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [x, y] }
@@ -550,7 +550,7 @@ describe('Circle Tag Tests', function () {
     cy.log("change radius with defining point")
     cy.window().then(async (win) => {
       let x = 3, y = 4, r = 5;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: r, y: 0 }
@@ -584,7 +584,7 @@ describe('Circle Tag Tests', function () {
     cy.log("change radius with reffed point")
     cy.window().then(async (win) => {
       let x = 3, y = 4, r = 7;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: r, y: 0 }
@@ -618,7 +618,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then(async (win) => {
       let x = -5, y = -2, r = 7;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/centerPoint",
         args: { x: x, y: y }
@@ -651,7 +651,7 @@ describe('Circle Tag Tests', function () {
     cy.log("move circle2")
     cy.window().then(async (win) => {
       let x = 9, y = -10, r = 7;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph3/circle",
         args: { center: [x, y] }
@@ -684,7 +684,7 @@ describe('Circle Tag Tests', function () {
     cy.log("move circle3")
     cy.window().then(async (win) => {
       let x = -3, y = -4, r = 7;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph4/circle",
         args: { center: [x, y] }
@@ -773,7 +773,7 @@ describe('Circle Tag Tests', function () {
       let tx = -4, ty = 7;
       let r = 1;
       let cnx = tx, cny = ty - r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
@@ -810,7 +810,7 @@ describe('Circle Tag Tests', function () {
       let tx = -5, ty = 9;
       let r = 1;
       let cnx = tx, cny = ty - r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: tx, y: ty }
@@ -847,7 +847,7 @@ describe('Circle Tag Tests', function () {
       let tx = 3, ty = -3;
       let r = 1;
       let cnx = tx, cny = ty - r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
@@ -884,7 +884,7 @@ describe('Circle Tag Tests', function () {
       let r = 3;
       let cnx = 3, cny = -6;
       let tx = 3, ty = cny + r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: r, y: 0 }
@@ -922,7 +922,7 @@ describe('Circle Tag Tests', function () {
       let r = 0;
       let cnx = 3, cny = -3;
       let tx = 3, ty = cny + r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: rtry, y: 0 }
@@ -959,7 +959,7 @@ describe('Circle Tag Tests', function () {
       let r = 2;
       let cnx = 3, cny = -5;
       let tx = 3, ty = cny + r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: r, y: 0 }
@@ -997,7 +997,7 @@ describe('Circle Tag Tests', function () {
       let r = 2;
       let cnx = 9, cny = -10;
       let tx = 9, ty = cny + r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
@@ -1035,7 +1035,7 @@ describe('Circle Tag Tests', function () {
       let r = 2;
       let cnx = -3, cny = -4;
       let tx = -3, ty = cny + r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
@@ -1135,7 +1135,7 @@ describe('Circle Tag Tests', function () {
       let t2x = -1, t2y = 7;
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
@@ -1179,7 +1179,7 @@ describe('Circle Tag Tests', function () {
       let t2x = -1, t2y = 7;
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
@@ -1223,7 +1223,7 @@ describe('Circle Tag Tests', function () {
       let t2x = 4, t2y = -1;
       let r = 0;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -1267,7 +1267,7 @@ describe('Circle Tag Tests', function () {
       let t2x = 8, t2y = -3;
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -1311,7 +1311,7 @@ describe('Circle Tag Tests', function () {
       let t2x = 8 + 2, t2y = -3 - 3;
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
@@ -1355,7 +1355,7 @@ describe('Circle Tag Tests', function () {
       let t2x = 8 + (8 + 2 - 8) / 2, t2y = -5 + (-3 - 3 + 5) / 2;
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: r, y: 0 }
@@ -1406,7 +1406,7 @@ describe('Circle Tag Tests', function () {
       t1y += dy;
       t2x += dx;
       t2y += dy;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
@@ -1457,7 +1457,7 @@ describe('Circle Tag Tests', function () {
       t1y += dy;
       t2x += dx;
       t2y += dy;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
@@ -1562,7 +1562,7 @@ describe('Circle Tag Tests', function () {
       let t2x = -1, t2y = 7;
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
@@ -1606,7 +1606,7 @@ describe('Circle Tag Tests', function () {
       let t2x = -1, t2y = 7;
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
@@ -1650,7 +1650,7 @@ describe('Circle Tag Tests', function () {
       let t2x = 4, t2y = -1;
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -1694,7 +1694,7 @@ describe('Circle Tag Tests', function () {
       let t2x = 8, t2y = -3;
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -1738,7 +1738,7 @@ describe('Circle Tag Tests', function () {
       let t2x = 8 + 2, t2y = -3 - 3;
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
@@ -1782,7 +1782,7 @@ describe('Circle Tag Tests', function () {
       let t2x = 8 + (8 + 2 - 8) / 2, t2y = -5 + (-3 - 3 + 5) / 2;
       let r = Math.sqrt(Math.pow(t1x - t2x, 2) + Math.pow(t1y - t2y, 2)) / 2;
       let cnx = (t1x + t2x) / 2, cny = (t1y + t2y) / 2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: r, y: 0 }
@@ -1834,7 +1834,7 @@ describe('Circle Tag Tests', function () {
       t1y += dy;
       t2x += dx;
       t2y += dy;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
@@ -1887,7 +1887,7 @@ describe('Circle Tag Tests', function () {
       t1y += dy;
       t2x += dx;
       t2y += dy;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
@@ -2014,7 +2014,7 @@ describe('Circle Tag Tests', function () {
       t3x += dx;
       t3y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
@@ -2061,7 +2061,7 @@ describe('Circle Tag Tests', function () {
 
       t1x = -3, t1y = 8;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
@@ -2109,7 +2109,7 @@ describe('Circle Tag Tests', function () {
 
       t2x = -4, t2y = -2;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -2166,7 +2166,7 @@ describe('Circle Tag Tests', function () {
 
       t3x = 5, t3y = 3;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: t3x, y: t3y }
@@ -2223,12 +2223,12 @@ describe('Circle Tag Tests', function () {
       t1x = 5, t1y = 3;
       t2x = 5, t2y = 3;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
       })
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -2280,7 +2280,6 @@ describe('Circle Tag Tests', function () {
 
     cy.log('points 1 and 3 are identical')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       t2x = 2, t2y = -7;
 
@@ -2289,7 +2288,7 @@ describe('Circle Tag Tests', function () {
       let cny = (t1y + t2y) / 2;
       let r = Math.sqrt(Math.pow(t2x - cnx, 2) + Math.pow(t2y - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -2335,7 +2334,6 @@ describe('Circle Tag Tests', function () {
 
     cy.log('points 2 and 3 are identical')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       t3x = 2, t3y = -7;
 
@@ -2344,7 +2342,7 @@ describe('Circle Tag Tests', function () {
       let cny = (t1y + t2y) / 2;
       let r = Math.sqrt(Math.pow(t2x - cnx, 2) + Math.pow(t2y - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: t3x, y: t3y }
@@ -2391,7 +2389,6 @@ describe('Circle Tag Tests', function () {
 
     cy.log('points 1 and 2 are identical')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       t1x = 4, t1y = 9;
       t2x = 4, t2y = 9;
@@ -2401,12 +2398,12 @@ describe('Circle Tag Tests', function () {
       let cny = (t1y + t3y) / 2;
       let r = Math.sqrt(Math.pow(t2x - cnx, 2) + Math.pow(t2y - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
       })
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -2453,17 +2450,16 @@ describe('Circle Tag Tests', function () {
 
     cy.log('move points apart again')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       t2x = 2, t2y = -7;
       t3x = 0, t3y = -8;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
       })
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: t3x, y: t3y }
@@ -2531,7 +2527,7 @@ describe('Circle Tag Tests', function () {
       t3x += dx;
       t3y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
@@ -2593,7 +2589,7 @@ describe('Circle Tag Tests', function () {
       t3x = cnx + (t3x - cnx) / 2;
       t3y = cny + (t3y - cny) / 2;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point4",
         args: { x: r, y: 0 }
@@ -2656,7 +2652,7 @@ describe('Circle Tag Tests', function () {
       t3x += dx;
       t3y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
@@ -2718,7 +2714,7 @@ describe('Circle Tag Tests', function () {
       t3x += dx;
       t3y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
@@ -2852,7 +2848,7 @@ describe('Circle Tag Tests', function () {
       t3x += dx;
       t3y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
@@ -2899,7 +2895,7 @@ describe('Circle Tag Tests', function () {
 
       t1x = -3, t1y = 8;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
@@ -2947,7 +2943,7 @@ describe('Circle Tag Tests', function () {
 
       t2x = -4, t2y = -2;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -3004,7 +3000,7 @@ describe('Circle Tag Tests', function () {
 
       t3x = 5, t3y = 3;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: t3x, y: t3y }
@@ -3061,12 +3057,12 @@ describe('Circle Tag Tests', function () {
       t1x = 5, t1y = 3;
       t2x = 5, t2y = 3;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
       })
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -3118,7 +3114,6 @@ describe('Circle Tag Tests', function () {
 
     cy.log('points 1 and 3 are identical')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       t2x = 2, t2y = -7;
 
@@ -3127,7 +3122,7 @@ describe('Circle Tag Tests', function () {
       let cny = (t1y + t2y) / 2;
       let r = Math.sqrt(Math.pow(t2x - cnx, 2) + Math.pow(t2y - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -3173,7 +3168,6 @@ describe('Circle Tag Tests', function () {
 
     cy.log('points 2 and 3 are identical')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       t3x = 2, t3y = -7;
 
@@ -3182,7 +3176,7 @@ describe('Circle Tag Tests', function () {
       let cny = (t1y + t2y) / 2;
       let r = Math.sqrt(Math.pow(t2x - cnx, 2) + Math.pow(t2y - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: t3x, y: t3y }
@@ -3229,7 +3223,6 @@ describe('Circle Tag Tests', function () {
 
     cy.log('points 1 and 2 are identical')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       t1x = 4, t1y = 9;
       t2x = 4, t2y = 9;
@@ -3239,12 +3232,12 @@ describe('Circle Tag Tests', function () {
       let cny = (t1y + t3y) / 2;
       let r = Math.sqrt(Math.pow(t2x - cnx, 2) + Math.pow(t2y - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: t1x, y: t1y }
       })
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
@@ -3291,17 +3284,16 @@ describe('Circle Tag Tests', function () {
 
     cy.log('move points apart again')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       t2x = 2, t2y = -7;
       t3x = 0, t3y = -8;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t2x, y: t2y }
       })
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: t3x, y: t3y }
@@ -3369,7 +3361,7 @@ describe('Circle Tag Tests', function () {
       t3x += dx;
       t3y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
@@ -3431,7 +3423,7 @@ describe('Circle Tag Tests', function () {
       t3x = cnx + (t3x - cnx) / 2;
       t3y = cny + (t3y - cny) / 2;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point4",
         args: { x: r, y: 0 }
@@ -3494,7 +3486,7 @@ describe('Circle Tag Tests', function () {
       t3x += dx;
       t3y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
@@ -3556,7 +3548,7 @@ describe('Circle Tag Tests', function () {
       t3x += dx;
       t3y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
@@ -3670,7 +3662,7 @@ describe('Circle Tag Tests', function () {
       let tx = 1, ty = -1;
       let r = 2;
       let cnx = tx, cny = ty - r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
@@ -3714,7 +3706,7 @@ describe('Circle Tag Tests', function () {
       let tx = 4, ty = 7;
       let r = 2;
       let cnx = tx, cny = ty - r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: tx, y: ty }
@@ -3758,7 +3750,7 @@ describe('Circle Tag Tests', function () {
       let tx = 4, ty = 7;
       let r = 6;
       let cnx = tx, cny = ty - r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: r, y: 0 }
@@ -3802,7 +3794,7 @@ describe('Circle Tag Tests', function () {
       let cnx = 4, cny = 4;
       let r = 3;
       let tx = cnx, ty = cny + 3;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: r, y: 0 }
@@ -3846,7 +3838,7 @@ describe('Circle Tag Tests', function () {
       let cnx = 9, cny = -10;
       let r = 3;
       let tx = cnx, ty = cny + r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
@@ -3891,7 +3883,7 @@ describe('Circle Tag Tests', function () {
       let cnx = -4, cny = -3;
       let r = 3;
       let tx = cnx, ty = cny + r;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
@@ -4016,7 +4008,7 @@ describe('Circle Tag Tests', function () {
       t2x += dx;
       t2y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
@@ -4063,7 +4055,7 @@ describe('Circle Tag Tests', function () {
       let t2x = 4, t2y = 3;
       let r = 2;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t1x, y: t1y }
@@ -4109,7 +4101,7 @@ describe('Circle Tag Tests', function () {
       let t2x = 4, t2y = 3;
       let r = 6;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: r, y: 0 }
@@ -4169,7 +4161,7 @@ describe('Circle Tag Tests', function () {
       let cny = stateVariables['/_circle1'].stateValues.numericalCenter[1];
 
       r = r / 3;
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point4",
         args: { x: r, y: 0 }
@@ -4209,7 +4201,7 @@ describe('Circle Tag Tests', function () {
         // expect(Number.isFinite(stateVariables["/radiusNumber"].stateValues.value)).false;
 
         r = r * 3;
-        win.callAction1({
+        await win.callAction1({
           actionName: "movePoint",
           componentName: "/_point4",
           args: { x: r, y: 0 }
@@ -4253,7 +4245,7 @@ describe('Circle Tag Tests', function () {
         expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
 
         r = r / 9;
-        win.callAction1({
+        await win.callAction1({
           actionName: "movePoint",
           componentName: "/_point1",
           args: { x: r, y: 0 }
@@ -4304,12 +4296,12 @@ describe('Circle Tag Tests', function () {
 
       let cnx = t1x, cny = t1y - r;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t1x, y: t1y }
       });
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: t2x, y: t2y }
@@ -4361,12 +4353,12 @@ describe('Circle Tag Tests', function () {
       let t2x = -2.5, t2y = 6.6;
       let r = 2 / 3;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: t1x, y: t1y }
       });
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: t2x, y: t2y }
@@ -4433,7 +4425,7 @@ describe('Circle Tag Tests', function () {
       t2y += dy;
 
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
@@ -4498,7 +4490,7 @@ describe('Circle Tag Tests', function () {
       t2y += dy;
 
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
@@ -4561,7 +4553,7 @@ describe('Circle Tag Tests', function () {
       t2x += dx;
       t2y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
@@ -4681,7 +4673,7 @@ describe('Circle Tag Tests', function () {
       tx += dx;
       ty += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
@@ -4731,7 +4723,7 @@ describe('Circle Tag Tests', function () {
 
       let r = Math.sqrt(Math.pow(tx - cnx, 2) + Math.pow(ty - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: cnx, y: cny }
@@ -4777,7 +4769,7 @@ describe('Circle Tag Tests', function () {
       let tx = 3, ty = 0;
       let r = Math.sqrt(Math.pow(tx - cnx, 2) + Math.pow(ty - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
@@ -4825,7 +4817,7 @@ describe('Circle Tag Tests', function () {
 
       let r = Math.sqrt(Math.pow(tx - cnx, 2) + Math.pow(ty - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: tx, y: ty }
@@ -4878,7 +4870,7 @@ describe('Circle Tag Tests', function () {
       tx = cnx + (tx - cnx) / 4;
       ty = cny + (ty - cny) / 4;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: r, y: 0 }
@@ -4937,7 +4929,7 @@ describe('Circle Tag Tests', function () {
       ty += dy;
 
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph3/circle",
         args: { center: [cnx, cny] }
@@ -4998,7 +4990,7 @@ describe('Circle Tag Tests', function () {
       ty += dy;
 
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph4/circle",
         args: { center: [cnx, cny] }
@@ -5104,7 +5096,7 @@ describe('Circle Tag Tests', function () {
       let cnx = -3, cny = 5;
       let r = -3;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: r, y: 0 }
@@ -5149,13 +5141,13 @@ describe('Circle Tag Tests', function () {
       let cnx = -3, cny = 5;
       let r = 0;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1, y: 0 }
       });
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/radiusPoint",
         args: { x: -5, y: 0 }
@@ -5265,7 +5257,7 @@ describe('Circle Tag Tests', function () {
       let cnx = 5, cny = -2;
       let r = 3;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: cnx, y: cny }
@@ -5312,7 +5304,7 @@ describe('Circle Tag Tests', function () {
       let cnx = 5, cny = -2;
       let r = 1;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: r, y: 0 }
@@ -5359,7 +5351,7 @@ describe('Circle Tag Tests', function () {
       let cnx = 5, cny = -2;
       let r = 1;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: -9, y: 8 }
@@ -5407,7 +5399,7 @@ describe('Circle Tag Tests', function () {
       let cnx = -3, cny = 7;
       let r = 1;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/graph2/_circle1",
         args: { center: [cnx, cny] }
@@ -5455,7 +5447,7 @@ describe('Circle Tag Tests', function () {
       let cnx = -3, cny = 7;
       let r = 1;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/graph2/_point3",
         args: { x: 11, y: -21 }
@@ -5568,7 +5560,7 @@ describe('Circle Tag Tests', function () {
       tx += dx;
       ty += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
@@ -5618,7 +5610,7 @@ describe('Circle Tag Tests', function () {
       tx += dx;
       ty += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/circle2",
         args: { center: [cnx, cny] }
@@ -5665,7 +5657,7 @@ describe('Circle Tag Tests', function () {
 
       let r = Math.sqrt(Math.pow(tx - cnx, 2) + Math.pow(ty - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/centerPoint",
         args: { x: cnx, y: cny }
@@ -5710,7 +5702,7 @@ describe('Circle Tag Tests', function () {
 
       let r = Math.sqrt(Math.pow(tx - cnx, 2) + Math.pow(ty - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: cnx, y: cny }
@@ -5755,7 +5747,7 @@ describe('Circle Tag Tests', function () {
 
       let r = Math.sqrt(Math.pow(tx - cnx, 2) + Math.pow(ty - cny, 2));
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: tx, y: ty }
@@ -5812,7 +5804,7 @@ describe('Circle Tag Tests', function () {
       // first time through, the radius doesn't end up being what specified
       let rActual = Math.sqrt(Math.pow(tx - cnx, 2) + Math.pow(ty - cny, 2))
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: cny, y: rSpecified }
@@ -5854,7 +5846,7 @@ describe('Circle Tag Tests', function () {
         ty = cny + rSpecified * Math.sin(theta);
         rActual = rSpecified;
 
-        win.callAction1({
+        await win.callAction1({
           actionName: "movePoint",
           componentName: "/_point3",
           args: { x: cny, y: rSpecified }
@@ -6020,7 +6012,7 @@ describe('Circle Tag Tests', function () {
       t3x += dx;
       t3y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/c",
         args: { center: [circx, circy] }
@@ -6061,7 +6053,7 @@ describe('Circle Tag Tests', function () {
       t2x += dx;
       t3x += dx;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/x",
         args: { x: circx }
@@ -6104,7 +6096,7 @@ describe('Circle Tag Tests', function () {
       t2y += dy;
       t3y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/y",
         args: { y: circy }
@@ -6150,7 +6142,7 @@ describe('Circle Tag Tests', function () {
       t3x = circx + (t3x - circx) * radiusfactor;
       t3y = circy + (t3y - circy) * radiusfactor;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/r",
         args: { x: r }
@@ -6184,7 +6176,7 @@ describe('Circle Tag Tests', function () {
     cy.log("shrink radius to zero")
     cy.window().then(async (win) => {
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/r",
         args: { x: -3 }
@@ -6230,7 +6222,7 @@ describe('Circle Tag Tests', function () {
       t3x = circx + (t3x - circx) * radiusfactor;
       t3y = circy + (t3y - circy) * radiusfactor;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/r",
         args: { x: r }
@@ -6294,7 +6286,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle");
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [-3, 5] }
@@ -6334,7 +6326,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle below x-axis");
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [3, -2] }
@@ -6400,7 +6392,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle");
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [-3, 5] }
@@ -6439,7 +6431,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle below x-axis");
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [3, -2] }
@@ -6505,7 +6497,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle");
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [-3, 6] }
@@ -6549,7 +6541,7 @@ describe('Circle Tag Tests', function () {
     cy.log("move circle below x-axis");
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [3, -2] }
@@ -6619,7 +6611,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle");
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [-3, 5] }
@@ -6659,7 +6651,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle below x-axis");
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [3, -2] }
@@ -6730,7 +6722,7 @@ describe('Circle Tag Tests', function () {
       let actualHeight = (5 + 2) / 2;
       // given previous radius is 2, would move through point to 5+2,
       // so that center of circle would be (5+2)/2
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [-3, desiredHeight] }
@@ -6773,7 +6765,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle below x-axis");
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [4, -6] }
@@ -6846,7 +6838,7 @@ describe('Circle Tag Tests', function () {
       let actualHeight = (5 + 1) / 2;
       // given previous radius is 1, would move through point to 5+1,
       // so that center of circle would be (5+1)/2
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [-3, desiredHeight] }
@@ -6889,7 +6881,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move circle below x-axis");
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [4, -6] }
@@ -6963,7 +6955,7 @@ describe('Circle Tag Tests', function () {
       let actualHeight = (5 + 2) / 2;
       // given previous radius is 2, would move through point to 5+2,
       // so that center of circle would be (5+2)/2
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [-3, desiredHeight] }
@@ -7010,7 +7002,7 @@ describe('Circle Tag Tests', function () {
       let actualHeight = -6 + 5.25
       // would move through point to -6+5.25,
       // but radius becomes zero, so center is at -6+5.25
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [4, desiredHeight] }
@@ -7083,7 +7075,7 @@ describe('Circle Tag Tests', function () {
       let actualHeight = (5 + 2) / 2;
       // given previous radius is 2, would move through point to 5+2,
       // so that center of circle would be (5+2)/2
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [-3, desiredHeight] }
@@ -7128,7 +7120,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then(async (win) => {
       let desiredHeight = -8;
       let actualHeight = (-8 + 7) / 2; // given previous radius is 7
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [4, desiredHeight] }
@@ -7202,7 +7194,7 @@ describe('Circle Tag Tests', function () {
       let actualHeight = (5 + 2) / 2;
       // given previous radius is 2, would move through point to 5+2,
       // so that center of circle would be (5+2)/2
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [-3, desiredHeight] }
@@ -7247,7 +7239,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then(async (win) => {
       let desiredHeight = -8;
       let actualHeight = (-8 + 7) / 2; // given previous radius is 7
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [4, desiredHeight] }
@@ -7318,7 +7310,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then(async (win) => {
       let desiredHeight = 5;
       let actualHeight = -2;
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [-3, desiredHeight] }
@@ -7412,7 +7404,7 @@ describe('Circle Tag Tests', function () {
       t2x += dx;
       t2y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: newCenter }
@@ -7648,7 +7640,7 @@ describe('Circle Tag Tests', function () {
       t2x += dx;
       t2y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: newCenter }
@@ -7888,7 +7880,7 @@ describe('Circle Tag Tests', function () {
       t2x += dx;
       t2y += dy;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
@@ -7921,7 +7913,6 @@ describe('Circle Tag Tests', function () {
 
     cy.log("move center point");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       let cnx = (t1x + t2x) / 2;
       let cny = (t1y + t2y) / 2;
@@ -8110,7 +8101,7 @@ describe('Circle Tag Tests', function () {
 
       let r = stateVariables['/_circle1'].stateValues.radius;
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [cnx, cny] }
@@ -8363,7 +8354,7 @@ describe('Circle Tag Tests', function () {
     cy.log("move circle");
     cy.window().then(async (win) => {
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/_circle1",
         args: { center: [-7, 2] }
@@ -8382,7 +8373,7 @@ describe('Circle Tag Tests', function () {
     cy.log("move flipped point");
     cy.window().then(async (win) => {
 
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -3, y: -5 }
@@ -8466,7 +8457,7 @@ describe('Circle Tag Tests', function () {
     cy.log(`move circle`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/circ",
         args: { center: [-7, 2] }
@@ -8496,7 +8487,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log(`move circle2`)
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/circ2",
         args: { center: [6, 9] }
@@ -8593,7 +8584,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log('move original circle')
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/c",
         args: { center: [-1, 2] }
@@ -8663,7 +8654,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log('move point P and set radius of second circle')
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -5, y: 2 }
@@ -8693,7 +8684,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log('move point Q')
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/Q",
         args: { x: 3, y: 8 }
@@ -8795,7 +8786,7 @@ describe('Circle Tag Tests', function () {
     cy.log('move and change radius of fourth circle')
 
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/c3",
         args: { center: [3, 8] }
@@ -8859,7 +8850,7 @@ describe('Circle Tag Tests', function () {
 
     cy.log(`move circle`)
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "moveCircle",
         componentName: "/circ",
         args: { center: [-7, 2] }

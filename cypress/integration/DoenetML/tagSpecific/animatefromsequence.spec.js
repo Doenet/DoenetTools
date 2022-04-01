@@ -62,7 +62,10 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.get(`#\\/b_input`).click();
 
-    cy.wait(500)
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
 
     // should stop at 2 or 3
     cy.get('#\\/a').contains(/2|3/)
@@ -134,7 +137,11 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get('#\\/a').should('have.text', '10')
     cy.get('#\\/a2').should('have.text', '10')
 
-    cy.wait(500)
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
+
     cy.get('#\\/a').should('have.text', '10')
     cy.get('#\\/a2').should('have.text', '10')
 
@@ -183,11 +190,19 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get(`#\\/b_input`).click();
     cy.get(`#\\/b_input`).click();
 
+
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let lastValue = stateVariables['/x'].stateValues.value;
+      return (lastValue === "z" || lastValue === "w") && stateVariables['/x'].stateValues.animationOn === false;
+    }))
+
     cy.get('#\\/a').contains(/w|z/)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let lastValue = stateVariables['/x'].stateValues.value;
+      console.log(`lastValue: ` , lastValue)
       expect(lastValue === "z" || lastValue === "w").be.true;
       expect(stateVariables['/a'].stateValues.value).eq(lastValue);
       expect(stateVariables['/a2'].stateValues.value).eq(lastValue);
@@ -223,7 +238,12 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.get(`#\\/b_input`).click();
 
-    cy.wait(500)
+
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
+
     cy.get('#\\/a').contains(/q|n/)
 
 
@@ -289,8 +309,11 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get('#\\/a').should('have.text', 'e')
     cy.get('#\\/a2').should('have.text', 'e')
 
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
 
-    cy.wait(500)
     cy.get('#\\/a').should('have.text', 'e')
     cy.get('#\\/a2').should('have.text', 'e')
 
@@ -338,6 +361,12 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get(`#\\/b_input`).click();
     cy.get(`#\\/b_input`).click();
 
+
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let lastValue = stateVariables['/x'].stateValues.value;
+      return (lastValue === -600 || lastValue === -500) && stateVariables['/x'].stateValues.animationOn === false;
+    }))
 
     cy.get('#\\/a').contains(/-600|-500/)
 
@@ -397,7 +426,11 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.get(`#\\/b_input`).click();
 
-    cy.wait(500)
+
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
 
     cy.get('#\\/a').contains(/-100|100/)
 
@@ -453,6 +486,12 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get(`#\\/b_input`).click();
     cy.get(`#\\/b_input`).click();
 
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let lastValue = stateVariables['/x'].stateValues.value;
+      return Math.abs(lastValue - 89.8) < 1E-12 && stateVariables['/x'].stateValues.animationOn === false;
+    }))
+
     cy.get('#\\/pa').should('have.text', 'value: 89.8')
     cy.get('#\\/pa2').should('have.text', 'value: 89.8')
 
@@ -477,6 +516,13 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.get(`#\\/b_input`).click();
 
+
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
+
+
     cy.get('#\\/pa').should('have.text', 'value: 90.1')
     cy.get('#\\/pa2').should('have.text', 'value: 90.1')
 
@@ -496,6 +542,13 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get('#\\/pa').should('have.text', 'value: 90.2')
     cy.get('#\\/pa2').should('have.text', 'value: 90.2')
     cy.get(`#\\/b_input`).click();
+
+
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
+
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -537,6 +590,13 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get('#\\/pa2').should('have.text', 'value: 33.6')
     cy.get(`#\\/b_input`).click();
 
+
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
+
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/x'].stateValues.value).closeTo(33.6, 1E-12);
@@ -573,7 +633,13 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get('#\\/pa2').should('have.text', 'value: 64.7')
     cy.get(`#\\/b_input`).click();
 
-    cy.wait(500)
+
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
+
+
     cy.get('#\\/pa').should('have.text', 'value: 64.7')
     cy.get('#\\/pa2').should('have.text', 'value: 64.7')
 
@@ -656,7 +722,12 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get('#\\/pa2').should('have.text', 'value: 4.7')
     cy.get(`#\\/b_input`).click();
 
-    cy.wait(500)
+
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
+
     cy.get('#\\/pa').should('have.text', 'value: 4.7')
     cy.get('#\\/pa2').should('have.text', 'value: 4.7')
 
@@ -786,7 +857,10 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.get('#\\/stop_button').click();
 
-    cy.wait(500)
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
 
     // should stop at 2 or 3
     cy.get('#\\/a').contains(/2|3/)
@@ -805,8 +879,12 @@ describe('AnimateFromSequence Tag Tests', function () {
 
       cy.get('#\\/stop_button').click();
 
-      cy.wait(500)
 
+      cy.waitUntil(() => cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        return stateVariables['/x'].stateValues.animationOn === false;
+      }))
+  
       cy.get('#\\/a').should('have.text', `${lastValue}`)
       cy.get('#\\/a2').should('have.text', `${lastValue}`)
 
@@ -825,7 +903,11 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.get('#\\/toggle_button').click();
 
-    cy.wait(500)
+
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
 
     // should stop at 7 or 8
     cy.get('#\\/a').contains(/7|8/)
