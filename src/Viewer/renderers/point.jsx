@@ -105,8 +105,8 @@ export default function Point(props) {
     }
 
     if (SVs.draggable && !SVs.fixed) {
-      jsxPointAttributes.highlightFillColor = "#EEEEEE";
-      jsxPointAttributes.highlightStrokeColor = "#C3D9FF";
+      jsxPointAttributes.highlightFillColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray"); 
+      jsxPointAttributes.highlightStrokeColor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"); 
       jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
     } else {
       jsxPointAttributes.highlightFillColor = fillColor;
@@ -256,8 +256,8 @@ export default function Point(props) {
       }
 
       if (SVs.draggable && !SVs.fixed) {
-        pointJXG.current.visProp.highlightfillcolor = "#EEEEEE";
-        pointJXG.current.visProp.highlightstrokecolor = "#C3D9FF";
+        pointJXG.current.visProp.highlightfillcolor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray"); 
+        pointJXG.current.visProp.highlightstrokecolor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"); 
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
         pointJXG.current.visProp.fixed = false;
       } else {

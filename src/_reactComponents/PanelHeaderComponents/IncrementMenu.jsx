@@ -7,62 +7,67 @@ const FONT_SIZES = [8, 9, 10, 11, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96];
 
 const Container = styled.div`
   display: flex;
-  width: fit-content;
+  justify-content: space-between;
+  align-items: center;
+  height: 20px;
+  min-width: 180px;
   margin: 0;
+  border-radius: 5px;
+  border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+
 `;
 
 const IncreaseButton = styled.button`
-  background-color: ${(props) => (props.disabled ? '#e2e2e2' : '#1a5a99')};
-  border-radius: 0px 5px 5px 0px;
-  border: ${(props) => (props.alert ? '2px solid #C1292E' : '2px solid black')};
-  border-left: none;
-  height: 24px;
-  width: 34px;
+  background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
+  border-radius: 0px 2px 2px 0px;
+  height: 100%;
+  width: 25px;
   color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
-  :hover {
+  border: none;
+  &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
+    color: black;
+    background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
 `;
 
 const DecreaseButton = styled.button`
-  background-color: ${(props) => (props.disabled ? '#e2e2e2' : '#1a5a99')};
-  border-radius: 5px 0px 0px 5px;
-  border: ${(props) => (props.alert ? '2px solid #C1292E' : '2px solid black')};
-  border-right: none;
-  height: 24px;
-  width: 34px;
+  background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
+  border-radius: 2px 0px 0px 2px;
+  height: 100%;
+  width: 25px;
   color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
-  :hover {
+  border: none;
+  &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
+    color: black;
+    background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
 `;
 
 const TextField = styled.input`
-  border: ${(props) => (props.alert ? '2px solid #C1292E' : '2px solid black')};
-  border-left: none;
-  border-right: none;
   z-index: 0;
-  height: 18px;
-  width: 80px;
+  width: 100%;
   text-align: center;
   resize: none;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'default')};
   outline: none;
+  border: none;
 `;
 
 const Label = styled.div`
-  font-size: 12px;
-  margin: 4px;
+  font-size: 14px;
+  margin-right: 5px;
 `;
 
 const Menu = styled.div`
-  background-color: #e2e2e2;
+  background-color: 'var(--mainGray)';
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  border: 2px solid black;
+  border: 'var(--mainBorder)';
   border-top: none;
-  border-radius: 5px;
+  border-radius: 'var(--mainBorderRadius)';
   position: relative;
   overflow: scroll;
   max-height: ${(props) => props.maxHeight};
@@ -70,7 +75,7 @@ const Menu = styled.div`
 `;
 
 const MenuOption = styled.button`
-  background-color: #e2e2e2;
+  background-color: 'var(--mainGray)';
   display: block;
   width: 146px;
   height: 24px;
@@ -108,7 +113,7 @@ export default function Increment(props) {
   if (props.values) {
     decreaseIcon = <FontAwesomeIcon icon={faAngleLeft} />;
     increaseIcon = <FontAwesomeIcon icon={faAngleRight} />;
-  }
+  };
 
   const [index, setIndex] = useState(0);
   const [value, setValue] = useState(props.value);
@@ -140,7 +145,7 @@ export default function Increment(props) {
       } else {
         setValue(0);
       }
-    }
+    };
   }, [props.value]);
 
   useEffect(() => {
@@ -155,11 +160,11 @@ export default function Increment(props) {
           numericFlag = false;
           break;
         }
-      }
+      };
 
       setNumericValues(numericFlag);
       // console.log('>>> numericValues', numericFlag);
-    }
+    };
     setValues(props.values);
   }, [props.values]);
 
@@ -333,7 +338,7 @@ export default function Increment(props) {
         {size}
       </MenuOption>
     ));
-  }
+  };
 
   if (values) {
     menuOptions = values.map((value, index) => (
@@ -341,7 +346,7 @@ export default function Increment(props) {
         {value}
       </MenuOption>
     ));
-  }
+  };
 
   // console.log('props.disabled', props.disabled);
 
@@ -378,10 +383,10 @@ export default function Increment(props) {
           onKeyDown={(e) => {
             if (props.onKeyDown) {
               props.onKeyDown(e);
-            }
+            };
             if (e.key === 'Enter') {
               onTextFieldEnter(e);
-            }
+            };
           }}
         />
         <IncreaseButton
@@ -408,4 +413,4 @@ export default function Increment(props) {
       )}
     </div>
   );
-}
+};

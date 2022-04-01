@@ -82,7 +82,7 @@ export default function Vector(props) {
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
-      highlightFillColor: 'lightgray',
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: layer + 1,
     });
     if (!SVs.draggable || SVs.fixed) {
