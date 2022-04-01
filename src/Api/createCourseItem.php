@@ -56,7 +56,7 @@ if ($success){
     try {
       $sql = "
         INSERT INTO course_content 
-        (contentType,
+        (type,
         courseId,
         doenetId,
         parentDoenetId,
@@ -94,7 +94,7 @@ if ($success){
   }else{
     $sql = "
     INSERT INTO course_content 
-    (contentType,
+    (type,
     courseId,
     doenetId,
     parentDoenetId,
@@ -118,7 +118,7 @@ if ($success){
 $sql = "
 SELECT 
 doenetId,
-contentType,
+type,
 parentDoenetId,
 label,
 creationDate,
@@ -135,7 +135,7 @@ $row = $result->fetch_assoc();
 
 $itemEntered = array(
   "doenetId"=>$row['doenetId'],
-  "contentType"=>$row['contentType'],//TODO: should be type
+  "type"=>$row['type'],//TODO: should be type
   "parentDoenetId"=>$row['parentDoenetId'],
   "label"=>$row['label'],
   "creationDate"=>$row['creationDate'],

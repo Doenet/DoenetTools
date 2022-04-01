@@ -26,14 +26,14 @@ export function useInitCourseItems(courseId) {
             //TODO: Guard for no order here
             orderDoenetIds.push(orderObj.doenetId);
             for (let orderItem of orderObj.content){
-              if (orderItem?.contentType == 'order'){
+              if (orderItem?.type == 'order'){
                 let moreOrderDoenetIds = findOrderDoenetIds(orderItem);
                 orderDoenetIds = [...orderDoenetIds,...moreOrderDoenetIds];
               }
             }
             return orderDoenetIds;
           }
-          if (item.contentType == 'activity'){
+          if (item.type == 'activity'){
             let orderDoenetIds = findOrderDoenetIds(item.order);
             for (let orderDoenetId of orderDoenetIds){
                 set(authorItemByDoenetId(orderDoenetId), {

@@ -133,14 +133,14 @@ function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisi
 }
 
 function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel}){
-  //TODO: Investigate if contentType should be a selector and these three would subscribe to item info
+  //TODO: Investigate if type should be a selector and these three would subscribe to item info
   let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
 
-  if (itemInfo.contentType == 'section'){
+  if (itemInfo.type == 'section'){
     return <Section key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
-  }else if (itemInfo.contentType == 'bank'){
+  }else if (itemInfo.type == 'bank'){
     return <Bank key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
-  }else if (itemInfo.contentType == 'activity'){
+  }else if (itemInfo.type == 'activity'){
     return <Activity key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }
 
@@ -187,7 +187,7 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
    let contentJSX = [];
    if (behavior == 'sequence'){
       contentJSX = content.map((pageOrOrder,i)=>{
-        if (pageOrOrder?.contentType == 'order'){
+        if (pageOrOrder?.type == 'order'){
           return <Order key={`Order${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
         }else{
           return <Page key={`Page${doenetId}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1}/>
@@ -246,6 +246,8 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   e.preventDefault();
   e.stopPropagation();
   let selectedItems = await snapshot.getPromise(selectedCourseItems);
+  let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+  console.log("clickedItem",clickedItem)
 
   if (selectedItems.length == 0){
   //No items selected so select this item
@@ -255,6 +257,8 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     newObj.isSelected = true;
     return newObj;
   })
+
+  //Select all children of component
 
   }else if (selectedItems.length == 1 && selectedItems[0] == doenetId){
     if(e.metaKey){
