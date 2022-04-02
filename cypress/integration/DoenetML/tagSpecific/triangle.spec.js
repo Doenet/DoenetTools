@@ -1030,7 +1030,7 @@ describe('Triangle Tag Tests', function () {
 
   })
 
-  it.only('reflect triangle via individual vertices', () => {
+  it('reflect triangle via individual vertices', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -1122,7 +1122,7 @@ describe('Triangle Tag Tests', function () {
 
   })
 
-  it.only('reflect triangle via individual vertices, one vertex specified', () => {
+  it('reflect triangle via individual vertices, one vertex specified', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -1215,7 +1215,7 @@ describe('Triangle Tag Tests', function () {
 
   })
 
-  it.only('triangle with one vertex refection of other', () => {
+  it('triangle with one vertex refection of other', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -1287,7 +1287,7 @@ describe('Triangle Tag Tests', function () {
 
   })
 
-  it.only('triangle with one vertex refection of other with internal references', () => {
+  it('triangle with one vertex refection of other with internal references', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -1353,7 +1353,7 @@ describe('Triangle Tag Tests', function () {
 
   })
 
-  it.only('triangle with one vertex refection of other with internal references, one vertex specified', () => {
+  it('triangle with one vertex refection of other with internal references, one vertex specified', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `

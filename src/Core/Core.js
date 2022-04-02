@@ -1105,7 +1105,6 @@ export default class Core {
           serializedComponent,
           sharedParameters,
           definingChildrenSoFar: definingChildren,
-          allComponentClasses: this.componentInfoObjects.allComponentClasses,
           descendantVariantComponents
         });
 
@@ -1680,9 +1679,18 @@ export default class Core {
     if ("nChildrenToRender" in component.state) {
       nChildrenToRender = await component.stateValues.nChildrenToRender;
     }
+    let childIndicesToRender = null;
+    if ("childIndicesToRender" in component.state) {
+      childIndicesToRender = await component.stateValues.childIndicesToRender;
+    }
+
     for (let [ind, child] of component.activeChildren.entries()) {
       if (ind >= nChildrenToRender) {
         break;
+      }
+
+      if (childIndicesToRender && !childIndicesToRender.includes(ind)) {
+        continue;
       }
 
       if (typeof child === "object") {
@@ -5832,6 +5840,10 @@ export default class Core {
         }
       }
 
+      if (result.updateRenderedChildren) {
+        this.componentsWithChangedChildrenToRender.add(component.componentName);
+      }
+
       if (result.updateActionChaining) {
         let chainObj = this.updateInfo.componentsToUpdateActionChaining[component.componentName];
         if (!chainObj) {
@@ -6276,6 +6288,10 @@ export default class Core {
                   break;
                 }
               }
+            }
+
+            if (result.updateRenderedChildren) {
+              this.componentsWithChangedChildrenToRender.add(component.componentName);
             }
 
             if (result.updateActionChaining) {

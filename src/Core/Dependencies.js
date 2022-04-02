@@ -3998,6 +3998,9 @@ class ChildDependency extends Dependency {
     }
 
     this.childGroups = this.definition.childGroups;
+    if(!Array.isArray(this.childGroups)) {
+      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: childGroups must be an array`)
+    }
 
     if (this.definition.childIndices !== undefined) {
       this.childIndices = this.definition.childIndices.map(x => Number(x))

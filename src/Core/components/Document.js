@@ -597,8 +597,7 @@ export default class Document extends BaseComponent {
   }
 
   static async setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
-    descendantVariantComponents,
-    allComponentClasses }) {
+    descendantVariantComponents }) {
 
     // console.log("****Variant for document*****")
 

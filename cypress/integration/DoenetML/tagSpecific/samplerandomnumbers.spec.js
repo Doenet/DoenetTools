@@ -1427,7 +1427,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
   });
 
 
-  it.only("copying parameters", () => {
+  it("copying parameters", () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `

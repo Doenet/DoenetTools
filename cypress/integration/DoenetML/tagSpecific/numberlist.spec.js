@@ -522,6 +522,84 @@ describe('Numberlist Tag Tests', function () {
     })
   })
 
+  it('dynamic maximum number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p><numberlist name="nl1" maximumNumber="$mn1">1 2 3 4 5</numberlist></p>
+      <p><copy target="nl1" maximumNumber="$mn2" assignNames="nl2" /></p>
+      <p>Maximum number 1: <mathinput name="mn1" prefill="2" /></p>
+      <p>Maximum number 2: <mathinput name="mn2" /></p>
+
+      ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/_p1').should('have.text', '1, 2')
+      cy.get('#\\/_p2').should('have.text', '1, 2, 3, 4, 5')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/nl1'].stateValues.numbers).eqls([1, 2]);
+        expect(stateVariables['/nl2'].stateValues.numbers).eqls([1, 2, 3, 4, 5]);
+      })
+    })
+
+    cy.log("clear first maxnum")
+    cy.get('#\\/mn1 textarea').type("{end}{backspace}", { force: true }).blur();
+    cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4, 5')
+    cy.get('#\\/_p2').should('have.text', '1, 2, 3, 4, 5')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/nl1'].stateValues.numbers).eqls([1, 2, 3, 4, 5]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([1, 2, 3, 4, 5]);
+    })
+
+
+    cy.log("number in second maxnum")
+    cy.get('#\\/mn2 textarea').type("3{enter}", { force: true });
+    cy.get('#\\/_p2').should('have.text', '1, 2, 3')
+    cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4, 5')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/nl1'].stateValues.numbers).eqls([1, 2, 3, 4, 5]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([1, 2, 3]);
+    })
+
+
+    cy.log("number in first maxnum")
+    cy.get('#\\/mn1 textarea').type("4{enter}", { force: true });
+    cy.get('#\\/_p1').should('have.text', '1, 2, 3, 4')
+    cy.get('#\\/_p2').should('have.text', '1, 2, 3')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/nl1'].stateValues.numbers).eqls([1, 2, 3, 4]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([1, 2, 3]);
+    })
+
+
+    cy.log("change number in first maxnum")
+    cy.get('#\\/mn1 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/_p1').should('have.text', '1')
+    cy.get('#\\/_p2').should('have.text', '1, 2, 3')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/nl1'].stateValues.numbers).eqls([1]);
+      expect(stateVariables['/nl2'].stateValues.numbers).eqls([1, 2, 3]);
+    })
+
+
+  })
+
   it('numberlist within numberlists, with child hide', () => {
     cy.window().then(async (win) => {
       win.postMessage({

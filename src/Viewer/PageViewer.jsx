@@ -909,7 +909,7 @@ export async function renderersloadComponent(promises, rendererClassNames) {
       rendererClasses[rendererClassNames[index]] = module.default;
     } catch (error) {
       console.log(error)
-      console.error(`Error: loading ${rendererClassNames[index]} failed.`)
+      throw Error(`Error: loading ${rendererClassNames[index]} failed.`)
     }
 
   }

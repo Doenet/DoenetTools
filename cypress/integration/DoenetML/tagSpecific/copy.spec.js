@@ -244,6 +244,7 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log(`initial position`);
+    cy.get('#\\/p1a').should("contain.text", "(1,2)")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/p1'].stateValues.xs[0]).eq(1);
@@ -256,7 +257,7 @@ describe('Copy Tag Tests', function () {
 
     cy.log(`move point 1`);
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
         args: { x: -3, y: 5 }
@@ -372,6 +373,8 @@ describe('Copy Tag Tests', function () {
       let d_tail = [0, 0];
       let v_head = displacement.map((x, i) => x + v_tail[i]);
       let d_head = displacement.map((x, i) => x + d_tail[i]);
+
+      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
 
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
@@ -2696,7 +2699,7 @@ describe('Copy Tag Tests', function () {
     cy.log('Add point')
 
     cy.get('#\\/n textarea').type("1{enter}", { force: true })
-    cy.get('#\\/m1').should('contain.text','A1=(1,1)')
+    cy.get('#\\/m1').should('contain.text', 'A1=(1,1)')
     cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=(1,1)')
     })
@@ -2714,7 +2717,7 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get('#\\/m1').should('contain.text','A1=(−3,7)')
+    cy.get('#\\/m1').should('contain.text', 'A1=(−3,7)')
     cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=(−3,7)')
     })
@@ -2726,7 +2729,7 @@ describe('Copy Tag Tests', function () {
     cy.log('Remove point')
     cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", { force: true })
 
-    cy.get('#\\/m1').should('not.contain.text','A1=(−3,7)')
+    cy.get('#\\/m1').should('not.contain.text', 'A1=(−3,7)')
     cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('A1=')
     })
@@ -2817,6 +2820,79 @@ describe('Copy Tag Tests', function () {
 
     cy.get('#\\/hi').should('have.text', 'Hello');
     cy.get('#\\/_p1').should('have.text', 'Hello there')
+
+
+  });
+
+  it('copy of external content retains desired variant', () => {
+    let doenetML = `
+    <text>a</text>
+    <copy assignNames="problem1" uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" componentType="problem" />
+    `;
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML,
+        requestedVariant: {
+          index: 1
+        }
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    let fishInd, choiceOrder;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/problem1/_select1"].stateValues.currentVariantName).eq("fish");
+      let choices = stateVariables['/problem1/_choiceinput1'].stateValues.choiceTexts;
+      fishInd = choices.indexOf("blub") + 1;
+      choiceOrder = stateVariables['/problem1/_choiceinput1'].stateValues.choiceOrder;
+
+      cy.get(cesc(`#/problem1/_choiceinput1_choice${fishInd}_input`)).click();
+    })
+
+
+    cy.get(cesc(`#/problem1/_choiceinput1_submit`)).click();
+    cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+
+    cy.wait(2000);  // make sure 1 second debounce occurred
+
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML,
+        requestedVariant: {
+          index: 1
+        }
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let foundIt = Boolean(stateVariables["/problem1/_choiceinput1"]?.stateValues?.choiceTexts);
+      return foundIt;
+    }))
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/problem1/_select1"].stateValues.currentVariantName).eq("fish");
+      expect(stateVariables['/problem1/_choiceinput1'].stateValues.choiceOrder).eqls(choiceOrder);
+      let choices = [...stateVariables['/problem1/_choiceinput1'].stateValues.choiceTexts];
+      expect(choices.indexOf("blub") + 1).eq(fishInd);
+    })
 
 
   });

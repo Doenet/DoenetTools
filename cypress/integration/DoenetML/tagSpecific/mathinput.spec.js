@@ -1966,6 +1966,7 @@ describe('MathInput Tag Tests', function () {
     cy.log('type new values')
     // Note: had to add a larger delay in typing 
     // or MathJax consistently didn't correctly update the second immediate value.
+    // (At least when delay core's response by 1 second)
     // Not sure what is going on here.
     cy.get('#\\/mi1 textarea').type(`{end}{backspace}y`, { force: true, delay: 100 });
 

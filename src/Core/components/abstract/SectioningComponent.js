@@ -659,8 +659,8 @@ export default class SectioningComponent extends BlockComponent {
   static async setUpVariant({
     serializedComponent, sharedParameters, definingChildrenSoFar,
     descendantVariantComponents,
-    allComponentClasses
   }) {
+
     let variantControlChild;
     for (let child of definingChildrenSoFar) {
       if (child !== undefined && child.componentType === "variantControl") {
