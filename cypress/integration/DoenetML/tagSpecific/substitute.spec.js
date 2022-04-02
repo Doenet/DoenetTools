@@ -35,10 +35,10 @@ describe('Substitute Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["+", "alpha", ["^", "b", 2]])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["+", "alpha", ["^", "b", 2]])
-      expect(stateVariables['/s_two'].stateValues.value.tree).eqls(['+', 'd', ['^', 'b', 2]])
-      expect(stateVariables['/two'].stateValues.value.tree).eqls(['+', 'd', ['^', 'b', 2]])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["+", "alpha", ["^", "b", 2]])
+      expect(stateVariables['/one'].stateValues.value).eqls(["+", "alpha", ["^", "b", 2]])
+      expect(stateVariables['/s_two'].stateValues.value).eqls(['+', 'd', ['^', 'b', 2]])
+      expect(stateVariables['/two'].stateValues.value).eqls(['+', 'd', ['^', 'b', 2]])
     })
   });
 
@@ -69,10 +69,10 @@ describe('Substitute Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["+", "alpha", ["^", "b", 2]])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["+", "alpha", ["^", "b", 2]])
-      expect(stateVariables['/s_two'].stateValues.value.tree).eqls(['+', 'd', ['^', 'b', 2]])
-      expect(stateVariables['/two'].stateValues.value.tree).eqls(['+', 'd', ['^', 'b', 2]])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["+", "alpha", ["^", "b", 2]])
+      expect(stateVariables['/one'].stateValues.value).eqls(["+", "alpha", ["^", "b", 2]])
+      expect(stateVariables['/s_two'].stateValues.value).eqls(['+', 'd', ['^', 'b', 2]])
+      expect(stateVariables['/two'].stateValues.value).eqls(['+', 'd', ['^', 'b', 2]])
     })
   });
 
@@ -103,10 +103,10 @@ describe('Substitute Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["+", "alpha", ["^", "b", 2]])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["+", "alpha", ["^", "b", 2]])
-      expect(stateVariables['/s_two'].stateValues.value.tree).eqls(['+', 'd', ['^', 'b', 2]])
-      expect(stateVariables['/two'].stateValues.value.tree).eqls(['+', 'd', ['^', 'b', 2]])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["+", "alpha", ["^", "b", 2]])
+      expect(stateVariables['/one'].stateValues.value).eqls(["+", "alpha", ["^", "b", 2]])
+      expect(stateVariables['/s_two'].stateValues.value).eqls(['+', 'd', ['^', 'b', 2]])
+      expect(stateVariables['/two'].stateValues.value).eqls(['+', 'd', ['^', 'b', 2]])
     })
   });
 
@@ -130,35 +130,37 @@ describe('Substitute Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["+", "y", "y"])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["+", "y", "y"])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["+", "y", "y"])
+      expect(stateVariables['/one'].stateValues.value).eqls(["+", "y", "y"])
     })
 
     cy.log("set simplify to full")
     cy.get('#\\/simplify_input').clear().type("full{enter}");
 
+    cy.get('#\\/one .mjx-mrow').should("contain.text", '2y')
     cy.get('#\\/one .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2y')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["*", 2, "y"])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["*", 2, "y"])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["*", 2, "y"])
+      expect(stateVariables['/one'].stateValues.value).eqls(["*", 2, "y"])
     })
 
     cy.log("set simplify back to none")
     cy.get('#\\/simplify_input').clear().type("none{enter}");
 
 
+    cy.get('#\\/one .mjx-mrow').should("contain.text", 'y+y')
     cy.get('#\\/one .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('y+y')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["+", "y", "y"])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["+", "y", "y"])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["+", "y", "y"])
+      expect(stateVariables['/one'].stateValues.value).eqls(["+", "y", "y"])
     })
 
   });
@@ -184,10 +186,10 @@ describe('Substitute Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(
+      expect(stateVariables['/s_one'].stateValues.value).eqls(
         ['+', ['^', 'b', 2], 'd', ['/', 'b', 'd']]
       )
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(
+      expect(stateVariables['/one'].stateValues.value).eqls(
         ['+', ['^', 'b', 2], 'd', ['/', 'b', 'd']]
       )
     })
@@ -217,62 +219,66 @@ describe('Substitute Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["+", "y", ["^", "b", 2]])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["+", "y", ["^", "b", 2]])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["+", "y", ["^", "b", 2]])
+      expect(stateVariables['/one'].stateValues.value).eqls(["+", "y", ["^", "b", 2]])
     })
 
     cy.log('change original')
     cy.get('#\\/original textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}q/x{enter}`, { force: true });
 
+    cy.get('#\\/one .mjx-mrow').should('contain.text', 'qb')
     cy.get('#\\/one .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('qb')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["/", "q", "b"])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["/", "q", "b"])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["/", "q", "b"])
+      expect(stateVariables['/one'].stateValues.value).eqls(["/", "q", "b"])
     })
 
 
     cy.log('change match so does not match')
     cy.get('#\\/match textarea').type(`{end}{backspace}{backspace}c{enter}`, { force: true });
 
+    cy.get('#\\/one .mjx-mrow').should('contain.text', 'qx')
     cy.get('#\\/one .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('qx')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["/", "q", "x"])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["/", "q", "x"])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["/", "q", "x"])
+      expect(stateVariables['/one'].stateValues.value).eqls(["/", "q", "x"])
     })
 
     cy.log('change match so matches again')
     cy.get('#\\/match textarea').type(`{end}{backspace}{backspace}q{enter}`, { force: true });
 
+    cy.get('#\\/one .mjx-mrow').should('contain.text', 'bx')
     cy.get('#\\/one .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('bx')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["/", "b", "x"])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["/", "b", "x"])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["/", "b", "x"])
+      expect(stateVariables['/one'].stateValues.value).eqls(["/", "b", "x"])
     })
 
 
     cy.log('change replacement')
     cy.get('#\\/replacement textarea').type(`{end}{backspace}{backspace}m^2{enter}`, { force: true });
 
+    cy.get('#\\/one .mjx-mrow').should('contain.text', 'm2x')
     cy.get('#\\/one .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('m2x')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["/", ["^", "m", 2], "x"])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["/", ["^", "m", 2], "x"])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["/", ["^", "m", 2], "x"])
+      expect(stateVariables['/one'].stateValues.value).eqls(["/", ["^", "m", 2], "x"])
     })
 
 
@@ -304,10 +310,10 @@ describe('Substitute Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/s_one'].stateValues.value.tree).eqls(["+", "x", 1])
-      expect(stateVariables['/one'].stateValues.value.tree).eqls(["+", "x", 1])
-      expect(stateVariables['/s_two'].stateValues.value.tree).eqls(["+", "y", 1])
-      expect(stateVariables['/two'].stateValues.value.tree).eqls(["+", "y", 1])
+      expect(stateVariables['/s_one'].stateValues.value).eqls(["+", "x", 1])
+      expect(stateVariables['/one'].stateValues.value).eqls(["+", "x", 1])
+      expect(stateVariables['/s_two'].stateValues.value).eqls(["+", "y", 1])
+      expect(stateVariables['/two'].stateValues.value).eqls(["+", "y", 1])
     })
   });
 
@@ -657,14 +663,17 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("x^2+2x+3y").tree;
       let subbedExpr = me.fromText("b^2+2b+3y").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
     cy.log('change original')
     cy.get('#\\/orig textarea').type(`{end}{backspace}x{enter}`, { force: true });
+
+    cy.get('#\\/orig2 .mjx-mrow').should('contain.text', 'x2+2x+3x')
+    cy.get(`#\\/subbed2 .mq-editable-field`).should('contain.text', 'b2+2b+3b')
 
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2+2x+3x')
@@ -684,16 +693,18 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("x^2+2x+3x").tree;
       let subbedExpr = me.fromText("b^2+2b+3b").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
 
     cy.log('change subbed')
     cy.get('#\\/subbed2 textarea').type(`{end}{backspace}v/b{enter}`, { force: true });
 
+    cy.get('#\\/orig2 .mjx-mrow').should('contain.text', 'x2+2x+3vx')
+    cy.get(`#\\/subbed2 .mq-editable-field`).should('contain.text', 'b2+2b+3vb')
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2+2x+3vx')
     })
@@ -712,16 +723,18 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("x^2+2x+3v/x").tree;
       let subbedExpr = me.fromText("b^2+2b+3v/b").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
 
     cy.log('change replacement so that it is in original')
     cy.get('#\\/replacement textarea').type(`{end}{backspace}v{enter}`, { force: true });
 
+    cy.get('#\\/subbed .mjx-mrow').should('contain.text', 'v2+2v+3vv')
+    cy.get(`#\\/subbed2 .mq-editable-field`).should('contain.text', 'v2+2v+3vv')
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2+2x+3vx')
     })
@@ -740,16 +753,18 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("x^2+2x+3v/x").tree;
       let subbedExpr = me.fromText("v^2+2v+3v/v").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
 
     cy.log('Cannot modify subbed')
     cy.get('#\\/subbed2 textarea').type(`{end}{backspace}+1{enter}`, { force: true });
 
+    cy.get(`#\\/subbed2 .mq-editable-field`).should('not.contain.text', 'v2+2v+3vv+1')
+
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2+2x+3vx')
     })
@@ -768,15 +783,17 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("x^2+2x+3v/x").tree;
       let subbedExpr = me.fromText("v^2+2v+3v/v").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
 
     cy.log('change original to not contain replacement')
     cy.get('#\\/orig textarea').type(`{end}{leftArrow}{leftArrow}{leftArrow}{backspace}u{enter}`, { force: true });
+    cy.get('#\\/orig2 .mjx-mrow').should('contain.text', 'x2+2x+3ux')
+    cy.get(`#\\/subbed2 .mq-editable-field`).should('contain.text', 'v2+2v+3uv')
 
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x2+2x+3ux')
@@ -796,14 +813,16 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("x^2+2x+3u/x").tree;
       let subbedExpr = me.fromText("v^2+2v+3u/v").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
     cy.log('Can modify subbed again')
     cy.get('#\\/subbed2 textarea').type(`{home}{rightArrow}{rightArrow}{rightArrow}{backspace}5{enter}`, { force: true });
+
+    cy.get('#\\/orig2 .mjx-mrow').should('contain.text', 'x5+2x+3ux')
 
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x5+2x+3ux')
@@ -823,16 +842,19 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("x^5+2x+3u/x").tree;
       let subbedExpr = me.fromText("v^5+2v+3u/v").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
 
     cy.log('change replacement to be more than a variable')
     cy.get('#\\/replacement textarea').type(`{end}+1{enter}`, { force: true });
 
+    cy.get('#\\/subbed .mjx-mrow').should('contain.text', '(v+1)5+2(v+1)+3uv+1')
+    cy.get(`#\\/subbed2 .mq-editable-field`).should('contain.text', '(v+1)5+2(v+1)+3uv+1')
+
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x5+2x+3ux')
     })
@@ -851,16 +873,18 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("x^5+2x+3u/x").tree;
       let subbedExpr = me.fromText("(v+1)^5+2(v+1)+3u/(v+1)").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
 
     cy.log('Cannot modify subbed')
     cy.get('#\\/subbed2 textarea').type(`{home}+7{enter}`, { force: true });
 
+    cy.get(`#\\/subbed2 .mq-editable-field`).should('not.contain.text', '+7')
+
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x5+2x+3ux')
     })
@@ -879,14 +903,18 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("x^5+2x+3u/x").tree;
       let subbedExpr = me.fromText("(v+1)^5+2(v+1)+3u/(v+1)").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
     cy.log('change replacement to involve a subscript')
     cy.get('#\\/replacement textarea').type(`{end}{backspace}{backspace}_3{enter}`, { force: true });
+
+    cy.waitUntil(() => cy.get(`#\\/subbed2 .mq-editable-field`).invoke('text').then((text) =>
+      text.replace(/[\s\u200B-\u200D\uFEFF]/g, '') === 'v53+2v3+3uv3'
+    ))
 
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x5+2x+3ux')
@@ -906,16 +934,17 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("x^5+2x+3u/x").tree;
       let subbedExpr = me.fromText("v_3^5+2v_3+3u/v_3").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
 
     cy.log('Can modify subbed once more')
     cy.get('#\\/subbed2 textarea').type(`{home}{rightArrow}{rightArrow}{rightArrow}{backspace}9{enter}`, { force: true });
 
+    cy.get('#\\/subbed .mjx-mrow').should('contain.text', 'v59+2v3+3uv3')
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v59+2x+3ux')
     })
@@ -934,15 +963,17 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("v_9^5+2x+3u/x").tree;
       let subbedExpr = me.fromText("v_9^5+2v_3+3u/v_3").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
 
     cy.log('change match to involve a subscript')
     cy.get('#\\/match textarea').type(`{end}{backspace}v_9{enter}`, { force: true });
+
+    cy.get('#\\/subbed .mjx-mrow').should('contain.text', 'v53+2x+3ux')
 
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v59+2x+3ux')
@@ -962,15 +993,17 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("v_9^5+2x+3u/x").tree;
       let subbedExpr = me.fromText("v_3^5+2x+3u/x").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
-    
+
 
     cy.log('Can still modify subbed')
     cy.get('#\\/subbed2 textarea').type(`{end}{leftArrow}{backspace}v_3{enter}`, { force: true });
+
+    cy.get('#\\/subbed .mjx-mrow').should('contain.text', 'v53+2x+3uv3')
 
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v59+2x+3uv9')
@@ -990,16 +1023,18 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("v_9^5+2x+3u/v_9").tree;
       let subbedExpr = me.fromText("v_3^5+2x+3u/v_3").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
 
 
     cy.log('Cannot modify subbed to include match')
     cy.get('#\\/subbed2 textarea').type(`{end}+v_9{enter}`, { force: true });
 
+    cy.get(`#\\/subbed2 .mq-editable-field`).should('not.contain.text', '+v9')
+
     cy.get(`#\\/orig .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('v59+2x+3uv9')
     })
@@ -1018,13 +1053,13 @@ describe('Substitute Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let origExpr = me.fromText("v_9^5+2x+3u/v_9").tree;
       let subbedExpr = me.fromText("v_3^5+2x+3u/v_3").tree;
-      expect(stateVariables['/orig'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/orig2'].stateValues.value.tree).eqls(origExpr)
-      expect(stateVariables['/subbed'].stateValues.value.tree).eqls(subbedExpr)
-      expect(stateVariables['/subbed2'].stateValues.value.tree).eqls(subbedExpr)
+      expect(stateVariables['/orig'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/orig2'].stateValues.value).eqls(origExpr)
+      expect(stateVariables['/subbed'].stateValues.value).eqls(subbedExpr)
+      expect(stateVariables['/subbed2'].stateValues.value).eqls(subbedExpr)
     })
-    
-    
+
+
 
   });
 
@@ -1046,7 +1081,7 @@ describe('Substitute Tag Tests', function () {
 
     <p>Substituted 2: <textinput name="subbed2" bindValueTo="$subbed" size="20" /></p>
 
-
+    <p><copy prop="value" target="matchCase" assignNames="matchCase2" /></p>
     `}, "*");
     });
 
@@ -1068,8 +1103,8 @@ describe('Substitute Tag Tests', function () {
     cy.log('change original')
     cy.get('#\\/orig_input').type(`{end}Hello{enter}`);
 
-    cy.get('#\\/orig_input').should('have.value', 'hello thereHello');
     cy.get('#\\/orig2').should('have.text', 'hello thereHello');
+    cy.get('#\\/orig_input').should('have.value', 'hello thereHello');
     cy.get('#\\/subbed').should('have.text', 'bye therebye');
     cy.get('#\\/subbed2_input').should('have.value', 'bye therebye');
 
@@ -1101,10 +1136,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('change replacement so that it is in original')
     cy.get('#\\/replacement_input').clear().type(`There{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'There thereThereThere');
     cy.get('#\\/orig_input').should('have.value', 'hello therehellohello');
     cy.get('#\\/orig2').should('have.text', 'hello therehellohello');
     cy.get('#\\/subbed').should('have.text', 'There thereThereThere');
-    cy.get('#\\/subbed2_input').should('have.value', 'There thereThereThere');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1118,10 +1153,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('Cannot modify subbed')
     cy.get('#\\/subbed2_input').type(`{end} extra{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'There thereThereThere');
     cy.get('#\\/orig_input').should('have.value', 'hello therehellohello');
     cy.get('#\\/orig2').should('have.text', 'hello therehellohello');
     cy.get('#\\/subbed').should('have.text', 'There thereThereThere');
-    cy.get('#\\/subbed2_input').should('have.value', 'There thereThereThere');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1134,8 +1169,8 @@ describe('Substitute Tag Tests', function () {
     cy.log('change original to not contain replacement')
     cy.get('#\\/orig_input').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}n{enter}")
 
-    cy.get('#\\/orig_input').should('have.value', 'hello thenhellohello');
     cy.get('#\\/orig2').should('have.text', 'hello thenhellohello');
+    cy.get('#\\/orig_input').should('have.value', 'hello thenhellohello');
     cy.get('#\\/subbed').should('have.text', 'There thenThereThere');
     cy.get('#\\/subbed2_input').should('have.value', 'There thenThereThere');
 
@@ -1166,10 +1201,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('Cannot modify subbed to include match')
     cy.get('#\\/subbed2_input').type(`{end}HELLO{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'There thenThereThe');
     cy.get('#\\/orig_input').should('have.value', 'hello thenhelloThe');
     cy.get('#\\/orig2').should('have.text', 'hello thenhelloThe');
     cy.get('#\\/subbed').should('have.text', 'There thenThereThe');
-    cy.get('#\\/subbed2_input').should('have.value', 'There thenThereThe');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1182,10 +1217,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('match whole word')
     cy.get('#\\/wholeWord_input').click();
 
+    cy.get('#\\/subbed2_input').should('have.value', 'There thenhelloThe');
     cy.get('#\\/orig_input').should('have.value', 'hello thenhelloThe');
     cy.get('#\\/orig2').should('have.text', 'hello thenhelloThe');
     cy.get('#\\/subbed').should('have.text', 'There thenhelloThe');
-    cy.get('#\\/subbed2_input').should('have.value', 'There thenhelloThe');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1195,14 +1230,14 @@ describe('Substitute Tag Tests', function () {
       expect(stateVariables['/subbed2'].stateValues.value).eq("There thenhelloThe")
     })
 
-    
+
     cy.log("change replacement so matches original, but not as a whole word")
     cy.get('#\\/replacement_input').clear().type(`Then{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'Then thenhelloThe');
     cy.get('#\\/orig_input').should('have.value', 'hello thenhelloThe');
     cy.get('#\\/orig2').should('have.text', 'hello thenhelloThe');
     cy.get('#\\/subbed').should('have.text', 'Then thenhelloThe');
-    cy.get('#\\/subbed2_input').should('have.value', 'Then thenhelloThe');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1232,10 +1267,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('Cannnot modify subbed by adding spaces to separate match')
     cy.get('#\\/subbed2_input').type(`{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow} {leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow} {enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'Then thenhelloThere');
     cy.get('#\\/orig_input').should('have.value', 'hello thenhelloThere');
     cy.get('#\\/orig2').should('have.text', 'hello thenhelloThere');
     cy.get('#\\/subbed').should('have.text', 'Then thenhelloThere');
-    cy.get('#\\/subbed2_input').should('have.value', 'Then thenhelloThere');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1249,8 +1284,8 @@ describe('Substitute Tag Tests', function () {
     cy.log("change original so that replacement matches original as a whole word")
     cy.get('#\\/orig_input').type('{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow} {enter}')
 
-    cy.get('#\\/orig_input').should('have.value', 'hello then helloThere');
     cy.get('#\\/orig2').should('have.text', 'hello then helloThere');
+    cy.get('#\\/orig_input').should('have.value', 'hello then helloThere');
     cy.get('#\\/subbed').should('have.text', 'Then then helloThere');
     cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere');
 
@@ -1265,10 +1300,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('Cannot modify subbed due to replacement match')
     cy.get('#\\/subbed2_input').type(`{end}nothing{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere');
     cy.get('#\\/orig_input').should('have.value', 'hello then helloThere');
     cy.get('#\\/orig2').should('have.text', 'hello then helloThere');
     cy.get('#\\/subbed').should('have.text', 'Then then helloThere');
-    cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1281,6 +1316,8 @@ describe('Substitute Tag Tests', function () {
 
     cy.log('match case')
     cy.get('#\\/matchCase_input').click();
+
+    cy.get("#\\/matchCase2").should('have.text', 'true');
 
     cy.get('#\\/orig_input').should('have.value', 'hello then helloThere');
     cy.get('#\\/orig2').should('have.text', 'hello then helloThere');
@@ -1299,10 +1336,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('Now cannot modify subbed due to replacement not matching original case')
     cy.get('#\\/subbed2_input').type(`{end} Hello{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere Hello');
     cy.get('#\\/orig_input').should('have.value', 'hello then helloThere Hello');
     cy.get('#\\/orig2').should('have.text', 'hello then helloThere Hello');
     cy.get('#\\/subbed').should('have.text', 'Then then helloThere Hello');
-    cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere Hello');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1315,10 +1352,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('Cannot add match to subbed')
     cy.get('#\\/subbed2_input').type(`{end} hello{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere Hello');
     cy.get('#\\/orig_input').should('have.value', 'hello then helloThere Hello');
     cy.get('#\\/orig2').should('have.text', 'hello then helloThere Hello');
     cy.get('#\\/subbed').should('have.text', 'Then then helloThere Hello');
-    cy.get('#\\/subbed2_input').should('have.value', 'Then then helloThere Hello');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1348,10 +1385,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('preserve case')
     cy.get('#\\/preserveCase_input').click();
 
+    cy.get('#\\/subbed2_input').should('have.value', 'then then helloThere Hello');
     cy.get('#\\/orig_input').should('have.value', 'then hello helloThere Hello');
     cy.get('#\\/orig2').should('have.text', 'then hello helloThere Hello');
     cy.get('#\\/subbed').should('have.text', 'then then helloThere Hello');
-    cy.get('#\\/subbed2_input').should('have.value', 'then then helloThere Hello');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1365,10 +1402,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('Cannot change subbed since original contains effective replacement')
     cy.get('#\\/subbed2_input').type(`{end} more{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'then then helloThere Hello');
     cy.get('#\\/orig_input').should('have.value', 'then hello helloThere Hello');
     cy.get('#\\/orig2').should('have.text', 'then hello helloThere Hello');
     cy.get('#\\/subbed').should('have.text', 'then then helloThere Hello');
-    cy.get('#\\/subbed2_input').should('have.value', 'then then helloThere Hello');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1381,10 +1418,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('change case of match so that effective replacement is not in original')
     cy.get('#\\/match_input').type(`{home}{rightArrow}{backspace}H{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'then hello helloThere Then');
     cy.get('#\\/orig_input').should('have.value', 'then hello helloThere Hello');
     cy.get('#\\/orig2').should('have.text', 'then hello helloThere Hello');
     cy.get('#\\/subbed').should('have.text', 'then hello helloThere Then');
-    cy.get('#\\/subbed2_input').should('have.value', 'then hello helloThere Then');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1415,10 +1452,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('change case of match so that effective replacement is again in original')
     cy.get('#\\/match_input').type(`{home}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{backspace}{backspace}{backspace}{backspace}ELLO{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN THEN helloThere Hello');
     cy.get('#\\/orig_input').should('have.value', 'Hello HELLO THEN helloThere Hello');
     cy.get('#\\/orig2').should('have.text', 'Hello HELLO THEN helloThere Hello');
     cy.get('#\\/subbed').should('have.text', 'Hello THEN THEN helloThere Hello');
-    cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN THEN helloThere Hello');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1431,10 +1468,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('Cannot change subbed')
     cy.get('#\\/subbed2_input').type(`{end} ineffective{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN THEN helloThere Hello');
     cy.get('#\\/orig_input').should('have.value', 'Hello HELLO THEN helloThere Hello');
     cy.get('#\\/orig2').should('have.text', 'Hello HELLO THEN helloThere Hello');
     cy.get('#\\/subbed').should('have.text', 'Hello THEN THEN helloThere Hello');
-    cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN THEN helloThere Hello');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1448,8 +1485,8 @@ describe('Substitute Tag Tests', function () {
     cy.log('change original so no longer has effective replacement')
     cy.get('#\\/orig_input').type(`{home}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{backspace}{backspace}{backspace}hen{enter}`);
 
-    cy.get('#\\/orig_input').should('have.value', 'Hello HELLO Then helloThere Hello');
     cy.get('#\\/orig2').should('have.text', 'Hello HELLO Then helloThere Hello');
+    cy.get('#\\/orig_input').should('have.value', 'Hello HELLO Then helloThere Hello');
     cy.get('#\\/subbed').should('have.text', 'Hello THEN Then helloThere Hello');
     cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN Then helloThere Hello');
 
@@ -1480,10 +1517,10 @@ describe('Substitute Tag Tests', function () {
     cy.log('Cannot add match to subbed')
     cy.get('#\\/subbed2_input').type(`{end} HELLO{enter}`);
 
+    cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN Then helloThere THEN');
     cy.get('#\\/orig_input').should('have.value', 'Hello HELLO Then helloThere HELLO');
     cy.get('#\\/orig2').should('have.text', 'Hello HELLO Then helloThere HELLO');
     cy.get('#\\/subbed').should('have.text', 'Hello THEN Then helloThere THEN');
-    cy.get('#\\/subbed2_input').should('have.value', 'Hello THEN Then helloThere THEN');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1522,9 +1559,9 @@ describe('Substitute Tag Tests', function () {
       expect(text.trim()).equal('x+1')
     })
 
-    cy.get('#\\/t1').should('have.text','hello')
-    cy.get('#\\/t2').should('have.text','hello')
-    cy.get('#\\/t3').should('have.text','hello')
+    cy.get('#\\/t1').should('have.text', 'hello')
+    cy.get('#\\/t2').should('have.text', 'hello')
+    cy.get('#\\/t3').should('have.text', 'hello')
 
   });
 

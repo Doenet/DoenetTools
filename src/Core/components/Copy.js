@@ -88,14 +88,14 @@ export default class Copy extends CompositeComponent {
     return attributes;
   }
 
-  static returnChildGroups() {
-
-    return [{
-      group: "externalContents",
-      componentTypes: ["externalContent"]
-    }]
-
+  static keepChildrenSerialized({ serializedComponent }) {
+    if (serializedComponent.children === undefined) {
+      return [];
+    } else {
+      return Object.keys(serializedComponent.children)
+    }
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -333,11 +333,10 @@ export default class Copy extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "cid"
         },
-        externalContentChild: {
-          dependencyType: "child",
-          childGroups: ["externalContents"],
-          variableNames: ["serializedChildren", "newNamespace"],
-        }
+        serializedChildren: {
+          dependencyType: "serializedChildren",
+          doNotProxy: true
+        },
       }),
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.cid) {
@@ -345,20 +344,22 @@ export default class Copy extends CompositeComponent {
             setValue: { serializedComponentsForCid: null }
           }
         }
-        let externalContentChild = dependencyValues.externalContentChild[0];
+        let externalContentChild = dependencyValues.serializedChildren?.[0];
         if (!externalContentChild) {
           return {
             setValue: { serializedComponentsForCid: null }
           }
         }
-        let childrenOfContent = externalContentChild.stateValues.serializedChildren;
+
+        let childrenOfContent = externalContentChild.children;
         let serializedComponentsForCid = {
           componentType: "externalContent",
           state: { rendered: true },
           children: childrenOfContent,
           originalName: externalContentChild.componentName,
+          variants: externalContentChild.variants,
         }
-        if (externalContentChild.stateValues.newNamespace) {
+        if (externalContentChild.attributes?.newNamespace?.primitive) {
           serializedComponentsForCid.attributes = { newNamespace: { primitive: true } }
         }
         return {
@@ -1149,7 +1150,7 @@ export default class Copy extends CompositeComponent {
     workspace, componentInfoObjects, compositeAttributesObj, flags
   }) {
 
-    if (!(component.attributes.componentType && component.attributes.componentType.primitive)
+    if (!component.attributes.componentType?.primitive
       && !component.sharedParameters.compositesMustHaveAReplacement
     ) {
 
@@ -1163,7 +1164,10 @@ export default class Copy extends CompositeComponent {
       replacementTypes = replacements.map(x => x.componentType);
 
       if (replacementTypes.length === 1 && replacementTypes[0] === "externalContent") {
-        replacementTypes = replacements[0].children.map(x => x.componentType)
+        // since looking for a particular componentType, filter out blank strings
+        replacementTypes = replacements[0].children
+          .filter(x => x.componentType || x.trim().length > 0)
+          .map(x => x.componentType)
       }
 
     } else {

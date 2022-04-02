@@ -294,6 +294,84 @@ describe('BooleanList Tag Tests', function () {
     })
   })
 
+  it('dynamic maximum number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p><booleanlist name="bl1" maximumNumber="$mn1">true true false true false</booleanlist></p>
+      <p><copy target="bl1" maximumNumber="$mn2" assignNames="bl2" /></p>
+      <p>Maximum number 1: <mathinput name="mn1" prefill="2" /></p>
+      <p>Maximum number 2: <mathinput name="mn2" /></p>
+
+      ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/_p1').should('have.text', 'true, true')
+      cy.get('#\\/_p2').should('have.text', 'true, true, false, true, false')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/bl1'].stateValues.booleans).eqls([true, true]);
+        expect(stateVariables['/bl2'].stateValues.booleans).eqls([true, true, false, true, false]);
+      })
+    })
+
+    cy.log("clear first maxnum")
+    cy.get('#\\/mn1 textarea').type("{end}{backspace}", { force: true }).blur();
+    cy.get('#\\/_p1').should('have.text', 'true, true, false, true, false')
+    cy.get('#\\/_p2').should('have.text', 'true, true, false, true, false')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/bl1'].stateValues.booleans).eqls([true, true, false, true, false]);
+      expect(stateVariables['/bl2'].stateValues.booleans).eqls([true, true, false, true, false]);
+    })
+
+
+    cy.log("number in second maxnum")
+    cy.get('#\\/mn2 textarea').type("3{enter}", { force: true });
+    cy.get('#\\/_p2').should('have.text', 'true, true, false')
+    cy.get('#\\/_p1').should('have.text', 'true, true, false, true, false')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/bl1'].stateValues.booleans).eqls([true, true, false, true, false]);
+      expect(stateVariables['/bl2'].stateValues.booleans).eqls([true, true, false]);
+    })
+
+
+    cy.log("number in first maxnum")
+    cy.get('#\\/mn1 textarea').type("4{enter}", { force: true });
+    cy.get('#\\/_p1').should('have.text', 'true, true, false, true')
+    cy.get('#\\/_p2').should('have.text', 'true, true, false')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/bl1'].stateValues.booleans).eqls([true, true, false, true]);
+      expect(stateVariables['/bl2'].stateValues.booleans).eqls([true, true, false]);
+    })
+
+
+    cy.log("change number in first maxnum")
+    cy.get('#\\/mn1 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/_p1').should('have.text', 'true')
+    cy.get('#\\/_p2').should('have.text', 'true, true, false')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/bl1'].stateValues.booleans).eqls([true]);
+      expect(stateVariables['/bl2'].stateValues.booleans).eqls([true, true, false]);
+    })
+
+
+  })
+
 })
 
 

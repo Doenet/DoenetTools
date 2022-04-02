@@ -678,7 +678,8 @@ export default class MathList extends InlineComponent {
         return {
           setValue: { nComponentsToDisplayByChild, nChildrenToRender },
         }
-      }
+      },
+      markStale: () => ({ updateRenderedChildren: true }),
     }
 
     return stateVariableDefinitions;

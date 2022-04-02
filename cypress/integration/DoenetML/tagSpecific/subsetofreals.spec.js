@@ -1313,30 +1313,39 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "(1,∞)")
 
     cy.get(`#\\/displayMode_choice${2}_input`).click();
+    cy.get('#\\/result .mjx-mrow').should('contain.text', "x>1")
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "x>1")
 
     cy.get('#\\/variable textarea').type('{end}{backspace}y{enter}', { force: true })
+    cy.get('#\\/result .mjx-mrow').should('contain.text', "y∈∅")
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "y∈∅")
 
     cy.get('#\\/input textarea').type('{home}{rightArrow}{backspace}y{enter}', { force: true })
+    cy.get('#\\/result .mjx-mrow').should('contain.text', "y>1")
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "y>1")
 
     cy.get(`#\\/displayMode_choice${1}_input`).click();
+    cy.get('#\\/result .mjx-mrow').should('contain.text', "(1,∞)")
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "(1,∞)")
 
     cy.get('#\\/input textarea').type('{end}{leftArrow}{backspace}\\ne{enter}{enter}', { force: true })
+    cy.get('#\\/result .mjx-mrow').should('contain.text', "(−∞,1)∪(1,∞)")
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "(−∞,1)∪(1,∞)")
 
     cy.get('#\\/input textarea').type('{end}{backspace}{backspace}{backspace}(y>1)\\and(y<3){enter}', { force: true })
+    cy.get('#\\/result .mjx-mrow').should('contain.text', "(1,3)")
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "(1,3)")
 
     cy.get(`#\\/displayMode_choice${2}_input`).click();
+    cy.get('#\\/result .mjx-mrow').should('contain.text', "1<y<3")
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "1<y<3")
 
     cy.get('#\\/input textarea').type('{end}\\or(y>6){enter}', { force: true })
+    cy.get('#\\/result .mjx-mrow').should('contain.text', "(1<y<3)∨(y>6)")
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "(1<y<3)∨(y>6)")
 
     cy.get(`#\\/displayMode_choice${1}_input`).click();
+    cy.get('#\\/result .mjx-mrow').should('contain.text', "(1,3)∪(6,∞)")
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "(1,3)∪(6,∞)")
 
 
@@ -1376,6 +1385,28 @@ describe('SubsetOfReals Tag Tests', function () {
       if (str0 === undefined) {
         str0 = str;
       }
+
+
+      cy.get('#\\/s1 .mjx-mrow').should('contain.text', str)
+      cy.get('#\\/s2 .mjx-mrow').should('contain.text', str)
+      cy.get('#\\/s3 .mjx-mrow').should('contain.text', str)
+      cy.get('#\\/s4 .mjx-mrow').should('contain.text', str)
+      cy.get('#\\/s5 .mjx-mrow').should('contain.text', str)
+      cy.get('#\\/s6 .mjx-mrow').should('contain.text', str)
+      cy.get('#\\/s7 .mjx-mrow').should('contain.text', str)
+      cy.get('#\\/s8 .mjx-mrow').should('contain.text', str)
+      cy.get('#\\/s9 .mjx-mrow').should('contain.text', str)
+
+      cy.get('#\\/input0 .mq-editable-field').should('contain.text', str0)
+      cy.get('#\\/input1 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input2 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input3 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input4 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input5 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input6 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input7 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input8 .mq-editable-field').should('contain.text', str)
+      cy.get('#\\/input9 .mq-editable-field').should('contain.text', str)
 
       cy.get('#\\/s1 .mjx-mrow').eq(0).should('have.text', str)
       cy.get('#\\/s2 .mjx-mrow').eq(0).should('have.text', str)

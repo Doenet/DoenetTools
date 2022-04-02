@@ -239,6 +239,83 @@ describe('TextList Tag Tests', function () {
     })
   })
 
+  it('dynamic maximum number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p><textlist name="tl1" maximumNumber="$mn1">a b c d e</textlist></p>
+      <p><copy target="tl1" maximumNumber="$mn2" assignNames="tl2" /></p>
+      <p>Maximum number 1: <mathinput name="mn1" prefill="2" /></p>
+      <p>Maximum number 2: <mathinput name="mn2" /></p>
+
+      ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/_p1').should('have.text', 'a, b')
+      cy.get('#\\/_p2').should('have.text', 'a, b, c, d, e')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/tl1'].stateValues.texts).eqls(["a", "b"]);
+        expect(stateVariables['/tl2'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
+      })
+    })
+
+    cy.log("clear first maxnum")
+    cy.get('#\\/mn1 textarea').type("{end}{backspace}", { force: true }).blur();
+    cy.get('#\\/_p1').should('have.text', 'a, b, c, d, e')
+    cy.get('#\\/_p2').should('have.text', 'a, b, c, d, e')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/tl1'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
+      expect(stateVariables['/tl2'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
+    })
+
+
+    cy.log("number in second maxnum")
+    cy.get('#\\/mn2 textarea').type("3{enter}", { force: true });
+    cy.get('#\\/_p2').should('have.text', 'a, b, c')
+    cy.get('#\\/_p1').should('have.text', 'a, b, c, d, e')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/tl1'].stateValues.texts).eqls(["a", "b", "c", "d", "e"]);
+      expect(stateVariables['/tl2'].stateValues.texts).eqls(["a", "b", "c"]);
+    })
+
+
+    cy.log("number in first maxnum")
+    cy.get('#\\/mn1 textarea').type("4{enter}", { force: true });
+    cy.get('#\\/_p1').should('have.text', 'a, b, c, d')
+    cy.get('#\\/_p2').should('have.text', 'a, b, c')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/tl1'].stateValues.texts).eqls(["a", "b", "c", "d"]);
+      expect(stateVariables['/tl2'].stateValues.texts).eqls(["a", "b", "c"]);
+    })
+
+
+    cy.log("change number in first maxnum")
+    cy.get('#\\/mn1 textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/_p1').should('have.text', 'a')
+    cy.get('#\\/_p2').should('have.text', 'a, b, c')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/tl1'].stateValues.texts).eqls(["a"]);
+      expect(stateVariables['/tl2'].stateValues.texts).eqls(["a", "b", "c"]);
+    })
+
+
+  })
 
 })
 

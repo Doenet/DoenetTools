@@ -1,10 +1,9 @@
-import Template from './Template';
 import BlockComponent from './abstract/BlockComponent';
 
-export class Paginator extends Template {
+export class Paginator extends BlockComponent {
   static componentType = "paginator";
-  static renderedDefault = true;
-  static includeBlankStringChildren = false;
+  static rendererType = "container";
+  static renderChildren = true;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -14,15 +13,20 @@ export class Paginator extends Template {
       createStateVariable: "initialPage",
       defaultValue: 1,
     }
-    attributes.submitAllOnPageChange = {
-      createComponentOfType: "boolean",
-      createStateVariable: "submitAllOnPageChange",
-      defaultValue: false,
-    }
     return attributes;
 
   }
 
+  static returnChildGroups() {
+
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
+
+  }
+
+  
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -32,73 +36,14 @@ export class Paginator extends Template {
       public: true,
       componentType: "integer",
       returnDependencies: () => ({
-        serializedChildren: {
-          dependencyType: "serializedChildren",
-          doNotProxy: true
-        },
-      }),
-      definition({ dependencyValues, componentInfoObjects }) {
-        let countSectionsFromChildren = function (children) {
-
-          let n = 0;
-          for (let child of children) {
-            if (
-              componentInfoObjects.isInheritedComponentType({
-                inheritedComponentType: child.componentType,
-                baseComponentType: "_sectioningComponent"
-              }) ||
-              child.componentType === "copy" && child.attributes &&
-              child.attributes.componentType &&
-              componentInfoObjects.isInheritedComponentType({
-                inheritedComponentType: child.attributes.componentType.primitive,
-                baseComponentType: "_sectioningComponent"
-              })
-            ) {
-              n++;
-            } else if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "select"
-            })) {
-              let nPagesPerOption = Infinity;
-              if (child.children) {
-                for (let gChild of child.children) {
-                  if (gChild.componentType === "option") {
-                    if (gChild.children) {
-                      nPagesPerOption = Math.min(nPagesPerOption, countSectionsFromChildren(gChild.children))
-                    }
-                  }
-                }
-              }
-              if (Number.isFinite(nPagesPerOption)) {
-                let numberToSelect = 1;
-                if (child.attributes && child.attributes.numberToSelect) {
-                  let ntsComp = child.attributes.numberToSelect.component;
-                  if (ntsComp.children) {
-                    // look for a string child
-                    for (let child of ntsComp.children) {
-                      if (typeof child === "string") {
-                        let n = Number(child);
-                        if (Number.isFinite(n)) {
-                          numberToSelect = Math.round(n);
-                          break;
-                        }
-                      }
-                    }
-                  }
-                }
-                n += nPagesPerOption * numberToSelect;
-              }
-            }
-
-          }
-          return n;
+        children: {
+          dependencyType: "child",
+          childGroups: ["anything"]
         }
-
-
+      }),
+      definition({ dependencyValues }) {
         return {
-          setValue: {
-            nPages: countSectionsFromChildren(dependencyValues.serializedChildren)
-          }
+          setValue: { nPages: dependencyValues.children.length }
         }
       }
 
@@ -159,115 +104,27 @@ export class Paginator extends Template {
       }
     }
 
-    stateVariableDefinitions.pageDescendants = {
+    stateVariableDefinitions.childIndicesToRender = {
       returnDependencies: () => ({
-        pageDescendants: {
-          dependencyType: "descendant",
-          componentTypes: ["paginatorPage"],
-          useReplacementsForComposites: true,
-          includeNonActiveChildren: true,
+        currentPage: {
+          dependencyType: "stateVariable",
+          variableName: "currentPage"
         }
       }),
       definition({ dependencyValues }) {
         return {
-          setValue: {
-            pageDescendants: dependencyValues.pageDescendants
-          }
+          setValue: { childIndicesToRender: [dependencyValues.currentPage - 1] }
         }
-      }
-    }
-
-    stateVariableDefinitions.documentName = {
-      returnDependencies: () => ({
-        documentAncestor: {
-          dependencyType: "ancestor",
-          componentType: "document"
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.documentAncestor) {
-          return {
-            setValue: {
-              documentName: dependencyValues.documentAncestor.componentName
-            }
-          }
-        } else {
-          return { setValue: { documentName: null } }
-        }
-      }
+      },
+      markStale: () => ({ updateRenderedChildren: true }),
     }
 
     return stateVariableDefinitions;
   }
 
 
-  static async createSerializedReplacements({ component, componentInfoObjects }) {
-    let sectionReplacements = (await super.createSerializedReplacements({ component, componentInfoObjects })).replacements;
-
-
-    let insertPages = async function (serializedReplacements) {
-      let newReplacements = [];
-      for (let replacement of serializedReplacements) {
-        if (
-          componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: replacement.componentType,
-            baseComponentType: "_sectioningComponent"
-          }) ||
-          replacement.componentType === "copy" && replacement.attributes &&
-          replacement.attributes.componentType &&
-          componentInfoObjects.isInheritedComponentType({
-            inheritedComponentType: replacement.attributes.componentType.primitive,
-            baseComponentType: "_sectioningComponent"
-          })
-        ) {
-
-
-          newReplacements.push({
-            componentType: "paginatorPage",
-            children: [replacement],
-          })
-
-        } else if (componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: replacement.componentType,
-          baseComponentType: "select"
-        })) {
-
-
-          if (replacement.children) {
-            for (let child of replacement.children) {
-              if (child.componentType === "option") {
-                if (child.children) {
-
-                  child.children = await insertPages(child.children);
-
-                }
-              }
-            }
-          }
-
-          newReplacements.push(replacement)
-
-
-        }
-      }
-      return newReplacements;
-    }
-
-    let replacements = await insertPages(sectionReplacements);
-
-
-    return { replacements };
-
-  }
 
   async setPage({ number, actionId }) {
-
-    if (await this.stateValues.submitAllOnPageChange && !this.flags.readOnly) {
-      await this.coreFunctions.performAction({
-        componentName: await this.stateValues.documentName,
-        actionName: "submitAllAnswers"
-      })
-    }
 
     if (!Number.isInteger(number)) {
       this.coreFunctions.resolveAction({ actionId });
@@ -310,88 +167,6 @@ export class Paginator extends Template {
   };
 
 }
-
-export class PaginatorPage extends Template {
-  static componentType = "paginatorPage";
-
-  static assignNamesSkipOver = true;
-
-  static renderedDefault = true;
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
-    delete attributes.hide;
-    return attributes;
-  }
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-
-    stateVariableDefinitions.pageNumber = {
-      public: true,
-      componentType: "integer",
-      returnDependencies: () => ({
-        paginatorPageDescendants: {
-          dependencyType: "sourceCompositeStateVariable",
-          compositeComponentType: "paginator",
-          variableName: "pageDescendants"
-        }
-      }),
-      definition({ dependencyValues, componentName }) {
-
-        let pageNumber = null;
-
-        if (dependencyValues.paginatorPageDescendants) {
-          let ind = dependencyValues.paginatorPageDescendants
-            .map(x => x.componentName).indexOf(componentName);
-          if (ind !== -1) {
-            pageNumber = ind + 1;
-          }
-        }
-
-        return { setValue: { pageNumber } }
-
-
-      }
-    }
-
-
-    stateVariableDefinitions.hide = {
-      public: true,
-      componentType: "boolean",
-      returnDependencies: () => ({
-        pageNumber: {
-          dependencyType: "stateVariable",
-          variableName: "pageNumber"
-        },
-        paginatorCurrentPage: {
-          dependencyType: "sourceCompositeStateVariable",
-          compositeComponentType: "paginator",
-          variableName: "currentPage"
-        }
-      }),
-      definition({ dependencyValues }) {
-        let hide = true;
-        if (dependencyValues.paginatorCurrentPage) {
-          hide = dependencyValues.paginatorCurrentPage !== dependencyValues.pageNumber;
-        }
-
-        return {
-          setValue: { hide }
-        }
-
-      }
-    }
-
-
-    return stateVariableDefinitions;
-  }
-
-
-}
-
 
 export class PaginatorControls extends BlockComponent {
   constructor(args) {

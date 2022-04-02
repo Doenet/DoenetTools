@@ -323,7 +323,9 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/x textarea').type('x > 0{enter}', { force: true });
     cy.get('#\\/x_incorrect').should('be.visible');
 
-    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}< 0{enter}', { force: true });
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}< 0', { force: true });
+    cy.get('#\\/x_submit').should('be.visible');
+    cy.get('#\\/x textarea').type('{enter}', { force: true });
     cy.get('#\\/x_incorrect').should('be.visible');
 
 
@@ -331,7 +333,9 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/x_submit').click();
     cy.get('#\\/x_correct').should('be.visible');
 
-    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}> 0{enter}', { force: true });
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}> 0', { force: true });
+    cy.get('#\\/x_submit').should('be.visible');
+    cy.get('#\\/x textarea').type('{enter}', { force: true });
     cy.get('#\\/x_incorrect').should('be.visible');
 
 
@@ -339,7 +343,9 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/x_submit').click();
     cy.get('#\\/x_correct').should('be.visible');
 
-    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}< 0{enter}', { force: true });
+    cy.get('#\\/x textarea').type('{end}{backspace}{backspace}{backspace}< 0', { force: true });
+    cy.get('#\\/x_submit').should('be.visible');
+    cy.get('#\\/x textarea').type('{enter}', { force: true });
     cy.get('#\\/x_incorrect').should('be.visible');
 
 
@@ -2022,6 +2028,11 @@ describe('Conditional Content Tag Tests', function () {
 
     cy.log('enter -1')
     cy.get('#\\/n textarea').type("{end}{backspace}{backspace}-1{enter}", { force: true })
+
+    cy.get(`#\\/a\\/animal`).should('not.exist')
+    cy.get(`#\\/a\\/plant`).should('not.exist')
+    cy.get(`#\\/a\\/p`).should('not.exist')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let p1Chidren = stateVariables["/_p1"].activeChildren;
@@ -2033,10 +2044,6 @@ describe('Conditional Content Tag Tests', function () {
       let theAnimalCopyAnchor = cesc("#" + repeatChildren[2].componentName)
       let thePlantCopyAnchor = cesc("#" + repeatChildren[4].componentName)
       let thePCopyAnchor = cesc("#" + repeatChildren[6].componentName)
-
-      cy.get(`#\\/a\\/animal`).should('not.exist')
-      cy.get(`#\\/a\\/plant`).should('not.exist')
-      cy.get(`#\\/a\\/p`).should('not.exist')
 
       cy.get(`#\\/_p1`).invoke('text').then(text => {
         let words = text.split(/\s+/).slice(1);

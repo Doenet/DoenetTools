@@ -148,7 +148,7 @@ export default class triggerSet extends InlineComponent {
   }
 
 
-  async triggerActions() {
+  async triggerActions({ actionId }) {
 
     for (let child of await this.stateValues.updateValueAndActionsToTrigger) {
 
@@ -171,17 +171,21 @@ export default class triggerSet extends InlineComponent {
       }
     }
 
+    this.coreFunctions.resolveAction({ actionId });
+
     return await this.coreFunctions.triggerChainedActions({
       componentName: this.componentName,
     })
 
   }
 
-  async triggerActionsIfTriggerNewlyTrue({ stateValues, previousValues }) {
+  async triggerActionsIfTriggerNewlyTrue({ stateValues, previousValues, actionId }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
     if (stateValues.triggerWhen && previousValues.triggerWhen === false) {
-      return await this.triggerActions();
+      return await this.triggerActions({ actionId });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

@@ -1720,7 +1720,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
-        allowedErrorInMean: 0.3,
+        allowedErrorInMean: 0.6,
         allowedErrorInVariance: 0.5,
         checkAllSamples: false,
         stateVariables
@@ -1743,7 +1743,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
-        allowedErrorInMean: 0.3,
+        allowedErrorInMean: 0.6,
         allowedErrorInVariance: 2,
         checkAllSamples: false,
         stateVariables
@@ -1764,7 +1764,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
-        allowedErrorInMean: 0.2,
+        allowedErrorInMean: 0.4,
         allowedErrorInVariance: 0.8,
         checkAllSamples: false,
         stateVariables
