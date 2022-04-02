@@ -11,6 +11,7 @@ import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { cidFromText } from '../Core/utils/cid';
 import { useToast, toastType } from '@Toast';
 import { nanoid } from 'nanoid';
+import { parseAndCompile } from '../Parser/parser';
 
 let rngClass = prng_alea;
 
@@ -22,6 +23,10 @@ export default function ActivityViewer(props) {
   const [cidFromProps, setCidFromProps] = useState(null);
   const [activityDefinitionFromProps, setActivityDefinitionFromProps] = useState(null);
   const [cid, setCid] = useState(null);
+
+  const activityDefinitionDoenetML = useRef(null);
+  const xmlns = useRef(null);
+
   const [activityDefinition, setActivityDefinition] = useState(null);
 
   const [attemptNumber, setAttemptNumber] = useState(null);
@@ -125,9 +130,8 @@ export default function ActivityViewer(props) {
         cidFromText(JSON.stringify(activityDefinitionFromProps))
           .then(calcCid => {
             if (calcCid === cidFromProps) {
-              setActivityDefinition(activityDefinitionFromProps);
               setCid(cidFromProps);
-              setStage('continue');
+              parseActivityDefinition(activityDefinitionFromProps);
             } else {
               if (props.setIsInErrorState) {
                 props.setIsInErrorState(true)
@@ -139,26 +143,17 @@ export default function ActivityViewer(props) {
         // if have activityDefinition and no cid, then calculate cid
         cidFromText(JSON.stringify(activityDefinitionFromProps))
           .then(cid => {
-            setActivityDefinition(activityDefinitionFromProps);
             setCid(cid);
-            setStage('continue');
+            parseActivityDefinition(activityDefinitionFromProps);
           })
       }
     } else {
       // if don't have activityDefinition, then retrieve activityDefinition from cid
 
-      retrieveTextFileForCid(cidFromProps, "json")
+      retrieveTextFileForCid(cidFromProps, "doenet")
         .then(retrievedActivityDefinition => {
-          try {
-            setActivityDefinition(JSON.parse(retrievedActivityDefinition));
-          } catch (e) {
-            if (props.setIsInErrorState) {
-              props.setIsInErrorState(true)
-            }
-            setErrMsg("Invalid JSON activity definition");
-          }
           setCid(cidFromProps);
-          setStage('continue');
+          parseActivityDefinition(retrievedActivityDefinition);
         })
         .catch(e => {
           if (props.setIsInErrorState) {
@@ -168,6 +163,396 @@ export default function ActivityViewer(props) {
         })
     }
 
+  }
+
+  function parseActivityDefinition(activityDef) {
+
+    activityDefinitionDoenetML.current = activityDef;
+
+    let serializedDefinition = parseAndCompile(activityDef)
+      .filter(x => typeof x !== "string" || /\S/.test(x))
+
+    if (serializedDefinition.length !== 1 || serializedDefinition[0].componentType !== "document") {
+      if (props.setIsInErrorState) {
+        props.setIsInErrorState(true)
+      }
+      setErrMsg(`Invalid activity definition`);
+      return;
+    }
+
+    serializedDefinition = serializedDefinition[0];
+
+    // make document props lowercase
+    let documentProps = {};
+    for (let prop in serializedDefinition.props) {
+      let lowerProp = prop.toLowerCase();
+      if (lowerProp in documentProps) {
+        if (props.setIsInErrorState) {
+          props.setIsInErrorState(true)
+        }
+        setErrMsg(`Invalid activity definition: duplicate attribute ${lowerProp}`);
+        return;
+      }
+      documentProps[prop.toLowerCase()] = serializedDefinition.props[prop];
+    }
+
+    if (documentProps.type.toLowerCase() === "activity") {
+      let jsonDefinition = {
+        type: "activity",
+      };
+      delete documentProps.type;
+
+      if (documentProps.itemweights) {
+        if (typeof documentProps.itemweights !== "string") {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true)
+          }
+          setErrMsg(`Invalid activity definition: invalid itemWeights`);
+          return;
+        }
+        jsonDefinition.itemWeights = documentProps.itemweights
+          .split(/\s+/)
+          .filter(s => s)
+          .map(Number);
+
+        delete documentProps.itemweights;
+      }
+
+      jsonDefinition.shuffleItemWidths =
+        documentProps.shuffleitemwidths !== undefined &&
+        (documentProps.shuffleitemwidths === true ||
+          documentProps.shuffleitemwidths.toLowerCase() === "true"
+        );
+
+      delete documentProps.shuffleitemwidths;
+
+      if (documentProps.xmlns) {
+        if (documentProps.xmlns.slice(0, 34) === "https://doenet.org/spec/doenetml/v") {
+          jsonDefinition.version = documentProps.xmlns.slice(34);
+          xmlns.current = documentProps.xmlns;
+          delete documentProps.xmlns;
+        } else {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true)
+          }
+          setErrMsg(`Invalid activity definition: unrecognized xmlns`);
+          return;
+        }
+      } else {
+        console.warn('no xmls of activity!');
+      }
+
+      if (Object.keys(documentProps).length > 0) {
+        if (props.setIsInErrorState) {
+          props.setIsInErrorState(true)
+        }
+        setErrMsg(`Invalid activity definition: invalid document attributes: ${Object.keys(documentProps).join(", ")}`);
+        return;
+      }
+
+      let foundOrder = false;
+      let foundVariantControl = false;
+
+      // remove blank string children
+      let documentChildren = serializedDefinition.children
+        .filter(x => typeof x !== "string" || /\S/.test(x))
+
+      for (let child of documentChildren) {
+        if (child.componentType.toLowerCase() === "order") {
+          if (foundOrder) {
+            if (props.setIsInErrorState) {
+              props.setIsInErrorState(true)
+            }
+            setErrMsg(`Invalid activity definition: more than one base order defined`);
+            return;
+          }
+
+          foundOrder = true;
+
+          let result = validateOrder(child);
+
+          if (!result.success) {
+            if (props.setIsInErrorState) {
+              props.setIsInErrorState(true)
+            }
+            setErrMsg(`Invalid activity definition: ${result.message}`);
+            return;
+          }
+
+          jsonDefinition.order = result.order;
+
+        } else if (child.componentType.toLowerCase() === "variantcontrol") {
+
+          if (foundVariantControl) {
+            if (props.setIsInErrorState) {
+              props.setIsInErrorState(true)
+            }
+            setErrMsg(`Invalid activity definition: more than one variantControl defined`);
+            return;
+          }
+
+          foundVariantControl = true;
+
+          let result = validateVariantControl(child);
+
+          if (!result.success) {
+            if (props.setIsInErrorState) {
+              props.setIsInErrorState(true)
+            }
+            setErrMsg(`Invalid activity definition: ${result.message}`);
+            return;
+          }
+
+          jsonDefinition.variantControl = result.variantControl;
+
+        } else {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true)
+          }
+          setErrMsg(`Invalid activity definition: invalid child of type ${child.componentType}`);
+          return;
+        }
+
+      }
+
+      console.log('jsonDefinition', jsonDefinition);
+      setActivityDefinition(jsonDefinition);
+      setStage("continue");
+
+
+    } else if (documentProps.type.toLowerCase() === "page") {
+
+
+      let page = { type: "page" };
+
+      if(cidFromProps) {
+        page.cid = cidFromProps
+      }
+      if(activityDefinitionFromProps) {
+        page.doenetML = activityDefinitionFromProps;
+      }
+
+
+      let jsonDefinition = {
+        type: "activity",
+        order: {
+          type: "order",
+          behavior: "sequence",
+          content: [page]
+        }
+      }
+
+
+      if (documentProps.xmlns) {
+        if (documentProps.xmlns.slice(0, 34) === "https://doenet.org/spec/doenetml/v") {
+          jsonDefinition.version = documentProps.xmlns.slice(34);
+          delete documentProps.xmlns;
+        } else {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true)
+          }
+          setErrMsg(`Invalid activity definition: unrecognized xmlns`);
+          return;
+        }
+      } else {
+        console.warn('no xmls of activity!');
+      }
+
+
+      // TODO: what to do about variant control?
+      // It'd be great to have a way to map activity variants
+      // directly to page variants
+      // That way, we could preserve the exact variants specified in the page definition
+
+      console.log("jsonDefinition", jsonDefinition)
+      setActivityDefinition(jsonDefinition);
+      setStage("continue");
+
+
+    } else {
+      if (props.setIsInErrorState) {
+        props.setIsInErrorState(true)
+      }
+      setErrMsg(`Invalid activity definition`);
+      return;
+    }
+
+
+  }
+
+  function validateOrder(order) {
+    let newOrder = { type: "order" };
+
+    let orderProps = {};
+    for (let prop in order.props) {
+      let lowerProp = prop.toLowerCase();
+      if (lowerProp in orderProps) {
+        return {
+          success: false,
+          message: `duplicate attribute of order ${lowerProp}`
+        }
+      }
+      orderProps[prop.toLowerCase()] = order.props[prop];
+    }
+
+    for (let prop in orderProps) {
+      if (prop === "behavior") {
+        newOrder.behavior = orderProps.behavior;
+      } else if (prop == "numbertoselect") {
+        newOrder.numberToSelect = Number(orderProps.numbertoselect);
+      } else if (prop == "withreplacement") {
+        newOrder.withReplacement =
+          orderProps.withreplacement !== undefined &&
+          (orderProps.withreplacement === true ||
+            orderProps.withreplacement.toLowerCase() === "true"
+          );
+      } else {
+        return {
+          success: false,
+          message: `invalid order attribute: ${prop}`
+        }
+      }
+    }
+
+
+    // remove blank string children
+    let orderChildren = order.children
+      .filter(x => typeof x !== "string" || /\S/.test(x));
+
+    let content = [];
+    for (let child of orderChildren) {
+      if (child.componentType.toLowerCase() === "order") {
+        let result = validateOrder(child);
+        if (result.success) {
+          content.push(result.order);
+        } else {
+          return result;
+        }
+      } else if (child.componentType.toLowerCase() == "page") {
+        let result = validatePage(child);
+        if (result.success) {
+          content.push(result.page)
+        } else {
+          return result;
+        }
+      } else {
+        return {
+          success: false,
+          message: `invalid child of order, found type: ${child.componentType}`
+        }
+      }
+    }
+
+    newOrder.content = content;
+
+    return {
+      success: true,
+      order: newOrder
+    }
+
+  }
+
+
+  function validatePage(page) {
+    let newPage = { type: "page" };
+
+    let pageProps = {};
+    for (let prop in page.props) {
+      let lowerProp = prop.toLowerCase();
+      if (lowerProp in pageProps) {
+        return {
+          success: false,
+          message: `duplicate attribute of page ${lowerProp}`
+        }
+      }
+      pageProps[prop.toLowerCase()] = page.props[prop];
+    }
+
+
+    for (let prop in pageProps) {
+      if (prop === "cid") {
+        newPage.cid = pageProps.cid;
+        delete pageProps.cid;
+      } else {
+        return {
+          success: false,
+          message: `invalid page attribute: ${prop}`
+        }
+      }
+    }
+
+    if (page.children.length > 0) {
+      let pageDoenetML = activityDefinitionDoenetML.current.slice(page.range.openEnd+1, page.range.closeBegin);
+
+      if(page.children[0].componentType.toLowerCase() !== "document")  {
+        // add <docoument> around page
+        let xmlnsprop = '';
+        if(xmlns.current) {
+          xmlnsprop = ` xmlns="${xmlns.current}"`
+        }
+        pageDoenetML = `<document type="page" ${xmlnsprop}>${pageDoenetML}</document>`;
+      }
+
+      newPage.doenetML = pageDoenetML;
+    }
+
+    return {
+      success: true,
+      page: newPage
+    }
+  }
+
+
+  function validateVariantControl(variantControl) {
+    let newVariantControl = {};
+
+    let variantControlProps = {};
+    for (let prop in variantControl.props) {
+      let lowerProp = prop.toLowerCase();
+      if (lowerProp in variantControlProps) {
+        return {
+          success: false,
+          message: `duplicate attribute of variantControl ${lowerProp}`
+        }
+      }
+      variantControlProps[prop.toLowerCase()] = variantControl.props[prop];
+    }
+
+
+    for (let prop in variantControlProps) {
+      if (prop === "nvariants") {
+        newVariantControl.nVariants = Number(variantControlProps.nvariants);
+      } else if (prop === "seeds") {
+        if (typeof variantControlProps.seeds !== "string") {
+          return {
+            success: false,
+            message: "invalid seeds of variantControl"
+          }
+        }
+        newVariantControl.seeds = variantControlProps.seeds
+          .split(/\s+/)
+          .filter(s => s);
+
+      } else {
+        return {
+          success: false,
+          message: `invalid variantControl attribute: ${prop}`
+        }
+      }
+    }
+
+
+    if (variantControl.children.length > 0) {
+      return {
+        success: false,
+        message: "invalid variantControl: variantControl cannot have children"
+      }
+    }
+
+    return {
+      success: true,
+      variantControl: newVariantControl
+    }
   }
 
   async function loadState() {
@@ -730,11 +1115,6 @@ export default function ActivityViewer(props) {
         }
       });
 
-      console.log({
-        currentCid: cid,
-        doenetId: props.doenetId
-      })
-
       setCidChanged(resp.data.cidChanged === true);
 
     } catch (e) {
@@ -796,7 +1176,7 @@ export default function ActivityViewer(props) {
     return null;
   }
 
-  if (stage == 'recalcParams') {
+  if (stage === 'recalcParams') {
     setStage('wait');
     calculateCidDefinition();
     return null;

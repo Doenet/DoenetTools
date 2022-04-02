@@ -344,7 +344,6 @@ export default function PageViewer(props) {
 
   function resolveAction({ actionId }) {
     if (actionId) {
-      console.log(`resolving actionId ${actionId}`);
       resolveActionPromises.current[actionId]?.();
       delete resolveActionPromises.current[actionId]
     }
