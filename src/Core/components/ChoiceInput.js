@@ -170,26 +170,24 @@ export default class Choiceinput extends Input {
         } else {
 
           // if desiredIndices is specfied, use those
-          if (dependencyValues.variants && dependencyValues.variants.desiredVariant !== undefined) {
-            let desiredChoiceOrder = dependencyValues.variants.desiredVariant.indices;
-            if (desiredChoiceOrder !== undefined) {
-              if (desiredChoiceOrder.length !== numberChoices) {
-                console.warn("Ignoring indices specified for choiceInput as number of indices doesn't match number of choice children.")
+          let desiredChoiceOrder = dependencyValues.variants?.desiredVariant?.indices;
+          if (desiredChoiceOrder !== undefined) {
+            if (desiredChoiceOrder.length !== numberChoices) {
+              console.warn("Ignoring indices specified for choiceInput as number of indices doesn't match number of choice children.")
+            } else {
+              desiredChoiceOrder = desiredChoiceOrder.map(Number);
+              if (!desiredChoiceOrder.every(Number.isInteger)) {
+                throw Error("All indices specified for choiceInput must be integers");
+              }
+              if (!desiredChoiceOrder.every(x => x >= 1 && x <= numberChoices)) {
+                console.warn("Ignoring indices specified for choiceInput as some indices out of range.")
               } else {
-                desiredChoiceOrder = desiredChoiceOrder.map(Number);
-                if (!desiredChoiceOrder.every(Number.isInteger)) {
-                  throw Error("All indices specified for choiceInput must be integers");
-                }
-                if (!desiredChoiceOrder.every(x => x >= 1 && x <= numberChoices)) {
-                  console.warn("Ignoring indices specified for choiceInput as some indices out of range.")
-                } else {
 
-                  return {
-                    // makeEssential: ["choiceOrder"],
-                    setValue: {
-                      choiceOrder: desiredChoiceOrder,
-                    },
-                  }
+                return {
+                  // makeEssential: ["choiceOrder"],
+                  setValue: {
+                    choiceOrder: desiredChoiceOrder,
+                  },
                 }
               }
             }
