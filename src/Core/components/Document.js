@@ -29,6 +29,17 @@ export default class Document extends BaseComponent {
       defaultValue: false,
       public: true,
     };
+
+    // at this point, we are creating these attributes
+    // so that having them in the doenetML is valid
+    // Do we want to do something with these attributes?
+    attributes.xmlns = {
+      createPrimitiveOfType: "string"
+    }
+    attributes.type = {
+      createPrimitiveOfType: "string"
+    }
+
     return attributes;
   }
 
