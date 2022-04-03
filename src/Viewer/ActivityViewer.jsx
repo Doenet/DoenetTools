@@ -218,13 +218,13 @@ export default function ActivityViewer(props) {
         delete documentProps.itemweights;
       }
 
-      jsonDefinition.shuffleItemWidths =
-        documentProps.shuffleitemwidths !== undefined &&
-        (documentProps.shuffleitemwidths === true ||
-          documentProps.shuffleitemwidths.toLowerCase() === "true"
+      jsonDefinition.shuffleItemWeights =
+        documentProps.shuffleitemweights !== undefined &&
+        (documentProps.shuffleitemweights === true ||
+          documentProps.shuffleitemweights.toLowerCase() === "true"
         );
 
-      delete documentProps.shuffleitemwidths;
+      delete documentProps.shuffleitemweights;
 
       if (documentProps.xmlns) {
         if (documentProps.xmlns.slice(0, 34) === "https://doenet.org/spec/doenetml/v") {
