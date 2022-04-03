@@ -41,10 +41,10 @@ export default function EditorInfoCap(){
     <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
       <img src={image} style={{ position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)" }}  />
     </div>
-    <div style={{ padding:'16px 12px' }}>
-      <span style={{ marginBottom: "15px" }}>{course_label}</span> <br />
-      <span style={{ marginBottom: "15px" }}>{docInfo.label}</span> <br />
-      <span>{ status }</span>
+    <div style={{padding:"8px"}}>
+    <div>{course_label}</div>
+    <div>{docInfo.label}</div>
+    <div>{status} </div>
     {/* <ClipboardLinkButtons doenetId={doenetId}/> */}
     {/* <div>Last saved (comming soon)</div> */}
   </div>
