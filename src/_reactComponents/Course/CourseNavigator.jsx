@@ -56,7 +56,7 @@ import {
  * Internal dependencies
  */
 import '../../_utils/util.css';
-import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
+import { pageToolViewAtom, searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';  
 import { set } from 'lodash';
 
@@ -259,6 +259,8 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
 //singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
 function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
 
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set})=>()=>{
     set(authorItemByDoenetId(doenetId),(was)=>{
@@ -395,12 +397,23 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   } 
 
   //Used to open editor or assignment
-  let handleDoubleClick = useRecoilCallback(({set})=>(e)=>{
-    console.log("Double CLICK!",doenetId)
+  let handleDoubleClick = useRecoilCallback(({snapshot,set})=> async (e)=>{
+    let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+    console.log("Double CLICK!",doenetId,clickedItem)
     e.preventDefault();
     e.stopPropagation();
     //TODO: use item type and role to determine what to update
-  
+    if (clickedItem.type == 'page'){
+      setPageToolView((was)=>{return {
+        page: 'course',
+        tool: 'editor',
+        view: was.view,
+        params: { doenetId, path:was.params.path },
+        }})
+    }
+
+
+
   },[doenetId])
 
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
