@@ -7,18 +7,17 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 import { useCourse } from '../../../_reactComponents/Course/CourseActions';
 
 export default function AddDriveItems() {
-  const [courseId, parentFolderId] = useRecoilValue(
+  const [courseId] = useRecoilValue(
     searchParamAtomFamily('path'),
   ).split(':');
   let { create } = useCourse(courseId);
-  //TODO: add selection information
 
   return (
     <ButtonGroup vertical>
       <Button
         width="menu"
         onClick={() =>
-          create({itemType:"activity",previousDoenetId:"testid",placeInFolderFlag:false})
+          create({itemType:"activity"})
         }
         value="Add Activity"
       >
@@ -27,14 +26,14 @@ export default function AddDriveItems() {
       <Button
         width="menu"
         onClick={() =>
-          create({itemType:"bank",previousDoenetId:"testid",placeInFolderFlag:false})
+          create({itemType:"bank"})
         }
         value="Add Bank"
       />
       <Button
         width="menu"
         onClick={() =>
-          create({itemType:"section",previousDoenetId:"testid",placeInFolderFlag:false})
+          create({itemType:"section"})
 
         }
         value="Add Section"

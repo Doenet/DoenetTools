@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-03-31 21:35:22 +0000
+# Generation Time: 2022-04-01 13:57:22 +0000
 # ************************************************************
 
 
@@ -187,7 +187,7 @@ DROP TABLE IF EXISTS `course_content`;
 
 CREATE TABLE `course_content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `contentType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `cid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,

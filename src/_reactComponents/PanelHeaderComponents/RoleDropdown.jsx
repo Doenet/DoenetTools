@@ -94,7 +94,7 @@ export function RoleDropdown() {
     <>
       Role
       <DropdownMenu
-        width="150px"
+        width="menu"
         // maxMenuHeight="200px"
         items={items}
         title="Role"

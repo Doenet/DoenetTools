@@ -29,7 +29,8 @@ if ($success){
   $label = 'Untitled';
 
   $jsonDefinition = null;
-  $sortOrder = 'a'; //replace with position function
+  $sortOrder = 'a'; //TODO: replace with position function 
+  $parentDoenetId = $previousDoenetId; //TODO: use position function to define this
 
 //Defaults for each item type
 if ($itemType == 'section'){
@@ -56,7 +57,7 @@ if ($success){
     try {
       $sql = "
         INSERT INTO course_content 
-        (contentType,
+        (type,
         courseId,
         doenetId,
         parentDoenetId,
@@ -64,7 +65,7 @@ if ($success){
         sortOrder,
         jsonDefinition)
         VALUES
-        ('$itemType','$courseId','$doenetId','$previousDoenetId',NOW(),'$sortOrder','$jsonDefinition');
+        ('$itemType','$courseId','$doenetId','$parentDoenetId',NOW(),'$sortOrder','$jsonDefinition');
         ";
         $conn->query($sql);
 
@@ -76,10 +77,13 @@ if ($success){
         $pageEntered = array(
           "type"=>"page",
           "label"=>"Untitled",
+          "containingDoenetId"=>$doenetId,
+          // "parentDoenetId"=>$orderDoenetId,//Do we need this?
           "doenetId"=>$pageDoenetId,
           "draftCid"=>"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku", 
           "cid"=>"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
         );
+        
 
         /* If code reaches this point without errors then commit the data in the database */
         // $conn->commit();
@@ -94,7 +98,7 @@ if ($success){
   }else{
     $sql = "
     INSERT INTO course_content 
-    (contentType,
+    (type,
     courseId,
     doenetId,
     parentDoenetId,
@@ -103,7 +107,7 @@ if ($success){
     sortOrder,
     jsonDefinition)
     VALUES
-    ('$itemType','$courseId','$doenetId','$previousDoenetId','$label',NOW(),'$sortOrder','$jsonDefinition')
+    ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',NOW(),'$sortOrder','$jsonDefinition')
     ";
     
     $result = $conn->query($sql); 
@@ -118,7 +122,7 @@ if ($success){
 $sql = "
 SELECT 
 doenetId,
-contentType,
+type,
 parentDoenetId,
 label,
 creationDate,
@@ -135,7 +139,7 @@ $row = $result->fetch_assoc();
 
 $itemEntered = array(
   "doenetId"=>$row['doenetId'],
-  "contentType"=>$row['contentType'],//TODO: should be type
+  "type"=>$row['type'],
   "parentDoenetId"=>$row['parentDoenetId'],
   "label"=>$row['label'],
   "creationDate"=>$row['creationDate'],

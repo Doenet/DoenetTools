@@ -41,7 +41,7 @@ $containingDoenetIds = [];
 	//No then no Recipies, no banks and no unused files
 	if ($canEditContent == '1'){
 		$sql = "
-		SELECT contentType,
+		SELECT type,
 		doenetId,
 		cid,
 		parentDoenetId,
@@ -63,7 +63,7 @@ $containingDoenetIds = [];
 			while($row = $result->fetch_assoc()){
 				$item = array(
 					"doenetId"=>$row['doenetId'],
-					"contentType"=>$row['contentType'],
+					"type"=>$row['type'],
 					"parentDoenetId"=>$row['parentDoenetId'],
 					"label"=>$row['label'],
 					"creationDate"=>$row['creationDate'],
@@ -72,7 +72,7 @@ $containingDoenetIds = [];
 					"isPublic"=>$row['isPublic'],
 				);
 
-				if ($row['contentType'] == 'activity' || $row['contentType'] == 'bank'){
+				if ($row['type'] == 'activity' || $row['type'] == 'bank'){
 					array_push($containingDoenetIds,$row['doenetId']);
 				}
 				
@@ -101,7 +101,7 @@ $containingDoenetIds = [];
 				if ($result->num_rows > 0) {
 					while($row = $result->fetch_assoc()){
 						$item = array(
-							"contentType"=>"page",
+							"type"=>"page",
 							"doenetId"=>$row['doenetId'],
 							"cid"=>$row['cid'],
 							"draftCid"=>$row['draftCid'],

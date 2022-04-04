@@ -1,4 +1,3 @@
-import { faHandMiddleFinger } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import Select from 'react-select';
 
@@ -9,7 +8,7 @@ const DropdownMenu = (props) => {
       return {
         ...provided,
         color: 'black',
-        backgroundColor: state.isSelected ? 'hsl(209,54%,82%)' : 'white',
+        backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'white',
         ':active': { backgroundColor: 'white' },
       };
     },
@@ -44,7 +43,7 @@ const DropdownMenu = (props) => {
         alignItems: 'center',
         fontFamily: 'Open Sans',
         backgroundColor: 'hsl(0, 0%, 100%)',
-        cursor: 'default',
+        cursor: state.isDisabled ? 'not-allowed' : 'default',
         display: 'flex',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
@@ -52,10 +51,8 @@ const DropdownMenu = (props) => {
         minHeight: '20px',
         height: '20px',
         width: state.selectProps.width,
-        borderWidth: '2px',
-        borderStyle: 'solid',
-        borderColor: state.isDisabled ? '#e2e2e2' : 'black',
-        borderRadius: '5px',
+        border: state.isDisabled ? '2px solid var(--mainGray)' : 'var(--mainBorder)',
+        borderRadius: 'var(--mainBorderRadius)',
         position: 'relative',
         transition: 'all 100ms',
         ':focus': {
@@ -72,7 +69,7 @@ const DropdownMenu = (props) => {
   var width = props.width;
   if (props.width == 'menu') {
     width = '210px';
-  }
+  };
 
   //   console.log(options, props.def);
   return (

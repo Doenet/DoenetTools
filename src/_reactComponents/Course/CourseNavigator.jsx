@@ -133,14 +133,14 @@ function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisi
 }
 
 function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel}){
-  //TODO: Investigate if contentType should be a selector and these three would subscribe to item info
+  //TODO: Investigate if type should be a selector and these three would subscribe to item info
   let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
 
-  if (itemInfo.contentType == 'section'){
+  if (itemInfo.type == 'section'){
     return <Section key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
-  }else if (itemInfo.contentType == 'bank'){
+  }else if (itemInfo.type == 'bank'){
     return <Bank key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
-  }else if (itemInfo.contentType == 'activity'){
+  }else if (itemInfo.type == 'activity'){
     return <Activity key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }
 
@@ -187,7 +187,7 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
    let contentJSX = [];
    if (behavior == 'sequence'){
       contentJSX = content.map((pageOrOrder,i)=>{
-        if (pageOrOrder?.contentType == 'order'){
+        if (pageOrOrder?.type == 'order'){
           return <Order key={`Order${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
         }else{
           return <Page key={`Page${doenetId}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1}/>
@@ -213,9 +213,51 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
   return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} />
 }
 
+
+// function findDoenetIdsIncludingOrderAndPages(itemArray){
+//   return itemArray.reduce((result,item) => {
+//     //Don't do anything with page information it's added with activity
+//     if (item.type === 'activity'){
+//       let activityChildren = findActivityDoenetIdsInOrder(item.order);
+//       result = [...result,item.doenetId,...activityChildren];
+//     }else if (item.type === 'bank'){
+//       result = [...result,item.doenetId,...item.pages];
+//     }else if (item.type === 'section'){
+//       result.push(item.doenetId);
+//     }
+//     return result;
+//   },[]);
+// }
+
+//Doesn't include origninal item's doenetId
+// function findActivityDoenetIdsInOrder({orderObj,doenetIds=[],snapshot}){
+//   doenetIds.push(orderObj.doenetId); //Add the order's doenetId
+//   let children = orderObj.content.reduce((result,entry)=>{
+//     if (typeof entry === 'string' || entry instanceof String){
+//       result.push(entry);
+//     }else{
+//       let recurseChildren = findActivityDoenetIdsInOrder({orderObj:entry,snapshot});
+//       result = [...result,...recurseChildren]
+//     }
+//     return result;
+//   },[])
+//   doenetIds = [...doenetIds,...children];
+//   return doenetIds;
+// }
+
+//Start at one item and assume it's open, then find all children who are visible
+// async function findVisibleDoenetIds({doenetId,snapshot}){
+//   let resultingDoenetIds = [];
+//   let item = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+//   if (item.type == 'activity'){
+
+//   }
+//   console.log("item",item)
+//   return resultingDoenetIds
+// }
+
 //singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
 function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
-  
 
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set})=>()=>{
@@ -246,6 +288,8 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   e.preventDefault();
   e.stopPropagation();
   let selectedItems = await snapshot.getPromise(selectedCourseItems);
+  let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+  console.log("clickedItem",clickedItem,doenetId)
 
   if (selectedItems.length == 0){
   //No items selected so select this item
@@ -255,6 +299,8 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     newObj.isSelected = true;
     return newObj;
   })
+
+  //Select all children of component
 
   }else if (selectedItems.length == 1 && selectedItems[0] == doenetId){
     if(e.metaKey){
@@ -272,27 +318,30 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     if (e.shiftKey){
       //Shift Click
       //Select all items from the last one selected to this one
-      const allItems = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
-      let lastSelectedDoenetId = selectedItems[selectedItems.length -1];
-      let indexOfLastSelected = allItems.indexOf(lastSelectedDoenetId);
-      let indexOfClick = allItems.indexOf(doenetId);
-      let itemsToSelect = allItems.slice(Math.min(indexOfLastSelected,indexOfClick),(Math.max(indexOfLastSelected,indexOfClick)+1))
-      //Need to reverse when the new last item won't be at the end
-      if (indexOfLastSelected > indexOfClick){
-        itemsToSelect.reverse();
-      }
-      let newSelectedItems = [...selectedItems];
-      for (let newDoenetId of itemsToSelect){
-        if (!selectedItems.includes(newDoenetId)){
-          newSelectedItems.push(newDoenetId);
-          set(authorItemByDoenetId(newDoenetId),(was)=>{
-            let newObj = {...was};
-            newObj.isSelected = true;
-            return newObj;
-          })
-        }
-      }
-      set(selectedCourseItems,newSelectedItems);
+      //TODO: use path to filter to correct section
+      const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
+      //build allRenderedRows on the fly
+
+      // let lastSelectedDoenetId = selectedItems[selectedItems.length -1];
+      // let indexOfLastSelected = allRenderedRows.indexOf(lastSelectedDoenetId);
+      // let indexOfClick = allRenderedRows.indexOf(doenetId);
+      // let itemsToSelect = allRenderedRows.slice(Math.min(indexOfLastSelected,indexOfClick),(Math.max(indexOfLastSelected,indexOfClick)+1))
+      // //Need to reverse when the new last item won't be at the end
+      // if (indexOfLastSelected > indexOfClick){
+      //   itemsToSelect.reverse();
+      // }
+      // let newSelectedItems = [...selectedItems];
+      // for (let newDoenetId of itemsToSelect){
+      //   if (!selectedItems.includes(newDoenetId)){
+      //     newSelectedItems.push(newDoenetId);
+      //     set(authorItemByDoenetId(newDoenetId),(was)=>{
+      //       let newObj = {...was};
+      //       newObj.isSelected = true;
+      //       return newObj;
+      //     })
+      //   }
+      // }
+      // set(selectedCourseItems,newSelectedItems);
     }else if(e.metaKey){
       //Command Click means toggle the one item selected or not
       let itemWasSelected = selectedItems.includes(doenetId);
