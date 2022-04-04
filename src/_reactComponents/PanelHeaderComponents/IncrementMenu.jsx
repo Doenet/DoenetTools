@@ -10,7 +10,7 @@ const Container = styled.div`
   justify-content: space-between;
   align-items: center;
   height: 20px;
-  min-width: 180px;
+  max-width: 210px;
   margin: 0;
   border-radius: 5px;
   border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
@@ -21,7 +21,7 @@ const IncreaseButton = styled.button`
   background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
   border-radius: 0px 2px 2px 0px;
   height: 100%;
-  width: 25px;
+  width: 36px;
   color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
   border: none;
@@ -35,8 +35,9 @@ const IncreaseButton = styled.button`
 const DecreaseButton = styled.button`
   background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
   border-radius: 2px 0px 0px 2px;
+  text-align: center;
   height: 100%;
-  width: 25px;
+  width: 36px;
   color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
   border: none;
@@ -49,7 +50,7 @@ const DecreaseButton = styled.button`
 
 const TextField = styled.input`
   z-index: 0;
-  width: 100%;
+  width: 70%;
   text-align: center;
   resize: none;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'default')};
@@ -351,20 +352,15 @@ export default function Increment(props) {
   // console.log('props.disabled', props.disabled);
 
   return (
-    <div
-      className="incrementcontainer"
-      style={{ width: 'fit-content', ...props.style }}
-    >
-      {props.vertical && props.label ? <Label>{props.label}</Label> : null}
+    <div style={{ display: "flex", alignItems: "center" }}>
+      {props.vertical && props.label && <Label>{props.label}</Label> }
       <Container
         ref={containerRef}
-        className="textfieldcontainer"
         onBlur={containerOnBlur}
+        alert={props.alert}
       >
-        {!props.vertical && props.label ? <Label>{props.label}</Label> : null}
         <DecreaseButton
           ref={decrementRef}
-          alert={props.alert}
           disabled={props.disabled}
           onClick={decrementOnClick}
         >
@@ -374,7 +370,6 @@ export default function Increment(props) {
           placeholder={props.placeholder}
           value={value}
           ref={textFieldRef}
-          alert={props.alert}
           disabled={props.disabled ? props.disabled : false}
           onChange={onTextFieldChange}
           onClick={(e) => {
@@ -391,7 +386,6 @@ export default function Increment(props) {
         />
         <IncreaseButton
           ref={incrementRef}
-          alert={props.alert}
           disabled={props.disabled}
           onClick={incrementOnClick}
         >
