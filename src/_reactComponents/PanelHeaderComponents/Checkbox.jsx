@@ -13,11 +13,6 @@ const Button = styled.button`
   border-radius: var(--mainBorderRadius);
   color: #fff;
   background-color: ${(props) => props.color};
-  
-  &:hover {
-    color: black;
-    background-color: ${props => props.alert ? 'var(--lightRed)' : (props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)')};
-  }
 `;
 
 export default function CalendarButton(props) {
