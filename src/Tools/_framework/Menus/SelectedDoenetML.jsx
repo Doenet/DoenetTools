@@ -78,6 +78,7 @@ const LabelText = styled.span`
 
 const CheckboxLabelText = styled.span`
   font-size: 15px;
+  line-height: 1.1
 `
 
 const InputControl = styled.div`
@@ -358,13 +359,11 @@ export default function SelectedDoenetML() {
           }}
         />
       </label> */}
-      <InputWrapper>
         <Button
-          style={{ width: "100%"}}
+          width="menu"
           value={assignDraftLabel}
           onClick={() => assignUnassign(item)}
         />
-      </InputWrapper>
       
       <AssignmentSettings role={effectiveRole} doenetId={item.doenetId} />
       <div style={{ margin: "16px 0" }}>
@@ -1151,68 +1150,65 @@ export function AssignmentSettings({ role, doenetId }) {
               });
             }}
           />
-          <DateTime
-            disabled={
-              pinnedAfterDate === null || pinnedAfterDate === undefined
-            }
-            disabledText="No Pinned After Date"
-            disabledOnClick={(e) => {
-              let valueDescription = 'None';
-              let value = null;
-              let secondValue = null;
-
-              if (pinnedAfterDate === null || pinnedAfterDate === undefined) {
-                valueDescription = 'Now to Next Year';
-                let today = new Date();
-                let nextYear = new Date();
-                nextYear.setDate(nextYear.getDate() + 365);
-                value = DateToDateString(today);
-                secondValue = DateToDateString(nextYear);
-              }
-              setPinnedAfterDate(value);
-              setPinnedUntilDate(secondValue);
-              updateAssignment({
-                doenetId,
-                keyToUpdate: 'pinnedAfterDate',
-                value,
-                description: 'Pinned Dates ',
-                valueDescription,
-                secondKeyToUpdate: 'pinnedUntilDate',
-                secondValue,
-              });
-            }}
-            value={pinnedAfterDate ? new Date(pinnedAfterDate) : null}
-            onBlur={({ valid, value }) => {
-              if (valid) {
-                try {
-                  value = value.toDate();
-                } catch (e) {
-                  // console.log('value not moment');
-                }
-                if (
-                  new Date(DateToDateString(value)).getTime() !==
-                  new Date(pinnedAfterDate).getTime()
-                ) {
-                  setPinnedAfterDate(DateToDateString(value));
-                  updateAssignment({
-                    doenetId,
-                    keyToUpdate: 'pinnedAfterDate',
-                    value: DateToDateString(value),
-                    description: 'Pinned After Date',
-                  });
-                }
-              } else {
-                addToast('Invalid Pin After Date');
-              }
-            }}
-          />
-          {/* <div
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
+          <div style={{ display: "flex", flexDirection: "column"}}>
             <DateTime
-              style={{ marginTop: '2px' }}
+              disabled={
+                pinnedAfterDate === null || pinnedAfterDate === undefined
+              }
+              disabledText="No Pinned After Date"
+              disabledOnClick={(e) => {
+                let valueDescription = 'None';
+                let value = null;
+                let secondValue = null;
+
+                if (pinnedAfterDate === null || pinnedAfterDate === undefined) {
+                  valueDescription = 'Now to Next Year';
+                  let today = new Date();
+                  let nextYear = new Date();
+                  nextYear.setDate(nextYear.getDate() + 365);
+                  value = DateToDateString(today);
+                  secondValue = DateToDateString(nextYear);
+                }
+                setPinnedAfterDate(value);
+                setPinnedUntilDate(secondValue);
+                updateAssignment({
+                  doenetId,
+                  keyToUpdate: 'pinnedAfterDate',
+                  value,
+                  description: 'Pinned Dates ',
+                  valueDescription,
+                  secondKeyToUpdate: 'pinnedUntilDate',
+                  secondValue,
+                });
+              }}
+              value={pinnedAfterDate ? new Date(pinnedAfterDate) : null}
+              onBlur={({ valid, value }) => {
+                if (valid) {
+                  try {
+                    value = value.toDate();
+                  } catch (e) {
+                    // console.log('value not moment');
+                  }
+                  if (
+                    new Date(DateToDateString(value)).getTime() !==
+                    new Date(pinnedAfterDate).getTime()
+                  ) {
+                    setPinnedAfterDate(DateToDateString(value));
+                    updateAssignment({
+                      doenetId,
+                      keyToUpdate: 'pinnedAfterDate',
+                      value: DateToDateString(value),
+                      description: 'Pinned After Date',
+                    });
+                  }
+                } else {
+                  addToast('Invalid Pin After Date');
+                }
+              }}
+            />
+          
+            <DateTime
+              style={{ marginTop: '5px' }}
               disabled={
                 pinnedUntilDate === null || pinnedUntilDate === undefined
               }
@@ -1271,7 +1267,7 @@ export function AssignmentSettings({ role, doenetId }) {
                 }
               }}
             />
-          </div> */}
+          </div>
         </InputControl>
       </InputWrapper>
     </>
