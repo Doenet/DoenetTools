@@ -24,7 +24,7 @@ let label = course.label;
  
  if (image != 'none'){
   image = '/media/drive_pictures/' + image;
-  console.log('there is an image??');
+  // console.log('there is an image??');
  }
  if (color != 'none'){
   color = '#' + color;

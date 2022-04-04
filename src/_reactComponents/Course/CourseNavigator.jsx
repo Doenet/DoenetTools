@@ -213,9 +213,51 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
   return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} />
 }
 
+
+// function findDoenetIdsIncludingOrderAndPages(itemArray){
+//   return itemArray.reduce((result,item) => {
+//     //Don't do anything with page information it's added with activity
+//     if (item.type === 'activity'){
+//       let activityChildren = findActivityDoenetIdsInOrder(item.order);
+//       result = [...result,item.doenetId,...activityChildren];
+//     }else if (item.type === 'bank'){
+//       result = [...result,item.doenetId,...item.pages];
+//     }else if (item.type === 'section'){
+//       result.push(item.doenetId);
+//     }
+//     return result;
+//   },[]);
+// }
+
+//Doesn't include origninal item's doenetId
+// function findActivityDoenetIdsInOrder({orderObj,doenetIds=[],snapshot}){
+//   doenetIds.push(orderObj.doenetId); //Add the order's doenetId
+//   let children = orderObj.content.reduce((result,entry)=>{
+//     if (typeof entry === 'string' || entry instanceof String){
+//       result.push(entry);
+//     }else{
+//       let recurseChildren = findActivityDoenetIdsInOrder({orderObj:entry,snapshot});
+//       result = [...result,...recurseChildren]
+//     }
+//     return result;
+//   },[])
+//   doenetIds = [...doenetIds,...children];
+//   return doenetIds;
+// }
+
+//Start at one item and assume it's open, then find all children who are visible
+// async function findVisibleDoenetIds({doenetId,snapshot}){
+//   let resultingDoenetIds = [];
+//   let item = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+//   if (item.type == 'activity'){
+
+//   }
+//   console.log("item",item)
+//   return resultingDoenetIds
+// }
+
 //singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
 function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
-  
 
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set})=>()=>{
@@ -247,7 +289,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   e.stopPropagation();
   let selectedItems = await snapshot.getPromise(selectedCourseItems);
   let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-  console.log("clickedItem",clickedItem)
+  console.log("clickedItem",clickedItem,doenetId)
 
   if (selectedItems.length == 0){
   //No items selected so select this item
@@ -276,27 +318,30 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     if (e.shiftKey){
       //Shift Click
       //Select all items from the last one selected to this one
-      const allItems = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
-      let lastSelectedDoenetId = selectedItems[selectedItems.length -1];
-      let indexOfLastSelected = allItems.indexOf(lastSelectedDoenetId);
-      let indexOfClick = allItems.indexOf(doenetId);
-      let itemsToSelect = allItems.slice(Math.min(indexOfLastSelected,indexOfClick),(Math.max(indexOfLastSelected,indexOfClick)+1))
-      //Need to reverse when the new last item won't be at the end
-      if (indexOfLastSelected > indexOfClick){
-        itemsToSelect.reverse();
-      }
-      let newSelectedItems = [...selectedItems];
-      for (let newDoenetId of itemsToSelect){
-        if (!selectedItems.includes(newDoenetId)){
-          newSelectedItems.push(newDoenetId);
-          set(authorItemByDoenetId(newDoenetId),(was)=>{
-            let newObj = {...was};
-            newObj.isSelected = true;
-            return newObj;
-          })
-        }
-      }
-      set(selectedCourseItems,newSelectedItems);
+      //TODO: use path to filter to correct section
+      const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
+      //build allRenderedRows on the fly
+
+      // let lastSelectedDoenetId = selectedItems[selectedItems.length -1];
+      // let indexOfLastSelected = allRenderedRows.indexOf(lastSelectedDoenetId);
+      // let indexOfClick = allRenderedRows.indexOf(doenetId);
+      // let itemsToSelect = allRenderedRows.slice(Math.min(indexOfLastSelected,indexOfClick),(Math.max(indexOfLastSelected,indexOfClick)+1))
+      // //Need to reverse when the new last item won't be at the end
+      // if (indexOfLastSelected > indexOfClick){
+      //   itemsToSelect.reverse();
+      // }
+      // let newSelectedItems = [...selectedItems];
+      // for (let newDoenetId of itemsToSelect){
+      //   if (!selectedItems.includes(newDoenetId)){
+      //     newSelectedItems.push(newDoenetId);
+      //     set(authorItemByDoenetId(newDoenetId),(was)=>{
+      //       let newObj = {...was};
+      //       newObj.isSelected = true;
+      //       return newObj;
+      //     })
+      //   }
+      // }
+      // set(selectedCourseItems,newSelectedItems);
     }else if(e.metaKey){
       //Command Click means toggle the one item selected or not
       let itemWasSelected = selectedItems.includes(doenetId);

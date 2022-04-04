@@ -16,8 +16,10 @@ export function useInitCourseItems(courseId) {
         const { data } = await axios.get('/api/getCourseItems.php', {
           params: { courseId },
         });
-        let doenetIds = data.items.map((item) => item.doenetId);
+        //DoenetIds depth first search without going into json structures
+        let doenetIds = data.items.map((item)=>item.doenetId)
         set(authorCourseItemOrderByCourseId(courseId), doenetIds);
+        //Add all items to authorItemByDoenetId
         data.items.map((item) => {
           set(authorItemByDoenetId(item.doenetId), item);
           //add orders to recoil if activity
@@ -33,6 +35,7 @@ export function useInitCourseItems(courseId) {
             }
             return orderDoenetIds;
           }
+          //Special processing for orders
           if (item.type == 'activity'){
             let orderDoenetIds = findOrderDoenetIds(item.order);
             for (let orderDoenetId of orderDoenetIds){
@@ -57,29 +60,8 @@ export function useInitCourseItems(courseId) {
 }
 
 export const authorCourseItemOrderByCourseId = atomFamily({
-  key: 'allCourseItemsByCourseIdByCourseId',
+  key: 'authorCourseItemOrderByCourseId',
   default: [],
-  // effects: (doenetId) => [
-  //   ({ setSelf, onSet, trigger }) => {
-  //     if (trigger === 'get') {
-  //       console.log("get itemInfoByDoenetId",doenetId);
-  //       // try {
-  //       //   const { data } = axios.get('/api/loadCourseOrderData', {
-  //       //     params: { courseId },
-  //       //   });
-  //       //   //sort
-  //       //   let sorted = [];
-  //       //   let lookup = {};
-  //       //   setSelf({ completeOrder: sorted, orderingDataLookup: lookup });
-  //       // } catch (e) {}
-  //     }
-  //     // onSet((newObj, was) => {
-  //     //   console.log('newObj',newObj)
-  //     //   console.log('was',was)
-
-  //     // });
-  //   },
-  // ],
 });
 
 export const authorItemByDoenetId = atomFamily({
@@ -241,11 +223,22 @@ export const useCourse = (courseId) => {
     coursePermissionsAndSettingsByCourseId(courseId),
   );
   const addToast = useToast();
-  // const visableOrder = useRecoilValue(visableOrderByDriveId(driveId));
 
   const create = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({ previousDoenetId, itemType, placeInFolderFlag = false }) => {
+      async ({ itemType, placeInFolderFlag, previousDoenetId }) => {
+
+        let authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
+        let newAuthorItemDoenetIds = [...authorItemDoenetIds];
+
+        //TODO: define these by selection if not defined from socket
+        if (placeInFolderFlag === undefined){
+          placeInFolderFlag = false;
+        }
+        if (previousDoenetId === undefined){
+          previousDoenetId = courseId;
+        }
+
         let newDoenetId;
         let coursePermissionsAndSettings = await snapshot.getPromise(
           coursePermissionsAndSettingsByCourseId(courseId),
@@ -269,7 +262,17 @@ export const useCourse = (courseId) => {
           newDoenetId = data.doenetId;
           set(authorItemByDoenetId(data.doenetId), data.itemEntered);
           set(authorItemByDoenetId(data.pageDoenetId), data.pageEntered);
-          set(authorCourseItemOrderByCourseId(courseId), data.order);
+          //Find index of previousDoenetId and insert the new item's doenetId right after
+          let indexOfPrevious = newAuthorItemDoenetIds.indexOf(previousDoenetId);
+          if (indexOfPrevious == -1){
+            //Place new item at the end as the prevousDoenetId isn't visible
+            newAuthorItemDoenetIds.push(data.doenetId);
+          }else{
+            //insert right after the index
+            newAuthorItemDoenetIds.splice(indexOfPrevious+1,0,data.doenetId)
+          }
+          set(authorCourseItemOrderByCourseId(courseId), newAuthorItemDoenetIds);
+          //TODO: eliminate data.order on create
         } else if (itemType == 'bank') {
           let { data } = await axios.get('/api/createCourseItem.php', {
             params: {
@@ -282,7 +285,16 @@ export const useCourse = (courseId) => {
           console.log('bankData', data);
           newDoenetId = data.doenetId;
           set(authorItemByDoenetId(data.doenetId), data.itemEntered);
-          set(authorCourseItemOrderByCourseId(courseId), data.order);
+          //Find index of previousDoenetId and insert the new item's doenetId right after
+          let indexOfPrevious = newAuthorItemDoenetIds.indexOf(previousDoenetId);
+          if (indexOfPrevious == -1){
+            //Place new item at the end as the prevousDoenetId isn't visible
+            newAuthorItemDoenetIds.push(data.doenetId);
+          }else{
+            //insert right after the index
+            newAuthorItemDoenetIds.splice(indexOfPrevious+1,0,data.doenetId)
+          }
+          set(authorCourseItemOrderByCourseId(courseId), newAuthorItemDoenetIds);
         } else if (itemType == 'section') {
           let { data } = await axios.get('/api/createCourseItem.php', {
             params: {
@@ -295,7 +307,16 @@ export const useCourse = (courseId) => {
           // console.log("sectionData",data)
           newDoenetId = data.doenetId;
           set(authorItemByDoenetId(data.doenetId), data.itemEntered);
-          set(authorCourseItemOrderByCourseId(courseId), data.order);
+          //Find index of previousDoenetId and insert the new item's doenetId right after
+          let indexOfPrevious = newAuthorItemDoenetIds.indexOf(previousDoenetId);
+          if (indexOfPrevious == -1){
+            //Place new item at the end as the prevousDoenetId isn't visible
+            newAuthorItemDoenetIds.push(data.doenetId);
+          }else{
+            //insert right after the index
+            newAuthorItemDoenetIds.splice(indexOfPrevious+1,0,data.doenetId)
+          }
+          set(authorCourseItemOrderByCourseId(courseId), newAuthorItemDoenetIds);
         } else if (itemType == 'page') {
           console.log('page');
         }
