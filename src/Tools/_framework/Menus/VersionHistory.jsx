@@ -27,8 +27,6 @@ import { useToast, toastType } from '@Toast';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
 import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
 import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
-import { CIDFromDoenetML } from '../../../Core/utils/cid';
-import { update } from '@react-spring/web';
 
 export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",

@@ -56,7 +56,7 @@ import {
  * Internal dependencies
  */
 import '../../_utils/util.css';
-import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
+import { pageToolViewAtom, searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';  
 import { set } from 'lodash';
 
@@ -246,18 +246,21 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
 // }
 
 //Start at one item and assume it's open, then find all children who are visible
-// async function findVisibleDoenetIds({doenetId,snapshot}){
-//   let resultingDoenetIds = [];
+// async function findAllRenderedRowsDoenetIds({snapshot}){
+//   let allRenderedRows = [];
 //   let item = await snapshot.getPromise(authorItemByDoenetId(doenetId));
 //   if (item.type == 'activity'){
 
 //   }
 //   console.log("item",item)
-//   return resultingDoenetIds
+//   return allRenderedRows
 // }
+
 
 //singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
 function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
+
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set})=>()=>{
@@ -321,27 +324,55 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       //TODO: use path to filter to correct section
       const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
       //build allRenderedRows on the fly
-
-      // let lastSelectedDoenetId = selectedItems[selectedItems.length -1];
-      // let indexOfLastSelected = allRenderedRows.indexOf(lastSelectedDoenetId);
-      // let indexOfClick = allRenderedRows.indexOf(doenetId);
-      // let itemsToSelect = allRenderedRows.slice(Math.min(indexOfLastSelected,indexOfClick),(Math.max(indexOfLastSelected,indexOfClick)+1))
-      // //Need to reverse when the new last item won't be at the end
-      // if (indexOfLastSelected > indexOfClick){
-      //   itemsToSelect.reverse();
-      // }
-      // let newSelectedItems = [...selectedItems];
-      // for (let newDoenetId of itemsToSelect){
-      //   if (!selectedItems.includes(newDoenetId)){
-      //     newSelectedItems.push(newDoenetId);
-      //     set(authorItemByDoenetId(newDoenetId),(was)=>{
-      //       let newObj = {...was};
-      //       newObj.isSelected = true;
-      //       return newObj;
-      //     })
-      //   }
-      // }
-      // set(selectedCourseItems,newSelectedItems);
+      let allRenderedRows = [];
+      let skip = false;
+      let parentDoenetIdsToSkip = [];
+      for (let i = 0; i < authorItemDoenetIds.length; i++){
+        let itemDoenetId = authorItemDoenetIds[i];
+        const authorItemInfo = await snapshot.getPromise(authorItemByDoenetId(itemDoenetId))
+        if (skip){
+          //Check if back to same parent
+          if (!parentDoenetIdsToSkip.includes(authorItemInfo.parentDoenetId)){
+            skip = false;
+            parentDoenetIdsToSkip = [];
+          }else{
+            //Test if we need to add another child to the ids to skip
+            if (authorItemInfo.type == 'order'){
+              parentDoenetIdsToSkip.push(authorItemInfo.doenetId)
+            }
+          }
+        }
+        if (!skip){
+          allRenderedRows.push(itemDoenetId);
+          //Start skip when we have a closed item
+          if (authorItemInfo?.isOpen !== undefined && !authorItemInfo.isOpen){
+            skip = true;
+            parentDoenetIdsToSkip.push(authorItemInfo.doenetId);
+          }
+        }
+      }
+ 
+      // console.log("allRenderedRows",allRenderedRows)
+      let lastSelectedDoenetId = selectedItems[selectedItems.length -1];
+      let indexOfLastSelected = allRenderedRows.indexOf(lastSelectedDoenetId);
+      let indexOfClick = allRenderedRows.indexOf(doenetId);
+      let itemsToSelect = allRenderedRows.slice(Math.min(indexOfLastSelected,indexOfClick),(Math.max(indexOfLastSelected,indexOfClick)+1))
+      //Need to reverse when the new last item won't be at the end
+      if (indexOfLastSelected > indexOfClick){
+        itemsToSelect.reverse();
+      }
+      let newSelectedItems = [...selectedItems];
+      for (let newDoenetId of itemsToSelect){
+        if (!selectedItems.includes(newDoenetId)){
+          newSelectedItems.push(newDoenetId);
+          set(authorItemByDoenetId(newDoenetId),(was)=>{
+            let newObj = {...was};
+            newObj.isSelected = true;
+            return newObj;
+          })
+        }
+      }
+      set(selectedCourseItems,newSelectedItems);
     }else if(e.metaKey){
       //Command Click means toggle the one item selected or not
       let itemWasSelected = selectedItems.includes(doenetId);
@@ -395,12 +426,23 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   } 
 
   //Used to open editor or assignment
-  let handleDoubleClick = useRecoilCallback(({set})=>(e)=>{
-    console.log("Double CLICK!",doenetId)
+  let handleDoubleClick = useRecoilCallback(({snapshot,set})=> async (e)=>{
+    let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+    console.log("Double CLICK!",doenetId,clickedItem)
     e.preventDefault();
     e.stopPropagation();
     //TODO: use item type and role to determine what to update
-  
+    if (clickedItem.type == 'page'){
+      setPageToolView((was)=>{return {
+        page: 'course',
+        tool: 'editor',
+        view: was.view,
+        params: { doenetId, path:was.params.path },
+        }})
+    }
+
+
+
   },[doenetId])
 
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);

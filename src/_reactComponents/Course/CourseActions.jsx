@@ -16,38 +16,59 @@ export function useInitCourseItems(courseId) {
         const { data } = await axios.get('/api/getCourseItems.php', {
           params: { courseId },
         });
-        //DoenetIds depth first search without going into json structures
-        let doenetIds = data.items.map((item)=>item.doenetId)
-        set(authorCourseItemOrderByCourseId(courseId), doenetIds);
-        //Add all items to authorItemByDoenetId
-        data.items.map((item) => {
-          set(authorItemByDoenetId(item.doenetId), item);
-          //add orders to recoil if activity
-          function findOrderDoenetIds(orderObj){
-            let orderDoenetIds = [];
-            //TODO: Guard for no order here
-            orderDoenetIds.push(orderObj.doenetId);
+        let pageDoenetIdToParentDoenetId = {};
+        //Recursive Function for order
+        function findOrderAndPageDoenetIds(orderObj,assignmentDoenetId,parentDoenetId){
+          let orderAndPagesDoenetIds = [];
+          //Guard for when there is no order
+          if (orderObj){
+            //Store order objects for UI
+            set(authorItemByDoenetId(orderObj.doenetId), {
+              type: "order",
+              doenetId: orderObj.doenetId, 
+              containingDoenetId:assignmentDoenetId,
+              isOpen:false,
+              isSelected:false,
+              parentDoenetId
+            });
+            orderAndPagesDoenetIds.push(orderObj.doenetId);
             for (let orderItem of orderObj.content){
               if (orderItem?.type == 'order'){
-                let moreOrderDoenetIds = findOrderDoenetIds(orderItem);
-                orderDoenetIds = [...orderDoenetIds,...moreOrderDoenetIds];
+                let moreOrderDoenetIds = findOrderAndPageDoenetIds(orderItem,assignmentDoenetId,orderItem.doenetId);
+                orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
+              }else{
+                //Page 
+                pageDoenetIdToParentDoenetId[orderItem] = orderObj.doenetId;
+                orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,orderItem];
               }
             }
-            return orderDoenetIds;
           }
-          //Special processing for orders
-          if (item.type == 'activity'){
-            let orderDoenetIds = findOrderDoenetIds(item.order);
-            for (let orderDoenetId of orderDoenetIds){
-                set(authorItemByDoenetId(orderDoenetId), {
-                  doenetId: orderDoenetId, 
-                  containerDoenetId:item.doenetId,
-                  isOpen:false,
-                  isSelected:false,
-                });
-            }
+          return orderAndPagesDoenetIds;
+        }
+        //DoenetIds depth first search and going into json structures
+        //TODO: organize by section
+        let doenetIds = data.items.reduce((items,item)=>{
+          if (item.type !== 'page'){
+            items.push(item.doenetId)
           }
-        });
+          if (item.type === 'activity'){
+            let ordersAndPages = findOrderAndPageDoenetIds(item.order,item.doenetId,item.doenetId);
+            item['numberOfPageAndOrderDoenetIds'] = ordersAndPages.length;
+            items = [...items,...ordersAndPages];
+          }else if (item.type === 'bank'){
+            items = [...items,...item.pages];
+          }else if (item.type === 'page'){
+            item['parentDoenetId'] = pageDoenetIdToParentDoenetId[item.doenetId];
+          }
+          
+          //Store activity, bank and page information
+          set(authorItemByDoenetId(item.doenetId), item);
+
+          return items
+        },[])
+
+        set(authorCourseItemOrderByCourseId(courseId), doenetIds);
+        
       },
     [],
   );
@@ -159,32 +180,6 @@ export const useCreateCourse = () => {
   return { createCourse };
 };
 
-const itemInfoByDoenetId = atomFamily({
-  key: 'itemDataByDoenetId',
-  default: null,
-  effects: (doenetId) => [
-    ({ setSelf, onSet, trigger }) => {
-      if (trigger === 'get') {
-        console.log('get itemInfoByDoenetId', doenetId);
-        // try {
-        //   const { data } = axios.get('/api/loadCourseOrderData', {
-        //     params: { courseId },
-        //   });
-        //   //sort
-        //   let sorted = [];
-        //   let lookup = {};
-        //   setSelf({ completeOrder: sorted, orderingDataLookup: lookup });
-        // } catch (e) {}
-      }
-      // onSet((newObj, was) => {
-      //   console.log('newObj',newObj)
-      //   console.log('was',was)
-
-      // });
-    },
-  ],
-});
-
 export const courseOrderDataByCourseId = atomFamily({
   key: 'courseOrderDataByCourseId',
   default: { completeOrder: [], orderingDataLookup: {} },
@@ -258,18 +253,39 @@ export const useCourse = (courseId) => {
               placeInFolderFlag,
             },
           });
-          // console.log('activityData', data);
-          newDoenetId = data.doenetId;
-          set(authorItemByDoenetId(data.doenetId), data.itemEntered);
-          set(authorItemByDoenetId(data.pageDoenetId), data.pageEntered);
+          console.log('activityData', data);
+          let createdActivityDoenentId = data.doenetId;
+          newDoenetId = createdActivityDoenentId;
+          //Activity
+          set(authorItemByDoenetId(createdActivityDoenentId), data.itemEntered); 
+          //Order
+
+          let createdOrderDoenetId = data.itemEntered.order.doenetId;
+          let createdOrderObj = {
+            type:"order",
+            doenetId:createdOrderDoenetId,
+            parentDoenetId:createdActivityDoenentId,
+            isOpen:false,
+            isSelected:false,
+            containingDoenetId:createdActivityDoenentId
+          }
+          set(authorItemByDoenetId(createdOrderDoenetId), createdOrderObj); 
+
+          //Page
+          let createdPageObj = {
+            ...data.pageEntered,
+            parentDoenetId:createdOrderDoenetId
+          }
+          set(authorItemByDoenetId(data.pageDoenetId), createdPageObj); 
+
           //Find index of previousDoenetId and insert the new item's doenetId right after
           let indexOfPrevious = newAuthorItemDoenetIds.indexOf(previousDoenetId);
           if (indexOfPrevious == -1){
             //Place new item at the end as the prevousDoenetId isn't visible
-            newAuthorItemDoenetIds.push(data.doenetId);
+            newAuthorItemDoenetIds.push(createdActivityDoenentId,createdOrderDoenetId,createdPageObj.doenetId);
           }else{
             //insert right after the index
-            newAuthorItemDoenetIds.splice(indexOfPrevious+1,0,data.doenetId)
+            newAuthorItemDoenetIds.splice(indexOfPrevious+1,0,createdActivityDoenentId,createdOrderDoenetId,createdPageObj.doenetId)
           }
           set(authorCourseItemOrderByCourseId(courseId), newAuthorItemDoenetIds);
           //TODO: eliminate data.order on create
