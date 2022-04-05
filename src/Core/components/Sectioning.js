@@ -127,16 +127,9 @@ export class Problem extends SectioningComponent {
   static componentType = "problem";
   static rendererType = "section";
 
-  static setUpVariantUnlessAttributePrimitive = "suppressAutomaticVariants";
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.aggregateScores.defaultValue = true;
-    attributes.suppressAutomaticVariants = {
-      createPrimitiveOfType: "boolean",
-      createStateVariable: "suppressAutomaticVariants",
-      defaultValue: false,
-    }
     return attributes;
   }
 
@@ -144,10 +137,6 @@ export class Problem extends SectioningComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    // Delete the suppressAutomaticVariants state variable definition that inherited
-    // so that will instead use the state variable created from the attribute, above
-    delete stateVariableDefinitions.suppressAutomaticVariants;
 
     stateVariableDefinitions.sectionName.definition = () => ({
       setValue: { sectionName: "Problem" }

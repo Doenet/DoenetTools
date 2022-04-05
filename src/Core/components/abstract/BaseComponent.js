@@ -1,6 +1,8 @@
 import createStateProxyHandler from '../../StateProxyHandler';
 import { flattenDeep, mapDeep } from '../../utils/array';
 import { deepClone } from '../../utils/deepFunctions';
+import { enumerateCombinations } from '../../utils/enumeration';
+import { gatherVariantComponents } from '../../utils/serializedStateProcessing';
 import { returnDefaultGetArrayKeysFromVarName } from '../../utils/stateVariables';
 
 export default class BaseComponent {
@@ -1010,6 +1012,114 @@ export default class BaseComponent {
     }
 
     return adapterComponentType;
+
+  }
+
+
+  static determineNumberOfUniqueVariants({
+    serializedComponent, componentInfoObjects
+  }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+
+    if (numberOfVariants !== undefined) {
+      return { success: true, numberOfVariants };
+    }
+
+    let descendantVariantComponents = gatherVariantComponents({
+      serializedComponents: serializedComponent.children,
+      componentInfoObjects
+    });
+
+
+
+    if (serializedComponent.variants === undefined) {
+      serializedComponent.variants = {};
+    }
+
+    serializedComponent.variants.descendantVariantComponents = descendantVariantComponents;
+
+
+    // number of variants is the product of 
+    // number of variants for each descendantVariantComponent
+    numberOfVariants = 1;
+
+    let numberOfVariantsByDescendant = [];
+    for (let descendant of descendantVariantComponents) {
+      let descendantClass = componentInfoObjects.allComponentClasses[descendant.componentType];
+      let result = descendantClass.determineNumberOfUniqueVariants({
+        serializedComponent: descendant,
+        componentInfoObjects
+      })
+      if (!result.success) {
+        return { success: false }
+      }
+      numberOfVariantsByDescendant.push(result.numberOfVariants);
+      numberOfVariants *= result.numberOfVariants;
+    }
+
+
+    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    serializedComponent.variants.uniqueVariantData = { numberOfVariantsByDescendant };
+
+    return { success: true, numberOfVariants }
+
+  }
+
+  static getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+    if (numberOfVariants === undefined) {
+      return { success: false }
+    }
+
+    if (!Number.isInteger(variantIndex) || variantIndex < 1 || variantIndex > numberOfVariants) {
+      return { success: false }
+    }
+
+    let haveNontrivialSubvariants = false;
+
+    let numberOfVariantsByDescendant = serializedComponent.variants.uniqueVariantData.numberOfVariantsByDescendant;
+    let descendantVariantComponents = serializedComponent.variants.descendantVariantComponents;
+
+    if (descendantVariantComponents.length > 0) {
+
+      let indicesForEachDescendant = enumerateCombinations({
+        numberOfOptionsByIndex: numberOfVariantsByDescendant,
+        maxNumber: variantIndex,
+      })[variantIndex - 1].map(x => x + 1);
+
+      // for each descendant, get unique variant corresponding
+      // to the selected variant number and include that as a subvariant
+
+      let subvariants = [];
+
+      for (let descendantNum = 0; descendantNum < numberOfVariantsByDescendant.length; descendantNum++) {
+        if (numberOfVariantsByDescendant[descendantNum] > 1) {
+          let descendant = descendantVariantComponents[descendantNum];
+          let compClass = componentInfoObjects.allComponentClasses[descendant.componentType];
+          let result = compClass.getUniqueVariant({
+            serializedComponent: descendant,
+            variantIndex: indicesForEachDescendant[descendantNum],
+            componentInfoObjects,
+          });
+          if (!result.success) {
+            return { success: false }
+          }
+          subvariants.push(result.desiredVariant);
+          haveNontrivialSubvariants = true;
+        } else {
+          subvariants.push({});
+        }
+      }
+    }
+
+    let desiredVariant = { index: variantIndex };
+    if (haveNontrivialSubvariants) {
+      desiredVariant.subvariants = subvariants;
+    }
+
+    return { success: true, desiredVariant }
 
   }
 

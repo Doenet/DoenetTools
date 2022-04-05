@@ -1,5 +1,5 @@
 import BaseComponent from './abstract/BaseComponent';
-import { getVariantsForDescendants } from '../utils/variants';
+import { getVariantsForDescendantsForUniqueVariants } from '../utils/variants';
 import { returnStyleDefinitionStateVariables } from '../utils/style';
 import { returnFeedbackDefinitionStateVariables } from '../utils/feedback';
 import { numberToLetters } from '../utils/sequence';
@@ -10,8 +10,6 @@ export default class Document extends BaseComponent {
   static renderChildren = true;
 
   static createsVariants = true;
-
-  static alwaysSetUpVariant = true;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -502,7 +500,7 @@ export default class Document extends BaseComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
           variableNames: [
             "isVariantComponent",
             "generatedVariantInfo",
@@ -725,89 +723,69 @@ export default class Document extends BaseComponent {
 
   }
 
-  static determineNumberOfUniqueVariants({ serializedComponent }) {
+  static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
     if (serializedComponent.children === undefined) {
       return { success: true, numberOfVariants: 1 };
     }
 
-    let variantControlInd;
-    let variantControlChild
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      if (child.componentType === "variantControl" || (
-        child.createdComponent && components[child.componentName].componentType === "variantControl"
-      )) {
-        variantControlInd = ind;
+    let variantControlChild;
+    for (let child of serializedComponent.children) {
+      if (child.componentType === "variantControl") {
         variantControlChild = child;
         break;
       }
     }
 
-    // Find number of variants from variantControl, if it exists
-    let numberOfVariants = 100;
-    if (variantControlInd !== undefined && variantControlChild.attributes &&
-      variantControlChild.attributes.nVariants !== undefined
-    ) {
-      let nVariantsComp = variantControlChild.attributes.nVariants;
-      // calculate nVariants only if has its value set directly 
-      // or if has a single child that is a string
-      let foundValid = false;
-      if (nVariantsComp.state !== undefined && nVariantsComp.state.value !== undefined) {
-        numberOfVariants = Math.round(Number(nVariantsComp.state.value));
-        foundValid = true;
-      }
-      // children overwrite state
-      if (nVariantsComp.children !== undefined && nVariantsComp.children.length === 1 &&
-        typeof nVariantsComp.children[0] === "string") {
-        numberOfVariants = Math.round(Number(nVariantsComp.children[0].state.value));
-        foundValid = true;
-      }
-      if (!foundValid) {
-        return { success: false }
-      }
+    if (!variantControlChild) {
+      return { success: true, numberOfVariants: 100 }
     }
 
-    let uniqueVariantData;
+    let numberOfVariants = variantControlChild.attributes.nVariants?.primitive;
 
-    // max number of variants is the product of 
-    // number of variants for each descendantVariantComponent
-    let maxNumberOfVariants = 1;
-    let numberOfVariantsByDescendant = []
-    if (serializedComponent.variants.descendantVariantComponents !== undefined) {
-      numberOfVariantsByDescendant = serializedComponent.variants.descendantVariantComponents
-        .map(x => x.variants.numberOfVariants);
-      maxNumberOfVariants = numberOfVariantsByDescendant.reduce((a, c) => a * c, 1);
-      uniqueVariantData = {
-        numberOfVariantsByDescendant: numberOfVariantsByDescendant,
-      }
+    if (numberOfVariants === undefined) {
+      numberOfVariants = 100;
     }
 
-    numberOfVariants = Math.min(maxNumberOfVariants, numberOfVariants)
+    if (!variantControlChild.attributes.uniqueVariants?.primitive) {
+      return { success: true, numberOfVariants }
+    }
+
+
+    let result = super.determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects });
+
+    if (!result.success) {
+      return result;
+    }
+
+    numberOfVariants = Math.min(result.numberOfVariants, numberOfVariants);
+
+    serializedComponent.variants.numberOfVariants = numberOfVariants;
+
+    console.log("Actual number of variants for document is " + numberOfVariants)
 
     return {
       success: true,
-      numberOfVariants: numberOfVariants,
-      uniqueVariantData: uniqueVariantData,
-    }
+      numberOfVariants
+    };
+
 
   }
 
-  static getUniqueVariant({ serializedComponent, variantIndex, allComponentClasses }) {
-    if (serializedComponent.variants === undefined) {
-      return { succes: false }
-    }
-    let numberOfVariants = serializedComponent.variants.numberOfVariants;
+  static getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
     if (numberOfVariants === undefined) {
       return { success: false }
     }
 
-    if (!Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= numberOfVariants) {
+    if (!Number.isInteger(variantIndex) || variantIndex < 1 || variantIndex > numberOfVariants) {
       return { success: false }
     }
 
-    let result = getVariantsForDescendants({
-      variantIndex: variantIndex,
-      serializedComponent: serializedComponent,
-      allComponentClasses: allComponentClasses
+    let result = getVariantsForDescendantsForUniqueVariants({
+      variantIndex,
+      serializedComponent,
+      componentInfoObjects
     })
 
     if (!result.success) {
@@ -816,7 +794,13 @@ export default class Document extends BaseComponent {
       return { success: false }
     }
 
-    return { success: true, desiredVariant: { subvariants: result.desiredVariants } }
+    return {
+      success: true,
+      desiredVariant: {
+        index: variantIndex,
+        subvariants: result.desiredVariants
+      }
+    }
   }
 
   static includeBlankStringChildren = true;

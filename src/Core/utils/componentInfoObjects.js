@@ -5,7 +5,6 @@ export default function createComponentInfoObjects(flags) {
 
   let allComponentClasses = ComponentTypes.allComponentClasses();
   let componentTypesCreatingVariants = ComponentTypes.componentTypesCreatingVariants();
-  let componentTypeWithPotentialVariants = ComponentTypes.componentTypeWithPotentialVariants();
 
   let componentTypeLowerCaseMapping = {};
   for (let componentType in allComponentClasses) {
@@ -78,7 +77,6 @@ export default function createComponentInfoObjects(flags) {
   return {
     allComponentClasses,
     componentTypesCreatingVariants,
-    componentTypeWithPotentialVariants,
     componentTypeLowerCaseMapping,
     isInheritedComponentType,
     isCompositeComponent,

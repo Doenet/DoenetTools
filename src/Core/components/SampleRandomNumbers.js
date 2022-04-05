@@ -10,7 +10,6 @@ export default class SampleRandomNumbers extends CompositeComponent {
   static assignNamesToReplacements = true;
 
   static createsVariants = true;
-  static alwaysSetUpVariant = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
