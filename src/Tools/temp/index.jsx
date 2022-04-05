@@ -4,9 +4,7 @@ import {doenetMLToSerializedComponents} from  '../../Core/utils/serializedStateP
 import {parseAndCompile} from '../../Parser/parser'
 import { returnAllPossibleVariants } from '../../Core/utils/returnAllPossibleVariants';
 //import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
-import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton.jsx';
-import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.jsx';
-
+import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems';
 
 // serializeFunctions.expandDoenetMLsToFullSerializedComponents({
 //     contentIds: [],
@@ -20,11 +18,26 @@ import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/Acti
 //     contentIdsToDoenetMLs
 // })
 
-
 ReactDOM.render(
-  <ActionButtonGroup vertical><ActionButton alert/><ActionButton alert/></ActionButtonGroup>,
+  <RelatedItems 
+    width="100px" 
+    size="8"
+    options={
+      [
+        <option value='Keagan'>Keagan</option>,
+        <option value='Keagan'>Keagan</option>,
+        <option value='Keagan'>Keagan</option>
+      ]
+    }
+    onChange={(data) => console.log(data)}
+    onBlur={(e) => console.log(e.target.value)}
+    disabled
+  >
+  </RelatedItems>,
   document.getElementById('root'),
 );
+
+options.push(<option value='Keagan'>Keagan</option>);
 
 
 // const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"

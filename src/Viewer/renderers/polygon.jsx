@@ -47,7 +47,7 @@ export default function Polygon(props) {
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
-      highlightFillColor: 'lightgray',
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"), 
       visible: SVs.draggable && !SVs.fixed,
       withLabel: false,
       layer: 10 * SVs.layer + 9,

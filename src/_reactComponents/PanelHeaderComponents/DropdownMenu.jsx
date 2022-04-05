@@ -39,7 +39,7 @@ const DropdownMenu = (props) => {
     }),
     control: (provided, state) => {
       return {
-        margin: '0px 4px 0px 4px',
+        // margin: '0px 4px 0px 4px',
         alignItems: 'center',
         fontFamily: 'Open Sans',
         backgroundColor: 'hsl(0, 0%, 100%)',
