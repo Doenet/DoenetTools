@@ -1077,37 +1077,40 @@ export default class BaseComponent {
       return { success: false }
     }
 
+    let haveNontrivialSubvariants = false;
+
     let numberOfVariantsByDescendant = serializedComponent.variants.uniqueVariantData.numberOfVariantsByDescendant;
     let descendantVariantComponents = serializedComponent.variants.descendantVariantComponents;
 
-    let indicesForEachDescendant = enumerateCombinations({
-      numberOfOptionsByIndex: numberOfVariantsByDescendant,
-      maxNumber: variantIndex,
-    })[variantIndex - 1].map(x => x + 1);
+    if (descendantVariantComponents.length > 0) {
 
-    // for each selected child, find the descendant variant components
-    // and map the variant number (index) of that child
-    // to the indices of those descendant variant components
+      let indicesForEachDescendant = enumerateCombinations({
+        numberOfOptionsByIndex: numberOfVariantsByDescendant,
+        maxNumber: variantIndex,
+      })[variantIndex - 1].map(x => x + 1);
 
-    let subvariants = [];
+      // for each descendant, get unique variant corresponding
+      // to the selected variant number and include that as a subvariant
 
-    let haveNontrivialSubvariants = false;
-    for (let descendantNum = 0; descendantNum < numberOfVariantsByDescendant.length; descendantNum++) {
-      if (numberOfVariantsByDescendant[descendantNum] > 1) {
-        let descendant = descendantVariantComponents[descendantNum];
-        let compClass = componentInfoObjects.allComponentClasses[descendant.componentType];
-        let result = compClass.getUniqueVariant({
-          serializedComponent: descendant,
-          variantIndex: indicesForEachDescendant[descendantNum],
-          componentInfoObjects,
-        });
-        if (!result.success) {
-          return { success: false }
+      let subvariants = [];
+
+      for (let descendantNum = 0; descendantNum < numberOfVariantsByDescendant.length; descendantNum++) {
+        if (numberOfVariantsByDescendant[descendantNum] > 1) {
+          let descendant = descendantVariantComponents[descendantNum];
+          let compClass = componentInfoObjects.allComponentClasses[descendant.componentType];
+          let result = compClass.getUniqueVariant({
+            serializedComponent: descendant,
+            variantIndex: indicesForEachDescendant[descendantNum],
+            componentInfoObjects,
+          });
+          if (!result.success) {
+            return { success: false }
+          }
+          subvariants.push(result.desiredVariant);
+          haveNontrivialSubvariants = true;
+        } else {
+          subvariants.push({});
         }
-        subvariants.push(result.desiredVariant);
-        haveNontrivialSubvariants = true;
-      } else {
-        subvariants.push({});
       }
     }
 

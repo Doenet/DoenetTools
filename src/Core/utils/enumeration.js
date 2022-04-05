@@ -43,7 +43,7 @@ export function enumerateSelectionCombinations({
     for (let ind0 = 1; ind0 <= numberOfOptions; ind0++) {
       let combination = [ind0 % numberOfOptions,
       ...offsets.map(x => (ind0 + x) % numberOfOptions)];
-      if(skipZero && combination.includes(0)) {
+      if (skipZero && combination.includes(0)) {
         continue;
       }
       results.push(combination);
@@ -198,4 +198,29 @@ export function enumerateCombinations({
 
   return outerResult;
 
+}
+
+// from https://stackoverflow.com/a/20871714
+export function enumeratePermutations({ values, maxNumber }) {
+
+  let result = [];
+
+  const permute = (arr, m = []) => {
+    if (arr.length === 0) {
+      result.push(m)
+    } else {
+      for (let i = 0; i < arr.length; i++) {
+        let curr = arr.slice();
+        let next = curr.splice(i, 1);
+        permute(curr.slice(), m.concat(next))
+        if(result.length >= maxNumber) {
+          return;
+        }
+      }
+    }
+  }
+
+  permute(values)
+
+  return result;
 }

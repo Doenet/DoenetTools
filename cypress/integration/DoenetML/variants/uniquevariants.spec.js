@@ -1722,31 +1722,40 @@ describe('Specifying unique variant tests', function () {
 
   it('can get unique with map without variants', () => {
 
-    cy.log("get all values in order and they repeat in next variants")
-    for (let ind = 1; ind <= 15; ind++) {
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
 
-      // reload every 10 times to keep it from slowing down
-      // (presumably due to garbage collecting)
-      if (ind % 10 === 0) {
+    let doenetML = `
+    <variantControl uniquevariants />
+    <selectfromsequence assignnames="x" length="3" />
+    <map assignNames="(p1) (p2) (p3) (p4)">
+      <template>
+        <p>letter: $v</p>
+      </template>
+      <sources alias="v">
+        <sequence type="letters" length="$n" />
+      </sources>
+    </map>
+    <p>N: <mathinput name="n" prefill="1" /></p>
+    `
+
+    cy.log("get all values in order and they repeat in next variants")
+    for (let ind = 1; ind <= 4; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
         cy.reload();
-      };
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
-        <text>${ind}</text>
-        <variantControl uniquevariants />
-        <selectfromsequence assignnames="x" length="5" />
-        <map assignNames="(p1) (p2) (p3)">
-          <template>
-            <p>letter: $v</p>
-          </template>
-          <sources alias="v">
-            <sequence type="letters" length="$n" />
-          </sources>
-        </map>
-        <p>N: <mathinput name="n" prefill="1" /></p>
-      `,
+        <text>${ind}</text>${doenetML}`,
           requestedVariant: { index: ind },
         }, "*");
       })
@@ -1763,15 +1772,316 @@ describe('Specifying unique variant tests', function () {
       cy.get('#\\/p2').should('have.text', 'letter: b')
       cy.get('#\\/p3').should('have.text', 'letter: c')
 
+
       cy.window().then(async (win) => {
 
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/x'].stateValues.value).eq((ind - 1) % 5 + 1)
+        expect(stateVariables[stateVariables["/p1"].activeChildren[1].componentName].stateValues.value).eq('a')
+        expect(stateVariables[stateVariables["/p2"].activeChildren[1].componentName].stateValues.value).eq('b')
+        expect(stateVariables[stateVariables["/p3"].activeChildren[1].componentName].stateValues.value).eq('c')
       })
+
+
+
+      cy.wait(2000);  // wait for 1 second debounce
+      cy.reload();
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>${doenetML}`,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      // wait until core is loaded
+      cy.waitUntil(() => cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        return stateVariables["/x"];
+      }))
+
+      cy.get('#\\/x').should('have.text', (ind - 1) % 5 + 1)
+
+      cy.get('#\\/p1').should('have.text', 'letter: a')
+      cy.get('#\\/p2').should('have.text', 'letter: b')
+      cy.get('#\\/p3').should('have.text', 'letter: c')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/x'].stateValues.value).eq((ind - 1) % 5 + 1)
+        expect(stateVariables[stateVariables["/p1"].activeChildren[1].componentName].stateValues.value).eq('a')
+        expect(stateVariables[stateVariables["/p2"].activeChildren[1].componentName].stateValues.value).eq('b')
+        expect(stateVariables[stateVariables["/p3"].activeChildren[1].componentName].stateValues.value).eq('c')
+      })
+
+      cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true })
+      cy.get('#\\/p1').should('have.text', 'letter: a')
+      cy.get('#\\/p2').should('have.text', 'letter: b')
+      cy.get('#\\/p3').should('have.text', 'letter: c')
+      cy.get('#\\/p4').should('have.text', 'letter: d')
+
     }
 
 
   });
+
+  it('single randomized choiceinput', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+  
+    let doenetML = `
+    <variantControl uniquevariants />
+    <choiceinput name="ci" randomizeOrder>
+      <choice>red</choice>
+      <choice>blue</choice>
+      <choice>green</choice>
+    </choiceinput>
+    <p>Selected value: <copy prop='selectedvalue' target="ci" assignNames="selectedValue" /></p>
+
+    `
+
+    let ordersFound = [];
+    let choices = ["red", "blue", "green"];
+
+    cy.log("get all orders in first 6 variants")
+    for (let ind = 1; ind <= 6; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `<text>${ind}</text>${doenetML}`,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let choiceOrder = stateVariables['/ci'].stateValues.choiceOrder;
+        let selectedOrder = choiceOrder.join(",")
+        expect(ordersFound.includes(selectedOrder)).eq(false);
+        ordersFound.push(selectedOrder);
+
+        for (let i = 0; i < 3; i++) {
+          cy.get(`#\\/ci_choice${i + 1}_input`).click();
+          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[i]-1])
+          cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
+            expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[i]-1]])
+          });
+        }
+
+        cy.wait(2000);  // wait for 1 second debounce
+        cy.reload();
+
+        cy.window().then(async (win) => {
+          win.postMessage({
+            doenetML: `<text>${ind}</text>${doenetML}`,
+            requestedVariant: { index: ind },
+          }, "*");
+        })
+  
+        // to wait for page to load
+        cy.get('#\\/_text1').should('have.text', `${ind}`)
+  
+        // wait until core is loaded
+        cy.waitUntil(() => cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          return stateVariables["/ci"];
+        }))
+  
+        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[2]-1])
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[2]-1]])
+        });
+
+          cy.get(`#\\/ci_choice1_input`).click();
+          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[0]-1])
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[0]-1]])
+        });
+      })
+    }
+
+
+
+    cy.log("7th variant repeats first order")
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_newAttempt').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+    cy.reload();
+
+    let ind = 7;
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `<text>${ind}</text>${doenetML}`,
+        requestedVariant: { index: ind },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceOrder = stateVariables['/ci'].stateValues.choiceOrder;
+      let selectedOrder = choiceOrder.join(",")
+      expect(selectedOrder).eq(ordersFound[0]);
+
+    });
+
+  });
+
+  it('randomized choiceinput with selectFromSequence in choices', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+  
+    let doenetML = `
+    <variantControl uniquevariants />
+    <choiceinput name="ci" randomizeOrder>
+      <choice><selectFromSequence from="1" to="2" assignNames="n" /></choice>
+      <choice><selectFromSequence type="letters" from="a" to="b" assignNames="l" /></choice>
+    </choiceinput>
+    <p>Selected value: <copy prop='selectedvalue' target="ci" assignNames="selectedValue" /></p>
+    `
+
+    let selectionsFound = [];
+
+    cy.log("get all options in first 8 variants")
+    for (let ind = 1; ind <= 8; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `<text>${ind}</text>${doenetML}`,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let choiceOrder = stateVariables['/ci'].stateValues.choiceOrder;
+        let n = stateVariables["/n"].stateValues.value;
+        let l = stateVariables["/l"].stateValues.value;
+        let choices = [n.toString(), l]
+        let selectedOption = [...choiceOrder, ...choices].join(",")
+        expect(selectionsFound.includes(selectedOption)).eq(false);
+        selectionsFound.push(selectedOption);
+
+        for (let i = 0; i < 2; i++) {
+          cy.get(`#\\/ci_choice${i + 1}_input`).click();
+          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[i]-1])
+          cy.window().then(async (win) => {
+            let stateVariables = await win.returnAllStateVariables1();
+            expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[i]-1]])
+          });
+        }
+
+        cy.wait(2000);  // wait for 1 second debounce
+        cy.reload();
+
+        cy.window().then(async (win) => {
+          win.postMessage({
+            doenetML: `<text>${ind}</text>${doenetML}`,
+            requestedVariant: { index: ind },
+          }, "*");
+        })
+  
+        // to wait for page to load
+        cy.get('#\\/_text1').should('have.text', `${ind}`)
+  
+        // wait until core is loaded
+        cy.waitUntil(() => cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          return stateVariables["/ci"];
+        }))
+  
+        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[1]-1])
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[1]-1]])
+        });
+
+          cy.get(`#\\/ci_choice1_input`).click();
+          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[0]-1])
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[0]-1]])
+        });
+      })
+    }
+
+
+
+    cy.log("7th variant repeats first order")
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_newAttempt').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+    cy.reload();
+
+    let ind = 9;
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `<text>${ind}</text>${doenetML}`,
+        requestedVariant: { index: ind },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let choiceOrder = stateVariables['/ci'].stateValues.choiceOrder;
+      let n = stateVariables["/n"].stateValues.value;
+      let l = stateVariables["/l"].stateValues.value;
+      let choices = [n.toString(), l]
+      let selectedOption = [...choiceOrder, ...choices].join(",")
+      expect(selectedOption).eq(selectionsFound[0]);
+
+    });
+
+  });
+
 
 
 });
