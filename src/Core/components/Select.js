@@ -1,6 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { enumerateSelectionCombinations, enumerateCombinations } from '../utils/enumeration';
-import { getVariantsForDescendants } from '../utils/variants';
 import { deepClone } from '../utils/deepFunctions';
 import { gatherVariantComponents, processAssignNames } from '../utils/serializedStateProcessing';
 import me from 'math-expressions';
@@ -416,7 +415,7 @@ export default class Select extends CompositeComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
           variableNames: [
             "isVariantComponent",
             "generatedVariantInfo",
@@ -563,161 +562,149 @@ export default class Select extends CompositeComponent {
   }
 
 
-  static determineNumberOfUniqueVariants({ serializedComponent }) {
+  static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+
+    if (numberOfVariants !== undefined) {
+      return { success: true, numberOfVariants };
+    }
+
+
     let numberToSelect = 1, withReplacement = false;
-    let numberOfVariantsByChild = [];
-    let childrenToSelect = [];
-    if (serializedComponent.state !== undefined) {
-      if (serializedComponent.state.numberToSelect !== undefined) {
-        numberToSelect = serializedComponent.state.numberToSelect;
+
+
+
+    let numberToSelectComponent = serializedComponent.attributes.numberToSelect?.component;
+    if (numberToSelectComponent) {
+      // only implemented if have an integer with a single string child
+      if (numberToSelectComponent.componentType === "integer"
+        && numberToSelectComponent.children?.length === 1
+        && typeof numberToSelectComponent.children[0] === "string") {
+        numberToSelect = Number(numberToSelectComponent.children[0]);
+
+        if (!(Number.isInteger(numberToSelect) && numberToSelect >= 0)) {
+          console.log(`cannot determine unique variants of selectFromSequence as numberToSelect isn't a non-negative integer.`)
+          return { success: false };
+        }
+
+      } else {
+        console.log(`cannot determine unique variants of selectFromSequence as numberToSelect isn't constant number.`)
+        return { success: false };
       }
-      if (serializedComponent.state.withReplacement !== undefined) {
-        withReplacement = serializedComponent.state.withReplacement;
-      }
-    }
-    if (serializedComponent.children === undefined) {
-      return { succes: false }
     }
 
-    let stringChild;
+
+    let withReplacementComponent = serializedComponent.attributes.withReplacement?.component;
+    if (withReplacementComponent) {
+      // only implemented if have an boolean with a boolean value or a single string child
+      if (withReplacementComponent.componentType === "boolean") {
+        if (withReplacementComponent.children?.length === 1
+          && typeof withReplacementComponent.children[0] === "string") {
+          withReplacement = withReplacementComponent.children[0].toLowerCase() === "true"
+        } else if ((withReplacementComponent.children === undefined || withReplacementComponent.children.length === 0)
+          && typeof withReplacementComponent.state?.value === "boolean"
+        ) {
+          withReplacement = withReplacementComponent.state.value;
+        } else {
+          console.log(`cannot determine unique variants of selectFromSequence as withReplacement isn't constant boolean.`)
+          return { success: false };
+        }
+      } else {
+        console.log(`cannot determine unique variants of selectFromSequence as withReplacement isn't constant boolean.`)
+        return { success: false };
+      }
+
+    }
+
     for (let child of serializedComponent.children) {
-      let componentType = child.componentType;
-      if (componentType === "numberToSelect") {
-        // calculate numberToSelect only if has its value set directly
-        // or if has a child that is a string
-        let foundValid = false;
-        if (child.state !== undefined && child.state.value !== undefined) {
-          numberToSelect = Math.round(Number(child.state.value));
-          foundValid = true;
-        }
-        // children overwrite state
-        if (child.children !== undefined) {
-          for (let grandchild of child.children) {
-            if (typeof grandchild === "string") {
-              numberToSelect = Math.round(Number(grandchild));
-              foundValid = true;
-              break;
-            }
-          }
-        }
-        if (!foundValid) {
-          return { success: false }
-        }
-      } else if (componentType === "withReplacement") {
-        // calculate withReplacement only if has its value set directly
-        // or if has a child that is a string
-        let foundValid = false;
-        if (child.state !== undefined) {
-          if (child.state.value !== undefined) {
-            withReplacement = child.state.value;
-            foundValid = true;
-          }
-        }
-        // children overwrite state
-        if (child.children !== undefined) {
-          for (let grandchild of child.children) {
-            if (typeof grandchild === "string") {
-              foundValid = true;
-              if (grandchild.trim().toLowerCase() === "true") {
-                withReplacement = true;
-              } else {
-                withReplacement = false;
-              }
-              break;
-            }
-          }
-        }
-
-        if (!foundValid) {
-          return { success: false }
-        }
-
-      } else if (componentType === "selectWeight") {
-        // uniqueVariants disabled if have a child with selectWeight specified
-        return { succes: false }
-      } else if (componentType !== "hide" && componentType !== "modifyIndirectly") {
-        if (typeof child === "string") {
-          stringChild = child;
-        }
-        let childvariants = 1;
-        if (child.variants !== undefined && child.variants.numberOfVariants !== undefined) {
-          childvariants = child.variants.numberOfVariants;
-        }
-        numberOfVariantsByChild.push(childvariants);
-        childrenToSelect.push(child);
+      if (child.attributes.selectWeight || child.attributes.selectForVariantNames) {
+        // uniqueVariants disabled if have a child with selectWeight or selectForVariantNames specified
+        console.log(`Unique variants for select disabled if have an option with selectWeight or selectForVariantNames specified`)
+        return { success: false }
       }
     }
-    // console.log("numberOfVariantsByChild")
-    // console.log(numberOfVariantsByChild)
-    if (numberOfVariantsByChild.length === 0) {
-      return { success: false }
+
+
+    if (serializedComponent.variants === undefined) {
+      serializedComponent.variants = {};
     }
 
-    // if have one string child, it will be broken into children by spaces
-    // account for number of resulting children, each with one variant
-    if (stringChild !== undefined && numberOfVariantsByChild.length === 1) {
-      let numPieces = stringChild.split(/s+/).length;
-      numberOfVariantsByChild = Array(numPieces).fill(1);
+    let descendantVariantComponents = gatherVariantComponents({
+      serializedComponents: serializedComponent.children,
+      componentInfoObjects
+    });
+
+    serializedComponent.variants.descendantVariantComponents = descendantVariantComponents;
+
+    let numberOfVariantsByChild = [];
+    for (let descendant of descendantVariantComponents) {
+      let descendantClass = componentInfoObjects.allComponentClasses[descendant.componentType];
+      let result = descendantClass.determineNumberOfUniqueVariants({
+        serializedComponent: descendant,
+        componentInfoObjects
+      })
+      if (!result.success) {
+        return { success: false }
+      }
+      numberOfVariantsByChild.push(result.numberOfVariants);
     }
+
+
 
     let uniqueVariantData = {
-      numberOfVariantsByChild: numberOfVariantsByChild,
-      numberToSelect: numberToSelect,
-      withReplacement: withReplacement,
-      childrenToSelect: childrenToSelect,
+      numberOfVariantsByChild,
+      numberToSelect,
+      withReplacement,
     }
 
     if (withReplacement || numberToSelect === 1) {
       let numberOfOptionsPerSelection = numberOfVariantsByChild.reduce((a, c) => a + c);
-      let numberOfVariants = Math.pow(numberOfOptionsPerSelection, numberToSelect);
-      return {
-        success: true,
-        numberOfVariants: numberOfVariants,
-        uniqueVariantData: uniqueVariantData,
+      numberOfVariants = Math.pow(numberOfOptionsPerSelection, numberToSelect);
+    } else {
+
+      let numberOfChildren = numberOfVariantsByChild.length;
+
+      if (numberToSelect > numberOfChildren) {
+        return { success: false }
       }
-    }
-    let numberOfChildren = numberOfVariantsByChild.length;
 
-    if (numberToSelect > numberOfChildren) {
-      return { success: false }
-    }
+      let firstNumber = numberOfVariantsByChild[0]
+      let allSameNumber = numberOfVariantsByChild.slice(1).every(x => x === firstNumber);
 
-    let firstNumber = numberOfVariantsByChild[0]
-    let allSameNumber = numberOfVariantsByChild.slice(1).every(x => x === firstNumber);
+      if (allSameNumber) {
+        let numberOfPermutations = numberOfChildren;
+        for (let n = numberOfChildren - 1; n > numberOfChildren - numberToSelect; n--) {
+          numberOfPermutations *= n;
+        }
+        numberOfVariants = numberOfPermutations * Math.pow(firstNumber, numberToSelect);
 
-    if (allSameNumber) {
-      let numberOfPermutations = numberOfChildren;
-      for (let n = numberOfChildren - 1; n > numberOfChildren - numberToSelect; n--) {
-        numberOfPermutations *= n;
-      }
-      let numberOfVariants = numberOfPermutations * Math.pow(firstNumber, numberToSelect);
-      return {
-        success: true,
-        numberOfVariants: numberOfVariants,
-        uniqueVariantData: uniqueVariantData,
+
+      } else {
+        // have select without replacement where options have different numbers of variants
+        numberOfVariants = countOptions(numberOfVariantsByChild, numberToSelect);
       }
     }
 
-    // have select without replacement where options have different numbers of variants
-    let numberOfVariants = countOptions(numberOfVariantsByChild, numberToSelect);
+    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    serializedComponent.variants.uniqueVariants = true;
+    serializedComponent.variants.uniqueVariantData = uniqueVariantData;
+
     return {
       success: true,
-      numberOfVariants: numberOfVariants,
-      uniqueVariantData: uniqueVariantData,
+      numberOfVariants
     }
+
   }
 
-  static getUniqueVariant({ serializedComponent, variantIndex, allComponentClasses }) {
+  static getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects }) {
 
-    if (serializedComponent.variants === undefined) {
-      return { succes: false }
-    }
-    let numberOfVariants = serializedComponent.variants.numberOfVariants;
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
     if (numberOfVariants === undefined) {
       return { success: false }
     }
 
-    if (!Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= numberOfVariants) {
+    if (!Number.isInteger(variantIndex) || variantIndex < 1 || variantIndex > numberOfVariants) {
       return { success: false }
     }
 
@@ -725,20 +712,19 @@ export default class Select extends CompositeComponent {
     let numberOfVariantsByChild = uniqueVariantData.numberOfVariantsByChild;
     let numberToSelect = uniqueVariantData.numberToSelect;
     let withReplacement = uniqueVariantData.withReplacement;
-    let numberOfChildren = numberOfVariantsByChild.length;
-    let childrenToSelect = uniqueVariantData.childrenToSelect;
+    let numberOfChildren = serializedComponent.children.length;
+    let childrenToSelect = serializedComponent.children;
 
     let combinations = enumerateSelectionCombinations({
       numberOfIndices: numberToSelect,
       numberOfOptions: numberOfChildren,
-      maxNumber: variantIndex + 1,
+      // maxNumber: variantIndex,
       withReplacement: withReplacement,
     })
 
     // console.log(combinations);
 
     let numberOfCombinations = combinations.length;
-    // console.log("number of combinations: " + numberOfCombinations);
 
     // for each combination, determine the number of possibilities
     let combinationsAvailable = combinations.map(x => ({
@@ -752,7 +738,7 @@ export default class Select extends CompositeComponent {
     // The variants, in order, will
     // select the first possibility from each combination
     // followed by the second possibility, etc.
-    // When the possibilities from the combination are exhaust
+    // When the possibilities from the combination are exhausted
     // skip that combination
 
     let combinationsLeft = [...Array(numberOfCombinations).keys()];
@@ -760,7 +746,7 @@ export default class Select extends CompositeComponent {
     let nCombinationsLeft = combinationsLeft.length;
     let combinationIndexSelected, variantIndexOfSelected;
 
-    let variantIndexLeft = variantIndex;
+    let variantIndexLeft = variantIndex - 1;
 
     while (nCombinationsLeft > 0) {
 
@@ -774,7 +760,7 @@ export default class Select extends CompositeComponent {
       if (variantIndexLeft < chunksize * nCombinationsLeft) {
         // won't exhaust the possibilities for any combination
         combinationIndexSelected = combinationsLeft[variantIndexLeft % nCombinationsLeft];
-        variantIndexOfSelected = possibilitiesUsed + Math.floor(variantIndexLeft / nCombinationsLeft);
+        variantIndexOfSelected = possibilitiesUsed + Math.floor(variantIndexLeft / nCombinationsLeft) + 1;
         break;
       } else {
         possibilitiesUsed += chunksize;
@@ -788,22 +774,22 @@ export default class Select extends CompositeComponent {
 
     }
 
-    // console.log("combinationIndexSelected: " + combinationIndexSelected)
-    // console.log("variantIndexOfSelected: " + variantIndexOfSelected)
+    // console.log("combinationIndexSelected: ", combinationIndexSelected)
+    // console.log("variantIndexOfSelected: ", variantIndexOfSelected)
 
     let selectedCombination = combinations[combinationIndexSelected];
-    // console.log("selectedCombination: " + selectedCombination)
+    // console.log("selectedCombination: ", selectedCombination)
 
     let indicesForEachChild = enumerateCombinations({
       numberOfOptionsByIndex: selectedCombination.map(x => numberOfVariantsByChild[x]),
-      maxNumber: variantIndexOfSelected + 1,
-    })[variantIndexOfSelected];
+      maxNumber: variantIndexOfSelected,
+    })[variantIndexOfSelected - 1].map(x => x + 1);
 
     // console.log("indicesForEachChild: " + indicesForEachChild)
 
     // for each selected child, find the descendant variant components
     // and map the variant number (index) of that child
-    // to the indices of those descendat variant components
+    // to the indices of those descendant variant components
 
 
     let subvariants = [];
@@ -812,35 +798,23 @@ export default class Select extends CompositeComponent {
     for (let [ind, childNum] of selectedCombination.entries()) {
       if (numberOfVariantsByChild[childNum] > 1) {
         let child = childrenToSelect[childNum];
-        if (child.variants.isVariantComponent) {
-          let compClass = allComponentClasses[child.componentType];
-          let result = compClass.getUniqueVariant({
-            serializedComponent: child,
-            variantIndex: indicesForEachChild[ind],
-            allComponentClasses: allComponentClasses,
-          });
-          if (!result.success) {
-            return { success: false }
-          }
-          subvariants.push(result.desiredVariant);
-        } else {
-          let result = getVariantsForDescendants({
-            variantIndex: indicesForEachChild[ind],
-            serializedComponent: child,
-            allComponentClasses: allComponentClasses
-          })
-          if (!result.success) {
-            return { success: false }
-          }
-          subvariants.push(...result.desiredVariants);
+        let compClass = componentInfoObjects.allComponentClasses[child.componentType];
+        let result = compClass.getUniqueVariant({
+          serializedComponent: child,
+          variantIndex: indicesForEachChild[ind],
+          componentInfoObjects,
+        });
+        if (!result.success) {
+          return { success: false }
         }
+        subvariants.push(result.desiredVariant);
         haveNontrivialSubvariants = true;
       } else {
         subvariants.push({});
       }
     }
 
-    let desiredVariant = { indices: selectedCombination };
+    let desiredVariant = { indices: selectedCombination.map(x => x + 1) };
     if (haveNontrivialSubvariants) {
       desiredVariant.subvariants = subvariants;
     }

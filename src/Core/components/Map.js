@@ -1,6 +1,6 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
-import { processAssignNames } from '../utils/serializedStateProcessing';
+import { gatherVariantComponents, processAssignNames } from '../utils/serializedStateProcessing';
 import { convertAttributesForComponentType } from '../utils/copy';
 import { setUpVariantSeedAndRng } from '../utils/variants';
 
@@ -10,7 +10,6 @@ export default class Map extends CompositeComponent {
   static assignNamesToReplacements = true;
 
   static createsVariants = true;
-  static alwaysSetUpVariant = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
@@ -195,7 +194,7 @@ export default class Map extends CompositeComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
           variableNames: [
             "isVariantComponent",
             "generatedVariantInfo",
@@ -716,10 +715,68 @@ export default class Map extends CompositeComponent {
   }
 
 
-  static determineNumberOfUniqueVariants({ serializedComponent }) {
+  static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+
+    if (numberOfVariants !== undefined) {
+      return { success: true, numberOfVariants };
+    }
+
+    let descendantVariantComponents = gatherVariantComponents({
+      serializedComponents: serializedComponent.children,
+      componentInfoObjects
+    });
+
+
+    let numberOfVariantsByDescendant = [];
+    for (let descendant of descendantVariantComponents) {
+      let descendantClass = componentInfoObjects.allComponentClasses[descendant.componentType];
+      let result = descendantClass.determineNumberOfUniqueVariants({
+        serializedComponent: descendant,
+        componentInfoObjects
+      })
+      if (!result.success) {
+        return { success: false }
+      }
+      numberOfVariantsByDescendant.push(result.numberOfVariants);
+    }
+
+
+    if (numberOfVariantsByDescendant.length === 1 && numberOfVariantsByDescendant[0] === 1) {
+      // just have a template with on variant
+      // so will have a single variant even if don't know how many times the template is repeated
+      serializedComponent.variants.numberOfVariants = 1;
+
+      return {
+        success: true,
+        numberOfVariants: 1
+      }
+    }
+
     // TODO: if template has only one unique variant
     // could treat as a normal component
     return { success: false };
+  }
+
+  static getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+    if (numberOfVariants === undefined) {
+      return { success: false }
+    }
+
+    if (!Number.isInteger(variantIndex) || variantIndex < 1 || variantIndex > numberOfVariants) {
+      return { success: false }
+    }
+
+    // so far, only have case where don't have any variants
+    // so variantIndex will be one and we don't have subvariants
+
+    let desiredVariant = { index: variantIndex };
+    return { success: true, desiredVariant }
+
+
   }
 
 }

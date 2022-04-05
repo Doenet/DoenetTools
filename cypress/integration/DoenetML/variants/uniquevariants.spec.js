@@ -1,3 +1,14 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
+
 describe('Specifying unique variant tests', function () {
 
   beforeEach(() => {
@@ -5,118 +16,118 @@ describe('Specifying unique variant tests', function () {
     cy.visit('/cypressTest')
   })
 
-  it.skip('single select', () => {
+  it('single select', () => {
 
     let values = ["u", "v", "w", "x", "y", "z"]
-    let valuesFound = [];
 
-    cy.log("get all values in six variants")
-    for (let ind = 0; ind < 6; ind++) {
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-        <text>${ind}</text>
-        <variantControl uniquevariants />
-        <select assignnames="x">u,v,w,x,y,z</select>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
+    cy.log("get all values in order and they repeat in next variants")
+    for (let ind = 1; ind <= 18; ind++) {
 
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        let newValue = stateVariables['/x'].stateValues.value;
-        expect(values.includes(newValue)).eq(true);
-        expect(valuesFound.includes(newValue)).eq(false);
-        valuesFound.push(newValue);
-      })
-    }
-
-    cy.log("values repeat in next variants")
-    for (let ind = 6; ind < 18; ind++) {
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
-        <select assignnames="x">u,v,w,x,y,z</select>
+        <select assignnames="x">u v w x y z</select>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
+      cy.get('#\\/x .mjx-mrow').should('have.text', values[(ind - 1) % 6])
+
       cy.window().then(async (win) => {
 
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables['/x'].stateValues.value).eq(valuesFound[ind % 6])
+        expect(stateVariables['/x'].stateValues.value).eq(values[(ind - 1) % 6])
       })
     }
 
   });
 
-  it.skip('single selectfromsequence', () => {
+  it('single selectfromsequence', () => {
 
-    let values = [...Array(10).keys()].map(x => x + 1)
-    let valuesFound = [];
+    cy.log("get all values in order and they repeat in next variants")
+    for (let ind = 1; ind <= 15; ind++) {
 
-    cy.log("get all values in ten variants")
-    for (let ind = 0; ind < 10; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-        <text>${ind}</text>
-        <variantControl uniquevariants />
-        <selectfromsequence assignnames="x">10</selectfromsequence>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        let newValue = stateVariables['/x'].stateValues.value;
-        expect(values.includes(newValue)).eq(true);
-        expect(valuesFound.includes(newValue)).eq(false);
-        valuesFound.push(newValue);
-      })
-    }
-
-    cy.log("values repeat in next variants")
-    for (let ind = 10; ind < 30; ind++) {
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      };
 
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
         <variantControl uniquevariants />
-        <selectfromsequence assignnames="x">10</selectfromsequence>
+        <selectfromsequence assignnames="x" length="5" />
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
+      cy.get('#\\/x').should('have.text', (ind - 1) % 5 + 1)
+
       cy.window().then(async (win) => {
 
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables['/x'].stateValues.value).eq(valuesFound[ind % 10])
+        expect(stateVariables['/x'].stateValues.value).eq((ind - 1) % 5 + 1)
       })
     }
+
 
   });
 
-  it.skip('select and selectfromsequence combination', () => {
+  it('selectfromsequence with excludes', () => {
+
+    cy.log("get all values in order and they repeat in next variants")
+    for (let ind = 1; ind <= 12; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      };
+
+      let letters = ["c", "e", "i", "m"]
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <variantControl uniquevariants />
+        <selectfromsequence assignnames="x" type="letters" from="c" to="m" step="2" exclude="g k" />
+      `,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      cy.get('#\\/x').should('have.text', letters[(ind - 1) % 4])
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/x'].stateValues.value).eq(letters[(ind - 1) % 4])
+      })
+    }
+
+
+  });
+
+  it('select and selectfromsequence combination', () => {
 
     let valuesW = ["m", "n"]
     let valuesX = ["x", "y", "z"];
@@ -137,8 +148,16 @@ describe('Specifying unique variant tests', function () {
 
     let numVariants = valuesW.length * valuesX.length * valuesY.length * valuesZ.length;
 
+    let wsFound = [], xsFound = [], ysFound = [], zsFound = [];
+
     cy.log("get all values in variants")
-    for (let ind = 0; ind < numVariants; ind++) {
+    for (let ind = 1; ind <= numVariants; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -146,13 +165,13 @@ describe('Specifying unique variant tests', function () {
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
-        <selectfromsequence type="letters" assignnames="w">m,n</selectfromsequence>
-        <select assignnames="x">x,y,z</select>
-        <selectfromsequence assignnames="y">2,4</selectfromsequence>
-        <select assignnames="z">3,7</select>
+        <selectfromsequence type="letters" assignnames="w" from="m" to="n" />
+        <select assignnames="x">x y z</select>
+        <selectfromsequence assignnames="y" from="2" to="4" />
+        <select assignnames="z">3 7</select>
       </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -169,74 +188,17 @@ describe('Specifying unique variant tests', function () {
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
-      })
-    }
 
-    cy.log("values begin to repeat in next variants")
-    for (let ind = numVariants; ind < numVariants + 15; ind += 3) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <aslist>
-        <selectfromsequence type="letters" assignnames="w">m,n</selectfromsequence>
-        <select assignnames="x">x,y,z</select>
-        <selectfromsequence assignnames="y">2,4</selectfromsequence>
-        <select assignnames="z">3,7</select>
-      </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        let newW = stateVariables['/w'].stateValues.value;
-        let newX = stateVariables['/x'].stateValues.value;
-        let newY = stateVariables['/y'].stateValues.value;
-        let newZ = stateVariables['/z'].stateValues.value;
-        let newValue = [newW, newX, newY, newZ].join(',')
-
-        expect(newValue).eq(valuesFound[ind % numVariants])
+        if (ind <= 3) {
+          wsFound.push(newW);
+          xsFound.push(newX);
+          ysFound.push(newY);
+          zsFound.push(newZ);
+        }
       })
     }
 
     cy.log("all individual options selected in first variants")
-    let wsFound = [], xsFound = [], ysFound = [], zsFound = [];
-    for (let ind = 0; ind < 3; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <aslist>
-        <selectfromsequence type="letters" assignnames="w">m,n</selectfromsequence>
-        <select assignnames="x">x,y,z</select>
-        <selectfromsequence assignnames="y">2,4</selectfromsequence>
-        <select assignnames="z">3,7</select>
-      </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        wsFound.push(stateVariables['/w'].stateValues.value);
-        xsFound.push(stateVariables['/x'].stateValues.value);
-        ysFound.push(stateVariables['/y'].stateValues.value);
-        zsFound.push(stateVariables['/z'].stateValues.value);
-      })
-    }
     cy.window().then(async (win) => {
       expect(wsFound.slice(0, 2).sort()).eqls(valuesW)
       expect(xsFound.sort()).eqls(valuesX);
@@ -244,9 +206,45 @@ describe('Specifying unique variant tests', function () {
       expect(zsFound.slice(0, 2).sort()).eqls(valuesZ)
     })
 
+    cy.log("values begin to repeat in next variants")
+    cy.reload();
+    for (let ind = numVariants + 1; ind <= numVariants + 15; ind += 3) {
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+      <text>${ind}</text>
+      <variantControl uniquevariants />
+      <aslist>
+        <selectfromsequence type="letters" assignnames="w" from="m" to="n" />
+        <select assignnames="x">x y z</select>
+        <selectfromsequence assignnames="y" from="2" to="4" />
+        <select assignnames="z">3 7</select>
+      </aslist>
+      `,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        let newW = stateVariables['/w'].stateValues.value;
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
+        let newValue = [newW, newX, newY, newZ].join(',')
+
+        expect(newValue).eq(valuesFound[(ind - 1) % numVariants])
+      })
+    }
+
+
   });
 
-  it.skip('select multiple', () => {
+  it('select multiple', () => {
 
     let valuesSingle = ["w", "x", "y", "z"]
     let valuesFound = [];
@@ -267,8 +265,17 @@ describe('Specifying unique variant tests', function () {
 
     let numVariants = values.length;
 
+    let xsFound = [], ysFound = [], zsFound = [];
+
+
     cy.log("get all values in first variants")
-    for (let ind = 0; ind < numVariants; ind++) {
+    for (let ind = 1; ind <= numVariants; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -276,10 +283,10 @@ describe('Specifying unique variant tests', function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <select assignnames="x,y,z" numbertoselect="3">w,x,y,z</select>
+          <select assignnames="x y z" numbertoselect="3">w x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -296,12 +303,25 @@ describe('Specifying unique variant tests', function () {
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
 
+        if (ind <= 4) {
+          xsFound.push(newX);
+          ysFound.push(newY);
+          zsFound.push(newZ);
+        }
+
       })
     }
 
+    cy.log("all individual options selected in first variants")
+    cy.window().then(async (win) => {
+      expect(xsFound.sort()).eqls(valuesSingle);
+      expect(ysFound.sort()).eqls(valuesSingle);
+      expect(zsFound.sort()).eqls(valuesSingle)
+    })
 
     cy.log("values begin to repeat in next variants")
-    for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
+    cy.reload();
+    for (let ind = numVariants + 1; ind <= numVariants + 25; ind += 5) {
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -309,10 +329,10 @@ describe('Specifying unique variant tests', function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <select assignnames="x,y,z" numbertoselect="3">w,x,y,z</select>
+          <select assignnames="x y z" numbertoselect="3">w x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -326,46 +346,14 @@ describe('Specifying unique variant tests', function () {
         let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
-        expect(newValue).eq(valuesFound[ind % numVariants])
+        expect(newValue).eq(valuesFound[(ind - 1) % numVariants])
       })
     }
 
-    cy.log("all individual options selected in first variants")
-    let xsFound = [], ysFound = [], zsFound = [];
-    for (let ind = 0; ind < 4; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-        <text>${ind}</text>
-        <variantControl uniquevariants />
-        <aslist>
-          <select assignnames="x,y,z" numbertoselect="3">w,x,y,z</select>
-        </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        xsFound.push(stateVariables['/x'].stateValues.value);
-        ysFound.push(stateVariables['/y'].stateValues.value);
-        zsFound.push(stateVariables['/z'].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(xsFound.sort()).eqls(valuesSingle);
-      expect(ysFound.sort()).eqls(valuesSingle);
-      expect(zsFound.sort()).eqls(valuesSingle)
-    })
 
   });
 
-  it.skip('select multiple with replacement', () => {
+  it('select multiple with replacement', () => {
 
     let valuesSingle = ["x", "y", "z"]
     let valuesFound = [];
@@ -379,9 +367,16 @@ describe('Specifying unique variant tests', function () {
     }
 
     let numVariants = values.length;
+    let xsFound = [], ysFound = [], zsFound = [];
 
     cy.log("get all values in first variants")
-    for (let ind = 0; ind < numVariants; ind++) {
+    for (let ind = 1; ind <= numVariants; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -389,10 +384,10 @@ describe('Specifying unique variant tests', function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <select assignnames="x,y,z" numbertoselect="3" withreplacement>x,y,z</select>
+          <select assignnames="x y z" numbertoselect="3" withreplacement>x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -409,12 +404,25 @@ describe('Specifying unique variant tests', function () {
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
 
+
+        if (ind <= 3) {
+          xsFound.push(newX);
+          ysFound.push(newY);
+          zsFound.push(newZ);
+        }
       })
     }
 
+    cy.log("all individual options selected in first variants")
+    cy.window().then(async (win) => {
+      expect(xsFound.sort()).eqls(valuesSingle);
+      expect(ysFound.sort()).eqls(valuesSingle);
+      expect(zsFound.sort()).eqls(valuesSingle)
+    })
 
     cy.log("values begin to repeat in next variants")
-    for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
+    cy.reload();
+    for (let ind = numVariants + 1; ind <= numVariants + 25; ind += 5) {
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -422,10 +430,10 @@ describe('Specifying unique variant tests', function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <select assignnames="x,y,z" numbertoselect="3" withreplacement>x,y,z</select>
+          <select assignnames="x y z" numbertoselect="3" withreplacement>x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -439,46 +447,13 @@ describe('Specifying unique variant tests', function () {
         let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
-        expect(newValue).eq(valuesFound[ind % numVariants])
+        expect(newValue).eq(valuesFound[(ind - 1) % numVariants])
       })
     }
-
-    cy.log("all individual options selected in first variants")
-    let xsFound = [], ysFound = [], zsFound = [];
-    for (let ind = 0; ind < 3; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-        <text>${ind}</text>
-        <variantControl uniquevariants />
-        <aslist>
-          <select assignnames="x,y,z" numbertoselect="3" withreplacement>x,y,z</select>
-        </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        xsFound.push(stateVariables['/x'].stateValues.value);
-        ysFound.push(stateVariables['/y'].stateValues.value);
-        zsFound.push(stateVariables['/z'].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(xsFound.sort()).eqls(valuesSingle);
-      expect(ysFound.sort()).eqls(valuesSingle);
-      expect(zsFound.sort()).eqls(valuesSingle)
-    })
 
   });
 
-  it.skip('select multiple from sequence', () => {
+  it('select multiple from sequence', () => {
 
     let valuesSingle = ["w", "x", "y", "z"]
     let valuesFound = [];
@@ -498,9 +473,16 @@ describe('Specifying unique variant tests', function () {
     }
 
     let numVariants = values.length;
+    let xsFound = [], ysFound = [], zsFound = [];
 
     cy.log("get all values in first variants")
-    for (let ind = 0; ind < numVariants; ind++) {
+    for (let ind = 1; ind <= numVariants; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -508,10 +490,10 @@ describe('Specifying unique variant tests', function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <selectfromsequence type="letters" assignnames="x,y,z" numbertoselect="3">w,z</selectfromsequence>
+          <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" from="w" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -528,12 +510,24 @@ describe('Specifying unique variant tests', function () {
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
 
+        if (ind <= 4) {
+          xsFound.push(newX);
+          ysFound.push(newY);
+          zsFound.push(newZ);
+        }
       })
     }
 
+    cy.log("all individual options selected in first variants")
+    cy.window().then(async (win) => {
+      expect(xsFound.sort()).eqls(valuesSingle);
+      expect(ysFound.sort()).eqls(valuesSingle);
+      expect(zsFound.sort()).eqls(valuesSingle)
+    })
 
     cy.log("values begin to repeat in next variants")
-    for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
+    cy.reload();
+    for (let ind = numVariants + 1; ind <= numVariants + 25; ind += 5) {
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -541,10 +535,10 @@ describe('Specifying unique variant tests', function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <selectfromsequence type="letters" assignnames="x,y,z" numbertoselect="3">w,z</selectfromsequence>
+          <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" from="w" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -558,46 +552,14 @@ describe('Specifying unique variant tests', function () {
         let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
-        expect(newValue).eq(valuesFound[ind % numVariants])
+        expect(newValue).eq(valuesFound[(ind - 1) % numVariants])
+
       })
     }
-
-    cy.log("all individual options selected in first variants")
-    let xsFound = [], ysFound = [], zsFound = [];
-    for (let ind = 0; ind < 4; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-        <text>${ind}</text>
-        <variantControl uniquevariants />
-        <aslist>
-          <selectfromsequence type="letters" assignnames="x,y,z" numbertoselect="3">w,z</selectfromsequence>
-        </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        xsFound.push(stateVariables['/x'].stateValues.value);
-        ysFound.push(stateVariables['/y'].stateValues.value);
-        zsFound.push(stateVariables['/z'].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(xsFound.sort()).eqls(valuesSingle);
-      expect(ysFound.sort()).eqls(valuesSingle);
-      expect(zsFound.sort()).eqls(valuesSingle)
-    })
 
   });
 
-  it.skip('select multiple from sequence with replacement', () => {
+  it('select multiple from sequence with replacement', () => {
 
     let valuesSingle = ["x", "y", "z"]
     let valuesFound = [];
@@ -611,9 +573,16 @@ describe('Specifying unique variant tests', function () {
     }
 
     let numVariants = values.length;
+    let xsFound = [], ysFound = [], zsFound = [];
 
     cy.log("get all values in first variants")
-    for (let ind = 0; ind < numVariants; ind++) {
+    for (let ind = 1; ind <= numVariants; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -621,10 +590,10 @@ describe('Specifying unique variant tests', function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <selectfromsequence type="letters" assignnames="x,y,z" numbertoselect="3" withreplacement>x,z</selectfromsequence>
+          <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" withreplacement from="x" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -641,12 +610,24 @@ describe('Specifying unique variant tests', function () {
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
 
+        if (ind <= 3) {
+          xsFound.push(newX);
+          ysFound.push(newY);
+          zsFound.push(newZ);
+        }
       })
     }
 
+    cy.log("all individual options selected in first variants")
+    cy.window().then(async (win) => {
+      expect(xsFound.sort()).eqls(valuesSingle);
+      expect(ysFound.sort()).eqls(valuesSingle);
+      expect(zsFound.sort()).eqls(valuesSingle)
+    })
 
     cy.log("values begin to repeat in next variants")
-    for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
+    cy.reload();
+    for (let ind = numVariants + 1; ind <= numVariants + 25; ind += 5) {
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -654,10 +635,10 @@ describe('Specifying unique variant tests', function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <selectfromsequence type="letters" assignnames="x,y,z" numbertoselect="3" withreplacement>x,z</selectfromsequence>
+          <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" withreplacement from="x" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -671,46 +652,14 @@ describe('Specifying unique variant tests', function () {
         let newZ = stateVariables['/z'].stateValues.value;
         let newValue = [newX, newY, newZ].join(',')
 
-        expect(newValue).eq(valuesFound[ind % numVariants])
+        expect(newValue).eq(valuesFound[(ind - 1) % numVariants])
       })
     }
 
-    cy.log("all individual options selected in first variants")
-    let xsFound = [], ysFound = [], zsFound = [];
-    for (let ind = 0; ind < 3; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-        <text>${ind}</text>
-        <variantControl uniquevariants />
-        <aslist>
-          <selectfromsequence type="letters" assignnames="x,y,z" numbertoselect="3" withreplacement>x,z</selectfromsequence>
-        </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        xsFound.push(stateVariables['/x'].stateValues.value);
-        ysFound.push(stateVariables['/y'].stateValues.value);
-        zsFound.push(stateVariables['/z'].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(xsFound.sort()).eqls(valuesSingle);
-      expect(ysFound.sort()).eqls(valuesSingle);
-      expect(zsFound.sort()).eqls(valuesSingle)
-    })
 
   });
 
-  it.skip('limit variants', () => {
+  it('limit variants', () => {
 
     let valuesSingle = ["u", "v", "w", "x", "y", "z"]
     let valuesFound = [];
@@ -726,9 +675,16 @@ describe('Specifying unique variant tests', function () {
     }
 
     let numVariants = 10;
+    let wsFound = [], xsFound = [], ysFound = [], zsFound = [];
 
     cy.log("get unique values in first variants")
-    for (let ind = 0; ind < numVariants; ind++) {
+    for (let ind = 1; ind <= numVariants; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -736,10 +692,10 @@ describe('Specifying unique variant tests', function () {
         <text>${ind}</text>
         <variantControl uniquevariants nvariants="10" />
         <aslist>
-          <selectfromsequence type="letters" assignnames="w,x,y,z" numbertoselect="4" withreplacement>u,z</selectfromsequence>
+          <selectfromsequence type="letters" assignnames="w x y z" numbertoselect="4" withreplacement from="u" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -757,69 +713,17 @@ describe('Specifying unique variant tests', function () {
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
 
-      })
-    }
+        if (ind <= 6) {
+          wsFound.push(newW);
+          xsFound.push(newX);
+          ysFound.push(newY);
+          zsFound.push(newZ);
+        }
 
-
-    cy.log("values repeat in next variants")
-    for (let ind = numVariants; ind < 2 * numVariants + 3; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-        <text>${ind}</text>
-        <variantControl uniquevariants nvariants="10" />
-        <aslist>
-          <selectfromsequence type="letters" assignnames="w,x,y,z" numbertoselect="4" withreplacement>u,z</selectfromsequence>
-        </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        let newW = stateVariables['/w'].stateValues.value;
-        let newX = stateVariables['/x'].stateValues.value;
-        let newY = stateVariables['/y'].stateValues.value;
-        let newZ = stateVariables['/z'].stateValues.value;
-        let newValue = [newW, newX, newY, newZ].join(',')
-
-        expect(newValue).eq(valuesFound[ind % numVariants])
       })
     }
 
     cy.log("all individual options selected in first variants")
-    let wsFound = [], xsFound = [], ysFound = [], zsFound = [];
-    for (let ind = 0; ind < 6; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-        <text>${ind}</text>
-        <variantControl uniquevariants nvariants="10" />
-        <aslist>
-          <selectfromsequence type="letters" assignnames="w,x,y,z" numbertoselect="4" withreplacement>u,z</selectfromsequence>
-        </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        wsFound.push(stateVariables['/w'].stateValues.value);
-        xsFound.push(stateVariables['/x'].stateValues.value);
-        ysFound.push(stateVariables['/y'].stateValues.value);
-        zsFound.push(stateVariables['/z'].stateValues.value);
-      })
-    }
     cy.window().then(async (win) => {
       expect(wsFound.sort()).eqls(valuesSingle);
       expect(xsFound.sort()).eqls(valuesSingle);
@@ -827,31 +731,310 @@ describe('Specifying unique variant tests', function () {
       expect(zsFound.sort()).eqls(valuesSingle)
     })
 
+    cy.log("values repeat in next variants")
+    cy.reload();
+    for (let ind = numVariants + 1; ind <= 2 * numVariants + 3; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <variantControl uniquevariants nvariants="10" />
+        <aslist>
+          <selectfromsequence type="letters" assignnames="w x y z" numbertoselect="4" withreplacement from="u" to="z" />
+        </aslist>
+      `,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`);
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        let newW = stateVariables['/w'].stateValues.value;
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
+        let newZ = stateVariables['/z'].stateValues.value;
+        let newValue = [newW, newX, newY, newZ].join(',')
+
+        expect(newValue).eq(valuesFound[(ind - 1) % numVariants])
+      })
+    }
+
+
   });
 
-  it.skip('selects of selectfromsequence', () => {
+  it('selects of selectfromsequence', () => {
 
     let valuesFound = [];
     let values = [1, 2, 101, 102, 103, 201, 202, 203, 204];
     let numVariants = values.length;
 
     cy.log("get all values in first variants")
-    for (let ind = 0; ind < numVariants; ind++) {
+    for (let ind = 1; ind <= numVariants; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
-      <aslist>
-        <select assignnames="x">
-          <selectfromsequence assignnames="n">1,2</selectfromsequence>
-          <selectfromsequence assignnames="n">101,103</selectfromsequence>
-          <selectfromsequence assignnames="n">201,204</selectfromsequence>
-        </select>
-      </aslist>
+      <select assignnames="((x))">
+        <option>
+          <selectfromsequence from="1" to="2" />
+        </option>
+        <option>
+          <selectfromsequence from="101" to="103" />
+        </option>
+        <option>
+          <selectfromsequence from="201" to="204" />
+        </option>
+      </select>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`);
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x'].stateValues.value;
+        expect(values.includes(newValue)).eq(true);
+        expect(valuesFound.includes(newValue)).eq(false);
+        valuesFound.push(newValue);
+
+        if (ind === 3) {
+          cy.log("all individual groups selected in first variants")
+          cy.window().then(async (win) => {
+            expect(valuesFound.some(x => x <= 2)).eq(true);
+            expect(valuesFound.some(x => x >= 101 && x <= 103)).eq(true);
+            expect(valuesFound.some(x => x >= 201 && x <= 204)).eq(true);
+          })
+        }
+
+        if (ind === 6) {
+          cy.log("all individual groups selected twice in first variants")
+          cy.window().then(async (win) => {
+            expect(valuesFound.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(2);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(2);
+          })
+        }
+
+        if (ind === 8) {
+          cy.log("most individual groups selected three times in first variants")
+          cy.window().then(async (win) => {
+            expect(valuesFound.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(3);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(3);
+          })
+        }
+
+      })
+    }
+
+
+    cy.log("values repeat in next variants")
+    cy.reload();
+    for (let ind = numVariants + 1; ind <= numVariants + 25; ind += 5) {
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+      <text>${ind}</text>
+      <variantControl uniquevariants />
+      <select assignnames="((x))">
+        <option>
+          <selectfromsequence from="1" to="2" />
+        </option>
+        <option>
+          <selectfromsequence from="101" to="103" />
+        </option>
+        <option>
+          <selectfromsequence from="201" to="204" />
+        </option>
+      </select>
+      `,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`);
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x'].stateValues.value;
+        expect(newValue).eq(valuesFound[(ind - 1) % numVariants])
+
+      })
+    }
+
+  });
+
+  it('selects of selects', () => {
+
+    let valuesFound = [];
+    let values = [1, 2, 101, 102, 103, 201, 202, 203, 204];
+    let numVariants = values.length;
+
+    cy.log("get all values in first variants")
+    for (let ind = 1; ind <= numVariants; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+      <text>${ind}</text>
+      <variantControl uniquevariants />
+      <select assignnames="((x))">
+        <option>
+          <select>1 2</select>
+        </option>
+        <option>
+          <select>101 102 103</select>
+        </option>
+        <option>
+          <select>201 202 203 204</select>
+        </option>
+      </select>
+      `,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`);
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x'].stateValues.value;
+        expect(values.includes(newValue)).eq(true);
+        expect(valuesFound.includes(newValue)).eq(false);
+        valuesFound.push(newValue);
+
+        if (ind === 3) {
+          cy.log("all individual groups selected in first variants")
+          cy.window().then(async (win) => {
+            expect(valuesFound.some(x => x <= 2)).eq(true);
+            expect(valuesFound.some(x => x >= 101 && x <= 103)).eq(true);
+            expect(valuesFound.some(x => x >= 201 && x <= 204)).eq(true);
+          })
+        }
+
+        if (ind === 6) {
+          cy.log("all individual groups selected twice in first variants")
+          cy.window().then(async (win) => {
+            expect(valuesFound.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(2);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(2);
+          })
+        }
+
+        if (ind === 8) {
+          cy.log("most individual groups selected three times in first variants")
+          cy.window().then(async (win) => {
+            expect(valuesFound.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(3);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(3);
+          })
+        }
+
+      })
+    }
+
+
+    cy.log("values repeat in next variants")
+    cy.reload();
+    for (let ind = numVariants + 1; ind <= numVariants + 25; ind += 5) {
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+      <text>${ind}</text>
+      <variantControl uniquevariants />
+      <select assignnames="((x))">
+        <option>
+          <select>1 2</select>
+        </option>
+        <option>
+          <select>101 102 103</select>
+        </option>
+        <option>
+          <select>201 202 203 204</select>
+        </option>
+      </select>
+      `,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`);
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        let newValue = stateVariables['/x'].stateValues.value;
+        expect(newValue).eq(valuesFound[(ind - 1) % numVariants])
+
+      })
+    }
+
+  });
+
+  it('selects of paragraphs of selects/selectfromsequence', () => {
+
+    let valuesFound = [];
+    let values = [1, 2, 101, 102, 103, 201, 202, 203, 204];
+    let numVariants = values.length;
+
+    cy.log("get all values in first variants")
+    for (let ind = 1; ind <= numVariants; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+      <text>${ind}</text>
+      <variantControl uniquevariants />
+      <select assignnames="x">
+        <option newNamespace>
+          <p><select assignnames="n">1 2</select></p>
+        </option>
+        <option newNamespace>
+         <p><selectfromsequence assignnames="n" from="101" to="103"/></p>
+        </option>
+        <option newNamespace>
+          <p><select assignnames="n">201 202 203 204</select></p>
+        </option>
+      </select>
+      `,
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -865,27 +1048,59 @@ describe('Specifying unique variant tests', function () {
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
 
+        if (ind === 3) {
+          cy.log("all individual groups selected in first variants")
+          cy.window().then(async (win) => {
+            expect(valuesFound.some(x => x <= 2)).eq(true);
+            expect(valuesFound.some(x => x >= 101 && x <= 103)).eq(true);
+            expect(valuesFound.some(x => x >= 201 && x <= 204)).eq(true);
+          })
+        }
+
+        if (ind === 6) {
+          cy.log("all individual groups selected twice in first variants")
+          cy.window().then(async (win) => {
+            expect(valuesFound.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(2);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(2);
+          })
+        }
+
+        if (ind === 8) {
+          cy.log("most individual groups selected three times in first variants")
+          cy.window().then(async (win) => {
+            expect(valuesFound.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(3);
+            expect(valuesFound.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(3);
+          })
+        }
+
       })
     }
 
 
     cy.log("values repeat in next variants")
-    for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
+    cy.reload();
+    for (let ind = numVariants + 1; ind <= numVariants + 25; ind += 5) {
 
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
       <variantControl uniquevariants />
-      <aslist>
-        <select assignnames="x">
-          <selectfromsequence assignnames="n">1,2</selectfromsequence>
-          <selectfromsequence assignnames="n">101,103</selectfromsequence>
-          <selectfromsequence assignnames="n">201,204</selectfromsequence>
-        </select>
-      </aslist>
+      <select assignnames="x">
+        <option newNamespace>
+          <p><select assignnames="n">1 2</select></p>
+        </option>
+        <option newNamespace>
+         <p><selectfromsequence assignnames="n" from="101" to="103"/></p>
+        </option>
+        <option newNamespace>
+          <p><select assignnames="n">201 202 203 204</select></p>
+        </option>
+      </select>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -895,459 +1110,14 @@ describe('Specifying unique variant tests', function () {
 
         let stateVariables = await win.returnAllStateVariables1();
         let newValue = stateVariables['/x/n'].stateValues.value;
-        expect(newValue).eq(valuesFound[ind % numVariants])
+        expect(newValue).eq(valuesFound[(ind - 1) % numVariants])
+
       })
     }
-
-    cy.log("all individual groups selected in first variants")
-    let valuesFound2 = [];
-    for (let ind = 0; ind < 3; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <aslist>
-        <select assignnames="x">
-          <selectfromsequence assignnames="n">1,2</selectfromsequence>
-          <selectfromsequence assignnames="n">101,103</selectfromsequence>
-          <selectfromsequence assignnames="n">201,204</selectfromsequence>
-        </select>
-      </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(valuesFound2.some(x => x <= 2)).eq(true);
-      expect(valuesFound2.some(x => x >= 101 && x <= 103)).eq(true);
-      expect(valuesFound2.some(x => x >= 201 && x <= 204)).eq(true);
-    })
-
-    cy.log("all individual groups selected twice in first variants")
-    for (let ind = 3; ind < 6; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <aslist>
-        <select assignnames="x">
-          <selectfromsequence assignnames="n">1,2</selectfromsequence>
-          <selectfromsequence assignnames="n">101,103</selectfromsequence>
-          <selectfromsequence assignnames="n">201,204</selectfromsequence>
-        </select>
-      </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(2);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(2);
-    })
-
-
-    cy.log("most individual groups selected three times in first variants")
-    for (let ind = 6; ind < 8; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <aslist>
-        <select assignnames="x">
-          <selectfromsequence assignnames="n">1,2</selectfromsequence>
-          <selectfromsequence assignnames="n">101,103</selectfromsequence>
-          <selectfromsequence assignnames="n">201,204</selectfromsequence>
-        </select>
-      </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(3);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(3);
-    })
 
   });
 
-  it.skip('selects of selects', () => {
-
-    let valuesFound = [];
-    let values = [1, 2, 101, 102, 103, 201, 202, 203, 204];
-    let numVariants = values.length;
-
-    cy.log("get all values in first variants")
-    for (let ind = 0; ind < numVariants; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <aslist>
-        <select assignnames="x">
-          <select assignnames="n">1,2</select>
-          <select assignnames="n">101,102,103</select>
-          <select assignnames="n">201,202,203,204</select>
-        </select>
-      </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        let newValue = stateVariables['/x/n'].stateValues.value;
-        expect(values.includes(newValue)).eq(true);
-        expect(valuesFound.includes(newValue)).eq(false);
-        valuesFound.push(newValue);
-
-      })
-    }
-
-
-    cy.log("values repeat in next variants")
-    for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <aslist>
-        <select assignnames="x">
-          <select assignnames="n">1,2</select>
-          <select assignnames="n">101,102,103</select>
-          <select assignnames="n">201,202,203,204</select>
-        </select>
-      </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        let newValue = stateVariables['/x/n'].stateValues.value;
-        expect(newValue).eq(valuesFound[ind % numVariants])
-      })
-    }
-
-    cy.log("all individual groups selected in first variants")
-    let valuesFound2 = [];
-    for (let ind = 0; ind < 3; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <aslist>
-        <select assignnames="x">
-          <select assignnames="n">1,2</select>
-          <select assignnames="n">101,102,103</select>
-          <select assignnames="n">201,202,203,204</select>
-        </select>
-      </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(valuesFound2.some(x => x <= 2)).eq(true);
-      expect(valuesFound2.some(x => x >= 101 && x <= 103)).eq(true);
-      expect(valuesFound2.some(x => x >= 201 && x <= 204)).eq(true);
-    })
-
-    cy.log("all individual groups selected twice in first variants")
-    for (let ind = 3; ind < 6; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <aslist>
-        <select assignnames="x">
-          <select assignnames="n">1,2</select>
-          <select assignnames="n">101,102,103</select>
-          <select assignnames="n">201,202,203,204</select>
-        </select>
-      </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(2);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(2);
-    })
-
-
-    cy.log("most individual groups selected three times in first variants")
-    for (let ind = 6; ind < 8; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <aslist>
-        <select assignnames="x">
-          <select assignnames="n">1,2</select>
-          <select assignnames="n">101,102,103</select>
-          <select assignnames="n">201,202,203,204</select>
-        </select>
-      </aslist>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        valuesFound2.push(stateVariables['/x/n'].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(3);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(3);
-    })
-
-  });
-
-  it.skip('selects of paragraphs of selects/selectfromsequence', () => {
-
-    let valuesFound = [];
-    let values = [1, 2, 101, 102, 103, 201, 202, 203, 204];
-    let numVariants = values.length;
-
-    cy.log("get all values in first variants")
-    for (let ind = 0; ind < numVariants; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <select assignnames="x">
-        <p><select assignnames="n">1,2</select></p>
-        <p><selectfromsequence assignnames="n">101,103</selectfromsequence></p>
-        <p><select assignnames="n">201,202,203,204</select></p>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        let newValue = stateVariables['/x'].activeChildren[0].stateValues.value;
-        expect(values.includes(newValue)).eq(true);
-        expect(valuesFound.includes(newValue)).eq(false);
-        valuesFound.push(newValue);
-
-      })
-    }
-
-
-    cy.log("values repeat in next variants")
-    for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <select assignnames="x">
-        <p><select assignnames="n">1,2</select></p>
-        <p><selectfromsequence assignnames="n">101,103</selectfromsequence></p>
-        <p><select assignnames="n">201,202,203,204</select></p>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        let newValue = stateVariables['/x'].activeChildren[0].stateValues.value;
-        expect(newValue).eq(valuesFound[ind % numVariants])
-      })
-    }
-
-    cy.log("all individual groups selected in first variants")
-    let valuesFound2 = [];
-    for (let ind = 0; ind < 3; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <select assignnames="x">
-        <p><select assignnames="n">1,2</select></p>
-        <p><selectfromsequence assignnames="n">101,103</selectfromsequence></p>
-        <p><select assignnames="n">201,202,203,204</select></p>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        valuesFound2.push(stateVariables['/x'].activeChildren[0].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(valuesFound2.some(x => x <= 2)).eq(true);
-      expect(valuesFound2.some(x => x >= 101 && x <= 103)).eq(true);
-      expect(valuesFound2.some(x => x >= 201 && x <= 204)).eq(true);
-    })
-
-    cy.log("all individual groups selected twice in first variants")
-    for (let ind = 3; ind < 6; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <select assignnames="x">
-        <p><select assignnames="n">1,2</select></p>
-        <p><selectfromsequence assignnames="n">101,103</selectfromsequence></p>
-        <p><select assignnames="n">201,202,203,204</select></p>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        valuesFound2.push(stateVariables['/x'].activeChildren[0].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(2);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(2);
-    })
-
-
-    cy.log("most individual groups selected three times in first variants")
-    for (let ind = 6; ind < 8; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl uniquevariants />
-      <select assignnames="x">
-        <p><select assignnames="n">1,2</select></p>
-        <p><selectfromsequence assignnames="n">101,103</selectfromsequence></p>
-        <p><select assignnames="n">201,202,203,204</select></p>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        valuesFound2.push(stateVariables['/x'].activeChildren[0].stateValues.value);
-      })
-    }
-    cy.window().then(async (win) => {
-      expect(valuesFound2.reduce((a, c) => a + ((c <= 2) ? 1 : 0), 0)).eq(2);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 101 && c <= 103) ? 1 : 0), 0)).eq(3);
-      expect(valuesFound2.reduce((a, c) => a + ((c >= 201 && c <= 204) ? 1 : 0), 0)).eq(3);
-    })
-
-  });
-
-  it.skip('selects of selects, select multiple', () => {
+  it('selects of selects, select multiple', () => {
 
     let valuesFound = [];
     let valuesSingle = [1, 2, 101, 102, 103, 201, 202, 203, 204];
@@ -1362,7 +1132,13 @@ describe('Specifying unique variant tests', function () {
     let numVariants = values.length;
 
     cy.log("get unique values in first variants")
-    for (let ind = 0; ind < 20; ind++) {
+    for (let ind = 1; ind <= 20; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -1370,14 +1146,20 @@ describe('Specifying unique variant tests', function () {
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
-        <select assignnames="x,y" numbertoselect="2">
-          <select assignnames="n">1,2</select>
-          <select assignnames="n">101,102,103</select>
-          <select assignnames="n">201,202,203,204</select>
+        <select assignnames="((x)) ((y))" numberToSelect="2">
+          <option>
+            <select>1 2</select>
+          </option>
+          <option>
+            <select>101 102 103</select>
+          </option>
+          <option>
+            <select>201 202 203 204</select>
+          </option>
         </select>
       </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -1386,8 +1168,8 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
 
         let stateVariables = await win.returnAllStateVariables1();
-        let newX = stateVariables['/x/n'].stateValues.value;
-        let newY = stateVariables['/y/n'].stateValues.value;
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
         let newValue = [newX, newY].join(',');
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
@@ -1398,7 +1180,8 @@ describe('Specifying unique variant tests', function () {
 
 
     cy.log("values repeat in next variants")
-    for (let ind = numVariants; ind < numVariants + 20; ind += 5) {
+    cy.reload();
+    for (let ind = numVariants + 1; ind <= numVariants + 20; ind += 5) {
 
       cy.window().then(async (win) => {
         win.postMessage({
@@ -1406,14 +1189,20 @@ describe('Specifying unique variant tests', function () {
       <text>${ind}</text>
       <variantControl uniquevariants />
       <aslist>
-        <select assignnames="x,y" numbertoselect="2">
-          <select assignnames="n">1,2</select>
-          <select assignnames="n">101,102,103</select>
-          <select assignnames="n">201,202,203,204</select>
+        <select assignnames="((x)) ((y))" numberToSelect="2">
+          <option>
+            <select>1 2</select>
+          </option>
+          <option>
+            <select>101 102 103</select>
+          </option>
+          <option>
+            <select>201 202 203 204</select>
+          </option>
         </select>
       </aslist>
       `,
-          requestedVariant: { index: [ind] },
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -1422,10 +1211,10 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
 
         let stateVariables = await win.returnAllStateVariables1();
-        let newX = stateVariables['/x/n'].stateValues.value;
-        let newY = stateVariables['/y/n'].stateValues.value;
+        let newX = stateVariables['/x'].stateValues.value;
+        let newY = stateVariables['/y'].stateValues.value;
         let newValue = [newX, newY].join(',');
-        expect(newValue).eq(valuesFound[ind % numVariants])
+        expect(newValue).eq(valuesFound[(ind - 1) % numVariants])
       })
     }
 
@@ -1433,7 +1222,13 @@ describe('Specifying unique variant tests', function () {
     let valuesFound1 = [];
     let valuesFound2 = [];
     for (let pass = 0; pass < 12; pass++) {
-      for (let ind = pass * 3; ind < (pass + 1) * 3; ind++) {
+      for (let ind = pass * 3 + 1; ind <= (pass + 1) * 3; ind++) {
+
+        // reload every 10 times to keep it from slowing down
+        // (presumably due to garbage collecting)
+        if (ind % 10 === 0) {
+          cy.reload();
+        }
 
         cy.window().then(async (win) => {
           win.postMessage({
@@ -1441,14 +1236,20 @@ describe('Specifying unique variant tests', function () {
         <text>${ind}</text>
         <variantControl uniquevariants />
         <aslist>
-          <select assignnames="x,y" numbertoselect="2">
-            <select assignnames="n">1,2</select>
-            <select assignnames="n">101,102,103</select>
-            <select assignnames="n">201,202,203,204</select>
+          <select assignnames="((x)) ((y))" numberToSelect="2">
+            <option>
+              <select>1 2</select>
+            </option>
+            <option>
+              <select>101 102 103</select>
+            </option>
+            <option>
+              <select>201 202 203 204</select>
+            </option>
           </select>
         </aslist>
         `,
-            requestedVariant: { index: [ind] },
+            requestedVariant: { index: ind },
           }, "*");
         })
         // to wait for page to load
@@ -1457,8 +1258,8 @@ describe('Specifying unique variant tests', function () {
         cy.window().then(async (win) => {
 
           let stateVariables = await win.returnAllStateVariables1();
-          valuesFound1.push(stateVariables['/x/n'].stateValues.value);
-          valuesFound2.push(stateVariables['/y/n'].stateValues.value);
+          valuesFound1.push(stateVariables['/x'].stateValues.value);
+          valuesFound2.push(stateVariables['/y'].stateValues.value);
         })
       }
       cy.window().then(async (win) => {
@@ -1473,7 +1274,44 @@ describe('Specifying unique variant tests', function () {
 
   });
 
-  it.skip('deeper nesting of selects/selectfromsequence', () => {
+  it('deeper nesting of selects/selectfromsequence', () => {
+
+    let doenetML = `
+    <variantControl nvariants="24" uniquevariants/>
+    <select assignnames="(p)">
+      <option>
+        <p>Favorite color:
+          <select>
+            <option>
+              <select type="text">red orange yellow magenta maroon fuchsia scarlet</select>
+            </option>
+            <option>
+              <select type="text">green chartreuse turquoise</select>
+            </option>
+            <option>
+              <select type="text">white black</select>
+            </option>
+          </select>
+        </p>
+      </option>
+      <option>
+        <p>Selected number:
+          <select>
+            <option><selectfromsequence from="1000" to="2000" /></option>
+            <option><selectfromsequence from="-1000" to="-900" /></option>
+          </select>
+        </p>
+      </option>
+      <option>
+        <p>Chosen letter: <selectfromsequence type="letters" from="a" to="z" /></p>
+      </option>
+      <option>
+        <p>Variable:
+          <select>u v w x y z</select>
+        </p>
+      </option>
+    </select>
+    `
 
     let valuesFound = [];
 
@@ -1481,9 +1319,6 @@ describe('Specifying unique variant tests', function () {
     let colorsB = ["green", "chartreuse", "turquoise"];
     let colorsC = ["white", "black"];
     let allColors = [...colorsA, ...colorsB, ...colorsC];
-    let colorsFound = [];
-
-    let numbersFound = [];
 
     let letters = [...Array(26)].map((_, i) => String.fromCharCode('a'.charCodeAt(0) + i));
 
@@ -1493,50 +1328,25 @@ describe('Specifying unique variant tests', function () {
 
     let numVariants = 24;
 
+    let colorsFound = [];
+    let numbersFound = [];
+    let lettersFound = [];
+    let variablesFound = [];
+    let categoriesFound = [];
+
     cy.log("get all values in first variants")
-    for (let ind = 0; ind < numVariants; ind++) {
+    for (let ind = 1; ind <= numVariants; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl nvariants="24" uniquevariants/>
-      <select assignnames="p">
-        <p>Favorite color:
-          <select>
-            <select>
-              <text>red</text>
-              <text>orange</text>
-              <text>yellow</text>
-              <text>magenta</text>
-              <text>maroon</text>
-              <text>fuchsia</text>
-              <text>scarlet</text>
-            </select>
-            <select>
-              <text>green</text>
-              <text>chartreuse</text>
-              <text>turquoise</text>
-            </select>
-            <select>
-              <text>white</text>
-              <text>black</text>
-            </select>
-          </select>
-        </p>
-        <p>Selected number:
-          <select>
-            <selectfromsequence>1000, 2000</selectfromsequence>
-            <selectfromsequence>-1000,-900</selectfromsequence>
-          </select>
-        </p>
-        <p>Chosen letter: <selectfromsequence type="letters">z</selectfromsequence></p>
-        <p>Variable:
-        <select>u,v,w,x,y,z</select>
-        </p>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
+          doenetML: `<text>${ind}</text>${doenetML}`,
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -1545,14 +1355,11 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
 
         let stateVariables = await win.returnAllStateVariables1();
-        let category = stateVariables['/p'].activeChildren[0].stateValues.value.trim();
+        let category = stateVariables['/p'].activeChildren[0].trim();
         expect(categories.includes(category)).eq(true);
 
-        let component = stateVariables['/p'].activeChildren[1];
-        let newValue = component.state.value;
-        if (typeof newValue !== "string") {
-          newValue = component.state.value;
-        }
+        let component = stateVariables[stateVariables['/p'].activeChildren.filter(x => x.componentName)[0].componentName];
+        let newValue = component.stateValues.value;
         if (category === categories[0]) {
           expect(allColors.includes(newValue)).eq(true);
           colorsFound.push(newValue);
@@ -1565,8 +1372,10 @@ describe('Specifying unique variant tests', function () {
           numbersFound.push(newValue);
         } else if (category === categories[2]) {
           expect(letters.includes(newValue)).eq(true);
+          lettersFound.push(newValue);
         } else {
           expect(variables.includes(newValue)).eq(true);
+          variablesFound.push(newValue);
         }
 
         let combinedValue = [category, newValue].join(",");
@@ -1574,9 +1383,30 @@ describe('Specifying unique variant tests', function () {
         expect(valuesFound.includes(combinedValue)).eq(false);
         valuesFound.push(combinedValue);
 
+        categoriesFound.push(category);
+
+        if (ind === 4) {
+          cy.log("all individual groups selected in first variants")
+          cy.window().then(async (win) => {
+            for (let ind = 0; ind < 4; ind++) {
+              expect(categoriesFound.includes(categories[ind])).eq(true);
+            }
+          })
+        }
+
+        if (ind === 8) {
+          cy.log("all individual groups selected twice in first variants")
+          cy.window().then(async (win) => {
+            for (let ind = 0; ind < 4; ind++) {
+              expect(categoriesFound.slice(4, 8).includes(categories[ind])).eq(true);
+            }
+          })
+        }
+
       })
     }
 
+    cy.log('the 24 values are distributed 6 to each category and evenly distributed across subcategories')
     cy.window().then(async (win) => {
       let colorsFoundSet = new Set(colorsFound);
       expect(colorsFoundSet.size).eq(6);
@@ -1587,53 +1417,22 @@ describe('Specifying unique variant tests', function () {
       expect(numbersFound.reduce((a, c) => a + ((c > 0 ? 1 : 0)), 0)).eq(3)
       expect(numbersFound.reduce((a, c) => a + ((c < 0 ? 1 : 0)), 0)).eq(3)
 
+      expect(lettersFound.length).eq(6);
+      expect(variablesFound.length).eq(6);
+
+      expect(variablesFound.sort()).eqls(variables);
+
     });
 
 
     cy.log("values repeat in next variants")
-    for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
+    cy.reload();
+    for (let ind = numVariants + 1; ind <= numVariants + 25; ind += 5) {
 
       cy.window().then(async (win) => {
         win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl nvariants="24" uniquevariants/>
-      <select assignnames="p">
-        <p>Favorite color:
-          <select>
-            <select>
-              <text>red</text>
-              <text>orange</text>
-              <text>yellow</text>
-              <text>magenta</text>
-              <text>maroon</text>
-              <text>fuchsia</text>
-              <text>scarlet</text>
-            </select>
-            <select>
-              <text>green</text>
-              <text>chartreuse</text>
-              <text>turquoise</text>
-            </select>
-            <select>
-              <text>white</text>
-              <text>black</text>
-            </select>
-          </select>
-        </p>
-        <p>Selected number:
-          <select>
-            <selectfromsequence>1000, 2000</selectfromsequence>
-            <selectfromsequence>-1000,-900</selectfromsequence>
-          </select>
-        </p>
-        <p>Chosen letter: <selectfromsequence type="letters">z</selectfromsequence></p>
-        <p>Variable:
-        <select>u,v,w,x,y,z</select>
-        </p>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
+          doenetML: `<text>${ind}</text>${doenetML}`,
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
@@ -1642,248 +1441,131 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
 
         let stateVariables = await win.returnAllStateVariables1();
-        let category = stateVariables['/p'].activeChildren[0].stateValues.value.trim();
-        let component = stateVariables['/p'].activeChildren[1];
-        let newValue = component.state.value;
-        if (typeof newValue !== "string") {
-          newValue = component.state.value;
-        }
+        let category = stateVariables['/p'].activeChildren[0].trim();
+        let component = stateVariables[stateVariables['/p'].activeChildren.filter(x => x.componentName)[0].componentName];
+        let newValue = component.stateValues.value;
         let combinedValue = [category, newValue].join(",");
-        expect(combinedValue).eq(valuesFound[ind % numVariants])
+        expect(combinedValue).eq(valuesFound[(ind - 1) % numVariants])
       })
     }
-
-    cy.log("all individual groups selected in first variants")
-    let categoriesFound = [];
-    for (let ind = 0; ind < 4; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl nvariants="24" uniquevariants/>
-      <select assignnames="p">
-        <p>Favorite color:
-          <select>
-            <select>
-              <text>red</text>
-              <text>orange</text>
-              <text>yellow</text>
-              <text>magenta</text>
-              <text>maroon</text>
-              <text>fuchsia</text>
-              <text>scarlet</text>
-            </select>
-            <select>
-              <text>green</text>
-              <text>chartreuse</text>
-              <text>turquoise</text>
-            </select>
-            <select>
-              <text>white</text>
-              <text>black</text>
-            </select>
-          </select>
-        </p>
-        <p>Selected number:
-          <select>
-            <selectfromsequence>1000, 2000</selectfromsequence>
-            <selectfromsequence>-1000,-900</selectfromsequence>
-          </select>
-        </p>
-        <p>Chosen letter: <selectfromsequence type="letters">z</selectfromsequence></p>
-        <p>Variable:
-        <select>u,v,w,x,y,z</select>
-        </p>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        categoriesFound.push(stateVariables['/p'].activeChildren[0].stateValues.value.trim());
-      })
-    }
-    cy.window().then(async (win) => {
-      for (let ind = 0; ind < 4; ind++) {
-        expect(categoriesFound.includes(categories[ind])).eq(true);
-      }
-    })
-
-    cy.log("all individual groups selected twice in first variants")
-    for (let ind = 4; ind < 8; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl nvariants="24" uniquevariants/>
-      <select assignnames="p">
-        <p>Favorite color:
-          <select>
-            <select>
-              <text>red</text>
-              <text>orange</text>
-              <text>yellow</text>
-              <text>magenta</text>
-              <text>maroon</text>
-              <text>fuchsia</text>
-              <text>scarlet</text>
-            </select>
-            <select>
-              <text>green</text>
-              <text>chartreuse</text>
-              <text>turquoise</text>
-            </select>
-            <select>
-              <text>white</text>
-              <text>black</text>
-            </select>
-          </select>
-        </p>
-        <p>Selected number:
-          <select>
-            <selectfromsequence>1000, 2000</selectfromsequence>
-            <selectfromsequence>-1000,-900</selectfromsequence>
-          </select>
-        </p>
-        <p>Chosen letter: <selectfromsequence type="letters">z</selectfromsequence></p>
-        <p>Variable:
-        <select>u,v,w,x,y,z</select>
-        </p>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        categoriesFound[ind - 4] = stateVariables['/p'].activeChildren[0].stateValues.value.trim();
-      })
-    }
-    cy.window().then(async (win) => {
-      for (let ind = 0; ind < 4; ind++) {
-        expect(categoriesFound.includes(categories[ind])).eq(true);
-      }
-    })
 
   });
 
-  it.skip('select problems of selects/selectfromsequence', () => {
+  it('select problems of selects/selectfromsequence', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    let doenetML = `
+    <variantControl nvariants="6" uniquevariants/>
+    <select assignnames="(problem)">
+      <option>
+        <problem newNamespace><title>Favorite color</title>
+          <select assignNames="(p)">
+            <option>
+              <p newNamespace>I like 
+                <select type="text" assignNames="color">red orange yellow magenta maroon fuchsia scarlet</select>
+              </p>
+            </option>
+            <option>
+              <p newNamespace>You like
+                <select type="text" assignNames="color">green chartreuse turquoise</select>
+              </p>
+            </option>
+          </select>
+          <p>Enter the color $(p/color): <answer name="ans" type="text">$(p/color)</answer></p>
+        </problem>
+      </option>
+      <option>
+        <problem newNamespace><title>Selected word</title>
+          <select assignNames="(p)">
+            <option><p newNamespace>Verb: <select type="text" assignNames="word">run walk jump skip</select></p></option>
+            <option><p newNamespace>Adjective: <select type="text" assignNames="word">soft scary large empty residual limitless</select></p></option>
+          </select>
+          <p>Enter the word $(p/word): <answer name="ans" type="text">$(p/word)</answer></p>
+        </problem>
+      </option>
+      <option>
+        <problem newNamespace><title>Chosen letter</title>
+          <p>Letter
+            <selectfromsequence  assignNames="l" type="letters" from="a" to="z" />
+          </p>
+          <p>Enter the letter $l: <answer name="ans" type="text">$l</answer></p>
+        </problem>
+      </option>
+    </select>
+    `
 
     let valuesFound = [];
 
     let colorsA = ["red", "orange", "yellow", "magenta", "maroon", "fuchsia", "scarlet"];
     let colorsB = ["green", "chartreuse", "turquoise"];
-    let colorsC = ["white", "black"];
-    let allColors = [...colorsA, ...colorsB, ...colorsC];
-    let colorsFound = [];
+    let allColors = [...colorsA, ...colorsB];
 
-    let numbersFound = [];
+    let wordsA = ["run", "walk", "jump", "skip"];
+    let wordsB = ["soft", "scary", "large", "empty", "residual", "limitless"];
+    let allWords = [...wordsA, ...wordsB];
 
     let letters = [...Array(26)].map((_, i) => String.fromCharCode('a'.charCodeAt(0) + i));
 
-    let variables = ["u", "v", "w", "x", "y", "z"];
+    let categories = ["Favorite color", "Selected word", "Chosen letter"];
 
-    let categories = ["Favorite color", "Selected number", "Chosen letter", "Variable"];
+    let numVariants = 6;
 
-    let numVariants = 24;
+    let categoriesFound = [];
+    let colorsFound = [];
+    let wordsFound = [];
+    let lettersFound = [];
 
     cy.log("get all values in first variants")
-    for (let ind = 0; ind < numVariants; ind++) {
+    for (let ind = 1; ind <= numVariants; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
+        cy.reload();
+      }
 
       cy.window().then(async (win) => {
         win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl nvariants="24" uniquevariants/>
-      <select assignnames="problem">
-        <problem><title>Favorite color</title>
-          <select><p>I like 
-            <select>
-              <text>red</text>
-              <text>orange</text>
-              <text>yellow</text>
-              <text>magenta</text>
-              <text>maroon</text>
-              <text>fuchsia</text>
-              <text>scarlet</text>
-            </select>
-          </p>
-          <p>You like
-            <select>
-              <text>green</text>
-              <text>chartreuse</text>
-              <text>turquoise</text>
-            </select>
-          </p>
-          <p>They like
-            <select>
-              <text>white</text>
-              <text>black</text>
-            </select>
-          </p>
-          </select>
-        </problem>
-        <problem><title>Selected number</title>
-          <select>
-            <p>Positive: <selectfromsequence>1000, 2000</selectfromsequence></p>
-            <p>Negative: <selectfromsequence>-1000,-900</selectfromsequence></p>
-          </select>
-        </problem>
-        <problem><title>Chosen letter</title>
-          <p>Letter
-            <selectfromsequence type="letters">z</selectfromsequence>
-          </p>
-        </problem>
-        <problem><title>Variable</title>
-        <p>Let
-          <select>u,v,w,x,y,z</select>
-          be the temperature at time <m>t</m>.
-        </p>
-        </problem>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
+          doenetML: `<text>${ind}</text>${doenetML}`,
+          requestedVariant: { index: ind },
         }, "*");
       })
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
+      let category, newValue;
+
+
+      let textinputName;
+
+
       cy.window().then(async (win) => {
 
         let stateVariables = await win.returnAllStateVariables1();
-        let category = stateVariables['/problem'].stateValues.title;
+
+        textinputName = stateVariables[`/problem/ans`].stateValues.inputChildren[0].componentName;
+        category = stateVariables['/problem'].stateValues.title;
         expect(categories.includes(category)).eq(true);
 
-        let component = stateVariables['/problem'].activeChildren[2].activeChildren[1];
-        let newValue = component.state.value;
-        if (typeof newValue !== "string") {
-          newValue = component.state.value;
-        }
+        let component = stateVariables[stateVariables[stateVariables['/problem'].activeChildren.filter(x => x.componentName)[1].componentName].activeChildren[1].componentName];
+        newValue = component.stateValues.value;
         if (category === categories[0]) {
           expect(allColors.includes(newValue)).eq(true);
           colorsFound.push(newValue);
+
+
         } else if (category === categories[1]) {
-          let validNum = Number.isInteger(newValue) && (
-            (newValue >= 1000 && newValue <= 2000) ||
-            (newValue >= -1000 && newValue <= -900)
-          )
-          expect(validNum).eq(true);
-          numbersFound.push(newValue);
+          expect(allWords.includes(newValue)).eq(true);
+          wordsFound.push(newValue);
         } else if (category === categories[2]) {
           expect(letters.includes(newValue)).eq(true);
-        } else {
-          expect(variables.includes(newValue)).eq(true);
+          lettersFound.push(newValue);
         }
 
         let combinedValue = [category, newValue].join(",");
@@ -1891,80 +1573,136 @@ describe('Specifying unique variant tests', function () {
         expect(valuesFound.includes(combinedValue)).eq(false);
         valuesFound.push(combinedValue);
 
+
+        categoriesFound.push(category);
+
+        if (ind === 3) {
+          cy.log("all individual groups selected in first variants")
+          cy.window().then(async (win) => {
+            for (let ind = 0; ind < 3; ind++) {
+              expect(categoriesFound.includes(categories[ind])).eq(true);
+            }
+          })
+        }
+
+        if (ind === 6) {
+          cy.log("all individual groups selected twice in first variants")
+          cy.window().then(async (win) => {
+            for (let ind = 0; ind < 3; ind++) {
+              expect(categoriesFound.slice(3).includes(categories[ind])).eq(true);
+            }
+          })
+        }
+
       })
+
+
+      cy.window().then(async (win) => {
+        let textinputAnchor = cesc('#' + textinputName) + "_input";
+        let answerCorrect = cesc('#' + textinputName + "_correct");
+        let answerIncorrect = cesc('#' + textinputName + "_incorrect");
+        let answerSubmit = cesc('#' + textinputName + "_submit");
+
+        cy.get(textinputAnchor).type(`${newValue}{enter}`);
+
+        cy.get(answerCorrect).should('be.visible');
+
+        cy.window().then(async (win) => {
+
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/problem/ans"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/problem/ans"].stateValues.submittedResponses).eqls([newValue]);
+          expect(stateVariables[textinputName].stateValues.value).eq(newValue)
+
+        });
+
+        cy.wait(2000);  // wait for 1 second debounce
+
+        cy.reload();
+
+        cy.window().then(async (win) => {
+          win.postMessage({
+            doenetML: `<text>${ind}</text>${doenetML}`,
+            requestedVariant: { index: ind },
+          }, "*");
+        })
+        // to wait for page to load
+        cy.get('#\\/_text1').should('have.text', `${ind}`);
+
+        // wait until core is loaded
+        cy.waitUntil(() => cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          return stateVariables["/problem/ans"];
+        }))
+
+        cy.get(answerCorrect).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/problem/ans"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/problem/ans"].stateValues.submittedResponses).eqls([newValue]);
+          expect(stateVariables[textinputName].stateValues.value).eq(newValue)
+        });
+
+
+        cy.get(textinputAnchor).type(`{end}X`);
+        cy.get(answerSubmit).click()
+        cy.get(answerIncorrect).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/problem/ans"].stateValues.creditAchieved).eq(0);
+          expect(stateVariables["/problem/ans"].stateValues.submittedResponses).eqls([newValue + "X"]);
+          expect(stateVariables[textinputName].stateValues.value).eq(newValue + "X")
+        });
+
+        cy.get(textinputAnchor).type(`{end}{backspace}`);
+        cy.get(answerSubmit).click()
+        cy.get(answerCorrect).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/problem/ans"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/problem/ans"].stateValues.submittedResponses).eqls([newValue]);
+          expect(stateVariables[textinputName].stateValues.value).eq(newValue)
+        });
+
+
+      })
+
     }
 
     cy.window().then(async (win) => {
       let colorsFoundSet = new Set(colorsFound);
-      expect(colorsFoundSet.size).eq(6);
-      expect(colorsA.reduce((a, c) => a + (colorsFoundSet.has(c) ? 1 : 0), 0)).eq(2);
-      expect(colorsB.reduce((a, c) => a + (colorsFoundSet.has(c) ? 1 : 0), 0)).eq(2);
-      expect(colorsC.reduce((a, c) => a + (colorsFoundSet.has(c) ? 1 : 0), 0)).eq(2);
+      expect(colorsFoundSet.size).eq(2);
+      expect(colorsA.reduce((a, c) => a + (colorsFoundSet.has(c) ? 1 : 0), 0)).eq(1);
+      expect(colorsB.reduce((a, c) => a + (colorsFoundSet.has(c) ? 1 : 0), 0)).eq(1);
 
-      expect(numbersFound.reduce((a, c) => a + ((c > 0 ? 1 : 0)), 0)).eq(3)
-      expect(numbersFound.reduce((a, c) => a + ((c < 0 ? 1 : 0)), 0)).eq(3)
+      let wordsFoundSet = new Set(wordsFound);
+      expect(wordsFoundSet.size).eq(2);
+      expect(wordsA.reduce((a, c) => a + (wordsFoundSet.has(c) ? 1 : 0), 0)).eq(1);
+      expect(wordsB.reduce((a, c) => a + (wordsFoundSet.has(c) ? 1 : 0), 0)).eq(1);
+
 
     });
 
 
     cy.log("values repeat in next variants")
-    for (let ind = numVariants; ind < numVariants + 25; ind += 5) {
+    for (let ind = numVariants + 1; ind <= numVariants + 6; ind += 2) {
+
+      cy.get('#testRunner_toggleControls').click();
+      cy.get('#testRunner_newAttempt').click()
+      cy.wait(100)
+      cy.get('#testRunner_toggleControls').click();
+      cy.reload();
 
       cy.window().then(async (win) => {
         win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl nvariants="24" uniquevariants/>
-      <select assignnames="problem">
-        <problem><title>Favorite color</title>
-          <select><p>I like 
-            <select>
-              <text>red</text>
-              <text>orange</text>
-              <text>yellow</text>
-              <text>magenta</text>
-              <text>maroon</text>
-              <text>fuchsia</text>
-              <text>scarlet</text>
-            </select>
-          </p>
-          <p>You like
-            <select>
-              <text>green</text>
-              <text>chartreuse</text>
-              <text>turquoise</text>
-            </select>
-          </p>
-          <p>They like
-            <select>
-              <text>white</text>
-              <text>black</text>
-            </select>
-          </p>
-          </select>
-        </problem>
-        <problem><title>Selected number</title>
-          <select>
-            <p>Positive: <selectfromsequence>1000, 2000</selectfromsequence></p>
-            <p>Negative: <selectfromsequence>-1000,-900</selectfromsequence></p>
-          </select>
-        </problem>
-        <problem><title>Chosen letter</title>
-          <p>Letter
-            <selectfromsequence type="letters">z</selectfromsequence>
-          </p>
-        </problem>
-        <problem><title>Variable</title>
-        <p>Let
-          <select>u,v,w,x,y,z</select>
-          be the temperature at time <m>t</m>.
-        </p>
-        </problem>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
+          doenetML: `<text>${ind}</text>${doenetML}`,
+          requestedVariant: { index: ind },
         }, "*");
       })
+
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`);
 
@@ -1972,163 +1710,68 @@ describe('Specifying unique variant tests', function () {
 
         let stateVariables = await win.returnAllStateVariables1();
         let category = stateVariables['/problem'].stateValues.title;
-        let component = stateVariables['/problem'].activeChildren[2].activeChildren[1];
-        let newValue = component.state.value;
-        if (typeof newValue !== "string") {
-          newValue = component.state.value;
-        }
+        let component = stateVariables[stateVariables[stateVariables['/problem'].activeChildren.filter(x => x.componentName)[1].componentName].activeChildren[1].componentName];
+        let newValue = component.stateValues.value;
         let combinedValue = [category, newValue].join(",");
-        expect(combinedValue).eq(valuesFound[ind % numVariants])
+        expect(combinedValue).eq(valuesFound[(ind - 1) % numVariants])
       })
     }
 
-    cy.log("all individual groups selected in first variants")
-    let categoriesFound = [];
-    for (let ind = 0; ind < 4; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl nvariants="24" uniquevariants/>
-      <select assignnames="problem">
-        <problem><title>Favorite color</title>
-          <select><p>I like 
-            <select>
-              <text>red</text>
-              <text>orange</text>
-              <text>yellow</text>
-              <text>magenta</text>
-              <text>maroon</text>
-              <text>fuchsia</text>
-              <text>scarlet</text>
-            </select>
-          </p>
-          <p>You like
-            <select>
-              <text>green</text>
-              <text>chartreuse</text>
-              <text>turquoise</text>
-            </select>
-          </p>
-          <p>They like
-            <select>
-              <text>white</text>
-              <text>black</text>
-            </select>
-          </p>
-          </select>
-        </problem>
-        <problem><title>Selected number</title>
-          <select>
-            <p>Positive: <selectfromsequence>1000, 2000</selectfromsequence></p>
-            <p>Negative: <selectfromsequence>-1000,-900</selectfromsequence></p>
-          </select>
-        </problem>
-        <problem><title>Chosen letter</title>
-          <p>Letter
-            <selectfromsequence type="letters">z</selectfromsequence>
-          </p>
-        </problem>
-        <problem><title>Variable</title>
-        <p>Let
-          <select>u,v,w,x,y,z</select>
-          be the temperature at time <m>t</m>.
-        </p>
-        </problem>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        categoriesFound.push(stateVariables['/problem'].stateValues.title);
-      })
-    }
-    cy.window().then(async (win) => {
-      for (let ind = 0; ind < 4; ind++) {
-        expect(categoriesFound.includes(categories[ind])).eq(true);
-      }
-    })
-
-    cy.log("all individual groups selected twice in first variants")
-    for (let ind = 4; ind < 8; ind++) {
-
-      cy.window().then(async (win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <variantControl nvariants="24" uniquevariants/>
-      <select assignnames="problem">
-        <problem><title>Favorite color</title>
-          <select><p>I like 
-            <select>
-              <text>red</text>
-              <text>orange</text>
-              <text>yellow</text>
-              <text>magenta</text>
-              <text>maroon</text>
-              <text>fuchsia</text>
-              <text>scarlet</text>
-            </select>
-          </p>
-          <p>You like
-            <select>
-              <text>green</text>
-              <text>chartreuse</text>
-              <text>turquoise</text>
-            </select>
-          </p>
-          <p>They like
-            <select>
-              <text>white</text>
-              <text>black</text>
-            </select>
-          </p>
-          </select>
-        </problem>
-        <problem><title>Selected number</title>
-          <select>
-            <p>Positive: <selectfromsequence>1000, 2000</selectfromsequence></p>
-            <p>Negative: <selectfromsequence>-1000,-900</selectfromsequence></p>
-          </select>
-        </problem>
-        <problem><title>Chosen letter</title>
-          <p>Letter
-            <selectfromsequence type="letters">z</selectfromsequence>
-          </p>
-        </problem>
-        <problem><title>Variable</title>
-        <p>Let
-          <select>u,v,w,x,y,z</select>
-          be the temperature at time <m>t</m>.
-        </p>
-        </problem>
-      </select>
-      `,
-          requestedVariant: { index: [ind] },
-        }, "*");
-      })
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`);
-
-      cy.window().then(async (win) => {
-
-        let stateVariables = await win.returnAllStateVariables1();
-        categoriesFound[ind - 4] = stateVariables['/problem'].stateValues.title;
-      })
-    }
-    cy.window().then(async (win) => {
-      for (let ind = 0; ind < 4; ind++) {
-        expect(categoriesFound.includes(categories[ind])).eq(true);
-      }
-    })
 
   });
+
+  it('can get unique with map without variants', () => {
+
+    cy.log("get all values in order and they repeat in next variants")
+    for (let ind = 1; ind <= 15; ind++) {
+
+      // reload every 10 times to keep it from slowing down
+      // (presumably due to garbage collecting)
+      if (ind % 10 === 0) {
+        cy.reload();
+      };
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <variantControl uniquevariants />
+        <selectfromsequence assignnames="x" length="5" />
+        <map assignNames="(p1) (p2) (p3)">
+          <template>
+            <p>letter: $v</p>
+          </template>
+          <sources alias="v">
+            <sequence type="letters" length="$n" />
+          </sources>
+        </map>
+        <p>N: <mathinput name="n" prefill="1" /></p>
+      `,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      cy.get('#\\/x').should('have.text', (ind - 1) % 5 + 1)
+
+      cy.get('#\\/p1').should('have.text', 'letter: a')
+      cy.get('#\\/p2').should('not.exist')
+
+      cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true })
+      cy.get('#\\/p1').should('have.text', 'letter: a')
+      cy.get('#\\/p2').should('have.text', 'letter: b')
+      cy.get('#\\/p3').should('have.text', 'letter: c')
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/x'].stateValues.value).eq((ind - 1) % 5 + 1)
+      })
+    }
+
+
+  });
+
 
 });

@@ -47,7 +47,7 @@ export default class VariantControl extends BaseComponent {
         },
         numberOfVariantsFromSharedParameters: {
           dependencyType: "value",
-          value: sharedParameters.numberOfVariantsFromSharedParameters,
+          value: sharedParameters.numberOfVariants,
         },
         nVariants: {
           dependencyType: "stateVariable",

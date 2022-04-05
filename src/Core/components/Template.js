@@ -15,7 +15,6 @@ export default class Template extends CompositeComponent {
   static originalNamesAreConsistent = true;
 
   static createsVariants = true;
-  static alwaysSetUpVariant = true;
 
 
   static keepChildrenSerialized({ serializedComponent }) {
@@ -104,7 +103,7 @@ export default class Template extends CompositeComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
           variableNames: [
             "isVariantComponent",
             "generatedVariantInfo",

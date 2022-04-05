@@ -90,9 +90,6 @@ export default class Core {
 
     this.requestedVariantIndex = requestedVariantIndex;
     this.requestedVariant = requestedVariant;
-    if (!this.requestedVariant) {
-      this.requestedVariant = { index: this.requestedVariantIndex };
-    }
 
     // console.time('serialize doenetML');
 
@@ -197,10 +194,46 @@ export default class Core {
 
     // console.timeEnd('serialize doenetML');
 
-    this.parameterStack.parameters.variant = this.requestedVariant;
-    serializedComponents[0].variants = {
-      desiredVariant: this.parameterStack.parameters.variant
+    let numVariants = serializeFunctions.getNumberOfVariants({
+      serializedComponent: serializedComponents[0],
+      componentInfoObjects: this.componentInfoObjects
+    })
+
+
+    if (!this.requestedVariant) {
+
+      // don't have full variant, just requested variant index
+
+      this.requestedVariantIndex = ((this.requestedVariantIndex - 1) % numVariants + numVariants) % numVariants + 1;
+
+      if (serializedComponents[0].variants.uniqueVariants) {
+        let docClass = this.componentInfoObjects.allComponentClasses[serializedComponents[0].componentType];
+
+        let result = docClass.getUniqueVariant({
+          serializedComponent: serializedComponents[0],
+          variantIndex: this.requestedVariantIndex,
+          componentInfoObjects: this.componentInfoObjects
+        })
+
+        if (result.success) {
+          this.requestedVariant = result.desiredVariant;
+        }
+
+      }
+
+      // either didn't have unique variants
+      // or getting unique variant failed,
+      // so just set variant index
+      // and rest of variant will be generated from that index
+      if (!this.requestedVariant) {
+        this.requestedVariant = { index: this.requestedVariantIndex };
+      }
+
     }
+
+
+    this.parameterStack.parameters.variant = this.requestedVariant;
+    serializedComponents[0].variants.desiredVariant = this.parameterStack.parameters.variant;
 
     // //Make these variables available for cypress
     // window.state = {
@@ -1028,11 +1061,11 @@ export default class Core {
 
     if (serializedChildren !== undefined) {
 
-      let setUpVariant = false;
-      let variantControlInd;
-      let variantControlChild;
+      if (componentClass.setUpVariant) {
 
-      if (componentClass.alwaysSetUpVariant || componentClass.setUpVariantIfVariantControlChild) {
+        let variantControlInd;
+        let variantControlChild;
+  
         // look for variantControl child
         for (let [ind, child] of serializedChildren.entries()) {
           if (child.componentType === "variantControl" || (
@@ -1043,22 +1076,6 @@ export default class Core {
             break;
           }
         }
-
-        if (variantControlInd !== undefined || componentClass.alwaysSetUpVariant) {
-          setUpVariant = true;
-        }
-      }
-
-      if (!setUpVariant && componentClass.setUpVariantUnlessAttributePrimitive) {
-        let attribute = componentClass.setUpVariantUnlessAttributePrimitive;
-
-        if (!(serializedComponent.attributes && serializedComponent.attributes[attribute]
-          && serializedComponent.attributes[attribute].primitive)) {
-          setUpVariant = true;
-        }
-      }
-
-      if (setUpVariant) {
 
         let descendantVariantComponents = serializeFunctions.gatherVariantComponents({
           serializedComponents: serializedChildren,

@@ -363,27 +363,3 @@ export function componentTypesCreatingVariants() {
 }
 
 
-export function componentTypeWithPotentialVariants() {
-  const componentClasses = {};
-  const lowerCaseComponentTypes = new Set();
-  for (let ct of componentTypeArray) {
-    if (ct.createsVariants ||
-      ct.setUpVariantIfVariantControlChild ||
-      ct.setUpVariantUnlessAttributePrimitive ||
-      ct.alwaysSetUpVariant
-    ) {
-      let newComponentType = ct.componentType;
-      if (newComponentType === undefined) {
-        throw Error("Cannot create component as componentType is undefined for class " + ct)
-      }
-      let lowerCaseType = newComponentType.toLowerCase();
-      if (lowerCaseComponentTypes.has(lowerCaseType)) {
-        throw Error("component type " + newComponentType + " defined in two classes");
-      }
-      componentClasses[newComponentType] = ct;
-      lowerCaseComponentTypes.add(lowerCaseType);
-    }
-  }
-  return componentClasses;
-}
-

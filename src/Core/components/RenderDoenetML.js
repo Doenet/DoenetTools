@@ -9,7 +9,6 @@ export default class RenderDoenetML extends CompositeComponent {
   static assignNamesToReplacements = true;
 
   static createsVariants = true;
-  static alwaysSetUpVariant = true;
 
   static stateVariableToEvaluateAfterReplacements = "triggerUpdates";
 
@@ -154,7 +153,7 @@ export default class RenderDoenetML extends CompositeComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
           variableNames: [
             "isVariantComponent",
             "generatedVariantInfo",
