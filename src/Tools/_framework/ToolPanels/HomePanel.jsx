@@ -185,14 +185,14 @@ export default function HomePage(props) {
         </Paragraph>
 
         <Paragraph>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=qyPDhmvsuwjwNGM9OPy3Q"><DoenetDriveCard image="RandomlyGeneratedGraph.jpg" label="Randomly-Generated Graphs" width="100px" /></a>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=qyPDhmvsuwjwNGM9OPy3Q" style={{textDecoration: "none"}}><DoenetDriveCard image="RandomlyGeneratedGraph.jpg" label="Randomly-Generated Graphs" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq"><DoenetDriveCard image="Cobwebbing.jpg" label="Hands-On Activities" width="100px" /></a>
+            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq" style={{textDecoration: "none"}}><DoenetDriveCard image="Cobwebbing.jpg" label="Hands-On Activities" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=JXTxrd8XXjfEy9GuFPcy6"><DoenetDriveCard image="DynamicContentInteractions.jpg" label="Dynamic Content Interactions" width="100px" /></a>
+            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=JXTxrd8XXjfEy9GuFPcy6" style={{textDecoration: "none"}}><DoenetDriveCard image="DynamicContentInteractions.jpg" label="Dynamic Content Interactions" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=UdDWyNkqfF21O6Ew-Qh4O"><DoenetDriveCard image="BasicAnswerValidation.jpg" label="Basics of Answer Validation" width="100px" /></a>
+            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=UdDWyNkqfF21O6Ew-Qh4O" style={{textDecoration: "none"}}><DoenetDriveCard image="BasicAnswerValidation.jpg" label="Basics of Answer Validation" wwidth="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
           </div>
         </Paragraph>
 
@@ -237,14 +237,14 @@ export default function HomePage(props) {
           </div>
         </Paragraph>
         <Paragraph>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD"><DoenetDriveCard image="AnteaterDynamicalSystem.jpg" label="Exploring an Anteater Dynamical System" width="100px" /></a>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD" style={{textDecoration: "none"}}><DoenetDriveCard image="AnteaterDynamicalSystem.jpg" label="Exploring an Anteater Dynamical System" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq"><DoenetDriveCard image="SketchGaussianCurve.jpg" label="Sketching the Derivative of a Gaussian" width="100px" /></a>
+            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq" style={{textDecoration: "none"}}><DoenetDriveCard image="SketchGaussianCurve.jpg" label="Sketching the Derivative of a Gaussian" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3"><DoenetDriveCard image="AverageRateOfChange.jpg" label="Average Rate of Change, Squirrel and Owl" width="100px" /></a>
+            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3" style={{textDecoration: "none"}}><DoenetDriveCard image="AverageRateOfChange.jpg" label="Average Rate of Change, Squirrel and Owl" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6" ><DoenetDriveCard image="RiemannSums.jpg" label="Sketching Riemann Sums, Varying Intervals" width="100px" /></a>
+            <a href="https://www.doenet.org/#/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6" style={{textDecoration: "none"}}><DoenetDriveCard image="RiemannSums.jpg" label="Sketching Riemann Sums, Varying Intervals" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
           </div>
         </Paragraph>
 
