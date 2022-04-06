@@ -1,6 +1,4 @@
 .rdtPicker {
-  min-width: 0px;
-  width: 175px;
   margin-left: var(--menuPanelMargin, 0px);
 }
 
@@ -8,7 +6,7 @@
   border: var(--mainBorder);
   border-radius: var(--mainBorderRadius);
   height: 18px;
-  width: 177px;
+  width: 170px;
 }
 
 .rdtPicker td.rdtActive,
