@@ -90,6 +90,15 @@ export const authorCourseItemOrderByCourseId = atomFamily({
   default: [],
 });
 
+//Start at top find the section we are filtering to based on searchparams AtomFamily sectionId
+//If empty sectionId then return everything in authorCourseItemOrderByCourseId
+//Start collecting parentNames and doenetIds to include for the section
+//Stop when we see one of the parentNames
+// export const authorCourseItemOrderByCourseIdAndSection = selectorFamily({
+//   key: 'authorCourseItemOrderByCourseIdAndSection',
+//   default: [],
+// });
+
 export const authorItemByDoenetId = atomFamily({
   key: 'authorItemByDoenetId',
   default: {},
