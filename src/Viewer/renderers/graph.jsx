@@ -182,6 +182,7 @@ export default function Graph(props) {
     divStyle.display = "none";
   }
   divStyle.border = "2px solid black";
+  divStyle.margin = "12px";
   if (!board) {
     return <>
       <a name={name} />

@@ -58,7 +58,7 @@ import {
 import '../../_utils/util.css';
 import { pageToolViewAtom, searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';  
-import { useToast } from '../../Tools/_framework/Toast';
+import { useToast, toastType } from '../../Tools/_framework/Toast';
 
 export default function CourseNavigator() {
   console.log("=== CourseNavigator")
@@ -67,7 +67,6 @@ export default function CourseNavigator() {
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
   let setMainPanelClick = useSetRecoilState(mainPanelClickAtom);
-  // const addToast = useToast();
 
   let clearSelections = useRecoilCallback(({snapshot,set})=> async ()=>{
     const selectedItems = await snapshot.getPromise(selectedCourseItems);
@@ -119,6 +118,7 @@ function StudentCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVis
 }
 
 function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisibleColumns}){
+  // let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdAndSection(courseId)); //TODO make selector
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseId(courseId));
   
   let items = [];
@@ -214,51 +214,11 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
 }
 
 
-// function findDoenetIdsIncludingOrderAndPages(itemArray){
-//   return itemArray.reduce((result,item) => {
-//     //Don't do anything with page information it's added with activity
-//     if (item.type === 'activity'){
-//       let activityChildren = findActivityDoenetIdsInOrder(item.order);
-//       result = [...result,item.doenetId,...activityChildren];
-//     }else if (item.type === 'bank'){
-//       result = [...result,item.doenetId,...item.pages];
-//     }else if (item.type === 'section'){
-//       result.push(item.doenetId);
-//     }
-//     return result;
-//   },[]);
-// }
-
-//Doesn't include origninal item's doenetId
-// function findActivityDoenetIdsInOrder({orderObj,doenetIds=[],snapshot}){
-//   doenetIds.push(orderObj.doenetId); //Add the order's doenetId
-//   let children = orderObj.content.reduce((result,entry)=>{
-//     if (typeof entry === 'string' || entry instanceof String){
-//       result.push(entry);
-//     }else{
-//       let recurseChildren = findActivityDoenetIdsInOrder({orderObj:entry,snapshot});
-//       result = [...result,...recurseChildren]
-//     }
-//     return result;
-//   },[])
-//   doenetIds = [...doenetIds,...children];
-//   return doenetIds;
-// }
-
-//Start at one item and assume it's open, then find all children who are visible
-// async function findAllRenderedRowsDoenetIds({snapshot}){
-//   let allRenderedRows = [];
-//   let item = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-//   if (item.type == 'activity'){
-
-//   }
-//   console.log("item",item)
-//   return allRenderedRows
-// }
 
 
 //singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
 function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
+  const addToast = useToast();
 
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
@@ -430,6 +390,35 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     console.log("Double CLICK!",doenetId,clickedItem)
     e.preventDefault();
     e.stopPropagation();
+
+    function findFirstPage(orderObj){
+      //No pages or orders in order so return null
+      if (orderObj.content.length == 0){
+        return null;
+      }
+      let response = null;
+
+      for (let item of orderObj.content){
+        console.log("item",item)
+
+        if (typeof item === 'string' || item instanceof String){
+          //First content is a string so return the doenetId
+          response = item;
+          break;
+        }else{
+          //First item of content is another order
+          let nextOrderResponse = findFirstPage(item);
+        
+          if (typeof nextOrderResponse === 'string' || nextOrderResponse instanceof String){
+            response = nextOrderResponse;
+            break;
+          }
+        }
+      }
+
+      return response; //if didn't find any pages
+
+    }
     //TODO: use item type and role to determine what to update
     if (clickedItem.type == 'page'){
       setPageToolView((was)=>{return {
@@ -439,7 +428,19 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
         params: { doenetId, path:was.params.path },
         }})
     }else if (clickedItem.type == 'activity'){
-      console.log("Activity",doenetId)
+      
+      //Find first page
+      let pageDoenetId = findFirstPage(clickedItem.order);
+      if (pageDoenetId == null){
+        addToast(`ERROR: No page found in activity`, toastType.INFO);
+      }else{
+        setPageToolView((was)=>{return {
+          page: 'course',
+          tool: 'editor',
+          view: was.view,
+          params: { doenetId:pageDoenetId, path:was.params.path },
+          }})
+      }
     }
 
 
