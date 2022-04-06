@@ -20,6 +20,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
 import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx';
+import DriveCard from '../../_reactComponents/Drive/DoenetDriveCard.jsx';
+
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -262,6 +264,41 @@ export default function attempt() {
         // propPreview: '<ActionButtonGroup width="500px" />',
         // propCode: {width: '500px'},
         // description: 'Sets width to custom dimensions'},
+      ],
+    },
+    {
+      name: 'DriveCard',
+      id: 'drivecard',
+      code: DriveCard,
+      codePreview: '<DoenetDriveCard width="175px" height="150px"/>',
+      req_props: { width: "175px", height: "150px" },
+      req_children: null,
+      use: 'Used for course selection and graphics with text. Width and height props should always be defined unless in the course selection page.',
+      props: [
+        {
+          name: 'Width and Height',
+          propPreview: '<DoenetDriveCard width="100px" height="100px"/>',
+          propCode: { width: "100px", height: "100px" },
+          description: 'Sets custom width and height; these props should always be defined unless in course selection',
+        },
+        {
+          name: 'Label',
+          propPreview: '<DoenetDriveCard label="This is the super long title of a course!" width="175px" height="150px"/>',
+          propCode: { label: "This is the super long title of a course!!", width: "175px", height: "150px" },
+          description: 'Adds label to the drive card',
+        },
+        {
+          name: 'Label - Text Align, Line Height, Whitespace',
+          propPreview: '<DoenetDriveCard textAlign="center" lineHeight="15px" whiteSpace="normal" label="This is the super long title of a course!" width="175px" height="150px"/>',
+          propCode: { textAlign: "center", lineHeight: "15px", whiteSpace: "normal", label: "This is the super long title of a course!!", width: "175px", height: "150px" },
+          description: 'textAlign is used to center the label; lineHeight is used to increase the label spacing; whiteSpace is used to wrap the label text',
+        },
+        {
+          name: 'Image',
+          propPreview: '<DoenetDriveCard image="RandomlyGeneratedGraph.jpg" width="175px" height="150px"/>',
+          propCode: { image: "RandomlyGeneratedGraph.jpg", width: "175px", height: "150px" },
+          description: 'Adds image to the drive card',
+        },
       ],
     },
     {
