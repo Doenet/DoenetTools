@@ -14,6 +14,7 @@ import {
   variantInfoAtom, 
   variantPanelAtom,
  } from '../ToolHandlers/CourseToolHandler';
+import { authorItemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
 //  import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
 
 export const viewerDoenetMLAtom = atom({
@@ -53,21 +54,32 @@ export default function EditorViewer(){
   // refreshCount.current++;
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
+  const paramPath = useRecoilValue(searchParamAtomFamily('path')) 
+  const [courseId] = paramPath.split(":");
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
   const setVariantPanel = useSetRecoilState(variantPanelAtom);
   const setEditorInit = useSetRecoilState(editorDoenetIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
+  const pageObj = useRecoilValue(authorItemByDoenetId(paramDoenetId))
+
+  useInitCourseItems(courseId);
+    
+  let pageInitiated = false;
+  if (Object.keys(pageObj).length > 0){
+    pageInitiated = true;
+  }
 
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
-    const cid = versionHistory.draft.cid;
-    let response = await snapshot.getPromise(fileByContentId(cid));
-    if (typeof response === "object"){
-      response = response.data;
-    }
+    console.log("INIT!")
+    let pageObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+    let response = await snapshot.getPromise(fileByContentId(pageObj.draftCid));
+    console.log("response",response)
+    // if (typeof response === "object"){
+    //   response = response.data;
+    // }
     const doenetML = response;
 
     set(updateTextEditorDoenetMLAtom,doenetML);
@@ -78,13 +90,13 @@ export default function EditorViewer(){
 
 
   useEffect(() => {
-      if (paramDoenetId !== ''){
+      if (paramDoenetId !== '' && pageInitiated){
         initDoenetML(paramDoenetId)
       }
     return () => {
       setEditorInit("");
     }
-  }, [paramDoenetId]);
+  }, [paramDoenetId,pageInitiated]);
 
   if (paramDoenetId !== initilizedDoenetId){
     //DoenetML is changing to another DoenetID
@@ -131,7 +143,7 @@ export default function EditorViewer(){
 
 
 
-  console.log(`>>>>Show PageViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
+  // console.log(`>>>>Show PageViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
   // console.log(`>>>> refreshNumber -${refreshNumber}-`)
   // console.log(`>>>> attemptNumber -${attemptNumber}-`)
   // console.log('>>>PageViewer Read Only:',!isCurrentDraft)
