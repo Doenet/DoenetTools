@@ -892,12 +892,12 @@ export function AssignmentSettings({ role, doenetId }) {
             }[gradeCategory]
           }
           items={[
-            ['gateway', 'gateway'],
-            ['exams', 'exams'],
-            ['quizzes', 'qizzes'],
-            ['problem sets', 'problem sets'],
-            ['projects', 'projects'],
-            ['participation', 'participation'],
+            ['gateway', 'Gateway'],
+            ['exams', 'Exams'],
+            ['quizzes', 'Quizzes'],
+            ['problem sets', 'Problem Sets'],
+            ['projects', 'Projects'],
+            ['participation', 'Participation'],
           ]}
           onChange={({ value: val }) => {
             console.log('on change');
