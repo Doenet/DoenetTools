@@ -6,7 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
-
+include "lexicographicalRankingSort.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -29,7 +29,30 @@ if ($success){
   $label = 'Untitled';
 
   $jsonDefinition = null;
-  $sortOrder = 'a'; //TODO: replace with position function 
+
+  if ($previousDoenetId == $courseId) {
+    $sql = "SELECT sortOrder FROM `course_content` WHERE courseId = '$courseId' ORDER BY sortOrder LIMIT 1";
+    $result = $conn->query($sql);
+    $prev = "";
+    $row = $result->fetch_assoc();
+    $next = $row['sortOrder'] ?: "";
+  } else {
+    $sql = "SELECT sortOrder
+    FROM `course_content`
+    WHERE courseId = '$courseId' and sortOrder >= (Select sortOrder From `course_content` WHERE doenetId='$previousDoenetId')
+    ORDER BY sortOrder
+    LIMIT 2";
+    $result = $conn->query($sql); 
+    $row = $result->fetch_assoc() ;
+    $prev = $row['sortOrder'] ?: "";
+    $row = $result->fetch_assoc();
+    $next = $row['sortOrder'] ?: "";
+  }
+  
+
+    $message = "prev: $prev, next: $next";
+  
+  $sortOrder = SortOrder\getSortOrder($prev, $next); //TODO: replace with position function 
   $parentDoenetId = $previousDoenetId; //TODO: use position function to define this
 
 //Defaults for each item type
