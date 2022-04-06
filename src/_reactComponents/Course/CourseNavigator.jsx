@@ -58,7 +58,7 @@ import {
 import '../../_utils/util.css';
 import { pageToolViewAtom, searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';  
-import { set } from 'lodash';
+import { useToast } from '../../Tools/_framework/Toast';
 
 export default function CourseNavigator() {
   console.log("=== CourseNavigator")
@@ -284,7 +284,6 @@ if (hasToggle){
     );
 }
 
-//TODO: HANDLE WHAT HAS TO MOVE TOGETHER AND DON'T ALLOW SELECTING SETS OF ITEMS WHICH DON'T MAKE SENSE TO MOVE TOGETHER
 //Selection is based on course items and Recoil
 //Always append to the end of the array so we know the last selected item
 let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=>{
@@ -439,6 +438,8 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
         view: was.view,
         params: { doenetId, path:was.params.path },
         }})
+    }else if (clickedItem.type == 'activity'){
+      console.log("Activity",doenetId)
     }
 
 
