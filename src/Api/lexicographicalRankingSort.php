@@ -24,7 +24,7 @@ namespace SortOrder {
                     : UPPER_BOUND_ALPHACODE;
             $pos++;
         }
-        $newOrder = substr($prev, $pos - 1); // get identical substring
+        $newOrder = substr($prev, 0, $pos - 1); // get identical substring
 
         if ($p == LOWER_BOUND_ALPHACODE) {
             // prev string equals next[0:pos]
@@ -32,7 +32,7 @@ namespace SortOrder {
                 // next character is 'a'
                 $n =
                     $pos < strlen($next)
-                        ? ord(substr($prev, $pos, 1))
+                        ? ord(substr($next, $pos++, 1))
                         : UPPER_BOUND_ALPHACODE;
                 $newOrder .= 'a'; // insert an 'a' to match the 'a'
             }
@@ -47,12 +47,12 @@ namespace SortOrder {
             $n = UPPER_BOUND_ALPHACODE; // set to end of alphabet
             $p =
                 $pos < strlen($prev)
-                    ? ord(substr($next, $pos, 1))
+                    ? ord(substr($next, $pos++, 1))
                     : LOWER_BOUND_ALPHACODE;
             while ($p == CHAR_Z_ALPHACODE) {
                 $p =
                     $pos < strlen($prev)
-                        ? ord(substr($prev, $pos, 1))
+                        ? ord(substr($prev, $pos++, 1))
                         : LOWER_BOUND_ALPHACODE;
                 $newOrder .= 'z'; // insert 'z' to match 'z'
             }
