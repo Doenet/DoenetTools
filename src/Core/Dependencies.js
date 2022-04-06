@@ -4413,6 +4413,7 @@ class DescendantDependency extends Dependency {
     this.includeAttributeChildren = this.definition.includeAttributeChildren;
     this.skipOverAdapters = this.definition.skipOverAdapters;
     this.ignoreReplacementsOfMatchedComposites = this.definition.ignoreReplacementsOfMatchedComposites;
+    this.ignoreReplacementsOfEncounteredComposites = this.definition.ignoreReplacementsOfEncounteredComposites;
 
   }
 
@@ -4548,6 +4549,7 @@ class DescendantDependency extends Dependency {
       includeNonActiveChildren: this.includeNonActiveChildren,
       skipOverAdapters: this.skipOverAdapters,
       ignoreReplacementsOfMatchedComposites: this.ignoreReplacementsOfMatchedComposites,
+      ignoreReplacementsOfEncounteredComposites: this.ignoreReplacementsOfEncounteredComposites,
       componentInfoObjects: this.dependencyHandler.componentInfoObjects,
     });
 

@@ -112,7 +112,7 @@ export default class Template extends CompositeComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMatchedComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         },
       }),
       definition({ dependencyValues, componentName }) {

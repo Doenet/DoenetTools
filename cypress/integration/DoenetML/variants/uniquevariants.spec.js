@@ -1762,7 +1762,7 @@ describe('Specifying unique variant tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.get('#\\/x').should('have.text', (ind - 1) % 5 + 1)
+      cy.get('#\\/x').should('have.text', (ind - 1) % 3 + 1)
 
       cy.get('#\\/p1').should('have.text', 'letter: a')
       cy.get('#\\/p2').should('not.exist')
@@ -1776,7 +1776,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
 
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables['/x'].stateValues.value).eq((ind - 1) % 5 + 1)
+        expect(stateVariables['/x'].stateValues.value).eq((ind - 1) % 3 + 1)
         expect(stateVariables[stateVariables["/p1"].activeChildren[1].componentName].stateValues.value).eq('a')
         expect(stateVariables[stateVariables["/p2"].activeChildren[1].componentName].stateValues.value).eq('b')
         expect(stateVariables[stateVariables["/p3"].activeChildren[1].componentName].stateValues.value).eq('c')
@@ -1804,7 +1804,7 @@ describe('Specifying unique variant tests', function () {
         return stateVariables["/x"];
       }))
 
-      cy.get('#\\/x').should('have.text', (ind - 1) % 5 + 1)
+      cy.get('#\\/x').should('have.text', (ind - 1) % 3 + 1)
 
       cy.get('#\\/p1').should('have.text', 'letter: a')
       cy.get('#\\/p2').should('have.text', 'letter: b')
@@ -1812,7 +1812,7 @@ describe('Specifying unique variant tests', function () {
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables['/x'].stateValues.value).eq((ind - 1) % 5 + 1)
+        expect(stateVariables['/x'].stateValues.value).eq((ind - 1) % 3 + 1)
         expect(stateVariables[stateVariables["/p1"].activeChildren[1].componentName].stateValues.value).eq('a')
         expect(stateVariables[stateVariables["/p2"].activeChildren[1].componentName].stateValues.value).eq('b')
         expect(stateVariables[stateVariables["/p3"].activeChildren[1].componentName].stateValues.value).eq('c')

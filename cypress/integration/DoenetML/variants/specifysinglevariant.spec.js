@@ -1,4 +1,13 @@
 import { numberToLetters } from "../../../../src/Core/utils/sequence";
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('Specifying single variant document tests', function () {
 
@@ -34,7 +43,6 @@ describe('Specifying single variant document tests', function () {
         index: 1,
         name: 'a',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -71,7 +79,6 @@ describe('Specifying single variant document tests', function () {
         index: 1,
         name: 'a',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -106,7 +113,6 @@ describe('Specifying single variant document tests', function () {
         index: 1,
         name: 'a',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -142,7 +148,6 @@ describe('Specifying single variant document tests', function () {
         index: 1,
         name: 'a',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -156,40 +161,39 @@ describe('Specifying single variant document tests', function () {
       expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
     })
 
-    cy.log(`Number doesn't change when use generatedVariantInfo`)
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>d</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: generatedVariantInfo,
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `d`)
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
-        name: 'a',
-        meta: {
-          subvariantsSpecified: true,
-          createdBy: "/_document1"
-        },
-        subvariants: [{
-          indices: [nWithIndex1],
-          meta: { createdBy: "/_selectfromsequence1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
-    })
+    // cy.log(`Number doesn't change when use generatedVariantInfo`)
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <p>
+    //   <text>d</text>
+    //   Selected number: 
+    //   <selectfromsequence assignnames="n" length="10000000000" />
+    // </p>
+    // `,
+    //     requestedVariant: generatedVariantInfo,
+    //   }, "*");
+    // });
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `d`)
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 1,
+    //     name: 'a',
+    //     meta: {
+    //       createdBy: "/_document1"
+    //     },
+    //     subvariants: [{
+    //       indices: [nWithIndex1],
+    //       meta: { createdBy: "/_selectfromsequence1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
+    // })
 
     cy.log("Number changes for index 2");
     cy.window().then(async (win) => {
@@ -217,7 +221,6 @@ describe('Specifying single variant document tests', function () {
         index: 2,
         name: 'b',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -252,7 +255,6 @@ describe('Specifying single variant document tests', function () {
         index: 2,
         name: 'b',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -286,7 +288,6 @@ describe('Specifying single variant document tests', function () {
         index: 2,
         name: 'b',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -321,7 +322,6 @@ describe('Specifying single variant document tests', function () {
         index: 2,
         name: 'b',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -355,7 +355,6 @@ describe('Specifying single variant document tests', function () {
         index: 2,
         name: 'b',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -390,7 +389,6 @@ describe('Specifying single variant document tests', function () {
         index: 2,
         name: 'b',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -402,6 +400,8 @@ describe('Specifying single variant document tests', function () {
       expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
       expect(stateVariables["/_document1"].sharedParameters.variantName).eq('b');
     })
+
+    cy.reload(); // occasionally reload so doesn't slow way down (presumably due to garbage collection)
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -424,7 +424,6 @@ describe('Specifying single variant document tests', function () {
         index: 2,
         name: 'b',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -459,7 +458,6 @@ describe('Specifying single variant document tests', function () {
         index: 1,
         name: 'a',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -493,7 +491,6 @@ describe('Specifying single variant document tests', function () {
         index: 1,
         name: 'a',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -506,143 +503,139 @@ describe('Specifying single variant document tests', function () {
       expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
     })
 
-    cy.log("Variant 'a' same as index 1");
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>m</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { name: 'a' },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `m`);
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
-        name: 'a',
-        meta: {
-          subvariantsSpecified: false,
-          createdBy: "/_document1"
-        },
-        subvariants: [{
-          indices: [nWithIndex1],
-          meta: { createdBy: "/_selectfromsequence1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
-    })
+    // cy.log("Variant 'a' same as index 1");
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <p>
+    //   <text>m</text>
+    //   Selected number: 
+    //   <selectfromsequence assignnames="n" length="10000000000" />
+    // </p>
+    // `,
+    //     requestedVariant: { name: 'a' },
+    //   }, "*");
+    // });
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `m`);
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 1,
+    //     name: 'a',
+    //     meta: {
+    //       createdBy: "/_document1"
+    //     },
+    //     subvariants: [{
+    //       indices: [nWithIndex1],
+    //       meta: { createdBy: "/_selectfromsequence1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
+    // })
 
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>n</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { name: 'a' },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `n`);
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
-        name: 'a',
-        meta: {
-          subvariantsSpecified: false,
-          createdBy: "/_document1"
-        },
-        subvariants: [{
-          indices: [nWithIndex1],
-          meta: { createdBy: "/_selectfromsequence1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
-    })
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <p>
+    //   <text>n</text>
+    //   Selected number: 
+    //   <selectfromsequence assignnames="n" length="10000000000" />
+    // </p>
+    // `,
+    //     requestedVariant: { name: 'a' },
+    //   }, "*");
+    // });
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `n`);
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 1,
+    //     name: 'a',
+    //     meta: {
+    //       createdBy: "/_document1"
+    //     },
+    //     subvariants: [{
+    //       indices: [nWithIndex1],
+    //       meta: { createdBy: "/_selectfromsequence1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
+    // })
 
-    cy.log("Variant 'b' same as index 2");
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>o</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { name: 'b' },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `o`);
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 2,
-        name: 'b',
-        meta: {
-          subvariantsSpecified: false,
-          createdBy: "/_document1"
-        },
-        subvariants: [{
-          indices: [nWithIndex2],
-          meta: { createdBy: "/_selectfromsequence1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('b');
-    })
+    // cy.log("Variant 'b' same as index 2");
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <p>
+    //   <text>o</text>
+    //   Selected number: 
+    //   <selectfromsequence assignnames="n" length="10000000000" />
+    // </p>
+    // `,
+    //     requestedVariant: { name: 'b' },
+    //   }, "*");
+    // });
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `o`);
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 2,
+    //     name: 'b',
+    //     meta: {
+    //       createdBy: "/_document1"
+    //     },
+    //     subvariants: [{
+    //       indices: [nWithIndex2],
+    //       meta: { createdBy: "/_selectfromsequence1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('b');
+    // })
 
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>q</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { name: 'b' },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `q`);
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 2,
-        name: 'b',
-        meta: {
-          subvariantsSpecified: false,
-          createdBy: "/_document1"
-        },
-        subvariants: [{
-          indices: [nWithIndex2],
-          meta: { createdBy: "/_selectfromsequence1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('b');
-    })
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <p>
+    //   <text>q</text>
+    //   Selected number: 
+    //   <selectfromsequence assignnames="n" length="10000000000" />
+    // </p>
+    // `,
+    //     requestedVariant: { name: 'b' },
+    //   }, "*");
+    // });
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `q`);
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 2,
+    //     name: 'b',
+    //     meta: {
+    //       createdBy: "/_document1"
+    //     },
+    //     subvariants: [{
+    //       indices: [nWithIndex2],
+    //       meta: { createdBy: "/_selectfromsequence1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('b');
+    // })
 
     cy.log("Index '301' same as index 1");
     cy.window().then(async (win) => {
@@ -666,7 +659,6 @@ describe('Specifying single variant document tests', function () {
         index: 1,
         name: 'a',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -706,7 +698,6 @@ describe('Specifying single variant document tests', function () {
         index: 95,
         name: 'cq',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -719,40 +710,40 @@ describe('Specifying single variant document tests', function () {
       expect(stateVariables["/_document1"].sharedParameters.variantName).eq('cq');
     })
 
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>t</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { name: 'cQ' },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `t`);
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/n'].stateValues.value).eq(nWithIndex95);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 95,
-        name: 'cq',
-        meta: {
-          subvariantsSpecified: false,
-          createdBy: "/_document1"
-        },
-        subvariants: [{
-          indices: [nWithIndex95],
-          meta: { createdBy: "/_selectfromsequence1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('95');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(95);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('cq');
-    })
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <p>
+    //   <text>t</text>
+    //   Selected number: 
+    //   <selectfromsequence assignnames="n" length="10000000000" />
+    // </p>
+    // `,
+    //     requestedVariant: { name: 'cQ' },
+    //   }, "*");
+    // });
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `t`);
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex95);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 95,
+    //     name: 'cq',
+    //     meta: {
+    //       createdBy: "/_document1"
+    //     },
+    //     subvariants: [{
+    //       indices: [nWithIndex95],
+    //       meta: { createdBy: "/_selectfromsequence1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('95');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(95);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('cq');
+    // })
 
+    cy.reload(); // occasionally reload so doesn't slow way down (presumably due to garbage collection)
 
     cy.log(`invalid index gives variant 1`)
     cy.window().then(async (win) => {
@@ -777,7 +768,6 @@ describe('Specifying single variant document tests', function () {
         index: 1,
         name: 'a',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -791,41 +781,40 @@ describe('Specifying single variant document tests', function () {
     })
 
 
-    cy.log(`invalid name gives variant 1`)
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>v</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { name: "bad" },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `v`)
+    // cy.log(`invalid name gives variant 1`)
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <p>
+    //   <text>v</text>
+    //   Selected number: 
+    //   <selectfromsequence assignnames="n" length="10000000000" />
+    // </p>
+    // `,
+    //     requestedVariant: { name: "bad" },
+    //   }, "*");
+    // });
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `v`)
 
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
-        name: 'a',
-        meta: {
-          subvariantsSpecified: false,
-          createdBy: "/_document1"
-        },
-        subvariants: [{
-          indices: [nWithIndex1],
-          meta: { createdBy: "/_selectfromsequence1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
-    })
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   expect(stateVariables['/n'].stateValues.value).eq(nWithIndex1);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 1,
+    //     name: 'a',
+    //     meta: {
+    //       createdBy: "/_document1"
+    //     },
+    //     subvariants: [{
+    //       indices: [nWithIndex1],
+    //       meta: { createdBy: "/_selectfromsequence1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('a');
+    // })
 
 
     cy.log(`round variant index to nearest integer`)
@@ -851,7 +840,6 @@ describe('Specifying single variant document tests', function () {
         index: 95,
         name: 'cq',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -897,19 +885,18 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'a';
 
       let stateVariables = await win.returnAllStateVariables1();
-      let x = stateVariables['/x'].stateValues.value.tree;
+      let x = stateVariables['/x'].stateValues.value;
       expect(x).eq(expectedx);
-      let xorig = stateVariables['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
+      let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(xorig).eq(expectedx);
-      let x2 = stateVariables['/x2'].replacements[0].stateValues.value.tree;
+      let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
       expect(x2).eq(expectedx);
-      let x3 = stateVariables['/x3'].replacements[0].replacements[0].stateValues.value.tree;
+      let x3 = stateVariables[stateVariables[stateVariables['/x3'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(x3).eq(expectedx);
       expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
         index: 1,
         name: 'avocado',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -952,19 +939,18 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'c';
 
       let stateVariables = await win.returnAllStateVariables1();
-      let x = stateVariables['/x'].stateValues.value.tree;
+      let x = stateVariables['/x'].stateValues.value;
       expect(x).eq(expectedx);
-      let xorig = stateVariables['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
+      let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(xorig).eq(expectedx);
-      let x2 = stateVariables['/x2'].replacements[0].stateValues.value.tree;
+      let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
       expect(x2).eq(expectedx);
-      let x3 = stateVariables['/x3'].replacements[0].replacements[0].stateValues.value.tree;
+      let x3 = stateVariables[stateVariables[stateVariables['/x3'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(x3).eq(expectedx);
       expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
         index: 3,
         name: 'carrot',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -979,170 +965,167 @@ describe('Specifying single variant document tests', function () {
     })
 
 
-    cy.log("specify variant bRoccoli")
-    let generatedVariantInfo;
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <text>3</text>
-    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
-    <p>Selected variable:
-    <select assignnames="(x)">
-      <option selectForVariantNames="Dill"><math>d</math></option>
-      <option selectForVariantNames="carrot"><math>c</math></option>
-      <option selectForVariantNames="eggplant"><math>e</math></option>
-      <option selectForVariantNames="avocado"><math>a</math></option>
-      <option selectForVariantNames="broccoli"><math>b</math></option>
-    </select>
-    </p>
-    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
-    `,
-        requestedVariant: { name: 'bRoccoli' },
-      }, "*");
-    })
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `3`)
+    // cy.log("specify variant bRoccoli")
+    // let generatedVariantInfo;
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <text>3</text>
+    // <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
+    // <p>Selected variable:
+    // <select assignnames="(x)">
+    //   <option selectForVariantNames="Dill"><math>d</math></option>
+    //   <option selectForVariantNames="carrot"><math>c</math></option>
+    //   <option selectForVariantNames="eggplant"><math>e</math></option>
+    //   <option selectForVariantNames="avocado"><math>a</math></option>
+    //   <option selectForVariantNames="broccoli"><math>b</math></option>
+    // </select>
+    // </p>
+    // <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    // <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
+    // `,
+    //     requestedVariant: { name: 'bRoccoli' },
+    //   }, "*");
+    // })
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `3`)
 
-    cy.window().then(async (win) => {
-      let expectedx = 'b';
+    // cy.window().then(async (win) => {
+    //   let expectedx = 'b';
 
-      let stateVariables = await win.returnAllStateVariables1();
-      let x = stateVariables['/x'].stateValues.value.tree;
-      expect(x).eq(expectedx);
-      let xorig = stateVariables['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
-      expect(xorig).eq(expectedx);
-      let x2 = stateVariables['/x2'].replacements[0].stateValues.value.tree;
-      expect(x2).eq(expectedx);
-      let x3 = stateVariables['/x3'].replacements[0].replacements[0].stateValues.value.tree;
-      expect(x3).eq(expectedx);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 2,
-        name: 'broccoli',
-        meta: {
-          subvariantsSpecified: false,
-          createdBy: "/_document1"
-        },
-        subvariants: [{
-          indices: [5],
-          subvariants: [],
-          meta: { createdBy: "/_select1" }
-        }]
-      })
-      generatedVariantInfo = JSON.parse(JSON.stringify(stateVariables["/_document1"].stateValues.generatedVariantInfo))
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('broccoli');
-    })
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   let x = stateVariables['/x'].stateValues.value;
+    //   expect(x).eq(expectedx);
+    //   let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+    //   expect(xorig).eq(expectedx);
+    //   let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
+    //   expect(x2).eq(expectedx);
+    //   let x3 = stateVariables[stateVariables[stateVariables['/x3'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+    //   expect(x3).eq(expectedx);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 2,
+    //     name: 'broccoli',
+    //     meta: {
+    //       createdBy: "/_document1"
+    //     },
+    //     subvariants: [{
+    //       indices: [5],
+    //       subvariants: [],
+    //       meta: { createdBy: "/_select1" }
+    //     }]
+    //   })
+    //   generatedVariantInfo = JSON.parse(JSON.stringify(stateVariables["/_document1"].stateValues.generatedVariantInfo))
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('broccoli');
+    // })
 
 
-    cy.log("same result with previous generatedVariantInfo")
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <text>3a</text>
-    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
-    <p>Selected variable:
-    <select assignnames="(x)">
-      <option selectForVariantNames="Dill"><math>d</math></option>
-      <option selectForVariantNames="carrot"><math>c</math></option>
-      <option selectForVariantNames="eggplant"><math>e</math></option>
-      <option selectForVariantNames="avocado"><math>a</math></option>
-      <option selectForVariantNames="broccoli"><math>b</math></option>
-    </select>
-    </p>
-    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
-    `,
-        requestedVariant: generatedVariantInfo,
-      }, "*");
-    })
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `3a`)
+    // cy.log("same result with previous generatedVariantInfo")
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <text>3a</text>
+    // <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
+    // <p>Selected variable:
+    // <select assignnames="(x)">
+    //   <option selectForVariantNames="Dill"><math>d</math></option>
+    //   <option selectForVariantNames="carrot"><math>c</math></option>
+    //   <option selectForVariantNames="eggplant"><math>e</math></option>
+    //   <option selectForVariantNames="avocado"><math>a</math></option>
+    //   <option selectForVariantNames="broccoli"><math>b</math></option>
+    // </select>
+    // </p>
+    // <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    // <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
+    // `,
+    //     requestedVariant: generatedVariantInfo,
+    //   }, "*");
+    // })
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `3a`)
 
-    cy.window().then(async (win) => {
-      let expectedx = 'b';
+    // cy.window().then(async (win) => {
+    //   let expectedx = 'b';
 
-      let stateVariables = await win.returnAllStateVariables1();
-      let x = stateVariables['/x'].stateValues.value.tree;
-      expect(x).eq(expectedx);
-      let xorig = stateVariables['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
-      expect(xorig).eq(expectedx);
-      let x2 = stateVariables['/x2'].replacements[0].stateValues.value.tree;
-      expect(x2).eq(expectedx);
-      let x3 = stateVariables['/x3'].replacements[0].replacements[0].stateValues.value.tree;
-      expect(x3).eq(expectedx);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 2,
-        name: 'broccoli',
-        meta: {
-          subvariantsSpecified: true,
-          createdBy: "/_document1"
-        },
-        subvariants: [{
-          indices: [5],
-          subvariants: [],
-          meta: { createdBy: "/_select1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('broccoli');
-    })
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   let x = stateVariables['/x'].stateValues.value;
+    //   expect(x).eq(expectedx);
+    //   let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+    //   expect(xorig).eq(expectedx);
+    //   let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
+    //   expect(x2).eq(expectedx);
+    //   let x3 = stateVariables[stateVariables[stateVariables['/x3'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+    //   expect(x3).eq(expectedx);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 2,
+    //     name: 'broccoli',
+    //     meta: {
+    //       createdBy: "/_document1"
+    //     },
+    //     subvariants: [{
+    //       indices: [5],
+    //       subvariants: [],
+    //       meta: { createdBy: "/_select1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('2');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(2);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('broccoli');
+    // })
 
-    cy.log("specify variant dill")
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <text>4</text>
-    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
-    <p>Selected variable:
-    <select assignnames="(x)">
-      <option selectForVariantNames="Dill"><math>d</math></option>
-      <option selectForVariantNames="carrot"><math>c</math></option>
-      <option selectForVariantNames="eggplant"><math>e</math></option>
-      <option selectForVariantNames="avocado"><math>a</math></option>
-      <option selectForVariantNames="broccoli"><math>b</math></option>
-    </select>
-    </p>
-    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
-    `,
-        requestedVariant: { name: 'dill' },
-      }, "*");
-    })
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `4`)
+    // cy.log("specify variant dill")
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <text>4</text>
+    // <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
+    // <p>Selected variable:
+    // <select assignnames="(x)">
+    //   <option selectForVariantNames="Dill"><math>d</math></option>
+    //   <option selectForVariantNames="carrot"><math>c</math></option>
+    //   <option selectForVariantNames="eggplant"><math>e</math></option>
+    //   <option selectForVariantNames="avocado"><math>a</math></option>
+    //   <option selectForVariantNames="broccoli"><math>b</math></option>
+    // </select>
+    // </p>
+    // <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    // <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
+    // `,
+    //     requestedVariant: { name: 'dill' },
+    //   }, "*");
+    // })
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `4`)
 
-    cy.window().then(async (win) => {
-      let expectedx = 'd';
+    // cy.window().then(async (win) => {
+    //   let expectedx = 'd';
 
-      let stateVariables = await win.returnAllStateVariables1();
-      let x = stateVariables['/x'].stateValues.value.tree;
-      expect(x).eq(expectedx);
-      let xorig = stateVariables['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
-      expect(xorig).eq(expectedx);
-      let x2 = stateVariables['/x2'].replacements[0].stateValues.value.tree;
-      expect(x2).eq(expectedx);
-      let x3 = stateVariables['/x3'].replacements[0].replacements[0].stateValues.value.tree;
-      expect(x3).eq(expectedx);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 4,
-        name: 'dill',
-        meta: {
-          subvariantsSpecified: false,
-          createdBy: "/_document1"
-        },
-        subvariants: [{
-          indices: [1],
-          subvariants: [],
-          meta: { createdBy: "/_select1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('4');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(4);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('dill');
-    })
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   let x = stateVariables['/x'].stateValues.value;
+    //   expect(x).eq(expectedx);
+    //   let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+    //   expect(xorig).eq(expectedx);
+    //   let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
+    //   expect(x2).eq(expectedx);
+    //   let x3 = stateVariables[stateVariables[stateVariables['/x3'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+    //   expect(x3).eq(expectedx);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 4,
+    //     name: 'dill',
+    //     meta: {
+    //       createdBy: "/_document1"
+    //     },
+    //     subvariants: [{
+    //       indices: [1],
+    //       subvariants: [],
+    //       meta: { createdBy: "/_select1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('4');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(4);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('dill');
+    // })
 
 
     cy.log("specify large variant index")
@@ -1173,19 +1156,18 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'e';
 
       let stateVariables = await win.returnAllStateVariables1();
-      let x = stateVariables['/x'].stateValues.value.tree;
+      let x = stateVariables['/x'].stateValues.value;
       expect(x).eq(expectedx);
-      let xorig = stateVariables['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
+      let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(xorig).eq(expectedx);
-      let x2 = stateVariables['/x2'].replacements[0].stateValues.value.tree;
+      let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
       expect(x2).eq(expectedx);
-      let x3 = stateVariables['/x3'].replacements[0].replacements[0].stateValues.value.tree;
+      let x3 = stateVariables[stateVariables[stateVariables['/x3'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(x3).eq(expectedx);
       expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
         index: 5,
         name: 'eggplant',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -1228,19 +1210,18 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'b';
 
       let stateVariables = await win.returnAllStateVariables1();
-      let x = stateVariables['/x'].stateValues.value.tree;
+      let x = stateVariables['/x'].stateValues.value;
       expect(x).eq(expectedx);
-      let xorig = stateVariables['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
+      let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(xorig).eq(expectedx);
-      let x2 = stateVariables['/x2'].replacements[0].stateValues.value.tree;
+      let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
       expect(x2).eq(expectedx);
-      let x3 = stateVariables['/x3'].replacements[0].replacements[0].stateValues.value.tree;
+      let x3 = stateVariables[stateVariables[stateVariables['/x3'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(x3).eq(expectedx);
       expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
         index: 2,
         name: 'broccoli',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -1283,19 +1264,18 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'a';
 
       let stateVariables = await win.returnAllStateVariables1();
-      let x = stateVariables['/x'].stateValues.value.tree;
+      let x = stateVariables['/x'].stateValues.value;
       expect(x).eq(expectedx);
-      let xorig = stateVariables['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
+      let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(xorig).eq(expectedx);
-      let x2 = stateVariables['/x2'].replacements[0].stateValues.value.tree;
+      let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
       expect(x2).eq(expectedx);
-      let x3 = stateVariables['/x3'].replacements[0].replacements[0].stateValues.value.tree;
+      let x3 = stateVariables[stateVariables[stateVariables['/x3'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(x3).eq(expectedx);
       expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
         index: 1,
         name: 'avocado',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -1310,59 +1290,58 @@ describe('Specifying single variant document tests', function () {
     })
 
 
-    cy.log("invalid variant name gives index 0")
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <text>8</text>
-    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
-    <p>Selected variable:
-    <select assignnames="(x)">
-      <option selectForVariantNames="Dill"><math>d</math></option>
-      <option selectForVariantNames="carrot"><math>c</math></option>
-      <option selectForVariantNames="eggplant"><math>e</math></option>
-      <option selectForVariantNames="avocado"><math>a</math></option>
-      <option selectForVariantNames="broccoli"><math>b</math></option>
-    </select>
-    </p>
-    <p>Selected variable repeated: <copy name="x2" target="x" /></p>
-    <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
-    `,
-        requestedVariant: { name: 'rotten' },
-      }, "*");
-    })
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `8`)
+    // cy.log("invalid variant name gives index 0")
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <text>8</text>
+    // <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
+    // <p>Selected variable:
+    // <select assignnames="(x)">
+    //   <option selectForVariantNames="Dill"><math>d</math></option>
+    //   <option selectForVariantNames="carrot"><math>c</math></option>
+    //   <option selectForVariantNames="eggplant"><math>e</math></option>
+    //   <option selectForVariantNames="avocado"><math>a</math></option>
+    //   <option selectForVariantNames="broccoli"><math>b</math></option>
+    // </select>
+    // </p>
+    // <p>Selected variable repeated: <copy name="x2" target="x" /></p>
+    // <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
+    // `,
+    //     requestedVariant: { name: 'rotten' },
+    //   }, "*");
+    // })
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `8`)
 
-    cy.window().then(async (win) => {
-      let expectedx = 'a';
+    // cy.window().then(async (win) => {
+    //   let expectedx = 'a';
 
-      let stateVariables = await win.returnAllStateVariables1();
-      let x = stateVariables['/x'].stateValues.value.tree;
-      expect(x).eq(expectedx);
-      let xorig = stateVariables['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
-      expect(xorig).eq(expectedx);
-      let x2 = stateVariables['/x2'].replacements[0].stateValues.value.tree;
-      expect(x2).eq(expectedx);
-      let x3 = stateVariables['/x3'].replacements[0].replacements[0].stateValues.value.tree;
-      expect(x3).eq(expectedx);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
-        name: 'avocado',
-        meta: {
-          subvariantsSpecified: false,
-          createdBy: "/_document1"
-        },
-        subvariants: [{
-          indices: [4],
-          subvariants: [],
-          meta: { createdBy: "/_select1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('avocado');
-    })
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   let x = stateVariables['/x'].stateValues.value;
+    //   expect(x).eq(expectedx);
+    //   let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+    //   expect(xorig).eq(expectedx);
+    //   let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
+    //   expect(x2).eq(expectedx);
+    //   let x3 = stateVariables[stateVariables[stateVariables['/x3'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
+    //   expect(x3).eq(expectedx);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 1,
+    //     name: 'avocado',
+    //     meta: {
+    //       createdBy: "/_document1"
+    //     },
+    //     subvariants: [{
+    //       indices: [4],
+    //       subvariants: [],
+    //       meta: { createdBy: "/_select1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('1');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(1);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('avocado');
+    // })
 
 
     cy.log("round non-integer variant index")
@@ -1393,19 +1372,18 @@ describe('Specifying single variant document tests', function () {
       let expectedx = 'e';
 
       let stateVariables = await win.returnAllStateVariables1();
-      let x = stateVariables['/x'].stateValues.value.tree;
+      let x = stateVariables['/x'].stateValues.value;
       expect(x).eq(expectedx);
-      let xorig = stateVariables['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
+      let xorig = stateVariables[stateVariables[stateVariables['/_select1'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(xorig).eq(expectedx);
-      let x2 = stateVariables['/x2'].replacements[0].stateValues.value.tree;
+      let x2 = stateVariables[stateVariables['/x2'].replacements[0].componentName].stateValues.value;
       expect(x2).eq(expectedx);
-      let x3 = stateVariables['/x3'].replacements[0].replacements[0].stateValues.value.tree;
+      let x3 = stateVariables[stateVariables[stateVariables['/x3'].replacements[0].componentName].replacements[0].componentName].stateValues.value;
       expect(x3).eq(expectedx);
       expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
         index: 5,
         name: 'eggplant',
         meta: {
-          subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
@@ -1450,7 +1428,6 @@ describe('Specifying single variant document tests', function () {
         name: 'a',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed50283],
@@ -1487,7 +1464,6 @@ describe('Specifying single variant document tests', function () {
         name: 'a',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed50283],
@@ -1527,7 +1503,6 @@ describe('Specifying single variant document tests', function () {
         name: 'b',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed25018],
@@ -1562,7 +1537,6 @@ describe('Specifying single variant document tests', function () {
         name: 'b',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed25018],
@@ -1574,7 +1548,7 @@ describe('Specifying single variant document tests', function () {
       expect(stateVariables["/_document1"].sharedParameters.variantName).eq('b');
     })
 
-    cy.log("specify third variant by name")
+    cy.log("specify third variant")
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -1585,7 +1559,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { name: 'c' },
+        requestedVariant: { index: '3' },
       }, "*");
     })
     // to wait for page to load
@@ -1603,7 +1577,6 @@ describe('Specifying single variant document tests', function () {
         name: 'c',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed52018],
@@ -1615,40 +1588,39 @@ describe('Specifying single variant document tests', function () {
       expect(stateVariables["/_document1"].sharedParameters.variantName).eq('c');
     })
 
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <text>f</text>
-    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
-    <p>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { name: 'c' },
-      }, "*");
-    })
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `f`)
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/n'].stateValues.value).eq(nWithSeed52018);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 3,
-        name: 'c',
-        meta: {
-          createdBy: "/_document1",
-          subvariantsSpecified: false,
-        },
-        subvariants: [{
-          indices: [nWithSeed52018],
-          meta: { createdBy: "/_selectfromsequence1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('52018');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(3);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('c');
-    })
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <text>f</text>
+    // <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
+    // <p>
+    //   Selected number: 
+    //   <selectfromsequence assignnames="n" length="10000000000" />
+    // </p>
+    // `,
+    //     requestedVariant: { name: 'c' },
+    //   }, "*");
+    // })
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `f`)
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   expect(stateVariables['/n'].stateValues.value).eq(nWithSeed52018);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 3,
+    //     name: 'c',
+    //     meta: {
+    //       createdBy: "/_document1",
+    //     },
+    //     subvariants: [{
+    //       indices: [nWithSeed52018],
+    //       meta: { createdBy: "/_selectfromsequence1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('52018');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(3);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('c');
+    // })
 
     cy.log("specify fourth variant as string")
     cy.window().then(async (win) => {
@@ -1680,7 +1652,6 @@ describe('Specifying single variant document tests', function () {
         name: 'd',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed2917392],
@@ -1715,7 +1686,6 @@ describe('Specifying single variant document tests', function () {
         name: 'd',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed2917392],
@@ -1759,7 +1729,6 @@ describe('Specifying single variant document tests', function () {
         name: 'e',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed603962],
@@ -1795,7 +1764,6 @@ describe('Specifying single variant document tests', function () {
         name: 'e',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed603962],
@@ -1809,41 +1777,40 @@ describe('Specifying single variant document tests', function () {
     })
 
 
-    cy.log('same results with previous generatedVariantInfo')
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <text>ja</text>
-    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
-    <p>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>1
-    `,
-        requestedVariant: generatedVariantInfo,
-      }, "*");
-    })
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `ja`)
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/n'].stateValues.value).eq(nWithSeed603962);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 5,
-        name: 'e',
-        meta: {
-          createdBy: "/_document1",
-          subvariantsSpecified: true,
-        },
-        subvariants: [{
-          indices: [nWithSeed603962],
-          meta: { createdBy: "/_selectfromsequence1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('603962');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(5);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('e');
-    })
+    // cy.log('same results with previous generatedVariantInfo')
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <text>ja</text>
+    // <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
+    // <p>
+    //   Selected number: 
+    //   <selectfromsequence assignnames="n" length="10000000000" />
+    // </p>1
+    // `,
+    //     requestedVariant: generatedVariantInfo,
+    //   }, "*");
+    // })
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `ja`)
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   expect(stateVariables['/n'].stateValues.value).eq(nWithSeed603962);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 5,
+    //     name: 'e',
+    //     meta: {
+    //       createdBy: "/_document1",
+    //     },
+    //     subvariants: [{
+    //       indices: [nWithSeed603962],
+    //       meta: { createdBy: "/_selectfromsequence1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('603962');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(5);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('e');
+    // })
 
 
     cy.log('reorder seeds');
@@ -1873,7 +1840,6 @@ describe('Specifying single variant document tests', function () {
         name: 'a',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed2917392],
@@ -1908,7 +1874,6 @@ describe('Specifying single variant document tests', function () {
         name: 'a',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed2917392],
@@ -1945,7 +1910,6 @@ describe('Specifying single variant document tests', function () {
         name: 'b',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed52018],
@@ -1958,42 +1922,41 @@ describe('Specifying single variant document tests', function () {
     })
 
 
-    cy.log("specify third variant by name")
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-    <text>n</text>
-    <variantControl nvariants="5" seeds="2917392  52018  603962  50283  25018"/>
-    <p>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { name: 'c' },
-      }, "*");
-    })
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `n`)
+    // cy.log("specify third variant by name")
+    // cy.window().then(async (win) => {
+    //   win.postMessage({
+    //     doenetML: `
+    // <text>n</text>
+    // <variantControl nvariants="5" seeds="2917392  52018  603962  50283  25018"/>
+    // <p>
+    //   Selected number: 
+    //   <selectfromsequence assignnames="n" length="10000000000" />
+    // </p>
+    // `,
+    //     requestedVariant: { name: 'c' },
+    //   }, "*");
+    // })
+    // // to wait for page to load
+    // cy.get('#\\/_text1').should('have.text', `n`)
 
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/n'].stateValues.value).eq(nWithSeed603962);
-      expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 3,
-        name: 'c',
-        meta: {
-          createdBy: "/_document1",
-          subvariantsSpecified: false,
-        },
-        subvariants: [{
-          indices: [nWithSeed603962],
-          meta: { createdBy: "/_selectfromsequence1" }
-        }]
-      })
-      expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('603962');
-      expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(3);
-      expect(stateVariables["/_document1"].sharedParameters.variantName).eq('c');
-    })
+    // cy.window().then(async (win) => {
+    //   let stateVariables = await win.returnAllStateVariables1();
+    //   expect(stateVariables['/n'].stateValues.value).eq(nWithSeed603962);
+    //   expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
+    //     index: 3,
+    //     name: 'c',
+    //     meta: {
+    //       createdBy: "/_document1",
+    //     },
+    //     subvariants: [{
+    //       indices: [nWithSeed603962],
+    //       meta: { createdBy: "/_selectfromsequence1" }
+    //     }]
+    //   })
+    //   expect(stateVariables["/_document1"].sharedParameters.variantSeed).eq('603962');
+    //   expect(stateVariables["/_document1"].sharedParameters.variantIndex).eq(3);
+    //   expect(stateVariables["/_document1"].sharedParameters.variantName).eq('c');
+    // })
 
     cy.log("specify fourth variant as string")
     cy.window().then(async (win) => {
@@ -2020,7 +1983,6 @@ describe('Specifying single variant document tests', function () {
         name: 'd',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed50283],
@@ -2057,7 +2019,6 @@ describe('Specifying single variant document tests', function () {
         name: 'e',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed25018],
@@ -2100,7 +2061,6 @@ describe('Specifying single variant document tests', function () {
         name: 'd',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed50283],
@@ -2141,7 +2101,6 @@ describe('Specifying single variant document tests', function () {
         name: 'h',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed25018],
@@ -2182,7 +2141,6 @@ describe('Specifying single variant document tests', function () {
         name: 'c',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed3],
@@ -2224,7 +2182,6 @@ describe('Specifying single variant document tests', function () {
         name: 'e',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed4],
@@ -2267,7 +2224,6 @@ describe('Specifying single variant document tests', function () {
         name: 'a',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed1],
@@ -2308,7 +2264,6 @@ describe('Specifying single variant document tests', function () {
         name: 'b',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed2],
@@ -2349,7 +2304,6 @@ describe('Specifying single variant document tests', function () {
         name: 'c',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed3],
@@ -2393,7 +2347,6 @@ describe('Specifying single variant document tests', function () {
         name: 'a',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed1],
@@ -2431,7 +2384,6 @@ describe('Specifying single variant document tests', function () {
         name: 'a',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed1],
@@ -2475,7 +2427,6 @@ describe('Specifying single variant document tests', function () {
         name: 'c',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed3],
@@ -2520,7 +2471,6 @@ describe('Specifying single variant document tests', function () {
         name: 'a',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed1],
@@ -2558,7 +2508,6 @@ describe('Specifying single variant document tests', function () {
         name: 'a',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed1],
@@ -2602,7 +2551,6 @@ describe('Specifying single variant document tests', function () {
         name: 'a',
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: false,
         },
         subvariants: [{
           indices: [nWithSeed1],
@@ -2678,7 +2626,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(ind, true),
             meta: {
               createdBy: "/_document1",
-              subvariantsSpecified: false,
             },
             subvariants: []
           }
@@ -2821,7 +2768,6 @@ describe('Specifying single variant document tests', function () {
         name: numberToLetters(20, true),
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: true,
         },
         subvariants: []
       }
@@ -2978,7 +2924,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(ind, true),
             meta: {
               createdBy: "/_document1",
-              subvariantsSpecified: false,
             },
             subvariants: [{
               indices: [],
@@ -3017,7 +2962,6 @@ describe('Specifying single variant document tests', function () {
                 name: numberToLetters(problemVariantInd, true),
                 meta: {
                   createdBy: `/problem${i}`,
-                  subvariantsSpecified: false,
                 },
                 subvariants: [{
                   indices: [selectVariantInd],
@@ -3042,7 +2986,6 @@ describe('Specifying single variant document tests', function () {
                 name: numberToLetters(problemVariantInd, true),
                 meta: {
                   createdBy: `/problem${i}`,
-                  subvariantsSpecified: false,
                 },
                 subvariants: [{
                   indices: [num],
@@ -3124,7 +3067,6 @@ describe('Specifying single variant document tests', function () {
         name: numberToLetters(10, true),
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: true,
         },
         subvariants: [{
           indices: [],
@@ -3163,7 +3105,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(problemVariantInd, true),
             meta: {
               createdBy: `/problem${i}`,
-              subvariantsSpecified: true,
             },
             subvariants: [{
               indices: [selectVariantInd],
@@ -3188,7 +3129,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(problemVariantInd, true),
             meta: {
               createdBy: `/problem${i}`,
-              subvariantsSpecified: true,
             },
             subvariants: [{
               indices: [num],
@@ -3295,7 +3235,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(ind, true),
             meta: {
               createdBy: "/_document1",
-              subvariantsSpecified: false,
             },
             subvariants: [undefined, {
               indices: [],
@@ -3337,7 +3276,6 @@ describe('Specifying single variant document tests', function () {
                 name: numberToLetters(problemVariantInd, true),
                 meta: {
                   createdBy: `/problem${i}`,
-                  subvariantsSpecified: false,
                 },
                 subvariants: [{
                   indices: [selectVariantInd],
@@ -3369,7 +3307,6 @@ describe('Specifying single variant document tests', function () {
                 name: numberToLetters(problemVariantInd, true),
                 meta: {
                   createdBy: `/problem${i}`,
-                  subvariantsSpecified: false,
                 },
                 subvariants: [{
                   indices: [num],
@@ -3463,7 +3400,6 @@ describe('Specifying single variant document tests', function () {
         name: numberToLetters(10, true),
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: true,
         },
         subvariants: [undefined, {
           indices: [],
@@ -3505,7 +3441,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(problemVariantInd, true),
             meta: {
               createdBy: `/problem${i}`,
-              subvariantsSpecified: true,
             },
             subvariants: [{
               indices: [selectVariantInd],
@@ -3536,7 +3471,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(problemVariantInd, true),
             meta: {
               createdBy: `/problem${i}`,
-              subvariantsSpecified: true,
             },
             subvariants: [{
               indices: [num],
@@ -3646,7 +3580,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(ind, true),
             meta: {
               createdBy: "/_document1",
-              subvariantsSpecified: false,
             },
             subvariants: [{
               indices: [],
@@ -3685,7 +3618,6 @@ describe('Specifying single variant document tests', function () {
                 name: numberToLetters(problemVariantInd, true),
                 meta: {
                   createdBy: `/problem${i}`,
-                  subvariantsSpecified: false,
                 },
                 subvariants: [{
                   indices: [selectVariantInd],
@@ -3710,7 +3642,6 @@ describe('Specifying single variant document tests', function () {
                 name: numberToLetters(problemVariantInd, true),
                 meta: {
                   createdBy: `/problem${i}`,
-                  subvariantsSpecified: false,
                 },
                 subvariants: [{
                   indices: [num],
@@ -3792,7 +3723,6 @@ describe('Specifying single variant document tests', function () {
         name: numberToLetters(10, true),
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: true,
         },
         subvariants: [{
           indices: [],
@@ -3831,7 +3761,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(problemVariantInd, true),
             meta: {
               createdBy: `/problem${i}`,
-              subvariantsSpecified: true,
             },
             subvariants: [{
               indices: [selectVariantInd],
@@ -3856,7 +3785,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(problemVariantInd, true),
             meta: {
               createdBy: `/problem${i}`,
-              subvariantsSpecified: true,
             },
             subvariants: [{
               indices: [num],
@@ -3938,7 +3866,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(ind, true),
             meta: {
               createdBy: "/_document1",
-              subvariantsSpecified: false,
             },
             subvariants: [{
               values: [...valuesS1],
@@ -4000,7 +3927,6 @@ describe('Specifying single variant document tests', function () {
         name: numberToLetters(10, true),
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: true,
         },
         subvariants: [{
           values: [...valuesS1],
@@ -4091,7 +4017,6 @@ describe('Specifying single variant document tests', function () {
             name: numberToLetters(ind, true),
             meta: {
               createdBy: "/_document1",
-              subvariantsSpecified: false,
             },
             subvariants: [{
               indices: [...orderC1],
@@ -4189,7 +4114,6 @@ describe('Specifying single variant document tests', function () {
         name: numberToLetters(10, true),
         meta: {
           createdBy: "/_document1",
-          subvariantsSpecified: true,
         },
         subvariants: [{
           indices: [...orderC1],
@@ -4248,7 +4172,7 @@ describe('Specifying single variant document tests', function () {
 
       let generatedVariantInfo;
       let indexChosen1, indexChosen2;
-      let m,n;
+      let m, n;
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4371,6 +4295,234 @@ describe('Specifying single variant document tests', function () {
 
   });
 
+  it('replacements of composites are not included in generated variant info', () => {
 
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+    let doenetML = `
+    <group name="g" newNamespace>
+      <choiceinput randomizeOrder name="ci">
+        <choice>a</choice>
+        <choice>b</choice>
+        <choice>c</choice>
+      </choiceinput>
+      <p>Selected value: $ci</p>
+      <p>Enter <selectFromSequence assignNames="n" />. <answer name="ans">$n</answer></p>
+    </group>
+
+    <copy target="g" assignNames="g2" />
+
+    <copy target="g" assignNames="g3" link="false" />
+
+    <p>Enter <selectFromSequence assignNames="m" />. <answer name="ans">$m</answer></p>
+    `
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>1</text>${doenetML}`,
+        requestedVariant: { index: 1 },
+      }, "*");
+    })
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `1`)
+
+    let choices = ["a", "b", "c"]
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let choiceOrder = stateVariables["/g/ci"].stateValues.choiceOrder;
+      let n = stateVariables["/g/n"].stateValues.value;
+      let m = stateVariables["/m"].stateValues.value;
+
+      let mathinput1Name = stateVariables[`/g/ans`].stateValues.inputChildren[0].componentName;
+      let mathinput2Name = stateVariables[`/g2/ans`].stateValues.inputChildren[0].componentName;
+      let mathinput3Name = stateVariables[`/g3/ans`].stateValues.inputChildren[0].componentName;
+      let mathinput4Name = stateVariables[`/ans`].stateValues.inputChildren[0].componentName;
+
+      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+      let answer1Correct = cesc('#' + mathinput1Name + "_correct");
+      let answer1Incorrect = cesc('#' + mathinput1Name + "_incorrect");
+      let answer1Submit = cesc('#' + mathinput1Name + "_submit");
+
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let answer2Correct = cesc('#' + mathinput2Name + "_correct");
+      let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
+      let answer2Submit = cesc('#' + mathinput2Name + "_submit");
+
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+      let answer3Correct = cesc('#' + mathinput3Name + "_correct");
+      let answer3Incorrect = cesc('#' + mathinput3Name + "_incorrect");
+      let answer3Submit = cesc('#' + mathinput3Name + "_submit");
+
+      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+      let answer4Correct = cesc('#' + mathinput4Name + "_correct");
+      let answer4Incorrect = cesc('#' + mathinput4Name + "_incorrect");
+      let answer4Submit = cesc('#' + mathinput4Name + "_submit");
+
+      cy.get(`label[for=${cesc("/g/ci_choice1_input")}]`).should('have.text', choices[choiceOrder[0] - 1]);
+      cy.get(`label[for=${cesc("/g/ci_choice2_input")}]`).should('have.text', choices[choiceOrder[1] - 1]);
+      cy.get(`label[for=${cesc("/g/ci_choice3_input")}]`).should('have.text', choices[choiceOrder[2] - 1]);
+      cy.get(`label[for=${cesc("/g2/ci_choice1_input")}]`).should('have.text', choices[choiceOrder[0] - 1]);
+      cy.get(`label[for=${cesc("/g2/ci_choice2_input")}]`).should('have.text', choices[choiceOrder[1] - 1]);
+      cy.get(`label[for=${cesc("/g2/ci_choice3_input")}]`).should('have.text', choices[choiceOrder[2] - 1]);
+      cy.get(`label[for=${cesc("/g3/ci_choice1_input")}]`).should('have.text', choices[choiceOrder[0] - 1]);
+      cy.get(`label[for=${cesc("/g3/ci_choice2_input")}]`).should('have.text', choices[choiceOrder[1] - 1]);
+      cy.get(`label[for=${cesc("/g3/ci_choice3_input")}]`).should('have.text', choices[choiceOrder[2] - 1]);
+
+      cy.get(cesc(`#/g/_p2`)).should('have.text', `Enter ${n}. `)
+      cy.get(cesc(`#/g2/_p2`)).should('have.text', `Enter ${n}. `)
+      cy.get(cesc(`#/g3/_p2`)).should('have.text', `Enter ${n}. `)
+      cy.get(cesc(`#/_p1`)).should('have.text', `Enter ${m}. `)
+
+      cy.get(cesc(`#/g/ci_choice2_input`)).click();
+      cy.get(cesc(`#/g/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc(`#/g2/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc(`#/g3/ci_choice2_input`)).should('not.be.checked')
+
+      cy.get(cesc(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc(`#/g3/_p1`)).should('have.text', `Selected value: `)
+
+      cy.get(cesc(`#/g3/ci_choice1_input`)).click();
+      cy.get(cesc(`#/g/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc(`#/g2/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc(`#/g3/ci_choice1_input`)).should('be.checked')
+
+      cy.get(cesc(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc(`#/g3/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[0] - 1]}`)
+
+      cy.get(mathinput2Anchor).type(`${n}{enter}`, { force: true })
+      cy.get(answer1Correct).should('be.visible')
+      cy.get(answer2Correct).should('be.visible')
+      cy.get(answer3Submit).should('be.visible')
+      cy.get(answer4Submit).should('be.visible')
+
+      cy.get(mathinput3Anchor).type(`${n}{enter}`, { force: true })
+      cy.get(answer3Correct).should('be.visible');
+
+      cy.get(mathinput4Anchor).type(`${m}{enter}`, { force: true })
+      cy.get(answer4Correct).should('be.visible');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+
+        expect(stateVariables["/g2/n"].stateValues.value).eq(n)
+        expect(stateVariables["/g3/n"].stateValues.value).eq(n)
+        expect(stateVariables["/g2/ci"].stateValues.choiceOrder).eqls(choiceOrder);
+        expect(stateVariables["/g3/ci"].stateValues.choiceOrder).eqls(choiceOrder);
+
+        expect(stateVariables["/g/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[1] - 1]])
+        expect(stateVariables["/g2/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[1] - 1]])
+        expect(stateVariables["/g3/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[0] - 1]])
+
+        expect(stateVariables["/g/ans"].stateValues.submittedResponses).eqls([n])
+        expect(stateVariables["/g2/ans"].stateValues.submittedResponses).eqls([n])
+        expect(stateVariables["/g3/ans"].stateValues.submittedResponses).eqls([n])
+        expect(stateVariables["/ans"].stateValues.submittedResponses).eqls([m])
+
+
+      })
+
+      cy.wait(2000);  // wait for 1 second debounce
+      cy.reload();
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+      <text>1</text>${doenetML}`,
+          requestedVariant: { index: 1 },
+        }, "*");
+      })
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `1`)
+
+      // wait until core is loaded
+      cy.waitUntil(() => cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        return stateVariables["/ans"];
+      }))
+
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+
+        expect(stateVariables["/g/n"].stateValues.value).eq(n)
+        expect(stateVariables["/g2/n"].stateValues.value).eq(n)
+        expect(stateVariables["/g3/n"].stateValues.value).eq(n)
+        expect(stateVariables["/m"].stateValues.value).eq(m)
+
+        expect(stateVariables["/g/ci"].stateValues.choiceOrder).eqls(choiceOrder);
+        expect(stateVariables["/g2/ci"].stateValues.choiceOrder).eqls(choiceOrder);
+        expect(stateVariables["/g3/ci"].stateValues.choiceOrder).eqls(choiceOrder);
+
+        expect(stateVariables["/g/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[1] - 1]])
+        expect(stateVariables["/g2/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[1] - 1]])
+        expect(stateVariables["/g3/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[0] - 1]])
+
+        expect(stateVariables["/g/ans"].stateValues.submittedResponses).eqls([n])
+        expect(stateVariables["/g2/ans"].stateValues.submittedResponses).eqls([n])
+        expect(stateVariables["/g3/ans"].stateValues.submittedResponses).eqls([n])
+        expect(stateVariables["/ans"].stateValues.submittedResponses).eqls([m])
+
+
+      })
+
+      cy.get(cesc(`#/g/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc(`#/g2/ci_choice2_input`)).should('be.checked')
+      cy.get(cesc(`#/g3/ci_choice1_input`)).should('be.checked')
+
+      cy.get(cesc(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc(`#/g3/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[0] - 1]}`)
+
+
+      cy.get(cesc(`#/g/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc(`#/g2/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[1] - 1]}`)
+      cy.get(cesc(`#/g3/_p1`)).should('have.text', `Selected value: ${choices[choiceOrder[0] - 1]}`)
+
+
+      cy.get(answer1Correct).should('be.visible')
+      cy.get(answer2Correct).should('be.visible')
+      cy.get(answer3Correct).should('be.visible')
+      cy.get(answer4Correct).should('be.visible')
+
+      cy.get(mathinput1Anchor).type(`{end}{backspace}{backspace}${n+1}`, { force: true })
+      cy.get(answer2Submit).click();
+      cy.get(answer1Incorrect).should('be.visible')
+      cy.get(answer2Incorrect).should('be.visible')
+
+      cy.get(mathinput2Anchor).type(`{end}{backspace}{backspace}${n}`, { force: true })
+      cy.get(answer1Submit).click();
+      cy.get(answer1Correct).should('be.visible')
+      cy.get(answer2Correct).should('be.visible')
+
+      cy.get(mathinput3Anchor).type(`{end}{backspace}{backspace}${n+1}`, { force: true })
+      cy.get(answer3Submit).click();
+      cy.get(answer3Incorrect).should('be.visible')
+      cy.get(mathinput3Anchor).type(`{end}{backspace}{backspace}${n}`, { force: true })
+      cy.get(answer3Submit).click();
+      cy.get(answer3Correct).should('be.visible')
+      
+
+      cy.get(mathinput4Anchor).type(`{end}{backspace}{backspace}${m+1}`, { force: true })
+      cy.get(answer4Submit).click();
+      cy.get(answer4Incorrect).should('be.visible')
+      cy.get(mathinput4Anchor).type(`{end}{backspace}{backspace}${m}`, { force: true })
+      cy.get(answer4Submit).click();
+      cy.get(answer4Correct).should('be.visible')
+      
+
+
+    })
+
+  })
 
 });
