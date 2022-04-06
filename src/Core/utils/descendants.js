@@ -4,6 +4,7 @@ export function gatherDescendants({ ancestor, descendantTypes,
   includeNonActiveChildren = false,
   skipOverAdapters = false,
   ignoreReplacementsOfMatchedComposites = false,
+  ignoreReplacementsOfEncounteredComposites = false,
   init = true,
   componentInfoObjects,
 }) {
@@ -84,12 +85,15 @@ export function gatherDescendants({ ancestor, descendantTypes,
   }
 
 
-  if (ignoreReplacementsOfMatchedComposites) {
+  if (ignoreReplacementsOfMatchedComposites || ignoreReplacementsOfEncounteredComposites) {
     // first check if have matched any composites, so can ignore their replacements
     let namesToIgnore = [];
     for (let child of childrenToCheck) {
-      let matchedChild = matchChildToTypes(child);
-      if (matchedChild && componentInfoObjects.isInheritedComponentType({
+      let checkChildForReplacements = matchChildToTypes(child);
+      if(ignoreReplacementsOfEncounteredComposites) {
+        checkChildForReplacements = true;
+      }
+      if (checkChildForReplacements && componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: child.componentType,
         baseComponentType: "_composite"
       })) {
@@ -113,7 +117,6 @@ export function gatherDescendants({ ancestor, descendantTypes,
 
 
   let descendants = [];
-  let replacementNamesOfMatchedComposites = [];
 
   for (let child of childrenToCheck) {
     let matchedChild = matchChildToTypes(child);
@@ -135,15 +138,12 @@ export function gatherDescendants({ ancestor, descendantTypes,
         includeNonActiveChildren,
         skipOverAdapters,
         ignoreReplacementsOfMatchedComposites,
+        ignoreReplacementsOfEncounteredComposites,
         init: false,
         componentInfoObjects,
       });
       descendants.push(...additionalDescendants);
     }
-  }
-
-  if (ignoreReplacementsOfMatchedComposites) {
-    descendants = descendants.filter(x => !replacementNamesOfMatchedComposites.includes(x))
   }
 
   return descendants;

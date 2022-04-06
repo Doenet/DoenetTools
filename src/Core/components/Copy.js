@@ -1404,7 +1404,7 @@ export default class Copy extends CompositeComponent {
     // create a serialized copy of the entire component
 
     let serializedReplacements = [
-      await replacementSourceComponent.serialize({ copyAll: !link })
+      await replacementSourceComponent.serialize({ copyAll: !link, copyVariants: !link })
     ];
 
     // console.log(`serializedReplacements for ${component.componentName}`);
