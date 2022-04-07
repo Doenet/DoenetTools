@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilValueLoadable } from 'recoil';
-import { selectedInformation } from './SelectedDoenetML';
+import { selectedInformation } from './SelectedActivity';
 export default function MultiSelect() {
   const selection =
     useRecoilValueLoadable(selectedInformation).getValue() ?? [];
