@@ -37,7 +37,7 @@ const Label = styled.p`
 `;
 
 const Container = styled.div`
-  display: ${props => props.align};
+  display: ${ props => props.align ? props.align : 'inline-block'};
   width: auto;
   align-items: center;
 `;
@@ -64,9 +64,9 @@ export default function Button(props) {
   //     };
   if (props.width) {
     if (props.width === "menu") {
-      button.width = '235px';
+      button.width = '100%';
       if (props.label) {
-        container.width = '235px';
+        container.width = 'menu';
         button.width = '100%';
       }
     } 
