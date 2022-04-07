@@ -402,6 +402,23 @@ export default class Core {
 
       let results = await this.initializeRenderedComponentInstruction(this.document);
 
+      // initializing renderer instructions could trigger more composite updates
+      // (presumably from deriving child results)
+      // if so, make replacement changes and update renderer instructions again
+      // TODO: should we check for child results earlier so we don't have to check them
+      // when updating renderer instructions?
+      if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+        await this.replacementChangesFromCompositesToUpdate();
+
+        let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+        this.updateInfo.componentsToUpdateRenderers = [];
+
+        await this.updateRendererInstructions({
+          componentNamesToUpdate,
+        });
+      }
+
+
       this.documentRendererInstructions = results.componentToRender;
 
       let updateInstructions = [{
@@ -442,6 +459,23 @@ export default class Core {
       await this.updateRendererInstructions({
         componentNamesToUpdate: await this.componentAndRenderedDescendants(parent)
       });
+
+      // updating renderer instructions could trigger more composite updates
+      // (presumably from deriving child results)
+      // if so, make replacement changes and update renderer instructions again
+      // TODO: should we check for child results earlier so we don't have to check them
+      // when updating renderer instructions?
+      if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+        await this.replacementChangesFromCompositesToUpdate();
+
+        let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+        this.updateInfo.componentsToUpdateRenderers = [];
+
+        await this.updateRendererInstructions({
+          componentNamesToUpdate,
+        });
+      }
+
       await this.processStateVariableTriggers();
 
     }
@@ -450,7 +484,7 @@ export default class Core {
   }
 
 
-  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, actionId }) {
+  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate = {}, actionId }) {
 
     let deletedRenderers = [];
 
@@ -1065,7 +1099,7 @@ export default class Core {
 
         let variantControlInd;
         let variantControlChild;
-  
+
         // look for variantControl child
         for (let [ind, child] of serializedChildren.entries()) {
           if (child.componentType === "variantControl" || (
@@ -7940,6 +7974,24 @@ export default class Core {
       sourceOfUpdate: { sourceInformation, local: true },
       actionId,
     });
+
+    // updating renderer instructions could trigger more composite updates
+    // (presumably from deriving child results)
+    // if so, make replacement changes and update renderer instructions again
+    // TODO: should we check for child results earlier so we don't have to check them
+    // when updating renderer instructions?
+    if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+      await this.replacementChangesFromCompositesToUpdate();
+
+      let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+      this.updateInfo.componentsToUpdateRenderers = [];
+
+      await this.updateRendererInstructions({
+        componentNamesToUpdate,
+        sourceOfUpdate: { sourceInformation, local: true },
+        actionId,
+      });
+    }
 
     await this.processStateVariableTriggers();
 

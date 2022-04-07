@@ -80,21 +80,21 @@ describe('Basic copy assignName Tests', function () {
       expect(stateVariables['/o'].stateValues.value).eq('hello');
       expect(stateVariables['/p'].stateValues.value).eq('hello');
 
-      expect(stateVariables['/cp1'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp2'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp3'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp4'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp5'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp6'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp7'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp8'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp9'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp10'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp11'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp12'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp13'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp14'].replacements[0].stateValues.value).eq('hello');
-      expect(stateVariables['/cp15'].replacements[0].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp1'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp2'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp3'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp4'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp5'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp6'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp7'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp8'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp9'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp10'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp11'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp12'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp13'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp14'].replacements[0].componentName].stateValues.value).eq('hello');
+      expect(stateVariables[stateVariables['/cp15'].replacements[0].componentName].stateValues.value).eq('hello');
 
 
 
@@ -156,12 +156,12 @@ describe('Basic copy assignName Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables['/_math1'].stateValues.value.tree).eqls(["+", "x", "x"]);
+      expect(stateVariables['/_math1'].stateValues.value).eqls(["+", "x", "x"]);
       expect(stateVariables['/s1'].stateValues.value).eq('none');
       expect(stateVariables['/s2'].stateValues.value).eq('none');
       expect(stateVariables['/s3'].stateValues.value).eq('none');
 
-      expect(stateVariables['/m1'].stateValues.value.tree).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m1'].stateValues.value).eqls(["*", 2, "x"]);
 
       expect(stateVariables['/s4'].stateValues.value).eq('full');
       expect(stateVariables['/s5'].stateValues.value).eq('full');
@@ -176,22 +176,22 @@ describe('Basic copy assignName Tests', function () {
       expect(stateVariables['/s13'].stateValues.value).eq('full');
 
 
-      expect(stateVariables['/cp1'].replacements[0].stateValues.value).eq('none');
-      expect(stateVariables['/cp2'].replacements[0].stateValues.value).eq('none');
-      expect(stateVariables['/cp3'].replacements[0].stateValues.value).eq('none');
-      expect(stateVariables['/cp4'].replacements[0].stateValues.value.tree).eqls(["*", 2, "x"]);
-      expect(stateVariables['/cp5'].replacements[0].stateValues.value).eq('full');
-      expect(stateVariables['/cp6'].replacements[0].stateValues.value).eq('full');
-      expect(stateVariables['/cp7'].replacements[0].stateValues.value).eq('full');
-      expect(stateVariables['/cp8'].replacements[0].stateValues.value).eq('full');
-      expect(stateVariables['/cp9'].replacements[0].stateValues.value).eq('full');
-      expect(stateVariables['/cp10'].replacements[0].stateValues.value).eq('full');
+      expect(stateVariables[stateVariables['/cp1'].replacements[0].componentName].stateValues.value).eq('none');
+      expect(stateVariables[stateVariables['/cp2'].replacements[0].componentName].stateValues.value).eq('none');
+      expect(stateVariables[stateVariables['/cp3'].replacements[0].componentName].stateValues.value).eq('none');
+      expect(stateVariables[stateVariables['/cp4'].replacements[0].componentName].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables[stateVariables['/cp5'].replacements[0].componentName].stateValues.value).eq('full');
+      expect(stateVariables[stateVariables['/cp6'].replacements[0].componentName].stateValues.value).eq('full');
+      expect(stateVariables[stateVariables['/cp7'].replacements[0].componentName].stateValues.value).eq('full');
+      expect(stateVariables[stateVariables['/cp8'].replacements[0].componentName].stateValues.value).eq('full');
+      expect(stateVariables[stateVariables['/cp9'].replacements[0].componentName].stateValues.value).eq('full');
+      expect(stateVariables[stateVariables['/cp10'].replacements[0].componentName].stateValues.value).eq('full');
 
-      expect(stateVariables['/cp11'].replacements[0].stateValues.value).eq('none');
-      expect(stateVariables['/cp12'].replacements[0].stateValues.value).eq('full');
+      expect(stateVariables[stateVariables['/cp11'].replacements[0].componentName].stateValues.value).eq('none');
+      expect(stateVariables[stateVariables['/cp12'].replacements[0].componentName].stateValues.value).eq('full');
 
-      expect(stateVariables['/ex1'].replacements[0].stateValues.value).eq('none');
-      expect(stateVariables['/ex2'].replacements[0].stateValues.value).eq('full');
+      expect(stateVariables[stateVariables['/ex1'].replacements[0].componentName].stateValues.value).eq('none');
+      expect(stateVariables[stateVariables['/ex2'].replacements[0].componentName].stateValues.value).eq('full');
 
     })
 
@@ -243,28 +243,28 @@ describe('Basic copy assignName Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       // have to create unproxied version of equation for equals to work
-      let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation.tree);
+      let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
       expect(unproxiedEquation.equals(me.fromText('y=x'))).to.be.true;
 
-      expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-      expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-      expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-      expect(stateVariables['/c1'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-      expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-      expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-      expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-      expect(stateVariables['/g'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+      expect(stateVariables['/b'].stateValues.xs).eqls([0, 0]);
+      expect(stateVariables['/c'].stateValues.xs).eqls([1, 1]);
+      expect(stateVariables['/b1'].stateValues.xs).eqls([0, 0]);
+      expect(stateVariables['/c1'].stateValues.xs).eqls([1, 1]);
+      expect(stateVariables['/d'].stateValues.xs).eqls([0, 0]);
+      expect(stateVariables['/e'].stateValues.xs).eqls([1, 1]);
+      expect(stateVariables['/f'].stateValues.xs).eqls([0, 0]);
+      expect(stateVariables['/g'].stateValues.xs).eqls([1, 1]);
 
     })
 
     cy.log('move point b')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/b",
         args: { x: 5, y: -5 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b .mjx-mrow').should('contain.text', '(5,−5)')
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
@@ -278,26 +278,26 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1)')
       }).then(() => {
-        expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-        expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/c1'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/g'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(stateVariables['/b'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([1, 1]);
+        expect(stateVariables['/b1'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/c1'].stateValues.xs).eqls([1, 1]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([1, 1]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/g'].stateValues.xs).eqls([1, 1]);
       })
 
     })
 
     cy.log('move point c')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/c",
         args: { x: 3, y: 4 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
@@ -311,26 +311,26 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       }).then(() => {
-        expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/c1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/g'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(stateVariables['/b'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/b1'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/c1'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/g'].stateValues.xs).eqls([3, 4]);
       })
 
     })
 
     cy.log('move point b1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/b1",
         args: { x: -9, y: -8 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,−8)')
       })
@@ -343,14 +343,14 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,4)')
       }).then(() => {
-        expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/c1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/g'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(stateVariables['/b'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/b1'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/c1'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/g'].stateValues.xs).eqls([3, 4]);
       })
 
     })
@@ -358,12 +358,12 @@ describe('Basic copy assignName Tests', function () {
 
     cy.log('move point c1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/c1",
         args: { x: -1, y: -3 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,−8)')
       })
@@ -376,14 +376,14 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−3)')
       }).then(() => {
-        expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-        expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/c1'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/g'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(stateVariables['/b'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([-1, -3]);
+        expect(stateVariables['/b1'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/c1'].stateValues.xs).eqls([-1, -3]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([-1, -3]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/g'].stateValues.xs).eqls([-1, -3]);
       })
 
     })
@@ -391,12 +391,12 @@ describe('Basic copy assignName Tests', function () {
 
     cy.log('move point d')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/d",
         args: { x: 0, y: 2 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(0,2)')
       })
@@ -409,14 +409,14 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−3)')
       }).then(() => {
-        expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-        expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-        expect(stateVariables['/c1'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-        expect(stateVariables['/g'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(stateVariables['/b'].stateValues.xs).eqls([0, 2]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([-1, -3]);
+        expect(stateVariables['/b1'].stateValues.xs).eqls([0, 2]);
+        expect(stateVariables['/c1'].stateValues.xs).eqls([-1, -3]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([0, 2]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([-1, -3]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([0, 2]);
+        expect(stateVariables['/g'].stateValues.xs).eqls([-1, -3]);
       })
 
     })
@@ -424,12 +424,12 @@ describe('Basic copy assignName Tests', function () {
 
     cy.log('move point e')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/e",
         args: { x: 5, y: 4 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(0,2)')
       })
@@ -442,26 +442,26 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)')
       }).then(() => {
-        expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-        expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-        expect(stateVariables['/c1'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-        expect(stateVariables['/g'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+        expect(stateVariables['/b'].stateValues.xs).eqls([0, 2]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([5, 4]);
+        expect(stateVariables['/b1'].stateValues.xs).eqls([0, 2]);
+        expect(stateVariables['/c1'].stateValues.xs).eqls([5, 4]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([0, 2]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([5, 4]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([0, 2]);
+        expect(stateVariables['/g'].stateValues.xs).eqls([5, 4]);
       })
 
     })
 
     cy.log('move point f')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/f",
         args: { x: 6, y: 7 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(6,7)')
       })
@@ -474,14 +474,14 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,4)')
       }).then(() => {
-        expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-        expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-        expect(stateVariables['/c1'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-        expect(stateVariables['/g'].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+        expect(stateVariables['/b'].stateValues.xs).eqls([6, 7]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([5, 4]);
+        expect(stateVariables['/b1'].stateValues.xs).eqls([6, 7]);
+        expect(stateVariables['/c1'].stateValues.xs).eqls([5, 4]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([6, 7]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([5, 4]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([6, 7]);
+        expect(stateVariables['/g'].stateValues.xs).eqls([5, 4]);
       })
 
     })
@@ -489,12 +489,12 @@ describe('Basic copy assignName Tests', function () {
 
     cy.log('move point g')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/g",
         args: { x: 9, y: 3 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(6,7)')
       })
@@ -507,14 +507,14 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(9,3)')
       }).then(() => {
-        expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
-        expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-        expect(stateVariables['/c1'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-        expect(stateVariables['/g'].stateValues.xs.map(x => x.tree)).eqls([9, 3]);
+        expect(stateVariables['/b'].stateValues.xs).eqls([6, 7]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([9, 3]);
+        expect(stateVariables['/b1'].stateValues.xs).eqls([6, 7]);
+        expect(stateVariables['/c1'].stateValues.xs).eqls([9, 3]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([6, 7]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([9, 3]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([6, 7]);
+        expect(stateVariables['/g'].stateValues.xs).eqls([9, 3]);
       })
 
     })
@@ -559,96 +559,96 @@ describe('Basic copy assignName Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       // have to create unproxied version of equation for equals to work
-      let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation.tree);
+      let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
       expect(unproxiedEquation.equals(me.fromText('y=x'))).to.be.true;
 
-      expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-      expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-      expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-      expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
+      expect(stateVariables['/b'].stateValues.xs).eqls([0, 0]);
+      expect(stateVariables['/b1'].stateValues.xs).eqls([0, 0]);
+      expect(stateVariables['/d'].stateValues.xs).eqls([0, 0]);
+      expect(stateVariables['/f'].stateValues.xs).eqls([0, 0]);
 
     })
 
     cy.log('move point b')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/b",
         args: { x: 5, y: -5 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
       cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,−5)')
       })
-      expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
+      expect(stateVariables['/b'].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables['/b1'].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables['/d'].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables['/f'].stateValues.xs).eqls([5, -5]);
     })
 
     cy.log('move point b1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/b1",
         args: { x: -9, y: -8 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,−8)')
       })
       cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−9,−8)')
       })
-      expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-      expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-      expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-      expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
+      expect(stateVariables['/b'].stateValues.xs).eqls([-9, -8]);
+      expect(stateVariables['/b1'].stateValues.xs).eqls([-9, -8]);
+      expect(stateVariables['/d'].stateValues.xs).eqls([-9, -8]);
+      expect(stateVariables['/f'].stateValues.xs).eqls([-9, -8]);
     })
 
 
     cy.log('move point d')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/d",
         args: { x: 0, y: 2 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(0,2)')
       })
       cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(0,2)')
       })
-      expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-      expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-      expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
-      expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([0, 2]);
+      expect(stateVariables['/b'].stateValues.xs).eqls([0, 2]);
+      expect(stateVariables['/b1'].stateValues.xs).eqls([0, 2]);
+      expect(stateVariables['/d'].stateValues.xs).eqls([0, 2]);
+      expect(stateVariables['/f'].stateValues.xs).eqls([0, 2]);
     })
 
 
     cy.log('move point f')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/f",
         args: { x: 6, y: 7 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(6,7)')
       })
       cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(6,7)')
       })
-      expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-      expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-      expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
-      expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([6, 7]);
+      expect(stateVariables['/b'].stateValues.xs).eqls([6, 7]);
+      expect(stateVariables['/b1'].stateValues.xs).eqls([6, 7]);
+      expect(stateVariables['/d'].stateValues.xs).eqls([6, 7]);
+      expect(stateVariables['/f'].stateValues.xs).eqls([6, 7]);
     })
 
 
@@ -697,26 +697,26 @@ describe('Basic copy assignName Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       // have to create unproxied version of equation for equals to work
-      let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation.tree);
+      let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
       expect(unproxiedEquation.equals(me.fromText('y=x'))).to.be.true;
 
-      expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-      expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-      expect(stateVariables['/d'].stateValues.value.tree).eq(0);
-      expect(stateVariables['/e'].stateValues.value.tree).eq(1);
-      expect(stateVariables['/f'].stateValues.value.tree).eq(0);
-      expect(stateVariables['/g'].stateValues.value.tree).eq(1);
+      expect(stateVariables['/b'].stateValues.xs).eqls([0, 0]);
+      expect(stateVariables['/c'].stateValues.xs).eqls([1, 1]);
+      expect(stateVariables['/d'].stateValues.value).eq(0);
+      expect(stateVariables['/e'].stateValues.value).eq(1);
+      expect(stateVariables['/f'].stateValues.value).eq(0);
+      expect(stateVariables['/g'].stateValues.value).eq(1);
 
     })
 
     cy.log('move point b')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/b",
         args: { x: 5, y: -5 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -729,23 +729,23 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1')
       })
-      expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-      expect(stateVariables['/d'].stateValues.value.tree).eq(5);
-      expect(stateVariables['/e'].stateValues.value.tree).eq(1);
-      expect(stateVariables['/f'].stateValues.value.tree).eq(5);
-      expect(stateVariables['/g'].stateValues.value.tree).eq(1);
+      expect(stateVariables['/b'].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables['/c'].stateValues.xs).eqls([1, 1]);
+      expect(stateVariables['/d'].stateValues.value).eq(5);
+      expect(stateVariables['/e'].stateValues.value).eq(1);
+      expect(stateVariables['/f'].stateValues.value).eq(5);
+      expect(stateVariables['/g'].stateValues.value).eq(1);
 
     })
 
     cy.log('move point c')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/c",
         args: { x: 3, y: 4 }
       });
+      let stateVariables = await win.returnAllStateVariables1();
       cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5')
       })
@@ -758,12 +758,12 @@ describe('Basic copy assignName Tests', function () {
       cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       })
-      expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-      expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-      expect(stateVariables['/d'].stateValues.value.tree).eq(5);
-      expect(stateVariables['/e'].stateValues.value.tree).eq(3);
-      expect(stateVariables['/f'].stateValues.value.tree).eq(5);
-      expect(stateVariables['/g'].stateValues.value.tree).eq(3);
+      expect(stateVariables['/b'].stateValues.xs).eqls([5, -5]);
+      expect(stateVariables['/c'].stateValues.xs).eqls([3, 4]);
+      expect(stateVariables['/d'].stateValues.value).eq(5);
+      expect(stateVariables['/e'].stateValues.value).eq(3);
+      expect(stateVariables['/f'].stateValues.value).eq(5);
+      expect(stateVariables['/g'].stateValues.value).eq(3);
 
     })
 
@@ -870,24 +870,24 @@ describe('Basic copy assignName Tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
 
         // have to create unproxied version of equation for equals to work
-        let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation.tree);
+        let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
         expect(unproxiedEquation.equals(me.fromText('y=x'))).to.be.true;
 
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([0, 0]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([1, 1]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([0, 0]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([1, 1]);
 
       })
 
       cy.log('move point c')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/c",
-        args: { x: 5, y: -5 }
-      });
+          actionName: "movePoint",
+          componentName: "/c",
+          args: { x: 5, y: -5 }
+        });
+        let stateVariables = await win.returnAllStateVariables1();
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(5,−5)')
         })
@@ -925,20 +925,20 @@ describe('Basic copy assignName Tests', function () {
         cy.get('#\\/n11').should('have.text', 'nothing 11: ')
         cy.get('#\\/n12').should('have.text', 'nothing 12: ')
 
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([1, 1]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([1, 1]);
       })
 
       cy.log('move point d')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/d",
-        args: { x: 3, y: 4 }
-      });
+          actionName: "movePoint",
+          componentName: "/d",
+          args: { x: 3, y: 4 }
+        });
+        let stateVariables = await win.returnAllStateVariables1();
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(5,−5)')
         })
@@ -976,20 +976,20 @@ describe('Basic copy assignName Tests', function () {
         cy.get('#\\/n11').should('have.text', 'nothing 11: ')
         cy.get('#\\/n12').should('have.text', 'nothing 12: ')
 
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([3, 4]);
       })
 
       cy.log('move point e')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/e",
-        args: { x: -9, y: -8 }
-      });
+          actionName: "movePoint",
+          componentName: "/e",
+          args: { x: -9, y: -8 }
+        });
+        let stateVariables = await win.returnAllStateVariables1();
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(−9,−8)')
         })
@@ -1027,21 +1027,21 @@ describe('Basic copy assignName Tests', function () {
         cy.get('#\\/n11').should('have.text', 'nothing 11: ')
         cy.get('#\\/n12').should('have.text', 'nothing 12: ')
 
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([3, 4]);
       })
 
 
       cy.log('move point f')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/f",
-        args: { x: -1, y: -3 }
-      });
+          actionName: "movePoint",
+          componentName: "/f",
+          args: { x: -1, y: -3 }
+        });
+        let stateVariables = await win.returnAllStateVariables1();
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(−9,−8)')
         })
@@ -1079,10 +1079,10 @@ describe('Basic copy assignName Tests', function () {
         cy.get('#\\/n11').should('have.text', 'nothing 11: ')
         cy.get('#\\/n12').should('have.text', 'nothing 12: ')
 
-        expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(stateVariables['/c'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/d'].stateValues.xs).eqls([-1, -3]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([-1, -3]);
       })
 
 
@@ -1213,26 +1213,26 @@ describe('Basic copy assignName Tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
 
         // have to create unproxied version of equation for equals to work
-        let unproxiedEquation = me.fromAst(stateVariables['/hello/_line1'].stateValues.equation.tree);
+        let unproxiedEquation = me.fromAst(stateVariables['/hello/_line1'].stateValues.equation);
         expect(unproxiedEquation.equals(me.fromText('y=x'))).to.be.true;
 
-        expect(stateVariables['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-        expect(stateVariables['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-        expect(stateVariables['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-        expect(stateVariables['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(stateVariables['/hello/c'].stateValues.xs).eqls([0, 0]);
+        expect(stateVariables['/hello/d'].stateValues.xs).eqls([1, 1]);
+        expect(stateVariables['/hello/e'].stateValues.xs).eqls([0, 0]);
+        expect(stateVariables['/hello/f'].stateValues.xs).eqls([1, 1]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([0, 0]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([1, 1]);
 
       })
 
       cy.log('move point c')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/hello/c",
-        args: { x: 5, y: -5 }
-      });
+          actionName: "movePoint",
+          componentName: "/hello/c",
+          args: { x: 5, y: -5 }
+        });
+        let stateVariables = await win.returnAllStateVariables1();
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(5,−5)')
         })
@@ -1280,22 +1280,22 @@ describe('Basic copy assignName Tests', function () {
         cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
         cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
 
-        expect(stateVariables['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-        expect(stateVariables['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
+        expect(stateVariables['/hello/c'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/hello/d'].stateValues.xs).eqls([1, 1]);
+        expect(stateVariables['/hello/e'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/hello/f'].stateValues.xs).eqls([1, 1]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([1, 1]);
       })
 
       cy.log('move point d')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/hello/d",
-        args: { x: 3, y: 4 }
-      });
+          actionName: "movePoint",
+          componentName: "/hello/d",
+          args: { x: 3, y: 4 }
+        });
+        let stateVariables = await win.returnAllStateVariables1();
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(5,−5)')
         })
@@ -1343,22 +1343,22 @@ describe('Basic copy assignName Tests', function () {
         cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
         cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
 
-        expect(stateVariables['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([5, -5]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(stateVariables['/hello/c'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/hello/d'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/hello/e'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/hello/f'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([5, -5]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([3, 4]);
       })
 
       cy.log('move point e')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/hello/e",
-        args: { x: -9, y: -8 }
-      });
+          actionName: "movePoint",
+          componentName: "/hello/e",
+          args: { x: -9, y: -8 }
+        });
+        let stateVariables = await win.returnAllStateVariables1();
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(−9,−8)')
         })
@@ -1406,23 +1406,23 @@ describe('Basic copy assignName Tests', function () {
         cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
         cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
 
-        expect(stateVariables['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+        expect(stateVariables['/hello/c'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/hello/d'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/hello/e'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/hello/f'].stateValues.xs).eqls([3, 4]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([3, 4]);
       })
 
 
       cy.log('move point f')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables1();
         await win.callAction1({
-        actionName: "movePoint",
-        componentName: "/hello/f",
-        args: { x: -1, y: -3 }
-      });
+          actionName: "movePoint",
+          componentName: "/hello/f",
+          args: { x: -1, y: -3 }
+        });
+        let stateVariables = await win.returnAllStateVariables1();
         cy.get(point1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('(−9,−8)')
         })
@@ -1470,12 +1470,12 @@ describe('Basic copy assignName Tests', function () {
         cy.get(cesc('#/n15')).should('have.text', 'nothing 15: ')
         cy.get(cesc('#/n16')).should('have.text', 'nothing 16: ')
 
-        expect(stateVariables['/hello/c'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/hello/d'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-        expect(stateVariables['/hello/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/hello/f'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
-        expect(stateVariables['/e'].stateValues.xs.map(x => x.tree)).eqls([-9, -8]);
-        expect(stateVariables['/f'].stateValues.xs.map(x => x.tree)).eqls([-1, -3]);
+        expect(stateVariables['/hello/c'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/hello/d'].stateValues.xs).eqls([-1, -3]);
+        expect(stateVariables['/hello/e'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/hello/f'].stateValues.xs).eqls([-1, -3]);
+        expect(stateVariables['/e'].stateValues.xs).eqls([-9, -8]);
+        expect(stateVariables['/f'].stateValues.xs).eqls([-1, -3]);
       })
 
 

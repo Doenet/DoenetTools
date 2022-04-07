@@ -91,7 +91,6 @@ describe('ODEsystem Tag Tests', function () {
 
     cy.log("Change ic with point")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       ic = -5;
 
       await win.callAction1({
@@ -99,6 +98,8 @@ describe('ODEsystem Tag Tests', function () {
         componentName: "/_point1",
         args: { y: ic }
       });
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       let ode = stateVariables['/ode'];
       let solutionF = (await ode.stateValues.numericalSolutions)[0];
@@ -748,12 +749,13 @@ describe('ODEsystem Tag Tests', function () {
 
     cy.log("Change ic with point")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -5, y: 2 }
       });
+
+      let stateVariables = await win.returnAllStateVariables1();
 
       let ode = stateVariables['/ode'];
       let solutionFx = (await ode.stateValues.numericalSolutions)[0];
@@ -978,21 +980,21 @@ describe('ODEsystem Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let rhs1tree = ['+', ['*', 'a', 'x', 'y'], 'z'];
       let rhs2tree = ['/', 'x', 'y'];
-      expect(stateVariables['/rhs1a'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(stateVariables['/rhs1b'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(stateVariables['/rhs1c'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(stateVariables['/rhs1d'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(stateVariables['/rhs2a'].replacements[0].stateValues.value.tree).eqls(rhs2tree);
-      expect(stateVariables['/rhs2b'].replacements[0].stateValues.value.tree).eqls(rhs2tree);
-      expect(stateVariables['/rhssa'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(stateVariables['/rhssa'].replacements[1].stateValues.value.tree).eqls(rhs2tree);
-      expect(stateVariables['/rhssb'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
-      expect(stateVariables['/rhssb'].replacements[1].stateValues.value.tree).eqls(rhs2tree);
-      expect(stateVariables['/ic1a'].replacements[0].stateValues.value.tree).eqls('c');
-      expect(stateVariables['/ic1b'].replacements[0].stateValues.value.tree).eqls('c');
-      expect(stateVariables['/ic2a'].replacements[0].stateValues.value.tree).eqls(3);
-      expect(stateVariables['/icsa'].replacements[0].stateValues.value.tree).eqls('c');
-      expect(stateVariables['/icsa'].replacements[1].stateValues.value.tree).eqls(3);
+      expect(stateVariables['/rhs1a'].replacements[0].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables['/rhs1b'].replacements[0].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables['/rhs1c'].replacements[0].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables['/rhs1d'].replacements[0].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables['/rhs2a'].replacements[0].stateValues.value).eqls(rhs2tree);
+      expect(stateVariables['/rhs2b'].replacements[0].stateValues.value).eqls(rhs2tree);
+      expect(stateVariables['/rhssa'].replacements[0].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables['/rhssa'].replacements[1].stateValues.value).eqls(rhs2tree);
+      expect(stateVariables['/rhssb'].replacements[0].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables['/rhssb'].replacements[1].stateValues.value).eqls(rhs2tree);
+      expect(stateVariables['/ic1a'].replacements[0].stateValues.value).eqls('c');
+      expect(stateVariables['/ic1b'].replacements[0].stateValues.value).eqls('c');
+      expect(stateVariables['/ic2a'].replacements[0].stateValues.value).eqls(3);
+      expect(stateVariables['/icsa'].replacements[0].stateValues.value).eqls('c');
+      expect(stateVariables['/icsa'].replacements[1].stateValues.value).eqls(3);
 
     });
 

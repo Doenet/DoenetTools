@@ -70,19 +70,19 @@ describe('Equilibriumline Tag Tests', function () {
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);
       expect(stateVariables["/g/C"].stateValues.stable).eq(false);
       expect(stateVariables["/g/D"].stateValues.stable).eq(false);
-      expect(stateVariables["/g/A"].stateValues.equation.tree).eqls(["=", "y", 4])
-      expect(stateVariables["/g/B"].stateValues.equation.tree).eqls(["=", "y", 7])
-      expect(stateVariables["/g/C"].stateValues.equation.tree).eqls(["=", "y", ['-', 9]])
-      expect(stateVariables["/g/D"].stateValues.equation.tree).eqls(["=", "y", ['-', 3]])
+      expect(stateVariables["/g/A"].stateValues.equation).eqls(["=", "y", 4])
+      expect(stateVariables["/g/B"].stateValues.equation).eqls(["=", "y", 7])
+      expect(stateVariables["/g/C"].stateValues.equation).eqls(["=", "y", ['-', 9]])
+      expect(stateVariables["/g/D"].stateValues.equation).eqls(["=", "y", ['-', 3]])
 
       expect(stateVariables["/g2/A"].stateValues.stable).eq(true);
       expect(stateVariables["/g2/B"].stateValues.stable).eq(false);
       expect(stateVariables["/g2/C"].stateValues.stable).eq(false);
       expect(stateVariables["/g2/D"].stateValues.stable).eq(false);
-      expect(stateVariables["/g2/A"].stateValues.equation.tree).eqls(["=", "y", 4])
-      expect(stateVariables["/g2/B"].stateValues.equation.tree).eqls(["=", "y", 7])
-      expect(stateVariables["/g2/C"].stateValues.equation.tree).eqls(["=", "y", ['-', 9]])
-      expect(stateVariables["/g2/D"].stateValues.equation.tree).eqls(["=", "y", ['-', 3]])
+      expect(stateVariables["/g2/A"].stateValues.equation).eqls(["=", "y", 4])
+      expect(stateVariables["/g2/B"].stateValues.equation).eqls(["=", "y", 7])
+      expect(stateVariables["/g2/C"].stateValues.equation).eqls(["=", "y", ['-', 9]])
+      expect(stateVariables["/g2/D"].stateValues.equation).eqls(["=", "y", ['-', 3]])
     })
 
 
@@ -141,8 +141,12 @@ describe('Equilibriumline Tag Tests', function () {
 
     cy.log('switch A via first action')
     cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "switchLine",
+        componentName: "/g/A"
+      })
+
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables["/g/A"].actions.switchLine();
 
       expect(stateVariables["/g/A"].stateValues.stable).eq(false);
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);
@@ -169,8 +173,12 @@ describe('Equilibriumline Tag Tests', function () {
 
     cy.log('switch A via second action')
     cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "switchLine",
+        componentName: "/g2/A"
+      })
+
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables["/g2/A"].actions.switchLine();
 
       expect(stateVariables["/g/A"].stateValues.stable).eq(true);
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);
@@ -196,8 +204,12 @@ describe('Equilibriumline Tag Tests', function () {
 
     cy.log('cannot switch B via action')
     cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "switchLine",
+        componentName: "/g/B"
+      })
+
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables["/g/B"].actions.switchLine();
 
       expect(stateVariables["/g/A"].stateValues.stable).eq(true);
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);
@@ -223,8 +235,12 @@ describe('Equilibriumline Tag Tests', function () {
 
     cy.log('cannot switch C via second action')
     cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "switchLine",
+        componentName: "/g2/C"
+      })
+
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables["/g2/C"].actions.switchLine();
 
       expect(stateVariables["/g/A"].stateValues.stable).eq(true);
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);
@@ -249,8 +265,12 @@ describe('Equilibriumline Tag Tests', function () {
 
     cy.log('switch D via second action')
     cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "switchLine",
+        componentName: "/g2/D"
+      })
+
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables["/g2/D"].actions.switchLine();
 
       expect(stateVariables["/g/A"].stateValues.stable).eq(true);
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);

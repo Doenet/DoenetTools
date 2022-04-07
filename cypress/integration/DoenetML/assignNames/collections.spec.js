@@ -152,13 +152,12 @@ describe('Collection assignName Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/a1'].stateValues.xs.map(x => x.tree)).eqls([1, 2]);
-      expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      expect(stateVariables['/a1'].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables['/b1'].stateValues.xs).eqls([3, 4]);
     })
 
     cy.log('Move point a');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/a",
@@ -249,7 +248,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point b');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/b",
@@ -340,7 +338,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point a1');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/a1",
@@ -431,7 +428,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point b1');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/b1",
@@ -673,13 +669,12 @@ describe('Collection assignName Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/a1'].stateValues.xs.map(x => x.tree)).eqls([1, 2]);
-      expect(stateVariables['/b1'].stateValues.xs.map(x => x.tree)).eqls([3, 4]);
+      expect(stateVariables['/a1'].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables['/b1'].stateValues.xs).eqls([3, 4]);
     })
 
     cy.log('Move point a');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/a",
@@ -778,7 +773,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point b');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/b",
@@ -878,7 +872,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point a1');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/a1",
@@ -978,7 +971,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point b1');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/b1",
@@ -1296,15 +1288,14 @@ describe('Collection assignName Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/a'].stateValues.xs.map(x => x.tree)).eqls([0, 0]);
-      expect(stateVariables['/b'].stateValues.xs.map(x => x.tree)).eqls([1, 1]);
-      expect(stateVariables['/c'].stateValues.xs.map(x => x.tree)).eqls([4, 3]);
-      expect(stateVariables['/d'].stateValues.xs.map(x => x.tree)).eqls([2, 1]);
+      expect(stateVariables['/a'].stateValues.xs).eqls([0, 0]);
+      expect(stateVariables['/b'].stateValues.xs).eqls([1, 1]);
+      expect(stateVariables['/c'].stateValues.xs).eqls([4, 3]);
+      expect(stateVariables['/d'].stateValues.xs).eqls([2, 1]);
     })
 
     cy.log('Move point a');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/a",
@@ -1472,7 +1463,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point b');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/b",
@@ -1640,7 +1630,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point c');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/c",
@@ -1808,7 +1797,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point d');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/d",
@@ -2160,6 +2148,10 @@ describe('Collection assignName Tests', function () {
     // add window just so can collapse section
     cy.window().then(() => {
 
+      cy.get('#\\/p1 .mjx-mrow').should('contain.text', '(2,1)')
+      cy.get('#\\/p2 .mjx-mrow').should('contain.text', '(−2,−1)')
+      cy.get('#\\/p3 .mjx-mrow').should('contain.text', '(−3,−2)')
+
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,1)')
       })
@@ -2329,7 +2321,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point all three points');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
@@ -2346,6 +2337,8 @@ describe('Collection assignName Tests', function () {
         args: { x: 5, y: 6 }
       });
 
+
+      cy.get('#\\/p3 .mjx-mrow').should('contain.text', '(5,6)')
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
@@ -2522,6 +2515,8 @@ describe('Collection assignName Tests', function () {
     cy.get('#\\/n2 textarea').type('{end}{backspace}4{enter}', { force: true })
 
     cy.window().then(() => {
+
+      cy.get('#\\/p4 .mjx-mrow').should('contain.text', '(5,6)')
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)')
@@ -2746,7 +2741,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move point all six points');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/q1",
@@ -2778,6 +2772,8 @@ describe('Collection assignName Tests', function () {
         args: { x: -6, y: -4 }
       });
 
+
+      cy.get('#\\/q6 .mjx-mrow').should('contain.text', '(−6,−4)')
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−9)')
@@ -3005,6 +3001,7 @@ describe('Collection assignName Tests', function () {
     cy.get('#\\/n2 textarea').type('{end}{backspace}3{enter}', { force: true })
 
     cy.window().then(async (win) => {
+      cy.get('#\\/p2 .mjx-mrow').should('contain.text', '(−3,−7)')
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,−9)')
@@ -3214,7 +3211,6 @@ describe('Collection assignName Tests', function () {
 
     cy.window().then(async (win) => {
 
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
@@ -3236,6 +3232,8 @@ describe('Collection assignName Tests', function () {
         args: { x: 1, y: -8 }
       });
 
+
+      cy.get('#\\/p4 .mjx-mrow').should('contain.text', '(1,−8)')
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−5)')
@@ -3446,6 +3444,8 @@ describe('Collection assignName Tests', function () {
     cy.get('#\\/n2 textarea').type('{end}{backspace}2{enter}', { force: true })
 
     cy.window().then(async (win) => {
+
+      cy.get('#\\/p2 .mjx-mrow').should('contain.text', '(−2,−8)')
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(4,−5)')
@@ -3704,7 +3704,6 @@ describe('Collection assignName Tests', function () {
     cy.log('Move point all six points again');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/q1",
@@ -3736,6 +3735,7 @@ describe('Collection assignName Tests', function () {
         args: { x: -9, y: 1 }
       });
 
+      cy.get('#\\/q6 .mjx-mrow').should('contain.text', '(−9,1)')
 
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,6)')
@@ -3968,6 +3968,8 @@ describe('Collection assignName Tests', function () {
 
     cy.window().then(async (win) => {
 
+      cy.get('#\\/p1 .mjx-mrow').should('contain.text', '(−8,2)')
+
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−8,2)')
       })
@@ -4158,6 +4160,7 @@ describe('Collection assignName Tests', function () {
 
     cy.window().then(async (win) => {
 
+      cy.get('#\\/p1 .mjx-mrow').should('contain.text', '(−4,6)')
       cy.get('#\\/p1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−4,6)')
       })
@@ -4522,6 +4525,9 @@ describe('Collection assignName Tests', function () {
 
         let pointa = points1[ind];
         if (pointa) {
+          cy.get(`#\\/pa${ind + 1}\\/_point1 .mjx-mrow`).should('contain.text', pointToString(pointa))
+          cy.get(`#\\/pa${ind + 1}\\/_point1 .mjx-mrow`).should('not.contain.text', pointToString(pointa) + ",")
+          cy.get(`#\\/pa${ind + 1}\\/_point1 .mjx-mrow`).should('not.contain.text', "," + pointToString(pointa))
           cy.get(`#\\/pa${ind + 1}\\/_point1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(pointa))
           })
@@ -4531,6 +4537,9 @@ describe('Collection assignName Tests', function () {
 
         let pointb = points2[ind];
         if (pointb) {
+          cy.get(`#\\/pb${ind + 1}\\/_point1 .mjx-mrow`).should('contain.text', pointToString(pointb))
+          cy.get(`#\\/pb${ind + 1}\\/_point1 .mjx-mrow`).should('not.contain.text', pointToString(pointb) + ",")
+          cy.get(`#\\/pb${ind + 1}\\/_point1 .mjx-mrow`).should('not.contain.text', "," + pointToString(pointb))
           cy.get(`#\\/pb${ind + 1}\\/_point1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(pointToString(pointb))
           })
@@ -4642,7 +4651,6 @@ describe('Collection assignName Tests', function () {
     // move points
     cy.log('Move points');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/pa1/_point1",
@@ -4715,7 +4723,6 @@ describe('Collection assignName Tests', function () {
 
     cy.log('Move points');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
       await win.callAction1({
         actionName: "movePoint",
         componentName: "/pa1/_point1",
