@@ -29,7 +29,7 @@ export default function MathInput(props) {
 
   const [mathField, setMathField] = useState(null);
 
-  const setRendererState =  useSetRecoilState(rendererState(rendererName));
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
 
   let rendererValue = useRef(null);
 
@@ -128,11 +128,11 @@ export default function MathInput(props) {
   };
 
   const onChangeHandler = (text) => {
-    if (text !== rendererValue.current) {
+    if (text.replace(/\s/g, '') !== rendererValue.current.replace(/\s/g, '')) {
       rendererValue.current = text;
 
       setRendererState((was) => {
-        let newObj = {...was};
+        let newObj = { ...was };
         newObj.ignoreUpdate = true;
         return newObj;
       })

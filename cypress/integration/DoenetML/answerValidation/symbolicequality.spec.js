@@ -118,13 +118,13 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("3+1")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3+1{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}3+1{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3+1{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}3+1{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3+1{enter}', { force: true });
+      cy.get(mathinput3Anchor).type('{ctrl+home}{shift+end}{backspace}3+1{enter}', { force: true });
       cy.get(mathinput3CorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3+1{enter}', { force: true });
+      cy.get(mathinput4Anchor).type('{ctrl+home}{shift+end}{backspace}3+1{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -136,13 +136,13 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("1+3")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1+3{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1+3{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1+3{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1+3{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1+3{enter}', { force: true });
+      cy.get(mathinput3Anchor).type('{ctrl+home}{shift+end}{backspace}1+3{enter}', { force: true });
       cy.get(mathinput3CorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1+3{enter}', { force: true });
+      cy.get(mathinput4Anchor).type('{ctrl+home}{shift+end}{backspace}1+3{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -154,13 +154,13 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("1+1+1+1")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1+1+1+1{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1+1+1+1{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1+1+1+1{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1+1+1+1{enter}', { force: true });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1+1+1+1{enter}', { force: true });
+      cy.get(mathinput3Anchor).type('{ctrl+home}{shift+end}{backspace}1+1+1+1{enter}', { force: true });
       cy.get(mathinput3CorrectAnchor).should('be.visible');
-      cy.get(mathinput4Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1+1+1+1{enter}', { force: true });
+      cy.get(mathinput4Anchor).type('{ctrl+home}{shift+end}{backspace}1+1+1+1{enter}', { force: true });
       cy.get(mathinput4CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -225,9 +225,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Plus negative to subtraction")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x-0y-3s{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1x-0y-3s{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x-0y-3s{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1x-0y-3s{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -237,9 +237,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Parentheses")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x-0y+(-3s){enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1x-0y+(-3s){enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x-0y+(-3s){enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1x-0y+(-3s){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -249,9 +249,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Positive zero")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x+0y-3s{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1x+0y-3s{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x+0y-3s{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1x+0y-3s{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -261,9 +261,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Remove zero term")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x-3s{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1x-3s{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x-3s{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1x-3s{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -273,9 +273,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Remove one coefficient")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x-0y-3s{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}x-0y-3s{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x-0y-3s{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}x-0y-3s{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -285,9 +285,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Reorder terms")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-0y+1x-3s{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}-0y+1x-3s{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-0y+1x-3s{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}-0y+1x-3s{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -348,9 +348,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Simplify numbers")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x^2{rightArrow}+5+x^2{rightArrow}+3x^2{rightArrow}+11{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+5+x^2{rightArrow}+3x^2{rightArrow}+11{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x^2{rightArrow}+5+x^2{rightArrow}+3x^2{rightArrow}+11{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+5+x^2{rightArrow}+3x^2{rightArrow}+11{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -360,9 +360,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Permute adjacent numbers")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+4+7{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+4+7{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+4+7{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+x^2{rightArrow}+3x^2{rightArrow}+4+7{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -372,9 +372,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Permute adjacent variable terms")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+3x^2{rightArrow}+x^2{rightArrow}+7+4{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+3x^2{rightArrow}+x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+3x^2{rightArrow}+x^2{rightArrow}+7+4{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+3x^2{rightArrow}+x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -384,9 +384,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Combine adjacent variable terms")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -396,9 +396,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Combine all numbers")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}-0x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}-0x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}-0x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}-0x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -408,9 +408,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Combine all terms")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}5x^2{rightArrow}+16{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}5x^2{rightArrow}+16{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -471,9 +471,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Simplify numbers")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}x^2{rightArrow}+x^2{rightArrow}+3x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -483,9 +483,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Permute terms")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}7+1x^2{rightArrow}-0x^2{rightArrow}+3+3x^2{rightArrow}+4+2+x^2{rightArrow}{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}7+1x^2{rightArrow}-0x^2{rightArrow}+3+3x^2{rightArrow}+4+2+x^2{rightArrow}{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}7+1x^2{rightArrow}-0x^2{rightArrow}+3+3x^2{rightArrow}+4+2+x^2{rightArrow}{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}7+1x^2{rightArrow}-0x^2{rightArrow}+3+3x^2{rightArrow}+4+2+x^2{rightArrow}{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -495,9 +495,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Combine variable terms")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -507,9 +507,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Combine adjacent variable terms")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}1x^2{rightArrow}+2-0x^2{rightArrow}+3+4x^2{rightArrow}+7+4{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -519,9 +519,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Combine all terms")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}5x^2{rightArrow}+16{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}5x^2{rightArrow}+16{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}5x^2{rightArrow}+16{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -583,9 +583,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Combine terms")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}6x^2{rightArrow} + 5x-4 + (2x-3)(4-x){enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}6x^2{rightArrow} + 5x-4 + (2x-3)(4-x){enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}6x^2{rightArrow} + 5x-4 + (2x-3)(4-x){enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}6x^2{rightArrow} + 5x-4 + (2x-3)(4-x){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -595,9 +595,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Permute terms and factors")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-4 + 6x^2{rightArrow} + (4-x)(-3+2x) + 5x{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}-4 + 6x^2{rightArrow} + (4-x)(-3+2x) + 5x{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-4 + 6x^2{rightArrow} + (4-x)(-3+2x) + 5x{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}-4 + 6x^2{rightArrow} + (4-x)(-3+2x) + 5x{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -607,9 +607,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Expand polynomial")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}6x^2{rightArrow} + 5x-4-2x^2{rightArrow}+11x-12{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}6x^2{rightArrow} + 5x-4-2x^2{rightArrow}+11x-12{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}6x^2{rightArrow} + 5x-4-2x^2{rightArrow}+11x-12{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}6x^2{rightArrow} + 5x-4-2x^2{rightArrow}+11x-12{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -619,9 +619,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Expand and simplify")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}4x^2{rightArrow} + 16x-16{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}4x^2{rightArrow} + 16x-16{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}4x^2{rightArrow} + 16x-16{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}4x^2{rightArrow} + 16x-16{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -631,9 +631,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Factor polynomial")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3x+4)(2x -1) + (2x-3)(4-x){enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}(3x+4)(2x -1) + (2x-3)(4-x){enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3x+4)(2x -1) + (2x-3)(4-x){enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}(3x+4)(2x -1) + (2x-3)(4-x){enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -694,9 +694,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Expand polynomial")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-2x^2{rightArrow}+11x-12 + sin(x)^2{rightArrow}+cos(x)^2{rightArrow}{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}-2x^2{rightArrow}+11x-12 + sin(x)^2{rightArrow}+cos(x)^2{rightArrow}{enter}', { force: true });
       cy.get(mathinputCorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-2x^2{rightArrow}+11x-12 + sin(x)^2{rightArrow}+cos(x)^2{rightArrow}{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}-2x^2{rightArrow}+11x-12 + sin(x)^2{rightArrow}+cos(x)^2{rightArrow}{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {
@@ -706,9 +706,9 @@ describe('Symbolic equality tests', function () {
       });
 
       cy.log("Simplify trig")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2x-3)(4-x) + 1{enter}', { force: true });
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}(2x-3)(4-x) + 1{enter}', { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2x-3)(4-x) + 1{enter}', { force: true });
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}(2x-3)(4-x) + 1{enter}', { force: true });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then(async (win) => {

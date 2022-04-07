@@ -272,9 +272,9 @@ export default class ConditionalContent extends CompositeComponent {
     workspace.previousSelectedIndices = [...await component.stateValues.selectedIndices];
     workspace.previousBaseConditionSatisfied = await component.stateValues.baseConditionSatisfied;
 
-    console.log(`replacements for ${component.componentName}`)
-    console.log(JSON.parse(JSON.stringify(replacements)));
-    console.log(replacements);
+    // console.log(`replacements for ${component.componentName}`)
+    // console.log(JSON.parse(JSON.stringify(replacements)));
+    // console.log(replacements);
 
     return { replacements };
 
@@ -353,9 +353,9 @@ export default class ConditionalContent extends CompositeComponent {
 
   static async calculateReplacementChanges({ component, componentChanges, components, workspace, componentInfoObjects }) {
 
-    console.log(`calculate replacement changes for selectByCondition ${component.componentName}`)
-    console.log(workspace.previousSelectedIndices);
-    console.log(component.stateValues.selectedIndices);
+    // console.log(`calculate replacement changes for selectByCondition ${component.componentName}`)
+    // console.log(workspace.previousSelectedIndices);
+    // console.log(component.stateValues.selectedIndices);
 
     let selectedIndices = await component.stateValues.selectedIndices;
     let baseConditionSatisfied = await component.stateValues.baseConditionSatisfied;

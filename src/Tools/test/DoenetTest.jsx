@@ -287,12 +287,12 @@ function Test() {
         config={mathjaxConfig}
         onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
       >
-      <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
-        Test Viewer and Core
-      </h3>
-        {controls}
-      </div>
-      {viewer}
+        <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
+          Test Viewer and Core
+        </h3>
+          {controls}
+        </div>
+        {viewer}
       </MathJaxContext>
     </>
   )
