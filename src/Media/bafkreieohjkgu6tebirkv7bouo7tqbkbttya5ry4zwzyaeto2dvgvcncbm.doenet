@@ -24,17 +24,17 @@
     <customAttribute componentType="point" attribute="defaultPoint" defaultValue="" assignNames="defaultPoint" />
   </setup>
 
-  <copy uri="doenet:contentId=752089071678e72a5706927b89a0abd9b34ed65715aa6fefd34bf26f13699fd4&doenetId=2dnQm1B4zsbGzreEn0GKa" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" nIterationsRequired="$nIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" timeVariable="$timeVariable" showCalculatedValues="$showCalculatedValues" grid="$grid" defaultPoint="$defaultPoint" />
+  <copy uri="doenet:cid=bafkreib5kjxqt4r4rxtzrrda245u73akndgu2hsvjok3fcsabtzmksc45m&doenetId=2dnQm1B4zsbGzreEn0GKa" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" nIterationsRequired="$nIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" timeVariable="$timeVariable" showCalculatedValues="$showCalculatedValues" grid="$grid" defaultPoint="$defaultPoint" />
 
   <conditionalContent condition="$checkInitialCondition">
     <p>Initial condition:
       <answer name="initialCorrect" weight="$initialConditionWeight">
         <award>
-          <when><copy tname="cobwebApplet/initialCorrect" /></when>
+          <when><copy target="cobwebApplet/initialCorrect" /></when>
         </award>
         <considerAsResponses>
-          <copy tname="cobwebApplet/initialPoint" />
-          <copy tname="cobwebApplet/atLeastOnePoint" />
+          <copy target="cobwebApplet/initialPoint" />
+          <copy target="cobwebApplet/atLeastOnePoint" />
         </considerAsResponses>
       </answer>
     </p>
@@ -44,9 +44,9 @@
     <answer name="correctCobwebbing" weight="$cobwebbingWeight">
       <award credit="$(cobwebApplet/fractionCorrectCobweb)"><when>true</when></award>
       <considerAsResponses>
-        <copy prop="nIterateValues" tname="cobwebApplet/cobwebPolyline" />
-        <and><copy prop="correctVertices" tname="cobwebApplet/cobwebPolyline" /></and>
-        <copy prop="vertices" tname="cobwebApplet/cobwebPolyline" />
+        <copy prop="nIterateValues" target="cobwebApplet/cobwebPolyline" />
+        <and><copy prop="correctVertices" target="cobwebApplet/cobwebPolyline" /></and>
+        <copy prop="vertices" target="cobwebApplet/cobwebPolyline" />
       </considerAsResponses>
     </answer>
   </p>
