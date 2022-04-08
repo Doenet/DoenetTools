@@ -2154,8 +2154,14 @@ export async function replacementFromProp({ component, components,
             if (stateVarObj.stateVariablesPrescribingAdditionalAttributes) {
               let additionalAttributes = {};
               for (let attrName in stateVarObj.stateVariablesPrescribingAdditionalAttributes) {
-                let vName = stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName]
-                let attributeValue = await target.state[vName].value;
+                let vName = stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName];
+                let attributeStateVarObj = target.state[vName];
+                let attributeValue = await attributeStateVarObj.value;
+                if (attributeStateVarObj.isArray) {
+                  // Assume attribute has same dimensions as original
+                  // TODO: multidimensional arrays?
+                  attributeValue = attributeValue[attributeStateVarObj.keyToIndex[arrayKey]]
+                }
                 if (!target.state[vName].usedDefault) {
                   additionalAttributes[attrName] = attributeValue;
                 }
@@ -2267,8 +2273,14 @@ export async function replacementFromProp({ component, components,
               if (stateVarObj.stateVariablesPrescribingAdditionalAttributes) {
                 let additionalAttributes = {};
                 for (let attrName in stateVarObj.stateVariablesPrescribingAdditionalAttributes) {
-                  let vName = stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName]
-                  let attributeValue = await target.state[vName].value;
+                  let vName = stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName];
+                  let attributeStateVarObj = target.state[vName];
+                  let attributeValue = await attributeStateVarObj.value;
+                  if (attributeStateVarObj.isArray) {
+                    // Assume attribute has same dimensions as original
+                    // TODO: multidimensional arrays?
+                    attributeValue = attributeValue[attributeStateVarObj.keyToIndex[arrayKey]]
+                  }
                   if (!target.state[vName].usedDefault) {
                     additionalAttributes[attrName] = attributeValue;
                   }
