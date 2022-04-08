@@ -4420,6 +4420,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    cy.get('#\\/mns .mjx-mrow').should('contain.text', '＿')
     cy.get('#\\/mins textarea').type("xy{enter}", { force: true })
     cy.get('#\\/mis textarea').type("xy{enter}", { force: true })
     cy.get('#\\/mns .mjx-mrow').should('contain.text', 'xy')

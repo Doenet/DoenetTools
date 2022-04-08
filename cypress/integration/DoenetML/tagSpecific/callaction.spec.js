@@ -598,6 +598,8 @@ describe('CallAction Tag Tests', function () {
       }
     })
 
+    cy.get('#\\/P2').should('contain.text', '(−1,2)')
+
     cy.get('#\\/rs').should('not.exist');
 
     cy.window().then(async (win) => {
@@ -775,6 +777,7 @@ describe('CallAction Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
+    cy.get('#\\/P2').should('contain.text', '(−1,2)')
     cy.get('#\\/rs').should('not.exist');
     cy.get('#\\/addPoint').should('not.exist');
 
@@ -1003,6 +1006,7 @@ describe('CallAction Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
+    cy.get('#\\/P2').should('contain.text', '(−1,2)')
     cy.get('#\\/rs').should('not.exist');
     cy.get('#\\/addPoint').should('not.exist');
 

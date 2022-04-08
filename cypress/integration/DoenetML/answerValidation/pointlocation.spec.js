@@ -854,6 +854,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -862,7 +864,6 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    cy.wait(500);  // TODO: why does this reduce likelihood MathJax won't format submitted response?
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -1210,6 +1211,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -1218,7 +1221,6 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    cy.wait(100);  // TODO: why does this reduce likelihood MathJax won't format submitted response?
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -1566,6 +1568,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -1574,7 +1578,6 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    cy.wait(100);  // TODO: why does this reduce likelihood MathJax won't format submitted response?
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -1922,6 +1925,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -1930,7 +1935,6 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    cy.wait(100);  // TODO: why does this reduce likelihood MathJax won't format submitted response?
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -2278,6 +2282,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -2286,7 +2292,6 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    cy.wait(100);  // TODO: why does this reduce likelihood MathJax won't format submitted response?
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -2634,6 +2639,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -2642,7 +2649,6 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    cy.wait(100);  // TODO: why does this reduce likelihood MathJax won't format submitted response?
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -2976,6 +2982,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -2984,7 +2992,6 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    cy.wait(100);  // TODO: why does this reduce likelihood MathJax won't format submitted response?
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');

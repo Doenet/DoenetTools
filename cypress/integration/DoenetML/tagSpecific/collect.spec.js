@@ -831,6 +831,7 @@ describe('Collect Tag Tests', function () {
       expect(stateVariables['/v5'].stateValues.coords).eqls(["vector", y2, x2]);
       expect(stateVariables['/v6'].stateValues.tail).eqls([y1, x1]);
       expect(stateVariables['/v6'].stateValues.head).eqls([y2, x2]);
+      cy.get('#\\/h1').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
     })
 
