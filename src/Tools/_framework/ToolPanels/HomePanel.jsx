@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import styled from 'styled-components';
 import './homepage.css' ;
@@ -89,7 +89,7 @@ const Footer = styled.div`
 
 export default function HomePage(props){
   // console.log(">>>===HomePage")
-  let navigate = useNavigate();
+  let history = useHistory();
 
   const jwt = Cookies.get();
   let isSignedIn = false;
@@ -107,7 +107,7 @@ export default function HomePage(props){
             <h4 style={{ marginTop: '0px' }}>
               The free and open data-driven educational technology platform
             </h4>
-            {isSignedIn ? <div style={{display: "flex", justifyContent: "center"}}><Button size = "medium"  onClick={()=>navigate('/course')} value = "Go to Course" /></div> : <div style={{display: "flex", justifyContent: "center"}}><Button onClick={()=>navigate('/SignIn')} size = "medium" value = "Sign In" /></div>}
+            {isSignedIn ? <div style={{display: "flex", justifyContent: "center"}}><Button size = "medium"  onClick={()=>history.push('/course')} value = "Go to Course" /></div> : <div style={{display: "flex", justifyContent: "center"}}><Button onClick={()=>history.push('/SignIn')} size = "medium" value = "Sign In" /></div>}
             <ParagraphTags>
               The Distributed Open Education Network (Doenet) is, at its core, a
               mechanism for measuring and sharing student interactions with web
@@ -216,7 +216,7 @@ export default function HomePage(props){
           </SectionText>       
         </Footer>
   {/* {isSignedIn ?  */}
-  {/* <div><button onClick={()=>navigate('/course')}>Go To Course</button></div> */}
+  {/* <div><button onClick={()=>history.push('/course')}>Go To Course</button></div> */}
   {/* : */}
   {/* <div><button onClick={goToSignIn}>Sign In</button></div>  */}
   {/* } */}
