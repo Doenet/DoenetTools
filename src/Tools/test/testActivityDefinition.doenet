@@ -1,6 +1,6 @@
 <document Xmlns="https://doenet.org/spec/doenetml/v0.1.0" type="activity"
  itemWeights = "0 1 0.5 3"
- shuffleItemWidths
+ shuffleItemWeights
 >
   <order behavior="sequence">
     <page><graph><point>(4,-7)</point></graph><mathinput /></page>

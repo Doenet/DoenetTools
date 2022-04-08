@@ -2757,6 +2757,19 @@ export default class Core {
 
     if (redefineDependencies.propVariable) {
       let propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
+
+      // if we have an array entry state variable that hasn't been created yet
+      // create it now so that we can look up stateVariablesPrescribingAdditionalAttributes
+      if (!propStateVariableInTarget && this.checkIfArrayEntry({
+        stateVariable: redefineDependencies.propVariable,
+        component: targetComponent
+      })) {
+        await this.createFromArrayEntry({
+          stateVariable: redefineDependencies.propVariable,
+          component: targetComponent
+        })
+        propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
+      }
       if (propStateVariableInTarget && propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
         additionalAttributesFromStateVariables = propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes
       }
@@ -3612,6 +3625,32 @@ export default class Core {
           stateVarObj.additionalStateVariablesDefined.push(arrayEntryVarName);
         } else {
           stateVarObj.additionalStateVariablesDefined.push(varName);
+        }
+      }
+    }
+
+
+    // if any of the state variables prescribing additional entries are arrays,
+    // transform to their array entry
+    if (arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+      stateVarObj.stateVariablesPrescribingAdditionalAttributes = {};
+
+      let entryPrefixInd = arrayStateVarObj.entryPrefixes.indexOf(arrayEntryPrefix);
+
+      for (let attrName in arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+        let varName = arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName];
+
+        let sObj = component.state[varName];
+
+        if (sObj.isArray) {
+
+          // find the same array entry prefix in the other array state variable
+          let newArrayEntryPrefix = sObj.entryPrefixes[entryPrefixInd];
+          let arrayEntryVarName = newArrayEntryPrefix + stateVarObj.varEnding;
+
+          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = arrayEntryVarName;
+        } else {
+          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = varName;
         }
       }
     }

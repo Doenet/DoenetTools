@@ -1,3 +1,5 @@
+import { createFunctionFromDefinition } from "../../../../src/Core/utils/function";
+
 describe('ODEsystem Tag Tests', function () {
 
   beforeEach(() => {
@@ -20,11 +22,19 @@ describe('ODEsystem Tag Tests', function () {
     </odesystem>
 
     <graph>
-    <copy prop="numericalsolution" target="ode" />
+    <copy prop="numericalsolution" target="ode" assignNames="f" />
     <point x='$zeroFixed' y='$ic' />
     </graph>
 
+    <p><aslist><map>
+      <template><evaluate function="$f" input="$v" /></template>
+      <sources alias="v">
+        <sequence from="0" to="5" step="0.5" />
+      </sources>
+    </map></aslist></p>
+
     <number fixed hide name="zeroFixed">0</number>
+    <copy prop="value" target="tol" assignNames="tol2" />
   `}, "*");
     });
 
@@ -38,11 +48,13 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
+
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
+        expect(solutionsFromCore[2 * x]).eq(solutionF(x));
       }
 
     });
@@ -51,6 +63,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("Change initial condition")
     cy.get('#\\/ic textarea').type(`{end}{backspace}3{enter}`, { force: true });
 
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=xx(0)=3')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=3')
     })
@@ -59,11 +72,12 @@ describe('ODEsystem Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       ic = 3;
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
+        expect(solutionsFromCore[2 * x]).eq(solutionF(x));
       }
 
     });
@@ -71,6 +85,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("Change parameter")
     cy.get('#\\/a textarea').type(`{end}{backspace}-2{enter}`, { force: true });
 
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=−2xx(0)=3')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace('−', '-').trim()).equal('dxdt=-2xx(0)=3')
     })
@@ -79,11 +94,12 @@ describe('ODEsystem Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       a = -2;
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
+        expect(solutionsFromCore[2 * x]).eq(solutionF(x));
       }
 
     });
@@ -101,23 +117,26 @@ describe('ODEsystem Tag Tests', function () {
 
       let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
+        expect(solutionsFromCore[2 * x]).eq(solutionF(x));
       }
 
     });
 
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=−2xx(0)=−5')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=-2xx(0)=-5')
     })
 
 
     cy.log("Change tolerance")
-    cy.get('#\\/tol textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1E-10{enter}`, { force: true });
+    cy.get('#\\/tol textarea').type(`{ctrl+home}{shift+end}{backspace}1E-10{enter}`, { force: true });
 
+    cy.get('#\\/tol2 .mjx-mrow').should('contain.text', '1⋅10−10')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=-2xx(0)=-5')
     })
@@ -126,11 +145,12 @@ describe('ODEsystem Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       tol = 1E-10;
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
+        expect(solutionsFromCore[2 * x]).eq(solutionF(x));
       }
 
     });
@@ -139,6 +159,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("Change parameter again")
     cy.get('#\\/a textarea').type(`{end}{backspace}{backspace}0.5{enter}`, { force: true });
 
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=0.5xx(0)=−5')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=0.5xx(0)=-5')
     })
@@ -147,11 +168,12 @@ describe('ODEsystem Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       a = 0.5;
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
+        expect(solutionsFromCore[2 * x]).eq(solutionF(x));
       }
 
     });
@@ -159,18 +181,21 @@ describe('ODEsystem Tag Tests', function () {
     cy.log("Change initial condition to zero")
     cy.get('#\\/ic textarea').type(`{end}{backspace}{backspace}0{enter}`, { force: true });
 
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=0.5xx(0)=0')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=0.5xx(0)=0')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       for (let x = 0; x <= 1000; x += 100) {
         expect(solutionF(x)).eq(0);
       }
-
+      for (let x = 0; x <= 5; x += 0.5) {
+        expect(solutionsFromCore[2 * x]).eq(0);
+      }
     });
 
   });
@@ -190,7 +215,13 @@ describe('ODEsystem Tag Tests', function () {
 
   <p><m>f($T) = $$(ode{prop='numericalSolution'})($T)
   </m></p>
-`}, "*");
+
+
+  <copy prop="value" target="tol" assignNames="tol2" />
+  <copy prop="value" target="T" assignNames="T2" />
+  <copy prop="value" target="maxiter" assignNames="maxiter2" />
+  <copy prop="value" target="chunksize" assignNames="chunksize2" />
+  `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
@@ -205,8 +236,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
       for (let x = 0; x <= 10; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -214,8 +244,9 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("Can't make it to t=20");
-    cy.get('#\\/T textarea').type(`{end}{backspace}{backspace}20{enter}`, {force: true});
+    cy.get('#\\/T textarea').type(`{end}{backspace}{backspace}20{enter}`, { force: true });
 
+    cy.get('#\\/T2 .mjx-mrow').should('contain.text', '20')
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.split('=')[1].trim()).eq("NaN");
     })
@@ -223,15 +254,15 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
       assert.isNaN(solutionF(20));
 
     });
 
     cy.log("increase maxiterations");
-    cy.get('#\\/maxiter textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}2000{enter}`, {force: true});
+    cy.get('#\\/maxiter textarea').type(`{ctrl+home}{shift+end}{backspace}2000{enter}`, { force: true });
 
+    cy.get('#\\/maxiter2 .mjx-mrow').should('contain.text', '2000')
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
     })
@@ -239,8 +270,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -248,8 +278,9 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("Can't make it if decrease tolerance");
-    cy.get('#\\/tol textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1E-8{enter}`, {force: true});
+    cy.get('#\\/tol textarea').type(`{ctrl+home}{shift+end}{backspace}1E-8{enter}`, { force: true });
 
+    cy.get('#\\/tol2 .mjx-mrow').should('contain.text', '1⋅10−8')
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.split('=')[1].trim()).eq("NaN");
     })
@@ -257,16 +288,16 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
       assert.isNaN(solutionF(20));
 
     });
 
 
     cy.log("increase maxiterations further");
-    cy.get('#\\/maxiter textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}5000{enter}`, {force: true});
+    cy.get('#\\/maxiter textarea').type(`{ctrl+home}{shift+end}{backspace}5000{enter}`, { force: true });
 
+    cy.get('#\\/maxiter2 .mjx-mrow').should('contain.text', '5000')
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
     })
@@ -274,8 +305,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -284,9 +314,10 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("decrease maxiterations back down");
-    cy.get('#\\/maxiter textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}1000{enter}`, {force: true});
+    cy.get('#\\/maxiter textarea').type(`{ctrl+home}{shift+end}{backspace}1000{enter}`, { force: true });
 
 
+    cy.get('#\\/maxiter2 .mjx-mrow').should('contain.text', '1000')
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.split('=')[1].trim()).eq("NaN");
     })
@@ -294,16 +325,16 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
       assert.isNaN(solutionF(20));
 
     });
 
 
     cy.log("decrease chunksize");
-    cy.get('#\\/chunksize textarea').type(`{end}{backspace}{backspace}1{enter}`, {force: true});
+    cy.get('#\\/chunksize textarea').type(`{end}{backspace}{backspace}1{enter}`, { force: true });
 
+    cy.get('#\\/chunksize2 .mjx-mrow').should('not.contain.text', '10')
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
     })
@@ -311,8 +342,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -335,13 +365,24 @@ describe('ODEsystem Tag Tests', function () {
   </odesystem>
 
   <graph>
-  <copy prop="numericalsolution" target="ode"/>
+  <copy prop="numericalsolution" target="ode" assignNames="f" />
   </graph>
+
+
+  <p><aslist><map>
+    <template><evaluate function="$f" input="$v" /></template>
+    <sources alias="v">
+      <sequence from="0" to="5" />
+    </sources>
+  </map></aslist></p>
+
+  <copy prop="value" target="ivar" assignNames="ivar2" />
+  <copy prop="value" target="dvar" assignNames="dvar2" />
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-    
+
     let tol = 1e-6;
     let expectedF = x => Math.exp(x);
 
@@ -352,18 +393,22 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
+
       expect(solutionF(0)).eq(1);
+      expect(solutionsFromCore[0]).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
+        expect(solutionsFromCore[t]).eq(solutionF(t));
       }
 
     });
 
     cy.log("change independent variable");
-    cy.get('#\\/ivar textarea').type(`{end}{backspace}s{enter}`, {force: true});
+    cy.get('#\\/ivar textarea').type(`{end}{backspace}s{enter}`, { force: true });
 
+    cy.get('#\\/ivar2 .mjx-mrow').should('contain.text', 's')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxds=xx(0)=1')
     })
@@ -371,169 +416,198 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       expect(solutionF(0)).eq(1);
+      expect(solutionsFromCore[0]).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
+        expect(solutionsFromCore[t]).eq(solutionF(t));
       }
 
     });
 
     cy.log("erase independent variable");
-    cy.get('#\\/ivar textarea').type('{end}{backspace}{enter}', {force: true});
+    cy.get('#\\/ivar textarea').type('{end}{backspace}{enter}', { force: true });
 
+    cy.get('#\\/ivar2 .mjx-mrow').should('contain.text', '＿')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxd＿=xx(0)=1')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       expect(solutionF(0)).eq(1);
+      expect(solutionsFromCore[0]).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
+        assert.isNaN(solutionsFromCore[t]);
       }
     });
 
     cy.log("restore independent variable");
-    cy.get('#\\/ivar textarea').type('{end}{backspace}u{enter}', {force: true});
+    cy.get('#\\/ivar textarea').type('{end}{backspace}u{enter}', { force: true });
 
+    cy.get('#\\/ivar2 .mjx-mrow').should('contain.text', 'u')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdu=xx(0)=1')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       expect(solutionF(0)).eq(1);
+      expect(solutionsFromCore[0]).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
+        expect(solutionsFromCore[t]).eq(solutionF(t));
       }
     });
 
 
     cy.log("invalid independent variable");
-    cy.get('#\\/ivar textarea').type('{end}{backspace}1{enter}', {force: true});
+    cy.get('#\\/ivar textarea').type('{end}{backspace}1{enter}', { force: true });
 
+    cy.get('#\\/ivar2 .mjx-mrow').should('contain.text', '1')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxd1=xx(0)=1')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       expect(solutionF(0)).eq(1);
+      expect(solutionsFromCore[0]).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
+        assert.isNaN(solutionsFromCore[t]);
       }
     });
 
     cy.log("restore independent variable");
-    cy.get('#\\/ivar textarea').type('{end}{backspace}v{enter}', {force: true});
+    cy.get('#\\/ivar textarea').type('{end}{backspace}v{enter}', { force: true });
 
+    cy.get('#\\/ivar2 .mjx-mrow').should('contain.text', 'v')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdv=xx(0)=1')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       expect(solutionF(0)).eq(1);
+      expect(solutionsFromCore[0]).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
+        expect(solutionsFromCore[t]).eq(solutionF(t));
       }
     });
 
     cy.log("change dependent variable");
-    cy.get('#\\/dvar textarea').type('{end}{backspace}z{enter}', {force: true});
+    cy.get('#\\/dvar textarea').type('{end}{backspace}z{enter}', { force: true });
 
+    cy.get('#\\/dvar2 .mjx-mrow').should('contain.text', 'z')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dzdv=zz(0)=1')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       expect(solutionF(0)).eq(1);
+      expect(solutionsFromCore[0]).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
+        expect(solutionsFromCore[t]).eq(solutionF(t));
       }
     });
 
 
     cy.log("duplicate variable");
-    cy.get('#\\/dvar textarea').type('{end}{backspace}v{enter}', {force: true});
+    cy.get('#\\/dvar textarea').type('{end}{backspace}v{enter}', { force: true });
 
+    cy.get('#\\/dvar2 .mjx-mrow').should('contain.text', 'v')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dvdv=vv(0)=1')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       expect(solutionF(0)).eq(1);
+      expect(solutionsFromCore[0]).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
+        assert.isNaN(solutionsFromCore[t]);
       }
     });
 
 
     cy.log("different dependent variable");
-    cy.get('#\\/dvar textarea').type('{end}{backspace}v_1{enter}', {force: true});
+    cy.get('#\\/dvar textarea').type('{end}{backspace}v_1{enter}', { force: true });
 
+    cy.get('#\\/dvar2 .mjx-mrow').should('contain.text', 'v1')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dv1dv=v1v1(0)=1')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       expect(solutionF(0)).eq(1);
+      expect(solutionsFromCore[0]).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
+        expect(solutionsFromCore[t]).eq(solutionF(t));
       }
     });
 
 
     cy.log("invalid dependent variable");
-    cy.get('#\\/dvar textarea').type('{end}{backspace}{backspace}{backspace}ab{enter}', {force: true});
+    cy.get('#\\/dvar textarea').type('{end}{backspace}{backspace}{backspace}ab{enter}', { force: true });
 
+    cy.get('#\\/dvar2 .mjx-mrow').should('contain.text', 'ab')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dabdv=abab(0)=1')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       expect(solutionF(0)).eq(1);
+      expect(solutionsFromCore[0]).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
+        assert.isNaN(solutionsFromCore[t]);
       }
     });
 
     cy.log("restore dependent variable");
-    cy.get('#\\/dvar textarea').type('{end}{backspace}{backspace}a{enter}', {force: true});
+    cy.get('#\\/dvar textarea').type('{end}{backspace}{backspace}a{enter}', { force: true });
 
+    cy.get('#\\/dvar2 .mjx-mrow').should('not.contain.text', 'ab')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dadv=aa(0)=1')
     })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let ode = stateVariables['/ode'];
-      let solutionF = (await ode.stateValues.numericalSolutions)[0];
+      let solutionF = createFunctionFromDefinition(stateVariables['/ode'].stateValues.numericalSolutionFDefinitions[0]);
+      let solutionsFromCore = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
       expect(solutionF(0)).eq(1);
+      expect(solutionsFromCore[0]).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
+        expect(solutionsFromCore[t]).eq(solutionF(t));
       }
     });
 
@@ -559,15 +633,17 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.log('change display digits')
-    cy.get('#\\/digits textarea').type('{end}{backspace}{backspace}2{enter}', {force: true});
+    cy.get('#\\/digits textarea').type('{end}{backspace}{backspace}2{enter}', { force: true });
 
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=0.12xx(0)=9.9')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=0.12xx(0)=9.9')
     })
 
     cy.log('change display digits again')
-    cy.get('#\\/digits textarea').type('{end}{backspace}14{enter}', {force: true});
+    cy.get('#\\/digits textarea').type('{end}{backspace}14{enter}', { force: true });
 
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=0.12345678912346xx(0)=9.8765432198765')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=0.12345678912346xx(0)=9.8765432198765')
     })
@@ -611,8 +687,9 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.log("Change initial time");
-    cy.get('#\\/t0 textarea').type('{end}{backspace}-5{enter}', {force: true});
+    cy.get('#\\/t0 textarea').type('{end}{backspace}-5{enter}', { force: true });
 
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=xx(−5)=1')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(−5)=1')
     })
@@ -627,9 +704,10 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.log("Change initial and final time");
-    cy.get('#\\/t0 textarea').type('{end}{backspace}{backspace}11{enter}', {force: true});
-    cy.get('#\\/tf textarea').type('{end}{backspace}{backspace}12{enter}', {force: true});
+    cy.get('#\\/tf textarea').type('{end}{backspace}{backspace}12{enter}', { force: true });
+    cy.get('#\\/t0 textarea').type('{end}{backspace}{backspace}11{enter}', { force: true });
 
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=xx(11)=1')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(11)=1')
     })
@@ -667,12 +745,14 @@ describe('ODEsystem Tag Tests', function () {
 
     cy.log("don't display initial conditions");
     cy.get('#\\/showic_input').click();
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=x')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=x')
     })
 
     cy.log("display initial conditions again");
     cy.get('#\\/showic_input').click();
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=xx(0)=1')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=1')
     })
@@ -693,10 +773,18 @@ describe('ODEsystem Tag Tests', function () {
 
   <graph>
     <curve parmin="0" parmax="10">
-      <copy prop="numericalsolutions" target="ode" />
+      <copy prop="numericalsolutions" target="ode" assignNames="f1 f2" />
     </curve>
     <point x="$ic1" y="$ic2" />
   </graph>
+
+  <p><aslist><map>
+    <template><evaluate function="$f1" input="$v" /><evaluate function="$f2" input="$v" /></template>
+    <sources alias="v">
+      <sequence from="0" to="10" />
+    </sources>
+  </map></aslist></p>
+
   `}, "*");
     });
 
@@ -711,22 +799,31 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let ode = stateVariables['/ode'];
-      let solutionFx = (await ode.stateValues.numericalSolutions)[0];
-      let solutionFy = (await ode.stateValues.numericalSolutions)[1];
+      let solutionFx = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[0]);
+      let solutionFy = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[1]);
+      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinition);
+      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinition);
+      let solutionsFromCoreX = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
+      let solutionsFromCoreY = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[1].componentName].stateValues.value);
       let expectedFx = t => 8 * Math.exp(0.1 * t) - 7 * Math.exp(0.2 * t);
       let expectedFy = t => -4 * Math.exp(0.1 * t) + 7 * Math.exp(0.2 * t);
       for (let t = 0; t <= 10; t += 1) {
         expect(solutionFx(t)).closeTo(expectedFx(t), tol * Math.max(1, Math.abs(expectedFx(t))));
         expect(solutionFy(t)).closeTo(expectedFy(t), tol * Math.max(1, Math.abs(expectedFy(t))));
+        expect(solutionFx2(t)).eq(solutionFx(t));
+        expect(solutionFy2(t)).eq(solutionFy(t));
+        expect(solutionsFromCoreX[t]).eq(solutionFx(t));
+        expect(solutionsFromCoreY[t]).eq(solutionFy(t));
       }
 
     });
 
 
     cy.log("Change initial condition")
-    cy.get('#\\/ic1 textarea').type(`{end}{backspace}3{enter}`, {force: true});
-    cy.get('#\\/ic2 textarea').type(`{end}{backspace}-1{enter}`, {force: true});
+    cy.get('#\\/ic1 textarea').type(`{end}{backspace}3{enter}`, { force: true });
+    cy.get('#\\/ic2 textarea').type(`{end}{backspace}-1{enter}`, { force: true });
 
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=−0.2ydydt=0.1x+0.3yx(0)=3y(0)=−1')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('dxdt=-0.2ydydt=0.1x+0.3yx(0)=3y(0)=-1')
     })
@@ -735,13 +832,21 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let ode = stateVariables['/ode'];
-      let solutionFx = (await ode.stateValues.numericalSolutions)[0];
-      let solutionFy = (await ode.stateValues.numericalSolutions)[1];
+      let solutionFx = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[0]);
+      let solutionFy = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[1]);
+      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinition);
+      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinition);
+      let solutionsFromCoreX = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
+      let solutionsFromCoreY = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[1].componentName].stateValues.value);
       let expectedFx = t => 4 * Math.exp(0.1 * t) - 1 * Math.exp(0.2 * t);
       let expectedFy = t => -2 * Math.exp(0.1 * t) + 1 * Math.exp(0.2 * t);
       for (let t = 0; t <= 10; t += 1) {
         expect(solutionFx(t)).closeTo(expectedFx(t), tol * Math.max(1, Math.abs(expectedFx(t))));
         expect(solutionFy(t)).closeTo(expectedFy(t), tol * Math.max(1, Math.abs(expectedFy(t))));
+        expect(solutionFx2(t)).eq(solutionFx(t));
+        expect(solutionFy2(t)).eq(solutionFy(t));
+        expect(solutionsFromCoreX[t]).eq(solutionFx(t));
+        expect(solutionsFromCoreY[t]).eq(solutionFy(t));
       }
 
     });
@@ -758,13 +863,21 @@ describe('ODEsystem Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       let ode = stateVariables['/ode'];
-      let solutionFx = (await ode.stateValues.numericalSolutions)[0];
-      let solutionFy = (await ode.stateValues.numericalSolutions)[1];
+      let solutionFx = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[0]);
+      let solutionFy = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[1]);
+      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinition);
+      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinition);
+      let solutionsFromCoreX = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
+      let solutionsFromCoreY = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[1].componentName].stateValues.value);
       let expectedFx = t => -6 * Math.exp(0.1 * t) + 1 * Math.exp(0.2 * t);
       let expectedFy = t => 3 * Math.exp(0.1 * t) - 1 * Math.exp(0.2 * t);
       for (let t = 0; t <= 10; t += 1) {
         expect(solutionFx(t)).closeTo(expectedFx(t), tol * Math.max(1, Math.abs(expectedFx(t))));
         expect(solutionFy(t)).closeTo(expectedFy(t), tol * Math.max(1, Math.abs(expectedFy(t))));
+        expect(solutionFx2(t)).eq(solutionFx(t));
+        expect(solutionFy2(t)).eq(solutionFy(t));
+        expect(solutionsFromCoreX[t]).eq(solutionFx(t));
+        expect(solutionsFromCoreY[t]).eq(solutionFy(t));
       }
 
     });
@@ -775,9 +888,10 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("Change initial condition to zero")
-    cy.get('#\\/ic1 textarea').type(`{end}{backspace}{backspace}0{enter}`, {force: true});
-    cy.get('#\\/ic2 textarea').type(`{end}{backspace}0{enter}`, {force: true});
+    cy.get('#\\/ic1 textarea').type(`{end}{backspace}{backspace}0{enter}`, { force: true });
+    cy.get('#\\/ic2 textarea').type(`{end}{backspace}0{enter}`, { force: true });
 
+    cy.get('#\\/ode .mjx-mrow').should('contain.text', 'dxdt=−0.2ydydt=0.1x+0.3yx(0)=0y(0)=0')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('dxdt=-0.2ydydt=0.1x+0.3yx(0)=0y(0)=0')
     })
@@ -786,11 +900,19 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let ode = stateVariables['/ode'];
-      let solutionFx = (await ode.stateValues.numericalSolutions)[0];
-      let solutionFy = (await ode.stateValues.numericalSolutions)[1];
+      let solutionFx = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[0]);
+      let solutionFy = createFunctionFromDefinition(ode.stateValues.numericalSolutionFDefinitions[1]);
+      let solutionFx2 = createFunctionFromDefinition(stateVariables["/f1"].stateValues.fDefinition);
+      let solutionFy2 = createFunctionFromDefinition(stateVariables["/f2"].stateValues.fDefinition);
+      let solutionsFromCoreX = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[0].componentName].stateValues.value);
+      let solutionsFromCoreY = stateVariables["/_map1"].replacements.map(x => stateVariables[stateVariables[x.componentName].replacements[1].componentName].stateValues.value);
       for (let t = 0; t <= 10; t += 1) {
         expect(solutionFx(t)).eq(0);
         expect(solutionFy(t)).eq(0);
+        expect(solutionFx2(t)).eq(solutionFx(t));
+        expect(solutionFy2(t)).eq(solutionFy(t));
+        expect(solutionsFromCoreX[t]).eq(solutionFx(t));
+        expect(solutionsFromCoreY[t]).eq(solutionFy(t));
       }
 
     });
@@ -980,21 +1102,21 @@ describe('ODEsystem Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       let rhs1tree = ['+', ['*', 'a', 'x', 'y'], 'z'];
       let rhs2tree = ['/', 'x', 'y'];
-      expect(stateVariables['/rhs1a'].replacements[0].stateValues.value).eqls(rhs1tree);
-      expect(stateVariables['/rhs1b'].replacements[0].stateValues.value).eqls(rhs1tree);
-      expect(stateVariables['/rhs1c'].replacements[0].stateValues.value).eqls(rhs1tree);
-      expect(stateVariables['/rhs1d'].replacements[0].stateValues.value).eqls(rhs1tree);
-      expect(stateVariables['/rhs2a'].replacements[0].stateValues.value).eqls(rhs2tree);
-      expect(stateVariables['/rhs2b'].replacements[0].stateValues.value).eqls(rhs2tree);
-      expect(stateVariables['/rhssa'].replacements[0].stateValues.value).eqls(rhs1tree);
-      expect(stateVariables['/rhssa'].replacements[1].stateValues.value).eqls(rhs2tree);
-      expect(stateVariables['/rhssb'].replacements[0].stateValues.value).eqls(rhs1tree);
-      expect(stateVariables['/rhssb'].replacements[1].stateValues.value).eqls(rhs2tree);
-      expect(stateVariables['/ic1a'].replacements[0].stateValues.value).eqls('c');
-      expect(stateVariables['/ic1b'].replacements[0].stateValues.value).eqls('c');
-      expect(stateVariables['/ic2a'].replacements[0].stateValues.value).eqls(3);
-      expect(stateVariables['/icsa'].replacements[0].stateValues.value).eqls('c');
-      expect(stateVariables['/icsa'].replacements[1].stateValues.value).eqls(3);
+      expect(stateVariables[stateVariables['/rhs1a'].replacements[0].componentName].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables[stateVariables['/rhs1b'].replacements[0].componentName].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables[stateVariables['/rhs1c'].replacements[0].componentName].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables[stateVariables['/rhs1d'].replacements[0].componentName].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables[stateVariables['/rhs2a'].replacements[0].componentName].stateValues.value).eqls(rhs2tree);
+      expect(stateVariables[stateVariables['/rhs2b'].replacements[0].componentName].stateValues.value).eqls(rhs2tree);
+      expect(stateVariables[stateVariables['/rhssa'].replacements[0].componentName].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables[stateVariables['/rhssa'].replacements[1].componentName].stateValues.value).eqls(rhs2tree);
+      expect(stateVariables[stateVariables['/rhssb'].replacements[0].componentName].stateValues.value).eqls(rhs1tree);
+      expect(stateVariables[stateVariables['/rhssb'].replacements[1].componentName].stateValues.value).eqls(rhs2tree);
+      expect(stateVariables[stateVariables['/ic1a'].replacements[0].componentName].stateValues.value).eqls('c');
+      expect(stateVariables[stateVariables['/ic1b'].replacements[0].componentName].stateValues.value).eqls('c');
+      expect(stateVariables[stateVariables['/ic2a'].replacements[0].componentName].stateValues.value).eqls(3);
+      expect(stateVariables[stateVariables['/icsa'].replacements[0].componentName].stateValues.value).eqls('c');
+      expect(stateVariables[stateVariables['/icsa'].replacements[1].componentName].stateValues.value).eqls(3);
 
     });
 

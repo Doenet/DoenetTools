@@ -38,9 +38,20 @@ export function createFunctionFromDefinition(fDefinition, component = 0) {
       nOutputs: fDefinition.nOutputs,
       component,
     })
+  } else if (fDefinition.functionType === "ODESolution") {
+    return returnODESolutionFunction({
+      nDimensions: fDefinition.nDimensions,
+      t0: fDefinition.t0,
+      x0s: fDefinition.x0s,
+      chunkSize: fDefinition.chunkSize,
+      tolerance: fDefinition.tolerance,
+      numericalRHSfDefinitions: fDefinition.numericalRHSfDefinitions,
+      maxIterations: fDefinition.maxIterations,
+      component: fDefinition.component,
+    })
   } else {
-    // otherwise, return the zero function
-    return () => 0;
+    // otherwise, return the NaN function
+    return () => NaN;
   }
 }
 
@@ -521,5 +532,88 @@ export var functionOperatorDefinitions = {
     }
 
   }
+
+}
+
+function returnODESolutionFunction({
+  nDimensions, t0, x0s, chunkSize, tolerance,
+  numericalRHSfDefinitions, maxIterations, component
+}) {
+
+  var workspace = {};
+
+  workspace.calculatedNumericSolutions = [];
+  workspace.endingNumericalValues = [];
+  workspace.maxPossibleTime = undefined;
+
+
+  let numericalRHSfcomponents = numericalRHSfDefinitions.map(x => createFunctionFromDefinition(x));
+
+  let numericalRHSf = function (t, x) {
+    let fargs = [t];
+    if (Array.isArray(x)) {
+      fargs.push(...x)
+    } else {
+      fargs.push(x)
+    }
+    try {
+      return numericalRHSfcomponents.map(f => f(...fargs));
+    } catch (e) {
+      return NaN;
+    }
+  }
+
+  return function f(t) {
+    if (!Number.isFinite(t)) {
+      return NaN;
+    }
+    if (t === t0) {
+      return x0s[component];
+    }
+
+    let nChunksCalculated = workspace.calculatedNumericSolutions.length;
+    let chunk = Math.ceil((t - t0) / chunkSize) - 1;
+    if (chunk < 0) {
+      // console.log("Haven't yet implemented integrating ODE backward")
+      return NaN;
+    }
+    if (workspace.maxPossibleTime === undefined && chunk >= nChunksCalculated) {
+      for (let tind = nChunksCalculated; tind <= chunk; tind++) {
+        let x0 = workspace.endingNumericalValues[tind - 1];
+        if (x0 === undefined) {
+          x0 = x0s;
+        }
+        let t0shifted = t0 + tind * chunkSize;
+        let result = me.math.dopri(
+          t0shifted,
+          t0shifted + chunkSize,
+          x0,
+          numericalRHSf,
+          tolerance,
+          maxIterations,
+        )
+
+        workspace.endingNumericalValues.push(result.y[result.y.length - 1]);
+        workspace.calculatedNumericSolutions.push(result.at.bind(result));
+
+        let endingTime = result.x[result.x.length - 1];
+        if (endingTime < (t0shifted + chunkSize) * (1 - 1e-6)) {
+          workspace.maxPossibleTime = endingTime;
+          break;
+        }
+      }
+    }
+
+    if (t > workspace.maxPossibleTime) {
+      return NaN;
+    }
+
+    let value = workspace.calculatedNumericSolutions[chunk](t)[component];
+
+    return value;
+
+  }
+
+
 
 }
