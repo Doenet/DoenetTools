@@ -33,6 +33,11 @@ export default function MathInput(props) {
 
   let rendererValue = useRef(null);
 
+  // Need to use ref for includeCheckWork
+  // or handlePressEnter doesn't get the new value when the SV changes
+  let includeCheckWork = useRef(SVs.includeCheckWork);
+  includeCheckWork.current = SVs.includeCheckWork;
+
   if (!ignoreUpdate) {
     rendererValue.current = SVs.rawRendererValue;
   }
@@ -93,7 +98,7 @@ export default function MathInput(props) {
       baseVariableValue: rendererValue.current,
     });
 
-    if (SVs.includeCheckWork && validationState.current === 'unvalidated') {
+    if (includeCheckWork.current && validationState.current === 'unvalidated') {
       callAction({
         action: actions.submitAnswer,
       });

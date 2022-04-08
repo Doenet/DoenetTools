@@ -1858,7 +1858,7 @@ describe('Paginator Tag Tests', function () {
   })
 
   // Do we restore this feature?
-  it('Paginator controls ignore read only flag', () => {
+  it.skip('Paginator controls ignore read only flag', () => {
 
     let doenetML = `
     <text>a</text>

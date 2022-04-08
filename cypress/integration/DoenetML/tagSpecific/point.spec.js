@@ -295,6 +295,8 @@ describe('Point Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3,1)');
+
     cy.log(`we can move point`)
     cy.window().then(async (win) => {
       win.callAction1({
@@ -833,14 +835,12 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point1 to (-9,6)`)
     cy.window().then(async (win) => {
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9, y: 6 }
       })
     })
-
-    cy.wait(100)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1372,6 +1372,8 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+
     cy.log(`move point to (1.2,3.6)`)
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1466,6 +1468,8 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+
     cy.log(`move point to (1.2,3.6)`)
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1535,6 +1539,8 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+
     cy.log(`move point to (1.2,3.6)`)
     cy.window().then(async (win) => {
       win.callAction1({
@@ -1600,6 +1606,8 @@ describe('Point Tag Tests', function () {
 
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2,3)');
 
     cy.log(`move point to (1.2,3.6,5.4)`)
     cy.window().then(async (win) => {
@@ -1837,6 +1845,8 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+
     cy.log(`move point A to (105,3)`)
     cy.window().then(async (win) => {
       win.callAction1({
@@ -2071,6 +2081,8 @@ describe('Point Tag Tests', function () {
 
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log(`move point1 to (1.2,3.6)`)
     cy.window().then(async (win) => {
@@ -2914,9 +2926,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
 
       cy.log(`point is on line`);
+      cy.get('#\\/coords .mjx-mrow').should('contain.text', '(3,−1)');
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).eq(2);
@@ -2995,6 +3008,7 @@ describe('Point Tag Tests', function () {
   </point>
   </graph>
   <copy prop="constraintUsed" assignNames="constraintUsed" target="A" />
+  <copy prop="coords" target="A" assignNames="coords" />
   `}, "*");
     });
 
@@ -3002,6 +3016,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.log(`point is not on line`);
+    cy.get('#\\/coords .mjx-mrow').should('contain.text', '(−1,−5)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).eq(-1);
@@ -3097,6 +3112,9 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.log(`point is not on line`);
+
+    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−1,−5)');
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)).eqls([-1, -5])
@@ -3302,6 +3320,9 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`point is on line`);
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(4,1)');
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
@@ -3388,6 +3409,7 @@ describe('Point Tag Tests', function () {
   </point>
   </graph>
   <copy prop="constraintUsed" assignNames="constraintUsed" target="_point1" />
+  <copy prop="coords" target="_point1" assignNames="coords1" />
   <text>a</text>
   `}, "*");
     });
@@ -3397,6 +3419,9 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`point is in original location`);
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3,2)');
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
@@ -3518,6 +3543,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point on grid`);
+    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8,4)');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
@@ -3624,6 +3650,9 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point in original location`);
+
+    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(7,3)');
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7, 1E-12);
@@ -3783,6 +3812,9 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point in original location`);
+
+    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(7,3)');
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7, 1E-12);
@@ -4027,6 +4059,9 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`on x=y`);
+
+    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(5,5)');
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
@@ -4212,6 +4247,8 @@ describe('Point Tag Tests', function () {
 
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.log(`intersection is a line`);
     cy.window().then(async (win) => {
@@ -4587,6 +4624,8 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(2,1)');
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
@@ -4649,6 +4688,9 @@ describe('Point Tag Tests', function () {
     let ys = [8, 3, -3, -2, -6, 5, -9, 0];
 
     cy.log("initial positions")
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,2)`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = 1;
@@ -4703,6 +4745,9 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log("initial positions")
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,2)`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = 1;
@@ -4788,6 +4833,9 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log("initial positions")
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,2)`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = 1;
@@ -4869,7 +4917,8 @@ describe('Point Tag Tests', function () {
     <graph>
       <point name="p1" x="3" y="7" />
     </graph>
-  <copy prop="coords" target="p1" assignNames="coords1" />
+
+    <copy prop="coords" target="p1" assignNames="coords1" />
   `}, "*");
     });
 
@@ -4878,6 +4927,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log("initial values")
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(3,7)`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -4983,6 +5034,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log("initial values")
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(3,7)`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5114,6 +5167,8 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(9,7)`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = 9;
@@ -5201,6 +5256,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log("initial values")
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(9,7)`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5292,6 +5349,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log("initial values")
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(9,7)`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5466,6 +5525,8 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(9,7)`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = 9;
@@ -5637,6 +5698,8 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(9,7)`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = 9;
@@ -5739,6 +5802,8 @@ describe('Point Tag Tests', function () {
       expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
       expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
+      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(${x1},${y1})`)
+
     });
 
     cy.log("move points")
@@ -5820,6 +5885,8 @@ describe('Point Tag Tests', function () {
 
       expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
       expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+
+      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(${x1},${y1})`)
 
     });
 
@@ -6026,6 +6093,8 @@ describe('Point Tag Tests', function () {
     });
 
     cy.get("#\\/_text1").should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(−4,1)`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

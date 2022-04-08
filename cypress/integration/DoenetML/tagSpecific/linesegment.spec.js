@@ -2100,6 +2100,9 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.log('check initial values')
+
+    cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([1, 2]);
@@ -2259,6 +2262,9 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.log('check initial values')
+
+    cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([1, 2]);
@@ -2425,6 +2431,9 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point on line segment, close to origin`);
+
+    cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.00')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = (stateVariables['/P'].stateValues.xs)[0];
@@ -2514,6 +2523,9 @@ describe('LineSegment Tag Tests', function () {
       expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
       expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
       expect(stateVariables["/p2a"].stateValues.xs[1]).eq(p2y)
+
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
+
     })
 
     cy.log('move first individually copied point');
@@ -2711,6 +2723,7 @@ describe('LineSegment Tag Tests', function () {
       expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([p2x, p2y]);
       expect(stateVariables['/_linesegment2'].stateValues.endpoints[0]).eqls([p1x, p1y]);
       expect(stateVariables['/_linesegment2'].stateValues.endpoints[1]).eqls([p2x, p2y]);
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)}`)
     })
 
     cy.log('move first line segment up and to the right')
@@ -2867,6 +2880,8 @@ describe('LineSegment Tag Tests', function () {
 
     let x = 1, y = 2;
 
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
@@ -3004,6 +3019,8 @@ describe('LineSegment Tag Tests', function () {
     let x1 = 1, y1 = 0;
     let x2 = 3, y2 = 2;
     let x3 = -1, y3 = 4;
+
+    cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

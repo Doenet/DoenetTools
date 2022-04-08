@@ -9,6 +9,8 @@ export function gatherDescendants({ ancestor, descendantTypes,
   componentInfoObjects,
 }) {
 
+  // Note: ignoreReplacementsOfEncounteredComposites means ignore replacements
+  // of all composites except copies of external content
 
   let matchChildToTypes = child =>
     descendantTypes.some(ct => componentInfoObjects.isInheritedComponentType({
@@ -90,8 +92,12 @@ export function gatherDescendants({ ancestor, descendantTypes,
     let namesToIgnore = [];
     for (let child of childrenToCheck) {
       let checkChildForReplacements = matchChildToTypes(child);
-      if(ignoreReplacementsOfEncounteredComposites) {
-        checkChildForReplacements = true;
+      if (ignoreReplacementsOfEncounteredComposites && !checkChildForReplacements) {
+        // we explicitly will not ignore replacements of copies of external content
+        checkChildForReplacements = !(
+          child.componentType === "copy" &&
+          child.replacements[0]?.componentType === "externalContent"
+        );
       }
       if (checkChildForReplacements && componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: child.componentType,

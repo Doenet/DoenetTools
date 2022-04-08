@@ -3577,6 +3577,8 @@ describe('Vector Tag Tests', function () {
         expect(stateVariables[name].stateValues.head).eqls([v3hx, v3hy]);
       }
 
+      cy.get('#\\/vector1 .mjx-mrow').should('contain.text', `(${nInDOM(v1hx - v1tx)},${nInDOM(v1hy - v1ty)})`)
+
     })
 
     cy.log('move vector1')
@@ -4054,6 +4056,8 @@ describe('Vector Tag Tests', function () {
         expect(stateVariables[name].stateValues.displacement).eqls([displacement_x, displacement_y]);
       }
 
+      cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(displacement_x)},${nInDOM(displacement_y)})`)
+
     })
 
     cy.log("move vectors")
@@ -4191,6 +4195,9 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log('check initial values')
+
+    cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(2)},${nInDOM(2)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([1, 2]);
@@ -4355,6 +4362,9 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log('check initial values')
+
+    cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(2)},${nInDOM(2)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([1, 2]);
@@ -4542,6 +4552,9 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point on vector, close to origin`);
+
+    cy.get('#\\/Pa .mjx-mrow').should('contain.text', `0.00`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = stateVariables['/P'].stateValues.xs[0];
@@ -4617,6 +4630,9 @@ describe('Vector Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log('check initial values')
+
+    cy.get('#\\/o2 .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(3)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/original'].stateValues.tail).eqls([0, 0]);
@@ -4734,6 +4750,9 @@ describe('Vector Tag Tests', function () {
     let wHead = w.map((x, i) => x + wTail[i]);
 
     cy.log('check initial values')
+
+    cy.get('#\\/u2 .mjx-mrow').should('contain.text', `(${nInDOM(u[0])},${nInDOM(u[1])})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -5046,6 +5065,9 @@ describe('Vector Tag Tests', function () {
     let t4x = 0, t4y = 0;
 
     cy.log("initial positions")
+
+    cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -5434,6 +5456,9 @@ describe('Vector Tag Tests', function () {
     let t4x = 0, t4y = 0;
 
     cy.log("initial positions")
+
+    cy.get('#\\/v1a .mjx-mrow').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -5804,6 +5829,9 @@ describe('Vector Tag Tests', function () {
     let tx = 1, ty = 2, hx = -2, hy = 3;
 
     cy.log("initial positions")
+
+    cy.get('#\\/va .mjx-mrow').should('contain.text', `(${nInDOM(hx - tx)},${nInDOM(hy - ty)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -8202,6 +8230,8 @@ describe('Vector Tag Tests', function () {
     let x2 = 3, y2 = 2;
     let x3 = -1, y3 = 4;
 
+    cy.get('#\\/v1h').should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([x1, y1]);
@@ -8477,6 +8507,8 @@ describe('Vector Tag Tests', function () {
       expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
 
+      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+
     })
 
     cy.log(`move tail, make sure head doesn't move`)
@@ -8536,6 +8568,8 @@ describe('Vector Tag Tests', function () {
       expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
 
+      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
+
     })
 
     cy.log(`move tail, make sure head doesn't move`)
@@ -8594,6 +8628,8 @@ describe('Vector Tag Tests', function () {
       expect(stateVariables['/_vector1'].stateValues.tail).eqls([tailx, taily]);
       expect(stateVariables['/_vector1'].stateValues.head).eqls([headx, heady]);
       expect(stateVariables['/_vector1'].stateValues.displacement).eqls([displacementx, displacementy]);
+
+      cy.get("#\\/v1a .mjx-mrow").should('contain.text', `(${nInDOM(displacementx)},${nInDOM(displacementy)})`)
 
     })
 
@@ -9953,6 +9989,8 @@ describe('Vector Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    cy.get("#\\/v1h .mjx-mrow").should('contain.text', `(${nInDOM(3)},${nInDOM(4)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/v1"].stateValues.head).eqls([3, 4])
@@ -10241,6 +10279,8 @@ describe('Vector Tag Tests', function () {
     ]
 
     let displacements = heads.map((v, i) => [v[0] - tails[i][0], v[1] - tails[i][1]])
+
+    cy.get("#\\/v0t .mjx-mrow").should('contain.text', `(${nInDOM(tails[0][0])},${nInDOM(tails[0][1])})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

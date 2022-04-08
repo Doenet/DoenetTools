@@ -1337,9 +1337,9 @@ describe('Specifying unique variant tests', function () {
     cy.log("get all values in first variants")
     for (let ind = 1; ind <= numVariants; ind++) {
 
-      // reload every 10 times to keep it from slowing down
+      // reload every 8 times to keep it from slowing down
       // (presumably due to garbage collecting)
-      if (ind % 10 === 0) {
+      if (ind % 8 === 0) {
         cy.reload();
       }
 
