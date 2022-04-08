@@ -4,11 +4,13 @@ export function gatherDescendants({ ancestor, descendantTypes,
   includeNonActiveChildren = false,
   skipOverAdapters = false,
   ignoreReplacementsOfMatchedComposites = false,
-  ignoreReplacementsOfEncounteredComposites = false,
+  ignoreReplacementsOfMostEncounteredComposites = false,
   init = true,
   componentInfoObjects,
 }) {
 
+  // Note: ignoreReplacementsOfMostEncounteredComposites means ignore replacements
+  // of all composites except copies of external content
 
   let matchChildToTypes = child =>
     descendantTypes.some(ct => componentInfoObjects.isInheritedComponentType({
@@ -85,13 +87,17 @@ export function gatherDescendants({ ancestor, descendantTypes,
   }
 
 
-  if (ignoreReplacementsOfMatchedComposites || ignoreReplacementsOfEncounteredComposites) {
+  if (ignoreReplacementsOfMatchedComposites || ignoreReplacementsOfMostEncounteredComposites) {
     // first check if have matched any composites, so can ignore their replacements
     let namesToIgnore = [];
     for (let child of childrenToCheck) {
       let checkChildForReplacements = matchChildToTypes(child);
-      if(ignoreReplacementsOfEncounteredComposites) {
-        checkChildForReplacements = true;
+      if (ignoreReplacementsOfMostEncounteredComposites && !checkChildForReplacements) {
+        // we explicitly will not ignore replacements of copies of external content
+        checkChildForReplacements = !(
+          child.componentType === "copy" &&
+          child.replacements[0]?.componentType === "externalContent"
+        );
       }
       if (checkChildForReplacements && componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: child.componentType,
@@ -138,7 +144,7 @@ export function gatherDescendants({ ancestor, descendantTypes,
         includeNonActiveChildren,
         skipOverAdapters,
         ignoreReplacementsOfMatchedComposites,
-        ignoreReplacementsOfEncounteredComposites,
+        ignoreReplacementsOfMostEncounteredComposites,
         init: false,
         componentInfoObjects,
       });

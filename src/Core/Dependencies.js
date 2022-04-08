@@ -3998,7 +3998,7 @@ class ChildDependency extends Dependency {
     }
 
     this.childGroups = this.definition.childGroups;
-    if(!Array.isArray(this.childGroups)) {
+    if (!Array.isArray(this.childGroups)) {
       throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: childGroups must be an array`)
     }
 
@@ -4413,7 +4413,10 @@ class DescendantDependency extends Dependency {
     this.includeAttributeChildren = this.definition.includeAttributeChildren;
     this.skipOverAdapters = this.definition.skipOverAdapters;
     this.ignoreReplacementsOfMatchedComposites = this.definition.ignoreReplacementsOfMatchedComposites;
-    this.ignoreReplacementsOfEncounteredComposites = this.definition.ignoreReplacementsOfEncounteredComposites;
+
+    // Note: ignoreReplacementsOfMostEncounteredComposites means ignore replacements
+    // of all composites except copies of external content
+    this.ignoreReplacementsOfMostEncounteredComposites = this.definition.ignoreReplacementsOfMostEncounteredComposites;
 
   }
 
@@ -4549,7 +4552,7 @@ class DescendantDependency extends Dependency {
       includeNonActiveChildren: this.includeNonActiveChildren,
       skipOverAdapters: this.skipOverAdapters,
       ignoreReplacementsOfMatchedComposites: this.ignoreReplacementsOfMatchedComposites,
-      ignoreReplacementsOfEncounteredComposites: this.ignoreReplacementsOfEncounteredComposites,
+      ignoreReplacementsOfMostEncounteredComposites: this.ignoreReplacementsOfMostEncounteredComposites,
       componentInfoObjects: this.dependencyHandler.componentInfoObjects,
     });
 

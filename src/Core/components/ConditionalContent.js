@@ -229,7 +229,7 @@ export default class ConditionalContent extends CompositeComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfEncounteredComposites: true,
+          ignoreReplacementsOfMostEncounteredComposites: true,
         },
 
       }),
