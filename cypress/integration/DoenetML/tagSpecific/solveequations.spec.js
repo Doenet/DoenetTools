@@ -283,7 +283,7 @@ describe('SolveEquations Tag Tests', function () {
       expect(stateVariables['/solve'].stateValues.solutions).eqls([])
     })
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x_1{rightArrow}- 0.1exp(x_1{rightArrow})=0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}x_1{rightArrow}- 0.1exp(x_1{rightArrow})=0{enter}", { force: true, delay: 5 })
 
     cy.get("#\\/num").should('have.text', 1);
 
@@ -334,7 +334,7 @@ describe('SolveEquations Tag Tests', function () {
 
 
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}ab=0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}ab=0{enter}", { force: true, delay: 5 })
     cy.get('#\\/var textarea').type("{end}{backspace}{backspace}{backspace}{backspace}b{enter}", { force: true, delay: 5 })
     cy.get('#\\/var2').should('contain.text', 'b')
 
@@ -365,9 +365,9 @@ describe('SolveEquations Tag Tests', function () {
     })
 
 
-    cy.get('#\\/maxvar textarea').type("{end}{backspace}{backspace}{backspace}10{enter}", { force: true, delay: 5 })
+    cy.get('#\\/maxvar textarea').type("{ctrl+home}{shift+end}{backspace}10{enter}", { force: true, delay: 5 })
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}sin(10b) = b^3{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}sin(10b) = b^3{enter}", { force: true, delay: 5 })
     cy.get('#\\/equation2').should('contain.text','sin(10b)')
 
     cy.get("#\\/num").should('have.text', 4);
@@ -396,7 +396,7 @@ describe('SolveEquations Tag Tests', function () {
     })
 
 
-    cy.get('#\\/minvar textarea').type("{end}{backspace}{backspace}{backspace}-10{enter}", { force: true, delay: 5 })
+    cy.get('#\\/minvar textarea').type("{ctrl+home}{shift+end}{backspace}-10{enter}", { force: true, delay: 5 })
 
     cy.get("#\\/num").should('have.text', 7);
 
@@ -436,7 +436,7 @@ describe('SolveEquations Tag Tests', function () {
     })
 
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sin(pi b) = 0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}sin(pi b) = 0{enter}", { force: true, delay: 5 })
     cy.get('#\\/minvar textarea').type("{end}.1{enter}", { force: true, delay: 5 })
     cy.get('#\\/maxvar textarea').type("{end}.1{enter}", { force: true, delay: 5 })
     cy.get('#\\/maxvar2').should('contain.text','.1')
@@ -452,7 +452,7 @@ describe('SolveEquations Tag Tests', function () {
     })
 
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}b^2{rightArrow}-0.001b = 0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}b^2{rightArrow}-0.001b = 0{enter}", { force: true, delay: 5 })
     cy.get('#\\/equation2').should('contain.text','0.001b=0')
 
     cy.get("#\\/num").should('have.text', 2);
@@ -463,7 +463,7 @@ describe('SolveEquations Tag Tests', function () {
       expect(stateVariables['/solve'].stateValues.solutions[1]).closeTo(0.001, 1E-5)
     })
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(b+0.03)(b+0.0301) = 0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}(b+0.03)(b+0.0301) = 0{enter}", { force: true, delay: 5 })
     cy.get('#\\/equation2').should('contain.text','(b+0.03)(b+0.0301)=0')
 
     cy.get("#\\/num").should('have.text', 2);
@@ -483,7 +483,7 @@ describe('SolveEquations Tag Tests', function () {
       expect(stateVariables['/solve'].stateValues.numberSolutions).eq(0);
     })
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}43.241(b+4.52352)(b+4.52365)(b-8.58230)(b-8.58263) = 0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}43.241(b+4.52352)(b+4.52365)(b-8.58230)(b-8.58263) = 0{enter}", { force: true, delay: 5 })
     cy.get('#\\/equation2').should('contain.text','43.241(b+4.52352)(b+4.52365)')
     
     cy.get("#\\/num").should('have.text', 4);
@@ -510,7 +510,7 @@ describe('SolveEquations Tag Tests', function () {
       expect(stateVariables['/solve'].stateValues.solutions[3]).closeTo(8.58263, 1E-4)
     })
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pi b) + 1=0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}cos(pi b) + 1=0{enter}", { force: true, delay: 5 })
 
     cy.get("#\\/num").should('have.text', 10);
     cy.window().then(async (win) => {
@@ -521,7 +521,7 @@ describe('SolveEquations Tag Tests', function () {
       }
     })
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pib) = 1{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}cos(pib) = 1{enter}", { force: true, delay: 5 })
   
     cy.get("#\\/num").should('have.text', 11);
     cy.window().then(async (win) => {
@@ -557,7 +557,7 @@ describe('SolveEquations Tag Tests', function () {
     })
 
     cy.get('#\\/minvar textarea').type("{end}.0001{enter}", { force: true, delay: 5 })
-    cy.get('#\\/minvar2').should('not.contain.text','.0001')
+    cy.get('#\\/minvar2').should('contain.text','.0001')
 
     cy.get("#\\/num").should('have.text', 11);
     cy.window().then(async (win) => {
@@ -568,7 +568,7 @@ describe('SolveEquations Tag Tests', function () {
       }
     })
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrtb-pi{rightArrow}=0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}sqrtb-pi{rightArrow}=0{enter}", { force: true, delay: 5 })
 
     cy.get("#\\/num").should('have.text', 1);
     cy.window().then(async (win) => {
@@ -577,7 +577,7 @@ describe('SolveEquations Tag Tests', function () {
       expect(stateVariables['/solve'].stateValues.solutions[0]).closeTo(Math.PI, 1E-3)
     })
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrtb^2{rightArrow}-pi^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}sqrtb^2{rightArrow}-pi^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 5 })
 
     cy.get("#\\/num").should('have.text', 2);
     cy.window().then(async (win) => {
@@ -587,7 +587,7 @@ describe('SolveEquations Tag Tests', function () {
       expect(stateVariables['/solve'].stateValues.solutions[1]).closeTo(Math.PI, 1E-3)
     })
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrtpi^2{rightArrow}-b^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}sqrtpi^2{rightArrow}-b^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 5 })
     cy.get('#\\/equation2').should('contain.text','√π2−b2=0')
 
     cy.get("#\\/num").should('have.text', 2);
@@ -599,7 +599,7 @@ describe('SolveEquations Tag Tests', function () {
     })
 
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10000000000sqrtpi^2{rightArrow}-b^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}10000000000sqrtpi^2{rightArrow}-b^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 5 })
     cy.get('#\\/equation2').should('contain.text','10000000000√π2−b2=0')
 
     cy.get("#\\/num").should('have.text', 2);
@@ -611,7 +611,7 @@ describe('SolveEquations Tag Tests', function () {
     })
 
 
-    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}0.00000000000000000001sqrtpi^2{rightArrow}-b^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 5 })
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+end}{backspace}0.00000000000000000001sqrtpi^2{rightArrow}-b^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 5 })
     cy.get('#\\/equation2').should('contain.text','1⋅10−20√π2−b2=0')
 
     cy.get("#\\/num").should('have.text', 2);
