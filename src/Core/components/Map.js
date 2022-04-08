@@ -203,7 +203,7 @@ export default class Map extends CompositeComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMostEncounteredComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         },
 
       }),

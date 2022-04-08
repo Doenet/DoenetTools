@@ -162,7 +162,7 @@ export default class RenderDoenetML extends CompositeComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMostEncounteredComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         },
       }),
       definition({ dependencyValues, componentName }) {

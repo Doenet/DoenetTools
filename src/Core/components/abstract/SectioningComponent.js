@@ -437,7 +437,7 @@ export default class SectioningComponent extends BlockComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMostEncounteredComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         },
 
       }),

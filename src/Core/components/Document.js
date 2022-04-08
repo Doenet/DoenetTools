@@ -508,7 +508,7 @@ export default class Document extends BaseComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMostEncounteredComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         },
       }),
       definition({ dependencyValues, componentName, previousValues }) {

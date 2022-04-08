@@ -424,7 +424,7 @@ export default class Select extends CompositeComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMostEncounteredComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         }
       }),
       definition({ dependencyValues, componentName, previousValues }) {

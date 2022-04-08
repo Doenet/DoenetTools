@@ -4414,9 +4414,9 @@ class DescendantDependency extends Dependency {
     this.skipOverAdapters = this.definition.skipOverAdapters;
     this.ignoreReplacementsOfMatchedComposites = this.definition.ignoreReplacementsOfMatchedComposites;
 
-    // Note: ignoreReplacementsOfMostEncounteredComposites means ignore replacements
+    // Note: ignoreReplacementsOfEncounteredComposites means ignore replacements
     // of all composites except copies of external content
-    this.ignoreReplacementsOfMostEncounteredComposites = this.definition.ignoreReplacementsOfMostEncounteredComposites;
+    this.ignoreReplacementsOfEncounteredComposites = this.definition.ignoreReplacementsOfEncounteredComposites;
 
   }
 
@@ -4552,7 +4552,7 @@ class DescendantDependency extends Dependency {
       includeNonActiveChildren: this.includeNonActiveChildren,
       skipOverAdapters: this.skipOverAdapters,
       ignoreReplacementsOfMatchedComposites: this.ignoreReplacementsOfMatchedComposites,
-      ignoreReplacementsOfMostEncounteredComposites: this.ignoreReplacementsOfMostEncounteredComposites,
+      ignoreReplacementsOfEncounteredComposites: this.ignoreReplacementsOfEncounteredComposites,
       componentInfoObjects: this.dependencyHandler.componentInfoObjects,
     });
 

@@ -236,7 +236,7 @@ export default class Choiceinput extends Input {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMostEncounteredComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         }
       }),
       definition({ dependencyValues, componentName }) {

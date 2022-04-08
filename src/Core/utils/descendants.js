@@ -4,12 +4,12 @@ export function gatherDescendants({ ancestor, descendantTypes,
   includeNonActiveChildren = false,
   skipOverAdapters = false,
   ignoreReplacementsOfMatchedComposites = false,
-  ignoreReplacementsOfMostEncounteredComposites = false,
+  ignoreReplacementsOfEncounteredComposites = false,
   init = true,
   componentInfoObjects,
 }) {
 
-  // Note: ignoreReplacementsOfMostEncounteredComposites means ignore replacements
+  // Note: ignoreReplacementsOfEncounteredComposites means ignore replacements
   // of all composites except copies of external content
 
   let matchChildToTypes = child =>
@@ -87,12 +87,12 @@ export function gatherDescendants({ ancestor, descendantTypes,
   }
 
 
-  if (ignoreReplacementsOfMatchedComposites || ignoreReplacementsOfMostEncounteredComposites) {
+  if (ignoreReplacementsOfMatchedComposites || ignoreReplacementsOfEncounteredComposites) {
     // first check if have matched any composites, so can ignore their replacements
     let namesToIgnore = [];
     for (let child of childrenToCheck) {
       let checkChildForReplacements = matchChildToTypes(child);
-      if (ignoreReplacementsOfMostEncounteredComposites && !checkChildForReplacements) {
+      if (ignoreReplacementsOfEncounteredComposites && !checkChildForReplacements) {
         // we explicitly will not ignore replacements of copies of external content
         checkChildForReplacements = !(
           child.componentType === "copy" &&
@@ -144,7 +144,7 @@ export function gatherDescendants({ ancestor, descendantTypes,
         includeNonActiveChildren,
         skipOverAdapters,
         ignoreReplacementsOfMatchedComposites,
-        ignoreReplacementsOfMostEncounteredComposites,
+        ignoreReplacementsOfEncounteredComposites,
         init: false,
         componentInfoObjects,
       });
