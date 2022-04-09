@@ -719,4 +719,85 @@ describe('Symbolic equality tests', function () {
     })
   });
 
+  it('symbolic equality with simplification can match simplified negative', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <p><text>a</text></p>
+    <p>
+    What is <math name="expr">-3-4</math>?
+    <answer>
+      <award symbolicEquality="true"><copy target="expr" simplify /></award>
+    </answer>
+    </p>
+    
+    <p>Numeric versions</p>
+    <p>What is $expr? 
+    <answer>
+      <award><copy target="expr" simplify/></award>
+    </answer></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+
+      let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinput2SubmitAnchor).should('be.visible');
+
+      cy.log("Submit empty answers")
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get(mathinput2SubmitAnchor).click();
+      cy.get(mathinput2IncorrectAnchor).should('be.visible');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(0);
+      });
+
+      cy.log("The sum is always correct")
+      cy.get(mathinputAnchor).type('-7{enter}', { force: true });
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinput2Anchor).type('-7{enter}', { force: true });
+      cy.get(mathinput2CorrectAnchor).should('be.visible');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("The original expression is incorrect for symbolic")
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}-3-4{enter}', { force: true });
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}-3-4{enter}', { force: true });
+      cy.get(mathinput2CorrectAnchor).should('be.visible');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
+      });
+
+    })
+
+
+  });
+
+
 });

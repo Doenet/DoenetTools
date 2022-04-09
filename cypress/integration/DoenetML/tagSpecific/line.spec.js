@@ -552,6 +552,8 @@ describe('Line Tag Tests', function () {
     let slope = (point1y - point2y) / (point1x - point2x);
     let yintercept = point2y - slope * point2x;
 
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1x).substring(0, 4)}`)
+
     cy.log('points and line match constraints')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -711,6 +713,9 @@ describe('Line Tag Tests', function () {
 
 
     cy.log('line starts off correctly')
+
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(0)},${nInDOM(0)}`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(me.fromAst(stateVariables["/l2"].stateValues.slope).evaluate_to_constant()).closeTo(3, 1E-12);
@@ -849,6 +854,9 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.log('line starts off correctly')
+
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(-0.8)}`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(me.fromAst(stateVariables["/_line1"].stateValues.slope).evaluate_to_constant()).closeTo(2, 1E-12);

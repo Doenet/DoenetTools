@@ -3492,31 +3492,31 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/a2'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/a3'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/a3'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/b'].stateValues.value).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b2'].stateValues.value).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b2'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b3'].stateValues.value).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b3'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b4'].stateValues.value).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b4'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
+      expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/a2'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/a3'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/a3'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/b'].stateValues.value).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b2'].stateValues.value).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b2'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b3'].stateValues.value).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b3'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b4'].stateValues.value).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b4'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
       expect(stateVariables['/c'].stateValues.value).eqls(['apply', 'sin', 30]);
       expect(stateVariables['/c'].stateValues.valueForDisplay).eqls(['apply', 'sin', 30]);
       expect(stateVariables['/c2'].stateValues.value).eqls(['apply', 'sin', 30]);
       expect(stateVariables['/c2'].stateValues.valueForDisplay).eqls(['apply', 'sin', 30]);
       expect(stateVariables['/c3'].stateValues.value).eqls(['apply', 'sin', 30]);
       expect(stateVariables['/c3'].stateValues.valueForDisplay).eqls(['apply', 'sin', 30]);
-      expect(stateVariables['/d'].stateValues.value).eqls(['*', 6.35, ['^', 10, ['-', 14]]]);
-      expect(stateVariables['/d2'].stateValues.value).eqls(['*', 6.35, ['^', 10, ['-', 14]]]);
+      expect(stateVariables['/d'].stateValues.value).eqls(['*', 6.35, ['^', 10, -14]]);
+      expect(stateVariables['/d2'].stateValues.value).eqls(['*', 6.35, ['^', 10, -14]]);
       expect(stateVariables['/d2'].stateValues.valueForDisplay).eqls(6.35e-14);
-      expect(stateVariables['/d3'].stateValues.value).eqls(['*', 6.35, ['^', 10, ['-', 14]]]);
+      expect(stateVariables['/d3'].stateValues.value).eqls(['*', 6.35, ['^', 10, -14]]);
       expect(stateVariables['/d3'].stateValues.valueForDisplay).eqls(6.35e-14);
-      expect(stateVariables['/d4'].stateValues.value).eqls(['*', 6.35, ['^', 10, ['-', 14]]]);
+      expect(stateVariables['/d4'].stateValues.value).eqls(['*', 6.35, ['^', 10, -14]]);
       expect(stateVariables['/d4'].stateValues.valueForDisplay).eqls(6.35e-14);
     });
 
@@ -3745,6 +3745,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '＿')
+
     cy.get('#\\/a textarea').type('sqrt4{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '√4')
@@ -3776,6 +3778,8 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '＿')
 
     cy.log(`unicode α U+03B1`)
     cy.get('#\\/a textarea').type('α{enter}', { force: true });
@@ -4124,7 +4128,7 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^25{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}3^25{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '325')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '325')
@@ -4138,7 +4142,7 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^2x{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}3^2x{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '32x')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '32x')
@@ -4152,7 +4156,7 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^2{rightarrow}x{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}3^2{rightarrow}x{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '32x')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '32x')
@@ -4166,7 +4170,7 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^x2{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}3^x2{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '3x2')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '3x2')
@@ -4179,7 +4183,7 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/a3'].stateValues.value).eqls(['^', 3, 'x2']);
     });
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^x{rightarrow}2{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}3^x{rightarrow}2{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '3x2')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '3x⋅2')

@@ -565,13 +565,14 @@ function wrapWordIncludingNumberWithVarSub(string) {
 
   let newString = "";
 
-  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+  let regex = /([^a-zA-Z0-9\s]?\s*)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length - match[3].length;
-    if (match[1] === "\\") {
-      // start with backslash, so skip
+    if (match[1] === "\\" || match[1][0] === "^") {
+      // start with backslash or with a ^ and optional space
+      // so skip
       newString += string.substring(0, endMatch);
       string = string.substring(endMatch);
     } else {
