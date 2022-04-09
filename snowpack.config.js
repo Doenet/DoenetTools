@@ -57,6 +57,11 @@ module.exports = {
         });
       },
     },
+    {
+      match: 'routes',
+      src: '/.*',
+      dest: '/index.html',
+    },
   ],
 
   optimize: {
