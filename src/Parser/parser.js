@@ -33,13 +33,15 @@ export function parseAndCompile(inText) {
 
         //All of the siblings must b.name Attributes, but we're checking just in case the grammar changes
         if (cursor.name !== "Attribute") {
+          let errorBegin = cursor.from;
+          let errorEnd = cursor.to;
           // console.error(cursor);
           // console.error(showCursor(cursor));
           // console.error(cursor.name);
           // eslint-disable-next-line no-empty
           while (cursor.parent()) { }
 
-          throw Error(`Invalid DoenetML at positions ${cursor.from} to ${cursor.to}. Error in opening <${tagName}> tag.`)
+          throw Error(`Invalid DoenetML at positions ${errorBegin} to ${errorEnd}. Error in opening <${tagName}> tag.  Found ${inText.slice(tagOpenBegin-1, errorEnd)}`)
         }
 
         //Attributes always have exactly two children, an AttributeName and an Attribute Value

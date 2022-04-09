@@ -259,7 +259,7 @@ describe('Math Operator Tag Tests', function () {
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(21);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['+', ['/', 6, 2], 17, 5, ['-', 4]]);
+        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['+', ['/', 6, 2], 17, 5, -4]);
         expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(21);
@@ -452,11 +452,11 @@ describe('Math Operator Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'sum', ["tuple", 3, 17, ["+", 5, ["-", 4]]]]);
+        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'sum', ["tuple", 3, 17, ["+", 5, -4]]]);
         expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(21);
         expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'sum', ["+", ["*", 3, 17, 5], ["-", 4]]]);
+        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'sum', ["+", ["*", 3, 17, 5], -4]]);
         expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(251);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
@@ -750,7 +750,7 @@ describe('Math Operator Tag Tests', function () {
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(51);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['*', ['/', 6, 2], 17, ["+", 5, ['-', 4]]]);
+        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['*', ['/', 6, 2], 17, ["+", 5, -4]]);
         expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(51);
@@ -937,11 +937,11 @@ describe('Math Operator Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'prod', ["tuple", 3, 17, ["+", 5, ["-", 4]]]]);
+        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'prod', ["tuple", 3, 17, ["+", 5, -4]]]);
         expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(51);
         expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'prod', ["+", ["*", 3, 17, 5], ["-", 4]]]);
+        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'prod', ["+", ["*", 3, 17, 5], -4]]);
         expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(251);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
@@ -2446,7 +2446,7 @@ describe('Math Operator Tag Tests', function () {
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(7);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 5, ['-', 4]], 3]);
+        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 5, -4], 3]);
         expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(7);
@@ -2633,11 +2633,11 @@ describe('Math Operator Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'mean', ["tuple", 3, 17, ["+", 5, ["-", 4]]]]);
+        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'mean', ["tuple", 3, 17, ["+", 5, -4]]]);
         expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(7);
         expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'mean', ["+", ["*", 3, 17, 5], ["-", 4]]]);
+        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'mean', ["+", ["*", 3, 17, 5], -4]]);
         expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(251);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
@@ -2990,7 +2990,7 @@ describe('Math Operator Tag Tests', function () {
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(theVariance);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        // expect(stateVariables['/numericAsString'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 5, ['-', 4]], 3]);
+        // expect(stateVariables['/numericAsString'].stateValues.value).eqls(['/', ['+', ['/', 6, 2], 17, 5, -4], 3]);
         expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(theVariance);
@@ -3182,11 +3182,11 @@ describe('Math Operator Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'var', ["tuple", 3, 17, ["+", 5, ["-", 4]]]]);
+        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'var', ["tuple", 3, 17, ["+", 5, -4]]]);
         expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(theVariance);
         expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'var', ["+", ["*", 3, 17, 5], ["-", 4]]]);
+        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'var', ["+", ["*", 3, 17, 5], -4]]);
         expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(0);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
@@ -3714,11 +3714,11 @@ describe('Math Operator Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'std', ["tuple", 13, 25, ["+", 5, ["-", 4]]]]);
+        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'std', ["tuple", 13, 25, ["+", 5, -4]]]);
         expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(theStd);
         expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'std', ["+", ["*", 13, 25, 5], ["-", 4]]]);
+        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'std', ["+", ["*", 13, 25, 5], -4]]);
         expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(0);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
@@ -4431,11 +4431,11 @@ describe('Math Operator Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'count', ["tuple", 3, 17, ["+", 5, ["-", 4]]]]);
+        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'count', ["tuple", 3, 17, ["+", 5, -4]]]);
         expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(3);
         expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'count', ["+", ["*", 3, 17, 5], ["-", 4]]]);
+        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'count', ["+", ["*", 3, 17, 5], -4]]);
         expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(1);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
@@ -4783,7 +4783,7 @@ describe('Math Operator Tag Tests', function () {
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(1);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['apply', 'min', ["tuple", ['/', 6, 2], 17, ['+', 5, ['-', 4]]]]);
+        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['apply', 'min', ["tuple", ['/', 6, 2], 17, ['+', 5, -4]]]);
         expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(1);
@@ -4970,11 +4970,11 @@ describe('Math Operator Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, ["+", 5, ["-", 4]]]]);
+        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'min', ["tuple", 3, 17, ["+", 5, -4]]]);
         expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(1);
         expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'min', ["+", ["*", 3, 17, 5], ["-", 4]]]);
+        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'min', ["+", ["*", 3, 17, 5], -4]]);
         expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(251);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
@@ -5263,7 +5263,7 @@ describe('Math Operator Tag Tests', function () {
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.value).eq(17);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numbersAsStringForceSymbolicSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['apply', 'max', ["tuple", ['/', 6, 2], 17, ['+', 5, ['-', 4]]]]);
+        expect(stateVariables['/numericAsString'].stateValues.value).eqls(['apply', 'max', ["tuple", ['/', 6, 2], 17, ['+', 5, -4]]]);
         expect(stateVariables['/numericAsString'].stateValues.isNumericOperator).eq(false);
         expect(stateVariables['/numericAsString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numericAsStringSimplify'].stateValues.value).eq(17);
@@ -5450,11 +5450,11 @@ describe('Math Operator Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, ["+", 5, ["-", 4]]]]);
+        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'max', ["tuple", 3, 17, ["+", 5, -4]]]);
         expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(17);
         expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'max', ["+", ["*", 3, 17, 5], ["-", 4]]]);
+        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'max', ["+", ["*", 3, 17, 5], -4]]);
         expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(251);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);

@@ -72,8 +72,8 @@ describe('Equilibriumline Tag Tests', function () {
       expect(stateVariables["/g/D"].stateValues.stable).eq(false);
       expect(stateVariables["/g/A"].stateValues.equation).eqls(["=", "y", 4])
       expect(stateVariables["/g/B"].stateValues.equation).eqls(["=", "y", 7])
-      expect(stateVariables["/g/C"].stateValues.equation).eqls(["=", "y", ['-', 9]])
-      expect(stateVariables["/g/D"].stateValues.equation).eqls(["=", "y", ['-', 3]])
+      expect(stateVariables["/g/C"].stateValues.equation).eqls(["=", "y", -9])
+      expect(stateVariables["/g/D"].stateValues.equation).eqls(["=", "y", -3])
 
       expect(stateVariables["/g2/A"].stateValues.stable).eq(true);
       expect(stateVariables["/g2/B"].stateValues.stable).eq(false);
@@ -81,8 +81,8 @@ describe('Equilibriumline Tag Tests', function () {
       expect(stateVariables["/g2/D"].stateValues.stable).eq(false);
       expect(stateVariables["/g2/A"].stateValues.equation).eqls(["=", "y", 4])
       expect(stateVariables["/g2/B"].stateValues.equation).eqls(["=", "y", 7])
-      expect(stateVariables["/g2/C"].stateValues.equation).eqls(["=", "y", ['-', 9]])
-      expect(stateVariables["/g2/D"].stateValues.equation).eqls(["=", "y", ['-', 3]])
+      expect(stateVariables["/g2/C"].stateValues.equation).eqls(["=", "y", -9])
+      expect(stateVariables["/g2/D"].stateValues.equation).eqls(["=", "y", -3])
     })
 
 
