@@ -408,5 +408,28 @@ export const useCourse = (courseId) => {
     [courseId, defaultFailure],
   );
 
-  return { create, deleteCourse, modifyCourse, label, color, image };
+  const renameItem = useRecoilCallback( ({ snapshot,set }) =>
+  async (doenetId,newLabel, successCallback, failureCallback = defaultFailure) => {
+    try {
+      let itemObj = await snapshot.getPromise(authorItemByDoenetId(doenetId))
+      let resp = await axios.get('/api/renameCourseItem.php', {params:{ courseId,doenetId,newLabel,type:itemObj.type } });
+      if (resp.status < 300) {
+        let updatedItem = resp.data.item;
+        if (itemObj.type !== 'page'){
+          updatedItem.isOpen = itemObj.isOpen;
+        }
+        updatedItem.isSelected = itemObj.isSelected;
+        set(authorItemByDoenetId(doenetId),updatedItem);
+        successCallback?.();
+      } else {
+        throw new Error(`response code: ${resp.status}`);
+      }
+    } catch (err) {
+      failureCallback(err);
+    }
+  },
+[courseId, defaultFailure],
+);
+
+  return { create, deleteCourse, modifyCourse, label, color, image, renameItem };
 };

@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-04-01 13:57:22 +0000
+# Generation Time: 2022-04-10 12:23:37 +0000
 # ************************************************************
 
 
@@ -503,6 +503,7 @@ CREATE TABLE `page_state` (
 DROP TABLE IF EXISTS `pages`;
 
 CREATE TABLE `pages` (
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `containingDoenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `draftCid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',

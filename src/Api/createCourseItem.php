@@ -93,8 +93,8 @@ if ($success){
         $conn->query($sql);
 
         $sql = "
-        INSERT INTO pages (containingDoenetId,doenetId) 
-          VALUES('$doenetId','$pageDoenetId');
+        INSERT INTO pages (courseId,containingDoenetId,doenetId) 
+          VALUES('$courseId','$doenetId','$pageDoenetId');
         ";
         $conn->query($sql);
         $pageEntered = array(
@@ -177,7 +177,7 @@ $itemEntered = array_merge($json,$itemEntered);
 
 
 $itemEntered['isOpen'] = false;
-$item['isSelected'] = false;
+$itemEntered['isSelected'] = false;
 
 //Get new order
 $sql = "

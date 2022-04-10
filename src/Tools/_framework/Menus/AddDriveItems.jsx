@@ -28,7 +28,7 @@ export default function AddDriveItems() {
         onClick={() =>
           create({itemType:"bank"})
         }
-        value="Add Bank"
+        value="Add Collection"
       />
       <Button
         width="menu"
