@@ -148,7 +148,7 @@ const HomeButton = styled.button`
 `;
 
 function SelectionMenu(props){
-  console.log("child", props.children);
+  // console.log("child", props.children);
   return <>
     <div style={{
       // paddingTop: "4px", 

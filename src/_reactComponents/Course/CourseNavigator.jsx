@@ -191,7 +191,7 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
         if (pageOrOrder?.type == 'order'){
           return <Order key={`Order${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
         }else{
-          return <Page key={`Page${doenetId}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1}/>
+          return <Page key={`NavPage${i}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1}/>
         }
       })
     }
@@ -253,8 +253,6 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   e.stopPropagation();
   let selectedItems = await snapshot.getPromise(selectedCourseItems);
   let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-  console.log("clickedItem",clickedItem,doenetId)
-
 
   
   let newSelectedItems = [];
@@ -317,7 +315,6 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
         }
       }
  
-      // console.log("allRenderedRows",allRenderedRows)
       let lastSelectedDoenetId = selectedItems[selectedItems.length -1];
       let indexOfLastSelected = allRenderedRows.indexOf(lastSelectedDoenetId);
       let indexOfClick = allRenderedRows.indexOf(doenetId);
@@ -380,7 +377,6 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   }
   set(selectedCourseItems,newSelectedItems);
 
-  console.log("newSelectedItems",newSelectedItems)
   //Set Selection Menu
   if (newSelectedItems.length == 1){
     let selectedDoenetId = newSelectedItems[0];

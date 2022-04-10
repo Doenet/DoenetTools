@@ -1,154 +1,89 @@
-import { faFolder } from '@fortawesome/free-solid-svg-icons';
+import { faFolderTree } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
-import { useEffect } from 'react';
-import { useRecoilValueLoadable, useSetRecoilState, useRecoilValue } from 'recoil';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import useSockets from '../../../_reactComponents/Sockets';
-import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import { selectedInformation } from './SelectedActivity';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
-import { useToast } from '../Toast';
+import React, { useEffect, useState } from 'react';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+import { useToast } from '../Toast';
+
 
 
 export default function SelectedSection() {
-  return <p>SelectedSection</p>
-  // const effectiveRole = useRecoilValue(effectiveRoleAtom);
-  // const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
-  // const selection = useRecoilValueLoadable(selectedInformation).getValue();
-  // const [item, setItem] = useState(selection[0]);
-  // const [label, setLabel] = useState(selection[0]?.label ?? '');
-  // const { deleteItem, renameItem } = useSockets('drive');
-  // const addToast = useToast();
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
+  const doenetId = useRecoilValue(selectedCourseItems)[0];
+  const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
+  const { renameItem } = useCourse(courseId);
+  const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
 
-  // useEffect(() => {
-  //   if (!selection[0]) {
-  //     setSelectedMenu('');
-  //   } else {
-  //     setItem(selection[0]);
-  //     setLabel(selection[0]?.label);
-  //   }
-  // }, [selection, setSelectedMenu]);
+  useEffect(()=>{
+    if (itemTextFieldLabel !== itemObj.label){
+      setItemTextFieldLabel(itemObj.label)
+    }
+  },[doenetId])
 
-  // const dIcon = <FontAwesomeIcon icon={faFolder} />;
-  // const renameItemCallback = (newLabel) => {
-  //   renameItem({
-  //     driveIdFolderId: {
-  //       driveId: item.driveId,
-  //       folderId: item.parentFolderId,
-  //     },
-  //     itemId: item.itemId,
-  //     itemType: item.itemType,
-  //     newLabel: newLabel,
-  //   });
-  // };
+  const handelLabelModfication = () => {
+    let effectiveItemLabel = itemTextFieldLabel;
+    if (itemTextFieldLabel === '') {
+      effectiveItemLabel = itemObj.label;
+      if (itemObj.label === ''){
+        effectiveItemLabel = 'Untitled';
+      }
 
+      setItemTextFieldLabel(effectiveItemLabel);
+      addToast('Every item must have a label.');
+    }
+    //Only update the server when it changes
+    if (itemObj.label !== effectiveItemLabel){
+      renameItem(doenetId,effectiveItemLabel)
+    }
+  };
+
+  const addToast = useToast();
+  let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
+    <FontAwesomeIcon icon={faFolderTree} /> {itemObj.label} 
+  </h2>)
+
+
+  if (effectiveRole === 'student') {
+    return (
+      <>
+        {heading}
+        <ActionButton
+          width="menu"
+          value="Take Assignment"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'assignment',
+              view: '',
+              params: {
+                doenetId,
+              },
+            });
+          }}
+        />
+      </>
+    );
+  }
   
-  // if (!item){
-  //   return null;
-  // }
-  // let modControl = null;
-  // if (effectiveRole === 'instructor'){
-  //   modControl = <>
-  //     <Textfield
-  //       label="Folder Label"
-  //       vertical
-  //       width="menu"
-  //       data-cy="infoPanelItemLabelInput"
-  //         value={label}
-  //         onChange={(e) => setLabel(e.target.value)}
-  //         onKeyDown={(e) => {
-  //           if (e.key === 'Enter') {
-  //             let effectiveLabel = label;
-  //             if (label === ''){
-  //               effectiveLabel = 'Untitled';
-  //               addToast("Label for the folder can't be blank.");
-  //               setLabel(effectiveLabel);
-  //             }
-  //             //Only rename if label has changed
-  //             if (item.label !== effectiveLabel) {
-  //               renameItemCallback(effectiveLabel);
-  //               setLabel(effectiveLabel);
-  //             }
-  //           }
-  //         }}
-  //         onBlur={() => {
-  //           let effectiveLabel = label;
-  //             if (label === ''){
-  //               effectiveLabel = 'Untitled';
-  //               addToast("Label for the folder can't be blank.");
-  //             }
-  //           //Only rename if label has changed
-  //           if (item.label !== effectiveLabel) {
-  //             renameItemCallback(effectiveLabel);
-  //           }
-  //         }}
-  //     />
-  //    {/* <label>
-  //       {item.itemType} Label
-  //       <input
-  //         type="text"
-  //         data-cy="infoPanelItemLabelInput"
-  //         value={label}
-  //         onChange={(e) => setLabel(e.target.value)}
-  //         onKeyDown={(e) => {
-  //           if (e.key === 'Enter') {
-  //             let effectiveLabel = label;
-  //             if (label === ''){
-  //               effectiveLabel = 'Untitled';
-  //               addToast("Label for the folder can't be blank.");
-  //               setLabel(effectiveLabel);
-  //             }
-  //             //Only rename if label has changed
-  //             if (item.label !== effectiveLabel) {
-  //               renameItemCallback(effectiveLabel);
-  //               setLabel(effectiveLabel);
-  //             }
-  //           }
-  //         }}
-  //         onBlur={() => {
-  //           let effectiveLabel = label;
-  //             if (label === ''){
-  //               effectiveLabel = 'Untitled';
-  //               addToast("Label for the folder can't be blank.");
-  //             }
-  //           //Only rename if label has changed
-  //           if (item.label !== effectiveLabel) {
-  //             renameItemCallback(effectiveLabel);
-  //           }
-  //         }}
-  //       />
-  //     </label> */}
-  //     <br />
-  //     <ButtonGroup vertical>
-  //       <Button
-  //         alert
-  //         width="menu"
-  //         data-cy="deleteDoenetMLButton"
-  //         value="Delete Folder"
-  //         onClick={() => {
-  //           deleteItem({
-  //             driveIdFolderId: {
-  //               driveId: item.driveId,
-  //               folderId: item.parentFolderId,
-  //             },
-  //             itemId: item.itemId,
-  //             driveInstanceId: item.driveInstanceId,
-  //             label: item.label,
-  //           });
-  //         }}
-  //       />
-  //     </ButtonGroup>
-  //   </>
-  // }
-  // return (
-  //   <>
-  //     <h2 data-cy="infoPanelItemLabel">
-  //       {dIcon} {item.label}
-  //     </h2>
-  //     {modControl}
-  //   </>
-  // );
+  return <>
+  {heading}
+  <Textfield
+      label="Label"
+      vertical
+      width="menu"
+      value={itemTextFieldLabel}
+      onChange={(e) => setItemTextFieldLabel(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.keyCode === 13) handelLabelModfication();
+      }}
+      onBlur={handelLabelModfication}
+    />
+  </>
 }
+ 

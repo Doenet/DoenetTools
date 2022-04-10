@@ -1,41 +1,40 @@
+
 import {
-  faCode,
-  faCalendarPlus,
-  faCalendarTimes,
+  faFileCode,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
-import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
-import {
-  DateToUTCDateString,
-  DateToDateString,
-} from '../../../_utils/dateUtilityFunction';
-import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
+// import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
+// import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
+// import {
+//   DateToUTCDateString,
+//   DateToDateString,
+// } from '../../../_utils/dateUtilityFunction';
+// import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import styled from 'styled-components';
 
 import {
-  atom,
+  // atom,
   selector,
   useRecoilValue,
-  useRecoilValueLoadable,
+  // useRecoilValueLoadable,
   // useRecoilState,
   useSetRecoilState,
-  useRecoilCallback,
+  // useRecoilCallback,
 } from 'recoil';
-import {
-  // folderDictionaryFilterSelector,
-  loadAssignmentSelector,
-  folderDictionary,
-  globalSelectedNodesAtom,
-} from '../../../_reactComponents/Drive/NewDrive';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+// import {
+//   // folderDictionaryFilterSelector,
+//   loadAssignmentSelector,
+//   folderDictionary,
+//   globalSelectedNodesAtom,
+// } from '../../../_reactComponents/Drive/NewDrive';
+// import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+// import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+// import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 // import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 // import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
-import useSockets from '../../../_reactComponents/Sockets';
+// import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
 // import {
 //   itemHistoryAtom,
@@ -44,57 +43,128 @@ import { pageToolViewAtom } from '../NewToolRoot';
 // } from '../ToolHandlers/CourseToolHandler';
 // import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
 // import { useToast } from '../Toast';
-import Switch from '../Switch';
+// import Switch from '../Switch';
 // import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 // import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import axios from 'axios';
-import { nanoid } from 'nanoid';
+// import axios from 'axios';
+// import { nanoid } from 'nanoid';
 
-import {
-  itemHistoryAtom,
-  fileByContentId,
-} from '../ToolHandlers/CourseToolHandler';
+// import {
+//   itemHistoryAtom,
+//   fileByContentId,
+// } from '../ToolHandlers/CourseToolHandler';
 import { useToast, toastType } from '@Toast';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import CalendarToggle from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
-import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
-
-export const selectedVersionAtom = atom({
-  key: 'selectedVersionAtom',
-  default: '',
-});
+import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { searchParamAtomFamily } from '../NewToolRoot';
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+// import CalendarToggle from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
+// import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 
 
-const InputWrapper = styled.div`
-  margin: 0 5px 10px 5px;
-  display: ${props => props.flex ? "flex" : "block"};
-  align-items: ${props => props.flex && "center"}
 
-`
+// const InputWrapper = styled.div`
+//   margin: 0 5px 10px 5px;
+//   display: ${props => props.flex ? "flex" : "block"};
+//   align-items: ${props => props.flex && "center"}
 
-const LabelText = styled.span`
-  margin-bottom: 5px; 
-`
+// `
 
-const CheckboxLabelText = styled.span`
-  font-size: 15px;
-  line-height: 1.1
-`
+// const LabelText = styled.span`
+//   margin-bottom: 5px; 
+// `
 
-const InputControl = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
+// const CheckboxLabelText = styled.span`
+//   font-size: 15px;
+//   line-height: 1.1
+// `
+
+// const InputControl = styled.div`
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+// `
 
 export default function SelectedActivity() {
-  return <p>SelectedActivity</p>;
-//   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-//   const effectiveRole = useRecoilValue(effectiveRoleAtom);
-//   const item = useRecoilValue(selectedInformation)[0];
-//   let [label, setLabel] = useState('');
-//   const { deleteItem, renameItem } = useSockets('drive');
-//   const addToast = useToast();
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
+  const doenetId = useRecoilValue(selectedCourseItems)[0];
+  const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
+  const { renameItem } = useCourse(courseId);
+  const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
+
+  useEffect(()=>{
+    if (itemTextFieldLabel !== itemObj.label){
+      setItemTextFieldLabel(itemObj.label)
+    }
+  },[doenetId])
+
+  const handelLabelModfication = () => {
+    let effectiveItemLabel = itemTextFieldLabel;
+    if (itemTextFieldLabel === '') {
+      effectiveItemLabel = itemObj.label;
+      if (itemObj.label === ''){
+        effectiveItemLabel = 'Untitled';
+      }
+
+      setItemTextFieldLabel(effectiveItemLabel);
+      addToast('Every item must have a label.');
+    }
+    //Only update the server when it changes
+    if (itemObj.label !== effectiveItemLabel){
+      renameItem(doenetId,effectiveItemLabel)
+    }
+  };
+
+  const addToast = useToast();
+  let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
+    <FontAwesomeIcon icon={faFileCode} /> {itemObj.label} 
+  </h2>)
+
+
+  if (effectiveRole === 'student') {
+    return (
+      <>
+        {heading}
+        <ActionButton
+          width="menu"
+          value="Take Assignment"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'assignment',
+              view: '',
+              params: {
+                doenetId,
+              },
+            });
+          }}
+        />
+        <AssignmentSettings role={effectiveRole} doenetId={doenetId} />
+      </>
+    );
+  }
+  
+  return <>
+  {heading}
+  <Textfield
+      label="Label"
+      vertical
+      width="menu"
+      value={itemTextFieldLabel}
+      onChange={(e) => setItemTextFieldLabel(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.keyCode === 13) handelLabelModfication();
+      }}
+      onBlur={handelLabelModfication}
+    />
+  <AssignmentSettings role={effectiveRole} doenetId={doenetId} />
+  </>
+
+}
+
+
 
 //   useEffect(() => {
 //     setLabel(item?.label);
@@ -188,30 +258,7 @@ export default function SelectedActivity() {
 //     return null;
 //   }
 
-//   if (effectiveRole === 'student') {
-//     return (
-//       <>
-//         <h2 data-cy="infoPanelItemLabel">
-//           <FontAwesomeIcon icon={faCode} /> {item?.label}
-//         </h2>
-//         <ActionButton
-//           width="menu"
-//           value="Take Assignment"
-//           onClick={() => {
-//             setPageToolView({
-//               page: 'course',
-//               tool: 'assignment',
-//               view: '',
-//               params: {
-//                 doenetId: item?.doenetId,
-//               },
-//             });
-//           }}
-//         />
-//         <AssignmentSettings role={effectiveRole} doenetId={item.doenetId} />
-//       </>
-//     );
-//   }
+
 //   let assignDraftLabel = 'Release Current Draft';
 //   // if (item.isReleased === "1"){ assignDraftLabel = "Unassign Content";}
 
@@ -388,7 +435,7 @@ export default function SelectedActivity() {
 //       </div>    
 //     </>
 //   );
-}
+// }
 
 // //For item we just need label and doenetId
 export function AssignmentSettings({ role, doenetId }) {
@@ -1275,28 +1322,3 @@ export function AssignmentSettings({ role, doenetId }) {
 //     </>
 //   );
 }
-
-export const selectedInformation = selector({
-  key: 'selectedInformation',
-  get: ({ get }) => {
-    const globalSelected = get(globalSelectedNodesAtom);
-    if (globalSelected.length !== 1) {
-      return globalSelected;
-    }
-    //Find information if only one item selected
-    const driveId = globalSelected[0].driveId;
-    const folderId = globalSelected[0].parentFolderId;
-    const driveInstanceId = globalSelected[0].driveInstanceId;
-    let folderInfo = get(folderDictionary({ driveId, folderId }));
-    const itemId = globalSelected[0].itemId;
-    let itemInfo = {
-      ...(folderInfo.contentsDictionary[itemId] ?? {
-        ...folderInfo.folderInfo,
-      }),
-    };
-    itemInfo['driveId'] = driveId;
-    itemInfo['driveInstanceId'] = driveInstanceId;
-
-    return [itemInfo];
-  },
-});

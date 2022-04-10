@@ -1,42 +1,42 @@
-import {
-  faCode,
-  faCalendarPlus,
-  faCalendarTimes,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import {
+//   faCode,
+//   faCalendarPlus,
+//   faCalendarTimes,
+// } from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
-import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
-import {
-  DateToUTCDateString,
-  DateToDateString,
-} from '../../../_utils/dateUtilityFunction';
-import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
+// import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
+// import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
+// import {
+//   DateToUTCDateString,
+//   DateToDateString,
+// } from '../../../_utils/dateUtilityFunction';
+// import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import styled from 'styled-components';
 
-import {
-  atom,
-  selector,
-  useRecoilValue,
-  useRecoilValueLoadable,
-  // useRecoilState,
-  useSetRecoilState,
-  useRecoilCallback,
-} from 'recoil';
-import {
-  // folderDictionaryFilterSelector,
-  loadAssignmentSelector,
-  folderDictionary,
-  globalSelectedNodesAtom,
-} from '../../../_reactComponents/Drive/NewDrive';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
-import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
-// import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-// import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
-import useSockets from '../../../_reactComponents/Sockets';
-import { pageToolViewAtom } from '../NewToolRoot';
+// import {
+//   atom,
+//   selector,
+//   useRecoilValue,
+//   useRecoilValueLoadable,
+//   // useRecoilState,
+//   useSetRecoilState,
+//   useRecoilCallback,
+// } from 'recoil';
+// import {
+//   // folderDictionaryFilterSelector,
+//   loadAssignmentSelector,
+//   folderDictionary,
+//   globalSelectedNodesAtom,
+// } from '../../../_reactComponents/Drive/NewDrive';
+// import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+// import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+// import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
+// import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+// // import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+// // import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
+// import useSockets from '../../../_reactComponents/Sockets';
+// import { pageToolViewAtom } from '../NewToolRoot';
 // import {
 //   itemHistoryAtom,
 //   assignmentDictionarySelector,
@@ -44,25 +44,20 @@ import { pageToolViewAtom } from '../NewToolRoot';
 // } from '../ToolHandlers/CourseToolHandler';
 // import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
 // import { useToast } from '../Toast';
-import Switch from '../Switch';
+// import Switch from '../Switch';
 // import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 // import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import axios from 'axios';
-import { nanoid } from 'nanoid';
+// import axios from 'axios';
+// import { nanoid } from 'nanoid';
 
-import {
-  itemHistoryAtom,
-  fileByContentId,
-} from '../ToolHandlers/CourseToolHandler';
-import { useToast, toastType } from '@Toast';
-import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import CalendarToggle from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
-import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
-
-export const selectedVersionAtom = atom({
-  key: 'selectedVersionAtom',
-  default: '',
-});
+// import {
+//   itemHistoryAtom,
+//   fileByContentId,
+// } from '../ToolHandlers/CourseToolHandler';
+// import { useToast, toastType } from '@Toast';
+// import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+// import CalendarToggle from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
+// import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 
 
 const InputWrapper = styled.div`
@@ -91,7 +86,6 @@ export default function SelectedOrder() {
   return <p>SelectedOrder</p>;
 //   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 //   const effectiveRole = useRecoilValue(effectiveRoleAtom);
-//   const item = useRecoilValue(selectedInformation)[0];
 //   let [label, setLabel] = useState('');
 //   const { deleteItem, renameItem } = useSockets('drive');
 //   const addToast = useToast();
@@ -1276,27 +1270,3 @@ export function AssignmentSettings({ role, doenetId }) {
 //   );
 }
 
-export const selectedInformation = selector({
-  key: 'selectedInformation',
-  get: ({ get }) => {
-    const globalSelected = get(globalSelectedNodesAtom);
-    if (globalSelected.length !== 1) {
-      return globalSelected;
-    }
-    //Find information if only one item selected
-    const driveId = globalSelected[0].driveId;
-    const folderId = globalSelected[0].parentFolderId;
-    const driveInstanceId = globalSelected[0].driveInstanceId;
-    let folderInfo = get(folderDictionary({ driveId, folderId }));
-    const itemId = globalSelected[0].itemId;
-    let itemInfo = {
-      ...(folderInfo.contentsDictionary[itemId] ?? {
-        ...folderInfo.folderInfo,
-      }),
-    };
-    itemInfo['driveId'] = driveId;
-    itemInfo['driveInstanceId'] = driveInstanceId;
-
-    return [itemInfo];
-  },
-});
