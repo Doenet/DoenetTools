@@ -680,6 +680,9 @@ describe('Polyline Tag Tests', function () {
         expect((stateVariables[`/v${i + 1}`].stateValues.xs)[1]).eq(ps[i][1]);
         expect((stateVariables[`/v${i + 1}a`].stateValues.xs)[1]).eq(ps[i][1]);
       }
+
+      cy.get('#\\/v4b .mjx-mrow').should('contain.text', `(${nInDOM(ps[3][0])},${nInDOM(ps[3][1])})`)
+
     })
 
     cy.log('move individually copied vertices');
