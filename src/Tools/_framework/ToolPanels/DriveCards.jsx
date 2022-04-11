@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   useRecoilCallback,
   useSetRecoilState,
   useRecoilState,
-  useRecoilValueLoadable,
   useRecoilValue,
 } from 'recoil';
 import { useTransition, a } from '@react-spring/web';
@@ -13,14 +12,12 @@ import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import { pageToolViewAtom } from '../NewToolRoot';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
-import { clearDriveAndItemSelections } from '../../../_reactComponents/Drive/NewDrive';
 import { coursePermissionsAndSettings } from '../../../_reactComponents/Course/CourseActions';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import useMedia from './useMedia';
 import './driveCardsStyle.css';
-import CourseChooserLeave from '../EnterLeave/CourseChooserLeave';
 
-export default function DriveCardsNew(props) {
+export default function CourseCards(props) {
   console.log('>>>===CourseCards');
 
   const courses = useRecoilValue(coursePermissionsAndSettings);
@@ -118,15 +115,15 @@ const CourseCardWrapper = (props) => {
     set(selectedMenuPanelAtom, 'SelectedCourse');
   });
 
-  const handleKeyDown = (e, item) => {
-    if (e.key === 'Enter') {
-      setPageToolView({
-        tool: 'navigation',
-        params: {
-          path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`,
-        },
-      });
-    }
+  const handleSelect = (e, item) => {
+    setPageToolView({
+      page: 'course',
+      tool: 'dashboard',
+      view: '',
+      params: {
+        courseId: item.courseId,
+      },
+    });
   };
 
   
@@ -256,19 +253,16 @@ const CourseCardWrapper = (props) => {
                   drivecardselection(e, item, props);
                 }}
                 onBlur={() => handleOnBlur()}
-                onKeyDown={(e) => handleKeyDown(e, item)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSelect(e, item)
+                  }
+                }}
                 onKeyUp={(e) => handleKeyUp(e, item)}
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setPageToolView({
-                    page: 'course',
-                    tool: 'dashboard',
-                    view: '',
-                    params: {
-                      path: `${item.courseId}:${item.courseId}:${item.courseId}:Drive`,
-                    },
-                  });
+                  handleSelect(e, item);
                 }}>
           
                 <DriveCard
