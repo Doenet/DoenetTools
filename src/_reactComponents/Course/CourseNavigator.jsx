@@ -284,7 +284,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     if (e.shiftKey){
       //Shift Click
       //Select all items from the last one selected to this one
-      //TODO: use path to filter to correct section
+      //TODO: use sectionId to filter to correct section
       const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
       //build allRenderedRows on the fly
       let allRenderedRows = [];
