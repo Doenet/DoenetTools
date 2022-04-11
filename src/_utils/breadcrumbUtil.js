@@ -6,7 +6,6 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { pageToolViewAtom } from '../Tools/_framework/NewToolRoot';
-import { folderDictionary } from '../_reactComponents/Drive/NewDrive';
 import { effectiveRoleAtom } from '../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import {
   studentData,
@@ -127,54 +126,22 @@ export function useEditorCrumb({ doenetId, sectionId, courseId }) {
   };
 }
 
-export function useCollectionCrumb(doenetId, path) {
+export function useAssignmentCrumb({ doenetId, courseId, sectionId }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  let [driveId, folderId] = path.split(':');
-  const folderInfo = useRecoilValue(folderDictionary({ driveId, folderId }));
-  let label = folderInfo?.folderInfo?.label;
-  if (!label) {
-    label = '_';
-  }
-
-  let params = {
-    doenetId,
-    path,
-  };
+  const { label } = useRecoilValue(authorItemByDoenetId(doenetId));
 
   return {
-    label,
-    onClick: () => {
-      setPageToolView({
-        page: 'course',
-        tool: 'collection',
-        view: '',
-        params,
-      });
-    },
-  };
-}
-
-export function useAssignmentCrumb({ doenetId, driveId, folderId, itemId }) {
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const folderInfo = useRecoilValue(folderDictionary({ driveId, folderId }));
-  let label = folderInfo?.contentsDictionary?.[itemId]?.label;
-  if (!label) {
-    label = '_';
-  }
-
-  let params = {
-    doenetId,
-    // path: `${driveId}:${folderId}:${itemId}:DoenetML`
-  };
-
-  return {
-    label,
+    label: label ?? '_',
     onClick: () => {
       setPageToolView({
         page: 'course',
         tool: 'assignment',
         view: '',
-        params,
+        params: {
+          courseId,
+          sectionId,
+          doenetId,
+        },
       });
     },
   };
