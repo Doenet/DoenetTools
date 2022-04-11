@@ -90,7 +90,7 @@ export default function SelectedActivity() {
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
-  const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const { renameItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
 
@@ -312,7 +312,6 @@ export default function SelectedActivity() {
 //                 view: '',
 //                 params: {
 //                   doenetId: item.doenetId,
-//                   path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
 //                 },
 //               });
 //             }}

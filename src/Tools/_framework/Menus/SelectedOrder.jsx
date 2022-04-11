@@ -259,7 +259,6 @@ export default function SelectedOrder() {
 //                 view: '',
 //                 params: {
 //                   doenetId: item.doenetId,
-//                   path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
 //                 },
 //               });
 //             }}
