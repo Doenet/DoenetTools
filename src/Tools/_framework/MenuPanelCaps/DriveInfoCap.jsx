@@ -5,13 +5,7 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 import { RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 export default function DriveInfoCap(){
-  let path = useRecoilValue(searchParamAtomFamily('path'));
-  let courseId = useRecoilValue(searchParamAtomFamily('driveId'));
-
-  if (!courseId){
-    courseId = path.split(':')[0]
-  }
-
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
 if (!course || Object.keys(course).length == 0){

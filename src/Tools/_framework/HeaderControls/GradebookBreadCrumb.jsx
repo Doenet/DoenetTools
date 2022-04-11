@@ -5,9 +5,9 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 import { useCourseChooserCrumb, useDashboardCrumb, useGradebookCrumbs } from '../../../_utils/breadcrumbUtil';
 
 export default function GradebookBreadCrumb() {
-  const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const courseChooserCrumb = useCourseChooserCrumb();
-  const dashboardCrumb = useDashboardCrumb(driveId);
+  const dashboardCrumb = useDashboardCrumb(courseId);
   const gradebookCrumbs = useGradebookCrumbs();
 
   return (
