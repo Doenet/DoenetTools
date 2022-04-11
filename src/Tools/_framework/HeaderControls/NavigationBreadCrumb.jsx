@@ -3,19 +3,24 @@ import { useRecoilValue } from 'recoil';
 import { BreadCrumb } from '../../../_reactComponents/PanelHeaderComponents/BreadCrumb';
 
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { useCourseChooserCrumb, useDashboardCrumb, useNavigationCrumbs } from '../../../_utils/breadcrumbUtil';
-
+import {
+  useCourseChooserCrumb,
+  useDashboardCrumb,
+  useNavigationCrumbs,
+} from '../../../_utils/breadcrumbUtil';
 
 export default function NavigationBreadCrumb() {
+  console.log('nav');
   const chooserCrumb = useCourseChooserCrumb();
-  const path = useRecoilValue(searchParamAtomFamily('path'));
-  const [driveId,folderId] = path.split(':');
-  const dashboardCrumb = useDashboardCrumb(driveId);
-  const navigationCrumbs = useNavigationCrumbs(driveId,folderId)
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+
+  const dashboardCrumb = useDashboardCrumb(courseId);
+  // const navigationCrumbs = useNavigationCrumbs(courseId,folderId)
 
   return (
     <Suspense fallback={<div>Loading Breadcrumb...</div>}>
-      <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs]} />
+      {/* <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs]} /> */}
+      <BreadCrumb crumbs={[chooserCrumb, dashboardCrumb]} />
     </Suspense>
   );
 }

@@ -23,20 +23,18 @@ export function useCourseChooserCrumb(){
 export function useDashboardCrumb(courseId){
   
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  const course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
   let label = course?.label;
-
-  let params = {
-    path: `${courseId}:${courseId}:${courseId}:Drive`,
-  }
 
   return {label, onClick:()=>{
         setPageToolView({
           page: 'course',
           tool: 'dashboard',
           view: '',
-          params
+          params: {
+            courseId
+          }
         });
   }}
 }
@@ -73,20 +71,20 @@ const navigationSelectorFamily = selectorFamily({
   }
 })
 
-export function useNavigationCrumbs(driveId,folderId){
+export function useNavigationCrumbs(courseId,sectionId){
 
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const folderInfoArray = useRecoilValue(navigationSelectorFamily({driveId,folderId}));
+  const folderInfoArray = useRecoilValue(navigationSelectorFamily({driveId: courseId,folderId: sectionId}));
 
   let crumbs = [];
 
   for (let item of folderInfoArray){
        let params = {
-        path: `${driveId}:${driveId}:${driveId}:Drive`,
+        path: `${courseId}:${courseId}:${courseId}:Drive`,
       }
       if (item.itemType === 'Folder'){
         params = {
-          path: `${driveId}:${item.itemId}:${item.itemId}:Folder`,
+          path: `${courseId}:${item.itemId}:${item.itemId}:Folder`,
         }
       }
        crumbs.unshift({
