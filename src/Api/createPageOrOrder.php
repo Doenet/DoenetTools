@@ -35,12 +35,17 @@ if ($success){
 
 if ($success){
   $doenetId = include "randomId.php";
-  $sql = "
-  INSERT INTO pages (courseId,containingDoenetId,doenetId) 
-    VALUES('$courseId','$containingDoenetId','$doenetId');
-  ";
-  $conn->query($sql);
-  $pageThatWasCreated = getCourseItemFunction($conn,$itemType,$doenetId);
+  if ($itemType == 'page'){
+    $sql = "
+    INSERT INTO pages (courseId,containingDoenetId,doenetId) 
+      VALUES('$courseId','$containingDoenetId','$doenetId');
+    ";
+    $conn->query($sql);
+    $pageThatWasCreated = getCourseItemFunction($conn,$itemType,$doenetId);
+  }else if ($itemType == 'order'){
+    //TODO: make sure this is the same id as the one entered as order in the structure
+    $orderDoenetIdThatWasCreated = $doenetId;
+  }
 }
 
 
@@ -48,6 +53,7 @@ $response_arr = array(
   "success"=>$success,
   "message"=>$message,
   "pageThatWasCreated"=>$pageThatWasCreated,
+  "orderDoenetIdThatWasCreated"=>$orderDoenetIdThatWasCreated,
   );
 
 
