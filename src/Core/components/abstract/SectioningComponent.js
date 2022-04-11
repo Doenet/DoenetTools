@@ -816,6 +816,8 @@ export default class SectioningComponent extends BlockComponent {
       return { success: false }
     }
 
+    serializedComponent.variants.selectedUniqueVariant = true;
+
     return {
       success: true,
       desiredVariant: {

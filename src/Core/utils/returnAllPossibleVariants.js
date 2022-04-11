@@ -29,35 +29,18 @@ export async function returnAllPossibleVariants({
 
   let document = serializedComponents[0];
 
-  let variantControlChild;
-
-  // look for variantControl child document
-  for (let [ind, child] of document.children.entries()) {
-    if (child.componentType === "variantControl") {
-      variantControlChild = child;
-      break;
-    }
-  }
-
-
-  let nVariants = serializeFunctions.getNumberOfVariants({
+  let results = serializeFunctions.getNumberOfVariants({
     serializedComponent: document,
     componentInfoObjects
   })
 
+  let nVariants = results.numberOfVariants;
 
   let allPossibleVariants;
 
-  if (variantControlChild !== undefined) {
+  if (results.variantNames) {
 
-    // create variant names from variant control child
-
-    let variantNames = [];
-    if (variantControlChild.attributes?.variantNames) {
-      let variantNamesComponent = variantControlChild.attributes.variantNames.component;
-
-      variantNames = variantNamesComponent.children.map(x => x.toLowerCase().substring(0, 1000));
-    }
+    let variantNames = [...results.variantNames];
 
     if (variantNames.length >= nVariants) {
       variantNames = variantNames.slice(0, nVariants);
