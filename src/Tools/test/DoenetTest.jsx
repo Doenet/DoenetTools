@@ -228,7 +228,6 @@ function Test() {
 
   let viewer;
 
-  console.log(`useTestCode: ${useTestCode}`)
   if (useTestCode) {
     viewer = <PageViewer
       key={"pageviewer" + updateNumber}

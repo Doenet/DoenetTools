@@ -1,13 +1,14 @@
 <document Xmlns="https://doenet.org/spec/doenetml/v0.1.0" type="activity"
  itemWeights = "0 1 0.5 3"
  shuffleItemWeights
+ numberOfVariants = "10"
 >
   <order behavior="sequence">
+    <page><variantControl uniqueVariants /><selectFromSequence length="3" /></page>
     <page><graph><point>(4,-7)</point></graph><mathinput /></page>
     <page cid="bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
     <page cid="bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" />
     <page cid="bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" />
   </order>
-  <variantControl nVariants="10" seeds="1 10 111 134 42 14 948 3028 482 382" />
 
 </document>

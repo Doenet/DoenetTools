@@ -45,7 +45,7 @@ export default function ActivityViewer(props) {
   const [currentPage, setCurrentPage] = useState(1);
   const [nPages, setNPages] = useState(1);
 
-  const [variantsByItem, setVariantsByItem] = useState(null);
+  const [variantsByPage, setVariantsByPage] = useState(null);
   const [itemWeights, setItemWeights] = useState(null);
 
   const [cidChanged, setCidChanged] = useState(props.cidChanged);
@@ -242,6 +242,11 @@ export default function ActivityViewer(props) {
         console.warn('no xmls of activity!');
       }
 
+      if(documentProps.numberofvariants) {
+        jsonDefinition.numberOfVariants = Number(documentProps.numberofvariants);
+        delete documentProps.numberofvariants;
+      }
+
       if (Object.keys(documentProps).length > 0) {
         if (props.setIsInErrorState) {
           props.setIsInErrorState(true)
@@ -251,7 +256,6 @@ export default function ActivityViewer(props) {
       }
 
       let foundOrder = false;
-      let foundVariantControl = false;
 
       // remove blank string children
       let documentChildren = serializedDefinition.children
@@ -280,30 +284,6 @@ export default function ActivityViewer(props) {
           }
 
           jsonDefinition.order = result.order;
-
-        } else if (child.componentType.toLowerCase() === "variantcontrol") {
-
-          if (foundVariantControl) {
-            if (props.setIsInErrorState) {
-              props.setIsInErrorState(true)
-            }
-            setErrMsg(`Invalid activity definition: more than one variantControl defined`);
-            return;
-          }
-
-          foundVariantControl = true;
-
-          let result = validateVariantControl(child);
-
-          if (!result.success) {
-            if (props.setIsInErrorState) {
-              props.setIsInErrorState(true)
-            }
-            setErrMsg(`Invalid activity definition: ${result.message}`);
-            return;
-          }
-
-          jsonDefinition.variantControl = result.variantControl;
 
         } else {
           if (props.setIsInErrorState) {
@@ -503,58 +483,6 @@ export default function ActivityViewer(props) {
   }
 
 
-  function validateVariantControl(variantControl) {
-    let newVariantControl = {};
-
-    let variantControlProps = {};
-    for (let prop in variantControl.props) {
-      let lowerProp = prop.toLowerCase();
-      if (lowerProp in variantControlProps) {
-        return {
-          success: false,
-          message: `duplicate attribute of variantControl ${lowerProp}`
-        }
-      }
-      variantControlProps[prop.toLowerCase()] = variantControl.props[prop];
-    }
-
-
-    for (let prop in variantControlProps) {
-      if (prop === "nvariants") {
-        newVariantControl.nVariants = Number(variantControlProps.nvariants);
-      } else if (prop === "seeds") {
-        if (typeof variantControlProps.seeds !== "string") {
-          return {
-            success: false,
-            message: "invalid seeds of variantControl"
-          }
-        }
-        newVariantControl.seeds = variantControlProps.seeds
-          .split(/\s+/)
-          .filter(s => s);
-
-      } else {
-        return {
-          success: false,
-          message: `invalid variantControl attribute: ${prop}`
-        }
-      }
-    }
-
-
-    if (variantControl.children.length > 0) {
-      return {
-        success: false,
-        message: "invalid variantControl: variantControl cannot have children"
-      }
-    }
-
-    return {
-      success: true,
-      variantControl: newVariantControl
-    }
-  }
-
   async function loadState() {
 
     let loadedState = false;
@@ -610,12 +538,12 @@ export default function ActivityViewer(props) {
         newCurrentPage = localInfo.activityState.currentPage
         setCurrentPage(newCurrentPage);
 
-        // activityInfo is orderWithCids and variantsByItem
+        // activityInfo is orderWithCids and variantsByPage
         let newActivityInfo = localInfo.activityInfo;
         setVariantIndex(localInfo.variantIndex);
         setNPages(newActivityInfo.orderWithCids.length);
         setOrder(newActivityInfo.orderWithCids);
-        setVariantsByItem(newActivityInfo.variantsByItem);
+        setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
 
@@ -672,11 +600,11 @@ export default function ActivityViewer(props) {
           newCurrentPage = activityState.currentPage;
           setCurrentPage(newCurrentPage);
 
-          // activityInfo is orderWithCids and variantsByItem
+          // activityInfo is orderWithCids and variantsByPage
           setVariantIndex(resp.data.variantIndex);
           setNPages(newActivityInfo.orderWithCids.length);
           setOrder(newActivityInfo.orderWithCids);
-          setVariantsByItem(newActivityInfo.variantsByItem);
+          setVariantsByPage(newActivityInfo.variantsByPage);
           setItemWeights(newActivityInfo.itemWeights);
           newItemWeights = newActivityInfo.itemWeights;
 
@@ -703,7 +631,7 @@ export default function ActivityViewer(props) {
           setVariantIndex(results.variantIndex);
           setNPages(results.order.length);
           setOrder(results.order);
-          setVariantsByItem(results.variantsByItem);
+          setVariantsByPage(results.variantsByPage);
           setItemWeights(results.itemWeights);
           newItemWeights = results.itemWeights;
 
@@ -804,9 +732,9 @@ export default function ActivityViewer(props) {
 
   async function calculateOrderAndVariants() {
 
-    let variantSeedResults = await determineVariantSeed(activityDefinition, requestedVariantIndex, flags);
+    let variantResults = await determineVariant(activityDefinition, requestedVariantIndex, flags);
 
-    if (variantSeedResults.usePageVariants) {
+    if (variantResults.usePageVariants) {
       // didn't have a variant control and have a single page inside a sequence order
       // use the pageVariants
 
@@ -818,20 +746,20 @@ export default function ActivityViewer(props) {
       // Also, add cid if it isn't there
       if (page.doenetML === undefined) {
         page = { ...page };
-        page.doenetML = variantSeedResults.pageVariants.doenetML;
+        page.doenetML = variantResults.pageVariants.doenetML;
       } else if (!page.cid) {
         page = { ...page };
-        page.cid = variantSeedResults.pageVariants.cid;
+        page.cid = variantResults.pageVariants.cid;
       }
 
       orderWithCids[0].cid = page.cid;
 
-      let variantsByItem = [variantSeedResults.variantIndex];
+      let variantsByPage = [variantResults.variantIndex];
       let itemWeights = [1];
 
       let activityInfo = {
         orderWithCids,
-        variantsByItem,
+        variantsByPage,
         itemWeights
       };
   
@@ -840,14 +768,14 @@ export default function ActivityViewer(props) {
         success: true,
         order: [page],
         itemWeights: [1],
-        variantsByItem: [variantSeedResults.variantIndex],
-        variantIndex: variantSeedResults.variantIndex,
+        variantsByPage: [variantResults.variantIndex],
+        variantIndex: variantResults.variantIndex,
         activityInfo
       };
 
     }
 
-    let rng = new rngClass(variantSeedResults.seed);
+    let rng = new rngClass(variantResults.variantIndex.toString());
 
     let orderResult = determineOrder(activityDefinition.order, rng);
 
@@ -903,11 +831,11 @@ export default function ActivityViewer(props) {
 
     let newOrder = [];
     for (let [ind, possibleVariants] of variantsResult.entries()) {
-      let nVariants = possibleVariants.allPossibleVariants.length;
+      let numberOfPageVariants = possibleVariants.allPossibleVariants.length;
 
-      let variantIndex = Math.floor(rng() * nVariants) + 1;
+      let pageVariantIndex = Math.floor(rng() * numberOfPageVariants) + 1;
 
-      chosenVariants.push(variantIndex);
+      chosenVariants.push(pageVariantIndex);
 
       // if looked up doenetML to determine possible variants
       // record that doenetML in the order so don't have to load it again
@@ -929,7 +857,7 @@ export default function ActivityViewer(props) {
 
     let activityInfo = {
       orderWithCids,
-      variantsByItem: chosenVariants,
+      variantsByPage: chosenVariants,
       itemWeights
     };
 
@@ -937,8 +865,8 @@ export default function ActivityViewer(props) {
       success: true,
       order: newOrder,
       itemWeights,
-      variantsByItem: chosenVariants,
-      variantIndex: variantSeedResults.variantIndex,
+      variantsByPage: chosenVariants,
+      variantIndex: variantResults.variantIndex,
       activityInfo
     };
 
@@ -1280,7 +1208,7 @@ export default function ActivityViewer(props) {
           itemNumber={itemNumber}
           attemptNumber={attemptNumber}
           flags={flags}
-          requestedVariant={{ index: variantsByItem[ind] }}
+          requestedVariant={{ index: variantsByPage[ind] }}
           unbundledCore={props.unbundledCore}
           updateCreditAchievedCallback={props.updateCreditAchievedCallback}
           setIsInErrorState={props.setIsInErrorState}
@@ -1310,19 +1238,15 @@ export default function ActivityViewer(props) {
   </div>
 }
 
-async function determineVariantSeed(activityDefinition, requestedVariantIndex, flags) {
-  let nVariants = 100;
-  let seeds = [];
+async function determineVariant(activityDefinition, requestedVariantIndex, flags) {
+  let numberOfVariants = 100;
 
-  if (activityDefinition.variantControl) {
-    nVariants = activityDefinition.variantControl.nVariants;
-    if (!(Number.isInteger(nVariants) && nVariants >= 1)) {
-      nVariants = 100;
+  if (activityDefinition.numberOfVariants !== undefined) {
+    numberOfVariants = activityDefinition.numberOfVariants;
+    if (!(Number.isInteger(numberOfVariants) && numberOfVariants >= 1)) {
+      numberOfVariants = 100;
     }
 
-    if (Array.isArray(activityDefinition.variantControl.seeds)) {
-      seeds = activityDefinition.variantControl.seeds.map(x => x.toString());
-    }
   } else {
     // have no variant control
     // check to see if we have special case of a sequence order
@@ -1340,9 +1264,9 @@ async function determineVariantSeed(activityDefinition, requestedVariantIndex, f
       })
 
 
-      nVariants = pageVariants.allPossibleVariants.length;
+      numberOfVariants = pageVariants.allPossibleVariants.length;
 
-      let variantIndex = (requestedVariantIndex - 1) % nVariants + 1;
+      let variantIndex = (requestedVariantIndex - 1) % numberOfVariants + 1;
 
       return { variantIndex, usePageVariants: true, pageVariants };
 
@@ -1351,22 +1275,9 @@ async function determineVariantSeed(activityDefinition, requestedVariantIndex, f
 
   }
 
-  let variantIndex = (requestedVariantIndex - 1) % nVariants + 1;
+  let variantIndex = (requestedVariantIndex - 1) % numberOfVariants + 1;
 
-  if (seeds.length < variantIndex) {
-    for (let ind = seeds.length; ind < variantIndex; ind++) {
-      let s = ind + 1;
-      while (seeds.includes(s.toString())) {
-        s++;
-      }
-      seeds.push(s.toString());
-    }
-  }
-
-  let selectedSeed = seeds[variantIndex - 1];
-
-
-  return { selectedSeed, variantIndex, usePageVariants: false };
+  return { variantIndex, usePageVariants: false };
 
 }
 
