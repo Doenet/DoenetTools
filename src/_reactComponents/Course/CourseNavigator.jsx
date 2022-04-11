@@ -444,11 +444,11 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     }
     //TODO: use item type and role to determine what to update
     if (clickedItem.type == 'page'){
-      setPageToolView((was)=>{return {
+      setPageToolView((prev)=>{return {
         page: 'course',
         tool: 'editor',
-        view: was.view,
-        params: { doenetId, path:was.params.path },
+        view: prev.view,
+        params: { doenetId, sectionId: prev.params.sectionId ?? '', courseId: prev.params.courseId },
         }})
     }else if (clickedItem.type == 'activity'){
       
@@ -457,11 +457,11 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       if (pageDoenetId == null){
         addToast(`ERROR: No page found in activity`, toastType.INFO);
       }else{
-        setPageToolView((was)=>{return {
+        setPageToolView((prev)=>{return {
           page: 'course',
           tool: 'editor',
-          view: was.view,
-          params: { doenetId:pageDoenetId, path:was.params.path },
+          view: prev.view,
+          params: { doenetId:pageDoenetId, sectionId: prev.params.sectionId ?? '', courseId: prev.params.courseId },
           }})
       }
     }

@@ -61,7 +61,7 @@ const navigationSelectorFamily = selectorFamily({
     ({ courseId, sectionId }) =>
     async ({ get }) => {
       async function getSection({ courseId, sectionId }) {
-        if (sectionId === '') {
+        if (sectionId === '' || sectionId === undefined) {
           return [];
         }
         const { label, parentDoenetId, itemType } = await get(
@@ -106,26 +106,22 @@ export function useNavigationCrumbs(courseId, sectionId) {
   return crumbs;
 }
 
-export function useEditorCrumb({ doenetId, driveId, folderId, itemId }) {
+export function useEditorCrumb({ doenetId, sectionId, courseId }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const folderInfo = useRecoilValue(folderDictionary({ driveId, folderId }));
-  let label = folderInfo?.contentsDictionary?.[itemId]?.label;
-  if (!label) {
-    label = '_';
-  }
-  let params = {
-    doenetId,
-    path: `${driveId}:${folderId}:${itemId}:DoenetML`,
-  };
+  const { label } = useRecoilValue(authorItemByDoenetId(doenetId));
 
   return {
-    label,
+    label: label ?? '_',
     onClick: () => {
       setPageToolView({
         page: 'course',
         tool: 'editor',
         view: '',
-        params,
+        params: {
+          courseId,
+          sectionId,
+          doenetId,
+        },
       });
     },
   };
