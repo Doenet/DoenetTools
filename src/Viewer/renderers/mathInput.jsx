@@ -133,7 +133,9 @@ export default function MathInput(props) {
   };
 
   const onChangeHandler = (text) => {
-    if (text.replace(/\s/g, '') !== rendererValue.current.replace(/\s/g, '')) {
+    // whitespace differences and whether or not a single character exponent has braces
+    // do not count as a difference for changing raw renderer value
+    if (text.replace(/\s/g, '').replace(/\^{(\w)}/g, '^$1') !== rendererValue.current.replace(/\s/g, '').replace(/\^{(\w)}/g, '^$1')) {
       rendererValue.current = text;
 
       setRendererState((was) => {
