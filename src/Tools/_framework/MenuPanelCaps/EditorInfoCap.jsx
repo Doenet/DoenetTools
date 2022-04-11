@@ -1,33 +1,21 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { folderDictionary, fetchCoursesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { authorItemByDoenetId, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
 // import { ClipboardLinkButtons } from '../ToolHandlers/CourseToolHandler';
 
 export default function EditorInfoCap(){
-  let path = useRecoilValue(searchParamAtomFamily('path'));
-  let [driveId,folderId,doenetId] = path.split(':');
-  let folderInfo = useRecoilValue(folderDictionary({driveId,folderId}))
-  const driveInfo = useRecoilValue(fetchCoursesQuery)
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  let {color, image, course_label} = useCourse(courseId);
 
-  const docInfo = folderInfo.contentsDictionary[doenetId]
+  const docInfo = useRecoilValue(authorItemByDoenetId(doenetId));
   if (!docInfo){ return null;}
   let status = "Not Released";
   if (docInfo?.isReleased === "1"){ status = "Released"}
   // if (docInfo.isAssigned === "1"){ status = "Assigned"}
   // let listed = "";
   // if (docInfo.isPublic === "1"){ listed = "Listed"}
-  let image;
-  let color;
-  let course_label = "";
- for (let info of driveInfo.driveIdsAndLabels){
-   if (info.driveId === driveId){
-     color = info.color;
-     image = info.image;
-     course_label = info.label;
-     break;
-   }
- }
 
 //  let imageURL = `/media/drive_pictures/${image}`
  if (image != 'none'){
