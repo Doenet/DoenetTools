@@ -90,6 +90,7 @@ $containingDoenetIds = [];
 				$sql = "
 				SELECT 
 				doenetId,
+				containingDoenetId,
 				cid,
 				draftCid,
 				label
@@ -103,6 +104,7 @@ $containingDoenetIds = [];
 						$item = array(
 							"type"=>"page",
 							"doenetId"=>$row['doenetId'],
+							"containingDoenetId"=>$row['containingDoenetId'],
 							"cid"=>$row['cid'],
 							"draftCid"=>$row['draftCid'],
 							"label"=>$row['label']

@@ -489,6 +489,7 @@ describe('Circle Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = 0, y = 0, r = 2;
@@ -509,6 +510,9 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).eq(x);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).eq(y);
       expect(stateVariables["/radiusNumber"].stateValues.value).eq(r);
+
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
     })
 
     cy.log("move circle")
@@ -766,6 +770,8 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_point2'].stateValues.xs[0]).eq(r);
       expect(stateVariables['/_point2'].stateValues.xs[1]).eq(0);
       expect(stateVariables["/radiusNumber"].stateValues.value).eq(r);
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(r))
     })
 
     cy.log("move circle")
@@ -1127,6 +1133,8 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle')
@@ -1554,6 +1562,8 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(cnx)},${nInDOM(cny)})`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle')
@@ -1994,6 +2004,10 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
       expect(stateVariables["/diam"].stateValues.value).closeTo(2 * r, 1E-12);
+
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle up and to the right')
@@ -2828,6 +2842,9 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
       expect(stateVariables["/diam"].stateValues.value).closeTo(2 * r, 1E-12);
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle up and to the right')
@@ -3655,6 +3672,9 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle')
@@ -3987,6 +4007,10 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
+
     })
 
     cy.log('move circle')
@@ -4659,6 +4683,9 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle')
@@ -5089,6 +5116,8 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
     })
 
     cy.log('make defined radius negative')
@@ -5250,6 +5279,9 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/centerPoint"].stateValues.xs)[0]).closeTo(cnx, 1E-12);
       expect(stateVariables["/centerPoint"].stateValues.xs[1]).closeTo(cny, 1E-12);
       expect(stateVariables["/radiusNumber"].stateValues.value).closeTo(r, 1E-12);
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log('move circle')
@@ -5545,6 +5577,9 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables["/circle2"].stateValues.numericalCenter[1]).closeTo(cny, 1E-12);
       expect((await stateVariables["/circle2"].stateValues.radius)).closeTo(r, 1E-12);
       expect(stateVariables["/circle2"].stateValues.numericalRadius).closeTo(r, 1E-12);
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(cnx * 100) / 100)}`)
+      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(cny * 100) / 100)}`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
     })
 
@@ -5949,6 +5984,9 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/x'].stateValues.xs[0]).closeTo(circx, 1E-12);
       expect(stateVariables['/y'].stateValues.xs[1]).closeTo(circy, 1E-12);
       expect(stateVariables['/r'].stateValues.xs[0]).closeTo(r, 1E-12);
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(Math.trunc(circx * 100) / 100)}`)
+      cy.get('#\\/centerPoint2').should('contain.text', `${nInDOM(Math.trunc(circy * 100) / 100)}`)
+      cy.get('#\\/radiusNumber').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
     })
 
@@ -6282,6 +6320,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -6388,6 +6427,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -6493,6 +6533,7 @@ describe('Circle Tag Tests', function () {
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/_circle1'].stateValues.diameter).eq(4);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 4])
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -6607,6 +6648,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 1]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(1);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 1])
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(1))
     })
 
     cy.log("move circle");
@@ -6714,6 +6756,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -6830,6 +6873,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 1]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(1);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 1])
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(1))
     })
 
     cy.log("move circle");
@@ -6947,6 +6991,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -7067,6 +7112,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -7186,6 +7232,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(2);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(2))
     })
 
     cy.log("move circle");
@@ -7304,6 +7351,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.center).eqls([1, 2]);
       expect((stateVariables['/_circle1'].stateValues.radius)).eq(1);
       expect(stateVariables['/centerPoint'].stateValues.coords).eqls(["vector", 1, 2])
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(1))
     })
 
     cy.log("move circle");
@@ -7389,6 +7437,7 @@ describe('Circle Tag Tests', function () {
       expect((stateVariables['/_circle1'].stateValues.throughPoints)[1]).eqls([t2x, t2y])
       expect((await stateVariables["/TP1"].stateValues.coords)).eqls(["vector", t1x, t1y])
       expect((await stateVariables["/TP2"].stateValues.coords)).eqls(["vector", t2x, t2y])
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(r))
 
     })
 
@@ -7626,6 +7675,7 @@ describe('Circle Tag Tests', function () {
       expect((await stateVariables["/TP1"].stateValues.coords)).eqls(["vector", t1x, t1y])
       expect((await stateVariables["/TP2"].stateValues.coords)).eqls(["vector", t2x, t2y])
 
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(r))
     })
 
     cy.log("move circle");
@@ -7864,6 +7914,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.numericalCenter[0]).closeTo(cnx, 1E-12)
       expect(stateVariables['/_circle1'].stateValues.numericalCenter[1]).closeTo(cny, 1E-12)
 
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
     })
 
     cy.log("move circle");
@@ -8078,6 +8129,10 @@ describe('Circle Tag Tests', function () {
 
       expect(Number.isFinite(stateVariables['/_circle1'].stateValues.numericalCenter[0])).true;
       expect(Number.isFinite(stateVariables['/_circle1'].stateValues.numericalCenter[1])).true;
+
+      let r = stateVariables['/_circle1'].stateValues.radius;
+
+      cy.get('#\\/radiusNumber .mjx-mrow').should('contain.text', nInDOM(Math.trunc(r * 100) / 100))
 
     })
 
@@ -8348,6 +8403,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/_circle1'].stateValues.numericalCenter).eqls([0, 0]);
       expect(stateVariables["/centerPoint"].stateValues.coords).eqls(["vector", 0, 0])
       expect(stateVariables["/_point1"].stateValues.coords).eqls(["vector", 0, 0])
+      cy.get('#\\/centerPoint2').should('contain.text', `(${nInDOM(0)},${nInDOM(0)})`)
 
     })
 
@@ -8439,6 +8495,7 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/circ'].stateValues.numericalRadius).eq(1);
       expect(stateVariables['/circ2'].stateValues.numericalCenter).eqls([NaN, NaN]);
       expect(stateVariables['/circ2'].stateValues.numericalRadius).eq(1);
+      cy.get('#\\/centerPoint2').should('contain.text', `(＿,＿)`)
     });
 
     cy.log("enter point for center");
@@ -8846,6 +8903,7 @@ describe('Circle Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/circ'].stateValues.numericalCenter).eqls([0, 0]);
       expect(stateVariables['/circ'].stateValues.numericalRadius).eq(1);
+      cy.get(`#\\/r2 .mjx-mrow`).should('contain.text', "1");
     });
 
     cy.log(`move circle`)

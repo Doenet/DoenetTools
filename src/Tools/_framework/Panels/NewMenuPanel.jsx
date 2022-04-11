@@ -148,7 +148,7 @@ const HomeButton = styled.button`
 `;
 
 function SelectionMenu(props){
-  console.log("child", props.children);
+  // console.log("child", props.children);
   return <>
     <div style={{
       // paddingTop: "4px", 
@@ -220,10 +220,11 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
   const LazyMenuObj = useRef({
     SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
     GradeSettings:lazy(() => import('../Menus/GradeSettings')),
-    SelectedDoenetML:lazy(() => import('../Menus/SelectedDoenetML')),
-    SelectedFolder:lazy(() => import('../Menus/SelectedFolder')),
-    SelectedCollection:lazy(() => import('../Menus/SelectedCollection')),
-    SelectedMulti:lazy(() => import('../Menus/SelectedMulti.jsx')),
+    SelectedSection:lazy(() => import('../Menus/SelectedSection')),
+    SelectedBank:lazy(() => import('../Menus/SelectedBank')),
+    SelectedActivity:lazy(() => import('../Menus/SelectedActivity')),
+    SelectedOrder:lazy(() => import('../Menus/SelectedOrder')),
+    SelectedPage:lazy(() => import('../Menus/SelectedPage')),
     CreateCourse:lazy(() => import('../Menus/CreateCourse')),
     CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
     AddDriveItems:lazy(() => import('../Menus/AddDriveItems')),

@@ -29,9 +29,14 @@ export default function MathInput(props) {
 
   const [mathField, setMathField] = useState(null);
 
-  const setRendererState =  useSetRecoilState(rendererState(rendererName));
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
 
   let rendererValue = useRef(null);
+
+  // Need to use ref for includeCheckWork
+  // or handlePressEnter doesn't get the new value when the SV changes
+  let includeCheckWork = useRef(SVs.includeCheckWork);
+  includeCheckWork.current = SVs.includeCheckWork;
 
   if (!ignoreUpdate) {
     rendererValue.current = SVs.rawRendererValue;
@@ -93,7 +98,7 @@ export default function MathInput(props) {
       baseVariableValue: rendererValue.current,
     });
 
-    if (SVs.includeCheckWork && validationState.current === 'unvalidated') {
+    if (includeCheckWork.current && validationState.current === 'unvalidated') {
       callAction({
         action: actions.submitAnswer,
       });
@@ -128,11 +133,13 @@ export default function MathInput(props) {
   };
 
   const onChangeHandler = (text) => {
-    if (text !== rendererValue.current) {
+    // whitespace differences and whether or not a single character exponent has braces
+    // do not count as a difference for changing raw renderer value
+    if (text.replace(/\s/g, '').replace(/\^{(\w)}/g, '^$1') !== rendererValue.current.replace(/\s/g, '').replace(/\^{(\w)}/g, '^$1')) {
       rendererValue.current = text;
 
       setRendererState((was) => {
-        let newObj = {...was};
+        let newObj = { ...was };
         newObj.ignoreUpdate = true;
         return newObj;
       })

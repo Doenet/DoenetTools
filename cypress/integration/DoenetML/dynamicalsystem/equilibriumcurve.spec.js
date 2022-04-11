@@ -70,19 +70,19 @@ describe('Equilibriumcurve Tag Tests', function () {
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);
       expect(stateVariables["/g/C"].stateValues.stable).eq(false);
       expect(stateVariables["/g/D"].stateValues.stable).eq(false);
-      expect(stateVariables["/g/A"].stateValues.numericalThroughPoints).eqls([[1,2], [3,4], [2,6]])
-      expect(stateVariables["/g/B"].stateValues.numericalThroughPoints).eqls([[3,2], [5,4], [4,6]])
-      expect(stateVariables["/g/C"].stateValues.numericalThroughPoints).eqls([[-3,2], [-5,4], [-4,6]])
-      expect(stateVariables["/g/D"].stateValues.numericalThroughPoints).eqls([[-1,2], [-3,4], [-2,6]])
+      expect(stateVariables["/g/A"].stateValues.numericalThroughPoints).eqls([[1, 2], [3, 4], [2, 6]])
+      expect(stateVariables["/g/B"].stateValues.numericalThroughPoints).eqls([[3, 2], [5, 4], [4, 6]])
+      expect(stateVariables["/g/C"].stateValues.numericalThroughPoints).eqls([[-3, 2], [-5, 4], [-4, 6]])
+      expect(stateVariables["/g/D"].stateValues.numericalThroughPoints).eqls([[-1, 2], [-3, 4], [-2, 6]])
 
       expect(stateVariables["/g2/A"].stateValues.stable).eq(true);
       expect(stateVariables["/g2/B"].stateValues.stable).eq(false);
       expect(stateVariables["/g2/C"].stateValues.stable).eq(false);
       expect(stateVariables["/g2/D"].stateValues.stable).eq(false);
-      expect(stateVariables["/g2/A"].stateValues.numericalThroughPoints).eqls([[1,2], [3,4], [2,6]])
-      expect(stateVariables["/g2/B"].stateValues.numericalThroughPoints).eqls([[3,2], [5,4], [4,6]])
-      expect(stateVariables["/g2/C"].stateValues.numericalThroughPoints).eqls([[-3,2], [-5,4], [-4,6]])
-      expect(stateVariables["/g2/D"].stateValues.numericalThroughPoints).eqls([[-1,2], [-3,4], [-2,6]])
+      expect(stateVariables["/g2/A"].stateValues.numericalThroughPoints).eqls([[1, 2], [3, 4], [2, 6]])
+      expect(stateVariables["/g2/B"].stateValues.numericalThroughPoints).eqls([[3, 2], [5, 4], [4, 6]])
+      expect(stateVariables["/g2/C"].stateValues.numericalThroughPoints).eqls([[-3, 2], [-5, 4], [-4, 6]])
+      expect(stateVariables["/g2/D"].stateValues.numericalThroughPoints).eqls([[-1, 2], [-3, 4], [-2, 6]])
     })
 
 
@@ -141,8 +141,12 @@ describe('Equilibriumcurve Tag Tests', function () {
 
     cy.log('switch A via first action')
     cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "switchCurve",
+        componentName: "/g/A"
+      })
+
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables["/g/A"].actions.switchCurve();
 
       expect(stateVariables["/g/A"].stateValues.stable).eq(false);
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);
@@ -169,8 +173,12 @@ describe('Equilibriumcurve Tag Tests', function () {
 
     cy.log('switch A via second action')
     cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "switchCurve",
+        componentName: "/g2/A"
+      })
+
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables["/g2/A"].actions.switchCurve();
 
       expect(stateVariables["/g/A"].stateValues.stable).eq(true);
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);
@@ -196,8 +204,12 @@ describe('Equilibriumcurve Tag Tests', function () {
 
     cy.log('cannot switch B via action')
     cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "switchCurve",
+        componentName: "/g/B"
+      })
+
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables["/g/B"].actions.switchCurve();
 
       expect(stateVariables["/g/A"].stateValues.stable).eq(true);
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);
@@ -223,8 +235,12 @@ describe('Equilibriumcurve Tag Tests', function () {
 
     cy.log('cannot switch C via second action')
     cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "switchCurve",
+        componentName: "/g2/C"
+      })
+
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables["/g2/C"].actions.switchCurve();
 
       expect(stateVariables["/g/A"].stateValues.stable).eq(true);
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);
@@ -249,8 +265,12 @@ describe('Equilibriumcurve Tag Tests', function () {
 
     cy.log('switch D via second action')
     cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "switchCurve",
+        componentName: "/g2/D"
+      })
+
       let stateVariables = await win.returnAllStateVariables1();
-      await stateVariables["/g2/D"].actions.switchCurve();
 
       expect(stateVariables["/g/A"].stateValues.stable).eq(true);
       expect(stateVariables["/g/B"].stateValues.stable).eq(false);

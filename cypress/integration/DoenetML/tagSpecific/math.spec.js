@@ -444,7 +444,7 @@ describe('Math Tag Tests', function () {
     cy.log('change format of first back to latext')
     cy.get('#\\/_textinput1_input').clear().type(`latex{enter}`);
 
-    cy.get('#\\/a').should('contain.text','sin(x)sin(y)')
+    cy.get('#\\/a').should('contain.text', 'sin(x)sin(y)')
 
     cy.get('#\\/a .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(x)sin(y)')
@@ -500,11 +500,11 @@ describe('Math Tag Tests', function () {
     let originalTree = [
       '+',
       ['*', 1, ['^', 'x', 2]],
-      ['-', 3],
+      -3,
       ['*', 0, ['^', 'x', 2]],
       4,
       ['-', ['*', 2, ['^', 'x', 2]]],
-      ['-', 3],
+      -3,
       ['*', 5, ['^', 'x', 2]],
     ]
 
@@ -543,6 +543,8 @@ describe('Math Tag Tests', function () {
     <p>Expand: <math expand="true">(x-3)(2x+4)</math></p>
     <p>Don't expand sum: <math>(x-3)(2x+4) - (3x+5)(7-x)</math></p>
     <p>Expand: <math expand="true">(x-3)(2x+4) - (3x+5)(7-x)</math></p>
+    <p>Expand: <math expand>2(1-x)(1+x)(-2)</math></p>
+
     `}, "*");
     });
 
@@ -561,6 +563,55 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('5x2−18x−47')
     });
+    cy.get('#\\/_math5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4x2−4')
+    });
+
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value).eqls([
+        '*',
+        ['+', 'x', -3],
+        ['+', ['*', 2, 'x'], 4]
+      ]);
+      expect(stateVariables['/_math2'].stateValues.value).eqls([
+        '+',
+        ['*', 2, ['^', 'x', 2]],
+        ['*', -2, 'x'],
+        -12
+      ]);
+      expect(stateVariables['/_math3'].stateValues.value).eqls([
+        '+',
+        [
+          '*',
+          ['+', 'x', -3],
+          ['+', ['*', 2, 'x'], 4]
+        ],
+        [
+          '-',
+          [
+            '*',
+            ['+', ['*', 3, 'x'], 5],
+            ['+', 7, ['-', 'x']]
+          ]
+        ]
+      ])
+      expect(stateVariables['/_math4'].stateValues.value).eqls([
+        '+',
+        ['*', 5, ['^', 'x', 2]],
+        ['*', -18, 'x'],
+        -47
+      ])
+      expect(stateVariables['/_math5'].stateValues.value).eqls([
+        '+',
+        ['*', 4, ['^', 'x', 2]],
+        -4
+      ])
+
+    })
+
   })
 
   it('create vectors and intervals', () => {
@@ -1153,6 +1204,8 @@ describe('Math Tag Tests', function () {
   <p><math format="latex" name="m14" splitSymbols="false">xy uv x2y 2x x2</math></p>
   <p><math format="latex" name="m14a">\\var{xy} \\var{uv} x2y 2x x2</math></p>
   <p><math format="latex" name="m14b" splitSymbols="false">\\var{xy} \\var{uv} x2y 2x x2</math></p>
+  <p><math format="latex" name="m15">3^x2</math></p>
+  <p><math format="latex" name="m15a" splitSymbols="false">3^x2</math></p>
   `}, "*");
     });
 
@@ -1240,6 +1293,12 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/m14b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xyuvx2y⋅2xx2')
     })
+    cy.get('#\\/m15').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3x⋅2')
+    })
+    cy.get('#\\/m15a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3x2')
+    })
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
@@ -1271,6 +1330,8 @@ describe('Math Tag Tests', function () {
       expect(stateVariables['/m14'].stateValues.value).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
       expect(stateVariables['/m14a'].stateValues.value).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
       expect(stateVariables['/m14b'].stateValues.value).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
+      expect(stateVariables['/m15'].stateValues.value).eqls(["*", ["^", 3, "x"], 2]);
+      expect(stateVariables['/m15a'].stateValues.value).eqls(["^", 3, "x2"]);
 
     });
 
@@ -2004,6 +2065,65 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('negative zero', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1">-0</math></p>
+  <p><math name="m2">4 - 0</math></p>
+  <p><math name="m3">0 - 0</math></p>
+  <p><math name="m4">-0 - 0</math></p>
+  <p><math name="m5">0 + -0</math></p>
+  <p><math name="m6">0 - - 0</math></p>
+  <p><math name="m7">-6/-0</math></p>
+
+  <p><math name="m8">4 + <math>-0</math></math></p>
+  <p><math name="m9">4 - <math>-0</math></math></p>
+  <p><math name="m10"><math>-0</math> + <math>-0</math></math></p>
+  <p><math name="m11"><math>-0</math> - <math>-0</math></math></p>
+  <p><math name="m12"><math>-6</math>/<math>-0</math></math></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '−0');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '4−0');
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '0−0');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '−0−0');
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', '0−0');
+    cy.get('#\\/m6 .mjx-mrow').eq(0).should('have.text', '0−−0');
+    cy.get('#\\/m7 .mjx-mrow').eq(0).should('have.text', '−6−0');
+
+    cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', '4−0');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '4−−0');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', '−0−0');
+    cy.get('#\\/m11 .mjx-mrow').eq(0).should('have.text', '−0−−0');
+    cy.get('#\\/m12 .mjx-mrow').eq(0).should('have.text', '−6−0');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/m1"].stateValues.value).eqls(-0)
+      expect(stateVariables["/m2"].stateValues.value).eqls(["+", 4, -0])
+      expect(stateVariables["/m3"].stateValues.value).eqls(["+", 0, -0])
+      expect(stateVariables["/m4"].stateValues.value).eqls(["+", -0, -0])
+      expect(stateVariables["/m5"].stateValues.value).eqls(["+", 0, -0])
+      expect(stateVariables["/m6"].stateValues.value).eqls(["+", 0, ["-", -0]])
+      expect(stateVariables["/m7"].stateValues.value).eqls(["-", ["/", 6, -0]])
+
+      expect(stateVariables["/m8"].stateValues.value).eqls(["+", 4, -0])
+      expect(stateVariables["/m9"].stateValues.value).eqls(["+", 4, ["-", -0]])
+      expect(stateVariables["/m10"].stateValues.value).eqls(["+", -0, -0])
+      expect(stateVariables["/m11"].stateValues.value).eqls(["+", -0, ["-", -0]])
+      expect(stateVariables["/m12"].stateValues.value).eqls(["/", -6, -0])
+
+    })
+  });
 
 
 

@@ -42,18 +42,18 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move point to correct quadrant")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 5.9, y: 3.5 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -74,18 +74,18 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
     cy.log("Move point to second quadrant and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -8.8, y: 1.3 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -106,18 +106,18 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move point to third quadrant and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9.4, y: -5.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -137,18 +137,18 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move point to fourth quadrant and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 4.2, y: -2.9 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
@@ -167,18 +167,18 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move point back to first quadrant and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 4.6, y: 0.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -198,7 +198,7 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -222,12 +222,6 @@ describe('Point location validation tests', function () {
     `;
 
 
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: ''
-      }, "*");
-    });
-
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_allowLocalState').click()
     cy.wait(100)
@@ -248,31 +242,16 @@ describe('Point location validation tests', function () {
     // that occurs when expressionWithCodes of math isn't changed
 
     cy.window().then(async (win) => {
-      let core = win.state.core;
-      // Note: have to use requestAction here
-      // rather than call movePoint twice directly
-      // to make sure the second action is queued and waits for first to complete
-      core.requestAction({
-        componentName: "/_point1",
+      await win.callAction1({
         actionName: "movePoint",
-        args: { x: 5.9, y: 3.5 },
-      })
-      core.requestAction({
         componentName: "/_point1",
-        actionName: "movePoint",
-        args: { x: 5.9, y: 3.4 },
+        args: { x: 5.9, y: 3.5 }
       })
-      // let components = Object.assign({},win.state.components);
-      // win.callAction1({
-      //   actionName: "movePoint",
-      //     componentName: "/_point1",
-      //       args: { x: 5.9, y: 3.5 }
-      // })
-      // win.callAction1({
-      //   actionName: "movePoint",
-      //     componentName: "/_point1",
-      //       args: { x: 5.9, y: 3.4 }
-      // })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 5.9, y: 3.4 }
+      })
     });
 
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
@@ -292,7 +271,7 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -322,7 +301,7 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -330,12 +309,12 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point to second quadrant and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -8.8, y: 1.3 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -356,7 +335,7 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -387,7 +366,7 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -395,31 +374,17 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point to third quadrant and submit")
     cy.window().then(async (win) => {
-      let core = win.state.core;
-      // Note: have to use requestAction here
-      // rather than call movePoint twice directly
-      // to make sure the second action is queued and waits for first to complete
-      core.requestAction({
-        componentName: "/_point1",
+      await win.callAction1({
         actionName: "movePoint",
-        args: { x: -9.4, y: -5.1 },
-      })
-      core.requestAction({
         componentName: "/_point1",
-        actionName: "movePoint",
-        args: { x: -9.5, y: -5.1 },
+        args: { x: -9.4, y: -5.1 }
       })
-      let components = Object.assign({}, win.state.components);
-      // win.callAction1({
-      //   actionName: "movePoint",
-      //     componentName: "/_point1",
-      //       args: { x: -9.4, y: -5.1 }
-      // })
-      // win.callAction1({
-      // actionName: "movePoint",
-      //   componentName: "/_point1",
-      //     args: { x: -9.5, y: -5.1 }
-      //       })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -9.5, y: -5.1 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -439,7 +404,7 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -514,18 +479,18 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move near correct point")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -4, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -546,18 +511,18 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
     cy.log("Move point further away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.7, y: 7 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -577,18 +542,18 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move point close again and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.8, y: 7.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -609,7 +574,7 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -666,18 +631,18 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move near correct point")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -5, y: 7 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -698,7 +663,7 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -713,7 +678,7 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -727,19 +692,19 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
     cy.log("Move point further away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -2.8, y: 9 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
@@ -758,7 +723,7 @@ describe('Point location validation tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.6);
     });
 
@@ -772,7 +737,7 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.6);
     });
 
@@ -786,18 +751,18 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move point closer again and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3, y: 9 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
@@ -816,18 +781,18 @@ describe('Point location validation tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.6);
     });
 
     cy.log("Move point even closer and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.5, y: 8 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.6);
     });
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
@@ -846,7 +811,7 @@ describe('Point location validation tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -889,6 +854,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -910,18 +877,18 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move A near correct point")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -4, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -946,18 +913,18 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
     cy.log("Move point A further away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.7, y: 7 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -980,18 +947,18 @@ describe('Point location validation tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-2.3,-3.4))')
     })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move point B close and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -3.8, y: 7.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -1016,19 +983,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A close to other goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 6.9, y: 9.0 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1054,19 +1021,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
     cy.log("Move point B away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -9.9, y: -8.8 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -1091,19 +1058,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point B close to second goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: 6.7, y: 9 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1128,19 +1095,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.1, y: -1.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1165,19 +1132,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A near first goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.8, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1202,7 +1169,7 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -1244,6 +1211,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -1265,18 +1234,18 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move A near correct point")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -4, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -1301,18 +1270,18 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
     cy.log("Move point A further away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.7, y: 7 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1335,18 +1304,18 @@ describe('Point location validation tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-2.3,-3.4))')
     })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move point B close and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -3.8, y: 7.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -1371,19 +1340,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A close to other goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 6.9, y: 9.0 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1409,19 +1378,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point B away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -9.9, y: -8.8 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1446,19 +1415,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point B close to second goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: 6.7, y: 9 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1483,19 +1452,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.1, y: -1.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1520,19 +1489,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A near first goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.8, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1557,7 +1526,7 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -1599,6 +1568,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -1620,18 +1591,18 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move A near correct point")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -4, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -1656,18 +1627,18 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
     cy.log("Move point A further away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.7, y: 7 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1690,18 +1661,18 @@ describe('Point location validation tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-2.3,-3.4))')
     })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move point B close and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -3.8, y: 7.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -1726,19 +1697,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A close to other goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 6.9, y: 9.0 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1764,19 +1735,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
     cy.log("Move point B away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -9.9, y: -8.8 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -1801,19 +1772,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point B close to second goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: 6.7, y: 9 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1838,19 +1809,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.1, y: -1.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1875,19 +1846,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A near first goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.8, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -1912,7 +1883,7 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -1954,6 +1925,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -1975,18 +1948,18 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move A near correct point")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -4, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -2011,18 +1984,18 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
     cy.log("Move point A further away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.7, y: 7 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -2045,18 +2018,18 @@ describe('Point location validation tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-2.3,-3.4))')
     })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move point B close and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -3.8, y: 7.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -2081,19 +2054,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A close to other goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 6.9, y: 9.0 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -2119,19 +2092,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point B away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -9.9, y: -8.8 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -2156,19 +2129,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point B close to second goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: 6.7, y: 9 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -2193,19 +2166,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.1, y: -1.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -2230,19 +2203,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A near first goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.8, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -2267,7 +2240,7 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -2309,6 +2282,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -2330,18 +2305,18 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move A near correct point")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -4, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -2366,18 +2341,18 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
     cy.log("Move point A further away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.7, y: 7 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -2400,18 +2375,18 @@ describe('Point location validation tests', function () {
       expect(text.trim().replace(/−/g, '-')).equal('((-3.7,7),(-2.3,-3.4))')
     })
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
     cy.log("Move point B close and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -3.8, y: 7.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -2436,19 +2411,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A close to other goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 6.9, y: 9.0 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -2474,19 +2449,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
 
     cy.log("Move point B away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -9.9, y: -8.8 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -2511,19 +2486,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point B close to second goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: 6.7, y: 9 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -2548,19 +2523,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.1, y: -1.1 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -2585,19 +2560,19 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
 
     cy.log("Move point A near first goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.8, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
     });
 
@@ -2622,7 +2597,7 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -2664,6 +2639,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -2685,7 +2662,7 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -2707,12 +2684,12 @@ describe('Point location validation tests', function () {
 
     cy.log("Move A near correct point")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -4, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -2738,8 +2715,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point A further away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.7, y: 7 }
@@ -2774,8 +2750,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point B close and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -3.8, y: 7.1 }
@@ -2797,8 +2772,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point A close to other goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 6.9, y: 9.0 }
@@ -2822,8 +2796,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point B away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -9.9, y: -8.8 }
@@ -2844,8 +2817,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point B close to second goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: 6.7, y: 9 }
@@ -2868,8 +2840,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point A away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.1, y: -1.1 }
@@ -2891,8 +2862,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point A near first goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.8, y: 7.6 }
@@ -2928,8 +2898,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point C near first goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/C",
         args: { x: -3.8, y: 7.6 }
@@ -3013,6 +2982,8 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
+    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -3034,7 +3005,7 @@ describe('Point location validation tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -3056,12 +3027,12 @@ describe('Point location validation tests', function () {
 
     cy.log("Move A1 near correct point")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A1",
         args: { x: -4, y: 7.6 }
       })
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -3087,8 +3058,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point A1 further away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A1",
         args: { x: -3.7, y: 7 }
@@ -3123,8 +3093,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point A2 close and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A2",
         args: { x: -3.8, y: 7.1 }
@@ -3146,8 +3115,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point A1 close to other goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A1",
         args: { x: 6.9, y: 9.0 }
@@ -3171,8 +3139,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point A2 away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A2",
         args: { x: -9.9, y: -8.8 }
@@ -3193,8 +3160,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point A2 close to second goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A2",
         args: { x: 6.7, y: 9 }
@@ -3217,8 +3183,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point A1 away and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A1",
         args: { x: 0.1, y: -1.1 }
@@ -3240,8 +3205,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point A1 near first goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A1",
         args: { x: -3.8, y: 7.6 }
@@ -3277,8 +3241,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Move point B1 near second goal and submit")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      win.callAction1({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B1",
         args: { x: 7, y: 9 }

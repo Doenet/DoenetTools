@@ -21,7 +21,7 @@ export default function DateTime(props) {
   let borderColor = props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)';
   borderColor = props.disabled ? '2px solid var(--mainGray)' : borderColor;
   let cursorStyle = props.disabled ? 'not-allowed' : 'auto';
-  let width = props.width ? props.width : '182px';
+  let width = props.width ? props.width : '170px';
   
 
   useEffect(() => {
@@ -97,7 +97,7 @@ export default function DateTime(props) {
           cursor: 'not-allowed',
           color: '#545454',
           height: '18px',
-          width: '177px',
+          width: '170px',
           border: '2px solid var(--mainGray)',
           borderRadius: 'var(--mainBorderRadius)',
           ...props.style,

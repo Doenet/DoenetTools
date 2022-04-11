@@ -120,6 +120,8 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    cy.get("#\\/p1a .mjx-mrow").should('contain.text', `(${nInDOM(3)},${nInDOM(5)})`)
+
     cy.log('move point P to (5,-5)')
     cy.window().then(async (win) => {
       win.callAction1({
@@ -550,6 +552,8 @@ describe('Line Tag Tests', function () {
     let slope = (point1y - point2y) / (point1x - point2x);
     let yintercept = point2y - slope * point2x;
 
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1x).substring(0, 4)}`)
+
     cy.log('points and line match constraints')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -709,6 +713,9 @@ describe('Line Tag Tests', function () {
 
 
     cy.log('line starts off correctly')
+
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(0)},${nInDOM(0)}`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(me.fromAst(stateVariables["/l2"].stateValues.slope).evaluate_to_constant()).closeTo(3, 1E-12);
@@ -847,6 +854,9 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.log('line starts off correctly')
+
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(-0.8)}`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(me.fromAst(stateVariables["/_line1"].stateValues.slope).evaluate_to_constant()).closeTo(2, 1E-12);
@@ -983,6 +993,7 @@ describe('Line Tag Tests', function () {
       expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
       expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
       expect(stateVariables["/p2a"].stateValues.xs[1]).eq(p2y)
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
     })
 
     cy.log('move first individually copied point');
@@ -1180,6 +1191,7 @@ describe('Line Tag Tests', function () {
       expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([p2x, p2y]);
       expect(stateVariables['/_line2'].stateValues.points[0]).eqls([p1x, p1y]);
       expect(stateVariables['/_line2'].stateValues.points[1]).eqls([p2x, p2y]);
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
     })
 
     cy.log('move first line up and to the right')
@@ -5298,6 +5310,8 @@ describe('Line Tag Tests', function () {
     let x1 = 3, y1 = 3;
     let x2 = 4, y2 = 5;
 
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
@@ -5521,6 +5535,8 @@ describe('Line Tag Tests', function () {
 
     let x1 = 3, y1 = 3;
     let x2 = 4, y2 = 5;
+
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -5750,6 +5766,8 @@ describe('Line Tag Tests', function () {
     let x1 = 2 * y2 + 1;
     let x2 = x1 + 1;
     let y1 = 2 * x2 + 1;
+
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6007,6 +6025,8 @@ describe('Line Tag Tests', function () {
     let x1 = 2 * y2 + 1;
     let x2 = x1 + 1;
     let y1 = 2 * x2 + 1;
+
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9306,6 +9326,9 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point on line, close to origin`);
+
+    cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.00')
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let x = stateVariables['/P'].stateValues.xs[0];

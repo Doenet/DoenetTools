@@ -3998,7 +3998,7 @@ class ChildDependency extends Dependency {
     }
 
     this.childGroups = this.definition.childGroups;
-    if(!Array.isArray(this.childGroups)) {
+    if (!Array.isArray(this.childGroups)) {
       throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: childGroups must be an array`)
     }
 
@@ -4414,6 +4414,10 @@ class DescendantDependency extends Dependency {
     this.skipOverAdapters = this.definition.skipOverAdapters;
     this.ignoreReplacementsOfMatchedComposites = this.definition.ignoreReplacementsOfMatchedComposites;
 
+    // Note: ignoreReplacementsOfEncounteredComposites means ignore replacements
+    // of all composites except copies of external content
+    this.ignoreReplacementsOfEncounteredComposites = this.definition.ignoreReplacementsOfEncounteredComposites;
+
   }
 
   async determineDownstreamComponents() {
@@ -4548,6 +4552,7 @@ class DescendantDependency extends Dependency {
       includeNonActiveChildren: this.includeNonActiveChildren,
       skipOverAdapters: this.skipOverAdapters,
       ignoreReplacementsOfMatchedComposites: this.ignoreReplacementsOfMatchedComposites,
+      ignoreReplacementsOfEncounteredComposites: this.ignoreReplacementsOfEncounteredComposites,
       componentInfoObjects: this.dependencyHandler.componentInfoObjects,
     });
 

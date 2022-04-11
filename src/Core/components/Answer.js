@@ -1367,7 +1367,7 @@ export default class Answer extends InlineComponent {
   };
 
 
-  async submitAnswer({actionId}) {
+  async submitAnswer({ actionId }) {
 
     let numberOfAttemptsLeft = await this.stateValues.numberOfAttemptsLeft;
     if (numberOfAttemptsLeft < 1) {
@@ -1464,13 +1464,13 @@ export default class Answer extends InlineComponent {
         updateType: "updateValue",
         componentName: child.componentName,
         stateVariable: "creditAchieved",
-        value: child.stateValues.creditAchievedIfSubmit 
+        value: child.stateValues.creditAchievedIfSubmit
       });
       instructions.push({
         updateType: "updateValue",
         componentName: child.componentName,
         stateVariable: "fractionSatisfied",
-        value: child.stateValues.fractionSatisfiedIfSubmit 
+        value: child.stateValues.fractionSatisfiedIfSubmit
       });
     }
 

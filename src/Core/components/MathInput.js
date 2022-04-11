@@ -353,10 +353,6 @@ export default class MathInput extends Input {
             unionFromU: await stateValues.unionFromU,
           });
 
-          // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
-          // unlike math-expression's latex parser
-          text = text.replace(/\^(\w)/g, '^{$1}');
-
           let fromLatex = getFromLatex({
             functionSymbols: await stateValues.functionSymbols,
             splitSymbols: await stateValues.splitSymbols,

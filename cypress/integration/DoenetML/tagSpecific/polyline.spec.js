@@ -680,6 +680,9 @@ describe('Polyline Tag Tests', function () {
         expect((stateVariables[`/v${i + 1}`].stateValues.xs)[1]).eq(ps[i][1]);
         expect((stateVariables[`/v${i + 1}a`].stateValues.xs)[1]).eq(ps[i][1]);
       }
+
+      cy.get('#\\/v4b .mjx-mrow').should('contain.text', `(${nInDOM(ps[3][0])},${nInDOM(ps[3][1])})`)
+
     })
 
     cy.log('move individually copied vertices');
@@ -1203,6 +1206,9 @@ describe('Polyline Tag Tests', function () {
     let B = [3, 4];
     let C = [-5, 6];
     let D = [C[0] + B[0] - A[0], C[1] + B[1] - A[1]];
+
+    cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
@@ -1325,6 +1331,9 @@ describe('Polyline Tag Tests', function () {
     let A = [1, 2];
     let B = [3, 4];
     let C = [-5, 6];
+
+    cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_polyline1'].stateValues.nVertices).eq(4)
@@ -1444,6 +1453,9 @@ describe('Polyline Tag Tests', function () {
     let A = [1, 2];
     let B = [3, 4];
     let C = [-5, 6];
+
+    cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_polyline1'].stateValues.nVertices).eq(4)
@@ -1565,6 +1577,9 @@ describe('Polyline Tag Tests', function () {
     let B = [3, 4];
     let C = [-5, 6];
     let D = [A[0] + 1, 2];
+
+    cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_polyline1'].stateValues.vertices)[0]).eqls(A);
@@ -1720,6 +1735,9 @@ describe('Polyline Tag Tests', function () {
     let E = [-5, 7];
     let F = [3, 1];
     let G = [5, 0];
+
+    cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A);
@@ -2049,6 +2067,9 @@ describe('Polyline Tag Tests', function () {
     let A1 = [A[0] + 1, A[1] + 1];
     let A2 = [A[0] + 2, A[1] + 2];
     let A3 = [A[0] + 3, A[1] + 3];
+
+    cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A3[0])},${nInDOM(A3[1])})`);
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/P'].stateValues.vertices)[0]).eqls(A3);
@@ -2390,6 +2411,9 @@ describe('Polyline Tag Tests', function () {
     let y1 = 5, y2 = -1, y3 = 2;
 
     cy.log('point originally not attracted')
+
+    cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(7,8)`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', 7, 8]);
@@ -2467,7 +2491,7 @@ describe('Polyline Tag Tests', function () {
 
         expect(px).closeTo(x, 1E-6);
         expect(py).closeTo(y, 1E-6);
-  
+
       })
     })
 
@@ -2712,6 +2736,9 @@ describe('Polyline Tag Tests', function () {
     let y1 = 5, y2 = -1, y3 = 2;
 
     cy.log('point originally constrained')
+
+    cy.get('#\\/p1 .mjx-mrow').should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', x1, y1]);
@@ -2788,7 +2815,7 @@ describe('Polyline Tag Tests', function () {
         let py = stateVariables['/_point1'].stateValues.xs[1];
         let mseg1 = (y2 - y1) / (x2 - x1);
         expect(py).closeTo(mseg1 * (px - x1) + y1, 1E-6)
-  
+
       })
     })
 
@@ -3031,6 +3058,9 @@ describe('Polyline Tag Tests', function () {
     let y1 = -0.02, y2 = 0.07, y3 = 0.06, y4 = -0.01;
 
     cy.log('point originally on segment 3')
+
+    cy.get('#\\/A2 .mjx-mrow').should('contain.text', `(${nInDOM(15.)}`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 

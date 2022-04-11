@@ -813,7 +813,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       let meanX = me.math.mean(samples);
       let varX = me.math.var(samples, 'uncorrected');
 
-      expect(meanX).closeTo(1, 0.3);
+      expect(meanX).closeTo(1, 0.5);
       expect(varX).closeTo((5 ** 2 - 1) * 2 ** 2 / 12, 1)
 
       let firstSample = stateVariables[stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements[0].componentName]
@@ -932,7 +932,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(me.math.mean(sample1numbersc)).closeTo(2, 1)
       expect(me.math.var(sample1numbersc, 'uncorrected')).closeTo(4 ** 2 / 12, 1)
 
-      expect(me.math.mean(sample2numbersc)).closeTo(0, 4)
+      expect(me.math.mean(sample2numbersc)).closeTo(0, 6)
       expect(me.math.var(sample2numbersc, 'uncorrected')).closeTo(18 ** 2, 100)
 
       for (let ind = 0; ind < 10; ind++) {

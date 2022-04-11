@@ -156,7 +156,7 @@ describe('Sort Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/x1'].stateValues.value).eq(-Infinity)
-      expect(stateVariables['/x2'].stateValues.value).eqls(['-', 5])
+      expect(stateVariables['/x2'].stateValues.value).eqls(-5)
       expect(stateVariables['/x3'].stateValues.value).eqls(['-', 'pi'])
       expect(stateVariables['/x4'].stateValues.value).eqls(['/', 5, 6])
       expect(stateVariables['/x5'].stateValues.value).eq(70)
@@ -186,7 +186,7 @@ describe('Sort Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/x1'].stateValues.value).eq(-Infinity)
-      expect(stateVariables['/x2'].stateValues.value).eqls(['-', 5])
+      expect(stateVariables['/x2'].stateValues.value).eqls(-5)
       expect(stateVariables['/x3'].stateValues.value).eqls(['-', 'pi'])
       expect(stateVariables['/x4'].stateValues.value).eq(70)
       expect(stateVariables['/x5'].stateValues.value).eqls(['^', 'e', 5])
@@ -216,8 +216,8 @@ describe('Sort Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/x1'].stateValues.value).eq(-Infinity)
-      expect(stateVariables['/x2'].stateValues.value).eqls(['-', 100])
-      expect(stateVariables['/x3'].stateValues.value).eqls(['-', 5])
+      expect(stateVariables['/x2'].stateValues.value).eqls(-100)
+      expect(stateVariables['/x3'].stateValues.value).eqls(-5)
       expect(stateVariables['/x4'].stateValues.value).eqls(['-', 'pi'])
       expect(stateVariables['/x5'].stateValues.value).eq(70)
       expect(stateVariables['/x6'].stateValues.value).eqls(['^', 'e', 5])
@@ -245,8 +245,8 @@ describe('Sort Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/x1'].stateValues.value).eqls(['-', 100])
-      expect(stateVariables['/x2'].stateValues.value).eqls(['-', 5])
+      expect(stateVariables['/x1'].stateValues.value).eqls(-100)
+      expect(stateVariables['/x2'].stateValues.value).eqls(-5)
       expect(stateVariables['/x3'].stateValues.value).eqls(['-', 'pi'])
       expect(stateVariables['/x4'].stateValues.value).eq(0)
       expect(stateVariables['/x5'].stateValues.value).eq(70)

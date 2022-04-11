@@ -424,7 +424,7 @@ export default class Select extends CompositeComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMatchedComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         }
       }),
       definition({ dependencyValues, componentName, previousValues }) {
@@ -715,12 +715,18 @@ export default class Select extends CompositeComponent {
     let numberOfChildren = serializedComponent.children.length;
     let childrenToSelect = serializedComponent.children;
 
-    let combinations = enumerateSelectionCombinations({
-      numberOfIndices: numberToSelect,
-      numberOfOptions: numberOfChildren,
-      // maxNumber: variantIndex,
-      withReplacement: withReplacement,
-    })
+    let combinations;
+
+    if (numberToSelect === 1) {
+      combinations = [...Array(numberOfChildren).keys()].map(x => [x]);
+    } else {
+      combinations = enumerateSelectionCombinations({
+        numberOfIndices: numberToSelect,
+        numberOfOptions: numberOfChildren,
+        // maxNumber: variantIndex,
+        withReplacement: withReplacement,
+      })
+    }
 
     // console.log(combinations);
 

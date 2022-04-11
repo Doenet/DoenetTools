@@ -492,6 +492,27 @@ describe('Boolean Tag Tests', function () {
   })
 
 
+  it('boolean simplifyOnCompare bug', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean simplifyOnCompare symbolicEquality name="b1">
+      <math>-5e^(-t)</math> = <math simplify>-5e^(-t)</math>
+    </boolean>
+    <boolean simplifyOnCompare symbolicEquality name="b2">
+      <math name="orig">-5e^(-t)</math> = <copy prop="value" simplify target="orig" />
+    </boolean>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/b1').should('have.text', "true")
+    cy.get('#\\/b2').should('have.text', "true")
+
+  })
+
 })
 
 

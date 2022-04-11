@@ -120,6 +120,16 @@ export default class Function extends InlineComponent {
       valueForFalse: 0,
     };
 
+
+    // Note: specifying this attribute in DoenetML don't do anything
+    // it is just for passing the definition when copy a property that returns a function
+    // TODO: a cleaner approach that doesn't introduce a dummy attribute
+    attributes.fDefinition = {
+      leaveRaw: true,
+      createStateVariable: "fDefinitionAttr",
+      defaultValue: null
+    }
+
     return attributes;
   }
 
@@ -1392,6 +1402,10 @@ export default class Function extends InlineComponent {
             domain: {
               dependencyType: "stateVariable",
               variableName: "domain"
+            },
+            fDefinitionAttr: {
+              dependencyType: "stateVariable",
+              variableName: "fDefinitionAttr"
             }
           }
         }
@@ -1431,6 +1445,10 @@ export default class Function extends InlineComponent {
             setValue: {
               fDefinition: dependencyValues.functionChild[0].stateValues.fDefinition
             }
+          }
+        } else if (dependencyValues.fDefinitionAttr) {
+          return {
+            setValue: { fDefinition: dependencyValues.fDefinitionAttr }
           }
         } else if (dependencyValues.numericalfShadow) {
           // TODO: ??

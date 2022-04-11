@@ -80,6 +80,11 @@ async function createCore(args) {
 
 
 async function returnAllStateVariables(core) {
+
+  if (!core.components) {
+    return {};
+  }
+
   let componentsObj = {};
   for (let componentName in core.components) {
     let component = core.components[componentName];
@@ -94,11 +99,14 @@ async function returnAllStateVariables(core) {
     compObj.activeChildren = component.activeChildren.map(x => x.componentName ? { componentName: x.componentName, componentType: x.componentType } : x)
     if (component.replacements) {
       compObj.replacements = component.replacements.map(x => x.componentName ? { componentName: x.componentName, componentType: x.componentType } : x)
-      if(component.replacementsToWithhold !== undefined) {
+      if (component.replacementsToWithhold !== undefined) {
         compObj.replacementsToWithhold = component.replacementsToWithhold;
       }
     }
   }
+
+
+  componentsObj[core.documentName].sharedParameters = removeFunctionsMathExpressionClass(core.components[core.documentName].sharedParameters);
   return componentsObj;
 }
 

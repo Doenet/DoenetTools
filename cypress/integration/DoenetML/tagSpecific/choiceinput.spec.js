@@ -822,7 +822,13 @@ describe('ChoiceInput Tag Tests', function () {
       selectedIndices = selectedChoices.map(x => choices.indexOf(x) + 1);
       selectedChoices.sort((a, b) => choices.indexOf(a) - choices.indexOf(b))
       inputText = selectedChoices.join(", ");
+
+      // for some reason, the html <select> tag is ignoring the onChange event
+      // unless first select option 3 before selecting them all!
+      // No idea what's going on
+      cy.get('#\\/ci2').select(["3"])
       cy.get(`#\\/ci2`).select(selectedIndices.map(String));
+
       checkChoices(selectedChoices, inputText)
 
 

@@ -1084,7 +1084,7 @@ describe('CobwebPolyline Tag Tests', function () {
     <function name="f">2x-x^2/3</function>
   </setup>
   
-  <copy uri="doenet:contentId=7b504f0c51580d25125f3902e835986c632b0ce3991c82e93c17547e521d5466" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
+  <copy uri="doenet:cid=bafkreieohjkgu6tebirkv7bouo7tqbkbttya5ry4zwzyaeto2dvgvcncbm" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
  
   `}, "*");
     });
@@ -1398,7 +1398,7 @@ describe('CobwebPolyline Tag Tests', function () {
     <function name="f">2x-x^2/3</function>
   </setup>
   
-  <copy uri="doenet:contentId=6d72350e798b3c98ad5f78b47c3ed1dee7526cc219c0265a4114314b2aa9e708" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
+  <copy uri="doenet:cid=bafkreibfifwbkasl4tipmjgddahe57cdl4g5imshhdykwmwang6zyuj6nq" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
  
   <p>Credit achieved: <copy target="_document1" prop="creditAchieved" assignNames="ca" /></p>
   `}, "*");

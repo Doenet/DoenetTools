@@ -858,6 +858,14 @@ export default class BaseComponent {
       serializedComponent.state = deepClone(this.essentialState);
     }
 
+    if(parameters.copyVariants) {
+      if(this.state.generatedVariantInfo) {
+        serializedComponent.variants = {
+          desiredVariant: await this.stateValues.generatedVariantInfo
+        }
+      }
+    }
+
     serializedComponent.originalName = this.componentName;
     serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
     serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
@@ -1082,6 +1090,8 @@ export default class BaseComponent {
     let numberOfVariantsByDescendant = serializedComponent.variants.uniqueVariantData.numberOfVariantsByDescendant;
     let descendantVariantComponents = serializedComponent.variants.descendantVariantComponents;
 
+    let subvariants = [];
+
     if (descendantVariantComponents.length > 0) {
 
       let indicesForEachDescendant = enumerateCombinations({
@@ -1092,7 +1102,6 @@ export default class BaseComponent {
       // for each descendant, get unique variant corresponding
       // to the selected variant number and include that as a subvariant
 
-      let subvariants = [];
 
       for (let descendantNum = 0; descendantNum < numberOfVariantsByDescendant.length; descendantNum++) {
         if (numberOfVariantsByDescendant[descendantNum] > 1) {

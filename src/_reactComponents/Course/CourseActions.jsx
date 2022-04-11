@@ -11,14 +11,11 @@ import { useToast, toastType } from '../../Tools/_framework/Toast';
 
 export function useInitCourseItems(courseId) {
   const getDataAndSetRecoil = useRecoilCallback(
-    ({ set }) =>
-      async (courseId) => {
-        const { data } = await axios.get('/api/getCourseItems.php', {
-          params: { courseId },
-        });
-        let pageDoenetIdToParentDoenetId = {};
-        //Recursive Function for order
-        function findOrderAndPageDoenetIds(orderObj,assignmentDoenetId,parentDoenetId){
+     ({ snapshot,set }) =>
+     async (courseId) => {
+       let pageDoenetIdToParentDoenetId = {};
+       //Recursive Function for order
+       function findOrderAndPageDoenetIds(orderObj,assignmentDoenetId,parentDoenetId){
           let orderAndPagesDoenetIds = [];
           //Guard for when there is no order
           if (orderObj){
@@ -45,29 +42,37 @@ export function useInitCourseItems(courseId) {
           }
           return orderAndPagesDoenetIds;
         }
-        //DoenetIds depth first search and going into json structures
-        //TODO: organize by section
-        let doenetIds = data.items.reduce((items,item)=>{
-          if (item.type !== 'page'){
-            items.push(item.doenetId)
-          }
-          if (item.type === 'activity'){
-            let ordersAndPages = findOrderAndPageDoenetIds(item.order,item.doenetId,item.doenetId);
-            item['numberOfPageAndOrderDoenetIds'] = ordersAndPages.length;
-            items = [...items,...ordersAndPages];
-          }else if (item.type === 'bank'){
-            items = [...items,...item.pages];
-          }else if (item.type === 'page'){
-            item['parentDoenetId'] = pageDoenetIdToParentDoenetId[item.doenetId];
-          }
-          
-          //Store activity, bank and page information
-          set(authorItemByDoenetId(item.doenetId), item);
 
-          return items
-        },[])
+        //Only ask the server for course if we haven't already
+        const courseArrayTest = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
+        if (courseArrayTest.length == 0){
+          const { data } = await axios.get('/api/getCourseItems.php', {
+            params: { courseId },
+          });
+          //DoenetIds depth first search and going into json structures
+          //TODO: organize by section
+          let doenetIds = data.items.reduce((items,item)=>{
+            if (item.type !== 'page'){
+              items.push(item.doenetId)
+            }
+            if (item.type === 'activity'){
+              let ordersAndPages = findOrderAndPageDoenetIds(item.order,item.doenetId,item.doenetId);
+              item['numberOfPageAndOrderDoenetIds'] = ordersAndPages.length;
+              items = [...items,...ordersAndPages];
+            }else if (item.type === 'bank'){
+              items = [...items,...item.pages];
+            }else if (item.type === 'page'){
+              item['parentDoenetId'] = pageDoenetIdToParentDoenetId[item.doenetId];
+            }
+            
+            //Store activity, bank and page information
+            set(authorItemByDoenetId(item.doenetId), item);
 
-        set(authorCourseItemOrderByCourseId(courseId), doenetIds);
+            return items
+          },[])
+
+          set(authorCourseItemOrderByCourseId(courseId), doenetIds);
+        }
         
       },
     [],
@@ -84,6 +89,15 @@ export const authorCourseItemOrderByCourseId = atomFamily({
   key: 'authorCourseItemOrderByCourseId',
   default: [],
 });
+
+//Start at top find the section we are filtering to based on searchparams AtomFamily sectionId
+//If empty sectionId then return everything in authorCourseItemOrderByCourseId
+//Start collecting parentNames and doenetIds to include for the section
+//Stop when we see one of the parentNames
+// export const authorCourseItemOrderByCourseIdAndSection = selectorFamily({
+//   key: 'authorCourseItemOrderByCourseIdAndSection',
+//   default: [],
+// });
 
 export const authorItemByDoenetId = atomFamily({
   key: 'authorItemByDoenetId',
@@ -394,5 +408,28 @@ export const useCourse = (courseId) => {
     [courseId, defaultFailure],
   );
 
-  return { create, deleteCourse, modifyCourse, label, color, image };
+  const renameItem = useRecoilCallback( ({ snapshot,set }) =>
+  async (doenetId,newLabel, successCallback, failureCallback = defaultFailure) => {
+    try {
+      let itemObj = await snapshot.getPromise(authorItemByDoenetId(doenetId))
+      let resp = await axios.get('/api/renameCourseItem.php', {params:{ courseId,doenetId,newLabel,type:itemObj.type } });
+      if (resp.status < 300) {
+        let updatedItem = resp.data.item;
+        if (itemObj.type !== 'page'){
+          updatedItem.isOpen = itemObj.isOpen;
+        }
+        updatedItem.isSelected = itemObj.isSelected;
+        set(authorItemByDoenetId(doenetId),updatedItem);
+        successCallback?.();
+      } else {
+        throw new Error(`response code: ${resp.status}`);
+      }
+    } catch (err) {
+      failureCallback(err);
+    }
+  },
+[courseId, defaultFailure],
+);
+
+  return { create, deleteCourse, modifyCourse, label, color, image, renameItem };
 };

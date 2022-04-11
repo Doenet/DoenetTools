@@ -58,7 +58,8 @@ import {
 import '../../_utils/util.css';
 import { pageToolViewAtom, searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';  
-import { set } from 'lodash';
+import { useToast, toastType } from '../../Tools/_framework/Toast';
+import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 
 export default function CourseNavigator() {
   console.log("=== CourseNavigator")
@@ -67,7 +68,6 @@ export default function CourseNavigator() {
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
   let setMainPanelClick = useSetRecoilState(mainPanelClickAtom);
-  // const addToast = useToast();
 
   let clearSelections = useRecoilCallback(({snapshot,set})=> async ()=>{
     const selectedItems = await snapshot.getPromise(selectedCourseItems);
@@ -119,6 +119,7 @@ function StudentCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVis
 }
 
 function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisibleColumns}){
+  // let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdAndSection(courseId)); //TODO make selector
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseId(courseId));
   
   let items = [];
@@ -190,7 +191,7 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
         if (pageOrOrder?.type == 'order'){
           return <Order key={`Order${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
         }else{
-          return <Page key={`Page${doenetId}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1}/>
+          return <Page key={`NavPage${i}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1}/>
         }
       })
     }
@@ -214,51 +215,12 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
 }
 
 
-// function findDoenetIdsIncludingOrderAndPages(itemArray){
-//   return itemArray.reduce((result,item) => {
-//     //Don't do anything with page information it's added with activity
-//     if (item.type === 'activity'){
-//       let activityChildren = findActivityDoenetIdsInOrder(item.order);
-//       result = [...result,item.doenetId,...activityChildren];
-//     }else if (item.type === 'bank'){
-//       result = [...result,item.doenetId,...item.pages];
-//     }else if (item.type === 'section'){
-//       result.push(item.doenetId);
-//     }
-//     return result;
-//   },[]);
-// }
-
-//Doesn't include origninal item's doenetId
-// function findActivityDoenetIdsInOrder({orderObj,doenetIds=[],snapshot}){
-//   doenetIds.push(orderObj.doenetId); //Add the order's doenetId
-//   let children = orderObj.content.reduce((result,entry)=>{
-//     if (typeof entry === 'string' || entry instanceof String){
-//       result.push(entry);
-//     }else{
-//       let recurseChildren = findActivityDoenetIdsInOrder({orderObj:entry,snapshot});
-//       result = [...result,...recurseChildren]
-//     }
-//     return result;
-//   },[])
-//   doenetIds = [...doenetIds,...children];
-//   return doenetIds;
-// }
-
-//Start at one item and assume it's open, then find all children who are visible
-// async function findAllRenderedRowsDoenetIds({snapshot}){
-//   let allRenderedRows = [];
-//   let item = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-//   if (item.type == 'activity'){
-
-//   }
-//   console.log("item",item)
-//   return allRenderedRows
-// }
 
 
 //singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
 function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
+  const addToast = useToast();
+  const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
 
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
@@ -284,7 +246,6 @@ if (hasToggle){
     );
 }
 
-//TODO: HANDLE WHAT HAS TO MOVE TOGETHER AND DON'T ALLOW SELECTING SETS OF ITEMS WHICH DON'T MAKE SENSE TO MOVE TOGETHER
 //Selection is based on course items and Recoil
 //Always append to the end of the array so we know the last selected item
 let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=>{
@@ -292,31 +253,33 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   e.stopPropagation();
   let selectedItems = await snapshot.getPromise(selectedCourseItems);
   let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-  console.log("clickedItem",clickedItem,doenetId)
+
+  
+  let newSelectedItems = [];
 
   if (selectedItems.length == 0){
   //No items selected so select this item
-  set(selectedCourseItems,[doenetId]);
+  newSelectedItems = [doenetId]
   set(authorItemByDoenetId(doenetId),(was)=>{
     let newObj = {...was};
     newObj.isSelected = true;
     return newObj;
   })
 
-  //Select all children of component
-
   }else if (selectedItems.length == 1 && selectedItems[0] == doenetId){
     if(e.metaKey){
-      //If cmd then clear all selections to remove
-      set(selectedCourseItems,[]);
+      //If cmd then clear the one item
+      newSelectedItems = [];
       set(authorItemByDoenetId(doenetId),(was)=>{
         let newObj = {...was};
         newObj.isSelected = false;
         return newObj;
       })
+    }else{
+      //Just keep the one item selected
+      newSelectedItems = [...selectedItems];
     }
-      //Selecting this item again so don't do anything
-      return;
+
   }else{
     if (e.shiftKey){
       //Shift Click
@@ -352,7 +315,6 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
         }
       }
  
-      // console.log("allRenderedRows",allRenderedRows)
       let lastSelectedDoenetId = selectedItems[selectedItems.length -1];
       let indexOfLastSelected = allRenderedRows.indexOf(lastSelectedDoenetId);
       let indexOfClick = allRenderedRows.indexOf(doenetId);
@@ -361,7 +323,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       if (indexOfLastSelected > indexOfClick){
         itemsToSelect.reverse();
       }
-      let newSelectedItems = [...selectedItems];
+      newSelectedItems = [...selectedItems];
       for (let newDoenetId of itemsToSelect){
         if (!selectedItems.includes(newDoenetId)){
           newSelectedItems.push(newDoenetId);
@@ -372,13 +334,11 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
           })
         }
       }
-      set(selectedCourseItems,newSelectedItems);
     }else if(e.metaKey){
       //Command Click means toggle the one item selected or not
       let itemWasSelected = selectedItems.includes(doenetId);
       if (itemWasSelected){
-        let newSelectedItems = selectedItems.filter((testId)=>{return testId != doenetId});
-        set(selectedCourseItems,newSelectedItems);
+        newSelectedItems = selectedItems.filter((testId)=>{return testId != doenetId});
         set(authorItemByDoenetId(doenetId),(was)=>{
           let newObj = {...was};
           newObj.isSelected = false;
@@ -387,7 +347,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
 
       }else{
         //Add this item to the selected items
-        set(selectedCourseItems,[...selectedItems,doenetId]);
+        newSelectedItems = [...selectedItems,doenetId];
         set(authorItemByDoenetId(doenetId),(was)=>{
           let newObj = {...was};
           newObj.isSelected = true;
@@ -398,7 +358,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
 
       //No Shift or Command Click
       //Only select this option and remove the others
-      set(selectedCourseItems,[doenetId]);
+      newSelectedItems = [doenetId];
       set(authorItemByDoenetId(doenetId),(was)=>{
                 let newObj = {...was};
                 newObj.isSelected = true;
@@ -414,6 +374,28 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
         }
       }
     }
+  }
+  set(selectedCourseItems,newSelectedItems);
+
+  //Set Selection Menu
+  if (newSelectedItems.length == 1){
+    let selectedDoenetId = newSelectedItems[0];
+    let selectedItem = await snapshot.getPromise(authorItemByDoenetId(selectedDoenetId));
+    if (selectedItem.type == "activity"){
+      setSelectionMenu("SelectedActivity"); 
+    }else if (selectedItem.type == "order"){
+      setSelectionMenu("SelectedOrder");
+    }else if (selectedItem.type == "page"){
+      setSelectionMenu("SelectedPage");
+    }else if (selectedItem.type == "section"){
+      setSelectionMenu("SelectedSection");
+    }else if (selectedItem.type == "bank"){
+      setSelectionMenu("SelectedBank");
+    }else{
+      setSelectionMenu(null);
+    }
+  }else{
+    setSelectionMenu(null);
   }
 
 },[doenetId,courseId])
@@ -431,6 +413,35 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     console.log("Double CLICK!",doenetId,clickedItem)
     e.preventDefault();
     e.stopPropagation();
+
+    function findFirstPage(orderObj){
+      //No pages or orders in order so return null
+      if (orderObj.content.length == 0){
+        return null;
+      }
+      let response = null;
+
+      for (let item of orderObj.content){
+        console.log("item",item)
+
+        if (typeof item === 'string' || item instanceof String){
+          //First content is a string so return the doenetId
+          response = item;
+          break;
+        }else{
+          //First item of content is another order
+          let nextOrderResponse = findFirstPage(item);
+        
+          if (typeof nextOrderResponse === 'string' || nextOrderResponse instanceof String){
+            response = nextOrderResponse;
+            break;
+          }
+        }
+      }
+
+      return response; //if didn't find any pages
+
+    }
     //TODO: use item type and role to determine what to update
     if (clickedItem.type == 'page'){
       setPageToolView((was)=>{return {
@@ -439,6 +450,20 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
         view: was.view,
         params: { doenetId, path:was.params.path },
         }})
+    }else if (clickedItem.type == 'activity'){
+      
+      //Find first page
+      let pageDoenetId = findFirstPage(clickedItem.order);
+      if (pageDoenetId == null){
+        addToast(`ERROR: No page found in activity`, toastType.INFO);
+      }else{
+        setPageToolView((was)=>{return {
+          page: 'course',
+          tool: 'editor',
+          view: was.view,
+          params: { doenetId:pageDoenetId, path:was.params.path },
+          }})
+      }
     }
 
 

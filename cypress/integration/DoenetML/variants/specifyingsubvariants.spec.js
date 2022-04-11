@@ -16,7 +16,7 @@ describe('Specifying subvariants tests', function () {
     cy.visit('/cypressTest')
   })
 
-  it('specify indices of a select', () => {
+  it.skip('specify indices of a select', () => {
 
     let values = ["u", "v", "w", "x", "y", "z"]
 
@@ -61,7 +61,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('specify two indices of a select, ignores withReplacement', () => {
+  it.skip('specify two indices of a select, ignores withReplacement', () => {
 
     let values = ["x", "y", "z"]
 
@@ -113,7 +113,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('specify indices of a selectfromsequence', () => {
+  it.skip('specify indices of a selectfromsequence', () => {
 
     let values = [...Array(10).keys()].map(x => x + 1);
 
@@ -158,7 +158,7 @@ describe('Specifying subvariants tests', function () {
     }
   })
 
-  it('specify two indices of a selectfromsequence, ignores withReplacement', () => {
+  it.skip('specify two indices of a selectfromsequence, ignores withReplacement', () => {
 
     let values = [...Array(4).keys()].map(x => x + 1);
 
@@ -206,7 +206,7 @@ describe('Specifying subvariants tests', function () {
     }
   });
 
-  it('specify indices of selects, ignores variant names', () => {
+  it.skip('specify indices of selects, ignores variant names', () => {
 
     let directions = ["north", "south", "east", "west"];
     let directionIndByVariantName = {
@@ -503,7 +503,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('nested selects', () => {
+  it.skip('nested selects', () => {
 
     let firstStringsToInd = {
       "Favorite color:": 1,
@@ -820,7 +820,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('selected problems', () => {
+  it.skip('selected problems', () => {
 
     let titlesToInd = {
       "A word problem": 1,
@@ -984,7 +984,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('selected problems, one outside select', () => {
+  it.skip('selected problems, one outside select', () => {
 
     let titlesToInd = {
       "A word problem": 1,
@@ -1172,7 +1172,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('selected problems, specify options directly', () => {
+  it.skip('selected problems, specify options directly', () => {
 
     let titlesToInd = {
       "A word problem": 1,
@@ -1328,7 +1328,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('selected problems, one outside select, specify options directly', () => {
+  it.skip('selected problems, one outside select, specify options directly', () => {
 
     let titlesToInd = {
       "A word problem": 1,
@@ -1508,7 +1508,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('selected problems, one without variantcontrol, specify options directly', () => {
+  it.skip('selected problems, one without variantcontrol, specify options directly', () => {
 
     let titlesToInd = {
       "A word problem": 1,
@@ -1664,7 +1664,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('specify values of a selectRandomNumbers', () => {
+  it.skip('specify values of a selectRandomNumbers', () => {
 
     let values = [0.150382373817, 502385.24839203, -3.18593023941];
 
@@ -1709,7 +1709,7 @@ describe('Specifying subvariants tests', function () {
     }
   })
 
-  it('problem variants are the same in multiple contexts', () => {
+  it.skip('problem variants are the same in multiple contexts', () => {
 
 
     let problemAlone = `

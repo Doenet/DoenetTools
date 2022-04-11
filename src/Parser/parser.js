@@ -33,12 +33,15 @@ export function parseAndCompile(inText) {
 
         //All of the siblings must b.name Attributes, but we're checking just in case the grammar changes
         if (cursor.name !== "Attribute") {
-          console.error(cursor);
-          console.error(showCursor(cursor));
-          console.error(cursor.name);
+          let errorBegin = cursor.from;
+          let errorEnd = cursor.to;
+          // console.error(cursor);
+          // console.error(showCursor(cursor));
+          // console.error(cursor.name);
           // eslint-disable-next-line no-empty
           while (cursor.parent()) { }
-          throw Error("Expected an Attribute in OpenTag, got ", showCursor(cursor));
+
+          throw Error(`Invalid DoenetML at positions ${errorBegin} to ${errorEnd}. Error in opening <${tagName}> tag.  Found ${inText.slice(tagOpenBegin-1, errorEnd)}`)
         }
 
         //Attributes always have exactly two children, an AttributeName and an Attribute Value
@@ -84,9 +87,14 @@ export function parseAndCompile(inText) {
         } else if (cursor.name === "Comment") {
           //ignore comments
           continue;
+        }  else if (cursor.name === "MismatchedCloseTag") {
+            throw Error(`Invalid DoenetML at position ${cursor.from}. Mismatched closing tag.  Expected </${tagName}>.  Found ${inText.slice(cursor.from, cursor.to)}.`)
         } else {
+          // console.log(`error is at position ${cursor.from}, ${cursor.to}`)
+          // console.log(`error part: ${inText.slice(cursor.from, cursor.to)}`)
+          // console.log(`Here is cursor: ${showCursor(cursor)}`)
           // There are a couple of other things in the entity non-terminal, but nothing of immediate importance
-          throw Error("Non text/element non-terminal not supported as child of compile Element");
+          throw Error(`Invalid DoenetML at position ${cursor.from}. Expected a closing </${tagName}> tag.  Instead found ${inText.slice(cursor.from, cursor.to)}.`)
         }
       }
       element.range = {
@@ -107,7 +115,7 @@ export function parseAndCompile(inText) {
       while (cursor.nextSibling()) {
         //All of the siblings must be Attributes, but we're checking just in case the grammar changes
         if (cursor.name !== "Attribute") {
-          throw Error("Expected an Attribute in SelfClosingTag");
+          throw Error(`Invalid DoenetML at positions ${cursor.from} to ${cursor.to}. Error in self-closing <${tagName}/> tag.`)
         }
         //Attributes always have exactly two children, an AttributeName and an Attribute Value
         //We scrape the content of both from the in string and add them to the attribute array here

@@ -402,6 +402,23 @@ export default class Core {
 
       let results = await this.initializeRenderedComponentInstruction(this.document);
 
+      // initializing renderer instructions could trigger more composite updates
+      // (presumably from deriving child results)
+      // if so, make replacement changes and update renderer instructions again
+      // TODO: should we check for child results earlier so we don't have to check them
+      // when updating renderer instructions?
+      if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+        await this.replacementChangesFromCompositesToUpdate();
+
+        let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+        this.updateInfo.componentsToUpdateRenderers = [];
+
+        await this.updateRendererInstructions({
+          componentNamesToUpdate,
+        });
+      }
+
+
       this.documentRendererInstructions = results.componentToRender;
 
       let updateInstructions = [{
@@ -442,6 +459,23 @@ export default class Core {
       await this.updateRendererInstructions({
         componentNamesToUpdate: await this.componentAndRenderedDescendants(parent)
       });
+
+      // updating renderer instructions could trigger more composite updates
+      // (presumably from deriving child results)
+      // if so, make replacement changes and update renderer instructions again
+      // TODO: should we check for child results earlier so we don't have to check them
+      // when updating renderer instructions?
+      if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+        await this.replacementChangesFromCompositesToUpdate();
+
+        let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+        this.updateInfo.componentsToUpdateRenderers = [];
+
+        await this.updateRendererInstructions({
+          componentNamesToUpdate,
+        });
+      }
+
       await this.processStateVariableTriggers();
 
     }
@@ -450,7 +484,7 @@ export default class Core {
   }
 
 
-  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, actionId }) {
+  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate = {}, actionId }) {
 
     let deletedRenderers = [];
 
@@ -1065,7 +1099,7 @@ export default class Core {
 
         let variantControlInd;
         let variantControlChild;
-  
+
         // look for variantControl child
         for (let [ind, child] of serializedChildren.entries()) {
           if (child.componentType === "variantControl" || (
@@ -2723,6 +2757,19 @@ export default class Core {
 
     if (redefineDependencies.propVariable) {
       let propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
+
+      // if we have an array entry state variable that hasn't been created yet
+      // create it now so that we can look up stateVariablesPrescribingAdditionalAttributes
+      if (!propStateVariableInTarget && this.checkIfArrayEntry({
+        stateVariable: redefineDependencies.propVariable,
+        component: targetComponent
+      })) {
+        await this.createFromArrayEntry({
+          stateVariable: redefineDependencies.propVariable,
+          component: targetComponent
+        })
+        propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
+      }
       if (propStateVariableInTarget && propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
         additionalAttributesFromStateVariables = propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes
       }
@@ -3578,6 +3625,32 @@ export default class Core {
           stateVarObj.additionalStateVariablesDefined.push(arrayEntryVarName);
         } else {
           stateVarObj.additionalStateVariablesDefined.push(varName);
+        }
+      }
+    }
+
+
+    // if any of the state variables prescribing additional entries are arrays,
+    // transform to their array entry
+    if (arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+      stateVarObj.stateVariablesPrescribingAdditionalAttributes = {};
+
+      let entryPrefixInd = arrayStateVarObj.entryPrefixes.indexOf(arrayEntryPrefix);
+
+      for (let attrName in arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+        let varName = arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName];
+
+        let sObj = component.state[varName];
+
+        if (sObj.isArray) {
+
+          // find the same array entry prefix in the other array state variable
+          let newArrayEntryPrefix = sObj.entryPrefixes[entryPrefixInd];
+          let arrayEntryVarName = newArrayEntryPrefix + stateVarObj.varEnding;
+
+          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = arrayEntryVarName;
+        } else {
+          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = varName;
         }
       }
     }
@@ -7940,6 +8013,24 @@ export default class Core {
       sourceOfUpdate: { sourceInformation, local: true },
       actionId,
     });
+
+    // updating renderer instructions could trigger more composite updates
+    // (presumably from deriving child results)
+    // if so, make replacement changes and update renderer instructions again
+    // TODO: should we check for child results earlier so we don't have to check them
+    // when updating renderer instructions?
+    if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+      await this.replacementChangesFromCompositesToUpdate();
+
+      let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+      this.updateInfo.componentsToUpdateRenderers = [];
+
+      await this.updateRendererInstructions({
+        componentNamesToUpdate,
+        sourceOfUpdate: { sourceInformation, local: true },
+        actionId,
+      });
+    }
 
     await this.processStateVariableTriggers();
 
