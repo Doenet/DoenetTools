@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
+import { HashRouter as Router, Link, Route } from 'react-router-dom';
 import styled from 'styled-components';
 
 //=== COMPONENT IMPORTS ===
@@ -24,6 +24,8 @@ import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/Color
 import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
+import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems.jsx';
+
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -795,6 +797,95 @@ export default function attempt() {
       ],
     },
     {
+      name: 'RelatedItems',
+      id: 'relateditems',
+      code: RelatedItems,
+      codePreview: '<RelatedItems/>',
+      req_props: null,
+      req_children: null,
+      use: 'Currently used to track version history. The styling on this component could be improved in the future by making <option> a part of RelatedItems.',
+      props: [
+        {
+          name: 'Options',
+          propPreview: "<RelatedItems options={[<option value='apple'>apple</option>, <option value='pear'>pear</option>, <option value='banana'>banana</option>]} />",
+          propCode: { options: [<option value='apple'>apple</option>, <option value='pear'>pear</option>, <option value='banana'>banana</option>] },
+          description: 'Adds options to the select component',
+        },
+        {
+          name: 'Width - Menu Panel',
+          propPreview: '<RelatedItems width="menu" />',
+          propCode: { width: 'menu' },
+          description: 'Sets width to fill menu panel width',
+        },
+        {
+          name: 'Width',
+          propPreview: '<RelatedItems width="100px" />',
+          propCode: { width: '100px' },
+          description: 'Sets width to custom amount',
+        },
+        {
+          name: 'Size',
+          propPreview: '<RelatedItems size="8" />',
+          propCode: { size: '8' },
+          description: 'Sets size (height) to custom amount',
+        },
+        {
+          name: 'Label',
+          propPreview: '<RelatedItems label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to componenet',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<RelatedItems label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Aria Label',
+            propPreview: '<RelatedItems ariaLabel="Related Items"/>',
+            propCode: { ariaLabel: 'Related Items' },
+            description: 'Adds aria label to component'
+        },
+        {
+          name: 'onChange',
+          propPreview: '<RelatedItems onChange={(data) => console.log(data)} />',
+          propCode: {onChange: (data) => console.log(data)},
+          description: 'Function called when data changes'
+        },
+        {
+          name: 'onClick',
+          propPreview: '<RelatedItems onClick={() => console.log("clicked")} />',
+          propCode: {onClick: () => console.log("clicked")},
+          description: 'Function called when component is clicked'
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<RelatedItems onBlur={(e) => console.log(e.target.value)} />',
+          propCode: {onBlur: (e) => console.log(e.target.value)},
+          description: 'Function called when component blurs'
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<RelatedItems onKeyDown={(e) => console.log(e.key)} />',
+          propCode: {onKeyDown: (e) => console.log(e.key)},
+          description: 'Function called when key hit with focus on component'
+        },
+        {
+          name: 'Alert',
+          propPreview: '<RelatedItems alert/>',
+          propCode: {alert},
+          description: 'Changes to alert mode (border is red)'
+        },
+        {
+          name: 'Disabled',
+          propPreview: '<RelatedItems disabled />',
+          propCode: {disabled},
+          description: 'Makes component not able to be used'
+        },
+      ],
+    },
+    {
       name: 'SearchBar',
       id: 'searchbar',
       code: SearchBar,
@@ -812,7 +903,7 @@ export default function attempt() {
         {
           name: 'No Search Button',
           propPreview: '<SearchBar noSearchButton />',
-          propCode: { noSearchButton },
+          propCode: { noSearchButton, width: "menu" },
           description: 'Removes button from search bar',
         },
         {
@@ -865,7 +956,7 @@ export default function attempt() {
         },
         {
           name: 'Disabled',
-          propPreview: '<Increment disabled />',
+          propPreview: '<SearchBar disabled />',
           propCode: { disabled },
           description: 'Makes button not able to be used.',
         },
@@ -1097,7 +1188,7 @@ export default function attempt() {
     {
       name: 'ToggleButton',
       id: 'togglebutton',
-      use: 'This is button toggles back and forth',
+      use: 'This is button toggles back and forth. It is a controlled component, so you must always pass the button the status of its state using isSelected.',
       code: ToggleButton,
       codePreview: '<ToggleButton/>',
       req_props: null,
@@ -1115,10 +1206,10 @@ export default function attempt() {
           propCode: { value: 'Select me' },
           description: 'Changes the value',
         },
-        // {name: 'isSelected',
-        // propPreview: '<ToggleButton isSelected/>',
-        // propCode: {'isSelected'},
-        // description: 'If added, starts the button in selected state.'},
+        {name: 'isSelected',
+        propPreview: '<ToggleButton isSelected=true/>',
+        propCode: {isSelected: true},
+        description: 'Sets state of toggle button'},
         {
           name: 'Switch Value',
           propPreview: '<ToggleButton switch_value="frog"/>',
@@ -1543,28 +1634,24 @@ export default function attempt() {
             {/* <SearchBar width='110px'/> */}
           </div>
           <h3>
-            <Link to={`/uiDocs/new_components`} style={{ color: 'black' }}>
+            <Link to={`/new_components`} style={{ color: 'black' }}>
               New Component Guidelines
             </Link>
           </h3>
           <List>
             {dataStructure.map(({ name, id }) => (
               <li key={id}>
-                <Link to={`/uiDocs/component/${id}`} style={{ color: 'black' }}>
+                <Link to={`/component/${id}`} style={{ color: 'black' }}>
                   {name}
                 </Link>
               </li>
             ))}
           </List>
         </NavBar>
-
         <Content>
-          <Route exact path="/uiDocs" component={Home}></Route>
-          <Route exact path={`/uiDocs/new_components`} component={New}></Route>
-          <Route
-            path={`/uiDocs/component/:componentId`}
-            component={Components}
-          ></Route>
+          <Route exact path="/" component={Home} />
+          <Route path={`/new_components`} component={New} />
+          <Route path={`/component/:componentId`} component={Components} />
         </Content>
       </div>
     </Router>

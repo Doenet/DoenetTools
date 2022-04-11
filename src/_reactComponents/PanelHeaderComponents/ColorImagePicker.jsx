@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { driveColors, driveImages } from '../Drive/util.js';
 import styled, { css } from 'styled-components';
 
 const Display = styled.div`
-    border-radius: 5px;
+    border-radius: var(--mainBorderRadius);
     height: 36px;
     width: 36px;
     background-size: cover;
@@ -11,12 +11,11 @@ const Display = styled.div`
     background-repeat: no-repeat;
     background-color: ${props => props.color || "#ffffff"};
     background-image: ${props => props.image || "none"};
-
-`
+`;
 
 const Menu = styled.div`
-    border: 2px solid black;
-    border-radius: 5px;
+    border: var(--mainBorder);
+    border-radius: var(--mainBorderRadius);
     background-color: #f6f8ff;
     height: 246px;
     width: 220px;
@@ -28,8 +27,8 @@ const Menu = styled.div`
         props.visible === "True" &&
         css`
           display: block;
-        `};
-`
+    `};
+`;
 
 const ColorSection = styled.div`
     display: grid;
@@ -37,7 +36,7 @@ const ColorSection = styled.div`
     grid-template-rows: 20px;
     width: 224px;
     height: 24px;
-`
+`;
 
 const ImageSection = styled.div`
     display: grid;
@@ -46,31 +45,30 @@ const ImageSection = styled.div`
     width: 224px;
     height: 100px;
     padding-bottom: 6px;
-`
+`;
 
 const Color = styled.div`
-    border-radius: 5px;
+    border-radius: var(--mainBorderRadius);
     height: 20px;
     width: 20px;
     margin: 4px;
     background-color: ${props => props.color || "#ffffff"};
-`
+`;
 
 const Label = styled.p`
-
   display: static;
   margin-right: 5px;
-  font-family: Open Sans;
+  font-family: 'Open Sans';
   margin-bottom: 6px;
-`
+`;
 
 const Container = styled.div`
   display: static;
   width: auto;
-`
+`;
 
 const Image = styled.div`
-    border-radius: 5px;
+    border-radius: var(--mainBorderRadius);
     height: 50px;
     width: 50px;
     margin: 4px;
@@ -78,8 +76,7 @@ const Image = styled.div`
     background-position: center center;
     background-repeat: no-repeat;
     background-image: ${props => props.image || "none"};
-    
-`
+`;
 
 
 export default function ColorImagePicker(props){
@@ -109,28 +106,27 @@ export default function ColorImagePicker(props){
     //     }
     // });
     
-
     function handleClick(e){
         if (menuOpen == "True") {
             setMenuOpen("False")
         } else if (menuOpen == "False") {
             setMenuOpen("True")
         }
-    }
+    };
 
     function changeColor(newColor) {
         setDisplayColor(newColor);
         setDisplayImage("none");
         setMenuOpen("False");
         if (props.colorCallback) props.colorCallback(newColor);
-    }
+    };
 
     function changeImage(newImage) {
         setDisplayImage(newImage);
         setDisplayColor("none");
         setMenuOpen("False");
         if (props.imageCallback) props.imageCallback(newImage);
-    }
+    };
 
     var colorArray = [];
     for (let i = 0; i < driveColors.length; i++){
@@ -142,8 +138,8 @@ export default function ColorImagePicker(props){
                     changeColor(driveColors[i]);
                 }}
             ></Color>
-        )
-    }
+        );
+    };
 
     var imageArray = [];
     for (let i = 0; i < driveImages.length; i++){
@@ -157,8 +153,8 @@ export default function ColorImagePicker(props){
                 // value={driveImages[i]}
                 // selected = {displayImage === driveImages[i]}
             ></Image>
-        )
-    }
+        );
+    };
     
     return (
         <Container>
@@ -178,5 +174,5 @@ export default function ColorImagePicker(props){
             </Display>
         </Container>
         
-    )
-}
+    );
+};

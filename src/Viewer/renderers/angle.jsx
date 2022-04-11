@@ -52,7 +52,7 @@ export default function Angle(props) {
       return null;
     }
 
-    let angleColor = "#FF7F00";
+    let angleColor = getComputedStyle(document.documentElement).getPropertyValue("--solidLightBlue");
 
     var jsxAngleAttributes = {
       name: SVs.label,
