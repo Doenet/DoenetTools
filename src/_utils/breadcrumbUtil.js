@@ -88,8 +88,21 @@ export function useNavigationCrumbs(courseId, parentDoenetId) {
     navigationSelectorFamily({ courseId, parentDoenetId }),
   );
 
-  let crumbs = [];
-  console.log(folderInfoArray);
+  const crumbs = [
+    {
+      label: 'Content',
+      onClick: () => {
+        setPageToolView({
+          page: 'course',
+          tool: 'navigation',
+          view: '',
+          params: {
+            courseId,
+          },
+        });
+      },
+    },
+  ];
 
   for (let { label, parentDoenetId, type } of folderInfoArray) {
     switch (type) {

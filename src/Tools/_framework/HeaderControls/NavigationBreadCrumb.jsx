@@ -10,10 +10,10 @@ import {
 } from '../../../_utils/breadcrumbUtil';
 
 export default function NavigationBreadCrumb() {
-  const chooserCrumb = useCourseChooserCrumb();
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
 
+  const chooserCrumb = useCourseChooserCrumb();
   const dashboardCrumb = useDashboardCrumb(courseId);
   const navigationCrumbs = useNavigationCrumbs(courseId, sectionId);
 
