@@ -379,7 +379,6 @@ export const useCourse = (courseId) => {
           //Prepare to make a new page
           let selectedDoenetId = (await snapshot.getPromise(selectedCourseItems))[0];
           const selectedItemObj = await snapshot.getPromise(authorItemByDoenetId(selectedDoenetId));
-          let itemType = 'page';
           let containingDoenetId;
           if (selectedItemObj.type == 'activity' || 
               selectedItemObj.type == 'bank'
@@ -398,7 +397,7 @@ export const useCourse = (courseId) => {
                   containingDoenetId,
                 },
               });
-          // console.log("pageData",data)
+          // console.log("createPageOrOrder Data",data)
           let pageThatWasCreated = data.pageThatWasCreated;
           // console.log("pageThatWasCreated",pageThatWasCreated)
 
@@ -474,7 +473,6 @@ export const useCourse = (courseId) => {
           }else if (selectedItemObj.type == 'page'){
 
             const containingItemObj = await snapshot.getPromise(authorItemByDoenetId(selectedItemObj.containingDoenetId));
-            console.log("containingItemObj",containingItemObj)
             if (containingItemObj.type == 'bank'){
               let insertedAfterDoenetId = selectedItemObj.doenetId;
               let newJSON = [];
@@ -494,15 +492,12 @@ export const useCourse = (courseId) => {
               });
               // console.log("data",data)
            
-              console.log("insertedAfterDoenetId",insertedAfterDoenetId)
-              console.log("pageThatWasCreated.doenetId",pageThatWasCreated.doenetId)
               
             set(authorItemByDoenetId(pageThatWasCreated.doenetId),pageThatWasCreated)
             set(authorItemByDoenetId(newCollectionObj.doenetId),newCollectionObj)
             set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
               let next = [...prev];
               next.splice(next.indexOf(insertedAfterDoenetId)+1,0,pageThatWasCreated.doenetId);
-              console.log("next",next)
               return next;
             });
 
