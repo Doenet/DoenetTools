@@ -63,7 +63,7 @@ import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPane
 
 export default function CourseNavigator() {
   console.log("=== CourseNavigator")
-  const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
