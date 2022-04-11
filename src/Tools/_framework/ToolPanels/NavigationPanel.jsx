@@ -35,14 +35,15 @@ const movingGradient = keyframes `
 const Table = styled.table `
   width: 850px;
   border-radius: 5px;
+  margin-top: 50px;
+  margin-left: 20px;
 `;
-const Tr = styled.tr `
-  border-bottom: 2px solid black;
-`;
+const Tr = styled.tr ``;
 const Td = styled.td `
   height: 40px;
   vertical-align: middle;
   padding: 8px;
+  /* border-bottom: 2px solid black; */
 
   &.Td2 {
     width: 50px;
@@ -54,16 +55,15 @@ const Td = styled.td `
 
 `;
 const TBody = styled.tbody ``;
-// const TdSpan = styled.span `
-//   display: block;
-// `;
 const Td2Span = styled.span `
+  display: block; 
   background-color: rgba(0,0,0,.15);
   width: 70px;
   height: 16px;
   border-radius: 5px;
 `;
 const Td3Span = styled.span `
+  display: block;
   height: 14px;
   border-radius: 5px;
   background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
@@ -254,16 +254,31 @@ export default function NavigationPanel() {
           <Table>
             <TBody>
               <Tr>
-                <Td className='Td2'>
+                <Td className="Td2">
                   <Td2Span></Td2Span>
                 </Td>
-                <Td className='Td3'>
+                <Td className="Td3">
+                  <Td3Span></Td3Span>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td className="Td2">
+                  <Td2Span></Td2Span>
+                </Td>
+                <Td className="Td3">
+                  <Td3Span></Td3Span>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td className="Td2">
+                  <Td2Span></Td2Span>
+                </Td>
+                <Td className="Td3">
                   <Td3Span></Td3Span>
                 </Td>
               </Tr>
             </TBody>
-         </Table>
-        //  <div>TESTING!!!!!!!</div>
+          </Table>
         }>
           <Container>
             <Drive

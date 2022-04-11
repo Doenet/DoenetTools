@@ -18,14 +18,14 @@ const Table = styled.table `
   border-radius: 5px;
 `;
 const Tr = styled.tr `
-  border-bottom: 2px solid black;
+  /* border: 2px solid black; */
   /* background-color: blue; */
 `;
 const Td = styled.td `
   height: 40px;
   vertical-align: middle;
   padding: 8px;
-
+  border-bottom: 2px solid black;
   &.Td2 {
     width: 50px;
   }

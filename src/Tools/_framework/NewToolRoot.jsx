@@ -258,7 +258,49 @@ export default function ToolRoot() {
       >
         <Suspense
           key={SupportPanelKey}
-          fallback={<LoadingFallback>loading...</LoadingFallback>}
+          fallback={
+            <LoadingFallback display="static">
+              <Table>
+                <TBody>
+                  <Tr>
+                    <Td className="Td2">
+                    </Td>
+                    <Td className="Td3">
+                      <Td3Span></Td3Span>
+                    </Td>
+                  </Tr>
+                  <Tr>
+                    <Td className="Td2">
+                    </Td>
+                    <Td className="Td3">
+                      <Td3Span></Td3Span>
+                    </Td>
+                  </Tr>
+                  <Tr>
+                    <Td className="Td2">
+                    </Td>
+                    <Td className="Td3">
+                      <Td3Span></Td3Span>
+                    </Td>
+                  </Tr>
+                  <Tr>
+                    <Td className="Td2">
+                    </Td>
+                    <Td className="Td3">
+                      <Td3Span></Td3Span>
+                    </Td>
+                  </Tr>
+                  <Tr>
+                    <Td className="Td2">
+                    </Td>
+                    <Td className="Td3">
+                      <Td3Span></Td3Span>
+                    </Td>
+                  </Tr>
+                </TBody>
+              </Table>
+            </LoadingFallback>
+          }
         >
           {React.createElement(LazyPanelObj[spType], { SupportPanelKey })}
         </Suspense>
@@ -328,6 +370,7 @@ export default function ToolRoot() {
       >
         <Suspense
           key={footerKey}
+          // TODO: loading animation for footer
           fallback={<LoadingFallback>loading...</LoadingFallback>}
         >
           {React.createElement(
@@ -1009,7 +1052,7 @@ function RootController(props) {
 const LoadingFallback = styled.div`
   background-color: hsl(0, 0%, 99%);
   border-radius: 4px;
-  display: flex;
+  display: ${props => props.display ? props.display : "flex"};
   justify-content: center;
   align-items: center;
   font-size: 2em;
@@ -1070,6 +1113,7 @@ const BreadcrumbContainer = styled.ul`
   height: 21px;
   display: flex;
   margin-left: -35px;
+  background-color: white;
 `;
 
 const shimmerAnimation = keyframes `
@@ -1100,16 +1144,36 @@ const BreadcrumbOutline = styled.li`
   position: relative;
 `;
 
-// const Shimmer = styled.div `
-//   animation-duration: 1s;
-//   animation-fill-mode: forwards;
-//   animation-iteration-count: infinite;
-//   animation-name: ${shimmerAnimation};
-//   animation-timing-function: linear;
-//   background: #f6f7f8;
-//   background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
-//   background-size: 800px 104px;
-//   width: 100vw;
-//   height: 100vh;
-//   position: relative;
-// `;
+const movingGradient = keyframes `
+  0% { background-position: -250px 0; }
+  100% { background-position: 250px 0; }
+`;
+
+const Table = styled.table `
+  border-radius: 5px;
+  margin: 8px;
+`;
+const Tr = styled.tr `
+  /* border-bottom: 2px solid black; */
+`;
+const Td = styled.td `
+  height: 40px;
+
+  &.Td3 {
+    width: 100%;
+  }
+
+`;
+const TBody = styled.tbody ``;
+const Td3Span = styled.span `
+  display: block;
+  height: 14px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+  background-size: 500px 100px;
+  animation-name: ${movingGradient};
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+`;
