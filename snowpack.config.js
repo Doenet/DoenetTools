@@ -59,6 +59,21 @@ module.exports = {
     },
     {
       match: 'routes',
+      src: '/temp',
+      dest: '/temp/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/test',
+      dest: '/test/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/uiDocs',
+      dest: '/uiDocs/index.html',
+    },
+    {
+      match: 'routes',
       src: '/.*',
       dest: '/index.html',
     },
