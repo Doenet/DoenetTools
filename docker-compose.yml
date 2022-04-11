@@ -16,10 +16,7 @@ services:
 
   apache:
     image: lyanthropos/doenet_test:apache-dev
-    ports:
-      - 8080:80
     volumes:
-      - ./dist:/usr/local/apache2/htdocs/
       - ./src/Api:/usr/local/apache2/htdocs/api
       - ./src/Media:/usr/local/apache2/htdocs/media
       - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
