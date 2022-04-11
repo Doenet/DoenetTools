@@ -2037,7 +2037,7 @@ export function gatherVariantComponents({ serializedComponents, componentInfoObj
 
   for (let serializedComponent of serializedComponents) {
 
-    if(serializedComponent.variants?.isVariantComponent) {
+    if (serializedComponent.variants?.isVariantComponent) {
       variantComponents.push(serializedComponent);
       continue;
     }
@@ -2093,7 +2093,7 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
 
   // get number of variants from document (or other sectioning component)
 
-  if(!serializedComponent.variants) {
+  if (!serializedComponent.variants) {
     serializedComponent.variants = {};
   }
 
@@ -2106,7 +2106,36 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
   }
 
   if (!variantControlChild) {
-    return 100;
+
+    if (serializedComponent.componentType === "document") {
+      // if have a single child that is a section, use variants from that section
+
+      let nonBlankChildren = serializedComponent.children.filter(x => x.componentType || x.trim() !== "");
+
+      if (nonBlankChildren.length === 1 && componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: nonBlankChildren[0].componentType,
+        baseComponentType: "_sectioningComponent"
+      })) {
+
+        let results = getNumberOfVariants({
+          serializedComponent: nonBlankChildren[0],
+          componentInfoObjects
+        });
+
+
+        serializedComponent.variants.numberOfVariants = results.numberOfVariants;
+        serializedComponent.variants.variantNames = results.variantNames;
+        serializedComponent.variants.variantsFromChild = true;
+
+        return results;
+
+      }
+    }
+
+    serializedComponent.variants.numberOfVariants = 100;
+
+    return { numberOfVariants: 100 };
+
   }
 
   let numberOfVariants = variantControlChild.attributes.nVariants?.primitive;
@@ -2115,8 +2144,16 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
     numberOfVariants = 100;
   }
 
+  let variantNames = variantControlChild.attributes.variantNames?.component?.children
+    .map(x => x.toLowerCase().substring(0, 1000));
+
+
   if (!variantControlChild.attributes.uniqueVariants?.primitive) {
-    return numberOfVariants;
+    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    return {
+      numberOfVariants,
+      variantNames
+    }
   }
 
   // have unique variants so it is more complicated!
@@ -2130,9 +2167,14 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
   if (result.success) {
     numberOfVariants = result.numberOfVariants;
     serializedComponent.variants.uniqueVariants = true;
+
+    // don't have to add to serializedComponent.variants.numberOfVariants 
+    // as determineNumberOfUniqueVariants does it in this case
+  } else {
+    serializedComponent.variants.numberOfVariants = numberOfVariants;
   }
 
-  return numberOfVariants;
+  return { numberOfVariants, variantNames };
 
 }
 

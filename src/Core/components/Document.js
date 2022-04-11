@@ -623,13 +623,51 @@ export default class Document extends BaseComponent {
       // with variant names a, b, c, ...
       // and seeds 1,2,3,...
 
-      let nVariants = 100;
+      let nVariants;
+      let variantNames;
 
-      // if (serializedComponent.variants.uniqueVariants) {
-      //   nVariants = serializedComponent.variants.numberOfVariants;
-      // }
+      if (serializedComponent.variants.variantsFromChild) {
+        nVariants = serializedComponent.variants.numberOfVariants;
 
-      sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
+        if (serializedComponent.variants.variantNames) {
+
+          variantNames = [...serializedComponent.variants.variantNames];
+
+          if (variantNames.length >= nVariants) {
+            variantNames = variantNames.slice(0, nVariants);
+          } else {
+            let originalVariantNames = [...variantNames];
+            let variantNumber = variantNames.length;
+            let variantValue = variantNumber;
+            let variantString;
+            while (variantNumber < nVariants) {
+              variantNumber++;
+              variantValue++;
+              variantString = indexToLowercaseLetters(variantValue);
+              while (originalVariantNames.includes(variantString)) {
+                variantValue++;
+                variantString = indexToLowercaseLetters(variantValue);
+              }
+              variantNames.push(variantString);
+            }
+
+          }
+
+
+          sharedParameters.allPossibleVariants = variantNames;
+
+        } else {
+
+          sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
+
+        }
+
+      } else {
+
+        nVariants = 100;
+
+        sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
+      }
 
       let variantIndex;
       // check if desiredVariant was specified
@@ -651,18 +689,6 @@ export default class Document extends BaseComponent {
             }
             variantIndex = indexFrom0 + 1;
           }
-        } else if (desiredVariant.name !== undefined) {
-          if (typeof desiredVariant.name === "string") {
-            // want case insensitive test, so convert to lower case
-            let desiredNumber = sharedParameters.allPossibleVariants.indexOf(desiredVariant.name.toLowerCase());
-            if (desiredNumber !== -1) {
-              variantIndex = desiredNumber + 1;
-            }
-          }
-          if (variantIndex === undefined) {
-            console.warn("Variant name " + desiredVariant.name + " is not valid");
-            variantIndex = 1;
-          }
         }
       }
 
@@ -673,7 +699,11 @@ export default class Document extends BaseComponent {
 
       sharedParameters.variantSeed = variantIndex.toString();
       sharedParameters.variantIndex = variantIndex;
-      sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
+      if (variantNames) {
+        sharedParameters.variantName = variantNames[variantIndex - 1];
+      } else {
+        sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
+      }
       sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
 
 
@@ -694,18 +724,6 @@ export default class Document extends BaseComponent {
       desiredVariant = {};
     }
 
-    // // if subvariants aren't defined but we have uniqueVariants specified
-    // // then calculate variant information for the descendant variant component
-    // if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
-    //   let variantInfo = this.getUniqueVariant({
-    //     serializedComponent: serializedComponent,
-    //     variantIndex: sharedParameters.variantIndex,
-    //     allComponentClasses: allComponentClasses,
-    //   })
-    //   if (variantInfo.success) {
-    //     Object.assign(desiredVariant, variantInfo.desiredVariant);
-    //   }
-    // }
 
     if (desiredVariant.subvariants && descendantVariantComponents) {
       for (let ind in desiredVariant.subvariants) {
@@ -716,6 +734,10 @@ export default class Document extends BaseComponent {
         }
         variantComponent.variants.desiredVariant = subvariant;
       }
+    } else if (serializedComponent.variants.variantsFromChild && descendantVariantComponents?.length === 1) {
+      // copy desired variant to child
+      descendantVariantComponents[0].variants.desiredVariant = desiredVariant;
+
     }
 
     // console.log("Desired variant for document");

@@ -325,10 +325,10 @@ export default function ActivityViewer(props) {
 
       let page = { type: "page" };
 
-      if(cidFromProps) {
+      if (cidFromProps) {
         page.cid = cidFromProps
       }
-      if(activityDefinitionFromProps) {
+      if (activityDefinitionFromProps) {
         page.doenetML = activityDefinitionFromProps;
       }
 
@@ -482,12 +482,12 @@ export default function ActivityViewer(props) {
     }
 
     if (page.children.length > 0) {
-      let pageDoenetML = activityDefinitionDoenetML.current.slice(page.range.openEnd+1, page.range.closeBegin);
+      let pageDoenetML = activityDefinitionDoenetML.current.slice(page.range.openEnd + 1, page.range.closeBegin);
 
-      if(page.children[0].componentType.toLowerCase() !== "document")  {
+      if (page.children[0].componentType.toLowerCase() !== "document") {
         // add <docoument> around page
         let xmlnsprop = '';
-        if(xmlns.current) {
+        if (xmlns.current) {
           xmlnsprop = ` xmlns="${xmlns.current}"`
         }
         pageDoenetML = `<document type="page" ${xmlnsprop}>${pageDoenetML}</document>`;
@@ -804,9 +804,50 @@ export default function ActivityViewer(props) {
 
   async function calculateOrderAndVariants() {
 
-    let variantSeed = determineVariantSeed(activityDefinition, requestedVariantIndex);
+    let variantSeedResults = await determineVariantSeed(activityDefinition, requestedVariantIndex, flags);
 
-    let rng = new rngClass(variantSeed.seed);
+    if (variantSeedResults.usePageVariants) {
+      // didn't have a variant control and have a single page inside a sequence order
+      // use the pageVariants
+
+      let page = activityDefinition.order.content[0];
+      let orderWithCids = [page];
+  
+      // if looked up doenetML to determine possible variants
+      // record that doenetML in the order so don't have to load it again
+      // Also, add cid if it isn't there
+      if (page.doenetML === undefined) {
+        page = { ...page };
+        page.doenetML = variantSeedResults.pageVariants.doenetML;
+      } else if (!page.cid) {
+        page = { ...page };
+        page.cid = variantSeedResults.pageVariants.cid;
+      }
+
+      orderWithCids[0].cid = page.cid;
+
+      let variantsByItem = [variantSeedResults.variantIndex];
+      let itemWeights = [1];
+
+      let activityInfo = {
+        orderWithCids,
+        variantsByItem,
+        itemWeights
+      };
+  
+
+      return {
+        success: true,
+        order: [page],
+        itemWeights: [1],
+        variantsByItem: [variantSeedResults.variantIndex],
+        variantIndex: variantSeedResults.variantIndex,
+        activityInfo
+      };
+
+    }
+
+    let rng = new rngClass(variantSeedResults.seed);
 
     let orderResult = determineOrder(activityDefinition.order, rng);
 
@@ -897,7 +938,7 @@ export default function ActivityViewer(props) {
       order: newOrder,
       itemWeights,
       variantsByItem: chosenVariants,
-      variantIndex: variantSeed.variantIndex,
+      variantIndex: variantSeedResults.variantIndex,
       activityInfo
     };
 
@@ -1269,7 +1310,7 @@ export default function ActivityViewer(props) {
   </div>
 }
 
-function determineVariantSeed(activityDefinition, requestedVariantIndex) {
+async function determineVariantSeed(activityDefinition, requestedVariantIndex, flags) {
   let nVariants = 100;
   let seeds = [];
 
@@ -1282,14 +1323,38 @@ function determineVariantSeed(activityDefinition, requestedVariantIndex) {
     if (Array.isArray(activityDefinition.variantControl.seeds)) {
       seeds = activityDefinition.variantControl.seeds.map(x => x.toString());
     }
+  } else {
+    // have no variant control
+    // check to see if we have special case of a sequence order
+    // with just a single page.
+    // In that case, use the variant control of that page
+    if (activityDefinition.order?.behavior?.toLowerCase() === "sequence"
+      && activityDefinition.order.content?.length === 1
+      && activityDefinition.order.content[0].type?.toLowerCase() === "page"
+    ) {
+      // have single page in a sequence
+
+      let page = activityDefinition.order.content[0];
+      let pageVariants = await returnAllPossibleVariants({
+        cid: page.cid, doenetML: page.doenetML, flags
+      })
+
+
+      nVariants = pageVariants.allPossibleVariants.length;
+
+      let variantIndex = (requestedVariantIndex - 1) % nVariants + 1;
+
+      return { variantIndex, usePageVariants: true, pageVariants };
+
+    }
+
+
   }
 
   let variantIndex = (requestedVariantIndex - 1) % nVariants + 1;
 
-  if (seeds.length >= nVariants) {
-    seeds = seeds.slice(0, nVariants)
-  } else {
-    for (let ind = seeds.length; ind < nVariants; ind++) {
+  if (seeds.length < variantIndex) {
+    for (let ind = seeds.length; ind < variantIndex; ind++) {
       let s = ind + 1;
       while (seeds.includes(s.toString())) {
         s++;
@@ -1301,7 +1366,7 @@ function determineVariantSeed(activityDefinition, requestedVariantIndex) {
   let selectedSeed = seeds[variantIndex - 1];
 
 
-  return { selectedSeed, variantIndex };
+  return { selectedSeed, variantIndex, usePageVariants: false };
 
 }
 

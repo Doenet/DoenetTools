@@ -235,15 +235,11 @@ export default class VariantControl extends BaseComponent {
       definition: function ({ dependencyValues }) {
 
         // determine how variant will be selected.
-        // Use the first of these options that is available
-        // 1. if variants.desiredVariantIndex is defined and is a valid index,
+        // - if variantsObject.desiredVariantIndex is defined and is a valid index,
         //    then use that for variantIndex
-        // 2. if variants.desiredVariantName is defined and is a valid variantName
-        //    then use the variantIndex corresponding to that name
-        // 3. else, randomly generate variantIndex (except use 1 for document)
+        // - else, randomly generate variantIndex (except use 1 for document)
 
 
-        // no essential state variable, so try to find desiredVariant
         if (dependencyValues.variantsObject !== undefined) {
           if (dependencyValues.variantsObject.desiredVariantIndex !== undefined) {
             let desiredVariantIndex = Number(dependencyValues.variantsObject.desiredVariantIndex);
@@ -268,27 +264,6 @@ export default class VariantControl extends BaseComponent {
                 setEssentialValue: { selectedVariantIndex },
                 setValue: { selectedVariantIndex }
               }
-            }
-          }
-          if (dependencyValues.variantsObject.desiredVariantName !== undefined) {
-            if (typeof dependencyValues.variantsObject.desiredVariantName === "string") {
-              // want case insensitive test, so convert to lower case
-              // treat originalVariantNames separately so don't have to lower case
-              // remaining variantNames, which are alread lowercase
-              let originalLowerCaseVariantNames = dependencyValues.originalVariantNames.map(x => x.toLowerCase());
-              let lowerCaseVariantNames = [...originalLowerCaseVariantNames, ...dependencyValues.variantNames.slice(originalLowerCaseVariantNames.length)];
-              let desiredIndexFrom0 = lowerCaseVariantNames.indexOf(dependencyValues.variantsObject.desiredVariantName.toLowerCase());
-              if (desiredIndexFrom0 !== -1) {
-                return {
-                  setEssentialValue: { selectedVariantIndex: desiredIndexFrom0 + 1 },
-                  setValue: { selectedVariantIndex: desiredIndexFrom0 + 1 }
-                }
-              }
-            }
-            console.warn("Variant name " + dependencyValues.variantsObject.desiredVariantName + " is not valid");
-            return {
-              setEssentialValue: { selectedVariantIndex: 1 },
-              setValue: { selectedVariantIndex: 1 }
             }
           }
         }
