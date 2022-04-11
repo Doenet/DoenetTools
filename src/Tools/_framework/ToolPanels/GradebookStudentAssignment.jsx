@@ -8,11 +8,11 @@ import {
   } from "recoil";
  
 import { pageToolViewAtom, searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
-import DoenetViewer from '../../../Viewer/DoenetViewer';
 import { serializedComponentsReviver } from "../../../Core/utils/serializedStateProcessing";
 import  axios from 'axios';
 import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 import { effectiveRoleAtom } from "../../../_reactComponents/PanelHeaderComponents/RoleDropdown";
+import PageViewer from "../../../Viewer/PageViewer";
 
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
@@ -246,7 +246,7 @@ export default function GradebookStudentAssignmentView(){
         let doenetML = attemptsInfo[attemptNumber].doenetML;
         let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
   
-        dViewer = <DoenetViewer
+        dViewer = <PageViewer
         key={`doenetviewer${doenetId}`}
         doenetML={doenetML}
         doenetId={doenetId}

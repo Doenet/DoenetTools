@@ -6,10 +6,10 @@ import {
   useRecoilCallback,
 } from 'recoil';
 
-import DoenetViewer from '../../../Viewer/DoenetViewer';
 import { 
   itemHistoryAtom, 
  } from '../ToolHandlers/CourseToolHandler';
+import PageViewer from '../../../Viewer/PageViewer';
 
 const contentIdAtom = atom({
   key:"contentIdAtom",
@@ -84,7 +84,7 @@ export default function Content(props){
   const attemptNumber = 1;
   
   return <div style={props.style}>
-    <DoenetViewer
+    <PageViewer
         key={'doenetviewer'}
         // doenetML={doenetML} ???parameter
         cid={cid}
