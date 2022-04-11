@@ -10,17 +10,18 @@ import {
 } from '../../../_utils/breadcrumbUtil';
 
 export default function NavigationBreadCrumb() {
-  console.log('nav');
   const chooserCrumb = useCourseChooserCrumb();
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
 
   const dashboardCrumb = useDashboardCrumb(courseId);
-  // const navigationCrumbs = useNavigationCrumbs(courseId,folderId)
+  const navigationCrumbs = useNavigationCrumbs(courseId, sectionId);
 
   return (
     <Suspense fallback={<div>Loading Breadcrumb...</div>}>
-      {/* <BreadCrumb crumbs={[chooserCrumb,dashboardCrumb,...navigationCrumbs]} /> */}
-      <BreadCrumb crumbs={[chooserCrumb, dashboardCrumb]} />
+      <BreadCrumb
+        crumbs={[chooserCrumb, dashboardCrumb, ...navigationCrumbs]}
+      />
     </Suspense>
   );
 }
