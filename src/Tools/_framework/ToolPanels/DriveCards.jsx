@@ -81,9 +81,10 @@ const CourseCardWrapper = (props) => {
     showCards = courses;
   }
 
+  //TODO move showcards into the memo to make it effective (currenlty has no effect)
   const [heights, driveCardItems] = useMemo(() => {
     let heights = new Array(columns).fill(0); // Each column gets a height starting with zero
-    let driveCardItems = showCards.map((child, i) => {
+    let driveCardItems = showCards.map((child) => {
       const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
       const x = (width / columns) * column + 20; // x = container width / number of columns * column index,
       const y = (heights[column] += 270) - 270; // y = it's just the height of the current column
@@ -145,13 +146,13 @@ const CourseCardWrapper = (props) => {
     if (isOneDriveSelect) {
       if (!e.shiftKey && !e.metaKey) {
         // one item
-        setDrivecardSelection((old) => [item]);
+        setDrivecardSelection(() => [item]);
         setSelectedCourseMenu();
       }
     } else {
       if (!e.shiftKey && !e.metaKey) {
         // one item
-        setDrivecardSelection((old) => [item]);
+        setDrivecardSelection(() => [item]);
         setSelectedCourseMenu();
       } else if (e.shiftKey && !e.metaKey) {
         // range to item

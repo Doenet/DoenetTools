@@ -88,7 +88,7 @@ export default function CourseNavigator() {
       newObj.push(clearSelections)
       return newObj;
     })
-  },[])
+  },[clearSelections, setMainPanelClick])
 
 
   if (!coursePermissionsAndSettings){
@@ -398,7 +398,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     setSelectionMenu(null);
   }
 
-},[doenetId,courseId])
+},[doenetId, courseId, setSelectionMenu])
 
   let bgcolor = '#ffffff';
   if (isSelected){
@@ -408,7 +408,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   } 
 
   //Used to open editor or assignment
-  let handleDoubleClick = useRecoilCallback(({snapshot,set})=> async (e)=>{
+  let handleDoubleClick = useRecoilCallback(({snapshot})=> async (e)=>{
     let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
     console.log("Double CLICK!",doenetId,clickedItem)
     e.preventDefault();
@@ -468,7 +468,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
 
 
 
-  },[doenetId])
+  },[addToast, doenetId, setPageToolView])
 
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
   const indentPx = 25;
