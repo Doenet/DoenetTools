@@ -8,6 +8,8 @@ import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponen
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import { useToast } from '../Toast';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 export default function SelectedBank() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -17,6 +19,7 @@ export default function SelectedBank() {
   const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
   const { renameItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
+  let { create } = useCourse(courseId);
 
   useEffect(()=>{
     if (itemTextFieldLabel !== itemObj.label){
@@ -82,5 +85,15 @@ export default function SelectedBank() {
       }}
       onBlur={handelLabelModfication}
     />
+    <br />
+    <ButtonGroup vertical>
+      <Button
+        width="menu"
+        onClick={() =>
+          create({itemType:"page"})
+        }
+        value="Add Page"
+      />
+    </ButtonGroup>
   </>
 }

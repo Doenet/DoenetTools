@@ -237,6 +237,34 @@ export const useCourse = (courseId) => {
     ({ set, snapshot }) =>
       async ({ itemType, placeInFolderFlag, previousDoenetId }) => {
 
+        function addPageToOrder(newJSON,orderDoenetId,newDoenetId){
+          console.log("addPageToOrder newJSON",newJSON,orderDoenetId,newDoenetId)
+          let insertedAfterDoenetId;
+          //TODO: recurse through the content to find the order
+          if (newJSON.doenetId == orderDoenetId){
+            insertedAfterDoenetId = newJSON.content[newJSON.content.length - 1];
+            newJSON.content = [...newJSON.content,newDoenetId];
+
+          }
+            return {newJSON,insertedAfterDoenetId};
+        }
+        function addDoenetIdAfterPageForActivity(newJSON,pageDoenetId,newDoenetId){
+          console.log("addDoenetIdAfterPageForActivity newJSON",newJSON,pageDoenetId,newDoenetId)
+          //TODO: recurse through the content to find the page
+          let content = [];
+          for (let entry of newJSON.content){
+            //TODO if order recurse into that order
+            content.push(entry);
+            if (newDoenetId == entry){
+              content.push(newDoenetId)
+            }
+          }
+          let updateNewJSON = {...newJSON};
+          updateNewJSON.content = content;
+          
+          return updateNewJSON;
+        }
+
         let authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
         let newAuthorItemDoenetIds = [...authorItemDoenetIds];
 
@@ -312,7 +340,7 @@ export const useCourse = (courseId) => {
               placeInFolderFlag,
             },
           });
-          console.log('bankData', data);
+          // console.log('bankData', data);
           newDoenetId = data.doenetId;
           set(authorItemByDoenetId(data.doenetId), data.itemEntered);
           //Find index of previousDoenetId and insert the new item's doenetId right after
@@ -348,10 +376,169 @@ export const useCourse = (courseId) => {
           }
           set(authorCourseItemOrderByCourseId(courseId), newAuthorItemDoenetIds);
         } else if (itemType == 'page') {
-          console.log('page');
-        }
-        return newDoenetId;
-      },
+          // console.log('page');
+          let selectedDoenetId = (await snapshot.getPromise(selectedCourseItems))[0];
+          const selectedItemObj = await snapshot.getPromise(authorItemByDoenetId(selectedDoenetId));
+          let itemType = 'page';
+          let containingDoenetId;
+          if (selectedItemObj.type == 'activity' || 
+              selectedItemObj.type == 'bank'
+          ){
+            containingDoenetId = selectedItemObj.doenetId;
+          }else if (selectedItemObj.type == 'order' || 
+                    selectedItemObj.type == 'page'){
+            containingDoenetId = selectedItemObj.containingDoenetId;
+          } 
+          
+          //Create a page.  Get the new page object.
+          let { data } = await axios.get('/api/createPageOrOrder.php', {
+              params: {
+                  courseId,
+                  itemType,
+                  containingDoenetId,
+                },
+              });
+          // console.log("pageData",data)
+          let pageThatWasCreated = data.pageThatWasCreated;
+          // console.log("pageThatWasCreated",pageThatWasCreated)
+
+          //Update the Activity or Collection
+          if (selectedItemObj.type == 'activity'){
+            let newJSON = {...selectedItemObj.order};
+            let insertedAfterDoenetId = selectedItemObj.order.content[selectedItemObj.order.content.length - 1];
+            newJSON.content = [...selectedItemObj.order.content,pageThatWasCreated.doenetId]
+            let newActivityObj = {...selectedItemObj}
+            newActivityObj.order = newJSON;
+            let { data } = await axios.post('/api/updateActivityStructure.php', {
+                courseId,
+                doenetId:newActivityObj.doenetId,
+                newJSON,
+              });
+              // console.log("data",data)
+
+            set(authorItemByDoenetId(pageThatWasCreated.doenetId),pageThatWasCreated)
+            set(authorItemByDoenetId(newActivityObj.doenetId),newActivityObj)
+            set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
+              let next = [...prev];
+              next.splice(next.indexOf(insertedAfterDoenetId)+1,0,pageThatWasCreated.doenetId);
+              return next;
+            });
+
+          }else if (selectedItemObj.type == 'bank'){
+            let insertedAfterDoenetId = selectedItemObj.pages[selectedItemObj.pages.length - 1];
+            let newJSON = [...selectedItemObj.pages,pageThatWasCreated.doenetId];
+            let newCollectionObj = {...selectedItemObj}
+            newCollectionObj.pages = newJSON;
+       
+            let { data } = await axios.post('/api/updateCollectionStructure.php', {
+                courseId,
+                doenetId:newCollectionObj.doenetId,
+                newJSON,
+              });
+              // console.log("data",data)
+           
+
+            set(authorItemByDoenetId(pageThatWasCreated.doenetId),pageThatWasCreated)
+            set(authorItemByDoenetId(newCollectionObj.doenetId),newCollectionObj)
+            set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
+              let next = [...prev];
+              next.splice(next.indexOf(insertedAfterDoenetId)+1,0,pageThatWasCreated.doenetId);
+              console.log("next",next)
+              return next;
+            });
+          }else if (selectedItemObj.type == 'order'){
+            let orderDoenetId = selectedItemObj.doenetId;
+
+            console.log("orderDoenetId",orderDoenetId)
+            console.log("selectedItemObj",selectedItemObj)
+            const containingItemObj = await snapshot.getPromise(authorItemByDoenetId(selectedItemObj.containingDoenetId));
+            console.log("containingItemObj",containingItemObj)
+
+            let newJSON = {...containingItemObj.order};
+
+            let newActivityObj = {...containingItemObj}
+            let jsonAndInsert = addPageToOrder(newJSON,orderDoenetId,pageThatWasCreated.doenetId)
+            newJSON = jsonAndInsert['newJSON'];
+            let insertedAfterDoenetId = jsonAndInsert['insertedAfterDoenetId'];
+            newActivityObj.order = newJSON;
+            console.log("newJSON",newJSON)
+            console.log("newActivityObj",newActivityObj)
+            let { data } = await axios.post('/api/updateActivityStructure.php', {
+                courseId,
+                doenetId:newActivityObj.doenetId,
+                newJSON,
+              });
+              console.log("data",data)
+
+            set(authorItemByDoenetId(pageThatWasCreated.doenetId),pageThatWasCreated)
+            set(authorItemByDoenetId(newActivityObj.doenetId),newActivityObj)
+            console.log("pageThatWasCreated.doenetId",pageThatWasCreated.doenetId)
+            console.log("insertedAfterDoenetId",insertedAfterDoenetId)
+
+            set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
+              let next = [...prev];
+              next.splice(next.indexOf(insertedAfterDoenetId)+1,0,pageThatWasCreated.doenetId);
+              console.log("next",next)
+              return next;
+            });
+          }else if (selectedItemObj.type == 'page'){
+            let pageDoenetId = selectedItemObj.doenetId;
+            console.log("pageDoenetId",pageDoenetId)
+            console.log("selectedItemObj",selectedItemObj)
+            const containingItemObj = await snapshot.getPromise(authorItemByDoenetId(selectedItemObj.containingDoenetId));
+            console.log("containingItemObj",containingItemObj)
+            if (containingItemObj.type == 'bank'){
+              let newJSON = [];
+              for (let pageDoenetId of containingItemObj.pages){
+                newJSON.push(pageDoenetId);
+                if (pageDoenetId == selectedItemObj.doenetId){
+                  newJSON.push(pageThatWasCreated.doenetId);
+                }
+              }
+            let newCollectionObj = {...containingItemObj}
+            newCollectionObj.pages = newJSON;
+       
+            let { data } = await axios.post('/api/updateCollectionStructure.php', {
+                courseId,
+                doenetId:newCollectionObj.doenetId,
+                newJSON,
+              });
+              // console.log("data",data)
+           
+
+            set(authorItemByDoenetId(pageThatWasCreated.doenetId),pageThatWasCreated)
+            set(authorItemByDoenetId(newCollectionObj.doenetId),newCollectionObj)
+
+
+            }else if (containingItemObj.type == 'activity'){
+
+            let newJSON = {...containingItemObj.order};
+
+            let newActivityObj = {...containingItemObj}
+            newJSON = addDoenetIdAfterPageForActivity(newJSON,pageDoenetId,pageThatWasCreated.doenetId)
+            newActivityObj.order = newJSON;
+            console.log("newJSON",newJSON)
+            console.log("newActivityObj",newActivityObj)
+            // let { data } = await axios.post('/api/updateActivityStructure.php', {
+            //     courseId,
+            //     doenetId:newActivityObj.doenetId,
+            //     newJSON,
+            //   });
+            //   console.log("data",data)
+
+            // set(authorItemByDoenetId(pageThatWasCreated.doenetId),pageThatWasCreated)
+            // set(authorItemByDoenetId(newActivityObj.doenetId),newActivityObj)
+            }
+          }
+        
+          // console.log("updatedContainingObj",updatedContainingObj)
+
+
+            } else if (itemType == 'order') {
+              console.log('order');
+            }
+            return newDoenetId;
+          },
   );
 
   const defaultFailure = useCallback(
