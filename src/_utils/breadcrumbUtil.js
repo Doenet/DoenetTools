@@ -184,12 +184,8 @@ export function useAssignmentCrumb({ doenetId, driveId, folderId, itemId }) {
   };
 }
 
-export function useEnrollmentCrumb(driveId) {
+export function useEnrollmentCrumb(courseId) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-
-  let params = {
-    driveId,
-  };
 
   return {
     label: 'Enrollment',
@@ -198,7 +194,9 @@ export function useEnrollmentCrumb(driveId) {
         page: 'course',
         tool: 'enrollment',
         view: '',
-        params,
+        params: {
+          courseId,
+        },
       });
     },
   };
@@ -253,7 +251,7 @@ export function useGradebookCrumbs() {
   const students = useRecoilValue(studentData);
   const assignments = useRecoilValue(assignmentData);
 
-  let driveId = pageToolView.params?.driveId;
+  let courseId = pageToolView.params?.courseId;
   let doenetId = pageToolView.params?.doenetId;
   let userId = pageToolView.params?.userId;
   let previousCrumb = pageToolView.params?.previousCrumb;
@@ -263,7 +261,7 @@ export function useGradebookCrumbs() {
   if (role == 'instructor') {
     {
       let params = {
-        driveId,
+        courseId,
       };
       crumbs.push({
         label: 'Gradebook',
@@ -296,7 +294,7 @@ export function useGradebookCrumbs() {
     }
 
     let params = {
-      driveId,
+      courseId,
       userId,
     };
     crumbs.push({
@@ -330,7 +328,7 @@ export function useGradebookCrumbs() {
       }
 
       let params = {
-        driveId,
+        courseId,
         doenetId,
       };
       crumbs.push({
@@ -358,7 +356,7 @@ export function useGradebookCrumbs() {
       assignmentName = '_';
     }
     let params = {
-      driveId,
+      courseId,
       userId,
       doenetId,
     };
@@ -384,7 +382,7 @@ export function useGradebookCrumbs() {
     }
 
     let params = {
-      driveId,
+      courseId,
       userId,
       doenetId,
       previousCrumb,
