@@ -14,10 +14,12 @@ export async function returnAllPossibleVariants({
     cid = await cidFromText(doenetML);
   }
 
+  let componentInfoObjects = createComponentInfoObjects(flags);
+
   let { fullSerializedComponents } = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
     contentIds: [cid],
     doenetMLs: [doenetML],
-    componentInfoObjects: createComponentInfoObjects(flags),
+    componentInfoObjects,
     flags,
   });
 
@@ -38,25 +40,24 @@ export async function returnAllPossibleVariants({
   }
 
 
-  let nVariants = 100;
-  let allPossibleVariants;
+  let nVariants = serializeFunctions.getNumberOfVariants({
+    serializedComponent: document,
+    componentInfoObjects
+  })
 
+
+  let allPossibleVariants;
 
   if (variantControlChild !== undefined) {
 
     // create variant names from variant control child
 
-    if (variantControlChild.attributes && variantControlChild.attributes.nVariants) {
-      nVariants = Math.round(Number(variantControlChild.attributes.nVariants.primitive));
-    }
-
     let variantNames = [];
-    if (variantControlChild.attributes && variantControlChild.attributes.variantNames) {
+    if (variantControlChild.attributes?.variantNames) {
       let variantNamesComponent = variantControlChild.attributes.variantNames.component;
 
       variantNames = variantNamesComponent.children.map(x => x.toLowerCase().substring(0, 1000));
     }
-
 
     if (variantNames.length >= nVariants) {
       variantNames = variantNames.slice(0, nVariants);
