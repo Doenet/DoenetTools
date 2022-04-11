@@ -57,49 +57,77 @@ export function useDashboardCrumb(courseId) {
 const navigationSelectorFamily = selectorFamily({
   key: 'navigationSelectorFamily/Default',
   get:
-    ({ courseId, sectionId }) =>
+    ({ courseId, parentDoenetId }) =>
     async ({ get }) => {
-      async function getSection({ courseId, sectionId }) {
-        if (sectionId === '' || sectionId === undefined) {
+      async function getSections({ courseId, parentDoenetId }) {
+        if (parentDoenetId === '' || parentDoenetId === undefined) {
           return [];
         }
-        const { label, parentDoenetId, itemType } = await get(
-          authorItemByDoenetId(sectionId),
-        );
-        if (courseId === parentDoenetId) {
-          return [{ label, sectionId, itemType }];
+        const {
+          label,
+          parentDoenetId: itemParentDoenetId,
+          type,
+        } = await get(authorItemByDoenetId(parentDoenetId));
+        if (courseId === itemParentDoenetId) {
+          return [{ label, parentDoenetId, type }];
         }
-        let results = await getSection({ courseId, sectionId: parentDoenetId });
-        return [...results, { label, sectionId, itemType }];
+        let results = await getSections({
+          courseId,
+          parentDoenetId: itemParentDoenetId,
+        });
+        return [...results, { label, parentDoenetId, type }];
       }
 
-      return await getSection({ courseId, sectionId });
+      return await getSections({ courseId, parentDoenetId });
     },
 });
 
-export function useNavigationCrumbs(courseId, sectionId) {
+export function useNavigationCrumbs(courseId, parentDoenetId) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const folderInfoArray = useRecoilValue(
-    navigationSelectorFamily({ courseId, sectionId }),
+    navigationSelectorFamily({ courseId, parentDoenetId }),
   );
 
   let crumbs = [];
+  console.log(folderInfoArray);
 
-  for (let item of folderInfoArray) {
-    crumbs.push({
-      label: item.label,
-      onClick: () => {
-        setPageToolView({
-          page: 'course',
-          tool: 'navigation',
-          view: '',
-          params: {
-            courseId,
-            sectionId: item.sectionId,
+  for (let { label, parentDoenetId, type } of folderInfoArray) {
+    switch (type) {
+      case 'section':
+        crumbs.push({
+          label,
+          onClick: () => {
+            setPageToolView({
+              page: 'course',
+              tool: 'navigation',
+              view: '',
+              params: {
+                courseId,
+                sectionId: parentDoenetId,
+              },
+            });
           },
         });
-      },
-    });
+        break;
+      case 'activity':
+        crumbs.push({
+          label,
+          onClick: () => {
+            setPageToolView({
+              page: 'course',
+              tool: 'activity',
+              view: '',
+              params: {
+                courseId,
+                sectionId: parentDoenetId,
+              },
+            });
+          },
+        });
+        break;
+      default:
+        console.warn(`Unsupported navigration crumb type: ${type}`);
+    }
   }
 
   return crumbs;
