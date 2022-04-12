@@ -123,7 +123,6 @@ export default function ToolRoot() {
     SurveyDataViewer: lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor: lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment: lazy(() => import('./ToolPanels/Enrollment')),
-    CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
   }).current;
@@ -135,9 +134,6 @@ export default function ToolRoot() {
     ),
     NavigationBreadCrumb: lazy(() =>
       import('./HeaderControls/NavigationBreadCrumb'),
-    ),
-    CollectionBreadCrumb: lazy(() =>
-      import('./HeaderControls/CollectionBreadCrumb'),
     ),
     ChooserBreadCrumb: lazy(() => import('./HeaderControls/ChooserBreadCrumb')),
     DashboardBreadCrumb: lazy(() =>
@@ -488,13 +484,6 @@ let navigationObj = {
       headerControls: ['EditorBreadCrumb', 'ViewerUpdateButton'],
       onLeave: 'EditorLeave',
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
-    },
-    collection: {
-      currentMainPanel: 'CollectionEditor',
-      headerControls: ['CollectionBreadCrumb'],
-      currentMenus: ['AssignmentSettingsMenu', 'GroupSettings'],
-      menusTitles: ['Assignment Settings', 'Group Settings'],
-      menusInitOpen: [false, false],
     },
     enrollment: {
       //allStudentsInCourse

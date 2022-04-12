@@ -197,7 +197,7 @@ export default class Core {
     let numVariants = serializeFunctions.getNumberOfVariants({
       serializedComponent: serializedComponents[0],
       componentInfoObjects: this.componentInfoObjects
-    })
+    }).numberOfVariants;
 
 
     if (!this.requestedVariant) {
@@ -1134,6 +1134,13 @@ export default class Core {
               }
             }
 
+            if (serializedComponent.variants.numberOfVariants === undefined) {
+              serializeFunctions.getNumberOfVariants({
+                serializedComponent,
+                componentInfoObjects: this.componentInfoObjects
+              });
+            }
+
             if (serializedComponent.variants.uniqueVariants) {
               sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
             }
@@ -1149,6 +1156,21 @@ export default class Core {
           });
 
           definingChildren[variantControlInd] = childrenResult.components[0];
+
+
+          if (serializedComponent.variants.uniqueVariants && !serializedComponent.variants.selectedUniqueVariant) {
+
+            let result = componentClass.getUniqueVariant({
+              serializedComponent,
+              variantIndex: await childrenResult.components[0].stateValues.selectedVariantIndex,
+              componentInfoObjects: this.componentInfoObjects
+            })
+
+            if (result.success) {
+              serializedComponent.variants.desiredVariant = result.desiredVariant;
+            }
+
+          }
 
         }
 
@@ -9231,6 +9253,10 @@ export default class Core {
       )
     }
 
+    postMessage({
+      messageType: "savedState"
+    })
+
     if (!this.flags.allowSaveState) {
       return;
     }
@@ -9256,9 +9282,6 @@ export default class Core {
     // if not currently in throttle, save changes to database
     this.saveChangesToDatabase();
 
-    postMessage({
-      messageType: "savedState"
-    })
 
   }
 

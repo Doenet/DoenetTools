@@ -11,14 +11,13 @@ export function compileActivity({ activity, itemsByDoenetId }) {
     attributeString += ` shuffleItemWeights`;
   }
 
-  let childrenString = ``;
-
-  childrenString += orderToDoenetML({ order: activity.order, itemsByDoenetId });
-
-  if (activity.variantControl) {
-    childrenString += variantControlToDoenetML(activity.variantControl);
+  if(activity.numberOfVariants !== undefined) {
+    attributeString += ` numberOfVariants="${activity.numberOfVariants}"`;
   }
 
+  let childrenString = orderToDoenetML({ order: activity.order, itemsByDoenetId });
+
+    
   return `<document${attributeString}>\n${childrenString}</document>`
 
 }
@@ -63,21 +62,5 @@ function pageToDoenetML({ pageDoenetId, indentLevel = 1, itemsByDoenetId }) {
   }
 
   return `${indentSpacing}<page cid="${pageCid}" />\n`;
-
-}
-
-function variantControlToDoenetML(variantControl) {
-
-  let parameterString = "";
-
-  if (variantControl.nVariants) {
-    parameterString += ` nVariants="${variantControl.nVariants}"`
-  }
-
-  if (variantControl.seeds) {
-    parameterString += ` seeds="${variantControl.seeds.join(" ")}"`
-  }
-
-  return `  <variantControl${parameterString} />\n`;
 
 }

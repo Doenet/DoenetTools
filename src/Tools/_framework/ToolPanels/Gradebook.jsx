@@ -157,8 +157,8 @@ const assignmentDataQuerry = atom({
     key: 'assignmentDataQuerry/Default',
     get: async ({ get }) => {
       try {
-        const driveId = get(searchParamAtomFamily('driveId'));
-        const driveIdPayload = { params: { driveId } };
+        const courseId = get(searchParamAtomFamily('courseId'));
+        const driveIdPayload = { params: { driveId: courseId } };
         const { data } = await axios.get(
           '/api/loadAssignments.php',
           driveIdPayload,
@@ -206,8 +206,8 @@ export const studentDataQuerry = atom({
   default: selector({
     key: 'studentDataQuerry/Default',
     get: async ({ get }) => {
-      const driveId = get(searchParamAtomFamily('driveId'));
-      const driveIdPayload = { params: { driveId } };
+      const courseId = get(searchParamAtomFamily('courseId'));
+      const driveIdPayload = { params: { driveId: courseId } };
       try {
         const { data } = await axios.get(
           '/api/loadGradebookEnrollment.php',
@@ -262,9 +262,9 @@ export const overViewDataQuerry = atom({
     key: 'overViewDataQuerry/Default',
     get: async ({ get }) => {
       try {
-        const driveId = get(searchParamAtomFamily('driveId'));
+        const courseId = get(searchParamAtomFamily('courseId'));
 
-        const driveIdPayload = { params: { driveId } };
+        const driveIdPayload = { params: { driveId: courseId } };
         let { data } = await axios.get(
           '/api/loadGradebookOverview.php',
           driveIdPayload,
@@ -913,7 +913,7 @@ export default function Gradebook(props) {
 
   const setDriveId = useSetRecoilState(driveId);
 
-  setDriveId(useRecoilValue(searchParamAtomFamily('driveId')));
+  setDriveId(useRecoilValue(searchParamAtomFamily('courseId')));
 
   //console.log("driveId: ", useRecoilValue(driveId))
   return <GradebookOverview />;

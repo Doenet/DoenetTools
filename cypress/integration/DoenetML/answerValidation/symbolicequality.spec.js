@@ -799,5 +799,148 @@ describe('Symbolic equality tests', function () {
 
   });
 
+  it('symbolic equality with simplification, exponentials', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <p><text>a</text></p>
+    <math name='eans'>-5 *e^(-t)</math>
+    <math name='expans'>-5 *exp(-t)</math>
+
+    <answer symbolicEquality simplifyOnCompare>$eans</answer>
+    <answer symbolicEquality simplifyOnCompare>$expans</answer>
+    <answer symbolicEquality simplifyOnCompare>$(eans{simplify})</answer>
+    <answer symbolicEquality simplifyOnCompare>$(expans{simplify})</answer>
+    
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+
+      let mathinput2Name = stateVariables['/_answer2'].stateValues.inputChildren[0].componentName
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+
+      let mathinput3Name = stateVariables['/_answer3'].stateValues.inputChildren[0].componentName
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
+      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
+      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
+
+
+      let mathinput4Name = stateVariables['/_answer4'].stateValues.inputChildren[0].componentName
+      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+      let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
+      let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
+      let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinput2SubmitAnchor).should('be.visible');
+      cy.get(mathinput3SubmitAnchor).should('be.visible');
+      cy.get(mathinput4SubmitAnchor).should('be.visible');
+
+
+      cy.log("Submit original form")
+      cy.get(mathinputAnchor).type('-5e^-t{enter}', { force: true });
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinput2Anchor).type('-5e^-t{enter}', { force: true });
+      cy.get(mathinput2CorrectAnchor).should('be.visible');
+      cy.get(mathinput3Anchor).type('-5e^-t{enter}', { force: true });
+      cy.get(mathinput3CorrectAnchor).should('be.visible');
+      cy.get(mathinput4Anchor).type('-5e^-t{enter}', { force: true });
+      cy.get(mathinput4CorrectAnchor).should('be.visible');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer3'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer4'].stateValues.creditAchieved).eq(1);
+      });
+
+      
+      cy.log("Submit as exp")
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}-5exp(-t)', { force: true });
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}-5exp(-t)', { force: true });
+      cy.get(mathinput2SubmitAnchor).click();
+      cy.get(mathinput2CorrectAnchor).should('be.visible');
+      cy.get(mathinput3Anchor).type('{ctrl+home}{shift+end}{backspace}-5exp(-t)', { force: true });
+      cy.get(mathinput3SubmitAnchor).click();
+      cy.get(mathinput3CorrectAnchor).should('be.visible');
+      cy.get(mathinput4Anchor).type('{ctrl+home}{shift+end}{backspace}-5exp(-t)', { force: true });
+      cy.get(mathinput4SubmitAnchor).click();
+      cy.get(mathinput4CorrectAnchor).should('be.visible');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer3'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer4'].stateValues.creditAchieved).eq(1);
+      });
+
+
+      cy.log("Submit as ratio with exponent")
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}-5/e^t', { force: true });
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}-5/e^t', { force: true });
+      cy.get(mathinput2SubmitAnchor).click();
+      cy.get(mathinput2CorrectAnchor).should('be.visible');
+      cy.get(mathinput3Anchor).type('{ctrl+home}{shift+end}{backspace}-5/e^t', { force: true });
+      cy.get(mathinput3SubmitAnchor).click();
+      cy.get(mathinput3CorrectAnchor).should('be.visible');
+      cy.get(mathinput4Anchor).type('{ctrl+home}{shift+end}{backspace}-5/e^t', { force: true });
+      cy.get(mathinput4SubmitAnchor).click();
+      cy.get(mathinput4CorrectAnchor).should('be.visible');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer3'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer4'].stateValues.creditAchieved).eq(1);
+      });
+
+
+      cy.log("Submit as ratio with exp")
+      cy.get(mathinputAnchor).type('{ctrl+home}{shift+end}{backspace}-5/exp(t)', { force: true });
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinput2Anchor).type('{ctrl+home}{shift+end}{backspace}-5/exp(t)', { force: true });
+      cy.get(mathinput2SubmitAnchor).click();
+      cy.get(mathinput2CorrectAnchor).should('be.visible');
+      cy.get(mathinput3Anchor).type('{ctrl+home}{shift+end}{backspace}-5/exp(t)', { force: true });
+      cy.get(mathinput3SubmitAnchor).click();
+      cy.get(mathinput3CorrectAnchor).should('be.visible');
+      cy.get(mathinput4Anchor).type('{ctrl+home}{shift+end}{backspace}-5/exp(t)', { force: true });
+      cy.get(mathinput4SubmitAnchor).click();
+      cy.get(mathinput4CorrectAnchor).should('be.visible');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer2'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer3'].stateValues.creditAchieved).eq(1);
+        expect(stateVariables['/_answer4'].stateValues.creditAchieved).eq(1);
+      });
+
+    })
+
+
+  });
+
 
 });

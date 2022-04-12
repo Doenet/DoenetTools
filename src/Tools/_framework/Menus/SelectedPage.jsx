@@ -16,7 +16,7 @@ export default function SelectedPage() {
   // const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
-  const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
+  const courseId = useRecoilValue(searchParamAtomFamily('couresId'))
   const { create, renameItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
 

@@ -63,7 +63,7 @@ import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPane
 
 export default function CourseNavigator() {
   console.log("=== CourseNavigator")
-  const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
@@ -88,7 +88,7 @@ export default function CourseNavigator() {
       newObj.push(clearSelections)
       return newObj;
     })
-  },[])
+  },[clearSelections, setMainPanelClick])
 
 
   if (!coursePermissionsAndSettings){
@@ -284,7 +284,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     if (e.shiftKey){
       //Shift Click
       //Select all items from the last one selected to this one
-      //TODO: use path to filter to correct section
+      //TODO: use sectionId to filter to correct section
       const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
       //build allRenderedRows on the fly
       let allRenderedRows = [];
@@ -398,7 +398,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     setSelectionMenu(null);
   }
 
-},[doenetId,courseId])
+},[doenetId, courseId, setSelectionMenu])
 
   let bgcolor = '#ffffff';
   if (isSelected){
@@ -408,7 +408,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   } 
 
   //Used to open editor or assignment
-  let handleDoubleClick = useRecoilCallback(({snapshot,set})=> async (e)=>{
+  let handleDoubleClick = useRecoilCallback(({snapshot})=> async (e)=>{
     let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
     console.log("Double CLICK!",doenetId,clickedItem)
     e.preventDefault();
@@ -444,11 +444,11 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     }
     //TODO: use item type and role to determine what to update
     if (clickedItem.type == 'page'){
-      setPageToolView((was)=>{return {
+      setPageToolView((prev)=>{return {
         page: 'course',
         tool: 'editor',
-        view: was.view,
-        params: { doenetId, path:was.params.path },
+        view: prev.view,
+        params: { doenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId },
         }})
     }else if (clickedItem.type == 'activity'){
       
@@ -457,18 +457,18 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       if (pageDoenetId == null){
         addToast(`ERROR: No page found in activity`, toastType.INFO);
       }else{
-        setPageToolView((was)=>{return {
+        setPageToolView((prev)=>{return {
           page: 'course',
           tool: 'editor',
-          view: was.view,
-          params: { doenetId:pageDoenetId, path:was.params.path },
+          view: prev.view,
+          params: { doenetId:pageDoenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId },
           }})
       }
     }
 
 
 
-  },[doenetId])
+  },[addToast, doenetId, setPageToolView])
 
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
   const indentPx = 25;

@@ -4439,4 +4439,133 @@ describe('Specifying single variant document tests', function () {
 
   })
 
+  it('document inherits variants from single problem', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.log("get both options and then they repeat")
+    for (let ind = 1; ind <= 3; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
+        cy.reload();
+      }
+
+      let doenetML = `
+      <problem>
+        <variantControl nVariants="2" variantNames="apple orange" />
+        <text>${ind}</text>
+        <setup>
+          <select assignNames="(fruit)">
+            <option selectForVariantNames="apple"><text>apple</text></option>
+            <option selectForVariantNames="orange"><text>orange</text></option>
+          </select>
+        </setup>
+        <p>Enter $fruit:
+          <answer type="text">$fruit</answer>
+        </p>
+      </problem>
+      `
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML,
+          requestedVariant: { index: ind },
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      let fruit = ["apple", "orange"][(ind-1) % 2 ];
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+
+        let textinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let textinputAnchor = '#' + textinputName + '_input';
+        let textinputSubmitAnchor = '#' + textinputName + '_submit';
+        let textinputCorrectAnchor = '#' + textinputName + '_correct';
+        let textinputIncorrectAnchor = '#' + textinputName + '_incorrect';
+
+
+        expect(stateVariables["/fruit"].stateValues.value).eq(fruit);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["apple", "orange"])
+        expect(stateVariables["/_document1"].sharedParameters.variantName).eq(fruit)
+
+        cy.get(textinputAnchor).type(`${fruit}{enter}`);
+
+        cy.get(textinputCorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([fruit]);
+
+        });
+
+        cy.wait(2000);  // wait for 1 second debounce
+        cy.reload();
+
+        cy.window().then(async (win) => {
+          win.postMessage({
+            doenetML,
+            requestedVariant: { index: ind },
+          }, "*");
+        })
+
+        // to wait for page to load
+        cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+        // wait until core is loaded
+        cy.waitUntil(() => cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          return stateVariables["/_answer1"];
+        }))
+
+
+        cy.get(textinputAnchor).should('have.value', `${fruit}`)
+        cy.get(textinputCorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([fruit]);
+        });
+
+        cy.get(textinputAnchor).type(`{end}s`);
+        cy.get(textinputSubmitAnchor).click();
+        cy.get(textinputIncorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([fruit + "s"]);
+        });
+
+        cy.get(textinputAnchor).type(`{end}{backspace}`);
+        cy.get(textinputSubmitAnchor).click();
+        cy.get(textinputCorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([fruit]);
+        });
+
+      })
+
+    }
+
+
+  });
+
+
+
 });

@@ -122,9 +122,7 @@ export default function PageViewer(props) {
   const resolveAllStateVariables = useRef(null);
   const actionsBeforeCoreCreated = useRef([]);
 
-  const coreWorker = useRef(
-    new Worker(props.unbundledCore ? 'core/CoreWorker.js' : 'viewer/core.js', { type: 'module' })
-  );
+  const coreWorker = useRef(null);
 
   const [saveStatesWorker, setSaveStatesWorker] = useState(null);
 
@@ -135,52 +133,62 @@ export default function PageViewer(props) {
 
   useEffect(() => {
 
-    coreWorker.current.onmessage = function (e) {
-      // console.log('message from core', e.data)
-      if (e.data.messageType === "updateRenderers") {
-        if (e.data.init && coreInfo.current) {
-          // we don't initialize renderer state values if already have a coreInfo
-          // as we must have already gotten the renderer information before core was created
-        } else {
-          updateRenderers(e.data.args)
+    if (coreWorker.current) {
+      coreWorker.current.onmessage = function (e) {
+        // console.log('message from core', e.data)
+        if (e.data.messageType === "updateRenderers") {
+          if (e.data.init && coreInfo.current) {
+            // we don't initialize renderer state values if already have a coreInfo
+            // as we must have already gotten the renderer information before core was created
+          } else {
+            updateRenderers(e.data.args)
+          }
+        } else if (e.data.messageType === "requestAnimationFrame") {
+          requestAnimationFrame(e.data.args);
+        } else if (e.data.messageType === "cancelAnimationFrame") {
+          cancelAnimationFrame(e.data.args);
+        } else if (e.data.messageType === "coreCreated") {
+          coreCreated.current = true;
+          setStage('coreCreated');
+        } else if (e.data.messageType === "initializeRenderers") {
+          if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
+            // we already initialized renderers before core was created
+            // so don't initialize them again when core is createad and this is called a second time
+          } else {
+            initializeRenderers(e.data.args)
+          }
+        } else if (e.data.messageType === "updateCreditAchieved") {
+          props.updateCreditAchievedCallback?.(e.data.args);
+        } else if (e.data.messageType === "savedState") {
+          props.saveStateCallback?.();
+        } else if (e.data.messageType === "sendToast") {
+          console.log(`Sending toast message: ${e.data.args.message}`);
+          toast(e.data.args.message, e.data.args.toastType)
+        } else if (e.data.messageType === "resolveAction") {
+          resolveAction(e.data.args)
+        } else if (e.data.messageType === "returnAllStateVariables") {
+          console.log(e.data.args)
+          resolveAllStateVariables.current(e.data.args);
+        } else if (e.data.messageType === "inErrorState") {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true)
+          }
+          setErrMsg(e.data.args.errMsg);
+        } else if (e.data.messageType === "resetPage") {
+          resetPage(e.data.args);
         }
-      } else if (e.data.messageType === "requestAnimationFrame") {
-        requestAnimationFrame(e.data.args);
-      } else if (e.data.messageType === "cancelAnimationFrame") {
-        cancelAnimationFrame(e.data.args);
-      } else if (e.data.messageType === "coreCreated") {
-        coreCreated.current = true;
-        setStage('coreCreated');
-      } else if (e.data.messageType === "initializeRenderers") {
-        if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
-          // we already initialized renderers before core was created
-          // so don't initialize them again when core is createad and this is called a second time
-        } else {
-          initializeRenderers(e.data.args)
-        }
-      } else if (e.data.messageType === "updateCreditAchieved") {
-        props.updateCreditAchievedCallback?.(e.data.args);
-      } else if (e.data.messageType === "savedState") {
-        props.saveStateCallback?.();
-      } else if (e.data.messageType === "sendToast") {
-        console.log(`Sending toast message: ${e.data.args.message}`);
-        toast(e.data.args.message, e.data.args.toastType)
-      } else if (e.data.messageType === "resolveAction") {
-        resolveAction(e.data.args)
-      } else if (e.data.messageType === "returnAllStateVariables") {
-        console.log(e.data.args)
-        resolveAllStateVariables.current(e.data.args);
-      } else if (e.data.messageType === "inErrorState") {
-        if (props.setIsInErrorState) {
-          props.setIsInErrorState(true)
-        }
-        setErrMsg(e.data.args.errMsg);
-      } else if (e.data.messageType === "resetPage") {
-        resetPage(e.data.args);
       }
     }
   }, [coreWorker.current]);
 
+
+  useEffect(() => {
+    return () => {
+      if (coreWorker.current) {
+        coreWorker.current.terminate();
+      }
+    }
+  }, [])
 
   useEffect(() => {
 
@@ -635,6 +643,8 @@ export default function PageViewer(props) {
 
     console.log(`send message to create core ${pageId}`)
 
+    coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : 'viewer/core.js', { type: 'module' });
+
     coreWorker.current.postMessage({
       messageType: "createCore",
       args: {
@@ -852,14 +862,10 @@ export default function PageViewer(props) {
 
   } else if (stage === 'waitingOnCore' && !props.pageIsActive) {
     // we've moved off this page, but core is still being initialized
-    // kill the core worker and create a new one
-
-    console.log('terminating worker!!')
+    // kill the core worker
 
     coreWorker.current.terminate();
-
-    coreWorker.current =
-      new Worker(props.unbundledCore ? 'core/CoreWorker.js' : 'viewer/core.js', { type: 'module' });
+    coreWorker.current = null;
 
     setStage('readyToCreateCore');
 

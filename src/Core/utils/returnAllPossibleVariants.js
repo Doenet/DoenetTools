@@ -14,10 +14,12 @@ export async function returnAllPossibleVariants({
     cid = await cidFromText(doenetML);
   }
 
+  let componentInfoObjects = createComponentInfoObjects(flags);
+
   let { fullSerializedComponents } = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
     contentIds: [cid],
     doenetMLs: [doenetML],
-    componentInfoObjects: createComponentInfoObjects(flags),
+    componentInfoObjects,
     flags,
   });
 
@@ -27,36 +29,18 @@ export async function returnAllPossibleVariants({
 
   let document = serializedComponents[0];
 
-  let variantControlChild;
+  let results = serializeFunctions.getNumberOfVariants({
+    serializedComponent: document,
+    componentInfoObjects
+  })
 
-  // look for variantControl child document
-  for (let [ind, child] of document.children.entries()) {
-    if (child.componentType === "variantControl") {
-      variantControlChild = child;
-      break;
-    }
-  }
+  let nVariants = results.numberOfVariants;
 
-
-  let nVariants = 100;
   let allPossibleVariants;
 
+  if (results.variantNames) {
 
-  if (variantControlChild !== undefined) {
-
-    // create variant names from variant control child
-
-    if (variantControlChild.attributes && variantControlChild.attributes.nVariants) {
-      nVariants = Math.round(Number(variantControlChild.attributes.nVariants.primitive));
-    }
-
-    let variantNames = [];
-    if (variantControlChild.attributes && variantControlChild.attributes.variantNames) {
-      let variantNamesComponent = variantControlChild.attributes.variantNames.component;
-
-      variantNames = variantNamesComponent.children.map(x => x.toLowerCase().substring(0, 1000));
-    }
-
+    let variantNames = [...results.variantNames];
 
     if (variantNames.length >= nVariants) {
       variantNames = variantNames.slice(0, nVariants);
