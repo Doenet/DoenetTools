@@ -10,9 +10,11 @@ import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import { useToast } from '../Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
+import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 
 export default function SelectedPage() {
-  // const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   // const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
@@ -73,6 +75,38 @@ export default function SelectedPage() {
   
   return <>
   {heading}
+  <ActionButtonGroup vertical>
+  <ActionButton
+          width="menu"
+          value="Edit Page"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'editor',
+              view: '',
+              params: {
+                courseId,
+                doenetId,
+              },
+            });
+          }}
+        />
+  <ActionButton
+          width="menu"
+          value="View Page"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'assignment',
+              view: '',
+              params: {
+                courseId,
+                doenetId,
+              },
+            });
+          }}
+        />
+  </ActionButtonGroup>
   <Textfield
       label="Label"
       vertical

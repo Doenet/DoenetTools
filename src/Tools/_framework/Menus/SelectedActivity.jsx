@@ -31,7 +31,7 @@ import {
 // import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 // import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-// import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 // import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 // import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 // import useSockets from '../../../_reactComponents/Sockets';
@@ -151,6 +151,38 @@ export default function SelectedActivity() {
   
   return <>
   {heading}
+  <ActionButtonGroup vertical>
+  <ActionButton
+          width="menu"
+          value="Edit Activity"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'editor',
+              view: '',
+              params: {
+                courseId,
+                doenetId,
+              },
+            });
+          }}
+        />
+  <ActionButton
+          width="menu"
+          value="View Activity"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'assignment',
+              view: '',
+              params: {
+                courseId,
+                doenetId,
+              },
+            });
+          }}
+        />
+  </ActionButtonGroup>
   <Textfield
       label="Label"
       vertical
@@ -162,6 +194,7 @@ export default function SelectedActivity() {
       }}
       onBlur={handelLabelModfication}
     />
+    
     <br />
     <ButtonGroup vertical>
       <Button
@@ -179,6 +212,14 @@ export default function SelectedActivity() {
         value="Add Page"
       />
     </ButtonGroup>
+    <br />
+    <ActionButton
+          width="menu"
+          value="Assign Assignment (FAKE)"
+          onClick={() => {
+            console.log("ASSIGN")
+          }}
+        />
   <AssignmentSettings role={effectiveRole} doenetId={doenetId} />
   </>
 
