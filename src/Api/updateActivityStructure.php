@@ -32,6 +32,7 @@ if (!array_key_exists('courseId', $_POST)) {
 if ($success){
     $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
     $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
+    $makeMultiPage = mysqli_real_escape_string($conn, $_POST['makeMultiPage']);
     $json = json_encode($_POST['newJSON']);
     $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
     if ($permissions["canEditContent"] != '1'){
@@ -48,6 +49,15 @@ if ($success) {
     AND courseId='$courseId'
     ";
     $result = $conn->query($sql);
+    if ($makeMultiPage){
+        $sql = "
+        UPDATE course_content
+        SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.isSinglePage',false)
+        WHERE doenetId='$doenetId'
+        AND courseId='$courseId'
+        ";
+        $result = $conn->query($sql);
+    }
 }
 
 

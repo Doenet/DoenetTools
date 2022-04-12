@@ -169,6 +169,11 @@ function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
 
 function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
   // console.log("Activity itemInfo",itemInfo)
+  if (itemInfo.isSinglePage){
+    return <>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel}/>
+     </>
+  }
   if (itemInfo.isOpen){
     return <>
     <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}/>
