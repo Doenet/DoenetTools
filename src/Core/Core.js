@@ -9253,6 +9253,10 @@ export default class Core {
       )
     }
 
+    postMessage({
+      messageType: "savedState"
+    })
+
     if (!this.flags.allowSaveState) {
       return;
     }
@@ -9278,9 +9282,6 @@ export default class Core {
     // if not currently in throttle, save changes to database
     this.saveChangesToDatabase();
 
-    postMessage({
-      messageType: "savedState"
-    })
 
   }
 
