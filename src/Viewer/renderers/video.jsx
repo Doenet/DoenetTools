@@ -325,60 +325,46 @@ export default function Video(props) {
 
   }
 
-  if (SVs.hidden) return null;
-  return (
-    <div style={{ margin:"12px 0", display: "flex", justifyContent: "left", alignItems:"center" }}>
+  if (SVs.hidden) {
+    return null;
+  }
+
+  if (SVs.youtube) {
+    return <>
       <a name={name} />
-      {
-        SVs.youtube ? 
-          <div className="video" id={name} />
-        : SVs.source ? 
-          <video className="video" id={name} controls width="100%" >
-            <source src={SVs.source} type={`video/${SVs.source.split('/').pop().split('.').pop()}`} />
-            Your browser does not support the &lt;video&gt; tag.
-          </video>
-        :
-          <span id={name}>{SVs.text}</span>
-      }
-    </div>
-  ) 
+      <div className="video" id={name} />
+    </>
+  } else if (SVs.source) {
+    let extension = SVs.source.split('/').pop().split('.').pop();
+    let type;
+    if (extension === "ogg") {
+      type = "video/ogg";
+    } else if (extension === "webm") {
+      type = "video/webm";
+    } else if (extension === "mp4") {
+      type = "video/mp4";
+    } else {
+      console.warn("Haven't implemented video for any extension other than .ogg, .webm, .mp4");
+    }
+    if (type) {
 
-  // if (SVs.youtube) {
-  //   return <>
-  //     <a name={name} />
-  //     <div className="video" id={name} />
-  //   </>
-  // } else if (SVs.source) {
-  //   let extension = SVs.source.split('/').pop().split('.').pop();
-    // let type;
-    // if (extension === "ogg") {
-    //   type = "video/ogg";
-    // } else if (extension === "webm") {
-    //   type = "video/webm";
-    // } else if (extension === "mp4") {
-    //   type = "video/mp4";
-    // } else {
-    //   console.warn("Haven't implemented video for any extension other than .ogg, .webm, .mp4");
-    // }
-    // if (!type) return null
+      return <React.Fragment>
+        <a name={name} />
+        <video className="video" id={name} style={{ objectFit: "fill" }} controls={true} width={sizeToCSS(SVs.width)} height={sizeToCSS(SVs.height)}>
+          <source src={SVs.source} type={type} />
+        Your browser does not support the &lt;video&gt; tag.
+      </video>
+      </React.Fragment>
+    } else {
+      return null;
+    }
+  }
 
-    // return (
-    // <React.Fragment>
-    //   <a name={name} />
-    //   <video className="video" id={name} style={{ objectFit: "fill" }} controls={true} width={sizeToCSS(SVs.width)} height={sizeToCSS(SVs.height)}>
-    //     <source src={SVs.source} type={type} />
-    //   Your browser does not support the &lt;video&gt; tag.
-    // </video>
-    // </React.Fragment>
-    //   ) 
-    
-  
-
-  // console.warn("No video returned youtube or no valid sources specified");
-  // return null;
+  console.warn("No video returned youtube or no valid sources specified");
+  return null;
 
 
-  // return <><a name={name} /><span id={name}>{SVs.text}</span></>
+  return <><a name={name} /><span id={name}>{SVs.text}</span></>
 }
 
 

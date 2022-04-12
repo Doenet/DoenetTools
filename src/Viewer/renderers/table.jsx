@@ -42,11 +42,9 @@ export default function Table(props) {
 
     heading = <div id={name + "_title"}>{title}</div>
 
-    return (
-      <div id={name} style={{ margin: "12px 0" }}>
-        <a name={name} />
-        {heading}
-        {childrenToRender}
-      </div>
-    )
+    return <div id={name} >
+      <a name={name} />
+      {heading}
+      {childrenToRender}
+    </div>
 }

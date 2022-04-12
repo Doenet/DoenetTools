@@ -38,12 +38,10 @@ export default function Figure(props) {
       }
     }
 
-    return (
-      <figure id={name} style={{ margin: "12px 0" }}>
-        <a name={name} />
-        {childrenToRender}
-        <figcaption id={ name + "_caption" }>{caption}</figcaption>
-      </figure>
-    )
+    return <figure id={name} >
+      <a name={name} />
+      {childrenToRender}
+      <figcaption id={ name + "_caption" }>{caption}</figcaption>
+    </figure>
 }
 
