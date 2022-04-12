@@ -94,18 +94,21 @@ let editor = <div
 </div>
 
 
- return <><a name={name} />
- <div style={{
-  padding: "0px",
-  border: "1px solid black",
-  height: sizeToCSS(componentHeight),
-  width: sizeToCSS(componentWidth),
-  display: 'flex',
-  flexDirection: 'column',
- }}>
-  {editor}
-  {viewer}
+ return(
+  <div style={{ margin:"12px 0" }}>
+    <a name={name} />
+    <div style={{
+      padding: "0",
+      border: "1px solid black",
+      height: sizeToCSS(componentHeight),
+      width: sizeToCSS(componentWidth),
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      {editor}
+      {viewer}
+    </div>
   </div>
-  </>
+ ) 
 
 }
