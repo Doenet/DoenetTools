@@ -93,9 +93,9 @@ export default function SelectedActivity() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const { renameItem } = useCourse(courseId);
+  const { renameItem, create, compileActivity } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
-  let { create } = useCourse(courseId);
+  const addToast = useToast();
 
   useEffect(()=>{
     if (itemTextFieldLabel !== itemObj.label){
@@ -120,7 +120,6 @@ export default function SelectedActivity() {
     }
   };
 
-  const addToast = useToast();
   let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
     <FontAwesomeIcon icon={faFileCode} /> {itemObj.label} 
   </h2>)
@@ -171,15 +170,20 @@ export default function SelectedActivity() {
           width="menu"
           value="View Activity"
           onClick={() => {
-            setPageToolView({
-              page: 'course',
-              tool: 'assignment',
-              view: '',
-              params: {
-                courseId,
-                doenetId,
-              },
-            });
+            compileActivity({
+              activityDoenetId:doenetId,successCallback:()=>{
+                addToast("Activity compiled!", toastType.INFO);
+                setPageToolView({
+                  page: 'course',
+                  tool: 'assignment',
+                  view: '',
+                  params: {
+                    courseId,
+                    doenetId,
+                  },
+                });
+              }
+            })
           }}
         />
   </ActionButtonGroup>
@@ -217,7 +221,11 @@ export default function SelectedActivity() {
           width="menu"
           value="Assign Assignment (FAKE)"
           onClick={() => {
-            console.log("ASSIGN")
+            compileActivity({
+              activityDoenetId:doenetId,isAssigned:true,successCallback:()=>{
+                addToast("Activity compiled and Assigned!", toastType.INFO);
+              }
+            })
           }}
         />
   <AssignmentSettings role={effectiveRole} doenetId={doenetId} />

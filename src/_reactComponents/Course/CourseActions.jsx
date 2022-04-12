@@ -763,5 +763,97 @@ export const useCourse = (courseId) => {
 [courseId, defaultFailure],
 );
 
-  return { create, deleteCourse, modifyCourse, label, color, image, renameItem };
+const compileActivity = useRecoilCallback(
+  ({ set,snapshot }) =>
+    async ({activityDoenetId, successCallback, isAssigned=false, failureCallback = defaultFailure}) => {
+
+      async function orderToDoenetML({ order, indentLevel = 1 }) {
+        // TODO: list of possible order attributes
+        let attributes = ["behavior", "numberToSelect", "withReplacement"];
+      
+        let orderParameters = attributes.filter(x => x in order)
+          .map(x => `${x}="${order[x]}"`).join(" ");
+      
+        let contentStrings = (await Promise.all(order.content
+          .map( x => contentToDoenetML({ content: x, indentLevel: indentLevel + 1 }))))
+          .join("");
+      
+        let indentSpacing = "  ".repeat(indentLevel);
+      
+        return `${indentSpacing}<order ${orderParameters}>\n${contentStrings}${indentSpacing}</order>\n`;
+      }
+      
+      async function contentToDoenetML({ content, indentLevel = 1 }) {
+        if (content.type === "order") {
+          return await orderToDoenetML({ order: content, indentLevel });
+        } else if (typeof content === "string") {
+          return await pageToDoenetML({ pageDoenetId: content, indentLevel });
+        } else {
+          throw Error("Invalid activity definition: content must be an order or a doenetId specifying a page")
+        }
+      }
+      
+      async function pageToDoenetML({ pageDoenetId, indentLevel = 1 }) {
+        let indentSpacing = "  ".repeat(indentLevel);
+        
+        let pageCid = (await snapshot.getPromise(authorItemByDoenetId(pageDoenetId)))?.cid;
+      
+        if (!pageCid) {
+          throw Error(`Invalid page doenetId in order: ${pageDoenetId}`);
+        }
+      
+        return `${indentSpacing}<page cid="${pageCid}" />\n`;
+      }
+
+      let activity = await snapshot.getPromise(authorItemByDoenetId(activityDoenetId));
+
+      let attributeString = ` xmlns="https://doenet.org/spec/doenetml/v${activity.version}" type="activity"`
+
+      if(activity.itemWeights) {
+        attributeString += ` itemWeights = "${activity.itemWeights.join(" ")}"`;
+      }
+
+      if(activity.shuffleItemWeights) {
+        attributeString += ` shuffleItemWeights`;
+      }
+
+      if(activity.numberOfVariants !== undefined) {
+        attributeString += ` numberOfVariants="${activity.numberOfVariants}"`;
+      }
+
+      let childrenString;
+      try {
+        childrenString = await orderToDoenetML({ order: activity.order });
+      } catch (err) {
+        failureCallback(err);
+      }
+        
+      let activityDoenetML = `<document${attributeString}>\n${childrenString}</document>`
+
+      try {
+        let resp = await axios.post('/api/saveCompiledActivity.php', { courseId, doenetId:activityDoenetId, isAssigned, activityDoenetML });
+        if (resp.status < 300) {
+        let { success, message, cid } = resp.data;
+
+        let key = 'draftCid';
+        if (isAssigned){
+          key = 'assignedCid'
+        }
+        
+        //save the cid in assignedCid or draftCid
+        set(authorItemByDoenetId(activityDoenetId),(prev)=>{
+          let next = {...prev}
+          next[key] = cid;
+          return next;
+        })
+          successCallback?.();
+        } else {
+          throw new Error(`response code: ${resp.status}`);
+        }
+      } catch (err) {
+        failureCallback(err);
+      }
+    });
+
+  return { create, deleteCourse, modifyCourse, label, color, image, renameItem, compileActivity };
 };
