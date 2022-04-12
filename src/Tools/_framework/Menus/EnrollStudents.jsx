@@ -9,7 +9,7 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 export default function EnrollStudents(){
 const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
-const courseId = useRecoilValue(searchParamAtomFamily('couresId'))
+const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
   
   return <ButtonGroup vertical>
   <Button width="menu" onClick={()=>setPageToolView({page:'course',tool:"enrollment",view:"",params:{courseId}})} value="Go to Enrollment">Go to Enrollment</Button>

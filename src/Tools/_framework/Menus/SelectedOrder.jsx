@@ -12,7 +12,7 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 export default function SelectedOrder() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
-  const courseId = useRecoilValue(searchParamAtomFamily('couresId'))
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
   let { create } = useCourse(courseId);
 
   let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
