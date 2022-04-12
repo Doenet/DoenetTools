@@ -6,7 +6,9 @@ const Container = styled.div`
   display: ${props => props.align};
   align-items: ${props => props.alignItems};
 `;
+
 const Svg = styled.svg``;
+
 const Rect = styled.rect`;
   x: 0px;
   y: 0px;
@@ -18,7 +20,9 @@ const Rect = styled.rect`;
   // Usage: <ProgressBar width=400/> to set the width of the progress bar to 400px
   width: ${props => (props.width).toString() + "px"};
 `;
+
 const DonutG = styled.g``;
+
 const Circle = styled.circle`
   cy: 12.5px;
 `;
@@ -52,20 +56,20 @@ export default function ProgressBar(props) {
     <Circle
       id="donut" 
       cx={donutPosition}
-      fill="rgb(238,161,119)" 
+      fill="var(--donutBody)" 
       r="12.5" 
     />
     <Circle
       id="donut-topping"
       cx={donutPosition}
-      fill="rgb(109,68,69)"
+      fill="var(--donutTopping)"
       r="10"
     />
     <Circle 
       id="donut-hole"  
       cx={donutPosition}
       r="4" 
-      fill="#E2E2E2"
+      fill="var(--mainGray)"
     />
   </DonutG>
     
@@ -108,12 +112,12 @@ export default function ProgressBar(props) {
     <Container align={align} alignItems={alignItems}>
       <Label labelVisible={labelVisible} align={align}>{label}</Label>
       <Svg width={barWidth} height={height}>
-        <Rect id="main" fill="#E2E2E2" width={barWidth} height={height} radius={radius} aria-label={ariaLabel}/>
-        <Rect id="moving" fill="#1A5A99" width={fillWidth} height={height} radius={radius}/>
+        <Rect id="main" fill="var(--mainGray)" width={barWidth} height={height} radius={radius} aria-label={ariaLabel}/>
+        <Rect id="moving" fill="var(--mainBlue)" width={fillWidth} height={height} radius={radius}/>
         {props.donutIcon ? donut : ''}
       </Svg>
       {props.showProgress ? <Progress>{percent}</Progress> : ''}
     </Container>
   );
-}
+};
   
