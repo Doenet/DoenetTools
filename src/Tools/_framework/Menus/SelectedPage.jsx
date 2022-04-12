@@ -7,18 +7,21 @@ import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_
 // import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import { useToast } from '../Toast';
+import { useToast, toastType } from '@Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
+import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 
 export default function SelectedPage() {
-  // const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   // const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
-  const courseId = useRecoilValue(searchParamAtomFamily('couresId'))
-  const { create, renameItem } = useCourse(courseId);
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
+  const { create, renameItem, compileActivity } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
+  const addToast = useToast();
 
   useEffect(()=>{
     if (itemTextFieldLabel !== itemObj.label){
@@ -43,36 +46,50 @@ export default function SelectedPage() {
     }
   };
 
-  const addToast = useToast();
   let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
     <FontAwesomeIcon icon={faCode} /> {itemObj.label} 
   </h2>)
 
-
-  // if (effectiveRole === 'student') {
-  //   return (
-  //     <>
-  //       {heading}
-  //       <ActionButton
-  //         width="menu"
-  //         value="Take Assignment"
-  //         onClick={() => {
-  //           setPageToolView({
-  //             page: 'course',
-  //             tool: 'assignment',
-  //             view: '',
-  //             params: {
-  //               doenetId,
-  //             },
-  //           });
-  //         }}
-  //       />
-  //     </>
-  //   );
-  // }
   
   return <>
   {heading}
+  <ActionButtonGroup vertical>
+  <ActionButton
+          width="menu"
+          value="Edit Page"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'editor',
+              view: '',
+              params: {
+                courseId,
+                doenetId,
+              },
+            });
+          }}
+        />
+  <ActionButton
+          width="menu"
+          value="View Page"
+          onClick={() => {
+            compileActivity({
+              activityDoenetId:doenetId,successCallback:()=>{
+                addToast("Activity compiled!", toastType.INFO);
+                setPageToolView({
+                  page: 'course',
+                  tool: 'assignment',
+                  view: '',
+                  params: {
+                    courseId,
+                    doenetId,
+                  },
+                });
+              }
+            })
+          }}
+        />
+  </ActionButtonGroup>
   <Textfield
       label="Label"
       vertical
