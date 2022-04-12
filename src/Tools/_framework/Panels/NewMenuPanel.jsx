@@ -1,49 +1,63 @@
-import React, { useState, lazy, useRef, Suspense } from 'react';
-import { atom,  useRecoilValue, useSetRecoilState } from 'recoil';
+import React, { useState, lazy, useRef, Suspense, useEffect } from 'react';
+import {
+  atom,
+  useRecoilValue,
+  useSetRecoilState,
+  useRecoilState,
+} from 'recoil';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faCog, faHome } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronLeft,
+  faCog,
+  faHome,
+} from '@fortawesome/free-solid-svg-icons';
 import Logo from '../Logo';
 import { pageToolViewAtom } from '../NewToolRoot';
+import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 // import Logo from '../Logo';
 
 export const selectedMenuPanelAtom = atom({
-  key:"selectedMenuPanelAtom",
-  default:null
-}) 
+  key: 'selectedMenuPanelAtom',
+  default: null,
+});
 
+export const darkModeAtom = atom({
+  key: 'darkModeAtom',
+  default: JSON.parse(localStorage.getItem('darkModeToggle')),
+});
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
   display: flex;
   flex-direction: column;
- // overflow: auto;
+  // overflow: auto;
   justify-content: flex-start;
   background: #e3e3e3;
   height: 100%;
   overflow-x: hidden;
-  width: ${({hide})=>hide ? '0px' : '240px'};
+  width: ${({ hide }) => (hide ? '0px' : '240px')};
 `;
 
 const MenuPanelsCap = styled.div`
-width: 240px;
-height: 35px;
-background: white;
-display: flex;
-justify-content: space-between;
-align-items: center;
-position: ${(props) => props.fix ? 'static' : 'sticky'};
-border-bottom: 2px solid #e2e2e2;
-margin-bottom: -2px;
-top: 0;
-z-index: 2;
+  width: 240px;
+  height: 35px;
+  background: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: ${(props) => (props.fix ? 'static' : 'sticky')};
+  border-bottom: 2px solid #e2e2e2;
+  margin-bottom: -2px;
+  top: 0;
+  z-index: 2;
 `;
 
 const IconsGroup = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-left: 70px;
+  margin-left: 50px;
   // width: 40px;
 `;
 
@@ -71,15 +85,15 @@ const Branding = styled.div`
 // `;
 
 const MenuPanelsCapComponent = styled.div`
-width: 240px;
-background: white;
-border-top: 1px solid #e2e2e2;
-border-top: 1px solid #e2e2e2;
-border-bottom: 2px solid #e2e2e2;
-margin-bottom: -2px;
-position: sticky;
-top: 35;
-z-index: 2;
+  width: 240px;
+  background: white;
+  border-top: 1px solid #e2e2e2;
+  border-top: 1px solid #e2e2e2;
+  border-bottom: 2px solid #e2e2e2;
+  margin-bottom: -2px;
+  position: sticky;
+  top: 35;
+  z-index: 2;
 `;
 
 const MenuHeaderButton = styled.button`
@@ -92,52 +106,52 @@ const MenuHeaderButton = styled.button`
       linkedPanel === activePanel ? '#white' : 'black'};
   width: 100%;
   height: 100%;
-
 `;
 
 const CloseButton = styled.button`
-background-color: #1A5A99;
-height: 35px;
-width: 20px;
-color: white;
-border: none;
-// display: inline-block;
-position: static;
-left: 220px;
-cursor: pointer;
-z-index: 2;
+  background-color: #1a5a99;
+  height: 35px;
+  width: 20px;
+  color: white;
+  border: none;
+  // display: inline-block;
+  position: static;
+  left: 200px;
+  cursor: pointer;
+  z-index: 2;
 `;
 
 const EditMenuPanels = styled.button`
-background-color: #1A5A99;
-height: 35px;
-width: 35px;
-border: none;
-color: white;
-border-radius: 17.5px;
-font-size: 24px
+  background-color: #1a5a99;
+  height: 35px;
+  width: 35px;
+  border: none;
+  color: white;
+  border-radius: 17.5px;
+  font-size: 24px;
 `;
 
 const MenuPanelTitle = styled.button`
-width: 240px;
-height: 35px;
-background: white;
-display: flex;
-justify-content: center;
-align-items: center;
-border: 0px solid white;
-// border-top: 1px solid black;
-border-bottom: ${props => props.isOpen ? '2px solid black' : '0px solid black'} ;
-margin-top: 2px;
-`
+  width: 240px;
+  height: 35px;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 0px solid white;
+  // border-top: 1px solid black;
+  border-bottom: ${(props) =>
+    props.isOpen ? '2px solid black' : '0px solid black'};
+  margin-top: 2px;
+`;
 
 const SettingsButton = styled.button`
-background-color: white;
-color: black;
-border: none;
-cursor: pointer;
-font-size: 20px;
-`
+  background-color: white;
+  color: black;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+`;
 
 const HomeButton = styled.button`
   color: black;
@@ -147,46 +161,61 @@ const HomeButton = styled.button`
   font-size: 20px;
 `;
 
-function SelectionMenu(props){
-  console.log("child", props.children);
-  return <>
-    <div style={{
-      // paddingTop: "4px", 
-      // marginTop: "2px",
-      paddingBottom: "8px", 
-      paddingLeft: "4px",
-      paddingRight: "4px",
-      // backgroundColor:"hsl(209,54%,90%)"
-      backgroundColor: 'white',
-      borderLeft:"8px solid #1A5A99"
-      }}>
+function SelectionMenu(props) {
+  console.log('child', props.children);
+  return (
+    <>
+      <div
+        style={{
+          // paddingTop: "4px",
+          // marginTop: "2px",
+          paddingBottom: '8px',
+          paddingLeft: '4px',
+          paddingRight: '4px',
+          // backgroundColor:"hsl(209,54%,90%)"
+          backgroundColor: 'white',
+          borderLeft: '8px solid #1A5A99',
+        }}
+      >
         {/* <h3 style={{textAlign: "center", width: "240px", height: "35px",
  fontSize: "16px", marginTop: "5px", marginLeft: "-8px"}}>Current Selection</h3> */}
         {props.children}
-        </div>
-  </>
+      </div>
+    </>
+  );
 }
 
-function Menu(props){
+function Menu(props) {
   let isInitOpen = props.isInitOpen;
-  if (!isInitOpen){isInitOpen = false;}
-  let [isOpen,setIsOpen] = useState(isInitOpen);
+  if (!isInitOpen) {
+    isInitOpen = false;
+  }
+  let [isOpen, setIsOpen] = useState(isInitOpen);
 
   let hideShowStyle = null;
-  if (!isOpen){
-    hideShowStyle = 'none'
+  if (!isOpen) {
+    hideShowStyle = 'none';
   }
 
-  return <>
-    <MenuPanelTitle isOpen={isOpen} onClick={()=>setIsOpen(was=>!was)}><h3>{props.title}</h3></MenuPanelTitle>
-    <div style={{
-      display: hideShowStyle,
-      paddingTop: "4px", 
-      paddingBottom: "4px", 
-      paddingLeft: "4px",
-      paddingRight: "4px",
-      backgroundColor:"white"}}>{props.children}</div>
-  </>
+  return (
+    <>
+      <MenuPanelTitle isOpen={isOpen} onClick={() => setIsOpen((was) => !was)}>
+        <h3>{props.title}</h3>
+      </MenuPanelTitle>
+      <div
+        style={{
+          display: hideShowStyle,
+          paddingTop: '4px',
+          paddingBottom: '4px',
+          paddingLeft: '4px',
+          paddingRight: '4px',
+          backgroundColor: 'white',
+        }}
+      >
+        {props.children}
+      </div>
+    </>
+  );
 }
 
 const LoadingFallback = styled.div`
@@ -200,11 +229,33 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, displayProfile }) {
-console.log(">>>===MenuPanel", hide)
-// console.log(">>>menuPanelCap",menuPanelCap)
-// console.log(">>>currentMenus",currentMenus)
+export default function MenuPanel({
+  hide,
+  menuPanelCap = '',
+  menusTitles = [],
+  currentMenus = [],
+  initOpen = [],
+  setMenusOpen,
+  displayProfile,
+}) {
+  console.log('>>>===MenuPanel', hide);
+  // console.log(">>>menuPanelCap",menuPanelCap)
+  // console.log(">>>currentMenus",currentMenus)
 
+  const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
+
+  // const [darkModeToggle, setDarkModeToggle] = useState(() => {
+  //   // getting stored value
+  //   const saved = localStorage.getItem('darkModeToggle');
+  //   const initialValue = JSON.parse(saved);
+  //   return initialValue;
+  // });
+
+  useEffect(() => {
+    // storing input name
+    localStorage.setItem('darkModeToggle', JSON.stringify(darkModeToggle));
+    // window.location.reload(false);
+  }, [darkModeToggle]);
   //These maintain the panels' state
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -212,93 +263,96 @@ console.log(">>>===MenuPanel", hide)
 
   // const profilePicName = profile.profilePicture;
   const LazyMenuPanelCapObj = useRef({
-    DriveInfoCap:lazy(() => import('../MenuPanelCaps/DriveInfoCap')),
-    EditorInfoCap:lazy(() => import('../MenuPanelCaps/EditorInfoCap')),
-    AssignmentInfoCap:lazy(() => import('../MenuPanelCaps/AssignmentInfoCap')),
+    DriveInfoCap: lazy(() => import('../MenuPanelCaps/DriveInfoCap')),
+    EditorInfoCap: lazy(() => import('../MenuPanelCaps/EditorInfoCap')),
+    AssignmentInfoCap: lazy(() => import('../MenuPanelCaps/AssignmentInfoCap')),
   }).current;
 
   const LazyMenuObj = useRef({
-    SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
-    GradeSettings:lazy(() => import('../Menus/GradeSettings')),
-    SelectedDoenetML:lazy(() => import('../Menus/SelectedDoenetML')),
-    SelectedFolder:lazy(() => import('../Menus/SelectedFolder')),
-    SelectedCollection:lazy(() => import('../Menus/SelectedCollection')),
-    SelectedMulti:lazy(() => import('../Menus/SelectedMulti.jsx')),
-    CreateCourse:lazy(() => import('../Menus/CreateCourse')),
-    CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
-    AddDriveItems:lazy(() => import('../Menus/AddDriveItems')),
-    EnrollStudents:lazy(() => import('../Menus/EnrollStudents')),
-    DoenetMLSettings:lazy(() => import('../Menus/DoenetMLSettings')),
-    VersionHistory:lazy(() => import('../Menus/VersionHistory')),
-    Variant:lazy(() => import('../Menus/Variant')),
-    AutoSaves:lazy(() => import('../Menus/AutoSaves')),
-    LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
-    GradeUpload:lazy(() => import('../Menus/GradeUpload')),
-    GradeDownload:lazy(() => import('../Menus/GradeDownload')),
-    ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
-    AssignmentSettingsMenu:lazy(() => import('../Menus/AssignmentSettingsMenu')),
-    SupportingFilesMenu:lazy(() => import('../Menus/SupportingFilesMenu')),
-    GroupSettings:lazy(() => import('../Menus/GroupSettings')),
-    TimerMenu:lazy(() => import('../Menus/TimerMenu')),
-    CreditAchieved:lazy(() => import('../Menus/CreditAchieved')),
-    ClassTimes:lazy(() => import('../Menus/ClassTimes')),
-    CurrentContent:lazy(() => import('../Menus/CurrentContent')),
-    
+    SelectedCourse: lazy(() => import('../Menus/SelectedCourse')),
+    GradeSettings: lazy(() => import('../Menus/GradeSettings')),
+    SelectedDoenetML: lazy(() => import('../Menus/SelectedDoenetML')),
+    SelectedFolder: lazy(() => import('../Menus/SelectedFolder')),
+    SelectedCollection: lazy(() => import('../Menus/SelectedCollection')),
+    SelectedMulti: lazy(() => import('../Menus/SelectedMulti.jsx')),
+    CreateCourse: lazy(() => import('../Menus/CreateCourse')),
+    CourseEnroll: lazy(() => import('../Menus/CourseEnroll')),
+    AddDriveItems: lazy(() => import('../Menus/AddDriveItems')),
+    EnrollStudents: lazy(() => import('../Menus/EnrollStudents')),
+    DoenetMLSettings: lazy(() => import('../Menus/DoenetMLSettings')),
+    VersionHistory: lazy(() => import('../Menus/VersionHistory')),
+    Variant: lazy(() => import('../Menus/Variant')),
+    AutoSaves: lazy(() => import('../Menus/AutoSaves')),
+    LoadEnrollment: lazy(() => import('../Menus/LoadEnrollment')),
+    GradeUpload: lazy(() => import('../Menus/GradeUpload')),
+    GradeDownload: lazy(() => import('../Menus/GradeDownload')),
+    ManualEnrollment: lazy(() => import('../Menus/ManualEnrollment')),
+    AssignmentSettingsMenu: lazy(() =>
+      import('../Menus/AssignmentSettingsMenu'),
+    ),
+    SupportingFilesMenu: lazy(() => import('../Menus/SupportingFilesMenu')),
+    GroupSettings: lazy(() => import('../Menus/GroupSettings')),
+    TimerMenu: lazy(() => import('../Menus/TimerMenu')),
+    CreditAchieved: lazy(() => import('../Menus/CreditAchieved')),
+    ClassTimes: lazy(() => import('../Menus/ClassTimes')),
+    CurrentContent: lazy(() => import('../Menus/CurrentContent')),
   }).current;
 
   let selectionPanel = null;
-  if (currentSelectionMenu){
+  if (currentSelectionMenu) {
     const panelToUse = LazyMenuObj[currentSelectionMenu];
     //protect from typos
-    if (panelToUse){
-      const key = `SelectionMenu${currentSelectionMenu}`
-      selectionPanel = <SelectionMenu key={key}>
-        <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
-        {React.createElement(panelToUse,{key})}
-        </Suspense></SelectionMenu>
+    if (panelToUse) {
+      const key = `SelectionMenu${currentSelectionMenu}`;
+      selectionPanel = (
+        <SelectionMenu key={key}>
+          <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+            {React.createElement(panelToUse, { key })}
+          </Suspense>
+        </SelectionMenu>
+      );
     }
   }
 
   let menuPanelCapComponent = null;
-  if (menuPanelCap !== ""){
-    menuPanelCapComponent = <MenuPanelsCapComponent>
-      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
-      {React.createElement(LazyMenuPanelCapObj[menuPanelCap])}
+  if (menuPanelCap !== '') {
+    menuPanelCapComponent = (
+      <MenuPanelsCapComponent>
+        <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+          {React.createElement(LazyMenuPanelCapObj[menuPanelCap])}
         </Suspense>
-    </MenuPanelsCapComponent>;
+      </MenuPanelsCapComponent>
+    );
   }
 
-
-
-  //TODO: 
+  //TODO:
   // handle more than one of the same panel type
-  // match order of panel types 
+  // match order of panel types
   // toolMenus.current = []
 
-
   //Show menus
-  for (let [i,type] of Object.entries(currentMenus)){
-    console.log(">>>menu",type)
+  for (let [i, type] of Object.entries(currentMenus)) {
+    console.log('>>>menu', type);
     const mKey = `${type}`;
-    const title = menusTitles[i]
-    let isOpen = initOpen[i]
+    const title = menusTitles[i];
+    let isOpen = initOpen[i];
 
-
-     menusArray.push(<Menu key={mKey} title={title} isInitOpen={isOpen} >
-      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
-    {React.createElement(LazyMenuObj[type],{mKey})}
-    </Suspense></Menu>)
-
+    menusArray.push(
+      <Menu key={mKey} title={title} isInitOpen={isOpen}>
+        <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+          {React.createElement(LazyMenuObj[type], { mKey })}
+        </Suspense>
+      </Menu>,
+    );
   }
 
   return (
     <MenuPanelsWrapper hide={hide}>
       <MenuPanelsCap fix={hide}>
-        
-        <Branding style={{ marginLeft: '5px'}}>
+        <Branding style={{ marginLeft: '5px' }}>
           {/* <Logo src="data:image/gif;base64,R0lGODlhAQABAPcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAABAAEAAAgEAP8FBAA7 */}
-{/* "/> */}
-          <Logo/>
+          {/* "/> */}
+          <Logo />
           <p>Doenet</p>
         </Branding>
         <IconsGroup>
@@ -306,18 +360,26 @@ console.log(">>>===MenuPanel", hide)
           {/* <HomeButton onClick={()=>setPageToolView({page:'home',tool:'',view:''})}>
             <FontAwesomeIcon icon={faHome}/>
           </HomeButton>  */}
-          
-          <SettingsButton onClick={()=>setPageToolView({page:'settings',tool:'',view:''})}>
-            <FontAwesomeIcon icon={faCog}/>
-          </SettingsButton>
-          
-           
-        </IconsGroup>
-        
-        <span >
-          <CloseButton onClick={()=>setMenusOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
-        </span>
 
+          <Checkbox
+            checked={darkModeToggle}
+            onClick={(e) => setDarkModeToggle(!darkModeToggle)}
+          />
+
+          <SettingsButton
+            onClick={() =>
+              setPageToolView({ page: 'settings', tool: '', view: '' })
+            }
+          >
+            <FontAwesomeIcon icon={faCog} />
+          </SettingsButton>
+        </IconsGroup>
+
+        <span>
+          <CloseButton onClick={() => setMenusOpen(false)}>
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </CloseButton>
+        </span>
       </MenuPanelsCap>
 
       {menuPanelCapComponent}
@@ -325,7 +387,6 @@ console.log(">>>===MenuPanel", hide)
 
       {selectionPanel}
       <div>{menusArray}</div>
-
     </MenuPanelsWrapper>
   );
 }

@@ -6,9 +6,9 @@ const Button = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;
   border-style: solid;
-  border-color: ${doenetMainBlue};
+  border-color: var(--mainBlue);
   border-width: 2px;
-  color: ${doenetMainBlue};
+  color: var(--mainBlue);
   background-color: #fff;
   border-radius: ${(props) => props.theme.borderRadius};
   padding: ${(props) => props.theme.padding};

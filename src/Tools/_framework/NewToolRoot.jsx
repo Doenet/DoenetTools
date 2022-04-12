@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense, useRef } from 'react';
+import React, { useState, lazy, Suspense, useRef, useEffect } from 'react';
 import {
   atom,
   selector,
@@ -20,6 +20,7 @@ import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
 
 import { useHistory, useLocation } from 'react-router';
+import { darkModeAtom } from './Panels/NewMenuPanel';
 
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -77,6 +78,8 @@ export const paramObjAtom = atom({
 
 export default function ToolRoot() {
   // console.log('>>>===ToolRoot ');
+
+  const darkModeToggle = useRecoilValue(darkModeAtom);
 
   const [toolRootMenusAndPanels, setToolRootMenusAndPanels] = useState({
     pageName: 'init',
@@ -278,7 +281,7 @@ export default function ToolRoot() {
   // <p>insert keyboard here</p></FooterPanel>
 
   return (
-    <>
+    <html dark={darkModeToggle === true ? 'true' : null}>
       <ToolContainer>
         {menus}
         <ContentPanel
@@ -305,7 +308,7 @@ export default function ToolRoot() {
         setToolRootMenusAndPanels={setToolRootMenusAndPanels}
       />
       <MemoizedOnLeave key="MemoizedOnLeave" />
-    </>
+    </html>
   );
 }
 
