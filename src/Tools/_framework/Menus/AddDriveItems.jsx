@@ -7,41 +7,30 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 import { useCourse } from '../../../_reactComponents/Course/CourseActions';
 
 export default function AddDriveItems() {
-  const [courseId] = useRecoilValue(
-    searchParamAtomFamily('path'),
-  ).split(':');
-  let { create } = useCourse(courseId);
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const { create } = useCourse(courseId);
 
   return (
     <ButtonGroup vertical>
       <Button
         width="menu"
-        onClick={() =>
-          create({itemType:"activity"})
-        }
+        onClick={() => create({ itemType: 'activity' })}
         value="Add Activity"
       >
         Add Activity
       </Button>
       <Button
         width="menu"
-        onClick={() =>
-          create({itemType:"bank"})
-        }
+        onClick={() => create({ itemType: 'bank' })}
         value="Add Collection"
       />
       <Button
         width="menu"
-        onClick={() =>
-          create({itemType:"section"})
-
-        }
+        onClick={() => create({ itemType: 'section' })}
         value="Add Section"
       >
         Add Section
       </Button>
-      
     </ButtonGroup>
-    
   );
 }

@@ -54,8 +54,7 @@ export default function EditorViewer(){
   // refreshCount.current++;
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
-  const paramPath = useRecoilValue(searchParamAtomFamily('path')) 
-  const [courseId] = paramPath.split(":");
+  const courseId = useRecoilValue(searchParamAtomFamily('couresId'))
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
   const setVariantPanel = useSetRecoilState(variantPanelAtom);
