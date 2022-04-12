@@ -366,9 +366,6 @@ export const useCourse = (courseId) => {
         return null;
       }
 
-
-
-
         let authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
         let newAuthorItemDoenetIds = [...authorItemDoenetIds];
 
@@ -434,7 +431,6 @@ export const useCourse = (courseId) => {
             newAuthorItemDoenetIds.splice(indexOfPrevious+1,0,createdActivityDoenentId,createdOrderDoenetId,createdPageObj.doenetId)
           }
           set(authorCourseItemOrderByCourseId(courseId), newAuthorItemDoenetIds);
-          //TODO: eliminate data.order on create
         } else if (itemType == 'bank') {
           let { data } = await axios.get('/api/createCourseItem.php', {
             params: {
@@ -521,10 +517,16 @@ export const useCourse = (courseId) => {
             }
             let newActivityObj = {...selectedItemObj}
             newActivityObj.order = newJSON;
+            let makeMultiPage = false;
+            if (newActivityObj.isSinglePage){
+              makeMultiPage = true;
+              newActivityObj.isSinglePage = false;
+            }
             let { data } = await axios.post('/api/updateActivityStructure.php', {
                 courseId,
                 doenetId:newActivityObj.doenetId,
                 newJSON,
+                makeMultiPage,
               });
             // console.log("data",data)
             orderObj['isOpen'] = false;
