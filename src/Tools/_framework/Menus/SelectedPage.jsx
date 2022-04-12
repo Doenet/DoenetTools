@@ -3,19 +3,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
-import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+// import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
+// import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import { useToast } from '../Toast';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 export default function SelectedPage() {
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
+  // const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  // const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('couresId'))
-  const { renameItem } = useCourse(courseId);
+  const { create, renameItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
 
   useEffect(()=>{
@@ -47,27 +49,27 @@ export default function SelectedPage() {
   </h2>)
 
 
-  if (effectiveRole === 'student') {
-    return (
-      <>
-        {heading}
-        <ActionButton
-          width="menu"
-          value="Take Assignment"
-          onClick={() => {
-            setPageToolView({
-              page: 'course',
-              tool: 'assignment',
-              view: '',
-              params: {
-                doenetId,
-              },
-            });
-          }}
-        />
-      </>
-    );
-  }
+  // if (effectiveRole === 'student') {
+  //   return (
+  //     <>
+  //       {heading}
+  //       <ActionButton
+  //         width="menu"
+  //         value="Take Assignment"
+  //         onClick={() => {
+  //           setPageToolView({
+  //             page: 'course',
+  //             tool: 'assignment',
+  //             view: '',
+  //             params: {
+  //               doenetId,
+  //             },
+  //           });
+  //         }}
+  //       />
+  //     </>
+  //   );
+  // }
   
   return <>
   {heading}
@@ -82,5 +84,22 @@ export default function SelectedPage() {
       }}
       onBlur={handelLabelModfication}
     />
+    <br />
+    <ButtonGroup vertical>
+      <Button
+        width="menu"
+        onClick={() =>
+          create({itemType:"order"})
+        }
+        value="Add Order"
+      />
+      <Button
+        width="menu"
+        onClick={() =>
+          create({itemType:"page"})
+        }
+        value="Add Page"
+      />
+    </ButtonGroup>
   </>
 }

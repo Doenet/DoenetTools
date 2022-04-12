@@ -58,6 +58,8 @@ import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponen
 import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 // import CalendarToggle from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
 // import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 
@@ -93,6 +95,7 @@ export default function SelectedActivity() {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const { renameItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
+  let { create } = useCourse(courseId);
 
   useEffect(()=>{
     if (itemTextFieldLabel !== itemObj.label){
@@ -159,6 +162,23 @@ export default function SelectedActivity() {
       }}
       onBlur={handelLabelModfication}
     />
+    <br />
+    <ButtonGroup vertical>
+      <Button
+        width="menu"
+        onClick={() =>
+          create({itemType:"order"})
+        }
+        value="Add Order"
+      />
+      <Button
+        width="menu"
+        onClick={() =>
+          create({itemType:"page"})
+        }
+        value="Add Page"
+      />
+    </ButtonGroup>
   <AssignmentSettings role={effectiveRole} doenetId={doenetId} />
   </>
 
