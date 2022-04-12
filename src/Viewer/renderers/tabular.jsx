@@ -26,10 +26,13 @@ if (SVs.top !== "none") {
   }
 }
 
-return <><a name={name} /><table id={name} style={tableStyle}>
-  <tbody>
-  {children}
-  </tbody>
-</table></>
+return (
+  <div style={{ margin: "12px 0" }} >
+    <a name={name} />
+    <table id={name} style={tableStyle}>
+      <tbody>{children}</tbody>
+    </table>
+  </div>
+  )
 }
 

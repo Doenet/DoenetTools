@@ -23,9 +23,9 @@ const ButtonStyling = styled.button`
 
 ButtonStyling.defaultProps = {
   theme: {
-    margin: '0px 4px 0px 4px',
+    margin: 0,
     borderRadius: 'var(--mainBorderRadius)',
-    padding: '0px 10px 0px 10px'
+    padding: '0 10px'
   }
 };
 
