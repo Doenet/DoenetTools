@@ -14,6 +14,7 @@ export const mainPanelClickAtom = atom({
 const ContentWrapper = styled.div`
   grid-area: mainPanel;
   background-color: var(--canvas);
+  color: var(--canvastext);
   height: 100%;
   // border-radius: 0 0 4px 4px;
   overflow: auto;
