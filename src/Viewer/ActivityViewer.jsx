@@ -4,7 +4,6 @@ import PageViewer from './PageViewer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { prng_alea } from 'esm-seedrandom';
-import Button from '../_reactComponents/PanelHeaderComponents/Button';
 import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
 import axios from 'axios';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
@@ -73,6 +72,22 @@ export default function ActivityViewer(props) {
     setFlags(newFlags);
 
   }, [props.userId, props.flags]);
+
+  useEffect(() => {
+    window.returnActivityData = function () {
+      return {
+        activityDefinition,
+        requestedVariantIndex,
+        variantIndex,
+        cid,
+        order,
+        currentPage,
+        nPages,
+        variantsByPage,
+        itemWeights,
+      }
+    }
+  })
 
   function resetActivity({ changedOnDevice, newCid, newAttemptNumber }) {
     console.log('resetActivity', changedOnDevice, newCid, newAttemptNumber);
@@ -464,7 +479,7 @@ export default function ActivityViewer(props) {
     if (page.children.length > 0) {
       let pageDoenetML = activityDefinitionDoenetML.current.slice(page.range.openEnd + 1, page.range.closeBegin);
 
-      if (page.children[0].componentType.toLowerCase() !== "document") {
+      if (page.children[0].componentType?.toLowerCase() !== "document") {
         // add <docoument> around page
         let xmlnsprop = '';
         if (xmlns.current) {
@@ -879,7 +894,7 @@ export default function ActivityViewer(props) {
     }
 
 
-    if (stage != "saving" || currentPage === pageAtPreviousSave.current) {
+    if (stage !== "saving" || currentPage === pageAtPreviousSave.current) {
       // haven't got a save event from page or no change to be saved
       return;
     }
@@ -1224,15 +1239,15 @@ export default function ActivityViewer(props) {
   let cidChangedAlert = null;
   if (cidChanged) {
     cidChangedAlert = <div>
-      <Button onClick={() => alert("Hey, content changed")} value={"content changed"} />
+      <button onClick={() => alert("Hey, content changed")}>content changed</button>
     </div>
   }
 
   return <div style={{ marginBottom: "200px" }}>
     {cidChangedAlert}
-    <Button id={"prev_button"} onClick={() => setCurrentPage((was) => Math.max(1, was - 1))} value={"Previous page"} />
-    <Button id={"next_button"} onClick={() => setCurrentPage((was) => Math.min(nPages, was + 1))} value={"Next page"} />
-    <p>Current page: {currentPage}</p>
+    <button data-cy={"previous"} disabled={currentPage===1} onClick={() => setCurrentPage((was) => Math.max(1, was - 1))}>Previous page</button>
+    <button data-cy={"next"} disabled={currentPage===nPages} onClick={() => setCurrentPage((was) => Math.min(nPages, was + 1))}>Next page</button>
+    <p>Page {currentPage} of {nPages}</p>
     {title}
     {pages}
   </div>
@@ -1252,7 +1267,8 @@ async function determineVariant(activityDefinition, requestedVariantIndex, flags
     // check to see if we have special case of a sequence order
     // with just a single page.
     // In that case, use the variant control of that page
-    if (activityDefinition.order?.behavior?.toLowerCase() === "sequence"
+    let behavior = activityDefinition.order.behavior?.toLowerCase();
+    if ((behavior === "sequence" || behavior === undefined)
       && activityDefinition.order.content?.length === 1
       && activityDefinition.order.content[0].type?.toLowerCase() === "page"
     ) {
@@ -1287,7 +1303,11 @@ function determineOrder(order, rng) {
     return { success: false, message: "invalid order" }
   }
 
-  let behavior = order.behavior.toLowerCase();
+  let behavior = order.behavior?.toLowerCase();
+
+  if(behavior === undefined) {
+    behavior = 'sequence';
+  }
 
   switch (behavior) {
     case 'sequence':
