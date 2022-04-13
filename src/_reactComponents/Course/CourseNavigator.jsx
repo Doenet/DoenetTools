@@ -149,7 +149,7 @@ function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel}){
 }
 
 function Section({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
-  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
 }
 
 function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
@@ -259,11 +259,17 @@ function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=fal
 
 if (hasToggle){
    openCloseIndicator = isOpen ? (
-      <span data-cy="folderToggleCloseIcon" >
+      <span data-cy="folderToggleCloseIcon" onClick={ ()=>{
+        if (hasToggle){
+        toggleOpenClosed();
+      }}} >
         <FontAwesomeIcon icon={faChevronDown} />
       </span>
     ) : (
-      <span data-cy="folderToggleOpenIcon">
+      <span data-cy="folderToggleOpenIcon" onClick={ ()=>{
+        if (hasToggle){
+        toggleOpenClosed();
+      }}} >
         <FontAwesomeIcon icon={faChevronRight} />
       </span>
     );
@@ -530,11 +536,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
         // marginBottom: '8px',
       }}
     >
-      <p style={{ display: 'inline', margin: '0px' }} 
-      onClick={ ()=>{
-        if (hasToggle){
-        toggleOpenClosed();
-      }}} >
+      <p style={{ display: 'inline', margin: '0px' }} >
        { numbered ?  <svg style={{verticalAlign:'middle'}} width="22" height="22" viewBox="0 0 22 22">
       <circle cx="11"
               cy="11"
