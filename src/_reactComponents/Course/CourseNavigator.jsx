@@ -177,7 +177,7 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
   if (itemInfo.isOpen){
     return <>
     <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}/>
-    <Order key={`Order${doenetId}`} orderInfo={itemInfo.order} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+    <Order key={`Order${doenetId}`} orderInfo={itemInfo.order} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
      </>
   }else{
     return <>
@@ -194,7 +194,7 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
    if (behavior == 'sequence'){
       contentJSX = content.map((pageOrOrder,i)=>{
         if (pageOrOrder?.type == 'order'){
-          return <Order key={`Order${i}${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+          return <Order key={`Order${i}${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
         }else{
           return <Page key={`NavPage${i}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1}/>
         }
@@ -203,7 +203,7 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
       //All other behaviors
       contentJSX = content.map((pageOrOrder,i)=>{
         if (pageOrOrder?.type == 'order'){
-          return <Order key={`Order${i}${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+          return <Order key={`Order${i}${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
         }else{
           return <Page key={`NavPage${i}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
         }
