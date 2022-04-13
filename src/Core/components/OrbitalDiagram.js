@@ -4,17 +4,11 @@ import BaseComponent from './abstract/BaseComponent';
 export default class OrbitalDiagram extends BaseComponent {
 
   static componentType = "orbitalDiagram";
-  static rendererType = null;
 
   static variableForPlainMacro = "value";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
-    attributes.values = {
-      createComponentOfType: "tupleList",
-      createStateVariable: "valuesList",
-      defaultValue: [],
-    }
     attributes.labels = {
       createComponentOfType: "textList",
       createStateVariable: "labels",
@@ -24,6 +18,39 @@ export default class OrbitalDiagram extends BaseComponent {
   }
 
 
+  static returnSugarInstructions() {
+    let sugarInstructions = [{
+      replacementFunction: function ({ matchedChildren }) {
+        if (matchedChildren.length === 1 && typeof matchedChildren[0] !== "string") {
+          return { success: false }
+        }
+
+        return {
+          success: true,
+          newChildren: [{
+            componentType: "tupleList",
+            children: matchedChildren
+          }]
+        }
+      }
+    }];
+
+    return sugarInstructions;
+
+  }
+
+  static returnChildGroups() {
+
+    return [{
+      group: "tupleLists",
+      componentTypes: ["tupleList"],
+    },{
+      group: "orbitalDiagrams",
+      componentTypes: ["orbitalDiagram"]
+    }]
+
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -32,10 +59,17 @@ export default class OrbitalDiagram extends BaseComponent {
       defaultValue: [{ orbitalText: "", boxes: [] }],
       public: true,
       componentType: "orbitalDiagram",
+      forRenderer: true,
       returnDependencies: () => ({
-        valuesList: {
-          dependencyType: "stateVariable",
-          variableName: "valuesList"
+        orbitalDiagramChildren: {
+          dependencyType: "child",
+          childGroups: ["orbitalDiagrams"],
+          variableNames: ["value"]
+        },
+        tupleListChildren: {
+          dependencyType: "child",
+          childGroups: ["tupleLists"],
+          variableNames: ["maths"]
         },
         labels: {
           dependencyType: "stateVariable",
@@ -72,9 +106,14 @@ export default class OrbitalDiagram extends BaseComponent {
             }
           }
 
+          if(dependencyValues.orbitalDiagramChildren.length === 1) {
+            return dependencyValues.orbitalDiagramChildren[0].stateValues.value;
+          }
+
           let rows = [];
-          if (dependencyValues.valuesList.length > 0) {
-            for (let [rowInd, row] in dependencyValues.valuesList.entries()) {
+          if (dependencyValues.tupleListChildren[0]?.stateValues.maths.length > 0) {
+            let valuesList = dependencyValues.tupleListChildren[0].stateValues.maths;
+            for (let [rowInd, row] of valuesList.entries()) {
               let orbitalText = "";
               if (dependencyValues.labels[rowInd]) {
                 orbitalText = dependencyValues.labels[rowInd];
