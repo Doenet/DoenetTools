@@ -18,7 +18,7 @@ describe('Activity variants tests', function () {
   })
 
 
-  it("Variant from single page, no variant control in page", () => {
+  it("Variants from single page, no variant control in page", () => {
 
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_allowLocalState').click()
@@ -130,7 +130,7 @@ describe('Activity variants tests', function () {
 
   })
 
-  it("Variant from single page, specified variants in page", () => {
+  it("Variants from single page, specified variants in page", () => {
 
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_allowLocalState').click()
@@ -246,7 +246,7 @@ describe('Activity variants tests', function () {
 
   })
 
-  it("Variant from single page, specified variants in problem in page", () => {
+  it("Variants from single page, specified variants in problem in page", () => {
 
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_allowLocalState').click()
@@ -364,7 +364,76 @@ describe('Activity variants tests', function () {
 
   })
 
-  it("Two pages, numberOfVariants not specified", () => {
+  it("Two pages few variants, page variants enumerated", () => {
+
+    let activityDefinition = `
+    <document type="activity">
+      <order>
+        <page>
+          <text>a</text>
+          <variantControl uniqueVariants />
+          <selectFromSequence from="1" to="2" assignNames="n" />
+        </page>
+        <page>
+          <text>b</text>
+          <variantControl uniqueVariants />
+          <selectFromSequence type="letters" from="a" to="c" assignNames="l" />
+        </page>
+      </order>
+    </document>
+    `;
+
+    for (let ind = 1; ind <= 2000; ind += 371) {
+
+      if (ind > 1) {
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          activityDefinition,
+          requestedVariantIndex: ind
+        }, "*");
+      })
+
+
+      cy.get('#\\/_text1').should('have.text', 'a');
+
+
+      cy.window().then(async (win) => {
+        let activityData = win.returnActivityData();
+
+        expect(activityData.requestedVariantIndex).eq(ind);
+        expect(activityData.variantIndex).eq((ind - 1) % 1000 + 1);
+        expect(activityData.variantsByPage.length).eq(2);
+        expect(activityData.variantsByPage[0]).eq((activityData.variantIndex-1) % 2 + 1);
+        expect(activityData.variantsByPage[1]).eq((activityData.variantIndex-1) % 3 + 1);
+
+
+        let stateVariables1 = await win.returnAllStateVariables1();
+
+        expect(stateVariables1["/n"].stateValues.value).eq(activityData.variantsByPage[0])
+
+
+        cy.get('[data-cy=next]').click();
+
+        cy.get('#\\/_text1').should('have.text', 'b');
+
+        cy.window().then(async (win) => {
+          let stateVariables2 = await win.returnAllStateVariables2();
+
+          expect(stateVariables2["/l"].stateValues.value).eq(numberToLetters(activityData.variantsByPage[1], true));
+
+        })
+      })
+
+
+    }
+
+
+  })
+
+  it("Two pages, numberOfVariants not specified, defaults to 1000", () => {
 
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_allowLocalState').click()
@@ -390,7 +459,7 @@ describe('Activity variants tests', function () {
     </document>
     `;
 
-    for (let ind = 1; ind <= 200; ind += 97) {
+    for (let ind = 1; ind <= 2000; ind += 970) {
 
       if (ind > 1) {
         cy.get('#testRunner_toggleControls').click();
@@ -415,7 +484,7 @@ describe('Activity variants tests', function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq((ind - 1) % 100 + 1);
+        expect(activityData.variantIndex).eq((ind - 1) % 1000 + 1);
         expect(activityData.variantsByPage.length).eq(2);
         expect(activityData.variantsByPage[0]).gte(1);
         expect(activityData.variantsByPage[0]).lte(100);
@@ -731,7 +800,7 @@ describe('Activity variants tests', function () {
 
     let selectionByVariant = {};
 
-    for (let ind = 5; ind <= 150; ind += 25) {
+    for (let ind = 5; ind <= 1500; ind += 250) {
 
       if (ind > 1) {
         cy.reload();
@@ -751,7 +820,7 @@ describe('Activity variants tests', function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq((ind - 1) % 100 + 1);
+        expect(activityData.variantIndex).eq((ind - 1) % 1000 + 1);
         expect(activityData.variantsByPage.length).eq(2);
         expect(activityData.variantsByPage[0]).gte(1);
         expect(activityData.variantsByPage[0]).lte(100);
