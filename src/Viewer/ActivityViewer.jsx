@@ -641,7 +641,7 @@ export default function ActivityViewer(props) {
             if (props.setIsInErrorState) {
               props.setIsInErrorState(true)
             }
-            setErrMsg(`Error loading activity state: ${results.message}`);
+            setErrMsg(`Error initializing activity state: ${results.message}`);
             return;
           }
           setVariantIndex(results.variantIndex);
