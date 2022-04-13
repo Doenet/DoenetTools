@@ -10,6 +10,7 @@ const elements = {
     defaultMassNumber: 1,
     groupNumber: 1,
     metal: "nonmetal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["U"] }]
   },
   He: {
     name: "Helium",
@@ -20,6 +21,7 @@ const elements = {
     groupNumber: 18,
     groupName: "Noble Gases",
     metal: "nonmetal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }]
   },
   Li: {
     name: "Lithium",
@@ -30,6 +32,7 @@ const elements = {
     groupNumber: 1,
     groupName: "Alkali Metals",
     metal: "metal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["U"] }]
   },
   Be: {
     name: "Beryllium",
@@ -40,6 +43,7 @@ const elements = {
     groupNumber: 2,
     groupName: "Alkaline Earth Metals",
     metal: "metal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }]
   },
   B: {
     name: "Boron",
@@ -49,6 +53,7 @@ const elements = {
     defaultMassNumber: 11,
     groupNumber: 13,
     metal: "metalloid",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["U", "", ""] }]
   },
   C: {
     name: "Carbon",
@@ -58,6 +63,7 @@ const elements = {
     defaultMassNumber: 12,
     groupNumber: 14,
     metal: "nonmetal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["U", "U", ""] }]
   },
   N: {
     name: "Nitrogen",
@@ -67,6 +73,7 @@ const elements = {
     defaultMassNumber: 14,
     groupNumber: 15,
     metal: "nonmetal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["U", "U", "U"] }]
   },
   O: {
     name: "Oxygen",
@@ -77,6 +84,7 @@ const elements = {
     groupNumber: 16,
     groupName: "Chalcogens",
     metal: "nonmetal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["UD", "U", "U"] }]
   },
   F: {
     name: "Fluorine",
@@ -87,6 +95,7 @@ const elements = {
     groupNumber: 17,
     groupName: "Halogens",
     metal: "nonmetal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["UD", "UD", "U"] }]
   },
   Ne: {
     name: "Neon",
@@ -97,6 +106,7 @@ const elements = {
     groupNumber: 18,
     groupName: "Noble gases",
     metal: "nonmetal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["UD", "UD", "UD"] }]
   },
   Na: {
     name: "Sodium",
@@ -107,6 +117,7 @@ const elements = {
     groupNumber: 1,
     groupName: "Alkali metals",
     metal: "metal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["UD", "UD", "UD"] }, { orbitalText: "3s", boxes: ["U"] }]
   },
   Mg: {
     name: "Magnesium",
@@ -117,6 +128,7 @@ const elements = {
     groupNumber: 2,
     groupName: "Alkaline earth metals",
     metal: "metal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["UD", "UD", "UD"] }, { orbitalText: "3s", boxes: ["UD"] }]
   },
   Al: {
     name: "Aluminum",
@@ -126,6 +138,7 @@ const elements = {
     defaultMassNumber: 27,
     groupNumber: 13,
     metal: "metal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["UD", "UD", "UD"] }, { orbitalText: "3s", boxes: ["UD"] }, { orbitalText: "3p", boxes: ["U", "", ""] }]
   },
   Si: {
     name: "Silicon",
@@ -135,6 +148,7 @@ const elements = {
     defaultMassNumber: 28,
     groupNumber: 14,
     metal: "metalloid",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["UD", "UD", "UD"] }, { orbitalText: "3s", boxes: ["UD"] }, { orbitalText: "3p", boxes: ["U", "U", ""] }]
   },
   P: {
     name: "Phosphorus",
@@ -144,6 +158,7 @@ const elements = {
     defaultMassNumber: 31,
     groupNumber: 15,
     metal: "nonmetal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["UD", "UD", "UD"] }, { orbitalText: "3s", boxes: ["UD"] }, { orbitalText: "3p", boxes: ["U", "U", "U"] }]
   },
   S: {
     name: "Sulfur",
@@ -154,6 +169,7 @@ const elements = {
     groupNumber: 16,
     groupName: "Chalcogens",
     metal: "nonmetal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["UD", "UD", "UD"] }, { orbitalText: "3s", boxes: ["UD"] }, { orbitalText: "3p", boxes: ["UD", "U", "U"] }]
   },
   Cl: {
     name: "Chlorine",
@@ -164,6 +180,7 @@ const elements = {
     groupNumber: 17,
     groupName: "Halogens",
     metal: "nonmetal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["UD", "UD", "UD"] }, { orbitalText: "3s", boxes: ["UD"] }, { orbitalText: "3p", boxes: ["UD", "UD", "U"] }]
   },
   Ar: {
     name: "Argon",
@@ -174,12 +191,15 @@ const elements = {
     groupNumber: 18,
     groupName: "Noble gases",
     metal: "nonmetal",
+    orbitalDiagram: [{ orbitalText: "1s", boxes: ["UD"] }, { orbitalText: "2s", boxes: ["UD"] }, { orbitalText: "2p", boxes: ["UD", "UD", "UD"] }, { orbitalText: "3s", boxes: ["UD"] }, { orbitalText: "3p", boxes: ["UD", "UD", "UD"] }]
   },
 }
 
+const symbolByAtomicNumber = {};
 const symbolLowerCaseMapping = {};
 for (let symbol in elements) {
   symbolLowerCaseMapping[symbol.toLowerCase()] = symbol;
+  symbolByAtomicNumber[elements[symbol].atomicNumber] = symbol;
 }
 
 const neutronMass = 1.6749274980495E-27;
@@ -199,9 +219,10 @@ export default class Atom extends InlineComponent {
 
     attributes.symbol = {
       createComponentOfType: "text",
-      createStateVariable: "symbol",
-      defaultValue: null,
-      public: true,
+    };
+
+    attributes.atomicNumber = {
+      createComponentOfType: "integer",
     };
 
     attributes.massNumber = {
@@ -232,11 +253,23 @@ export default class Atom extends InlineComponent {
           dependencyType: "attributeComponent",
           attributeName: "symbol",
           variableNames: ["value"]
+        },
+
+        atomicNumberAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "atomicNumber",
+          variableNames: ["value"]
         }
       }),
       definition({ dependencyValues }) {
 
-        let symbol = symbolLowerCaseMapping[dependencyValues.symbolAttr?.stateValues.value.toLowerCase()];
+        let symbol;
+
+        if(dependencyValues.symbolAttr) {
+          symbol = symbolLowerCaseMapping[dependencyValues.symbolAttr.stateValues.value.toLowerCase()];
+        } else if(dependencyValues.atomicNumberAttr) {
+          symbol = symbolByAtomicNumber[dependencyValues.atomicNumberAttr.stateValues.value]
+        }
 
         if (!symbol) {
           symbol = null;
@@ -376,6 +409,23 @@ export default class Atom extends InlineComponent {
         }
         return {
           setValue: { electronConfiguration }
+        }
+      }
+    }
+
+    stateVariableDefinitions.orbitalDiagram = {
+      public: true,
+      componentType: "orbitalDiagram",
+      returnDependencies: () => ({
+        symbol: {
+          dependencyType: "stateVariable",
+          variableName: "symbol",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let orbitalDiagram = elements[dependencyValues.symbol]?.orbitalDiagram;
+        return {
+          setValue: { orbitalDiagram }
         }
       }
     }

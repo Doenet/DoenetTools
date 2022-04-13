@@ -4,10 +4,12 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   static componentType = "orbitalDiagramInput";
 
+  static variableForPlainMacro = "value";
+
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.prefill = {
-      createComponentOfType: "mathList",
+      createComponentOfType: "tupleList",
       createStateVariable: "prefill",
       defaultValue: [],
     }
@@ -115,6 +117,24 @@ export default class OrbitalDiagramInput extends BlockComponent {
         }
       }
     }
+
+
+    stateVariableDefinitions.value = {
+      public: true,
+      componentType: "orbitalDiagram",
+      returnDependencies: () => ({
+        rows: {
+          dependencyType: "stateVariable",
+          variableName: "rows"
+        },
+      }),
+      definition({ dependencyValues }) {
+        let value = [...dependencyValues.rows].reverse();
+
+        return { setValue: { value } }
+
+      }
+    };
 
     stateVariableDefinitions.numRows = {
       public: true,
