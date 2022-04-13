@@ -18,6 +18,7 @@ export default function SelectedPage() {
   // const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  const containingObj = useRecoilValue(authorItemByDoenetId(itemObj.containingDoenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
   const { create, renameItem, compileActivity } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
@@ -103,13 +104,16 @@ export default function SelectedPage() {
     />
     <br />
     <ButtonGroup vertical>
-      <Button
-        width="menu"
-        onClick={() =>
-          create({itemType:"order"})
-        }
-        value="Add Order"
-      />
+    {containingObj.type == 'activity' ? 
+     <Button
+     width="menu"
+     onClick={() =>
+       create({itemType:"order"})
+     }
+     value="Add Order"
+   /> : null
+    }
+     
       <Button
         width="menu"
         onClick={() =>
