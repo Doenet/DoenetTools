@@ -425,9 +425,15 @@ export const useCourse = (courseId) => {
           //Order
 
           let createdOrderDoenetId = data.itemEntered.order.doenetId;
+          let numberToSelect = 1;
+          let withReplacement = false;
+         
           let createdOrderObj = {
-            type:"order",
+            type: "order",
             doenetId:createdOrderDoenetId,
+            behavior:"sequence",
+            numberToSelect,
+            withReplacement,
             parentDoenetId:createdActivityDoenentId,
             isOpen:false,
             isSelected:false,
@@ -519,9 +525,13 @@ export const useCourse = (courseId) => {
                 },
               });
           let {pageThatWasCreated, orderDoenetIdThatWasCreated} = data;
+          let numberToSelect = 1;
+          let withReplacement = false;
           let orderObj = {
-            type:"order",
+            type: "order",
             behavior:"sequence",
+            numberToSelect,
+            withReplacement,
             content:[],
             doenetId: orderDoenetIdThatWasCreated,
           }
