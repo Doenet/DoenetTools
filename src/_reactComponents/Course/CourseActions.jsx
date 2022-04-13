@@ -398,6 +398,23 @@ export const useCourse = (courseId) => {
           previousDoenetId = courseId;
         }
 
+        //Place in section if section is toggled open and is the only selected item
+        //Define previousDoenetId if any single item is selected
+        let selectedArray = await snapshot.getPromise(selectedCourseItems);
+        if (selectedArray.length == 1){
+          let singleSelectedDoenetId = selectedArray[0];
+          // previousDoenetId = singleSelectedDoenetId; //Only in insert mode
+          let selectedObj = await snapshot.getPromise(authorItemByDoenetId(singleSelectedDoenetId))
+          if (selectedObj.type == 'section' ){
+            placeInFolderFlag = true;
+          }
+        }
+        console.log("create params",{
+          previousDoenetId,
+          courseId,
+          itemType,
+          placeInFolderFlag,
+        })
         let newDoenetId;
         let coursePermissionsAndSettings = await snapshot.getPromise(
           coursePermissionsAndSettingsByCourseId(courseId),

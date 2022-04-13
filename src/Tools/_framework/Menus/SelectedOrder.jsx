@@ -51,6 +51,7 @@ let items = [
   // ['deepshuffle', 'deep shuffle'],
   // ['showuntil100', 'show until 100%'],
   // ['adaptive', 'adaptive'],
+  // ['copy','copy'],
   // ['previousrequirements', 'previous requirements'],
 ];
 
