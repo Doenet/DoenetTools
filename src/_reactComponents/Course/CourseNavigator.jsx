@@ -187,28 +187,46 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
 }
 
 function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,orderInfo}){
-  let {behavior,doenetId,content} = orderInfo;
+  let {behavior,doenetId,content, numberToSelect, withReplacement} = orderInfo;
   let recoilOrderInfo = useRecoilValue(authorItemByDoenetId(doenetId));
 
    let contentJSX = [];
    if (behavior == 'sequence'){
       contentJSX = content.map((pageOrOrder,i)=>{
         if (pageOrOrder?.type == 'order'){
-          return <Order key={`Order${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+          return <Order key={`Order${i}${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
         }else{
           return <Page key={`NavPage${i}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1}/>
         }
       })
+    }else{
+      //All other behaviors
+      contentJSX = content.map((pageOrOrder,i)=>{
+        if (pageOrOrder?.type == 'order'){
+          return <Order key={`Order${i}${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+        }else{
+          return <Page key={`NavPage${i}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+        }
+      })
     }
-    //TODO: handle other behaviors
+
+    let label = behavior;
+    if (behavior == "select"){
+      if (withReplacement){
+        label = `${behavior} ${numberToSelect} with replacement`
+      }else{
+        label = `${behavior} ${numberToSelect} without replacement`
+
+      }
+    }
 
   if (recoilOrderInfo.isOpen){
     return <>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={behavior} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
     {contentJSX}
     </>
   }else{
-    return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={behavior} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
+    return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
   }
 }
 
@@ -258,7 +276,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   e.stopPropagation();
   let selectedItems = await snapshot.getPromise(selectedCourseItems);
   let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-
+  console.log("clickedItem",clickedItem)
   
   let newSelectedItems = [];
 
