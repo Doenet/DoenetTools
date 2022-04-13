@@ -11,6 +11,7 @@ import { cidFromText } from '../Core/utils/cid';
 import { useToast, toastType } from '@Toast';
 import { nanoid } from 'nanoid';
 import { parseAndCompile } from '../Parser/parser';
+import { enumerateCombinations } from '../Core/utils/enumeration';
 
 let rngClass = prng_alea;
 
@@ -254,10 +255,10 @@ export default function ActivityViewer(props) {
           return;
         }
       } else {
-        console.warn('no xmls of activity!');
+        console.warn('no xmlns of activity!');
       }
 
-      if(documentProps.numberofvariants) {
+      if (documentProps.numberofvariants) {
         jsonDefinition.numberOfVariants = Number(documentProps.numberofvariants);
         delete documentProps.numberofvariants;
       }
@@ -350,7 +351,7 @@ export default function ActivityViewer(props) {
           return;
         }
       } else {
-        console.warn('no xmls of activity!');
+        console.warn('no xmlns of activity!');
       }
 
 
@@ -747,50 +748,10 @@ export default function ActivityViewer(props) {
 
   async function calculateOrderAndVariants() {
 
-    let variantResults = await determineVariant(activityDefinition, requestedVariantIndex, flags);
+    let activityVariantResult = await determineVariant(activityDefinition, requestedVariantIndex, flags);
 
-    if (variantResults.usePageVariants) {
-      // didn't have a variant control and have a single page inside a sequence order
-      // use the pageVariants
 
-      let page = activityDefinition.order.content[0];
-      let orderWithCids = [page];
-  
-      // if looked up doenetML to determine possible variants
-      // record that doenetML in the order so don't have to load it again
-      // Also, add cid if it isn't there
-      if (page.doenetML === undefined) {
-        page = { ...page };
-        page.doenetML = variantResults.pageVariants.doenetML;
-      } else if (!page.cid) {
-        page = { ...page };
-        page.cid = variantResults.pageVariants.cid;
-      }
-
-      orderWithCids[0].cid = page.cid;
-
-      let variantsByPage = [variantResults.variantIndex];
-      let itemWeights = [1];
-
-      let activityInfo = {
-        orderWithCids,
-        variantsByPage,
-        itemWeights
-      };
-  
-
-      return {
-        success: true,
-        order: [page],
-        itemWeights: [1],
-        variantsByPage: [variantResults.variantIndex],
-        variantIndex: variantResults.variantIndex,
-        activityInfo
-      };
-
-    }
-
-    let rng = new rngClass(variantResults.variantIndex.toString());
+    let rng = new rngClass(activityVariantResult.variantIndex.toString());
 
     let orderResult = determineOrder(activityDefinition.order, rng);
 
@@ -822,33 +783,52 @@ export default function ActivityViewer(props) {
       itemWeights = itemWeights.map(x => x / totalWeight);
     }
 
-    console.time('getContent');
 
-    let promises = [];
+    let pageVariantsResult;
 
-    for (let page of originalOrder) {
-      promises.push(returnAllPossibleVariants({
-        cid: page.cid, doenetML: page.doenetML, flags
-      }));
+    if (activityVariantResult.pageVariants) {
+      pageVariantsResult = [activityVariantResult.pageVariants]
+    } else {
+
+      let promises = [];
+      for (let page of originalOrder) {
+        promises.push(returnAllPossibleVariants({
+          cid: page.cid, doenetML: page.doenetML, flags
+        }));
+      }
+
+      try {
+        pageVariantsResult = await Promise.all(promises);
+      } catch (e) {
+        return { success: false, message: `Error retrieving content for activity. ${e.message}` };
+      }
     }
 
-    let variantsResult;
 
-    try {
-      variantsResult = await Promise.all(promises);
-    } catch (e) {
-      return { success: false, message: `Error retrieving content for activity. ${e.message}` };
+    let variantForEachPage;
+
+    let numberOfVariantsPerPage = pageVariantsResult.map(x => x.allPossibleVariants.length);
+    let numberOfPageVariantCombinations = numberOfVariantsPerPage.reduce((a, c) => a * c, 1)
+
+    if (numberOfPageVariantCombinations <= activityVariantResult.numberOfVariants) {
+
+      let pageVariantCombinationIndex = (activityVariantResult.variantIndex - 1) % numberOfPageVariantCombinations + 1;
+
+      variantForEachPage = enumerateCombinations({
+        numberOfOptionsByIndex: numberOfVariantsPerPage,
+        maxNumber: pageVariantCombinationIndex,
+      })[pageVariantCombinationIndex - 1].map(x => x + 1);
+
+    } else {
+      variantForEachPage = [...Array(nPages).keys()].map(i => Math.floor(rng() * numberOfVariantsPerPage[i]) + 1)
     }
-
-    console.timeEnd('getContent');
 
     let chosenVariants = [];
 
     let newOrder = [];
-    for (let [ind, possibleVariants] of variantsResult.entries()) {
-      let numberOfPageVariants = possibleVariants.allPossibleVariants.length;
+    for (let [ind, possibleVariants] of pageVariantsResult.entries()) {
 
-      let pageVariantIndex = Math.floor(rng() * numberOfPageVariants) + 1;
+      let pageVariantIndex = variantForEachPage[ind];
 
       chosenVariants.push(pageVariantIndex);
 
@@ -881,7 +861,7 @@ export default function ActivityViewer(props) {
       order: newOrder,
       itemWeights,
       variantsByPage: chosenVariants,
-      variantIndex: variantResults.variantIndex,
+      variantIndex: activityVariantResult.variantIndex,
       activityInfo
     };
 
@@ -1245,8 +1225,8 @@ export default function ActivityViewer(props) {
 
   return <div style={{ marginBottom: "200px" }}>
     {cidChangedAlert}
-    <button data-cy={"previous"} disabled={currentPage===1} onClick={() => setCurrentPage((was) => Math.max(1, was - 1))}>Previous page</button>
-    <button data-cy={"next"} disabled={currentPage===nPages} onClick={() => setCurrentPage((was) => Math.min(nPages, was + 1))}>Next page</button>
+    <button data-cy={"previous"} disabled={currentPage === 1} onClick={() => setCurrentPage((was) => Math.max(1, was - 1))}>Previous page</button>
+    <button data-cy={"next"} disabled={currentPage === nPages} onClick={() => setCurrentPage((was) => Math.min(nPages, was + 1))}>Next page</button>
     <p>Page {currentPage} of {nPages}</p>
     {title}
     {pages}
@@ -1254,46 +1234,35 @@ export default function ActivityViewer(props) {
 }
 
 async function determineVariant(activityDefinition, requestedVariantIndex, flags) {
-  let numberOfVariants = 100;
+  let numberOfVariants = 1000;
+  let pageVariants = null;
 
   if (activityDefinition.numberOfVariants !== undefined) {
     numberOfVariants = activityDefinition.numberOfVariants;
     if (!(Number.isInteger(numberOfVariants) && numberOfVariants >= 1)) {
-      numberOfVariants = 100;
+      numberOfVariants = 1000;
     }
 
-  } else {
-    // have no variant control
-    // check to see if we have special case of a sequence order
-    // with just a single page.
-    // In that case, use the variant control of that page
-    let behavior = activityDefinition.order.behavior?.toLowerCase();
-    if ((behavior === "sequence" || behavior === undefined)
-      && activityDefinition.order.content?.length === 1
-      && activityDefinition.order.content[0].type?.toLowerCase() === "page"
-    ) {
-      // have single page in a sequence
+  } else if (activityDefinition.order.content?.length === 1
+    && activityDefinition.order.content[0].type?.toLowerCase() === "page"
+  ) {
 
-      let page = activityDefinition.order.content[0];
-      let pageVariants = await returnAllPossibleVariants({
-        cid: page.cid, doenetML: page.doenetML, flags
-      })
+    // if number of variants is not specified
+    // and have just a single page,
+    // determine number of variants from that page
 
+    let page = activityDefinition.order.content[0];
+    pageVariants = await returnAllPossibleVariants({
+      cid: page.cid, doenetML: page.doenetML, flags
+    })
 
-      numberOfVariants = pageVariants.allPossibleVariants.length;
-
-      let variantIndex = (requestedVariantIndex - 1) % numberOfVariants + 1;
-
-      return { variantIndex, usePageVariants: true, pageVariants };
-
-    }
-
-
+    numberOfVariants = pageVariants.allPossibleVariants.length;
   }
+
 
   let variantIndex = (requestedVariantIndex - 1) % numberOfVariants + 1;
 
-  return { variantIndex, usePageVariants: false };
+  return { variantIndex, numberOfVariants, pageVariants };
 
 }
 
@@ -1305,7 +1274,7 @@ function determineOrder(order, rng) {
 
   let behavior = order.behavior?.toLowerCase();
 
-  if(behavior === undefined) {
+  if (behavior === undefined) {
     behavior = 'sequence';
   }
 
