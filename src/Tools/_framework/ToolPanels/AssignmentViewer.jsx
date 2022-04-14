@@ -243,13 +243,16 @@ export default function AssignmentViewer() {
         // }
 
         //Find allPossibleVariants
-        try {
-          allPossibleVariants.current = await returnAllPossibleActivityVariants({ cid });
-        } catch (e) {
-          setStage('Problem');
-          setMessage(`Could not load assignment: ${e.message}`);
-          return;
-        }
+        // try {
+        //   allPossibleVariants.current = await returnAllPossibleActivityVariants({ cid });
+        // } catch (e) {
+        //   setStage('Problem');
+        //   setMessage(`Could not load assignment: ${e.message}`);
+        //   return;
+        // }
+
+        allPossibleVariants.current = [...Array(1000).keys()].map(x=>(x+1));
+
 
         //Find attemptNumber
         resp = await axios.get('/api/loadTakenVariants.php', {
