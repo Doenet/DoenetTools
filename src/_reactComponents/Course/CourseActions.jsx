@@ -101,6 +101,41 @@ export const authorCourseItemOrderByCourseId = atomFamily({
   default: [],
 });
 
+export const authorCourseItemOrderByCourseIdBySection = selectorFamily({
+  key: 'authorCourseItemOrderByCourseIdBySection',
+  get:({courseId,sectionId})=> ({get})=>{
+    // console.log("courseId,sectionId",courseId,sectionId)
+    let allDoenetIdsInOrder = get(authorCourseItemOrderByCourseId(courseId));
+    if (sectionId == courseId || !sectionId){
+      return allDoenetIdsInOrder;
+    }
+    let sectionDoenetIds = [];
+    let inSection = false;
+    let sectionDoenetIdsInSection = [sectionId];
+    for (let doenetId of allDoenetIdsInOrder){
+      if (doenetId == sectionId){
+        inSection = true;
+        continue;
+      }
+      if (inSection){
+        let itemObj = get(authorItemByDoenetId(doenetId));
+        if (sectionDoenetIdsInSection.includes(itemObj.parentDoenetId)){
+          sectionDoenetIds.push(doenetId);
+          //If of type which has children then add to the section list
+          if (itemObj.type !== 'page'){
+            sectionDoenetIdsInSection.push(doenetId);
+          }
+
+        }else{
+          break;
+        }
+
+      }
+    }
+    return sectionDoenetIds;
+  }
+})
+
 //Start at top find the section we are filtering to based on searchparams AtomFamily sectionId
 //If empty sectionId then return everything in authorCourseItemOrderByCourseId
 //Start collecting parentNames and doenetIds to include for the section
@@ -398,6 +433,23 @@ export const useCourse = (courseId) => {
           previousDoenetId = courseId;
         }
 
+        //Place in section if section is toggled open and is the only selected item
+        //Define previousDoenetId if any single item is selected
+        let selectedArray = await snapshot.getPromise(selectedCourseItems);
+        if (selectedArray.length == 1){
+          let singleSelectedDoenetId = selectedArray[0];
+          // previousDoenetId = singleSelectedDoenetId; //Only in insert mode
+          let selectedObj = await snapshot.getPromise(authorItemByDoenetId(singleSelectedDoenetId))
+          if (selectedObj.type == 'section' ){
+            placeInFolderFlag = true;
+          }
+        }
+        console.log("create params",{
+          previousDoenetId,
+          courseId,
+          itemType,
+          placeInFolderFlag,
+        })
         let newDoenetId;
         let coursePermissionsAndSettings = await snapshot.getPromise(
           coursePermissionsAndSettingsByCourseId(courseId),
@@ -425,9 +477,15 @@ export const useCourse = (courseId) => {
           //Order
 
           let createdOrderDoenetId = data.itemEntered.order.doenetId;
+          let numberToSelect = 1;
+          let withReplacement = false;
+         
           let createdOrderObj = {
-            type:"order",
+            type: "order",
             doenetId:createdOrderDoenetId,
+            behavior:"sequence",
+            numberToSelect,
+            withReplacement,
             parentDoenetId:createdActivityDoenentId,
             isOpen:false,
             isSelected:false,
@@ -519,9 +577,13 @@ export const useCourse = (courseId) => {
                 },
               });
           let {pageThatWasCreated, orderDoenetIdThatWasCreated} = data;
+          let numberToSelect = 1;
+          let withReplacement = false;
           let orderObj = {
-            type:"order",
+            type: "order",
             behavior:"sequence",
+            numberToSelect,
+            withReplacement,
             content:[],
             doenetId: orderDoenetIdThatWasCreated,
           }
