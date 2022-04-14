@@ -8,6 +8,7 @@ import React, {
   // Suspense,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 // import axios from 'axios';
@@ -49,7 +50,8 @@ import {
   authorItemByDoenetId,
   coursePermissionsAndSettingsByCourseId, 
   useInitCourseItems,
-  selectedCourseItems
+  selectedCourseItems,
+  authorCourseItemOrderByCourseIdBySection
 } from '../../_reactComponents/Course/CourseActions';
 
 /**
@@ -64,6 +66,10 @@ import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPane
 export default function CourseNavigator() {
   console.log("=== CourseNavigator")
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
+  // console.log("courseId",courseId)
+  // console.log("sectionId",sectionId)
+  // console.log("-----\n")
   let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
@@ -96,9 +102,9 @@ export default function CourseNavigator() {
   }
   //TODO: use effective role
   if (coursePermissionsAndSettings.canEditContent == '1'){
-    return <AuthorCourseNavigation courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
+    return <AuthorCourseNavigation courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }else{
-    return <StudentCourseNavigation courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
+    return <StudentCourseNavigation courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
 
 
@@ -118,14 +124,19 @@ function StudentCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVis
   </>
 }
 
-function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisibleColumns}){
-  // let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdAndSection(courseId)); //TODO make selector
-  let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseId(courseId));
-  
-  let items = [];
-  authorItemOrder.map((doenetId)=>
-    items.push(<Item key={`itemcomponent${doenetId}`} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={0} />)
-  )
+function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns}){
+  let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
+
+  let previousSections = useRef([]);
+  let definedForSectionId = useRef("");
+  //If sectionId changes clear out previousSections
+  if (definedForSectionId.current != sectionId){
+    previousSections.current = []
+    definedForSectionId.current = sectionId;
+  }
+
+  let items = authorItemOrder.map((doenetId)=>
+    <Item key={`itemcomponent${doenetId}`} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={0} />)
     
   return <>
   <CourseNavigationHeader columnLabels={["Assigned","Public"]} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
@@ -133,12 +144,18 @@ function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisi
   </>
 }
 
-function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel}){
+function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel,previousSections}){
   //TODO: Investigate if type should be a selector and these three would subscribe to item info
   let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
 
   if (itemInfo.type == 'section'){
-    return <Section key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
+    previousSections.current.push(itemInfo.doenetId);
+  }
+  if (previousSections.current.includes(itemInfo.parentDoenetId)){
+    return null;
+  }
+  if (itemInfo.type == 'section'){
+  return <Section key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }else if (itemInfo.type == 'bank'){
     return <Bank key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }else if (itemInfo.type == 'activity'){
@@ -149,7 +166,21 @@ function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel}){
 }
 
 function Section({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
-  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+  let authorSectionItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:itemInfo.doenetId}));
+  let previousSections = useRef([]);
+  
+  if (itemInfo.isOpen){
+    let sectionItems = authorSectionItemOrder.map((doenetId)=>
+    <Item key={`itemcomponent${doenetId}`} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel+1} />)
+    
+    return <>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+    {sectionItems}
+    </>
+
+  }else{
+    return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+  }
 }
 
 function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
@@ -493,6 +524,13 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
           params: { doenetId:pageDoenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId },
           }})
       }
+    }else if (clickedItem.type == 'section'){
+      setPageToolView((prev)=>{return {
+        page: 'course',
+        tool: 'navigation',
+        view: prev.view,
+        params: { sectionId: clickedItem.doenetId, courseId},
+        }})
     }
 
 

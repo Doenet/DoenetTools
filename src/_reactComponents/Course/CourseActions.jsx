@@ -101,6 +101,41 @@ export const authorCourseItemOrderByCourseId = atomFamily({
   default: [],
 });
 
+export const authorCourseItemOrderByCourseIdBySection = selectorFamily({
+  key: 'authorCourseItemOrderByCourseIdBySection',
+  get:({courseId,sectionId})=> ({get})=>{
+    // console.log("courseId,sectionId",courseId,sectionId)
+    let allDoenetIdsInOrder = get(authorCourseItemOrderByCourseId(courseId));
+    if (sectionId == courseId || !sectionId){
+      return allDoenetIdsInOrder;
+    }
+    let sectionDoenetIds = [];
+    let inSection = false;
+    let sectionDoenetIdsInSection = [sectionId];
+    for (let doenetId of allDoenetIdsInOrder){
+      if (doenetId == sectionId){
+        inSection = true;
+        continue;
+      }
+      if (inSection){
+        let itemObj = get(authorItemByDoenetId(doenetId));
+        if (sectionDoenetIdsInSection.includes(itemObj.parentDoenetId)){
+          sectionDoenetIds.push(doenetId);
+          //If of type which has children then add to the section list
+          if (itemObj.type !== 'page'){
+            sectionDoenetIdsInSection.push(doenetId);
+          }
+
+        }else{
+          break;
+        }
+
+      }
+    }
+    return sectionDoenetIds;
+  }
+})
+
 //Start at top find the section we are filtering to based on searchparams AtomFamily sectionId
 //If empty sectionId then return everything in authorCourseItemOrderByCourseId
 //Start collecting parentNames and doenetIds to include for the section
