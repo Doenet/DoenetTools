@@ -2108,19 +2108,19 @@ describe('Math Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/m1"].stateValues.value).eqls(-0)
-      expect(stateVariables["/m2"].stateValues.value).eqls(["+", 4, -0])
-      expect(stateVariables["/m3"].stateValues.value).eqls(["+", 0, -0])
-      expect(stateVariables["/m4"].stateValues.value).eqls(["+", -0, -0])
-      expect(stateVariables["/m5"].stateValues.value).eqls(["+", 0, -0])
-      expect(stateVariables["/m6"].stateValues.value).eqls(["+", 0, ["-", -0]])
-      expect(stateVariables["/m7"].stateValues.value).eqls(["-", ["/", 6, -0]])
+      expect(stateVariables["/m1"].stateValues.value).eqls(["-", 0])
+      expect(stateVariables["/m2"].stateValues.value).eqls(["+", 4, ["-", 0]])
+      expect(stateVariables["/m3"].stateValues.value).eqls(["+", 0, ["-", 0]])
+      expect(stateVariables["/m4"].stateValues.value).eqls(["+", ["-", 0], ["-", 0]])
+      expect(stateVariables["/m5"].stateValues.value).eqls(["+", 0, ["-", 0]])
+      expect(stateVariables["/m6"].stateValues.value).eqls(["+", 0, ["-", ["-", 0]]])
+      expect(stateVariables["/m7"].stateValues.value).eqls(["-", ["/", 6, ["-", 0]]])
 
-      expect(stateVariables["/m8"].stateValues.value).eqls(["+", 4, -0])
-      expect(stateVariables["/m9"].stateValues.value).eqls(["+", 4, ["-", -0]])
-      expect(stateVariables["/m10"].stateValues.value).eqls(["+", -0, -0])
-      expect(stateVariables["/m11"].stateValues.value).eqls(["+", -0, ["-", -0]])
-      expect(stateVariables["/m12"].stateValues.value).eqls(["/", -6, -0])
+      expect(stateVariables["/m8"].stateValues.value).eqls(["+", 4, ["-", 0]])
+      expect(stateVariables["/m9"].stateValues.value).eqls(["+", 4, ["-", ["-", 0]]])
+      expect(stateVariables["/m10"].stateValues.value).eqls(["+", ["-", 0], ["-", 0]])
+      expect(stateVariables["/m11"].stateValues.value).eqls(["+", ["-", 0], ["-", ["-", 0]]])
+      expect(stateVariables["/m12"].stateValues.value).eqls(["/", -6, ["-", 0]])
 
     })
   });

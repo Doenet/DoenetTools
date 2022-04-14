@@ -1194,7 +1194,7 @@ describe('Collect Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <text>a</text>
+  <text>a</text><math>a</math>
 
   <p>How many blanks? 
     <mathinput name="n" prefill="1" />
@@ -1242,6 +1242,7 @@ describe('Collect Tag Tests', function () {
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'a');
 
     cy.get('#\\/p_3e span:nth-of-type(1) textarea').type('x{enter}', { force: true });
 

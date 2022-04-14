@@ -201,7 +201,7 @@ export default class BooleanComponent extends InlineComponent {
               inheritedComponentType: child.componentType,
               baseComponentType: "booleanList"
             })) {
-              booleanChildrenByCode[code] = child;
+              booleanListChildrenByCode[code] = child;
             } else {
               otherChildrenByCode[code] = child;
             }

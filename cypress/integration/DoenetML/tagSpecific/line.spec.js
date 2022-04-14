@@ -9442,6 +9442,12 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/A"];
+    }))
+
     cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(9,8)')
     cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
 
@@ -9488,6 +9494,11 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/A"];
+    }))
 
     cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(0.5,3.5)')
     cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
