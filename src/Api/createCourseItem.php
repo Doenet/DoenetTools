@@ -40,7 +40,7 @@ if ($success){
     $row = $result->fetch_assoc();
     $prev =$row['sortOrder'] ?: "";
     $next = "";
-    $parentDoenetId = $placeInFolderFlag  == 'true' ? $previousDoenetId : $row['parentDoenetId'];
+    $parentDoenetId = $previousDoenetId;
   } else {
     $sql = "SELECT sortOrder, parentDoenetId
     FROM `course_content`
