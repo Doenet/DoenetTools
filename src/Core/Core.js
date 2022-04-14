@@ -64,7 +64,6 @@ export default class Core {
       requestRecordEvent: this.requestRecordEvent.bind(this),
       requestAnimationFrame: this.requestAnimationFrame.bind(this),
       cancelAnimationFrame: this.cancelAnimationFrame.bind(this),
-      calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer.bind(this),
       recordSolutionView: this.recordSolutionView.bind(this),
     }
 
@@ -9625,46 +9624,14 @@ export default class Core {
 
   // }
 
-  async calculateScoredItemNumberOfContainer(componentName) {
-
-    let component = this._components[componentName];
-    let ancestorNames = [
-      ...component.ancestors.slice(0, -1).reverse().map(x => x.componentName),
-      componentName
-    ];
-    let scoredComponent;
-    let scoredItemNumber;
-    for (let [index, scored] of (await this.document.stateValues.scoredDescendants).entries()) {
-      for (let ancestorName of ancestorNames) {
-        if (scored.componentName === ancestorName) {
-          scoredComponent = ancestorName;
-          scoredItemNumber = index + 1;
-          break;
-        }
-      }
-      if (scoredComponent !== undefined) {
-        break;
-      }
-    }
-
-    // if component wasn't inside a scoredComponent and isn't a scoredComponent itself
-    // then let the scoredComponent be the document itself
-    if (scoredComponent === undefined) {
-      scoredComponent = this.document.componentName;
-      scoredItemNumber = (await this.document.stateValues.scoredDescendants).length;
-    }
-
-    return { scoredItemNumber, scoredComponent };
-  }
-
-  async recordSolutionView({ itemNumber, scoredComponent }) {
+  async recordSolutionView() {
 
     // TODO: check if student was actually allowed to view solution.
 
     try {
       const resp = await axios.post('/api/reportSolutionViewed.php', {
         doenetId: this.doenetId,
-        itemNumber,
+        itemNumber: this.itemNumber,
         pageId: this.pageId,
         attemptNumber: this.attemptNumber,
       });
@@ -9679,15 +9646,15 @@ export default class Core {
             toastType: toastType.ERROR
           }
         })
-        return { allowView: false, message, scoredComponent };
+        return { allowView: false, message, scoredComponent: this.documentName };
       } else {
         let data = resp.data;
         if (data.success) {
-          return { allowView: true, message: "", scoredComponent };
+          return { allowView: true, message: "", scoredComponent: this.documentName };
         } else {
 
           let message = `Cannot show solution due to error: ${data.message}`;
-          return { allowView: false, message, scoredComponent };
+          return { allowView: false, message, scoredComponent: this.documentName };
         }
       }
     } catch (e) {
@@ -9701,7 +9668,7 @@ export default class Core {
         }
       });
 
-      return { allowView: false, message, scoredComponent };
+      return { allowView: false, message, scoredComponent: this.documentName };
 
     }
 

@@ -203,12 +203,7 @@ export default class Solution extends BlockComponent {
 
   async revealSolution({ actionId }) {
 
-    let { scoredItemNumber, scoredComponent } = await this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName);
-
-    let { allowView, message } = await this.coreFunctions.recordSolutionView({
-      itemNumber: scoredItemNumber,
-      scoredComponent: scoredComponent,
-    });
+    let { allowView, message, scoredComponent } = await this.coreFunctions.recordSolutionView();
 
 
     let updateInstructions = [{
