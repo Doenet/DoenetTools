@@ -187,7 +187,7 @@ export default function BooleanInput(props) {
   return <React.Fragment>
     <span id={name}>
       <a name={name} />
-      <label style={{fontSize: "14px"}}>
+      <label>
         <Button
           type="checkbox"
           style={checkWorkStyle}
