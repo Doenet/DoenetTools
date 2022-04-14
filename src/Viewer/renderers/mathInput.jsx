@@ -170,7 +170,6 @@ export default function MathInput(props) {
     position: relative;
     width: 30px;
     height: 24px;
-    font-size: 14px;
     /* font-weight: bold; */
     color: #ffffff;
     display: inline-block;
