@@ -1,7 +1,9 @@
 import React, { useRef, useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons';
+import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox';
+import styled from 'styled-components';
 
 export default function BooleanInput(props) {
   let { name, SVs, actions, ignoreUpdate, callAction } = useDoenetRender(props);
@@ -61,17 +63,37 @@ export default function BooleanInput(props) {
   const inputKey = name + '_input';
 
   let checkWorkStyle = {
-    position: "relative",
-    width: "30px",
-    height: "24px",
-    fontSize: "20px",
-    fontWeight: "bold",
-    color: "#ffffff",
-    display: "inline-block",
-    textAlign: "center",
-    top: "3px",
-    padding: "2px",
+    // position: "relative",
+    // width: "30px",
+    // height: "24px",
+    // fontSize: "20px",
+    // fontWeight: "bold",
+    // color: "#ffffff",
+    // display: "inline-block",
+    // textAlign: "center",
+    // top: "3px",
+    // padding: "2px",
+    backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue")
   }
+
+  const Button = styled.input `
+    position: relative;
+    width: 30px;
+    height: 24px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffffff;
+    display: inline-block;
+    text-align: center;
+    top: 3px;
+    padding: 2px;
+    background-color: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
+
+    &:checked {
+      background-color: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
+    }
+
+  `
 
   //Assume we don't have a check work button
   let checkWorkButton = null;
@@ -79,11 +101,11 @@ export default function BooleanInput(props) {
 
     if (validationState === "unvalidated") {
       if (disabled) {
-        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
       } else {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
       }
-      checkWorkButton = <button
+      checkWorkButton = <span
         id={name + '_submit'}
         tabIndex="0"
         disabled={disabled}
@@ -101,11 +123,11 @@ export default function BooleanInput(props) {
         }}
       >
         <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-      </button>
+      </span>
     } else {
       if (SVs.showCorrectness) {
         if (validationState === "correct") {
-          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
           checkWorkButton = <span
             id={name + '_correct'}
             style={checkWorkStyle}
@@ -126,7 +148,7 @@ export default function BooleanInput(props) {
           >{partialCreditContents}</span>
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
           checkWorkButton = <span
             id={name + '_incorrect'}
             style={checkWorkStyle}
@@ -165,9 +187,10 @@ export default function BooleanInput(props) {
   return <React.Fragment>
     <span id={name}>
       <a name={name} />
-      <label>
-        <input
+      <label style={{fontSize: "14px"}}>
+        <Button
           type="checkbox"
+          style={checkWorkStyle}
           key={inputKey}
           id={inputKey}
           checked={rendererValue}
