@@ -31,20 +31,20 @@ export default function EditorInfoCap(){
 
 //  let imageURL = `/media/drive_pictures/${image}`
  if (image != 'none'){
-  image = 'url(/media/drive_pictures/' + image + ')';
+  image = '/media/drive_pictures/' + image;
  }
  if (color != 'none'){
   color = '#' + color;
  }
 
   return <>
-    <div style={{position: 'relative', paddingBottom: '135px'}}>
-    <img style={{position: "absolute", height: "135px", objectFit: 'cover', backgroundImage: image, backgroundColor: color}} width='240px' />
+    <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
+      <img src={image} style={{ position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)" }}  />
     </div>
-    <div style={{padding:"8px"}}>
-    <div>{course_label}</div>
-    <div>{docInfo.label}</div>
-    <div>{status} </div>
+    <div style={{ padding:'16px 12px' }}>
+      <span style={{ marginBottom: "15px" }}>{course_label}</span> <br />
+      <span style={{ marginBottom: "15px" }}>{docInfo.label}</span> <br />
+      <span>{ status }</span>
     {/* <ClipboardLinkButtons doenetId={doenetId}/> */}
     {/* <div>Last saved (comming soon)</div> */}
   </div>
