@@ -7,6 +7,7 @@ import {
   useRecoilCallback,
   useRecoilValue,
 } from 'recoil';
+import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { useToast, toastType } from '../../Tools/_framework/Toast';
 
 export function useInitCourseItems(courseId) {
@@ -849,7 +850,7 @@ export const useCourse = (courseId) => {
 );
 
   const compileActivity = useRecoilCallback(
-({ set,snapshot }) =>
+  ({ set,snapshot }) =>
   async ({activityDoenetId, successCallback, isAssigned=false, failureCallback = defaultFailure}) => {
 
     async function orderToDoenetML({ order, indentLevel = 1 }) {
@@ -996,30 +997,79 @@ export const useCourse = (courseId) => {
         });
       });
 
-      const deleteItem = useRecoilCallback(
-        ({ set,snapshot }) =>
-          async ({doenetId, successCallback, failureCallback = defaultFailure}) => {
-            let itemToDeleteObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-            // let containingObj = await snapshot.getPromise(authorItemByDoenetId(orderObj.containingDoenetId))
-           console.log("DELETE",itemToDeleteObj)
-          //   let { data } = await axios.post('/api/updateActivityStructure.php', {
-          //     courseId,
-          //     doenetId:orderObj.containingDoenetId,
-          //     newJSON:nextOrder
-          //   });
-          // // console.log("data",data)
-          //   let nextActivityObj = {...activityObj};
-          //   nextActivityObj.order = nextOrder;
-          //   set(authorItemByDoenetId(orderObj.containingDoenetId),nextActivityObj)
-       
-          //   set(authorItemByDoenetId(doenetId),(prev)=>{
-          //     let next = {...prev}
-          //     next.behavior = behavior;
-          //     next.numberToSelect = numberToSelect;
-          //     next.withReplacement = withReplacement;
-          //     return next;
-          //   });
-          });
+  const deleteItem = useRecoilCallback(
+    ({ set,snapshot }) =>
+      async ({doenetId, successCallback, failureCallback = defaultFailure}) => {
+        let itemToDeleteObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+        console.log("DELETE",itemToDeleteObj)
+        let pagesDoenetIds = [];
+        let courseContentDoenetIds = [];
+        let activitiesJson = [];
+        let activitiesJsonDoenetIds = [];
+        let collectionsJson = []; 
+        let collectionsJsonDoenetIds = []; 
+        if (itemToDeleteObj.type == 'page'){
+          let containingObj = await snapshot.getPromise(authorItemByDoenetId(itemToDeleteObj.containingDoenetId))
+          if (containingObj.type == 'bank'){
+            collectionsJsonDoenetIds.push(containingObj.doenetId)
+            let nextPages = [...containingObj.pages];
+            nextPages.splice(nextPages.indexOf(itemToDeleteObj.doenetId),1);
+            collectionsJson.push(nextPages);
+
+            pagesDoenetIds.push(doenetId);
+
+          }
+          console.log("collectionsJson",collectionsJson)
+
+        }
+
+        //Delete off of server first
+    try {
+
+        let resp = await axios.post('/api/deleteItems.php', {
+          courseId,
+          pagesDoenetIds,
+          courseContentDoenetIds,
+          activitiesJson,
+          activitiesJsonDoenetIds,
+          collectionsJson,
+          collectionsJsonDoenetIds
+        });
+      if (resp.status < 300) {
+        // console.log("data",resp.data)
+        let { success, message } = resp.data;
+
+     //update recoil for deleted collections
+     for (let [i,collectionDoenetId] of Object.entries(collectionsJsonDoenetIds)){
+      let collectionJson = collectionsJson[i];
+      set(authorItemByDoenetId(collectionDoenetId),(prev)=>{
+        let next = {...prev}
+        next.pages = collectionJson;
+        return next;
+      })
+     }
+
+     //Clear selections
+     let selectedDoenentIds = await snapshot.getPromise(selectedCourseItems);
+    for (let doenetId of selectedDoenentIds){
+      set(authorItemByDoenetId(doenetId),(prev)=>{
+        let next = {...prev}
+        next.isSelected = false;
+        return next
+      })
+    }
+    set(selectedCourseItems,[]);
+    set(selectedMenuPanelAtom,"");
+
+        successCallback?.();
+      } else {
+        throw new Error(`response code: ${resp.status}`);
+      }
+    } catch (err) {
+      failureCallback(err);
+    }
+
+      });
 
   return { create, deleteItem, deleteCourse, modifyCourse, label, color, image, renameItem, compileActivity, updateOrderBehavior };
 };
