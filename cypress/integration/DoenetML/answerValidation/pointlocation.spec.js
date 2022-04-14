@@ -1233,7 +1233,12 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
-    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+    cy.get(`#\\/goal1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(-4.1,7.4)')
+    })
+    cy.get(`#\\/goal2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(6.8,9.1)')
+    })
 
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
