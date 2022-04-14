@@ -293,6 +293,12 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/_answer1"];
+    }))
+
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
@@ -357,6 +363,12 @@ describe('Point location validation tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/_answer1"];
+    }))
 
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -426,6 +438,12 @@ describe('Point location validation tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/_answer1"];
+    }))
 
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -434,6 +452,10 @@ describe('Point location validation tests', function () {
     });
     cy.get('#\\/_answer1_partial').should('not.exist');
 
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+    });
 
   });
 

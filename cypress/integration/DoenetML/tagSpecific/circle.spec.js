@@ -8952,6 +8952,11 @@ describe('Circle Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/circ"];
+    }))
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
