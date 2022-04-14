@@ -20,7 +20,7 @@ export default function SelectedPage() {
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
   const containingObj = useRecoilValue(authorItemByDoenetId(itemObj.containingDoenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
-  const { create, renameItem, compileActivity } = useCourse(courseId);
+  const { create, renameItem, compileActivity, deleteItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
   const addToast = useToast();
 
@@ -122,5 +122,17 @@ export default function SelectedPage() {
         value="Add Page"
       />
     </ButtonGroup>
+    <br />
+    <Button
+      width="menu"
+      value="Delete Page"
+      alert
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      
+        deleteItem({doenetId});
+      }}
+    />
   </>
 }

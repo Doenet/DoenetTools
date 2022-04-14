@@ -996,5 +996,30 @@ export const useCourse = (courseId) => {
         });
       });
 
-  return { create, deleteCourse, modifyCourse, label, color, image, renameItem, compileActivity, updateOrderBehavior };
+      const deleteItem = useRecoilCallback(
+        ({ set,snapshot }) =>
+          async ({doenetId, successCallback, failureCallback = defaultFailure}) => {
+            let itemToDeleteObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+            // let containingObj = await snapshot.getPromise(authorItemByDoenetId(orderObj.containingDoenetId))
+           console.log("DELETE",itemToDeleteObj)
+          //   let { data } = await axios.post('/api/updateActivityStructure.php', {
+          //     courseId,
+          //     doenetId:orderObj.containingDoenetId,
+          //     newJSON:nextOrder
+          //   });
+          // // console.log("data",data)
+          //   let nextActivityObj = {...activityObj};
+          //   nextActivityObj.order = nextOrder;
+          //   set(authorItemByDoenetId(orderObj.containingDoenetId),nextActivityObj)
+       
+          //   set(authorItemByDoenetId(doenetId),(prev)=>{
+          //     let next = {...prev}
+          //     next.behavior = behavior;
+          //     next.numberToSelect = numberToSelect;
+          //     next.withReplacement = withReplacement;
+          //     return next;
+          //   });
+          });
+
+  return { create, deleteItem, deleteCourse, modifyCourse, label, color, image, renameItem, compileActivity, updateOrderBehavior };
 };
