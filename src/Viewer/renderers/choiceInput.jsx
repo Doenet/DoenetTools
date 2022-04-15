@@ -100,6 +100,7 @@ export default function ChoiceInput(props) {
       textAlign: "center",
       top: "3px",
       padding: "2px",
+      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue")
     }
 
     //Assume we don't have a check work button
