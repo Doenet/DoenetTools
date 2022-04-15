@@ -108,9 +108,9 @@ export default function ChoiceInput(props) {
 
       if (validationState === "unvalidated") {
         if (disabled) {
-          checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
         } else {
-          checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
         }
         checkWorkButton = <button
           id={name + '_submit'}
@@ -134,7 +134,7 @@ export default function ChoiceInput(props) {
       } else {
         if (SVs.showCorrectness) {
           if (validationState === "correct") {
-            checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+            checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
             checkWorkButton = <span
               id={name + '_correct'}
               style={checkWorkStyle}
@@ -155,7 +155,7 @@ export default function ChoiceInput(props) {
             >{partialCreditContents}</span>
           } else {
             //incorrect
-            checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+            checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
             checkWorkButton = <span
               id={name + '_incorrect'}
               style={checkWorkStyle}
@@ -231,7 +231,7 @@ export default function ChoiceInput(props) {
     let checkWorkStyle = {
       height: "23px",
       display: "inline-block",
-      backgroundColor: "rgb(2, 117, 216)",
+      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
       padding: "1px 6px 1px 6px",
       color: "white",
       fontWeight: "bold",
@@ -248,7 +248,7 @@ export default function ChoiceInput(props) {
           checkWorkText = "Submit Response";
         }
         if (disabled) {
-          checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
         }
         checkworkComponent = (
           <button id={name + "_submit"}
@@ -274,7 +274,7 @@ export default function ChoiceInput(props) {
       } else {
         if (SVs.showCorrectness) {
           if (validationState === "correct") {
-            checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+            checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
             checkworkComponent = (
               <span id={name + "_correct"}
                 style={checkWorkStyle}
@@ -284,7 +284,7 @@ export default function ChoiceInput(props) {
                 Correct
               </span>);
           } else if (validationState === "incorrect") {
-            checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+            checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
             checkworkComponent = (
               <span id={name + "_incorrect"}
                 style={checkWorkStyle}
