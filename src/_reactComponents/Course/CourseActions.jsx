@@ -1047,6 +1047,15 @@ export const useCourse = (courseId) => {
         next.pages = collectionJson;
         return next;
       })
+      
+     }
+     for (let [i,pagesDoenetId] of Object.entries(pagesDoenetIds)){
+       //remove pages from author order
+      set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
+        let next = [...prev];
+        next.splice(next.indexOf(pagesDoenetId),1);
+        return next;
+      });
      }
 
      //Clear selections

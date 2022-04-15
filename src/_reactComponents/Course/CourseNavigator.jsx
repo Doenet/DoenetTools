@@ -126,6 +126,7 @@ function StudentCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVis
 
 function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns}){
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
+  // console.log("authorItemOrder",authorItemOrder)
 
   let previousSections = useRef([]);
   let definedForSectionId = useRef("");
@@ -151,7 +152,7 @@ function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel,previousSect
   if (itemInfo.type == 'section'){
     previousSections.current.push(itemInfo.doenetId);
   }
-  if (previousSections.current.includes(itemInfo.parentDoenetId)){
+  if (previousSections?.current.includes(itemInfo.parentDoenetId)){
     return null;
   }
   if (itemInfo.type == 'section'){
