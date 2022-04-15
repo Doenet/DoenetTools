@@ -292,7 +292,7 @@ export default class Answer extends InlineComponent {
       forRenderer: true,
       returnDependencies: () => ({
         showCorrectnessPreliminary: {
-          dependencyType: "stateVariables",
+          dependencyType: "stateVariable",
           variableName: "showCorrectnessPreliminary"
         },
         showCorrectnessFlag: {

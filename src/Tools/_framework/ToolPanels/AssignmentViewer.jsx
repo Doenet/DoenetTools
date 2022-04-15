@@ -503,18 +503,15 @@ export default function AssignmentViewer() {
 
 async function returnNumberOfActivityVariants(cid) {
 
-  console.log(`return number of variants for ${cid}`)
   let activityDefinitionDoenetML = await retrieveTextFileForCid(cid);
 
   let result = parseActivityDefinition(activityDefinitionDoenetML);
 
-  console.log(result);
-  
   if(!result.success) {
     return result;
   }
 
-  let numberOfVariants = determineNumberOfActivityVariants(result.activityJSON);
+  let numberOfVariants = await determineNumberOfActivityVariants(result.activityJSON);
 
   return { success: true, numberOfVariants };
 }

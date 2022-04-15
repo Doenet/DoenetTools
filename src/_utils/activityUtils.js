@@ -108,8 +108,6 @@ export function parseActivityDefinition(activityDefDoenetML) {
 
     }
 
-    console.log('jsonDefinition', jsonDefinition);
-
     return { success: true, activityJSON: jsonDefinition }
 
   } else if (documentProps.type.toLowerCase() === "page") {
@@ -151,7 +149,6 @@ export function parseActivityDefinition(activityDefDoenetML) {
     // directly to page variants
     // That way, we could preserve the exact variants specified in the page definition
 
-    console.log("jsonDefinition", jsonDefinition)
     return { success: true, activityJSON: jsonDefinition }
 
   } else {

@@ -687,7 +687,7 @@ export default class BaseComponent {
 
   }
 
-  static returnStateVariableInfo({ onlyPublic = false, onlyForRenderer = false }) {
+  static returnStateVariableInfo({ onlyPublic = false, onlyForRenderer = false } = {}) {
     let attributeObject = this.createAttributesObject();
 
     let stateVariableDescriptions = {};
@@ -858,8 +858,8 @@ export default class BaseComponent {
       serializedComponent.state = deepClone(this.essentialState);
     }
 
-    if(parameters.copyVariants) {
-      if(this.state.generatedVariantInfo) {
+    if (parameters.copyVariants) {
+      if (this.state.generatedVariantInfo) {
         serializedComponent.variants = {
           desiredVariant: await this.stateValues.generatedVariantInfo
         }
