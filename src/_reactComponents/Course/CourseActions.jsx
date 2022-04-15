@@ -970,6 +970,38 @@ export const useCourse = (courseId) => {
     return null;
   }
 
+  function deletePageFromOrder({orderObj,needleDoenetId}){
+    let nextOrderObj = {...orderObj};
+
+    let index = null;
+
+    for (let [i,item] of Object.entries(orderObj.content)){
+      if (item?.type == 'order'){
+        let childOrderObj = deletePageFromOrder({orderObj:item,needleDoenetId});
+        if (childOrderObj != null){
+          nextOrderObj.content = [...nextOrderObj.content]
+          nextOrderObj.content.splice(i,1,childOrderObj);
+          return nextOrderObj;
+        }
+
+      }else if (needleDoenetId == item){
+          index = i;
+          break;
+        }
+    }
+
+    //Need to return order object without the doenetId of the page to delete
+    if (index != null){
+      let nextContent = [...orderObj.content];
+      nextContent.splice(index,1);
+      nextOrderObj.content = nextContent
+      return nextOrderObj
+    }
+    //Didn't find needle
+    return null;
+  }
+
+
   const updateOrderBehavior = useRecoilCallback(
     ({ set,snapshot }) =>
       async ({doenetId, behavior, numberToSelect, withReplacement, successCallback, failureCallback = defaultFailure}) => {
@@ -1015,11 +1047,13 @@ export const useCourse = (courseId) => {
             let nextPages = [...containingObj.pages];
             nextPages.splice(nextPages.indexOf(itemToDeleteObj.doenetId),1);
             collectionsJson.push(nextPages);
-
             pagesDoenetIds.push(doenetId);
-
+          }else if (containingObj.type == 'activity'){
+            let nextOrder = deletePageFromOrder({orderObj:containingObj.order,needleDoenetId:doenetId})
+            activitiesJson.push(nextOrder);
+            activitiesJsonDoenetIds.push(containingObj.doenetId);
+            pagesDoenetIds.push(doenetId);
           }
-          console.log("collectionsJson",collectionsJson)
 
         }
 
@@ -1036,15 +1070,24 @@ export const useCourse = (courseId) => {
           collectionsJsonDoenetIds
         });
       if (resp.status < 300) {
-        // console.log("data",resp.data)
+        console.log("data",resp.data)
         let { success, message } = resp.data;
 
-     //update recoil for deleted collections
+     //update recoil for deleted items from collections
      for (let [i,collectionDoenetId] of Object.entries(collectionsJsonDoenetIds)){
       let collectionJson = collectionsJson[i];
       set(authorItemByDoenetId(collectionDoenetId),(prev)=>{
         let next = {...prev}
         next.pages = collectionJson;
+        return next;
+      })
+      
+     }
+     for (let [i,activitiesJsonDoenetId] of Object.entries(activitiesJsonDoenetIds)){
+      let activityJson = activitiesJson[i];
+      set(authorItemByDoenetId(activitiesJsonDoenetId),(prev)=>{
+        let next = {...prev}
+        next.order = activityJson;
         return next;
       })
       

@@ -126,7 +126,7 @@ function StudentCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVis
 
 function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns}){
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
-  // console.log("authorItemOrder",authorItemOrder)
+  console.log("authorItemOrder",authorItemOrder)
 
   let previousSections = useRef([]);
   let definedForSectionId = useRef("");

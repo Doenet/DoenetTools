@@ -96,6 +96,21 @@ if ($success) {
         }
     }
 
+    if (count($activitiesJsonDoenetIds) > 0){
+        for($i = 0; $i < count($activitiesJsonDoenetIds); $i++){
+            $activitiesJsonDoenetId = $activitiesJsonDoenetIds[$i];
+            $activitiesJson = $activitiesJson[$i];
+            $json = json_encode($activitiesJson);
+            $sql = "
+            UPDATE course_content
+            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$json'))
+            WHERE doenetId='$activitiesJsonDoenetId'
+            AND courseId='$courseId'
+            ";
+            $result = $conn->query($sql);
+        }
+    }
+
 
 }
 
