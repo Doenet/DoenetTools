@@ -8,8 +8,8 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
   static createsVariants = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     delete attributes.numberOfSamples;
 

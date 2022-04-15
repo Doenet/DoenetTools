@@ -4,8 +4,8 @@ export default class EquilibriumCurve extends Curve {
   static componentType = "equilibriumCurve";
   static rendererType = "curve";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.stable = {
       createComponentOfType: "boolean",

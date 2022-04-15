@@ -189,7 +189,7 @@ export function convertAttributesForComponentType({
 
 
   let newClass = componentInfoObjects.allComponentClasses[componentType];
-  let newAttributesObj = newClass.createAttributesObject({ flags });
+  let newAttributesObj = newClass.createAttributesObject();
   let attributeLowerCaseMapping = {};
   for (let propName in newAttributesObj) {
     attributeLowerCaseMapping[propName.toLowerCase()] = propName;

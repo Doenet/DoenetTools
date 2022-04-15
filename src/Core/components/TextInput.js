@@ -33,8 +33,8 @@ export default class Textinput extends Input {
 
   static variableForPlainMacro = "value";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.prefill = {
       createComponentOfType: "text",
       createStateVariable: "prefill",

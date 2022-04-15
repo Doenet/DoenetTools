@@ -5,8 +5,8 @@ export default class Choice extends InlineComponent {
   static rendererType = "container";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.credit = {
       createComponentOfType: "number",
       createStateVariable: "credit",

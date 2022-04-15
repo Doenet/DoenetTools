@@ -10,8 +10,8 @@ export default class SectioningComponent extends BlockComponent {
 
   static createsVariants = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.aggregateScores = {
       createComponentOfType: "boolean",
       createStateVariable: "aggregateScores",

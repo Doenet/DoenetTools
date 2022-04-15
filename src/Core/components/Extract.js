@@ -13,8 +13,8 @@ export default class Extract extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     // delete off attributes from base component that should apply to replacements instead
     // (using acceptAnyAttribute)
@@ -156,7 +156,7 @@ export default class Extract extends CompositeComponent {
 
     workspace.uniqueIdentifiersUsedBySource = {};
 
-    let compositeAttributesObj = this.createAttributesObject({ flags });
+    let compositeAttributesObj = this.createAttributesObject();
 
     let sourceComponents = await component.stateValues.sourceComponents;
 
@@ -250,7 +250,7 @@ export default class Extract extends CompositeComponent {
     let numReplacementsBySource = [];
     let propVariablesCopiedBySource = [];
 
-    let compositeAttributesObj = this.createAttributesObject({ flags });
+    let compositeAttributesObj = this.createAttributesObject();
 
     let sourceComponents = await component.stateValues.sourceComponents;
 

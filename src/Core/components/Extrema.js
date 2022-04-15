@@ -8,8 +8,8 @@ export class Extremum extends BaseComponent {
   static rendererType = undefined;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.location = {
       createComponentOfType: "math"

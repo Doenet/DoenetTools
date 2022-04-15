@@ -6,8 +6,8 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   static variableForPlainMacro = "value";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.prefill = {
       createComponentOfType: "orbitalDiagram",
       createStateVariable: "prefill",

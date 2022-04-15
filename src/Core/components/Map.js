@@ -13,8 +13,8 @@ export default class Map extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
@@ -347,7 +347,7 @@ export default class Map extends CompositeComponent {
     let nSources = await component.stateValues.nSources;
     let template = await component.stateValues.template;
 
-    let compositeAttributesObj = this.createAttributesObject({ flags });
+    let compositeAttributesObj = this.createAttributesObject();
 
     for (let iter = 0; iter < nIterates[sourcesNumber]; iter++) {
       newChildnumberArray[sourcesNumber] = iter;

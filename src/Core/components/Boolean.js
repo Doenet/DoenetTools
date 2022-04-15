@@ -11,8 +11,8 @@ export default class BooleanComponent extends InlineComponent {
   static descendantCompositesDefaultReplacementType = "math";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.symbolicEquality = {
       createComponentOfType: "boolean",
       createStateVariable: "symbolicEquality",

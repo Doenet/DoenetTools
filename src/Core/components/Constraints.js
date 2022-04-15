@@ -6,8 +6,8 @@ export default class Constraints extends BaseComponent {
   static componentType = "constraints";
   static rendererType = undefined;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.baseOnGraph = {
       createPrimitiveOfType: "string",

@@ -12,8 +12,8 @@ export default class RenderDoenetML extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "triggerUpdates";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"

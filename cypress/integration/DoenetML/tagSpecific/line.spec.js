@@ -1628,6 +1628,8 @@ describe('Line Tag Tests', function () {
     let x2 = 3, y2 = 2;
     let x3 = -1, y3 = 4;
 
+    cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);

@@ -7,8 +7,8 @@ export default class Module extends Template {
 
   static acceptAnyAttribute = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     delete attributes.styleNumber;
 
     return attributes;

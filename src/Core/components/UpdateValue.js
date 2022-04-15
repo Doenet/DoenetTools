@@ -6,8 +6,8 @@ export default class UpdateValue extends InlineComponent {
 
   static acceptTarget = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     // attributes.width = {default: 300};
     // attributes.height = {default: 50};
     attributes.label = {

@@ -9,8 +9,8 @@ export default class Polyline extends GraphicalComponent {
     finalizePolylinePosition: this.finalizePolylinePosition.bind(this)
   };
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",

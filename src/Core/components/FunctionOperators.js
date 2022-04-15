@@ -6,8 +6,8 @@ import { functionOperatorDefinitions } from '../utils/function';
 export class ClampFunction extends FunctionBaseOperator {
   static componentType = "clampFunction";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.lowerValue = {
       createComponentOfType: "number",
@@ -81,8 +81,8 @@ export class ClampFunction extends FunctionBaseOperator {
 export class WrapFunctionPeriodic extends FunctionBaseOperator {
   static componentType = "wrapFunctionPeriodic";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.lowerValue = {
       createComponentOfType: "number",
       createStateVariable: "lowerValue",
@@ -156,8 +156,8 @@ export class WrapFunctionPeriodic extends FunctionBaseOperator {
 export class Derivative extends FunctionBaseOperator {
   static componentType = "derivative";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.derivVariables = {
       createComponentOfType: "variables"

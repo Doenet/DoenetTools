@@ -13,8 +13,8 @@ export default class AnimateFromSequence extends BaseComponent {
 
   static acceptTarget = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     let sequenceAttributes = returnStandardSequenceAttributes();
     Object.assign(attributes, sequenceAttributes);

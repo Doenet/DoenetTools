@@ -29,6 +29,7 @@ import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive
 import axios from 'axios';
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { prng_alea } from 'esm-seedrandom';
+import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
 
 export const currentAttemptNumber = atom({
   key: 'currentAttemptNumber',
@@ -218,11 +219,6 @@ export default function AssignmentViewer() {
         let cidChanged = resp.data.cidChanged;
 
 
-        // Hard code cid for testing!!!!!!
-        // cid = 'bafkreidr6ny65lb5s23nyxhd3hx7xrghflzmpr2cyeru6mgctrgyha7i4m';
-        // bafkreifvkdnaoeqqn2aumwk4wvjlflnuo3ar7wd44giklfylzxkyfqs5km
-
-
         // TODO: add a flag to enable the below feature
         // where a assignment is not available until the assigned date
 
@@ -242,16 +238,16 @@ export default function AssignmentViewer() {
         //   return;
         // }
 
-        //Find allPossibleVariants
-        // try {
-        //   allPossibleVariants.current = await returnAllPossibleActivityVariants({ cid });
-        // } catch (e) {
-        //   setStage('Problem');
-        //   setMessage(`Could not load assignment: ${e.message}`);
-        //   return;
-        // }
 
-        allPossibleVariants.current = [...Array(1000).keys()].map(x=>(x+1));
+        let result = await returnNumberOfActivityVariants(cid);
+
+        if (!result.success) {
+          setStage('Problem');
+          setMessage(result.message);
+          return;
+        }
+
+        allPossibleVariants.current = [...Array(result.numberOfVariants).keys()].map(x => (x + 1));
 
 
         //Find attemptNumber
@@ -505,19 +501,20 @@ export default function AssignmentViewer() {
 
 
 
-async function returnAllPossibleActivityVariants({ cid }) {
-  let activityDefinition = JSON.parse(await retrieveTextFileForCid(cid, "json"));
+async function returnNumberOfActivityVariants(cid) {
 
-  let nVariants = 100;
-  if (activityDefinition.variantControl) {
-    nVariants = activityDefinition.variantControl.nVariants;
-    if (!(Number.isInteger(nVariants) && nVariants >= 1)) {
-      nVariants = 100;
-    }
+  console.log(`return number of variants for ${cid}`)
+  let activityDefinitionDoenetML = await retrieveTextFileForCid(cid);
+
+  let result = parseActivityDefinition(activityDefinitionDoenetML);
+
+  console.log(result);
+  
+  if(!result.success) {
+    return result;
   }
 
-  let variantIndices = [...Array(nVariants).keys()].map(i => i + 1);
+  let numberOfVariants = determineNumberOfActivityVariants(result.activityJSON);
 
-  return variantIndices;
-
+  return { success: true, numberOfVariants };
 }

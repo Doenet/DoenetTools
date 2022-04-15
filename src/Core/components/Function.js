@@ -11,8 +11,8 @@ export default class Function extends InlineComponent {
 
   static primaryStateVariableForDefinition = "numericalfShadow";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.simplify = {
       createComponentOfType: "text",

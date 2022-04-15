@@ -8,8 +8,8 @@ import { HyperFormula } from 'hyperformula';
 export default class Spreadsheet extends BlockComponent {
   static componentType = "spreadsheet";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",

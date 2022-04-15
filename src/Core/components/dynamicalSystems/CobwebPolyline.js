@@ -5,8 +5,8 @@ export default class CobwebPolyline extends Polyline {
   static componentType = "cobwebPolyline";
   static rendererType = "cobwebPolyline";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.attractThreshold = {
       createComponentOfType: "number",

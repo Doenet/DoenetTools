@@ -9,8 +9,8 @@ export default class When extends BooleanComponent {
 
   static stateVariableForAttributeValue = "conditionSatisfied";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.matchPartial = {
       createComponentOfType: "boolean",
       createStateVariable: "matchPartial",

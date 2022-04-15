@@ -5,8 +5,8 @@ export default class Column extends BaseComponent {
   static rendererType = "container";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.colNum = {
       createComponentOfType: "text",
       createStateVariable: "colNum",

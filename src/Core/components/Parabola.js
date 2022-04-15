@@ -6,8 +6,8 @@ export default class Parabola extends Curve {
   static componentType = "parabola";
   static rendererType = "curve";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.through = {
       createComponentOfType: "_pointListComponent",
     };
