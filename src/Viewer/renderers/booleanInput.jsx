@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage, faPiggyBank } from '@fortawesome/free-solid-svg-icons';
 import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox';
 import styled from 'styled-components';
 
@@ -87,16 +87,20 @@ export default function BooleanInput(props) {
     text-align: center;
     top: 3px;
     padding: 2px;
-    background-color: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
+    background-color: var(--mainBlue);
+    border: var(--mainBorder);
+    border-radius: var(--mainBorderRadius);
+    
 
     &:checked {
-      background-color: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
+      background-color: var(--mainBlue);
     }
 
   `
 
   //Assume we don't have a check work button
   let checkWorkButton = null;
+  let icon = props.icon;
   if (SVs.includeCheckWork) {
 
     if (validationState === "unvalidated") {
@@ -196,7 +200,8 @@ export default function BooleanInput(props) {
           checked={rendererValue}
           onChange={onChangeHandler}
           disabled={disabled}
-        />
+        >
+        </Button>
         {SVs.label}
       </label>
       {checkWorkButton}
