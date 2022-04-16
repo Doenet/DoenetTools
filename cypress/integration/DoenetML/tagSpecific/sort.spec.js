@@ -133,7 +133,7 @@ describe('Sort Tag Tests', function () {
 
 
     cy.log('change first value')
-    cy.get('#\\/m1 textarea').type('{end}{backspace}{backspace}{backspace}-5{enter}', { force: true })
+    cy.get('#\\/m1 textarea').type('{ctrl+home}{shift+end}{backspace}-5{enter}', { force: true })
 
     cy.get('#\\/x2').should('contain.text', '−5')
 
@@ -166,7 +166,7 @@ describe('Sort Tag Tests', function () {
 
 
     cy.log('change second value')
-    cy.get('#\\/m2 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}e^5{enter}', { force: true })
+    cy.get('#\\/m2 textarea').type('{ctrl+home}{shift+end}{backspace}e^5{enter}', { force: true })
 
     cy.get('#\\/x4').should('have.text', '70')
     cy.get('#\\/x1').should('have.text', "-Infinity")

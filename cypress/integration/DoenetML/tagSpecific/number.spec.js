@@ -94,7 +94,7 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type('{end}x{enter}', { force: true })
     cy.get('#\\/n').should('have.text', 'NaN');
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}9{enter}', { force: true })
+    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}9{enter}', { force: true })
     cy.get('#\\/n').should('have.text', '9');
 
   })

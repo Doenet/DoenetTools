@@ -444,7 +444,7 @@ describe('Numberlist Tag Tests', function () {
       for (let changeInd in mapping) {
         cy.window().then(async (win) => {
           vals[mapping[changeInd]] = 100 + Number(changeInd);
-          cy.get(mathinputAnchors[changeInd]).type("{end}{backspace}{backspace}{backspace}" + (100 + Number(changeInd)) + "{enter}", { force: true });
+          cy.get(mathinputAnchors[changeInd]).type("{ctrl+home}{shift+end}{backspace}" + (100 + Number(changeInd)) + "{enter}", { force: true });
 
           cy.log('Test value displayed in browser')
           cy.get('#\\/_p1').should('have.text', mapping.map(x => vals[x]).join(", "))

@@ -6486,7 +6486,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + d * Math.cos(theta);
       y2 = y1 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope })
 
@@ -6869,7 +6869,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope2 textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -7368,7 +7368,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -7761,7 +7761,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + d * Math.cos(theta);
       y2 = y1 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope })
 
@@ -8148,7 +8148,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope2 textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -8658,7 +8658,7 @@ describe('Line Tag Tests', function () {
       x21 = x11 + d * Math.cos(theta);
       y21 = y11 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
       await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope })
 
     })
@@ -9145,7 +9145,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 

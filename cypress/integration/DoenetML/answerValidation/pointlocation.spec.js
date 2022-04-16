@@ -691,7 +691,7 @@ describe('Point location validation tests', function () {
 
 
     cy.log("change criterion")
-    cy.get("#\\/criterion textarea").type('{end}{backspace}{backspace}{backspace}1', { force: true }).blur();
+    cy.get("#\\/criterion textarea").type('{ctrl+home}{shift+end}{backspace}1', { force: true }).blur();
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -750,7 +750,7 @@ describe('Point location validation tests', function () {
     });
 
     cy.log("change partial criterion")
-    cy.get("#\\/partialcriterion textarea").type('{end}{backspace}{backspace}{backspace}2', { force: true }).blur();
+    cy.get("#\\/partialcriterion textarea").type('{ctrl+home}{shift+end}{backspace}2', { force: true }).blur();
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })

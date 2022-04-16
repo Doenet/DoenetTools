@@ -105,7 +105,7 @@ describe('Integer Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('−6.5x')
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}9.5{enter}', { force: true })
+    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}9.5{enter}', { force: true })
     cy.get('#\\/n').should('have.text', '10');
     cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9.5')
@@ -139,7 +139,7 @@ describe('Integer Tag Tests', function () {
     })
 
     // Note: change to 3 and then 31 to verify bug doesn't reappear
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}3{enter}', { force: true })
+    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}3{enter}', { force: true })
     cy.get('#\\/n').should('have.text', '3');
     cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')

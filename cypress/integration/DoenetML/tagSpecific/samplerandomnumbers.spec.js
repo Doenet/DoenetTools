@@ -883,7 +883,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.log("Get new samples when change number of samples");
     cy.get('#\\/numberOfSamples textarea').type(`{end}{backspace}{backspace}70{enter}`, { force: true });
-    cy.get('#\\/numberOfSamples2 textarea').type(`{end}{backspace}{backspace}{backspace}160{enter}`, { force: true });
+    cy.get('#\\/numberOfSamples2 textarea').type(`{ctrl+home}{shift+end}{backspace}160{enter}`, { force: true });
     cy.get('#\\/numberOfSamples2a').should('contain.text', '160');
 
     cy.window().then(async (win) => {
@@ -1699,7 +1699,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 1,
-        allowedErrorInVariance: 2,
+        allowedErrorInVariance: 3,
         checkAllSamples: false,
         stateVariables
       })
@@ -1744,7 +1744,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 0.6,
-        allowedErrorInVariance: 2,
+        allowedErrorInVariance: 3,
         checkAllSamples: false,
         stateVariables
       })
@@ -1786,7 +1786,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 1,
-        allowedErrorInVariance: 2,
+        allowedErrorInVariance: 3,
         checkAllSamples: true,
         stateVariables
       })
