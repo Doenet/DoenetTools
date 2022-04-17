@@ -21,7 +21,8 @@ export default function CodeViewer(props){
   }
 
   if (!SVs.hasCodeEditorParent){
-    surroundingBoxStyle.border = "1px solid black";
+    surroundingBoxStyle.border = "2px solid black";
+    surroundingBoxStyle.borderRadius = "5px"
   }
  
   let contentPanel = 

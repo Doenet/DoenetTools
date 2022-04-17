@@ -82,19 +82,19 @@ export default function Section(props) {
     // if (SVs.open) {
       // if (SVs.boxed){
     content = 
-    <>
+    <div style={{ border:"2px solid black", borderRadius:"5px" }} >
       <div 
-        style={{ backgroundColor: "#ebebeb", cursor: "pointer" }} 
+        style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: "2px solid black" }} 
         onClick={() => callAction({action: SVs.open ? actions.closeSection : actions.revealSection})}
       >
         <a name={name} />
         {heading}
       </div>
-      <div style={{ display: SVs.open ? "block" : "none", backgroundColor: "white", padding: SVs.boxed && "6px", border: SVs.boxed && "1px solid #C9C9C9"}}>
+      <div style={{ display: SVs.open ? "block" : "none", backgroundColor: "white", padding: SVs.boxed && "6px" }}>
         {children}
         {checkworkComponent}
       </div>
-    </>
+    </div>
       // }else{
       //   content = <>
       //   <a name={name} />
@@ -126,16 +126,16 @@ export default function Section(props) {
     // }
   } else if (SVs.boxed) {
     content = 
-    <>
-      <div style={{ margin: "4px 4px 0px 4px", padding: "6px", border: "1px solid #C9C9C9", backgroundColor: "#ebebeb" }}>
+    <div style={{ border:"2px solid black", borderRadius:"5px" }}>
+      <div style={{ padding: "6px", borderBottom: "2px solid black", backgroundColor: "var(--mainGray)" }}>
         <a name={name} />
         {heading}<br/>
       </div>
-      <div style={{ display: "block", margin: "0px 4px 4px 4px", padding: "6px", border: "1px solid #C9C9C9", backgroundColor: "white" }}>
+      <div style={{ display: "block", padding: "6px", backgroundColor: "white" }}>
         {children}
         {checkworkComponent}
       </div>
-    </>
+    </div>
   } 
  
   switch (SVs.containerTag) {

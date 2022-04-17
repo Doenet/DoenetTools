@@ -327,13 +327,13 @@ export default function Video(props) {
 
   if (SVs.hidden) return null;
   return (
-    <div style={{ margin:"12px 0", display: "flex", justifyContent: "left", alignItems:"center" }}>
+    <div style={{ margin:"12px 0", display: "flex", justifyContent: "left", alignItems:"center"}}>
       <a name={name} />
       {
         SVs.youtube ? 
-          <div className="video" id={name} />
+          <div className="video" id={name} style={{ borderRadius:"5px", border:"2px solid black" }}/>
         : SVs.source ? 
-          <video className="video" id={name} controls width="100%" >
+          <video className="video" id={name} controls width="100%" style={{ borderRadius:"5px", border:"2px solid black" }}>
             <source src={SVs.source} type={`video/${SVs.source.split('/').pop().split('.').pop()}`} />
             Your browser does not support the &lt;video&gt; tag.
           </video>

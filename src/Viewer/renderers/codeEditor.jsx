@@ -95,11 +95,12 @@ let editor = <div
 
 
  return(
-  <div style={{ margin:"12px 0" }}>
+  <div style={{ margin:"12px 0"}}>
     <a name={name} />
     <div style={{
       padding: "0",
-      border: "1px solid black",
+      border: "2px solid black",
+      borderRadius:"5px",
       height: sizeToCSS(componentHeight),
       width: sizeToCSS(componentWidth),
       display: 'flex',
