@@ -5,8 +5,8 @@ const DriveCardContainer = styled.div`
   position: relative;
   background-size: cover;
   background-position: center center;
-  width: 100%;
-  height: 100%;
+  width: ${props => props.width ? props.width : "100%"};
+  height: ${props => props.height ? props.height : "100%"};
   overflow: hidden;
   font-size: 10px;
   line-height: 12px;
@@ -39,13 +39,15 @@ const Info = styled.div`
 
 const LabelContainer = styled.p`
   text-transform: capitalize;
+  text-align: ${props => props.textAlign ? props.textAlign : "left"};
+  line-height: ${props => props.lineHeight ? props.lineHeight : "normal"};
   margin: 7px;
   //width: 100%;
   color: #040f1a;
   font-family: helvetica;
   font-size: 12px;
   overflow: hidden;
-  white-space: nowrap;
+  white-space: ${props => props.whiteSpace ? props.whiteSpace : "nowrap"};
   text-overflow: ellipsis;
 `;
 
@@ -54,14 +56,14 @@ const DriveCard = (props) => {
   let imageURL = `/media/drive_pictures/${props.image}`;
 
   return (
-    <DriveCardContainer data-cy="driveCard" url={imageURL} color={props.color}>
+    <DriveCardContainer data-cy="driveCard" url={imageURL} color={props.color} width={props.width} height={props.height}>
       <Image url={imageURL} color={props.color} />
       <Info
         style={{
           backgroundColor: props.isSelected ? 'rgb(184, 210, 234)' : '',
         }}
       >
-        <LabelContainer>
+        <LabelContainer textAlign={props.textAlign} lineHeight={props.lineHeight} whiteSpace={props.whiteSpace}>
           <b data-cy="driveCardLabel">{props.label}</b>
         </LabelContainer>
         {props?.role?.map((item) => {

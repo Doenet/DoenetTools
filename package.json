@@ -7,7 +7,7 @@
     "dev:restart": "docker-compose restart dev",
     "dev:install": "docker-compose exec dev npm install",
     "dev:uninstall": "docker-compose exec dev npm uninstall",
-    "build": "docker exec -i doenet_dev_1 npx snowpack build --config snowpack.deploy.config.js",
+    "build": "docker exec -i doenet-dev-1 npx snowpack build --config snowpack.deploy.config.js",
     "build:ci": "snowpack build --out dist_ci --no-watch",
     "build:clean": "snowpack build --clean --reload --config snowpack.deploy.config.js",
     "build:docker": "docker-compose build",

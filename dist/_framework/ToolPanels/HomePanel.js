@@ -6,6 +6,9 @@ import "./homepage.css.proxy.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
+import DoenetDriveCard from "../../_reactComponents/Drive/DoenetDriveCard.js";
+{
+}
 const Headings = styled.h1`
   line-height: 1.1em;
 `;
@@ -70,6 +73,10 @@ const Footer = styled.div`
   padding: 20px 40px;
   text-align: center;
 `;
+const Caption = styled.p`
+text-align: center;
+   display: block;
+    `;
 export default function HomePage(props) {
   let history = useHistory();
   const navigate = useSetRecoilState(pageToolViewAtom);
@@ -107,77 +114,107 @@ export default function HomePage(props) {
     style: {display: "flex", justifyContent: "center"}
   }, /* @__PURE__ */ React.createElement("h4", {
     style: {marginTop: "0px"}
-  }, "Explore what you can create with DoenetML...")), /* @__PURE__ */ React.createElement("div", {
-    style: {display: "flex", justifyContent: "space-evenly"}
-  }, /* @__PURE__ */ React.createElement(DoenetImage, {
-    src: "/media/profile_pictures/RandomlyGeneratedGraph.jpg",
-    width: "175"
-  }), /* @__PURE__ */ React.createElement(DoenetImage, {
-    src: "/media/profile_pictures/Cobwebbing.jpg",
-    width: "175"
-  }), /* @__PURE__ */ React.createElement(DoenetImage, {
-    src: "/media/profile_pictures/DynamicContentInteractions.jpg",
-    width: "175"
-  }), /* @__PURE__ */ React.createElement(DoenetImage, {
-    src: "/media/profile_pictures/BasicAnswerValidation.jpg",
-    width: "175"
-  })), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
-    style: {display: "flex", justifyContent: "space-evenly"}
-  }, /* @__PURE__ */ React.createElement("button", {
-    type: "button"
+  }, "Explore what you can create with DoenetML..."))), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex", justifyContent: "space-between"}
   }, /* @__PURE__ */ React.createElement("a", {
-    href: "https://www.doenet.org/#/content?tool=edit&doenetId=qyPDhmvsuwjwNGM9OPy3Q"
-  }, "Randomly-Generated Graphs")), /* @__PURE__ */ React.createElement("button", {
-    type: "button"
-  }, /* @__PURE__ */ React.createElement("a", {
-    href: "https://www.doenet.org/#/content?tool=edit&doenetId=T-cgqOlqTxAJbicaXqtKg"
-  }, "Hands-On Exploratory Activities")), /* @__PURE__ */ React.createElement("button", {
-    type: "button"
-  }, /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=qyPDhmvsuwjwNGM9OPy3Q",
+    style: {textDecoration: "none"}
+  }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
+    image: "RandomlyGeneratedGraph.jpg",
+    label: "Randomly-Generated Graphs",
+    width: "175px",
+    height: "150px",
+    textAlign: "center",
+    lineHeight: "15px",
+    whiteSpace: "normal"
+  })), /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq",
+    style: {textDecoration: "none"}
+  }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
+    image: "Cobwebbing.jpg",
+    label: "Hands-On Activities",
+    width: "175px",
+    height: "150px",
+    textAlign: "center",
+    lineHeight: "15px",
+    whiteSpace: "normal"
+  })), /* @__PURE__ */ React.createElement("a", {
     href: "https://www.doenet.org/#/content?tool=edit&doenetId=JXTxrd8XXjfEy9GuFPcy6",
-    width: "50"
-  }, "Dynamic Content Interactions")), /* @__PURE__ */ React.createElement("button", {
-    type: "button"
-  }, /* @__PURE__ */ React.createElement("a", {
+    style: {textDecoration: "none"}
+  }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
+    image: "DynamicContentInteractions.jpg",
+    label: "Dynamic Content Interactions",
+    width: "175px",
+    height: "150px",
+    textAlign: "center",
+    lineHeight: "15px",
+    whiteSpace: "normal"
+  })), /* @__PURE__ */ React.createElement("a", {
     href: "https://www.doenet.org/#/content?tool=edit&doenetId=UdDWyNkqfF21O6Ew-Qh4O",
-    width: "40"
-  }, "Basics of Answer Validation"))))), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
+    style: {textDecoration: "none"}
+  }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
+    image: "BasicAnswerValidation.jpg",
+    label: "Basics of Answer Validation",
+    wwidth: "175px",
+    height: "150px",
+    textAlign: "center",
+    lineHeight: "15px",
+    whiteSpace: "normal"
+  })))), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
     style: {display: "flex", justifyContent: "center"}
   }, /* @__PURE__ */ React.createElement("h4", {
     style: {marginTop: "0px"}
   }, "DoenetML Gallery: More Examples from Course Pages"))), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
-    style: {display: "flex", justifyContent: "space-evenly"}
-  }, /* @__PURE__ */ React.createElement(DoenetImage, {
-    src: "/media/profile_pictures/AnteaterDynamicalSystem.jpg",
-    width: "175"
-  }), /* @__PURE__ */ React.createElement(DoenetImage, {
-    src: "/media/profile_pictures/SketchGaussianCurve.jpg",
-    width: "175"
-  }), /* @__PURE__ */ React.createElement(DoenetImage, {
-    src: "/media/profile_pictures/AverageRateOfChange.jpg",
-    width: "175"
-  }), /* @__PURE__ */ React.createElement(DoenetImage, {
-    src: "/media/profile_pictures/RiemannSums.jpg",
-    width: "175"
-  })), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
-    style: {display: "flex", justifyContent: "space-evenly"}
-  }, /* @__PURE__ */ React.createElement("button", {
-    type: "button"
+    style: {display: "flex", justifyContent: "space-between"}
   }, /* @__PURE__ */ React.createElement("a", {
-    href: "https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD"
-  }, "Exploring an anteater dynamical system")), /* @__PURE__ */ React.createElement("button", {
-    type: "button"
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=Sf8u9bDhC5W6ta3YP0XWD",
+    style: {textDecoration: "none"}
+  }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
+    image: "AnteaterDynamicalSystem.jpg",
+    label: "Exploring an Anteater Dynamical System",
+    width: "175px",
+    height: "150px",
+    textAlign: "center",
+    lineHeight: "15px",
+    whiteSpace: "normal"
+  })), /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq",
+    style: {textDecoration: "none"}
+  }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
+    image: "SketchGaussianCurve.jpg",
+    label: "Sketching the Derivative of a Gaussian",
+    width: "175px",
+    height: "150px",
+    textAlign: "center",
+    lineHeight: "15px",
+    whiteSpace: "normal"
+  })), /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3",
+    style: {textDecoration: "none"}
+  }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
+    image: "AverageRateOfChange.jpg",
+    label: "Average Rate of Change, Squirrel and Owl",
+    width: "175px",
+    height: "150px",
+    textAlign: "center",
+    lineHeight: "15px",
+    whiteSpace: "normal"
+  })), /* @__PURE__ */ React.createElement("a", {
+    href: "https://www.doenet.org/#/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6",
+    style: {textDecoration: "none"}
+  }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
+    image: "RiemannSums.jpg",
+    label: "Sketching Riemann Sums, Varying Intervals",
+    width: "175px",
+    height: "150px",
+    textAlign: "center",
+    lineHeight: "15px",
+    whiteSpace: "normal"
+  })))), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex", justifyContent: "center"}
   }, /* @__PURE__ */ React.createElement("a", {
-    href: "https://www.doenet.org/#/content?tool=edit&doenetId=i7KDJsUQeSToEv4DGmLKq"
-  }, "Sketching the derivative of a Gaussian")), /* @__PURE__ */ React.createElement("button", {
-    type: "button"
-  }, /* @__PURE__ */ React.createElement("a", {
-    href: "https://www.doenet.org/#/content?tool=edit&doenetId=2yATouuOTFtJAs9j_dzU3"
-  }, "Average rate of change, squirrel and owl")), /* @__PURE__ */ React.createElement("button", {
-    type: "button"
-  }, /* @__PURE__ */ React.createElement("a", {
-    href: "https://www.doenet.org/#/content?tool=edit&doenetId=cbOJJuuBUuzmhE1LcCHe6"
-  }, "Sketching Riemann Sums"))))))), /* @__PURE__ */ React.createElement(CloudColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
+    href: ""
+  }, "DoenetML Online Guide"))))), /* @__PURE__ */ React.createElement(CloudColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
     className: "section-headline"
   }, "Workshop on developing learning experiments in Doenet"), /* @__PURE__ */ React.createElement(Paragraph, null, "Interested in learning how to create and implement online learning experiments using Doenet?  Apply to attend our ", /* @__PURE__ */ React.createElement("a", {
     href: "https://ima.umn.edu/2021-2022/SW5.23-26.22"
