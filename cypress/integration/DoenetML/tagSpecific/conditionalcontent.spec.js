@@ -61,13 +61,13 @@ describe('Conditional Content Tag Tests', function () {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a negative number.')
     });
 
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}5-5{enter}", { force: true });
     cy.get('p#\\/_p1').should('contain.text', 'zero.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed zero.')
     });
 
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}-x{enter}", { force: true });
     cy.get('p#\\/_p1').should('contain.text', 'something else.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
@@ -117,13 +117,13 @@ describe('Conditional Content Tag Tests', function () {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed a negative number.')
     });
 
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}5-5{enter}", { force: true });
     cy.get('p#\\/_p1').should('contain.text', 'zero.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed zero.')
     });
 
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}-x{enter}", { force: true });
     cy.get('p#\\/_p1').should('contain.text', 'something else.')
     cy.get('p#\\/_p1').invoke('text').then((text) => {
       expect(text.replace(/\s+/g, " ").trim()).equal('You typed something else.')
@@ -188,7 +188,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_section3 p').should('not.exist');
     cy.get('#\\/_section4 p').should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}5-5{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}5-5{enter}", { force: true });
     cy.get('#\\/_section3 p').should('contain.text', 'zero.')
     cy.get('#\\/_section1 p').should('not.exist');
     cy.get('#\\/_section2 p').should('not.exist');
@@ -197,7 +197,7 @@ describe('Conditional Content Tag Tests', function () {
     });
     cy.get('#\\/_section4 p').should('not.exist');
 
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-x{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}-x{enter}", { force: true });
     cy.get('#\\/_section4 p').should('contain.text', 'something else.')
     cy.get('#\\/_section1 p').should('not.exist');
     cy.get('#\\/_section2 p').should('not.exist');
@@ -260,7 +260,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
 
-    cy.get('#\\/m textarea').type('{end}{backspace}{backspace}{backspace}{backspace}1/3{enter}', { force: true });
+    cy.get('#\\/m textarea').type('{ctrl+home}{shift+end}{backspace}1/3{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_correct').should('be.visible');
@@ -269,7 +269,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
 
 
-    cy.get('#\\/m textarea').type('{end}{backspace}{backspace}{backspace}{backspace}-7/5{enter}', { force: true });
+    cy.get('#\\/m textarea').type('{ctrl+home}{shift+end}{backspace}-7/5{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
@@ -278,7 +278,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_choiceinput1_correct').should('be.visible');
 
 
-    cy.get('#\\/m textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}1{enter}', { force: true });
+    cy.get('#\\/m textarea').type('{ctrl+home}{shift+end}{backspace}1{enter}', { force: true });
     cy.get('#\\/_choiceinput1').select(`stable`);
     cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
@@ -494,7 +494,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'mouse');
 
     cy.log('enter -1')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-1{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}-1{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: dog');
     cy.get('#\\/pa1').should('have.text', 'a1: dog');
@@ -506,7 +506,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/b1').should('have.text', 'dog');
 
     cy.log('enter x')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}x{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/pa').should('have.text', 'a: mouse');
     cy.get('#\\/pa1').should('have.text', 'a1: mouse');
@@ -1224,7 +1224,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/i1').should('not.exist');
 
     cy.log('enter -1')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}-1{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}-1{enter}", { force: true })
 
 
     cy.get('#\\/s1\\/a').should('have.text', 'dog');
@@ -1269,7 +1269,7 @@ describe('Conditional Content Tag Tests', function () {
 
 
     cy.log('enter x')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}x{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/s1\\/a').should('have.text', 'mouse');
     cy.get('#\\/a1').should('have.text', 'mouse');
@@ -1638,7 +1638,7 @@ describe('Conditional Content Tag Tests', function () {
 
 
     cy.log('enter 10')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}10{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}10{enter}", { force: true })
 
     cy.get(`#\\/a\\/animal`).should('have.text', 'mouse')
     cy.get(`#\\/a\\/plant`).should('have.text', 'bush')
@@ -1850,7 +1850,7 @@ describe('Conditional Content Tag Tests', function () {
 
 
     cy.log('enter 10')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}10{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}10{enter}", { force: true })
 
     cy.get(`#\\/s\\/a\\/animal`).should('have.text', 'mouse')
     cy.get(`#\\/s\\/a\\/plant`).should('have.text', 'bush')
@@ -2346,7 +2346,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'negative');
 
     cy.log('enter 0')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}0{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}0{enter}", { force: true })
 
     cy.get('#\\/_p1').should('have.text', 'non-positive');
     cy.get('#\\/_p3').should('have.text', 'non-positive');
@@ -2405,7 +2405,7 @@ describe('Conditional Content Tag Tests', function () {
     cy.get('#\\/_p4').should('have.text', 'hello');
 
     cy.log('enter 0')
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}0{enter}", { force: true })
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}0{enter}", { force: true })
 
     cy.get('#\\/_p1').should('have.text', 'bye');
     cy.get('#\\/_p3').should('have.text', 'bye');

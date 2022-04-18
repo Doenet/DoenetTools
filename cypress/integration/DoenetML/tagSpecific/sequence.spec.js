@@ -968,7 +968,7 @@ describe('Sequence Tag Tests', function () {
 
 
     cy.log("also exclude 3x")
-    cy.get('#\\/e textarea').type(`{end}{backspace}{backspace}{backspace}3x{enter}`, { force: true });
+    cy.get('#\\/e textarea').type(`{ctrl+home}{shift+end}{backspace}3x{enter}`, { force: true });
     cy.get('#\\/ea').should('contain.text', '3x')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

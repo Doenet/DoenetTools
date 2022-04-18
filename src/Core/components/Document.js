@@ -11,8 +11,8 @@ export default class Document extends BaseComponent {
 
   static createsVariants = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     delete attributes.hide;
     delete attributes.disabled;

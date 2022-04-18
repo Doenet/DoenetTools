@@ -2881,8 +2881,8 @@ describe('Point Tag Tests', function () {
     });
     cy.get('#\\/_boolean1').should('have.text', "false")
 
-    cy.get('#\\/xthreshold textarea').type('{end}{backspace}{backspace}{backspace}1.0', { force: true });
-    cy.get('#\\/ythreshold textarea').type('{end}{backspace}{backspace}{backspace}0.3{enter}', { force: true });
+    cy.get('#\\/xthreshold textarea').type('{ctrl+home}{shift+end}{backspace}1.0', { force: true });
+    cy.get('#\\/ythreshold textarea').type('{ctrl+home}{shift+end}{backspace}0.3{enter}', { force: true });
 
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−8,9.1)');
 
@@ -6616,7 +6616,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('Back to 1D point')
-    cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}q{enter}', { force: true });
+    cy.get('#\\/originalCoords textarea').type('{ctrl+home}{shift+end}{backspace}q{enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', 'q')
 
@@ -6957,7 +6957,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('change the coordinates from point 1 coords')
-    cy.get("#\\/coords1b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(7,8,9){enter}', { force: true });
+    cy.get("#\\/coords1b textarea").type('{ctrl+home}{shift+end}{backspace}(7,8,9){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(7,8,9)')
 
@@ -7156,7 +7156,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('change the coordinates from point 2 coords')
-    cy.get("#\\/coords2b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(i,j,k){enter}', { force: true });
+    cy.get("#\\/coords2b textarea").type('{ctrl+home}{shift+end}{backspace}(i,j,k){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(i,j,k)')
 
@@ -7356,7 +7356,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('change the coordinates from point 3 coords')
-    cy.get("#\\/coords3b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(l,m,n){enter}', { force: true });
+    cy.get("#\\/coords3b textarea").type('{ctrl+home}{shift+end}{backspace}(l,m,n){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(l,m,n)')
 
@@ -8165,7 +8165,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't decrease dimension from inverse direction 1`)
-    cy.get("#\\/coords1b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(u,v){enter}', { force: true });
+    cy.get("#\\/coords1b textarea").type('{ctrl+home}{shift+end}{backspace}(u,v){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(u,v,z)')
 
@@ -8366,7 +8366,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't decrease dimension from inverse direction 2`)
-    cy.get("#\\/coords2b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(s,t){enter}', { force: true });
+    cy.get("#\\/coords2b textarea").type('{ctrl+home}{shift+end}{backspace}(s,t){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(s,t,z)')
 
@@ -8566,7 +8566,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't decrease dimension from inverse direction 3`)
-    cy.get("#\\/coords3b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(q,r){enter}', { force: true });
+    cy.get("#\\/coords3b textarea").type('{ctrl+home}{shift+end}{backspace}(q,r){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(q,r,z)')
 
@@ -8769,7 +8769,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('Back to 2D point')
-    cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(p,q){enter}', { force: true });
+    cy.get('#\\/originalCoords textarea').type('{ctrl+home}{shift+end}{backspace}(p,q){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(p,q)')
 
@@ -8938,7 +8938,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't increase dimension from inverse direction 1`)
-    cy.get("#\\/coords1b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(a,b,c){enter}', { force: true });
+    cy.get("#\\/coords1b textarea").type('{ctrl+home}{shift+end}{backspace}(a,b,c){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(a,b)')
 
@@ -9108,7 +9108,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't increase dimension from inverse direction 2`)
-    cy.get("#\\/coords2b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(d,e,f){enter}', { force: true });
+    cy.get("#\\/coords2b textarea").type('{ctrl+home}{shift+end}{backspace}(d,e,f){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(d,e)')
 
@@ -9277,7 +9277,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't increase dimension from inverse direction 3`)
-    cy.get("#\\/coords3b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(g,h,i){enter}', { force: true });
+    cy.get("#\\/coords3b textarea").type('{ctrl+home}{shift+end}{backspace}(g,h,i){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(g,h)')
 
@@ -9533,7 +9533,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('Back to 1D point')
-    cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}q{enter}', { force: true });
+    cy.get('#\\/originalCoords textarea').type('{ctrl+home}{shift+end}{backspace}q{enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', 'q')
 
@@ -9604,7 +9604,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('Back to 2D point 2')
-    cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(p,q){enter}', { force: true });
+    cy.get('#\\/originalCoords textarea').type('{ctrl+home}{shift+end}{backspace}(p,q){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(p,q)')
 

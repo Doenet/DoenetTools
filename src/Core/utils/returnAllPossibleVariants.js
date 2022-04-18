@@ -5,7 +5,7 @@ import { retrieveTextFileForCid } from './retrieveTextFile.js';
 import { cidFromText } from './cid.js';
 
 export async function returnAllPossibleVariants({
-  cid, doenetML, flags = {}
+  cid, doenetML
 }) {
 
   if (doenetML === undefined) {
@@ -14,13 +14,12 @@ export async function returnAllPossibleVariants({
     cid = await cidFromText(doenetML);
   }
 
-  let componentInfoObjects = createComponentInfoObjects(flags);
+  let componentInfoObjects = createComponentInfoObjects();
 
   let { fullSerializedComponents } = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
     contentIds: [cid],
     doenetMLs: [doenetML],
     componentInfoObjects,
-    flags,
   });
 
   let serializedComponents = fullSerializedComponents[0];

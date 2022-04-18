@@ -9,8 +9,8 @@ export default class Ray extends GraphicalComponent {
     moveRay: this.moveRay.bind(this),
   };
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",

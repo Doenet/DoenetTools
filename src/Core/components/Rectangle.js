@@ -6,8 +6,8 @@ export default class Rectangle extends Polygon {
   static rendererType = "polygon";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",

@@ -4,8 +4,8 @@ export default class Endpoint extends Point {
   static componentType = "endpoint";
   static rendererType = "point";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.open = {
       createComponentOfType: "boolean",

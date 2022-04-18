@@ -15,8 +15,8 @@ export default class Collect extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     // delete off attributes from base component that should apply to replacements instead
     // (using acceptAnyAttribute)
@@ -319,7 +319,7 @@ export default class Collect extends CompositeComponent {
 
     workspace.uniqueIdentifiersUsedByCollected = {};
 
-    let compositeAttributesObj = this.createAttributesObject({});
+    let compositeAttributesObj = this.createAttributesObject();
 
     let collectedComponents = await component.stateValues.collectedComponents;
     for (let collectedNum = 0; collectedNum < collectedComponents.length; collectedNum++) {
@@ -500,7 +500,7 @@ export default class Collect extends CompositeComponent {
 
     let recreateRemaining = false;
 
-    let compositeAttributesObj = this.createAttributesObject({});
+    let compositeAttributesObj = this.createAttributesObject();
 
     for (let collectedNum = 0; collectedNum < maxCollectedLength; collectedNum++) {
       let collected = collectedComponents[collectedNum];

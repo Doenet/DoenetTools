@@ -1563,7 +1563,7 @@ describe('Math Tag Tests', function () {
     check_values(["s", "t", "u"], "vector")
 
     cy.log('change to 4D list')
-    cy.get('#\\/m textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}v,w,x,y{enter}", { force: true })
+    cy.get('#\\/m textarea').type("{ctrl+home}{shift+end}{backspace}v,w,x,y{enter}", { force: true })
     cy.get("#\\/x4").should('contain.text', 'y');
 
     check_values(["v", "w", "x", "y"], "list")

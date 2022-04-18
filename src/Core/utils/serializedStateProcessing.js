@@ -133,7 +133,7 @@ function findNextTag(text) {
 
 export async function expandDoenetMLsToFullSerializedComponents({
   cids, doenetMLs,
-  componentInfoObjects, flags,
+  componentInfoObjects,
 }) {
 
   let arrayOfSerializedComponents = [];
@@ -148,9 +148,9 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
     correctComponentTypeCapitalization(serializedComponents, componentInfoObjects.componentTypeLowerCaseMapping);
 
-    createAttributesFromProps(serializedComponents, componentInfoObjects, flags);
+    createAttributesFromProps(serializedComponents, componentInfoObjects);
 
-    applyMacros(serializedComponents, componentInfoObjects, flags);
+    applyMacros(serializedComponents, componentInfoObjects);
 
     // remove blank string children after applying macros,
     // as applying macros could create additional blank string children
@@ -201,7 +201,7 @@ export async function expandDoenetMLsToFullSerializedComponents({
     let { fullSerializedComponents } = await expandDoenetMLsToFullSerializedComponents({
       doenetMLs: newDoenetMLs,
       cids: newCids,
-      componentInfoObjects, flags,
+      componentInfoObjects,
     });
 
     for (let [ind, cid] of cidList.entries()) {
@@ -522,14 +522,14 @@ export function correctComponentTypeCapitalization(serializedComponents, compone
 }
 
 
-export function createAttributesFromProps(serializedComponents, componentInfoObjects, flags) {
+export function createAttributesFromProps(serializedComponents, componentInfoObjects) {
   for (let component of serializedComponents) {
     if (typeof component !== "object") {
       continue;
     }
 
     let componentClass = componentInfoObjects.allComponentClasses[component.componentType];
-    let classAttributes = componentClass.createAttributesObject({ flags });
+    let classAttributes = componentClass.createAttributesObject();
 
     let attributeLowerCaseMapping = {};
 
@@ -558,7 +558,6 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
             value: component.props[prop],
             originalComponentProps,
             componentInfoObjects,
-            flags
           });
           delete component.props[prop];
         } else if (!["name", "assignnames", "target"].includes(prop.toLowerCase())) {
@@ -568,7 +567,6 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
               value: component.props[prop],
               originalComponentProps,
               componentInfoObjects,
-              flags
             });
           } else {
             throw Error(`Invalid attribute for component of type ${component.componentType}: ${prop}`);
@@ -591,7 +589,6 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
           originalComponentProps,
           value: attrObj.defaultPrimitiveValue.toString(),
           componentInfoObjects,
-          flags
         });
       }
     }
@@ -600,13 +597,13 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
 
     //recurse on children
     if (component.children !== undefined) {
-      createAttributesFromProps(component.children, componentInfoObjects, flags);
+      createAttributesFromProps(component.children, componentInfoObjects);
     }
   }
 }
 
 export function componentFromAttribute({ attrObj, value, originalComponentProps,
-  componentInfoObjects, flags
+  componentInfoObjects
 }) {
   if (typeof value !== "object") {
     // typically this would mean value is a string.
@@ -673,7 +670,7 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
 
       }
 
-      createAttributesFromProps([newComponent], componentInfoObjects, flags)
+      createAttributesFromProps([newComponent], componentInfoObjects)
     }
 
     return { component: newComponent };
@@ -727,11 +724,11 @@ function findPreSugarIndsAndMarkFromSugar(components) {
 }
 
 
-export function applyMacros(serializedComponents, componentInfoObjects, flags) {
+export function applyMacros(serializedComponents, componentInfoObjects) {
 
   for (let component of serializedComponents) {
     if (component.children) {
-      applyMacros(component.children, componentInfoObjects, flags);
+      applyMacros(component.children, componentInfoObjects);
     }
     if (component.attributes) {
       for (let attrName in component.attributes) {
@@ -739,20 +736,20 @@ export function applyMacros(serializedComponents, componentInfoObjects, flags) {
         if (attribute.component) {
           let comp = attribute.component;
           if (comp.children) {
-            applyMacros(comp.children, componentInfoObjects, flags);
+            applyMacros(comp.children, componentInfoObjects);
           }
         } else if (attribute.childrenForComponent) {
-          applyMacros(attribute.childrenForComponent, componentInfoObjects, flags);
+          applyMacros(attribute.childrenForComponent, componentInfoObjects);
         }
       }
     }
   }
 
-  substituteMacros(serializedComponents, componentInfoObjects, flags);
+  substituteMacros(serializedComponents, componentInfoObjects);
 
 }
 
-function substituteMacros(serializedComponents, componentInfoObjects, flags) {
+function substituteMacros(serializedComponents, componentInfoObjects) {
 
   for (let componentInd = 0; componentInd < serializedComponents.length; componentInd++) {
     let component = serializedComponents[componentInd];
@@ -779,7 +776,7 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
           let newDoenetML = `<copy target="${result.targetName}" ${result.additionalAttributes} />`;
 
           let newComponents = doenetMLToSerializedComponents(newDoenetML);
-          createAttributesFromProps(newComponents, componentInfoObjects, flags);
+          createAttributesFromProps(newComponents, componentInfoObjects);
           markCreatedFromMacro(newComponents);
 
           // recurse in case there were more macros in the additionalAttributes

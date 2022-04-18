@@ -154,7 +154,7 @@ describe('Slider Tag Tests', function () {
 
     cy.log('enter x, ignored');
 
-    cy.get("#\\/mi textarea").type("{end}{backspace}{backspace}{backspace}x{enter}", { force: true })
+    cy.get("#\\/mi textarea").type("{ctrl+home}{shift+end}{backspace}x{enter}", { force: true })
     // use booleaninput to wait, since above has no effect
     cy.get('#\\/bi_input').click();
     cy.get('#\\/b').should('have.text', 'true');
@@ -246,7 +246,7 @@ describe('Slider Tag Tests', function () {
 
     cy.log('enter 2.5');
 
-    cy.get("#\\/mi textarea").type("{end}{backspace}{backspace}{backspace}2.5{enter}", { force: true })
+    cy.get("#\\/mi textarea").type("{ctrl+home}{shift+end}{backspace}2.5{enter}", { force: true })
 
     cy.get('#\\/sv').should('have.text', '2.5')
     // cy.get("#\\/mi .mq-editable-field").should('have.text', '2.5')
@@ -335,7 +335,7 @@ describe('Slider Tag Tests', function () {
 
     cy.log('enter 2.5');
 
-    cy.get("#\\/mi textarea").type("{end}{backspace}{backspace}{backspace}2.5{enter}", { force: true })
+    cy.get("#\\/mi textarea").type("{ctrl+home}{shift+end}{backspace}2.5{enter}", { force: true })
 
     cy.get('#\\/sv').should('have.text', '100')
     // cy.get("#\\/mi .mq-editable-field").should('have.text', '100')
@@ -353,7 +353,7 @@ describe('Slider Tag Tests', function () {
 
     cy.log('enter 357');
 
-    cy.get("#\\/mi textarea").type("{end}{backspace}{backspace}{backspace}357{enter}", { force: true })
+    cy.get("#\\/mi textarea").type("{ctrl+home}{shift+end}{backspace}357{enter}", { force: true })
 
     cy.get('#\\/sv').should('have.text', '200')
     // cy.get("#\\/mi .mq-editable-field").should('have.text', '200')
@@ -371,7 +371,7 @@ describe('Slider Tag Tests', function () {
 
     cy.log('enter 171');
 
-    cy.get("#\\/mi textarea").type("{end}{backspace}{backspace}{backspace}171{enter}", { force: true })
+    cy.get("#\\/mi textarea").type("{ctrl+home}{shift+end}{backspace}171{enter}", { force: true })
 
     cy.get('#\\/sv').should('have.text', '171')
     // cy.get("#\\/mi .mq-editable-field").should('have.text', '171')
@@ -558,7 +558,7 @@ describe('Slider Tag Tests', function () {
 
     cy.log('enter x in pre math input');
 
-    cy.get("#\\/mi0 textarea").type("{end}{backspace}{backspace}{backspace}x{enter}", { force: true })
+    cy.get("#\\/mi0 textarea").type("{ctrl+home}{shift+end}{backspace}x{enter}", { force: true })
 
     cy.get('#\\/sv').should('have.text', '0')
     cy.get("#\\/mi0 .mq-editable-field").invoke('text').then((text) => {

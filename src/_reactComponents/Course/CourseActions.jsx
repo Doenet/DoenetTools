@@ -906,6 +906,10 @@ export const useCourse = (courseId) => {
       attributeString += ` numberOfVariants="${activity.numberOfVariants}"`;
     }
 
+    if(activity.isSinglePage) {
+      attributeString += ` isSinglePage`;
+    }
+
     let childrenString;
     try {
       childrenString = await orderToDoenetML({ order: activity.order });

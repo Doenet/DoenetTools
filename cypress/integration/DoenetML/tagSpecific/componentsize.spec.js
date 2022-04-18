@@ -141,7 +141,7 @@ describe('Component Size Tag Tests', function () {
     })
 
     cy.log(`changed prescribed width`)
-    cy.get('#\\/wPrescribed textarea').type("{end}{backspace}{backspace}{backspace}312{enter}", { force: true });
+    cy.get('#\\/wPrescribed textarea').type("{ctrl+home}{shift+end}{backspace}312{enter}", { force: true });
 
 
     cy.get('#\\/w').should('have.text', '312px');
@@ -165,7 +165,7 @@ describe('Component Size Tag Tests', function () {
 
 
     cy.log(`changed width from inverse direction`)
-    cy.get('#\\/w2 textarea').type("{end}{backspace}{backspace}{backspace}476{enter}", { force: true });
+    cy.get('#\\/w2 textarea').type("{ctrl+home}{shift+end}{backspace}476{enter}", { force: true });
 
     cy.get('#\\/w').should('have.text', '476px');
     cy.get('#\\/wNum').should('have.text', '476');
@@ -229,7 +229,7 @@ describe('Component Size Tag Tests', function () {
     })
 
     cy.log(`changed prescribed width`)
-    cy.get('#\\/wPrescribed textarea').type("{end}{backspace}{backspace}{backspace}31{enter}", { force: true });
+    cy.get('#\\/wPrescribed textarea').type("{ctrl+home}{shift+end}{backspace}31{enter}", { force: true });
 
     cy.get('#\\/w').should('have.text', '31%');
     cy.get('#\\/wNum').should('have.text', '31');
@@ -315,7 +315,7 @@ describe('Component Size Tag Tests', function () {
     })
 
     cy.log(`changed prescribed width`)
-    cy.get('#\\/wPrescribed textarea').type("{end}{backspace}{backspace}{backspace}{backspace}312{enter}", { force: true });
+    cy.get('#\\/wPrescribed textarea').type("{ctrl+home}{shift+end}{backspace}312{enter}", { force: true });
 
     cy.get('#\\/w').should('have.text', '312px');
     cy.get('#\\/h').should('have.text', '156px');
@@ -336,7 +336,7 @@ describe('Component Size Tag Tests', function () {
     })
 
     cy.log(`changed width from inverse direction`)
-    cy.get('#\\/w2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}476{enter}", { force: true });
+    cy.get('#\\/w2 textarea').type("{ctrl+home}{shift+end}{backspace}476{enter}", { force: true });
 
     cy.get('#\\/w').should('have.text', '476px');
     cy.get('#\\/h').should('have.text', '238px');
@@ -357,7 +357,7 @@ describe('Component Size Tag Tests', function () {
     })
 
     cy.log(`changed height from inverse direction`)
-    cy.get('#\\/h2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}321{enter}", { force: true });
+    cy.get('#\\/h2 textarea').type("{ctrl+home}{shift+end}{backspace}321{enter}", { force: true });
 
     cy.get('#\\/w').should('have.text', '642px');
     cy.get('#\\/h').should('have.text', '321px');

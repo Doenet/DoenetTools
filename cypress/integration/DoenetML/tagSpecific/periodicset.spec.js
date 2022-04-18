@@ -85,7 +85,7 @@ describe('PeriodicSet Tag Tests', function () {
     });
 
     cy.log("Change period to be irrational factor of other period")
-    cy.get('#\\/p textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}1{enter}`, { force: true });
+    cy.get('#\\/p textarea').type(`{ctrl+home}{shift+end}{backspace}1{enter}`, { force: true });
     cy.get('#\\/_answer1_submit').click();
 
     cy.get('#\\/_answer1_incorrect').should('be.visible');
@@ -107,7 +107,7 @@ describe('PeriodicSet Tag Tests', function () {
 
 
     cy.log("Change period")
-    cy.get('#\\/p textarea').type(`{end}{backspace}{backspace}{backspace}pi{enter}`, { force: true });
+    cy.get('#\\/p textarea').type(`{ctrl+home}{shift+end}{backspace}pi{enter}`, { force: true });
     cy.get('#\\/_answer1_submit').click();
 
     cy.get('#\\/_answer1_incorrect').should('be.visible');
@@ -688,7 +688,7 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.log('correct answer');
 
-    cy.get('#\\/mi4 textarea').type('{end}{backspace}{backspace}{backspace}-30', { force: true }).blur();
+    cy.get('#\\/mi4 textarea').type('{ctrl+home}{shift+end}{backspace}-30', { force: true }).blur();
 
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_correct').should('be.visible');
@@ -757,7 +757,7 @@ describe('PeriodicSet Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('75% correct')
     })
 
-    cy.get('#\\/mi3 textarea').type('{end}{backspace}{backspace}{backspace}100', { force: true }).blur();
+    cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}100', { force: true }).blur();
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '50')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -785,7 +785,7 @@ describe('PeriodicSet Tag Tests', function () {
     })
 
     cy.log('change period')
-    cy.get('#\\/period_input textarea').type('{end}{backspace}{backspace}{backspace}180', { force: true });
+    cy.get('#\\/period_input textarea').type('{ctrl+home}{shift+end}{backspace}180', { force: true });
     cy.get('#\\/period_input_submit').click();
     cy.get('#\\/period_input_correct').should('be.visible');
     cy.get('#\\/number_offsets_input_submit').click();
@@ -810,7 +810,7 @@ describe('PeriodicSet Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('67% correct')
     })
 
-    cy.get('#\\/mi3 textarea').type('{end}{backspace}{backspace}{backspace}330', { force: true }).blur();
+    cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}330', { force: true }).blur();
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_correct').should("be.visible");
     cy.get('#\\/_answer4_submit').click();
@@ -820,7 +820,7 @@ describe('PeriodicSet Tag Tests', function () {
     })
 
     cy.log('change period')
-    cy.get('#\\/period_input textarea').type('{end}{backspace}{backspace}{backspace}90', { force: true });
+    cy.get('#\\/period_input textarea').type('{ctrl+home}{shift+end}{backspace}90', { force: true });
     cy.get('#\\/period_input_submit').click();
     cy.get('#\\/period_input_incorrect').should('be.visible');
     cy.get('#\\/number_offsets_input_submit').click();
@@ -836,7 +836,7 @@ describe('PeriodicSet Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/mi3 textarea').type('{end}{backspace}{backspace}{backspace}100', { force: true }).blur();
+    cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}100', { force: true }).blur();
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '33')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -848,7 +848,7 @@ describe('PeriodicSet Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('33% correct')
     })
 
-    cy.get('#\\/mi3 textarea').type('{end}{backspace}{backspace}{backspace}150', { force: true }).blur();
+    cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}150', { force: true }).blur();
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '50')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {

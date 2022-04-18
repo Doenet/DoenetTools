@@ -6,8 +6,8 @@ export default class Ref extends InlineComponent {
 
   static acceptTarget = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.textType = {
       createComponentOfType: "text",
       createStateVariable: "textType",

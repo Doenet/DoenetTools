@@ -71,8 +71,8 @@ export class Aside extends SectioningComponent {
   static componentType = "aside";
   static rendererType = "section";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.collapsible = {
       createComponentOfType: "boolean",
@@ -127,8 +127,8 @@ export class Problem extends SectioningComponent {
   static componentType = "problem";
   static rendererType = "section";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.aggregateScores.defaultValue = true;
     return attributes;
   }

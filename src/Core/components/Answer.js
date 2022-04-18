@@ -14,8 +14,8 @@ export default class Answer extends InlineComponent {
   static variableForPlainMacro = "submittedResponses";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.weight = {
       createComponentOfType: "number",
       createStateVariable: "weight",
@@ -117,9 +117,8 @@ export default class Answer extends InlineComponent {
     };
     attributes.showCorrectness = {
       createComponentOfType: "boolean",
-      createStateVariable: "showCorrectness",
-      defaultValue: args.flags ? args.flags.showCorrectness !== false : true,
-      forRenderer: true,
+      createStateVariable: "showCorrectnessPreliminary",
+      defaultValue: null,
     }
     attributes.type = {
       createPrimitiveOfType: "string"
@@ -288,6 +287,29 @@ export default class Answer extends InlineComponent {
       oldName: "disabled",
       newName: "disabledOriginal"
     });
+
+    stateVariableDefinitions.showCorrectness = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        showCorrectnessPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "showCorrectnessPreliminary"
+        },
+        showCorrectnessFlag: {
+          dependencyType: "flag",
+          flagName: "showCorrectness"
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        let showCorrectness;
+        if (!usedDefault.showCorrectnessPreliminary) {
+          showCorrectness = dependencyValues.showCorrectnessPreliminary
+        } else {
+          showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+        }
+        return { setValue: { showCorrectness } }
+      }
+    }
 
     stateVariableDefinitions.haveAwardThatRequiresInput = {
       returnDependencies: () => ({

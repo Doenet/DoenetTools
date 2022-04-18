@@ -66,7 +66,8 @@ if ($success) {
 
     // get cid from course_content
     // if didn't override doenetId, then use it only as long as it is assigned and globally assigned
-    $sql = "SELECT cid, isAssigned, isGloballyAssigned
+    $sql = "SELECT isAssigned, isGloballyAssigned,
+        CAST(jsonDefinition as CHAR) AS json
         FROM course_content
         WHERE doenetId = '$doenetIdForCid'
         ";
@@ -78,9 +79,11 @@ if ($success) {
             $isDoenetIdOverridden ||
             ($row["isAssigned"] && $row["isGloballyAssigned"])
         ) {
-            $cid = $row["cid"];
+            $json = json_decode($row['json'],true);
+            $cid = $json["assignedCid"];
         }
     }
+
 
     if ($latestAttemptOverrides == "true") {
         // the cid from the latest attempt overrides the instructor-provided cid

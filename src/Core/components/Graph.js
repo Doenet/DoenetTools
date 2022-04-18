@@ -5,8 +5,8 @@ export default class Graph extends BlockComponent {
   static componentType = "graph";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.xmin = {
       createComponentOfType: "number",
       createStateVariable: "xminPrelim",

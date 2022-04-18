@@ -16,8 +16,8 @@ export default class Copy extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     // delete off attributes from base component that should apply to replacements instead
     // (using acceptAnyAttribute)
@@ -913,7 +913,7 @@ export default class Copy extends CompositeComponent {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
-    let compositeAttributesObj = this.createAttributesObject({ flags });
+    let compositeAttributesObj = this.createAttributesObject();
 
     let assignNames = await component.stateValues.effectiveAssignNames;
 
@@ -1477,7 +1477,7 @@ export default class Copy extends CompositeComponent {
     }
 
 
-    let compositeAttributesObj = this.createAttributesObject({ flags });
+    let compositeAttributesObj = this.createAttributesObject();
 
     let replacementSourceIdentities = await component.stateValues.replacementSourceIdentities;
     if (!await component.stateValues.targetComponent || !replacementSourceIdentities) {

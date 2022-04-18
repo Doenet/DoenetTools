@@ -2023,7 +2023,7 @@ describe('Map Tag Tests', function () {
       }
     })
 
-    cy.get(cesc("#/step") + " textarea").type("{end}{backspace}{backspace}{backspace}{enter}", { force: true });
+    cy.get(cesc("#/step") + " textarea").type("{ctrl+home}{shift+end}{backspace}{enter}", { force: true });
     cy.get(cesc("#/step2")).should('contain.text', "\uff3f")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2393,10 +2393,10 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/b/ind')).should('have.text', '2');
     cy.get(cesc('#/c/ind')).should('have.text', 'NaN');
 
-    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}7{enter}', { force: true })
-    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}8{enter}', { force: true })
-    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}9{enter}', { force: true })
-    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}10{enter}', { force: true })
+    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}7{enter}', { force: true })
+    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}8{enter}', { force: true })
+    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}9{enter}', { force: true })
+    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}10{enter}', { force: true })
 
     cy.get(cesc('#/d/ind')).should('have.text', '10');
     cy.get(cesc('#/a/ind')).should('have.text', '1');

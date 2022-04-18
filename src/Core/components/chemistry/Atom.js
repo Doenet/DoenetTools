@@ -214,8 +214,8 @@ export default class Atom extends InlineComponent {
   static rendererType = "math";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.symbol = {
       createComponentOfType: "text",

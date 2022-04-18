@@ -6,8 +6,8 @@ export default class Award extends BaseComponent {
   static componentType = "award";
   static rendererType = undefined;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.credit = {
       createComponentOfType: "number",

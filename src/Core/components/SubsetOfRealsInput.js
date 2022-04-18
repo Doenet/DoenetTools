@@ -19,8 +19,8 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
   static variableForPlainMacro = "subsetValue";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.xmin = {
       createComponentOfType: "number",
       createStateVariable: "xmin",
