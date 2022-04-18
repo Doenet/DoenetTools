@@ -99,8 +99,8 @@ let editor = <div
     <a name={name} />
     <div style={{
       padding: "0",
-      border: "2px solid black",
-      borderRadius:"5px",
+      border: "var(--mainBorder)",
+      borderRadius:"var(--mainBorderRadius)",
       height: sizeToCSS(componentHeight),
       width: sizeToCSS(componentWidth),
       display: 'flex',

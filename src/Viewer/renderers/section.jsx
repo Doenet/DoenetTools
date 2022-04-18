@@ -82,9 +82,9 @@ export default function Section(props) {
     // if (SVs.open) {
       // if (SVs.boxed){
     content = 
-    <div style={{ border:"2px solid black", borderRadius:"5px" }} >
+    <div style={{ border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)" }} >
       <div 
-        style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: "2px solid black" }} 
+        style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: "var(--mainBorder)" }} 
         onClick={() => callAction({action: SVs.open ? actions.closeSection : actions.revealSection})}
       >
         <a name={name} />
@@ -126,8 +126,8 @@ export default function Section(props) {
     // }
   } else if (SVs.boxed) {
     content = 
-    <div style={{ border:"2px solid black", borderRadius:"5px" }}>
-      <div style={{ padding: "6px", borderBottom: "2px solid black", backgroundColor: "var(--mainGray)" }}>
+    <div style={{ border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)" }}>
+      <div style={{ padding: "6px", borderBottom: "var(--mainBorder)", backgroundColor: "var(--mainGray)" }}>
         <a name={name} />
         {heading}<br/>
       </div>

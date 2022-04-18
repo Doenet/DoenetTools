@@ -20,7 +20,7 @@ export default function SpreadsheetRenderer(props) {
     <div id={name} style={{ margin: "12px 0" }} >
       <a name={name} />
       <HotTable
-        style={{ borderRadius:"5px", border:"2px solid black" }}
+        style={{ borderRadius:"var(--mainBorderRadius)", border:"var(--mainBorder)" }}
         licenseKey='non-commercial-and-evaluation'
         data={SVs.cells.map(x => [...x])}
         colHeaders={SVs.columnHeaders}

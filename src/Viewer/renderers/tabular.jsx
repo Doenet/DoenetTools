@@ -14,7 +14,7 @@ const tableStyle = {
   height: sizeToCSS(SVs.height),
   borderCollapse: "collapse",
   borderColor: "black", 
-  borderRadius: "5px"
+  borderRadius: "var(--mainBorderRadius)"
 }
 if (SVs.top !== "none") {
   tableStyle.borderTopStyle = "solid";

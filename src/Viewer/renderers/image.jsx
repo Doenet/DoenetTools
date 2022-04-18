@@ -50,7 +50,7 @@ export default function Image(props) {
             maxWidth:'850px',
             width:sizeToCSS(SVs.width),
             height:sizeToCSS(SVs.height),
-            border: "solid black 1px",
+            border: "var(--mainBorder)",
           }}
         >
           {SVs.description}
