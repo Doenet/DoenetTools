@@ -8,8 +8,8 @@ export default class NumberComponent extends InlineComponent {
 
   static variableForPlainMacro = "value";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.displayDigits = {
       createComponentOfType: "integer",
       createStateVariable: "displayDigits",

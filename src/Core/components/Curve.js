@@ -21,8 +21,8 @@ export default class Curve extends GraphicalComponent {
   static primaryStateVariableForDefinition = "fShadow";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",

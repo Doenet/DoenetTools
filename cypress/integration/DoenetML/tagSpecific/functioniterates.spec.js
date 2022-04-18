@@ -124,7 +124,7 @@ describe('FunctionIterates Tag Tests', function () {
     })
 
     cy.log('change function to match variable')
-    cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}y+q{enter}", { force: true });
+    cy.get('#\\/fformula textarea').type("{ctrl+home}{shift+end}{backspace}y+q{enter}", { force: true });
     cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
 
     cy.get('#\\/l5').should('contain.text', 'f5(u)=5q+w')
@@ -253,7 +253,7 @@ describe('FunctionIterates Tag Tests', function () {
     })
 
     cy.log('change function to match variable')
-    cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}y+5{enter}", { force: true });
+    cy.get('#\\/fformula textarea').type("{ctrl+home}{shift+end}{backspace}y+5{enter}", { force: true });
     cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
 
     cy.get('#\\/l5').should('contain.text', 'f5(u)=25.25')

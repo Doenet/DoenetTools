@@ -170,7 +170,7 @@ export default class Core {
       Object.defineProperty(this.rendererVariablesByComponentType, componentType, {
         get: function () {
           let varDescriptions = this.componentInfoObjects.allComponentClasses[componentType].returnStateVariableInfo({
-            onlyForRenderer: true, flags: this.flags
+            onlyForRenderer: true,
           }).stateVariableDescriptions;
           delete this.rendererVariablesByComponentType[componentType];
           return this.rendererVariablesByComponentType[componentType] = varDescriptions;

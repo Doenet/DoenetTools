@@ -5,8 +5,8 @@ export class Paginator extends BlockComponent {
   static rendererType = "container";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.initialPage = {
       createComponentOfType: "integer",
@@ -194,8 +194,8 @@ export class PaginatorControls extends BlockComponent {
   static componentType = "paginatorControls";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.previousLabel = {
       createComponentOfType: "text",

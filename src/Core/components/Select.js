@@ -9,7 +9,7 @@ import { returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lis
 export default class Select extends CompositeComponent {
   static componentType = "select";
 
-  // static assignNewNamespaceToAllChildrenExcept = Object.keys(this.createAttributesObject({})).map(x => x.toLowerCase());
+  // static assignNewNamespaceToAllChildrenExcept = Object.keys(this.createAttributesObject()).map(x => x.toLowerCase());
   static assignNamesToReplacements = true;
 
   static createsVariants = true;
@@ -17,8 +17,8 @@ export default class Select extends CompositeComponent {
   static includeBlankStringChildren = true;
   static removeBlankStringChildrenPostSugar = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
     }

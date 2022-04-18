@@ -12,8 +12,8 @@ export default class Vector extends GraphicalComponent {
 
   static primaryStateVariableForDefinition = "displacementShadow";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",

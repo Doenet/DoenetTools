@@ -309,7 +309,7 @@ describe('Evaluate Tag Tests', function () {
     })
 
     cy.log('change function to match variable')
-    cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}ay+by^2{enter}", { force: true });
+    cy.get('#\\/fformula textarea').type("{ctrl+home}{shift+end}{backspace}ay+by^2{enter}", { force: true });
     cy.get('#\\/result').should('contain.text', 'f(u)=f(cq2)=acq2+bc2q4')
     cy.get('#\\/result').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(u)=f(cq2)=acq2+bc2q4')
@@ -1538,7 +1538,7 @@ describe('Evaluate Tag Tests', function () {
     })
 
     cy.log('change formula to use new variables')
-    cy.get('#\\/formula textarea').type("{end}{backspace}{backspace}{backspace}{backspace}u+v{enter}", { force: true });
+    cy.get('#\\/formula textarea').type("{end}{leftarrow}{backspace}{backspace}{backspace}u+v{enter}", { force: true });
     cy.get('#\\/result_symbolic').should('contain.text', 'sin(π+2π)')
     cy.get('#\\/result_symbolic').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(π+2π)')
@@ -1926,7 +1926,7 @@ describe('Evaluate Tag Tests', function () {
 
     cy.log(`change inputs`);
     cy.get('#\\/input1 textarea').type('{end}{leftArrow}{backspace}{backspace}{backspace}-3,5', { force: true })
-    cy.get('#\\/input2Orig textarea').type('{end}{backspace}{backspace}{backspace}-3,5', { force: true })
+    cy.get('#\\/input2Orig textarea').type('{ctrl+home}{shift+end}{backspace}-3,5', { force: true })
     cy.get('#\\/input4a textarea').type('{end}{backspace}-3', { force: true })
     cy.get('#\\/input4b textarea').type('{end}{backspace}5', { force: true }).blur()
 

@@ -25,8 +25,8 @@ export default class Template extends CompositeComponent {
     }
   }
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.rendered = {
       createComponentOfType: "boolean",
       createStateVariable: "rendered",

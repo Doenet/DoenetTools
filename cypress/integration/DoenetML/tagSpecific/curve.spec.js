@@ -269,7 +269,7 @@ describe('Curve Tag Tests', function () {
       expect(y).closeTo(0.2, 0.1);
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}{backspace}0.1{enter}", { force: true });
+    cy.get("#\\/_mathinput1 textarea").type("{ctrl+home}{shift+end}{backspace}0.1{enter}", { force: true });
     cy.get("#\\/m1").should('contain.text', "0.1")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -332,7 +332,7 @@ describe('Curve Tag Tests', function () {
       expect(y).closeTo(-6.3, 0.1);
     })
 
-    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}{backspace}1{enter}", { force: true });
+    cy.get("#\\/_mathinput1 textarea").type("{ctrl+home}{shift+end}{backspace}1{enter}", { force: true });
     cy.window().then(async (win) => {
       await win.callAction1({
         actionName: "movePoint",

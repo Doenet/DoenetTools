@@ -3,8 +3,8 @@ import Template from './Template';
 export default class Case extends Template {
   static componentType = "case";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.condition = {
       createComponentOfType: "boolean",

@@ -9,8 +9,8 @@ export default class LineSegment extends GraphicalComponent {
     moveLineSegment: this.moveLineSegment.bind(this),
   };
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",

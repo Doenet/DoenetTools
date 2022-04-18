@@ -3,8 +3,8 @@ import BaseComponent from './abstract/BaseComponent';
 export class FeedbackDefinition extends BaseComponent {
   static componentType = "feedbackDefinition";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.code = {
       createComponentOfType: "text",
     };

@@ -15,8 +15,8 @@ export default class Slider extends BaseComponent {
 
   static variableForPlainMacro = "value";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.type = {
       createPrimitiveOfType: "string",
       createStateVariable: "type",

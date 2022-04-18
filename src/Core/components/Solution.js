@@ -5,8 +5,8 @@ export default class Solution extends BlockComponent {
   static renderChildren = true;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.hide = {
       createComponentOfType: "boolean"
     }

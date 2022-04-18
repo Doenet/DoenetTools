@@ -8561,7 +8561,7 @@ describe('Circle Tag Tests', function () {
     })
 
     cy.log("center undefined again");
-    cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}{enter}", { force: true })
 
     cy.get('#\\/centerPoint2').should('contain.text', `(＿,＿)`)
     cy.window().then(async (win) => {
@@ -8687,7 +8687,7 @@ describe('Circle Tag Tests', function () {
     });
 
     cy.log('set radius and center for original circle back to number using other components');
-    cy.get('#\\/rc1 textarea').type("{end}{backspace}{backspace}{backspace}2{enter}", { force: true })
+    cy.get('#\\/rc1 textarea').type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true })
     cy.get('#\\/cc3 textarea').type("{end}{leftArrow}{backspace}{backspace}{backspace}{backspace}4,5{enter}", { force: true })
 
     cy.get('#\\/rc .mq-editable-field').should('have.text', '2')
