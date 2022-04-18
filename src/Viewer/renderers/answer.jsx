@@ -62,7 +62,7 @@ export default function Answer(props) {
     }
 
     const Button = styled.button `
-      height: 24px;
+      height: 26px;
       display: inline-block;
       padding: 1px 6px 1px 6px;
       color: white;
@@ -71,7 +71,8 @@ export default function Answer(props) {
       padding: 2px;
       margin-right: 4px;
       border: var(--mainBorder);
-      border-radius: var(--mainBorderRadius);
+      border-radius: 0 5px 5px 0;
+      border-left: none;
     `
 
     if (disabled) {

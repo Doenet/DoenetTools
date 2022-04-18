@@ -169,7 +169,7 @@ export default function MathInput(props) {
   const Button = styled.button `
     position: relative;
     width: 30px;
-    height: 24px;
+    height: 26px;
     /* font-weight: bold; */
     color: #ffffff;
     display: inline-block;
@@ -179,7 +179,8 @@ export default function MathInput(props) {
     margin-right: 4px;
     z-index: 0;
     border: var(--mainBorder);
-    border-radius: var(--mainBorderRadius);
+    border-radius: 0 5px 5px 0;
+    border-left: none;
   `
 
     if (validationState.current === 'unvalidated') {
