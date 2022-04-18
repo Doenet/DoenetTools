@@ -1001,6 +1001,39 @@ export const useCourse = (courseId) => {
     return null;
   }
 
+  function deleteOrderFromOrder({orderObj,needleDoenetId}){
+    let nextOrderObj = {...orderObj};
+
+    let index = null;
+
+    for (let [i,item] of Object.entries(orderObj.content)){
+      if (item?.type == 'order'){
+        //Check for match
+        if (needleDoenetId == item.doenetId){
+          index = i;
+          break;
+        }
+        
+        //if not a match then recurse into content
+        let childOrderObj = deleteOrderFromOrder({orderObj:item,needleDoenetId});
+        if (childOrderObj != null){
+          nextOrderObj.content = [...nextOrderObj.content]
+          nextOrderObj.content.splice(i,1,childOrderObj);
+          return nextOrderObj;
+        }
+      }
+    }
+    //Need to return order object without the doenetId of the page to delete
+    if (index != null){
+      let nextContent = [...orderObj.content];
+      nextContent.splice(index,1);
+      nextOrderObj.content = nextContent
+      return nextOrderObj
+    }
+    //Didn't find needle
+    return null;
+  }
+
 
   const updateOrderBehavior = useRecoilCallback(
     ({ set,snapshot }) =>
@@ -1055,6 +1088,13 @@ export const useCourse = (courseId) => {
             pagesDoenetIds.push(doenetId);
           }
 
+        }else if (itemToDeleteObj.type == 'order'){
+          let containingObj = await snapshot.getPromise(authorItemByDoenetId(itemToDeleteObj.containingDoenetId))
+          let nextOrder = deleteOrderFromOrder({orderObj:containingObj.order,needleDoenetId:doenetId})
+          console.log("nextOrder",nextOrder)
+          // activitiesJson.push(nextOrder);
+          // activitiesJsonDoenetIds.push(containingObj.doenetId);
+          // pagesDoenetIds.push(doenetId);
         }
 
         //Delete off of server first
