@@ -1034,6 +1034,29 @@ export const useCourse = (courseId) => {
     return null;
   }
 
+  function findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle=false}){
+    let pageDoenetIds = [];
+  
+      for (let item of orderObj.content){
+        console.log("item",item)
+        if (item?.type == 'order'){
+          let morePageDoenetIds;
+          if (foundNeedle || item.doenetId == needleOrderDoenetId){
+            morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle:true})
+          }else{
+            morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle})
+          }
+          pageDoenetIds = [...pageDoenetIds,...morePageDoenetIds];
+        }else{
+          //Page 
+          if (foundNeedle){
+            pageDoenetIds.push(item);
+          }
+        }
+      }
+
+    return pageDoenetIds;
+  }
 
   const updateOrderBehavior = useRecoilCallback(
     ({ set,snapshot }) =>
@@ -1066,7 +1089,7 @@ export const useCourse = (courseId) => {
     ({ set,snapshot }) =>
       async ({doenetId, successCallback, failureCallback = defaultFailure}) => {
         let itemToDeleteObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-        console.log("DELETE",itemToDeleteObj)
+        console.log("deleteItem itemToDeleteObj",itemToDeleteObj)
         let pagesDoenetIds = [];
         let courseContentDoenetIds = [];
         let activitiesJson = [];
@@ -1090,13 +1113,16 @@ export const useCourse = (courseId) => {
 
         }else if (itemToDeleteObj.type == 'order'){
           let containingObj = await snapshot.getPromise(authorItemByDoenetId(itemToDeleteObj.containingDoenetId))
+          //Find doenentIds of pages contained by the order
+          let pagesDoenetIdsInOrder = findPageDoenetIdsInAnOrder({orderObj:containingObj.order,needleOrderDoenetId:doenetId})
+          pagesDoenetIds = [...pagesDoenetIds,...pagesDoenetIdsInOrder]
+          //Find updated activities' default order
           let nextOrder = deleteOrderFromOrder({orderObj:containingObj.order,needleDoenetId:doenetId})
-          console.log("nextOrder",nextOrder)
-          // activitiesJson.push(nextOrder);
-          // activitiesJsonDoenetIds.push(containingObj.doenetId);
-          // pagesDoenetIds.push(doenetId);
+          // console.log("nextOrder",nextOrder)
+          activitiesJson.push(nextOrder);
+          activitiesJsonDoenetIds.push(containingObj.doenetId);
         }
-
+        // console.log("pagesDoenetIds",pagesDoenetIds)
         //Delete off of server first
     try {
 
