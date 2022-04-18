@@ -47,7 +47,7 @@ namespace SortOrder {
             $n = UPPER_BOUND_ALPHACODE; // set to end of alphabet
             $p =
                 $pos < strlen($prev)
-                    ? ord(substr($next, $pos++, 1))
+                    ? ord(substr($prev, $pos++, 1))
                     : LOWER_BOUND_ALPHACODE;
             while ($p == CHAR_Z_ALPHACODE) {
                 $p =
