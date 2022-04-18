@@ -149,7 +149,7 @@ function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel,previousSect
   //TODO: Investigate if type should be a selector and these three would subscribe to item info
   let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
 
-  if (itemInfo.type == 'section'){
+  if (itemInfo.type == 'section' && previousSections?.current){
     previousSections.current.push(itemInfo.doenetId);
   }
   if (previousSections?.current.includes(itemInfo.parentDoenetId)){

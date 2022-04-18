@@ -7,6 +7,7 @@ import {
   useRecoilCallback,
   useRecoilValue,
 } from 'recoil';
+import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { useToast, toastType } from '../../Tools/_framework/Toast';
 
@@ -105,7 +106,6 @@ export const authorCourseItemOrderByCourseId = atomFamily({
 export const authorCourseItemOrderByCourseIdBySection = selectorFamily({
   key: 'authorCourseItemOrderByCourseIdBySection',
   get:({courseId,sectionId})=> ({get})=>{
-    // console.log("courseId,sectionId",courseId,sectionId)
     let allDoenetIdsInOrder = get(authorCourseItemOrderByCourseId(courseId));
     if (sectionId == courseId || !sectionId){
       return allDoenetIdsInOrder;
@@ -277,70 +277,70 @@ export const useCourse = (courseId) => {
     ({ set, snapshot }) =>
       async ({ itemType, placeInFolderFlag, previousDoenetId }) => {
 
-        function addPageOrOrderToOrder({
-          parentOrderObj,
-          needleOrderDoenetId,
-          itemType,
-          newPageDonenetId,
-          orderObj
-        }){
-          let newOrderObj = {...parentOrderObj};
-          let insertedAfterDoenetId = parentOrderObj.doenetId;
-          //Only if the top order matches
-          if (parentOrderObj.doenetId == needleOrderDoenetId){
-            insertedAfterDoenetId = newOrderObj.content[newOrderObj.content.length - 1];
-            if (insertedAfterDoenetId?.type == 'order'){
-              insertedAfterDoenetId = insertedAfterDoenetId.doenetId;
+      function addPageOrOrderToOrder({
+        parentOrderObj,
+        needleOrderDoenetId,
+        itemType,
+        newPageDonenetId,
+        orderObj
+      }){
+        let newOrderObj = {...parentOrderObj};
+        let insertedAfterDoenetId = parentOrderObj.doenetId;
+        //Only if the top order matches
+        if (parentOrderObj.doenetId == needleOrderDoenetId){
+          insertedAfterDoenetId = newOrderObj.content[newOrderObj.content.length - 1];
+          if (insertedAfterDoenetId?.type == 'order'){
+            insertedAfterDoenetId = insertedAfterDoenetId.doenetId;
+          }
+          //Add to the newOrderObj
+          if (itemType == 'page'){
+            newOrderObj.content = [...parentOrderObj.content,newPageDonenetId]
+          }else if (itemType == 'order'){
+            newOrderObj.content = [...parentOrderObj.content,{...orderObj}]
+          }
+          return {newOrderObj,insertedAfterDoenetId};
+        }
+        //Recurse to find the matching order
+        for (let [i,item] of Object.entries(parentOrderObj.content)){
+          if (item?.doenetId == needleOrderDoenetId){
+            let newItem = {...item};
+            insertedAfterDoenetId = newItem.doenetId;
+            if (newItem.content.length > 0){
+              insertedAfterDoenetId = newItem.content[newItem.content.length -1];
             }
-            //Add to the newOrderObj
             if (itemType == 'page'){
-              newOrderObj.content = [...parentOrderObj.content,newPageDonenetId]
+              newItem.content = [...newItem.content,newPageDonenetId]
             }else if (itemType == 'order'){
-              newOrderObj.content = [...parentOrderObj.content,{...orderObj}]
+              newItem.content = [...newItem.content,{...orderObj}]
             }
+            newOrderObj.content = [...newOrderObj.content];
+            newOrderObj.content.splice(i,1,newItem)
+            
             return {newOrderObj,insertedAfterDoenetId};
           }
-          //Recurse to find the matching order
-          for (let [i,item] of Object.entries(parentOrderObj.content)){
-            if (item?.doenetId == needleOrderDoenetId){
-              let newItem = {...item};
-              insertedAfterDoenetId = newItem.doenetId;
-              if (newItem.content.length > 0){
-                insertedAfterDoenetId = newItem.content[newItem.content.length -1];
-              }
-              if (itemType == 'page'){
-                newItem.content = [...newItem.content,newPageDonenetId]
-              }else if (itemType == 'order'){
-                newItem.content = [...newItem.content,{...orderObj}]
-              }
-              newOrderObj.content = [...newOrderObj.content];
-              newOrderObj.content.splice(i,1,newItem)
-              
+          if (item?.type == 'order'){
+            let {newOrderObj:subOrder,insertedAfterDoenetId} = addPageOrOrderToOrder({
+              parentOrderObj:item,
+              needleOrderDoenetId,
+              itemType,
+              newPageDonenetId,
+              orderObj
+            });
+            if (subOrder != null){
+              //Attach subOrder to newOrderObj 
+              newOrderObj.content = [...newOrderObj.content]
+              newOrderObj.content.splice(i,1,subOrder)
               return {newOrderObj,insertedAfterDoenetId};
             }
-            if (item?.type == 'order'){
-              let {newOrderObj:subOrder,insertedAfterDoenetId} = addPageOrOrderToOrder({
-                parentOrderObj:item,
-                needleOrderDoenetId,
-                itemType,
-                newPageDonenetId,
-                orderObj
-              });
-              if (subOrder != null){
-                //Attach subOrder to newOrderObj 
-                newOrderObj.content = [...newOrderObj.content]
-                newOrderObj.content.splice(i,1,subOrder)
-                return {newOrderObj,insertedAfterDoenetId};
-              }
-            }
-    
           }
-          //Only ever get here when we didn't find the order
-            return {newOrderObj:null,insertedAfterDoenetId:null};
+  
         }
+        //Only ever get here when we didn't find the order
+          return {newOrderObj:null,insertedAfterDoenetId:null};
+      }
 
          //Recursive Function 
-       function findOrderAndPageDoenetIds(orderObj,assignmentDoenetId,parentDoenetId){
+      function findOrderAndPageDoenetIds(orderObj,assignmentDoenetId,parentDoenetId){
         let orderAndPagesDoenetIds = [];
         //Guard for when there is no order
         if (orderObj){
@@ -430,21 +430,50 @@ export const useCourse = (courseId) => {
         if (placeInFolderFlag === undefined){
           placeInFolderFlag = false;
         }
-        if (previousDoenetId === undefined){
-          previousDoenetId = courseId;
-        }
 
-        //Place in section if section is toggled open and is the only selected item
+        let sectionId = await snapshot.getPromise(searchParamAtomFamily('sectionId'));
+        if (sectionId == ''){
+          sectionId = courseId;
+        }
+         //Place in section if section is toggled open and is the only selected item
         //Define previousDoenetId if any single item is selected
         let selectedArray = await snapshot.getPromise(selectedCourseItems);
         if (selectedArray.length == 1){
           let singleSelectedDoenetId = selectedArray[0];
-          // previousDoenetId = singleSelectedDoenetId; //Only in insert mode
+          // previousDoenetId = singleSelectedDoenetId; //When in insert mode
           let selectedObj = await snapshot.getPromise(authorItemByDoenetId(singleSelectedDoenetId))
           if (selectedObj.type == 'section' ){
             placeInFolderFlag = true;
+            sectionId = singleSelectedDoenetId;
           }
         }
+        // console.log(`sectionId -${sectionId}- `)
+        // console.log(`previousDoenetId -${previousDoenetId}- `)
+
+        if (previousDoenetId == undefined){
+          //Find last item in section
+          let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
+          // console.log("authorItemSectionDoenetIds",authorItemSectionDoenetIds)
+          let lastItemDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
+
+          if (lastItemDoenetId == undefined){
+            //No items in this section
+            previousDoenetId = sectionId;
+            placeInFolderFlag = true;
+          }else{
+            //Find containing item doenetId 
+          let lastItemObj = await snapshot.getPromise(authorItemByDoenetId(lastItemDoenetId));
+          // console.log("lastItemObj",lastItemObj)
+          if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
+            previousDoenetId = lastItemObj.containingDoenetId;
+          }else{
+            previousDoenetId = lastItemDoenetId;
+          }
+
+          }
+        }
+
+       
         console.log("create params",{
           previousDoenetId,
           courseId,
@@ -461,7 +490,12 @@ export const useCourse = (courseId) => {
         }
         //Get selection information to know previous doenetId by order
         if (itemType == 'activity') {
-
+// console.log("activity",{
+//   previousDoenetId,
+//   courseId,
+//   itemType,
+//   placeInFolderFlag,
+// })
           let { data } = await axios.get('/api/createCourseItem.php', {
             params: {
               previousDoenetId,
