@@ -93,7 +93,7 @@ export default function SelectedActivity() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const { renameItem, create, compileActivity } = useCourse(courseId);
+  const { renameItem, create, compileActivity, deleteItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
   const addToast = useToast();
 
@@ -168,14 +168,14 @@ export default function SelectedActivity() {
         />
   <ActionButton
           width="menu"
-          value="View Activity"
+          value="View Draft Activity"
           onClick={() => {
             compileActivity({
               activityDoenetId:doenetId,successCallback:()=>{
                 addToast("Activity compiled!", toastType.INFO);
                 setPageToolView({
                   page: 'course',
-                  tool: 'assignment',
+                  tool: 'draftactivity',
                   view: '',
                   params: {
                     courseId,
@@ -184,6 +184,22 @@ export default function SelectedActivity() {
                 });
               }
             })
+          }}
+        />
+        <ActionButton
+          width="menu"
+          value="View Assigned Activity"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'assignment',
+              view: '',
+              params: {
+                madeUpstuff:'mystuff',
+                courseId,
+                doenetId,
+              },
+            });
           }}
         />
   </ActionButtonGroup>
@@ -229,6 +245,17 @@ export default function SelectedActivity() {
           }}
         />
   <AssignmentSettings role={effectiveRole} doenetId={doenetId} />
+  <Button
+      width="menu"
+      value="Delete Activity"
+      alert
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      
+        deleteItem({doenetId});
+      }}
+    />
   </>
 
 }
