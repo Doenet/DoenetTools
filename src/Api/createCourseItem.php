@@ -31,11 +31,7 @@ if ($success){
   $jsonDefinition = null;
 
   if ($previousDoenetId == $courseId) {
-    $sql = "SELECT sortOrder, parentDoenetId 
-    FROM `course_content` 
-    WHERE courseId = '$courseId' 
-    ORDER BY sortOrder 
-    LIMIT 1";
+    $sql = "SELECT sortOrder FROM `course_content` WHERE courseId = '$courseId' ORDER BY sortOrder DESC LIMIT 1";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
     $prev =$row['sortOrder'] ?: "";
