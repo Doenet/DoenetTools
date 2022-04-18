@@ -331,9 +331,9 @@ export default function Video(props) {
       <a name={name} />
       {
         SVs.youtube ? 
-          <div className="video" id={name} style={{ borderRadius:"5px", border:"2px solid black" }}/>
+          <div className="video" id={name} />
         : SVs.source ? 
-          <video className="video" id={name} controls width="100%" style={{ borderRadius:"5px", border:"2px solid black" }}>
+          <video className="video" id={name} controls width="100%" >
             <source src={SVs.source} type={`video/${SVs.source.split('/').pop().split('.').pop()}`} />
             Your browser does not support the &lt;video&gt; tag.
           </video>
