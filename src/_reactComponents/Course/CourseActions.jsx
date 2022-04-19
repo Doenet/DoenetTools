@@ -1074,9 +1074,9 @@ export const useCourse = (courseId) => {
 
   function findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle=false}){
     let pageDoenetIds = [];
-  
-      for (let item of orderObj.content){
 
+      for (let item of orderObj.content){
+        console.log("item",item)
         if (item?.type == 'order'){
           let morePageDoenetIds;
           if (foundNeedle || item.doenetId == needleOrderDoenetId){
@@ -1176,15 +1176,22 @@ export const useCourse = (courseId) => {
           //Find doenentIds of pages contained by the order
           pagesDoenetIds = findPageDoenetIdsInAnOrder({orderObj:containingObj.order,needleOrderDoenetId:doenetId})
           orderDoenetIds = findOrderDoenetIdsInAnOrder({orderObj:containingObj.order,needleOrderDoenetId:doenetId})
-          console.log("orderDoenetIds",orderDoenetIds)
           //Find updated activities' default order
           let nextOrder = deleteOrderFromOrder({orderObj:containingObj.order,needleDoenetId:doenetId})
-          // console.log("nextOrder",nextOrder)
           activitiesJson.push(nextOrder);
           activitiesJsonDoenetIds.push(containingObj.doenetId);
         }else if (itemToDeleteObj.type == 'bank'){
           wholeCollectionsDoenetIds.push(doenetId);
           pagesDoenetIds = itemToDeleteObj.pages;
+        }else if (itemToDeleteObj.type == 'activity'){
+          let orderObj = itemToDeleteObj.order;
+          let needleOrderDoenetId = itemToDeleteObj.order.doenetId;
+          pagesDoenetIds = findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle:true})
+          orderDoenetIds = findOrderDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle:true})
+          orderDoenetIds = [needleOrderDoenetId,...orderDoenetIds];
+          wholeActivitiesDoenetIds = [doenetId]
+        }else if (itemToDeleteObj.type == 'section'){
+          console.log("delete section")
         }
         //Delete off of server first
     try {

@@ -64,6 +64,9 @@ if ($success){
     $wholeCollectionsDoenetIds = array_map(function ($item) use ($conn) {
         return mysqli_real_escape_string($conn, $item);
     }, $_POST["wholeCollectionsDoenetIds"]);
+    $wholeActivitiesDoenetIds = array_map(function ($item) use ($conn) {
+        return mysqli_real_escape_string($conn, $item);
+    }, $_POST["wholeActivitiesDoenetIds"]);
 
     $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
     if ($permissions["canEditContent"] != '1'){
@@ -80,6 +83,17 @@ if ($success) {
         UPDATE course_content
         SET isDeleted = '1'
         WHERE doenetId IN ($list_of_wholeCollectionsDoenetIds)
+        AND courseId='$courseId'
+        ";
+        $result = $conn->query($sql);
+    }
+    if (count($wholeActivitiesDoenetIds) > 0){
+        $list_of_wholeActivitiesDoenetIds = join("','",$wholeActivitiesDoenetIds);
+        $list_of_wholeActivitiesDoenetIds = "'" . $list_of_wholeActivitiesDoenetIds . "'";
+        $sql = "
+        UPDATE course_content
+        SET isDeleted = '1'
+        WHERE doenetId IN ($list_of_wholeActivitiesDoenetIds)
         AND courseId='$courseId'
         ";
         $result = $conn->query($sql);
