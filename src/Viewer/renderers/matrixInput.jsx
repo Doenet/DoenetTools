@@ -96,9 +96,11 @@ export default function MatrixInput(props) {
 
     if (validationState.current === "unvalidated") {
       if (disabled) {
-        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray")
+        ;
       } else {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue")
+        ;
       }
       checkWorkButton = <button
         id={name + '_submit'}
@@ -121,7 +123,8 @@ export default function MatrixInput(props) {
     } else {
       if (SVs.showCorrectness) {
         if (validationState.current === "correct") {
-          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen")
+          ;
           checkWorkButton = <span
             id={name + '_correct'}
             style={checkWorkStyle}
@@ -142,7 +145,8 @@ export default function MatrixInput(props) {
           >{partialCreditContents}</span>
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed")
+          ;
           checkWorkButton = <span
             id={name + '_incorrect'}
             style={checkWorkStyle}
@@ -187,7 +191,7 @@ export default function MatrixInput(props) {
 
     for (let colInd = 0; colInd < SVs.numColumns; colInd++) {
       mathinputRow.push(
-        <td style={{ margin: "10px" }} key={colInd} id={name + "_component_" + rowInd + "_" + colInd}>
+        <td style={{ margin: "10px"}} key={colInd} id={name + "_component_" + rowInd + "_" + colInd}>
           {children[rowInd * SVs.numColumns + colInd]}
         </td>
       )
