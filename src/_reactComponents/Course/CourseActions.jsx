@@ -1134,6 +1134,8 @@ export const useCourse = (courseId) => {
         let activitiesJsonDoenetIds = [];
         let collectionsJson = []; 
         let collectionsJsonDoenetIds = []; 
+        let wholeCollectionsDoenetIds = [];
+
         if (itemToDeleteObj.type == 'page'){
           let containingObj = await snapshot.getPromise(authorItemByDoenetId(itemToDeleteObj.containingDoenetId))
           if (containingObj.type == 'bank'){
@@ -1159,8 +1161,10 @@ export const useCourse = (courseId) => {
           // console.log("nextOrder",nextOrder)
           activitiesJson.push(nextOrder);
           activitiesJsonDoenetIds.push(containingObj.doenetId);
+        }else if (itemToDeleteObj.type == 'bank'){
+          wholeCollectionsDoenetIds.push(doenetId);
+          pagesDoenetIds = itemToDeleteObj.pages;
         }
-        // console.log("pagesDoenetIds",pagesDoenetIds)
         //Delete off of server first
     try {
 
@@ -1171,7 +1175,8 @@ export const useCourse = (courseId) => {
           activitiesJson,
           activitiesJsonDoenetIds,
           collectionsJson,
-          collectionsJsonDoenetIds
+          collectionsJsonDoenetIds,
+          wholeCollectionsDoenetIds
         });
       if (resp.status < 300) {
         console.log("data",resp.data)
@@ -1196,14 +1201,23 @@ export const useCourse = (courseId) => {
       })
       
      }
-     for (let [i,pagesDoenetId] of Object.entries(pagesDoenetIds)){
-       //remove pages from author order
-      set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
-        let next = [...prev];
+
+     
+      //remove all items from author order
+     set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
+       let next = [...prev];
+      //  for (let pagesDoenetId of pagesDoenetIds){
+      //   next.splice(next.indexOf(pagesDoenetId),1);
+      //  }
+       for (let pagesDoenetId of pagesDoenetIds){
         next.splice(next.indexOf(pagesDoenetId),1);
-        return next;
-      });
-     }
+       }
+       for (let wholeCollectionsDoenetId of wholeCollectionsDoenetIds){
+        next.splice(next.indexOf(wholeCollectionsDoenetId),1);
+       }
+       return next;
+     });
+    
 
      //Clear selections
      let selectedDoenentIds = await snapshot.getPromise(selectedCourseItems);

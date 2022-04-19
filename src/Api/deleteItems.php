@@ -39,7 +39,10 @@ if (!array_key_exists('courseId', $_POST)) {
 } elseif (!array_key_exists('collectionsJsonDoenetIds', $_POST)) {
     $success = false;
     $message = 'Missing collectionsJsonDoenetIds';
-} 
+} elseif (!array_key_exists('wholeCollectionsDoenetIds', $_POST)) {
+    $success = false;
+    $message = 'Missing wholeCollectionsDoenetIds';
+}
 
 //Test Permission to edit content
 if ($success){
@@ -58,6 +61,9 @@ if ($success){
     $collectionsJsonDoenetIds = array_map(function ($item) use ($conn) {
         return mysqli_real_escape_string($conn, $item);
     }, $_POST["collectionsJsonDoenetIds"]);
+    $wholeCollectionsDoenetIds = array_map(function ($item) use ($conn) {
+        return mysqli_real_escape_string($conn, $item);
+    }, $_POST["wholeCollectionsDoenetIds"]);
 
     $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
     if ($permissions["canEditContent"] != '1'){
@@ -67,6 +73,17 @@ if ($success){
 }
 
 if ($success) {
+    if (count($wholeCollectionsDoenetIds) > 0){
+        $list_of_wholeCollectionsDoenetIds = join("','",$wholeCollectionsDoenetIds);
+        $list_of_wholeCollectionsDoenetIds = "'" . $list_of_wholeCollectionsDoenetIds . "'";
+        $sql = "
+        UPDATE course_content
+        SET isDeleted = '1'
+        WHERE doenetId IN ($list_of_wholeCollectionsDoenetIds)
+        AND courseId='$courseId'
+        ";
+        $result = $conn->query($sql);
+    }
     
     //Mark pages deleted
     if (count($pagesDoenetIds) > 0){
