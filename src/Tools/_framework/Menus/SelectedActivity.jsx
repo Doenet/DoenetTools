@@ -180,6 +180,7 @@ export default function SelectedActivity() {
                   params: {
                     courseId,
                     doenetId,
+                    requestedVariant: 1
                   },
                 });
               }
