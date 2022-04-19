@@ -210,11 +210,7 @@ export default function HomePage(props) {
     textAlign: "center",
     lineHeight: "15px",
     whiteSpace: "normal"
-  })))), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
-    style: {display: "flex", justifyContent: "center"}
-  }, /* @__PURE__ */ React.createElement("a", {
-    href: ""
-  }, "DoenetML Online Guide"))))), /* @__PURE__ */ React.createElement(CloudColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
+  })))))), /* @__PURE__ */ React.createElement(CloudColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
     className: "section-headline"
   }, "Workshop on developing learning experiments in Doenet"), /* @__PURE__ */ React.createElement(Paragraph, null, "Interested in learning how to create and implement online learning experiments using Doenet?  Apply to attend our ", /* @__PURE__ */ React.createElement("a", {
     href: "https://ima.umn.edu/2021-2022/SW5.23-26.22"
