@@ -263,11 +263,11 @@ export default function HomePage(props) {
             </div> */}
 
 
-        <Paragraph>
+        {/* <Paragraph>
           <div style={{ display: "flex", justifyContent: "center" }}>
             <a href="">DoenetML Online Guide</a>
           </div>
-        </Paragraph>
+        </Paragraph> */}
 
 
 
