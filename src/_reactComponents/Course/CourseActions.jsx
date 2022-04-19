@@ -1141,6 +1141,7 @@ export const useCourse = (courseId) => {
         });
       });
 
+
   const deleteItem = useRecoilCallback(
     ({ set,snapshot }) =>
       async ({doenetId, successCallback, failureCallback = defaultFailure}) => {
@@ -1152,8 +1153,9 @@ export const useCourse = (courseId) => {
         let activitiesJsonDoenetIds = [];
         let collectionsJson = []; 
         let collectionsJsonDoenetIds = []; 
-        let wholeCollectionsDoenetIds = [];
-        let wholeActivitiesDoenetIds = [];
+        let baseCollectionsDoenetIds = [];
+        let baseActivitiesDoenetIds = [];
+        let baseSectionsDoenetIds = [];
         let orderDoenetIds = []; //Only to update local recoil
 
         if (itemToDeleteObj.type == 'page'){
@@ -1181,7 +1183,7 @@ export const useCourse = (courseId) => {
           activitiesJson.push(nextOrder);
           activitiesJsonDoenetIds.push(containingObj.doenetId);
         }else if (itemToDeleteObj.type == 'bank'){
-          wholeCollectionsDoenetIds.push(doenetId);
+          baseCollectionsDoenetIds.push(doenetId);
           pagesDoenetIds = itemToDeleteObj.pages;
         }else if (itemToDeleteObj.type == 'activity'){
           let orderObj = itemToDeleteObj.order;
@@ -1189,9 +1191,26 @@ export const useCourse = (courseId) => {
           pagesDoenetIds = findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle:true})
           orderDoenetIds = findOrderDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle:true})
           orderDoenetIds = [needleOrderDoenetId,...orderDoenetIds];
-          wholeActivitiesDoenetIds = [doenetId]
+          baseActivitiesDoenetIds = [doenetId]
         }else if (itemToDeleteObj.type == 'section'){
-          console.log("delete section")
+          baseSectionsDoenetIds.push(itemToDeleteObj.doenetId);
+          let sectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:itemToDeleteObj.doenetId}))
+
+          for (let doenetId of sectionDoenetIds){
+            let itemObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+            if (itemObj.type == 'activity'){
+              baseActivitiesDoenetIds.push(itemObj.doenetId)
+            }else if (itemObj.type == 'order'){
+              orderDoenetIds.push(itemObj.doenetId)
+            }else if (itemObj.type == 'page'){
+              pagesDoenetIds.push(itemObj.doenetId)
+            }else if (itemObj.type == 'bank'){
+              baseCollectionsDoenetIds.push(itemObj.doenetId)
+            }else if (itemObj.type == 'section'){
+              baseSectionsDoenetIds.push(itemObj.doenetId)
+            }
+          }
+          console.log("delete section",{pagesDoenetIds,orderDoenetIds,baseCollectionsDoenetIds,baseActivitiesDoenetIds,baseSectionsDoenetIds})
         }
         //Delete off of server first
     try {
@@ -1204,8 +1223,9 @@ export const useCourse = (courseId) => {
           activitiesJsonDoenetIds,
           collectionsJson,
           collectionsJsonDoenetIds,
-          wholeCollectionsDoenetIds,
-          wholeActivitiesDoenetIds
+          baseCollectionsDoenetIds,
+          baseActivitiesDoenetIds,
+          baseSectionsDoenetIds
         });
       if (resp.status < 300) {
         console.log("data",resp.data)
@@ -1241,13 +1261,15 @@ export const useCourse = (courseId) => {
        for (let orderDoenetId of orderDoenetIds){
         next.splice(next.indexOf(orderDoenetId),1);
        }
-       for (let wholeCollectionsDoenetId of wholeCollectionsDoenetIds){
-        next.splice(next.indexOf(wholeCollectionsDoenetId),1);
+       for (let baseCollectionsDoenetId of baseCollectionsDoenetIds){
+        next.splice(next.indexOf(baseCollectionsDoenetId),1);
        }
-       for (let wholeActivitiesDoenetId of wholeActivitiesDoenetIds){
-        next.splice(next.indexOf(wholeActivitiesDoenetId),1);
+       for (let baseActivitiesDoenetId of baseActivitiesDoenetIds){
+        next.splice(next.indexOf(baseActivitiesDoenetId),1);
        }
-       
+       for (let baseSectionsDoenetId of baseSectionsDoenetIds){
+        next.splice(next.indexOf(baseSectionsDoenetId),1);
+       }
        return next;
      });
     
