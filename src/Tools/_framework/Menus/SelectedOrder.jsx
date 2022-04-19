@@ -21,11 +21,18 @@ const CheckboxLabelText = styled.span`
 export default function SelectedOrder() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  const parentItemObj = useRecoilValue(authorItemByDoenetId(itemObj.parentDoenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
   const [behavior,setBehavior] = useState(itemObj.behavior);
   const [numberToSelect,setNumberToSelect] = useState(itemObj.numberToSelect);
   const [withReplacement,setWithReplacement] = useState(itemObj.withReplacement);
-  let { create, updateOrderBehavior } = useCourse(courseId);
+  let { create, updateOrderBehavior, deleteItem } = useCourse(courseId);
+  console.log("parentItemObj",parentItemObj)
+  //Can't delete top order
+  let deleteDisabled = false;
+  if (parentItemObj.type == 'activity'){
+    deleteDisabled = true;
+  }
 
   useEffect(()=>{
     if (itemObj.behavior != behavior){
@@ -51,7 +58,7 @@ let items = [
   // ['deepshuffle', 'deep shuffle'],
   // ['showuntil100', 'show until 100%'],
   // ['adaptive', 'adaptive'],
-  // ['copy','copy'],
+  // ['select from collection','select from collection'],
   // ['previousrequirements', 'previous requirements'],
 ];
 
@@ -89,6 +96,7 @@ if (behavior == 'select'){
 }
 
 
+
   return <>
   {heading}
   <DropdownMenu
@@ -119,6 +127,19 @@ if (behavior == 'select'){
         value="Add Page"
       />
     </ButtonGroup>
+    <br />
+    <Button
+      width="menu"
+      value="Delete Order"
+      alert
+      disabled={deleteDisabled}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      
+        deleteItem({doenetId});
+      }}
+    />
   </>;
 }
 

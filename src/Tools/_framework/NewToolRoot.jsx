@@ -397,6 +397,16 @@ let navigationObj = {
       onLeave: 'DashboardLeave',
       waitForMenuSuppression: true,
     },
+    draftactivity: {
+      pageName: 'DraftActivity',
+      menuPanelCap: 'AssignmentInfoCap',
+      currentMainPanel: 'AssignmentViewer',
+      currentMenus: [], //Variant control
+      menusTitles: [],
+      menusInitOpen: [],
+      headerControls: ['AssignmentBreadCrumb'],
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
+    },
     gradebook: {
       pageName: 'Gradebook',
       currentMainPanel: 'Gradebook',

@@ -7,6 +7,8 @@ import {
   useRecoilCallback,
   useRecoilValue,
 } from 'recoil';
+import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
+import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { fileByDoenetId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 
@@ -105,7 +107,6 @@ export const authorCourseItemOrderByCourseId = atomFamily({
 export const authorCourseItemOrderByCourseIdBySection = selectorFamily({
   key: 'authorCourseItemOrderByCourseIdBySection',
   get:({courseId,sectionId})=> ({get})=>{
-    // console.log("courseId,sectionId",courseId,sectionId)
     let allDoenetIdsInOrder = get(authorCourseItemOrderByCourseId(courseId));
     if (sectionId == courseId || !sectionId){
       return allDoenetIdsInOrder;
@@ -277,70 +278,70 @@ export const useCourse = (courseId) => {
     ({ set, snapshot }) =>
       async ({ itemType, placeInFolderFlag, previousDoenetId }) => {
 
-        function addPageOrOrderToOrder({
-          parentOrderObj,
-          needleOrderDoenetId,
-          itemType,
-          newPageDonenetId,
-          orderObj
-        }){
-          let newOrderObj = {...parentOrderObj};
-          let insertedAfterDoenetId = parentOrderObj.doenetId;
-          //Only if the top order matches
-          if (parentOrderObj.doenetId == needleOrderDoenetId){
-            insertedAfterDoenetId = newOrderObj.content[newOrderObj.content.length - 1];
-            if (insertedAfterDoenetId?.type == 'order'){
-              insertedAfterDoenetId = insertedAfterDoenetId.doenetId;
+      function addPageOrOrderToOrder({
+        parentOrderObj,
+        needleOrderDoenetId,
+        itemType,
+        newPageDonenetId,
+        orderObj
+      }){
+        let newOrderObj = {...parentOrderObj};
+        let insertedAfterDoenetId = parentOrderObj.doenetId;
+        //Only if the top order matches
+        if (parentOrderObj.doenetId == needleOrderDoenetId){
+          insertedAfterDoenetId = newOrderObj.content[newOrderObj.content.length - 1];
+          if (insertedAfterDoenetId?.type == 'order'){
+            insertedAfterDoenetId = insertedAfterDoenetId.doenetId;
+          }
+          //Add to the newOrderObj
+          if (itemType == 'page'){
+            newOrderObj.content = [...parentOrderObj.content,newPageDonenetId]
+          }else if (itemType == 'order'){
+            newOrderObj.content = [...parentOrderObj.content,{...orderObj}]
+          }
+          return {newOrderObj,insertedAfterDoenetId};
+        }
+        //Recurse to find the matching order
+        for (let [i,item] of Object.entries(parentOrderObj.content)){
+          if (item?.doenetId == needleOrderDoenetId){
+            let newItem = {...item};
+            insertedAfterDoenetId = newItem.doenetId;
+            if (newItem.content.length > 0){
+              insertedAfterDoenetId = newItem.content[newItem.content.length -1];
             }
-            //Add to the newOrderObj
             if (itemType == 'page'){
-              newOrderObj.content = [...parentOrderObj.content,newPageDonenetId]
+              newItem.content = [...newItem.content,newPageDonenetId]
             }else if (itemType == 'order'){
-              newOrderObj.content = [...parentOrderObj.content,{...orderObj}]
+              newItem.content = [...newItem.content,{...orderObj}]
             }
+            newOrderObj.content = [...newOrderObj.content];
+            newOrderObj.content.splice(i,1,newItem)
+            
             return {newOrderObj,insertedAfterDoenetId};
           }
-          //Recurse to find the matching order
-          for (let [i,item] of Object.entries(parentOrderObj.content)){
-            if (item?.doenetId == needleOrderDoenetId){
-              let newItem = {...item};
-              insertedAfterDoenetId = newItem.doenetId;
-              if (newItem.content.length > 0){
-                insertedAfterDoenetId = newItem.content[newItem.content.length -1];
-              }
-              if (itemType == 'page'){
-                newItem.content = [...newItem.content,newPageDonenetId]
-              }else if (itemType == 'order'){
-                newItem.content = [...newItem.content,{...orderObj}]
-              }
-              newOrderObj.content = [...newOrderObj.content];
-              newOrderObj.content.splice(i,1,newItem)
-              
+          if (item?.type == 'order'){
+            let {newOrderObj:subOrder,insertedAfterDoenetId} = addPageOrOrderToOrder({
+              parentOrderObj:item,
+              needleOrderDoenetId,
+              itemType,
+              newPageDonenetId,
+              orderObj
+            });
+            if (subOrder != null){
+              //Attach subOrder to newOrderObj 
+              newOrderObj.content = [...newOrderObj.content]
+              newOrderObj.content.splice(i,1,subOrder)
               return {newOrderObj,insertedAfterDoenetId};
             }
-            if (item?.type == 'order'){
-              let {newOrderObj:subOrder,insertedAfterDoenetId} = addPageOrOrderToOrder({
-                parentOrderObj:item,
-                needleOrderDoenetId,
-                itemType,
-                newPageDonenetId,
-                orderObj
-              });
-              if (subOrder != null){
-                //Attach subOrder to newOrderObj 
-                newOrderObj.content = [...newOrderObj.content]
-                newOrderObj.content.splice(i,1,subOrder)
-                return {newOrderObj,insertedAfterDoenetId};
-              }
-            }
-    
           }
-          //Only ever get here when we didn't find the order
-            return {newOrderObj:null,insertedAfterDoenetId:null};
+  
         }
+        //Only ever get here when we didn't find the order
+          return {newOrderObj:null,insertedAfterDoenetId:null};
+      }
 
          //Recursive Function 
-       function findOrderAndPageDoenetIds(orderObj,assignmentDoenetId,parentDoenetId){
+      function findOrderAndPageDoenetIds(orderObj,assignmentDoenetId,parentDoenetId){
         let orderAndPagesDoenetIds = [];
         //Guard for when there is no order
         if (orderObj){
@@ -430,21 +431,50 @@ export const useCourse = (courseId) => {
         if (placeInFolderFlag === undefined){
           placeInFolderFlag = false;
         }
-        if (previousDoenetId === undefined){
-          previousDoenetId = courseId;
-        }
 
-        //Place in section if section is toggled open and is the only selected item
+        let sectionId = await snapshot.getPromise(searchParamAtomFamily('sectionId'));
+        if (sectionId == ''){
+          sectionId = courseId;
+        }
+         //Place in section if section is toggled open and is the only selected item
         //Define previousDoenetId if any single item is selected
         let selectedArray = await snapshot.getPromise(selectedCourseItems);
         if (selectedArray.length == 1){
           let singleSelectedDoenetId = selectedArray[0];
-          // previousDoenetId = singleSelectedDoenetId; //Only in insert mode
+          // previousDoenetId = singleSelectedDoenetId; //When in insert mode
           let selectedObj = await snapshot.getPromise(authorItemByDoenetId(singleSelectedDoenetId))
           if (selectedObj.type == 'section' ){
             placeInFolderFlag = true;
+            sectionId = singleSelectedDoenetId;
           }
         }
+        // console.log(`sectionId -${sectionId}- `)
+        // console.log(`previousDoenetId -${previousDoenetId}- `)
+
+        if (previousDoenetId == undefined){
+          //Find last item in section
+          let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
+          // console.log("authorItemSectionDoenetIds",authorItemSectionDoenetIds)
+          let lastItemDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
+
+          if (lastItemDoenetId == undefined){
+            //No items in this section
+            previousDoenetId = sectionId;
+            placeInFolderFlag = true;
+          }else{
+            //Find containing item doenetId 
+          let lastItemObj = await snapshot.getPromise(authorItemByDoenetId(lastItemDoenetId));
+          // console.log("lastItemObj",lastItemObj)
+          if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
+            previousDoenetId = lastItemObj.containingDoenetId;
+          }else{
+            previousDoenetId = lastItemDoenetId;
+          }
+
+          }
+        }
+
+       
         console.log("create params",{
           previousDoenetId,
           courseId,
@@ -461,7 +491,12 @@ export const useCourse = (courseId) => {
         }
         //Get selection information to know previous doenetId by order
         if (itemType == 'activity') {
-
+// console.log("activity",{
+//   previousDoenetId,
+//   courseId,
+//   itemType,
+//   placeInFolderFlag,
+// })
           let { data } = await axios.get('/api/createCourseItem.php', {
             params: {
               previousDoenetId,
@@ -986,6 +1021,94 @@ export const useCourse = (courseId) => {
     return null;
   }
 
+  function deletePageFromOrder({orderObj,needleDoenetId}){
+    let nextOrderObj = {...orderObj};
+
+    let index = null;
+
+    for (let [i,item] of Object.entries(orderObj.content)){
+      if (item?.type == 'order'){
+        let childOrderObj = deletePageFromOrder({orderObj:item,needleDoenetId});
+        if (childOrderObj != null){
+          nextOrderObj.content = [...nextOrderObj.content]
+          nextOrderObj.content.splice(i,1,childOrderObj);
+          return nextOrderObj;
+        }
+
+      }else if (needleDoenetId == item){
+          index = i;
+          break;
+        }
+    }
+
+    //Need to return order object without the doenetId of the page to delete
+    if (index != null){
+      let nextContent = [...orderObj.content];
+      nextContent.splice(index,1);
+      nextOrderObj.content = nextContent
+      return nextOrderObj
+    }
+    //Didn't find needle
+    return null;
+  }
+
+  function deleteOrderFromOrder({orderObj,needleDoenetId}){
+    let nextOrderObj = {...orderObj};
+
+    let index = null;
+
+    for (let [i,item] of Object.entries(orderObj.content)){
+      if (item?.type == 'order'){
+        //Check for match
+        if (needleDoenetId == item.doenetId){
+          index = i;
+          break;
+        }
+        
+        //if not a match then recurse into content
+        let childOrderObj = deleteOrderFromOrder({orderObj:item,needleDoenetId});
+        if (childOrderObj != null){
+          nextOrderObj.content = [...nextOrderObj.content]
+          nextOrderObj.content.splice(i,1,childOrderObj);
+          return nextOrderObj;
+        }
+      }
+    }
+    //Need to return order object without the doenetId of the page to delete
+    if (index != null){
+      let nextContent = [...orderObj.content];
+      nextContent.splice(index,1);
+      nextOrderObj.content = nextContent
+      return nextOrderObj
+    }
+    //Didn't find needle
+    return null;
+  }
+
+  function findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle=false}){
+    let pageDoenetIds = [];
+  
+      for (let item of orderObj.content){
+        console.log("item",item)
+        if (item?.type == 'order'){
+          let morePageDoenetIds;
+          if (foundNeedle || item.doenetId == needleOrderDoenetId){
+            morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle:true})
+          }else{
+            morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle})
+          }
+          pageDoenetIds = [...pageDoenetIds,...morePageDoenetIds];
+        }else{
+          //Page 
+          if (foundNeedle){
+            pageDoenetIds.push(item);
+          }
+        }
+      }
+
+    return pageDoenetIds;
+  }
+
   const updateOrderBehavior = useRecoilCallback(
     ({ set,snapshot }) =>
       async ({doenetId, behavior, numberToSelect, withReplacement, successCallback, failureCallback = defaultFailure}) => {
@@ -1013,5 +1136,109 @@ export const useCourse = (courseId) => {
         });
       });
 
-  return { create, deleteCourse, modifyCourse, label, color, image, renameItem, compileActivity, updateOrderBehavior };
+  const deleteItem = useRecoilCallback(
+    ({ set,snapshot }) =>
+      async ({doenetId, successCallback, failureCallback = defaultFailure}) => {
+        let itemToDeleteObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+        console.log("deleteItem itemToDeleteObj",itemToDeleteObj)
+        let pagesDoenetIds = [];
+        let courseContentDoenetIds = [];
+        let activitiesJson = [];
+        let activitiesJsonDoenetIds = [];
+        let collectionsJson = []; 
+        let collectionsJsonDoenetIds = []; 
+        if (itemToDeleteObj.type == 'page'){
+          let containingObj = await snapshot.getPromise(authorItemByDoenetId(itemToDeleteObj.containingDoenetId))
+          if (containingObj.type == 'bank'){
+            collectionsJsonDoenetIds.push(containingObj.doenetId)
+            let nextPages = [...containingObj.pages];
+            nextPages.splice(nextPages.indexOf(itemToDeleteObj.doenetId),1);
+            collectionsJson.push(nextPages);
+            pagesDoenetIds.push(doenetId);
+          }else if (containingObj.type == 'activity'){
+            let nextOrder = deletePageFromOrder({orderObj:containingObj.order,needleDoenetId:doenetId})
+            activitiesJson.push(nextOrder);
+            activitiesJsonDoenetIds.push(containingObj.doenetId);
+            pagesDoenetIds.push(doenetId);
+          }
+
+        }else if (itemToDeleteObj.type == 'order'){
+          let containingObj = await snapshot.getPromise(authorItemByDoenetId(itemToDeleteObj.containingDoenetId))
+          //Find doenentIds of pages contained by the order
+          let pagesDoenetIdsInOrder = findPageDoenetIdsInAnOrder({orderObj:containingObj.order,needleOrderDoenetId:doenetId})
+          pagesDoenetIds = [...pagesDoenetIds,...pagesDoenetIdsInOrder]
+          //Find updated activities' default order
+          let nextOrder = deleteOrderFromOrder({orderObj:containingObj.order,needleDoenetId:doenetId})
+          // console.log("nextOrder",nextOrder)
+          activitiesJson.push(nextOrder);
+          activitiesJsonDoenetIds.push(containingObj.doenetId);
+        }
+        // console.log("pagesDoenetIds",pagesDoenetIds)
+        //Delete off of server first
+    try {
+
+        let resp = await axios.post('/api/deleteItems.php', {
+          courseId,
+          pagesDoenetIds,
+          courseContentDoenetIds,
+          activitiesJson,
+          activitiesJsonDoenetIds,
+          collectionsJson,
+          collectionsJsonDoenetIds
+        });
+      if (resp.status < 300) {
+        console.log("data",resp.data)
+        let { success, message } = resp.data;
+
+     //update recoil for deleted items from collections
+     for (let [i,collectionDoenetId] of Object.entries(collectionsJsonDoenetIds)){
+      let collectionJson = collectionsJson[i];
+      set(authorItemByDoenetId(collectionDoenetId),(prev)=>{
+        let next = {...prev}
+        next.pages = collectionJson;
+        return next;
+      })
+      
+     }
+     for (let [i,activitiesJsonDoenetId] of Object.entries(activitiesJsonDoenetIds)){
+      let activityJson = activitiesJson[i];
+      set(authorItemByDoenetId(activitiesJsonDoenetId),(prev)=>{
+        let next = {...prev}
+        next.order = activityJson;
+        return next;
+      })
+      
+     }
+     for (let [i,pagesDoenetId] of Object.entries(pagesDoenetIds)){
+       //remove pages from author order
+      set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
+        let next = [...prev];
+        next.splice(next.indexOf(pagesDoenetId),1);
+        return next;
+      });
+     }
+
+     //Clear selections
+     let selectedDoenentIds = await snapshot.getPromise(selectedCourseItems);
+    for (let doenetId of selectedDoenentIds){
+      set(authorItemByDoenetId(doenetId),(prev)=>{
+        let next = {...prev}
+        next.isSelected = false;
+        return next
+      })
+    }
+    set(selectedCourseItems,[]);
+    set(selectedMenuPanelAtom,"");
+
+        successCallback?.();
+      } else {
+        throw new Error(`response code: ${resp.status}`);
+      }
+    } catch (err) {
+      failureCallback(err);
+    }
+
+      });
+
+  return { create, deleteItem, deleteCourse, modifyCourse, label, color, image, renameItem, compileActivity, updateOrderBehavior };
 };

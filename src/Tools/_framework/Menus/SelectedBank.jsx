@@ -19,7 +19,7 @@ export default function SelectedBank() {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const { renameItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
-  let { create } = useCourse(courseId);
+  let { create, deleteItem } = useCourse(courseId);
 
   useEffect(()=>{
     if (itemTextFieldLabel !== itemObj.label){
@@ -95,5 +95,17 @@ export default function SelectedBank() {
         value="Add Page"
       />
     </ButtonGroup>
+    <br />
+    <Button
+      width="menu"
+      value="Delete Collection"
+      alert
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      
+        deleteItem({doenetId});
+      }}
+    />
   </>
 }
