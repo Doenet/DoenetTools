@@ -1087,7 +1087,7 @@ export const useCourse = (courseId) => {
 
   function findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle=false}){
     let pageDoenetIds = [];
-  
+
       for (let item of orderObj.content){
         console.log("item",item)
         if (item?.type == 'order'){
@@ -1108,7 +1108,25 @@ export const useCourse = (courseId) => {
 
     return pageDoenetIds;
   }
+  
+  function findOrderDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle=false}){
+    let orderDoenetIds = [];
+  
+      for (let item of orderObj.content){
+        if (item?.type == 'order'){
+          let morePageDoenetIds;
+          if (foundNeedle || item.doenetId == needleOrderDoenetId){
+            orderDoenetIds.push(item.doenetId);
+            morePageDoenetIds = findOrderDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle:true})
+          }else{
+            morePageDoenetIds = findOrderDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle})
+          }
+          orderDoenetIds = [...orderDoenetIds,...morePageDoenetIds];
+        }
+      }
 
+    return orderDoenetIds;
+  }
   const updateOrderBehavior = useRecoilCallback(
     ({ set,snapshot }) =>
       async ({doenetId, behavior, numberToSelect, withReplacement, successCallback, failureCallback = defaultFailure}) => {
@@ -1136,6 +1154,7 @@ export const useCourse = (courseId) => {
         });
       });
 
+
   const deleteItem = useRecoilCallback(
     ({ set,snapshot }) =>
       async ({doenetId, successCallback, failureCallback = defaultFailure}) => {
@@ -1147,6 +1166,11 @@ export const useCourse = (courseId) => {
         let activitiesJsonDoenetIds = [];
         let collectionsJson = []; 
         let collectionsJsonDoenetIds = []; 
+        let baseCollectionsDoenetIds = [];
+        let baseActivitiesDoenetIds = [];
+        let baseSectionsDoenetIds = [];
+        let orderDoenetIds = []; //Only to update local recoil
+
         if (itemToDeleteObj.type == 'page'){
           let containingObj = await snapshot.getPromise(authorItemByDoenetId(itemToDeleteObj.containingDoenetId))
           if (containingObj.type == 'bank'){
@@ -1165,15 +1189,42 @@ export const useCourse = (courseId) => {
         }else if (itemToDeleteObj.type == 'order'){
           let containingObj = await snapshot.getPromise(authorItemByDoenetId(itemToDeleteObj.containingDoenetId))
           //Find doenentIds of pages contained by the order
-          let pagesDoenetIdsInOrder = findPageDoenetIdsInAnOrder({orderObj:containingObj.order,needleOrderDoenetId:doenetId})
-          pagesDoenetIds = [...pagesDoenetIds,...pagesDoenetIdsInOrder]
+          pagesDoenetIds = findPageDoenetIdsInAnOrder({orderObj:containingObj.order,needleOrderDoenetId:doenetId})
+          orderDoenetIds = findOrderDoenetIdsInAnOrder({orderObj:containingObj.order,needleOrderDoenetId:doenetId})
           //Find updated activities' default order
           let nextOrder = deleteOrderFromOrder({orderObj:containingObj.order,needleDoenetId:doenetId})
-          // console.log("nextOrder",nextOrder)
           activitiesJson.push(nextOrder);
           activitiesJsonDoenetIds.push(containingObj.doenetId);
+        }else if (itemToDeleteObj.type == 'bank'){
+          baseCollectionsDoenetIds.push(doenetId);
+          pagesDoenetIds = itemToDeleteObj.pages;
+        }else if (itemToDeleteObj.type == 'activity'){
+          let orderObj = itemToDeleteObj.order;
+          let needleOrderDoenetId = itemToDeleteObj.order.doenetId;
+          pagesDoenetIds = findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle:true})
+          orderDoenetIds = findOrderDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle:true})
+          orderDoenetIds = [needleOrderDoenetId,...orderDoenetIds];
+          baseActivitiesDoenetIds = [doenetId]
+        }else if (itemToDeleteObj.type == 'section'){
+          baseSectionsDoenetIds.push(itemToDeleteObj.doenetId);
+          let sectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:itemToDeleteObj.doenetId}))
+
+          for (let doenetId of sectionDoenetIds){
+            let itemObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+            if (itemObj.type == 'activity'){
+              baseActivitiesDoenetIds.push(itemObj.doenetId)
+            }else if (itemObj.type == 'order'){
+              orderDoenetIds.push(itemObj.doenetId)
+            }else if (itemObj.type == 'page'){
+              pagesDoenetIds.push(itemObj.doenetId)
+            }else if (itemObj.type == 'bank'){
+              baseCollectionsDoenetIds.push(itemObj.doenetId)
+            }else if (itemObj.type == 'section'){
+              baseSectionsDoenetIds.push(itemObj.doenetId)
+            }
+          }
+          console.log("delete section",{pagesDoenetIds,orderDoenetIds,baseCollectionsDoenetIds,baseActivitiesDoenetIds,baseSectionsDoenetIds})
         }
-        // console.log("pagesDoenetIds",pagesDoenetIds)
         //Delete off of server first
     try {
 
@@ -1184,7 +1235,10 @@ export const useCourse = (courseId) => {
           activitiesJson,
           activitiesJsonDoenetIds,
           collectionsJson,
-          collectionsJsonDoenetIds
+          collectionsJsonDoenetIds,
+          baseCollectionsDoenetIds,
+          baseActivitiesDoenetIds,
+          baseSectionsDoenetIds
         });
       if (resp.status < 300) {
         console.log("data",resp.data)
@@ -1209,14 +1263,29 @@ export const useCourse = (courseId) => {
       })
       
      }
-     for (let [i,pagesDoenetId] of Object.entries(pagesDoenetIds)){
-       //remove pages from author order
-      set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
-        let next = [...prev];
+
+     
+      //remove all items from author order
+     set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
+       let next = [...prev];
+       for (let pagesDoenetId of pagesDoenetIds){
         next.splice(next.indexOf(pagesDoenetId),1);
-        return next;
-      });
-     }
+       }
+       for (let orderDoenetId of orderDoenetIds){
+        next.splice(next.indexOf(orderDoenetId),1);
+       }
+       for (let baseCollectionsDoenetId of baseCollectionsDoenetIds){
+        next.splice(next.indexOf(baseCollectionsDoenetId),1);
+       }
+       for (let baseActivitiesDoenetId of baseActivitiesDoenetIds){
+        next.splice(next.indexOf(baseActivitiesDoenetId),1);
+       }
+       for (let baseSectionsDoenetId of baseSectionsDoenetIds){
+        next.splice(next.indexOf(baseSectionsDoenetId),1);
+       }
+       return next;
+     });
+    
 
      //Clear selections
      let selectedDoenentIds = await snapshot.getPromise(selectedCourseItems);

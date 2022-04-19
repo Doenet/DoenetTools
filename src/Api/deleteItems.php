@@ -39,7 +39,10 @@ if (!array_key_exists('courseId', $_POST)) {
 } elseif (!array_key_exists('collectionsJsonDoenetIds', $_POST)) {
     $success = false;
     $message = 'Missing collectionsJsonDoenetIds';
-} 
+} elseif (!array_key_exists('baseCollectionsDoenetIds', $_POST)) {
+    $success = false;
+    $message = 'Missing baseCollectionsDoenetIds';
+}
 
 //Test Permission to edit content
 if ($success){
@@ -58,6 +61,16 @@ if ($success){
     $collectionsJsonDoenetIds = array_map(function ($item) use ($conn) {
         return mysqli_real_escape_string($conn, $item);
     }, $_POST["collectionsJsonDoenetIds"]);
+    $baseCollectionsDoenetIds = array_map(function ($item) use ($conn) {
+        return mysqli_real_escape_string($conn, $item);
+    }, $_POST["baseCollectionsDoenetIds"]);
+    $baseActivitiesDoenetIds = array_map(function ($item) use ($conn) {
+        return mysqli_real_escape_string($conn, $item);
+    }, $_POST["baseActivitiesDoenetIds"]);
+    $baseSectionsDoenetIds = array_map(function ($item) use ($conn) {
+        return mysqli_real_escape_string($conn, $item);
+    }, $_POST["baseSectionsDoenetIds"]);
+
 
     $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
     if ($permissions["canEditContent"] != '1'){
@@ -67,6 +80,39 @@ if ($success){
 }
 
 if ($success) {
+    if (count($baseCollectionsDoenetIds) > 0){
+        $list_of_baseCollectionsDoenetIds = join("','",$baseCollectionsDoenetIds);
+        $list_of_baseCollectionsDoenetIds = "'" . $list_of_baseCollectionsDoenetIds . "'";
+        $sql = "
+        UPDATE course_content
+        SET isDeleted = '1'
+        WHERE doenetId IN ($list_of_baseCollectionsDoenetIds)
+        AND courseId='$courseId'
+        ";
+        $result = $conn->query($sql);
+    }
+    if (count($baseActivitiesDoenetIds) > 0){
+        $list_of_baseActivitiesDoenetIds = join("','",$baseActivitiesDoenetIds);
+        $list_of_baseActivitiesDoenetIds = "'" . $list_of_baseActivitiesDoenetIds . "'";
+        $sql = "
+        UPDATE course_content
+        SET isDeleted = '1'
+        WHERE doenetId IN ($list_of_baseActivitiesDoenetIds)
+        AND courseId='$courseId'
+        ";
+        $result = $conn->query($sql);
+    }
+    if (count($baseSectionsDoenetIds) > 0){
+        $list_of_baseSectionsDoenetIds = join("','",$baseSectionsDoenetIds);
+        $list_of_baseSectionsDoenetIds = "'" . $list_of_baseSectionsDoenetIds . "'";
+        $sql = "
+        UPDATE course_content
+        SET isDeleted = '1'
+        WHERE doenetId IN ($list_of_baseSectionsDoenetIds)
+        AND courseId='$courseId'
+        ";
+        $result = $conn->query($sql);
+    }
     
     //Mark pages deleted
     if (count($pagesDoenetIds) > 0){
