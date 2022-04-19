@@ -210,7 +210,7 @@ export default function MatrixInput(props) {
   let rowNumControls = null;
   if (SVs.showSizeControls) {
     rowNumControls =
-      <ActionButtonGroup>
+      <ActionButtonGroup style={{margin: "10px"}}>
       <ActionButton id={name + "_rowDecrement"} value="r-" onClick={() => callAction({
         action: actions.updateNumRows,
         args: { numRows: SVs.numRows - 1 }
@@ -247,6 +247,7 @@ export default function MatrixInput(props) {
 
   return <React.Fragment>
     <a name={name} />
+    <div>
     <Matrix className="matrixInputSurroundingBox" id={name}>
       <table><tbody>
         {matrixInputs}
@@ -255,6 +256,7 @@ export default function MatrixInput(props) {
     {rowNumControls}
     {colNumControls}
     {checkWorkButton}
+    </div>
   </React.Fragment>
 
 }
