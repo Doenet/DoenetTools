@@ -75,7 +75,7 @@ export default function SelectedPage() {
           value="View Page"
           onClick={() => {
             compileActivity({
-              activityDoenetId:doenetId,successCallback:()=>{
+              activityDoenetId:doenetId,courseId,successCallback:()=>{
                 addToast("Activity compiled!", toastType.INFO);
                 setPageToolView({
                   page: 'course',

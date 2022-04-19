@@ -32,7 +32,7 @@ export function parseActivityDefinition(activityDefDoenetML) {
 
     if (documentProps.itemweights) {
       if (typeof documentProps.itemweights !== "string") {
-        return { sucess: false, message: `Invalid activity definition: invalid itemWeights` };
+        return { success: false, message: `Invalid activity definition: invalid itemWeights` };
       }
       jsonDefinition.itemWeights = documentProps.itemweights
         .split(/\s+/)
@@ -97,7 +97,7 @@ export function parseActivityDefinition(activityDefDoenetML) {
         let result = validateOrder(child);
 
         if (!result.success) {
-          return { sucess: false, message: `Invalid activity definition: ${result.message}` };
+          return { success: false, message: `Invalid activity definition: ${result.message}` };
         }
 
         jsonDefinition.order = result.order;

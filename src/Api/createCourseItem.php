@@ -105,6 +105,22 @@ if ($success){
           "cid"=>"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
         );
         
+  
+        //Create blank file for page
+        $filename = "../media/bydoenetid/$pageDoenetId.doenet";
+        $dirname = dirname($filename);
+        if (!is_dir($dirname)) {
+            mkdir($dirname, 0755, true);
+        }
+
+        $newfile = fopen($filename, "w");
+        if ($newfile === false) {
+            $success = false;
+            $message = "Unable to open file!";
+        } else {
+            // don't write anything to file so that it is a blank file
+            fclose($newfile);
+        }
 
         /* If code reaches this point without errors then commit the data in the database */
         // $conn->commit();

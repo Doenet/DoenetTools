@@ -42,6 +42,23 @@ if ($success){
     ";
     $conn->query($sql);
     $pageThatWasCreated = getCourseItemFunction($conn,$itemType,$doenetId);
+
+    //Create blank file for page
+    $filename = "../media/bydoenetid/$doenetId.doenet";
+    $dirname = dirname($filename);
+    if (!is_dir($dirname)) {
+        mkdir($dirname, 0755, true);
+    }
+
+    $newfile = fopen($filename, "w");
+    if ($newfile === false) {
+        $success = false;
+        $message = "Unable to open file!";
+    } else {
+        // don't write anything to file so that it is a blank file
+        fclose($newfile);
+    }
+
   }else if ($itemType == 'order'){
     //TODO: make sure this is the same id as the one entered as order in the structure
     $orderDoenetIdThatWasCreated = $doenetId;
