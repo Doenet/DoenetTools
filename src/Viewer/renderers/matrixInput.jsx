@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import me from 'math-expressions';
+import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
+import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
@@ -18,7 +20,7 @@ const Matrix = styled.div`
     position: absolute;
     left: -6px;
     top: -6px;
-    border: 1px solid #000;
+    border: var(--mainBorder);
     border-right: 0px;
     width: 6px;
     height: 100%;
@@ -31,7 +33,7 @@ const Matrix = styled.div`
     position: absolute;
     right: -6px;
     top: -6px;
-    border: 1px solid #000;
+    border: var(--mainBorder);
     border-left: 0px;
     width: 6px;
     height: 100%;
@@ -207,37 +209,39 @@ export default function MatrixInput(props) {
 
   let rowNumControls = null;
   if (SVs.showSizeControls) {
-    rowNumControls = <span>
-      <button id={name + "_rowDecrement"} onClick={() => callAction({
+    rowNumControls =
+      <ActionButtonGroup>
+      <ActionButton id={name + "_rowDecrement"} value="r-" onClick={() => callAction({
         action: actions.updateNumRows,
         args: { numRows: SVs.numRows - 1 }
       })} disabled={SVs.numRows < 2}>
         r-
-      </button>
-      <button id={name + "_rowIncrement"} onClick={() => callAction({
+      </ActionButton>
+      <ActionButton id={name + "_rowIncrement"} value="r+" onClick={() => callAction({
         action: actions.updateNumRows,
         args: { numRows: SVs.numRows + 1 }
       })}>
         r+
-      </button>
-    </span>
+      </ActionButton>
+      </ActionButtonGroup>
   }
   let colNumControls = null;
   if (SVs.showSizeControls) {
-    colNumControls = <span>
-      <button id={name + "_columnDecrement"} onClick={() => callAction({
+    colNumControls =
+      <ActionButtonGroup>
+      <ActionButton id={name + "_columnDecrement"} value="c-" onClick={() => callAction({
         action: actions.updateNumColumns,
         args: { numColumns: SVs.numColumns - 1 }
       })} disabled={SVs.numColumns < 2}>
         c-
-      </button>
-      <button id={name + "_columnIncrement"} onClick={() => callAction({
+      </ActionButton>
+      <ActionButton id={name + "_columnIncrement"} value="c+" onClick={() => callAction({
         action: actions.updateNumColumns,
         args: { numColumns: SVs.numColumns + 1 }
       })}>
         c+
-      </button>
-    </span>
+      </ActionButton>
+      </ActionButtonGroup>
   }
 
 
