@@ -24,7 +24,7 @@ import axios from 'axios';
 // componentClass to string: componentClass.componentType
 
 export default class Core {
-  constructor({ doenetML, doenetId, pageId, attemptNumber, itemNumber,
+  constructor({ doenetML, doenetId, pageId, attemptNumber = 1, itemNumber = 1,
     serverSaveId,
     requestedVariant, requestedVariantIndex,
     flags = {},

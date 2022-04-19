@@ -1,6 +1,6 @@
 <?php
 
-$random_id = "";
+$random_id = "_";
 for ($iteration_num=1; $iteration_num<=21; $iteration_num++){
     $random_num = rand(1,62);
     switch($random_num) {

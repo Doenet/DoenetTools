@@ -56,10 +56,10 @@ export const itemHistoryAtom = atomFamily({
   })
 })
 
-export const fileByContentId = atomFamily({
-  key:"fileByContentId",
+export const fileByCid = atomFamily({
+  key:"fileByCid",
   default: selectorFamily({
-    key:"fileByContentId/Default",
+    key:"fileByCid/Default",
     get:(cid)=> async ()=>{
       if (!cid){
         return "";
@@ -68,6 +68,49 @@ export const fileByContentId = atomFamily({
       // if (local){ return local}
       try {
         const server = await axios.get(`/media/${cid}.doenet`); 
+        return server.data;
+      } catch (error) {
+        //TODO: Handle 404
+        // Error 😨
+        if (error.response) {
+          /*
+          * The request was made and the server responded with a
+          * status code that falls out of the range of 2xx
+          */
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+            /*
+            * The request was made but no response was received, `error.request`
+            * is an instance of XMLHttpRequest in the browser and an instance
+            * of http.ClientRequest in Node.js
+            */
+            console.log(error.request);
+        } else {
+            // Something happened in setting up the request and triggered an Error
+            console.log('Error', error.message);
+        }
+              return "Error Loading";
+        }
+    }
+  })
+  
+})
+
+
+export const fileByDoenetId = atomFamily({
+  key:"fileByDoenetId",
+  default: selectorFamily({
+    key:"fileByDoenetId/Default",
+    get:(doenetId)=> async ()=>{
+      if (!doenetId){
+        return "";
+      }
+      // const local = localStorage.getItem(doenetId);
+      // if (local){ return local}
+      try {
+        const server = await axios.get(`/media/bydoenetid/${doenetId}.doenet`); 
         return server.data;
       } catch (error) {
         //TODO: Handle 404

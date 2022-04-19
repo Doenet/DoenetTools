@@ -23,7 +23,6 @@ import {
   // variantInfoAtom,
   // variantPanelAtom,
 } from '../ToolHandlers/CourseToolHandler';
-//  import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
 import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants.js';
 import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';

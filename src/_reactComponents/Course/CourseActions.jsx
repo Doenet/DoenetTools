@@ -10,6 +10,7 @@ import {
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { useToast, toastType } from '../../Tools/_framework/Toast';
+import { fileByDoenetId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 
 export function useInitCourseItems(courseId) {
   const getDataAndSetRecoil = useRecoilCallback(
@@ -884,100 +885,112 @@ export const useCourse = (courseId) => {
 );
 
   const compileActivity = useRecoilCallback(
-  ({ set,snapshot }) =>
-  async ({activityDoenetId, successCallback, isAssigned=false, failureCallback = defaultFailure}) => {
+    ({ set, snapshot }) =>
+      async ({ activityDoenetId, successCallback, isAssigned = false, courseId, failureCallback = defaultFailure }) => {
 
-    async function orderToDoenetML({ order, indentLevel = 1 }) {
-      // TODO: list of possible order attributes
-      let attributes = ["behavior", "numberToSelect", "withReplacement"];
-    
-      let orderParameters = attributes.filter(x => x in order)
-        .map(x => `${x}="${order[x]}"`).join(" ");
-    
-      let contentStrings = (await Promise.all(order.content
-        .map( x => contentToDoenetML({ content: x, indentLevel: indentLevel + 1 }))))
-        .join("");
-    
-      let indentSpacing = "  ".repeat(indentLevel);
-    
-      return `${indentSpacing}<order ${orderParameters}>\n${contentStrings}${indentSpacing}</order>\n`;
-    }
-    
-    async function contentToDoenetML({ content, indentLevel = 1 }) {
-      if (content.type === "order") {
-        return await orderToDoenetML({ order: content, indentLevel });
-      } else if (typeof content === "string") {
-        return await pageToDoenetML({ pageDoenetId: content, indentLevel });
-      } else {
-        throw Error("Invalid activity definition: content must be an order or a doenetId specifying a page")
-      }
-    }
-    
-    async function pageToDoenetML({ pageDoenetId, indentLevel = 1 }) {
-      let indentSpacing = "  ".repeat(indentLevel);
-      
-      let pageCid = (await snapshot.getPromise(authorItemByDoenetId(pageDoenetId)))?.cid;
-    
-      if (!pageCid) {
-        throw Error(`Invalid page doenetId in order: ${pageDoenetId}`);
-      }
-    
-      return `${indentSpacing}<page cid="${pageCid}" />\n`;
-    }
+        async function orderToDoenetML({ order, indentLevel = 1 }) {
+          // TODO: list of possible order attributes
+          let attributes = ["behavior", "numberToSelect", "withReplacement"];
 
-    let activity = await snapshot.getPromise(authorItemByDoenetId(activityDoenetId));
+          let orderParameters = attributes.filter(x => x in order)
+            .map(x => `${x}="${order[x]}"`).join(" ");
 
-    let attributeString = ` xmlns="https://doenet.org/spec/doenetml/v${activity.version}" type="activity"`
+          let contentStrings = (await Promise.all(order.content
+            .map(x => contentToDoenetML({ content: x, indentLevel: indentLevel + 1 }))))
+            .join("");
 
-    if(activity.itemWeights) {
-      attributeString += ` itemWeights = "${activity.itemWeights.join(" ")}"`;
-    }
+          let indentSpacing = "  ".repeat(indentLevel);
 
-    if(activity.shuffleItemWeights) {
-      attributeString += ` shuffleItemWeights`;
-    }
+          return `${indentSpacing}<order ${orderParameters}>\n${contentStrings}${indentSpacing}</order>\n`;
+        }
 
-    if(activity.numberOfVariants !== undefined) {
-      attributeString += ` numberOfVariants="${activity.numberOfVariants}"`;
-    }
+        async function contentToDoenetML({ content, indentLevel = 1 }) {
+          if (content.type === "order") {
+            return await orderToDoenetML({ order: content, indentLevel });
+          } else if (typeof content === "string") {
+            return await pageToDoenetML({ pageDoenetId: content, indentLevel });
+          } else {
+            throw Error("Invalid activity definition: content must be an order or a doenetId specifying a page")
+          }
+        }
 
-    if(activity.isSinglePage) {
-      attributeString += ` isSinglePage`;
-    }
+        async function pageToDoenetML({ pageDoenetId, indentLevel = 1 }) {
+          let indentSpacing = "  ".repeat(indentLevel);
 
-    let childrenString;
-    try {
-      childrenString = await orderToDoenetML({ order: activity.order });
-    } catch (err) {
-      failureCallback(err);
-    }
-      
-    let activityDoenetML = `<document${attributeString}>\n${childrenString}</document>`
+          let pageDoenetML = (await snapshot.getPromise(fileByDoenetId(pageDoenetId)));
 
-    try {
-      let resp = await axios.post('/api/saveCompiledActivity.php', { courseId, doenetId:activityDoenetId, isAssigned, activityDoenetML });
-      if (resp.status < 300) {
-      let { success, message, cid } = resp.data;
+          let params = {
+            doenetML: pageDoenetML,
+            doenetId: pageDoenetId,
+            courseId,
+            saveAsCid: true,
+          }
 
-      let key = 'draftCid';
-      if (isAssigned){
-        key = 'assignedCid'
-      }
-      
-      //save the cid in assignedCid or draftCid
-      set(authorItemByDoenetId(activityDoenetId),(prev)=>{
-        let next = {...prev}
-        next[key] = cid;
-        return next;
-      })
-        successCallback?.();
-      } else {
-        throw new Error(`response code: ${resp.status}`);
-      }
-    } catch (err) {
-      failureCallback(err);
-    }
-  });
+          const { data } = await axios.post("/api/saveDoenetML.php", params)
+          if (!data.success) {
+            throw Error(data.message);
+          }
+
+          let pageCid = data.cid;
+
+          set(fileByCid(pageCid),pageDoenetML);
+
+          return `${indentSpacing}<page cid="${pageCid}" />\n`;
+        }
+
+        let activity = await snapshot.getPromise(authorItemByDoenetId(activityDoenetId));
+
+        let attributeString = ` xmlns="https://doenet.org/spec/doenetml/v${activity.version}" type="activity"`
+
+        if (activity.itemWeights) {
+          attributeString += ` itemWeights = "${activity.itemWeights.join(" ")}"`;
+        }
+
+        if (activity.shuffleItemWeights) {
+          attributeString += ` shuffleItemWeights`;
+        }
+
+        if (activity.numberOfVariants !== undefined) {
+          attributeString += ` numberOfVariants="${activity.numberOfVariants}"`;
+        }
+
+        if (activity.isSinglePage) {
+          attributeString += ` isSinglePage`;
+        }
+
+        let childrenString;
+        try {
+          childrenString = await orderToDoenetML({ order: activity.order });
+        } catch (err) {
+          failureCallback(err);
+        }
+
+        let activityDoenetML = `<document${attributeString}>\n${childrenString}</document>`
+
+        try {
+          let resp = await axios.post('/api/saveCompiledActivity.php', { courseId, doenetId: activityDoenetId, isAssigned, activityDoenetML });
+          if (resp.status < 300) {
+            let { success, message, cid } = resp.data;
+
+            let key = 'draftCid';
+            if (isAssigned) {
+              key = 'assignedCid'
+            }
+
+            //save the cid in assignedCid or draftCid
+            set(authorItemByDoenetId(activityDoenetId), (prev) => {
+              let next = { ...prev }
+              next[key] = cid;
+              return next;
+            })
+            successCallback?.();
+          } else {
+            throw new Error(`response code: ${resp.status}`);
+          }
+        } catch (err) {
+          failureCallback(err);
+        }
+      });
 
   function updateOrder({orderObj,needleDoenetId,changesObj}){
     let nextOrderObj = {...orderObj};

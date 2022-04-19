@@ -9,13 +9,11 @@ import {
 } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { 
-  itemHistoryAtom, 
-  fileByContentId, 
+  fileByDoenetId, 
   variantInfoAtom, 
   variantPanelAtom,
  } from '../ToolHandlers/CourseToolHandler';
 import { authorItemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
-//  import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
 
 export const viewerDoenetMLAtom = atom({
   key:"viewerDoenetMLAtom",
@@ -55,7 +53,7 @@ export default function EditorViewer(){
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
-  const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
+  const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
   const setVariantPanel = useSetRecoilState(variantPanelAtom);
   const setEditorInit = useSetRecoilState(editorDoenetIdInitAtom);
@@ -72,10 +70,7 @@ export default function EditorViewer(){
 
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    console.log("INIT!")
-    let pageObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-    let response = await snapshot.getPromise(fileByContentId(pageObj.draftCid));
-    console.log("response",response)
+    let response = await snapshot.getPromise(fileByDoenetId(doenetId));
     // if (typeof response === "object"){
     //   response = response.data;
     // }
@@ -97,7 +92,7 @@ export default function EditorViewer(){
     }
   }, [paramDoenetId,pageInitiated]);
 
-  if (paramDoenetId !== initilizedDoenetId){
+  if (paramDoenetId !== initializedDoenetId){
     //DoenetML is changing to another DoenetID
     return null;
   }
