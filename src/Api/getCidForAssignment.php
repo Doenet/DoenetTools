@@ -25,6 +25,7 @@ $latestAttemptOverrides = mysqli_real_escape_string(
     $conn,
     $_REQUEST["latestAttemptOverrides"]
 );
+$getDraft = mysqli_real_escape_string($conn, $_REQUEST["getDraft"]);
 
 if ($doenetId == "") {
     $success = false;
@@ -75,15 +76,17 @@ if ($success) {
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        if (
+        if ($getDraft === "true") {
+            $json = json_decode($row["json"], true);
+            $cid = $json["draftCid"];
+        } elseif (
             $isDoenetIdOverridden ||
             ($row["isAssigned"] && $row["isGloballyAssigned"])
         ) {
-            $json = json_decode($row['json'],true);
+            $json = json_decode($row["json"], true);
             $cid = $json["assignedCid"];
         }
     }
-
 
     if ($latestAttemptOverrides == "true") {
         // the cid from the latest attempt overrides the instructor-provided cid

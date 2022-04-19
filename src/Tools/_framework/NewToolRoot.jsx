@@ -119,6 +119,7 @@ export default function ToolRoot() {
     GradebookAttempt: lazy(() => import('./ToolPanels/GradebookAttempt')),
     EditorViewer: lazy(() => import('./ToolPanels/EditorViewer')),
     AssignmentViewer: lazy(() => import('./ToolPanels/AssignmentViewer')),
+    DraftAssignmentViewer: lazy(() => import('./ToolPanels/DraftAssignmentViewer')),
     SurveyListViewer: lazy(() => import('./ToolPanels/SurveyListViewer')),
     SurveyDataViewer: lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor: lazy(() => import('./ToolPanels/DoenetMLEditor')),
@@ -400,7 +401,7 @@ let navigationObj = {
     draftactivity: {
       pageName: 'DraftActivity',
       menuPanelCap: 'AssignmentInfoCap',
-      currentMainPanel: 'AssignmentViewer',
+      currentMainPanel: 'DraftAssignmentViewer',
       currentMenus: [], //Variant control
       menusTitles: [],
       menusInitOpen: [],
