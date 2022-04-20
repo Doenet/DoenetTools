@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 include "lexicographicalRankingSort.php";
+include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -14,15 +15,46 @@ $userId = $jwtArray['userId'];
 $success = TRUE;
 $message = "";
 
-$previousContainingDoenetId = mysqli_real_escape_string($conn,$_REQUEST["previousContainingDoenetId"]);
-$itemType = mysqli_real_escape_string($conn,$_REQUEST["itemType"]);
-$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
-$placeInFolderFlag = mysqli_real_escape_string($conn,$_REQUEST["placeInFolderFlag"]);
+$_POST = json_decode(file_get_contents('php://input'), true);
+
+if (!array_key_exists('courseId', $_POST)) {
+    $success = false;
+    $message = 'Missing courseId';
+} elseif (!array_key_exists('previousContainingDoenetId', $_POST)) {
+    $success = false;
+    $message = 'Missing previousContainingDoenetId';
+} elseif (!array_key_exists('itemType', $_POST)) {
+    $success = false;
+    $message = 'Missing itemType';
+} elseif (!array_key_exists('placeInFolderFlag', $_POST)) {
+    $success = false;
+    $message = 'Missing placeInFolderFlag';
+} 
 
 if ($userId == ''){
   $success = FALSE;
-  $message = "You need to be signed in to make a course";
+  $message = "You need to be signed in to make changes to a course";
 }
+
+//Test Permission to edit content
+if ($success){
+  $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
+  $itemType = $_POST["itemType"];
+  $previousContainingDoenetId = $_POST["previousContainingDoenetId"];
+  $placeInFolderFlag = $_POST["placeInFolderFlag"];
+
+  // $previousContainingDoenetIds = array_map(function ($item) use ($conn) {
+  //     return mysqli_real_escape_string($conn, $item);
+  // }, $_POST["previousContainingDoenetIds"]);
+
+  $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
+  if ($permissions["canEditContent"] != '1'){
+    $success = FALSE;
+    $message = "You need permission to edit content.";
+  }
+}
+
+
 
 if ($success){
   $doenetId = include "randomId.php";

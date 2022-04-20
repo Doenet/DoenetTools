@@ -501,13 +501,11 @@ export const useCourse = (courseId) => {
         //Get selection information to know previous doenetId by order
         if (itemType == 'activity') {
 
-          let { data } = await axios.get('/api/createCourseItem.php', {
-            params: {
+          let { data } = await axios.post('/api/createCourseItem.php', {
               previousContainingDoenetId,
               courseId,
               itemType,
               placeInFolderFlag,
-            },
           });
           // console.log('activityData', data);
           let createdActivityDoenentId = data.doenetId;
@@ -551,13 +549,11 @@ export const useCourse = (courseId) => {
           }
           set(authorCourseItemOrderByCourseId(courseId), newAuthorItemDoenetIds);
         } else if (itemType == 'bank') {
-          let { data } = await axios.get('/api/createCourseItem.php', {
-            params: {
+          let { data } = await axios.post('/api/createCourseItem.php', {
               previousContainingDoenetId,
               courseId,
               itemType,
               placeInFolderFlag,
-            },
           });
           // console.log('bankData', data);
           newDoenetId = data.doenetId;
@@ -573,13 +569,11 @@ export const useCourse = (courseId) => {
           }
           set(authorCourseItemOrderByCourseId(courseId), newAuthorItemDoenetIds);
         } else if (itemType == 'section') {
-          let { data } = await axios.get('/api/createCourseItem.php', {
-            params: {
+          let { data } = await axios.post('/api/createCourseItem.php', {
               previousContainingDoenetId,
               courseId,
               itemType,
-              placeInFolderFlag,
-            },
+              placeInFolderFlag
           });
           // console.log("sectionData",data)
           newDoenetId = data.doenetId;
