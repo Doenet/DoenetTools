@@ -284,155 +284,155 @@ export const useCourse = (courseId) => {
   );
   const addToast = useToast();
 
+  function addPageOrOrderToOrder({
+    parentOrderObj,
+    needleOrderDoenetId,
+    itemType,
+    newPageDonenetId,
+    orderObj
+  }){
+    let newOrderObj = {...parentOrderObj};
+    let insertedAfterDoenetId = parentOrderObj.doenetId;
+    //Only if the top order matches
+    if (parentOrderObj.doenetId == needleOrderDoenetId){
+      insertedAfterDoenetId = newOrderObj.content[newOrderObj.content.length - 1];
+      if (insertedAfterDoenetId?.type == 'order'){
+        insertedAfterDoenetId = insertedAfterDoenetId.doenetId;
+      }
+      //Add to the newOrderObj
+      if (itemType == 'page'){
+        newOrderObj.content = [...parentOrderObj.content,newPageDonenetId]
+      }else if (itemType == 'order'){
+        newOrderObj.content = [...parentOrderObj.content,{...orderObj}]
+      }
+      return {newOrderObj,insertedAfterDoenetId};
+    }
+    //Recurse to find the matching order
+    for (let [i,item] of Object.entries(parentOrderObj.content)){
+      if (item?.doenetId == needleOrderDoenetId){
+        let newItem = {...item};
+        insertedAfterDoenetId = newItem.doenetId;
+        if (newItem.content.length > 0){
+          insertedAfterDoenetId = newItem.content[newItem.content.length -1];
+        }
+        if (itemType == 'page'){
+          newItem.content = [...newItem.content,newPageDonenetId]
+        }else if (itemType == 'order'){
+          newItem.content = [...newItem.content,{...orderObj}]
+        }
+        newOrderObj.content = [...newOrderObj.content];
+        newOrderObj.content.splice(i,1,newItem)
+        
+        return {newOrderObj,insertedAfterDoenetId};
+      }
+      if (item?.type == 'order'){
+        let {newOrderObj:subOrder,insertedAfterDoenetId} = addPageOrOrderToOrder({
+          parentOrderObj:item,
+          needleOrderDoenetId,
+          itemType,
+          newPageDonenetId,
+          orderObj
+        });
+        if (subOrder != null){
+          //Attach subOrder to newOrderObj 
+          newOrderObj.content = [...newOrderObj.content]
+          newOrderObj.content.splice(i,1,subOrder)
+          return {newOrderObj,insertedAfterDoenetId};
+        }
+      }
+
+    }
+    //Only ever get here when we didn't find the order
+      return {newOrderObj:null,insertedAfterDoenetId:null};
+  }
+
+     //Recursive Function 
+  function findOrderAndPageDoenetIds(orderObj,assignmentDoenetId,parentDoenetId){
+    let orderAndPagesDoenetIds = [];
+    //Guard for when there is no order
+    if (orderObj){
+
+      let numberToSelect = orderObj.numberToSelect;
+        if (numberToSelect == undefined){
+          numberToSelect = 1;
+        }
+        let withReplacement = orderObj.withReplacement;
+        if (withReplacement == undefined){
+          withReplacement = false;
+        }
+      //Store order objects for UI
+      set(authorItemByDoenetId(orderObj.doenetId), {
+        type: "order",
+        doenetId: orderObj.doenetId, 
+        behavior:orderObj.behavior,
+        numberToSelect,
+        withReplacement,
+        containingDoenetId:assignmentDoenetId,
+        isOpen:false,
+        isSelected:false,
+        parentDoenetId
+      });
+      orderAndPagesDoenetIds.push(orderObj.doenetId);
+      for (let orderItem of orderObj.content){
+        if (orderItem?.type == 'order'){
+          let moreOrderDoenetIds = findOrderAndPageDoenetIds(orderItem,assignmentDoenetId,orderObj.doenetId);
+          orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
+        }else{
+          //Page 
+          pageDoenetIdToParentDoenetId[orderItem] = orderObj.doenetId;
+          orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,orderItem];
+        }
+      }
+    }
+    return orderAndPagesDoenetIds;
+  }
+
+  function addPageOrOrderToOrderUsingPage({
+    parentOrderObj,
+    needlePageDoenetId,
+    itemType,
+    newPageDonenetId,
+    orderObj
+  }){
+    let newOrderObj = {...parentOrderObj};
+  
+    for (let [i,item] of Object.entries(parentOrderObj.content)){
+      if (item == needlePageDoenetId){
+        //Found page! so add new page or order right after it
+        let newContent = [...parentOrderObj.content];
+        if (itemType == 'page'){
+          newContent.splice(i+1,0,newPageDonenetId)
+        }else if (itemType == 'order'){
+          newContent.splice(i+1,0,{...orderObj})
+        }
+        newOrderObj.content = newContent;
+        return newOrderObj;
+      }
+      if (item?.type == 'order'){
+        //Recurse into the order every time we see one
+        let subOrder = addPageOrOrderToOrderUsingPage({
+          parentOrderObj:item,
+          needlePageDoenetId,
+          itemType,
+          newPageDonenetId,
+          orderObj
+        });
+        if (subOrder != null){
+          //Attach subOrder to newOrderObj 
+          newOrderObj.content = [...newOrderObj.content]
+          newOrderObj.content.splice(i,1,subOrder)
+          return newOrderObj;
+        }
+      }
+
+    }
+    //Only ever get here when we didn't find the page in this order
+    return null;
+  }
+
   const create = useRecoilCallback(
     ({ set, snapshot }) =>
       async ({ itemType, placeInFolderFlag, previousDoenetId }) => {
-
-      function addPageOrOrderToOrder({
-        parentOrderObj,
-        needleOrderDoenetId,
-        itemType,
-        newPageDonenetId,
-        orderObj
-      }){
-        let newOrderObj = {...parentOrderObj};
-        let insertedAfterDoenetId = parentOrderObj.doenetId;
-        //Only if the top order matches
-        if (parentOrderObj.doenetId == needleOrderDoenetId){
-          insertedAfterDoenetId = newOrderObj.content[newOrderObj.content.length - 1];
-          if (insertedAfterDoenetId?.type == 'order'){
-            insertedAfterDoenetId = insertedAfterDoenetId.doenetId;
-          }
-          //Add to the newOrderObj
-          if (itemType == 'page'){
-            newOrderObj.content = [...parentOrderObj.content,newPageDonenetId]
-          }else if (itemType == 'order'){
-            newOrderObj.content = [...parentOrderObj.content,{...orderObj}]
-          }
-          return {newOrderObj,insertedAfterDoenetId};
-        }
-        //Recurse to find the matching order
-        for (let [i,item] of Object.entries(parentOrderObj.content)){
-          if (item?.doenetId == needleOrderDoenetId){
-            let newItem = {...item};
-            insertedAfterDoenetId = newItem.doenetId;
-            if (newItem.content.length > 0){
-              insertedAfterDoenetId = newItem.content[newItem.content.length -1];
-            }
-            if (itemType == 'page'){
-              newItem.content = [...newItem.content,newPageDonenetId]
-            }else if (itemType == 'order'){
-              newItem.content = [...newItem.content,{...orderObj}]
-            }
-            newOrderObj.content = [...newOrderObj.content];
-            newOrderObj.content.splice(i,1,newItem)
-            
-            return {newOrderObj,insertedAfterDoenetId};
-          }
-          if (item?.type == 'order'){
-            let {newOrderObj:subOrder,insertedAfterDoenetId} = addPageOrOrderToOrder({
-              parentOrderObj:item,
-              needleOrderDoenetId,
-              itemType,
-              newPageDonenetId,
-              orderObj
-            });
-            if (subOrder != null){
-              //Attach subOrder to newOrderObj 
-              newOrderObj.content = [...newOrderObj.content]
-              newOrderObj.content.splice(i,1,subOrder)
-              return {newOrderObj,insertedAfterDoenetId};
-            }
-          }
-  
-        }
-        //Only ever get here when we didn't find the order
-          return {newOrderObj:null,insertedAfterDoenetId:null};
-      }
-
-         //Recursive Function 
-      function findOrderAndPageDoenetIds(orderObj,assignmentDoenetId,parentDoenetId){
-        let orderAndPagesDoenetIds = [];
-        //Guard for when there is no order
-        if (orderObj){
-
-          let numberToSelect = orderObj.numberToSelect;
-            if (numberToSelect == undefined){
-              numberToSelect = 1;
-            }
-            let withReplacement = orderObj.withReplacement;
-            if (withReplacement == undefined){
-              withReplacement = false;
-            }
-          //Store order objects for UI
-          set(authorItemByDoenetId(orderObj.doenetId), {
-            type: "order",
-            doenetId: orderObj.doenetId, 
-            behavior:orderObj.behavior,
-            numberToSelect,
-            withReplacement,
-            containingDoenetId:assignmentDoenetId,
-            isOpen:false,
-            isSelected:false,
-            parentDoenetId
-          });
-          orderAndPagesDoenetIds.push(orderObj.doenetId);
-          for (let orderItem of orderObj.content){
-            if (orderItem?.type == 'order'){
-              let moreOrderDoenetIds = findOrderAndPageDoenetIds(orderItem,assignmentDoenetId,orderObj.doenetId);
-              orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
-            }else{
-              //Page 
-              pageDoenetIdToParentDoenetId[orderItem] = orderObj.doenetId;
-              orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,orderItem];
-            }
-          }
-        }
-        return orderAndPagesDoenetIds;
-      }
-
-      function addPageOrOrderToOrderUsingPage({
-        parentOrderObj,
-        needlePageDoenetId,
-        itemType,
-        newPageDonenetId,
-        orderObj
-      }){
-        let newOrderObj = {...parentOrderObj};
-      
-        for (let [i,item] of Object.entries(parentOrderObj.content)){
-          if (item == needlePageDoenetId){
-            //Found page! so add new page or order right after it
-            let newContent = [...parentOrderObj.content];
-            if (itemType == 'page'){
-              newContent.splice(i+1,0,newPageDonenetId)
-            }else if (itemType == 'order'){
-              newContent.splice(i+1,0,{...orderObj})
-            }
-            newOrderObj.content = newContent;
-            return newOrderObj;
-          }
-          if (item?.type == 'order'){
-            //Recurse into the order every time we see one
-            let subOrder = addPageOrOrderToOrderUsingPage({
-              parentOrderObj:item,
-              needlePageDoenetId,
-              itemType,
-              newPageDonenetId,
-              orderObj
-            });
-            if (subOrder != null){
-              //Attach subOrder to newOrderObj 
-              newOrderObj.content = [...newOrderObj.content]
-              newOrderObj.content.splice(i,1,subOrder)
-              return newOrderObj;
-            }
-          }
-  
-        }
-        //Only ever get here when we didn't find the page in this order
-        return null;
-      }
 
         let authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
         let newAuthorItemDoenetIds = [...authorItemDoenetIds];
@@ -467,19 +467,21 @@ export const useCourse = (courseId) => {
           // console.log("authorItemSectionDoenetIds",authorItemSectionDoenetIds)
           let lastItemDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
 
+          //Place at the end unless there are no items, then place after the parent
           if (lastItemDoenetId == undefined){
             //No items in this section
             previousDoenetId = sectionId;
             placeInFolderFlag = true;
           }else{
-            //Find containing item doenetId 
-          let lastItemObj = await snapshot.getPromise(authorItemByDoenetId(lastItemDoenetId));
-          // console.log("lastItemObj",lastItemObj)
-          if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
-            previousDoenetId = lastItemObj.containingDoenetId;
-          }else{
-            previousDoenetId = lastItemDoenetId;
-          }
+            previousDoenetId = lastItemDoenetId; 
+          //   //Find containing item doenetId 
+          // let lastItemObj = await snapshot.getPromise(authorItemByDoenetId(lastItemDoenetId));
+          // // console.log("lastItemObj",lastItemObj)
+          // if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
+          //   previousDoenetId = lastItemObj.containingDoenetId;
+          // }else{
+          //   previousDoenetId = lastItemDoenetId;
+          // }
 
           }
         }
@@ -881,8 +883,15 @@ export const useCourse = (courseId) => {
         if (itemObj.type !== 'page'){
           updatedItem.isOpen = itemObj.isOpen;
         }
-        updatedItem.isSelected = itemObj.isSelected;
-        set(authorItemByDoenetId(doenetId),updatedItem);
+        set(authorItemByDoenetId(doenetId),(prev)=>{
+          let next = {...prev}
+          next.label = updatedItem.label;
+          return next
+        });
+        
+        // updatedItem.isSelected = itemObj.isSelected;
+        // set(authorItemByDoenetId(doenetId),updatedItem);
+
         successCallback?.();
       } else {
         throw new Error(`response code: ${resp.status}`);
