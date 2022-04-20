@@ -66,12 +66,34 @@ if ($doenetId == "") {
     }
 }
 
-// TODO: check if cid of assignment has changed,
-// if so, include {cidChanged: true} in response
-// in order to alert the user
-
 $stateOverwritten = false;
 $savedState = false;
+$cidChanged = false;
+
+if ($success) {
+    // check if cid of assignment has changed,
+    // if so, include {cidChanged: true} in response
+    // in order to alert the user
+
+    $sql = "SELECT JSONdefinition->>'$.assignedCid' as assignedCid
+        FROM course_content
+        WHERE doenetId = '$doenetId'
+        ";
+
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $newCid = $row["assignedCid"];
+
+        if ($newCid != $cid) {
+            $cidChanged = true;
+        }
+    } else {
+        // something strange happened
+        $success = false;
+        $message = "Database error 1";
+    }
+}
 
 if ($success) {
     if ($serverSaveId != "") {
@@ -98,8 +120,8 @@ if ($success) {
         // or the saveId was changed by another device
 
         // as long as we aren't updating data on content change
-        // first check if there is a new attept number
-        // (as could be no row at the current attempt number even if we passed it to a new attempt number)
+        // first check if there is a new attempt number
+        // (as could be no row at the current attempt number even if we passed it a new attempt number)
         if ($updateDataOnContentChange != "1") {
             // get new attempt number from user_assignment_attempt
             // since that gets updated as soon as a new attempt is created
@@ -117,12 +139,12 @@ if ($success) {
             } else {
                 // something strange happened
                 $success = false;
-                $message = "Database error 1";
+                $message = "Database error 2";
             }
 
             if ($newAttemptNumber !== $attemptNumber) {
                 $stateOverwritten = true;
-                
+
                 // Note: don't need any more information if attempt number changes
                 // as will reset activity
             }
@@ -181,14 +203,13 @@ if ($success) {
                             if (!($conn->affected_rows > 0)) {
                                 // something went wrong
                                 $success = false;
-                                $message = "Database error 2";
+                                $message = "Database error 3";
                             }
                         }
                     }
                 }
 
                 if (!$modifiedDBRecord) {
-
                     // need additional information since keeping same attempt number
 
                     $stateOverwritten = true;
@@ -215,7 +236,7 @@ if ($success) {
                     } else {
                         // something strange happened (another process changed the database in between queries?)
                         $success = false;
-                        $message = "Database error 3";
+                        $message = "Database error 4";
                     }
                 }
             }
@@ -234,6 +255,7 @@ $response_arr = [
     "activityState" => $newActivityState,
     "device" => $newDevice,
     "message" => $message,
+    "cidChanged" => $cidChanged,
 ];
 
 http_response_code(200);
