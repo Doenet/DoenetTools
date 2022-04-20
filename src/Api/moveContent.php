@@ -46,98 +46,34 @@ if ($success){
     $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
     if ($permissions["canEditContent"] != '1'){
       $success = FALSE;
-      $message = "You need edit permission to add a page or order.";
+      $message = "You need permission to edit content.";
     }
 }
 
 if ($success) {
-    echo "\ncourseId\n";
-    var_dump($courseId);
-    echo "\ncourseContentTableDoenetIds\n";
-    var_dump($courseContentTableDoenetIds);
-    echo "\ncourseContentTableNewParentDoenetId\n";
-    var_dump($courseContentTableNewParentDoenetId);
-    echo "\npreviousContainingDoenetIds\n";
-    var_dump($previousContainingDoenetIds);
+    // echo "\ncourseId\n";
+    // var_dump($courseId);
+    // echo "\ncourseContentTableDoenetIds\n";
+    // var_dump($courseContentTableDoenetIds);
+    // echo "\ncourseContentTableNewParentDoenetId\n";
+    // var_dump($courseContentTableNewParentDoenetId);
+    // echo "\npreviousContainingDoenetIds\n";
+    // var_dump($previousContainingDoenetIds);
 
-    // if (count($baseCollectionsDoenetIds) > 0){
-    //     $list_of_baseCollectionsDoenetIds = join("','",$baseCollectionsDoenetIds);
-    //     $list_of_baseCollectionsDoenetIds = "'" . $list_of_baseCollectionsDoenetIds . "'";
-    //     $sql = "
-    //     UPDATE course_content
-    //     SET isDeleted = '1'
-    //     WHERE doenetId IN ($list_of_baseCollectionsDoenetIds)
-    //     AND courseId='$courseId'
-    //     ";
-    //     $result = $conn->query($sql);
-    // }
-    // if (count($baseActivitiesDoenetIds) > 0){
-    //     $list_of_baseActivitiesDoenetIds = join("','",$baseActivitiesDoenetIds);
-    //     $list_of_baseActivitiesDoenetIds = "'" . $list_of_baseActivitiesDoenetIds . "'";
-    //     $sql = "
-    //     UPDATE course_content
-    //     SET isDeleted = '1'
-    //     WHERE doenetId IN ($list_of_baseActivitiesDoenetIds)
-    //     AND courseId='$courseId'
-    //     ";
-    //     $result = $conn->query($sql);
-    // }
-    // if (count($baseSectionsDoenetIds) > 0){
-    //     $list_of_baseSectionsDoenetIds = join("','",$baseSectionsDoenetIds);
-    //     $list_of_baseSectionsDoenetIds = "'" . $list_of_baseSectionsDoenetIds . "'";
-    //     $sql = "
-    //     UPDATE course_content
-    //     SET isDeleted = '1'
-    //     WHERE doenetId IN ($list_of_baseSectionsDoenetIds)
-    //     AND courseId='$courseId'
-    //     ";
-    //     $result = $conn->query($sql);
-    // }
-    
-    // //Mark pages deleted
-    // if (count($pagesDoenetIds) > 0){
-    //     $list_of_pagesDoenetIds = join("','",$pagesDoenetIds);
-    //     $list_of_pagesDoenetIds = "'" . $list_of_pagesDoenetIds . "'";
-    //     $sql = "
-    //     UPDATE pages
-    //     SET isDeleted = '1'
-    //     WHERE doenetId IN ($list_of_pagesDoenetIds)
-    //     AND courseId='$courseId'
-    //     ";
-    //     $result = $conn->query($sql);
-    // }
-
-    // if (count($collectionsJsonDoenetIds) > 0){
-    //     for($i = 0; $i < count($collectionsJsonDoenetIds); $i++){
-    //         $collectionsJsonDoenetId = $collectionsJsonDoenetIds[$i];
-    //         $collectionJson = $collectionsJson[$i];
-    //         $json = json_encode($collectionJson);
-    //         $sql = "
-    //         UPDATE course_content
-    //         SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.pages',JSON_MERGE('[]','$json'))
-    //         WHERE doenetId='$collectionsJsonDoenetId'
-    //         AND courseId='$courseId'
-    //         ";
-    //         $result = $conn->query($sql);
-    //     }
-    // }
-
-    // if (count($activitiesJsonDoenetIds) > 0){
-    //     for($i = 0; $i < count($activitiesJsonDoenetIds); $i++){
-    //         $activitiesJsonDoenetId = $activitiesJsonDoenetIds[$i];
-    //         $activitiesJson = $activitiesJson[$i];
-    //         $json = json_encode($activitiesJson);
-    //         $sql = "
-    //         UPDATE course_content
-    //         SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$json'))
-    //         WHERE doenetId='$activitiesJsonDoenetId'
-    //         AND courseId='$courseId'
-    //         ";
-    //         $result = $conn->query($sql);
-    //     }
-    // }
-
-
+    if (count($courseContentTableDoenetIds) > 0){
+       foreach($courseContentTableDoenetIds as $doenetId ){
+           //TODO: Determine new sortOrder position
+           $sortOrder = 'o';
+           $sql = "
+           UPDATE course_content
+           SET parentDoenetId = '$courseContentTableNewParentDoenetId',
+           sortOrder = '$sortOrder'
+           WHERE doenetId = '$doenetId'
+           AND courseId='$courseId'
+           ";
+           $result = $conn->query($sql);
+       }
+    }
 }
 
 
