@@ -812,7 +812,7 @@ export default function PageViewer(props) {
   }
 
   // attemptNumber is used for requestedVariantIndex if not specified
-  let adjustedRequestedVariantIndex = props.requestedVariant?.index;
+  let adjustedRequestedVariantIndex = props.requestedVariantIndex;
   if (adjustedRequestedVariantIndex === undefined) {
     adjustedRequestedVariantIndex = propAttemptNumber;
   }

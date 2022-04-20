@@ -18,11 +18,6 @@ import {
   suppressMenusAtom,
   profileAtom,
 } from '../NewToolRoot';
-import {
-  itemHistoryAtom,
-  // variantInfoAtom,
-  // variantPanelAtom,
-} from '../ToolHandlers/CourseToolHandler';
 import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants.js';
 import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';

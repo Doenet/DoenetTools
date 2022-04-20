@@ -1,98 +1,98 @@
 import React, { useEffect, useRef } from 'react';
 import PageViewer from '../../../Viewer/PageViewer';
-import { 
-  useRecoilValue, 
+import {
+  useRecoilValue,
   atom,
   useRecoilCallback,
   useRecoilState,
   useSetRecoilState,
 } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { 
-  fileByDoenetId, 
-  variantInfoAtom, 
-  variantPanelAtom,
- } from '../ToolHandlers/CourseToolHandler';
+import {
+  fileByDoenetId,
+  pageVariantInfoAtom,
+  pageVariantPanelAtom,
+} from '../ToolHandlers/CourseToolHandler';
 import { authorItemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
 
 export const viewerDoenetMLAtom = atom({
-  key:"viewerDoenetMLAtom",
-  default:""
+  key: "viewerDoenetMLAtom",
+  default: ""
 })
 
 export const textEditorDoenetMLAtom = atom({
-  key:"textEditorDoenetMLAtom",
-  default:""
+  key: "textEditorDoenetMLAtom",
+  default: ""
 })
 
 export const updateTextEditorDoenetMLAtom = atom({
-  key:"updateTextEditorDoenetMLAtom",
-  default:""
+  key: "updateTextEditorDoenetMLAtom",
+  default: ""
 })
 
 //Boolean initialized editor tool start up
 export const editorDoenetIdInitAtom = atom({
-  key:"editorDoenetIdInitAtom",
-  default:""
+  key: "editorDoenetIdInitAtom",
+  default: ""
 })
 
 export const refreshNumberAtom = atom({
-  key:"refreshNumberAtom",
-  default:0
+  key: "refreshNumberAtom",
+  default: 0
 })
 
 export const editorViewerErrorStateAtom = atom({
-  key:"editorViewerErrorStateAtom",
-  default:false
+  key: "editorViewerErrorStateAtom",
+  default: false
 })
 
-export default function EditorViewer(){
+export default function EditorViewer() {
   // let refreshCount = useRef(1);
   // console.log(">>>>===EditorViewer",refreshCount.current)
   // refreshCount.current++;
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
-  const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
+  const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
   const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
-  const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
-  const setVariantPanel = useSetRecoilState(variantPanelAtom);
+  const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
+  const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const setEditorInit = useSetRecoilState(editorDoenetIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
   const pageObj = useRecoilValue(authorItemByDoenetId(paramDoenetId))
 
   useInitCourseItems(courseId);
-    
+
   let pageInitiated = false;
-  if (Object.keys(pageObj).length > 0){
+  if (Object.keys(pageObj).length > 0) {
     pageInitiated = true;
   }
 
 
-  let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
+  let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (doenetId) => {
     let response = await snapshot.getPromise(fileByDoenetId(doenetId));
     // if (typeof response === "object"){
     //   response = response.data;
     // }
     const doenetML = response;
 
-    set(updateTextEditorDoenetMLAtom,doenetML);
-    set(textEditorDoenetMLAtom,doenetML)
-    set(viewerDoenetMLAtom,doenetML)
-    set(editorDoenetIdInitAtom,doenetId);
-  },[])
+    set(updateTextEditorDoenetMLAtom, doenetML);
+    set(textEditorDoenetMLAtom, doenetML)
+    set(viewerDoenetMLAtom, doenetML)
+    set(editorDoenetIdInitAtom, doenetId);
+  }, [])
 
 
   useEffect(() => {
-      if (paramDoenetId !== '' && pageInitiated){
-        initDoenetML(paramDoenetId)
-      }
+    if (paramDoenetId !== '' && pageInitiated) {
+      initDoenetML(paramDoenetId)
+    }
     return () => {
       setEditorInit("");
     }
-  }, [paramDoenetId,pageInitiated]);
+  }, [paramDoenetId, pageInitiated]);
 
-  if (paramDoenetId !== initializedDoenetId){
+  if (paramDoenetId !== initializedDoenetId) {
     //DoenetML is changing to another DoenetID
     return null;
   }
@@ -101,37 +101,16 @@ export default function EditorViewer(){
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
 
-  if (variantInfo.lastUpdatedIndexOrName === 'Index'){
-    setVariantInfo((was)=>{
-      let newObj = {...was}; 
-      newObj.lastUpdatedIndexOrName = null; 
-      newObj.requestedVariant = {index:variantInfo.index};
-    return newObj})
 
-  }else if (variantInfo.lastUpdatedIndexOrName === 'Name'){
-    setVariantInfo((was)=>{
-      let newObj = {...was}; 
-      newObj.lastUpdatedIndexOrName = null; 
-      newObj.requestedVariant = {name:variantInfo.name};
-    return newObj})
-
-  }
-
-
-
-  function variantCallback(generatedVariantInfo, allPossibleVariants){
+  function variantCallback(generatedVariantInfo, allPossibleVariants) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
-    cleanGeneratedVariant.lastUpdatedIndexOrName = null 
     setVariantPanel({
-      index:cleanGeneratedVariant.index,
-      name:cleanGeneratedVariant.name,
+      index: cleanGeneratedVariant.index,
       allPossibleVariants
     });
-    setVariantInfo((was)=>{
-      let newObj = {...was}
-      Object.assign(newObj,cleanGeneratedVariant)
-      return newObj;
+    setVariantInfo({
+      index: cleanGeneratedVariant.index,
     });
   }
 
@@ -141,7 +120,7 @@ export default function EditorViewer(){
   // console.log(`>>>> refreshNumber -${refreshNumber}-`)
   // console.log(`>>>> attemptNumber -${attemptNumber}-`)
   // console.log('>>>PageViewer Read Only:',!isCurrentDraft)
-  // console.log('>>>>variantInfo.requestedVariant',variantInfo.requestedVariant)
+  // console.log('>>>>variantInfo.index',variantInfo.index)
 
   return <PageViewer
     key={`pageViewer${refreshNumber}`}
@@ -158,12 +137,13 @@ export default function EditorViewer(){
       allowSaveSubmissions: false,
       allowSaveEvents: false
     }}
+    doenetId={initializedDoenetId}
     attemptNumber={attemptNumber}
     generatedVariantCallback={variantCallback} //TODO:Replace
-    requestedVariant={variantInfo.requestedVariant}
+    requestedVariantIndex={variantInfo.index}
     setIsInErrorState={setIsInErrorState}
     pageIsActive={true}
-    /> 
+  />
 }
 
 
