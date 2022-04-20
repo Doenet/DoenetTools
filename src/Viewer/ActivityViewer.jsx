@@ -428,7 +428,7 @@ export default function ActivityViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    console.log('result from saving activity to db', resp.data)
+    setCidChanged(resp.data.cidChanged === true);
 
     let data = resp.data;
 
