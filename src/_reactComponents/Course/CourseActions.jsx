@@ -432,7 +432,7 @@ export const useCourse = (courseId) => {
 
   const create = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({ itemType, placeInFolderFlag, previousDoenetId }) => {
+      async ({ itemType, placeInFolderFlag, previousDoenetId, previousContainingDoenetId }) => {
 
         let authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
         let newAuthorItemDoenetIds = [...authorItemDoenetIds];
@@ -447,7 +447,6 @@ export const useCourse = (courseId) => {
           sectionId = courseId;
         }
          //Place in section if section is toggled open and is the only selected item
-        //Define previousDoenetId if any single item is selected
         let selectedArray = await snapshot.getPromise(selectedCourseItems);
         if (selectedArray.length == 1){
           let singleSelectedDoenetId = selectedArray[0];
@@ -458,41 +457,39 @@ export const useCourse = (courseId) => {
             sectionId = singleSelectedDoenetId;
           }
         }
-        // console.log(`sectionId -${sectionId}- `)
-        // console.log(`previousDoenetId -${previousDoenetId}- `)
 
         if (previousDoenetId == undefined){
           //Find last item in section
           let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
-          // console.log("authorItemSectionDoenetIds",authorItemSectionDoenetIds)
           let lastItemDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
 
           //Place at the end unless there are no items, then place after the parent
           if (lastItemDoenetId == undefined){
             //No items in this section
             previousDoenetId = sectionId;
+            previousContainingDoenetId = sectionId;
             placeInFolderFlag = true;
           }else{
             previousDoenetId = lastItemDoenetId; 
-          //   //Find containing item doenetId 
-          // let lastItemObj = await snapshot.getPromise(authorItemByDoenetId(lastItemDoenetId));
-          // // console.log("lastItemObj",lastItemObj)
-          // if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
-          //   previousDoenetId = lastItemObj.containingDoenetId;
-          // }else{
-          //   previousDoenetId = lastItemDoenetId;
-          // }
+            previousContainingDoenetId = lastItemDoenetId;
+            let lastItemObj = await snapshot.getPromise(authorItemByDoenetId(lastItemDoenetId));
+            if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
+              previousContainingDoenetId = lastItemObj.containingDoenetId;
+            }
+         
 
           }
         }
 
-       
-        console.log("create params",{
+        console.log(">>calculated create info:",{
           previousDoenetId,
+          previousContainingDoenetId,
           courseId,
           itemType,
           placeInFolderFlag,
+          sectionId,
         })
+
         let newDoenetId;
         let coursePermissionsAndSettings = await snapshot.getPromise(
           coursePermissionsAndSettingsByCourseId(courseId),
@@ -503,15 +500,10 @@ export const useCourse = (courseId) => {
         }
         //Get selection information to know previous doenetId by order
         if (itemType == 'activity') {
-// console.log("activity",{
-//   previousDoenetId,
-//   courseId,
-//   itemType,
-//   placeInFolderFlag,
-// })
+
           let { data } = await axios.get('/api/createCourseItem.php', {
             params: {
-              previousDoenetId,
+              previousContainingDoenetId,
               courseId,
               itemType,
               placeInFolderFlag,
@@ -561,7 +553,7 @@ export const useCourse = (courseId) => {
         } else if (itemType == 'bank') {
           let { data } = await axios.get('/api/createCourseItem.php', {
             params: {
-              previousDoenetId,
+              previousContainingDoenetId,
               courseId,
               itemType,
               placeInFolderFlag,
@@ -583,7 +575,7 @@ export const useCourse = (courseId) => {
         } else if (itemType == 'section') {
           let { data } = await axios.get('/api/createCourseItem.php', {
             params: {
-              previousDoenetId,
+              previousContainingDoenetId,
               courseId,
               itemType,
               placeInFolderFlag,
@@ -1410,7 +1402,7 @@ export const useCourse = (courseId) => {
             failureCallback("Destination is the same as the source.")
             return;
           }
-          let previousDoenetIds = [];
+          let previousContainingDoenetIds = [];
           let courseContentTableDoenetIds = [];
           let courseContentTableNewParentDoenetId = sectionId;
           //update original cut items to new location
@@ -1434,11 +1426,15 @@ export const useCourse = (courseId) => {
               let removedDoenetIds = nextOrder.splice(nextOrder.indexOf(cutObj.doenetId),numberOfItems); //Remove
               let doenetIdsInTheSection = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
               //Find last one in the section
-              let previousDoenetId = cutObj.doenetId; //assume new section with no content
+              let previousContainingDoenetId = cutObj.doenetId; //assume section with no content
               if (doenetIdsInTheSection.length > 0){
-                previousDoenetId = doenetIdsInTheSection[doenetIdsInTheSection.length - 1];
+                let lastInSectionDoenetId = doenetIdsInTheSection[doenetIdsInTheSection.length - 1];
+                let lastInSectionObj = await snapshot.getPromise(authorItemByDoenetId(lastInSectionDoenetId));
+                if (lastInSectionObj.type == 'page' || lastInSectionObj.type == 'order'){
+                  previousContainingDoenetId = lastInSectionObj.containingDoenetId;
+                }
               }
-              previousDoenetIds.push(previousDoenetId); //last one in the section
+              previousContainingDoenetIds.push(previousContainingDoenetId); //last one in the section
 
               nextOrder.splice(nextOrder.indexOf(sectionId)+1+doenetIdsInTheSection.length,0,...removedDoenetIds); //Insert
               set(authorCourseItemOrderByCourseId(courseId),nextOrder)
@@ -1447,12 +1443,11 @@ export const useCourse = (courseId) => {
 
           }
           //update the database
-
           let resp = await axios.post('/api/moveContent.php',{
             courseId,
             courseContentTableDoenetIds,
             courseContentTableNewParentDoenetId,
-            previousDoenetIds,
+            previousContainingDoenetIds,
           })
           console.log("resp.data",resp.data);
           //Transfer cut to copy so we don't get duplicate doenetIds

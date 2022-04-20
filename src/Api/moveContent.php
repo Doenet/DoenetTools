@@ -27,9 +27,9 @@ if (!array_key_exists('courseId', $_POST)) {
 } elseif (!array_key_exists('courseContentTableNewParentDoenetId', $_POST)) {
     $success = false;
     $message = 'Missing courseContentTableNewParentDoenetId';
-} elseif (!array_key_exists('previousDoenetIds', $_POST)) {
+} elseif (!array_key_exists('previousContainingDoenetIds', $_POST)) {
     $success = false;
-    $message = 'Missing previousDoenetIds';
+    $message = 'Missing previousContainingDoenetIds';
 } 
 
 //Test Permission to edit content
@@ -39,9 +39,9 @@ if ($success){
         return mysqli_real_escape_string($conn, $item);
     }, $_POST["courseContentTableDoenetIds"]);
     $courseContentTableNewParentDoenetId = $_POST["courseContentTableNewParentDoenetId"];
-    $previousDoenetIds = array_map(function ($item) use ($conn) {
+    $previousContainingDoenetIds = array_map(function ($item) use ($conn) {
         return mysqli_real_escape_string($conn, $item);
-    }, $_POST["previousDoenetIds"]);
+    }, $_POST["previousContainingDoenetIds"]);
 
     $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
     if ($permissions["canEditContent"] != '1'){
@@ -57,8 +57,8 @@ if ($success) {
     var_dump($courseContentTableDoenetIds);
     echo "\ncourseContentTableNewParentDoenetId\n";
     var_dump($courseContentTableNewParentDoenetId);
-    echo "\npreviousDoenetIds\n";
-    var_dump($previousDoenetIds);
+    echo "\npreviousContainingDoenetIds\n";
+    var_dump($previousContainingDoenetIds);
 
     // if (count($baseCollectionsDoenetIds) > 0){
     //     $list_of_baseCollectionsDoenetIds = join("','",$baseCollectionsDoenetIds);
