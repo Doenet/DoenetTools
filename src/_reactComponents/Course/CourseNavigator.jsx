@@ -203,17 +203,17 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
   // console.log("Activity itemInfo",itemInfo)
   if (itemInfo.isSinglePage){
     return <>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} isBeingCut={itemInfo.isBeingCut}/>
      </>
   }
   if (itemInfo.isOpen){
     return <>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}  isBeingCut={itemInfo.isBeingCut}/>
     <Order key={`Order${doenetId}`} orderInfo={itemInfo.order} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
      </>
   }else{
     return <>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen}  isSelected={itemInfo.isSelected} indentLevel={indentLevel}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen}  isSelected={itemInfo.isSelected} indentLevel={indentLevel}  isBeingCut={itemInfo.isBeingCut}/>
      </>
   }
 }
@@ -273,7 +273,7 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
 
 
 //singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
-function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
+function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen,isBeingCut=false}){
   const addToast = useToast();
   const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
 
@@ -463,10 +463,10 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
 
   let bgcolor = '#ffffff';
   if (isSelected){
-    // bgcolor = '#e2e2e2'; //grey
     bgcolor = 'hsl(209,54%,82%)';
-
-  } 
+  }else if (isBeingCut){
+    bgcolor = '#e2e2e2'; //grey
+  }
 
   //Used to open editor or assignment
   let handleDoubleClick = useRecoilCallback(({snapshot})=> async (e)=>{

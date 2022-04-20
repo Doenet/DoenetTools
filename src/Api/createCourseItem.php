@@ -14,7 +14,7 @@ $userId = $jwtArray['userId'];
 $success = TRUE;
 $message = "";
 
-$previousDoenetId = mysqli_real_escape_string($conn,$_REQUEST["previousDoenetId"]);
+$previousContainingDoenetId = mysqli_real_escape_string($conn,$_REQUEST["previousContainingDoenetId"]);
 $itemType = mysqli_real_escape_string($conn,$_REQUEST["itemType"]);
 $courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 $placeInFolderFlag = mysqli_real_escape_string($conn,$_REQUEST["placeInFolderFlag"]);
@@ -30,23 +30,23 @@ if ($success){
 
   $jsonDefinition = null;
 
-  if ($previousDoenetId == $courseId) {
+  if ($previousContainingDoenetId == $courseId) {
     $sql = "SELECT sortOrder FROM `course_content` WHERE courseId = '$courseId' ORDER BY sortOrder DESC LIMIT 1";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
     $prev =$row['sortOrder'] ?: "";
     $next = "";
-    $parentDoenetId = $previousDoenetId;
+    $parentDoenetId = $previousContainingDoenetId;
   } else {
     $sql = "SELECT sortOrder, parentDoenetId
     FROM `course_content`
-    WHERE courseId = '$courseId' and sortOrder >= (Select sortOrder From `course_content` WHERE doenetId='$previousDoenetId')
+    WHERE courseId = '$courseId' and sortOrder >= (Select sortOrder From `course_content` WHERE doenetId='$previousContainingDoenetId')
     ORDER BY sortOrder
     LIMIT 2";
     $result = $conn->query($sql); 
     $row = $result->fetch_assoc() ;
     $prev = $row['sortOrder'] ?: "";
-    $parentDoenetId = $placeInFolderFlag == 'true' ? $previousDoenetId : $row['parentDoenetId'];
+    $parentDoenetId = $placeInFolderFlag == 'true' ? $previousContainingDoenetId : $row['parentDoenetId'];
     $row = $result->fetch_assoc();
     $next = $row['sortOrder'] ?: "";
   }

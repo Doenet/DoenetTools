@@ -93,7 +93,7 @@ export default function SelectedActivity() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const { renameItem, create, compileActivity, deleteItem } = useCourse(courseId);
+  const { renameItem, create, compileActivity, deleteItem, copyItems, cutItems } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
   const addToast = useToast();
 
@@ -215,7 +215,32 @@ export default function SelectedActivity() {
       }}
       onBlur={handelLabelModfication}
     />
-    
+    <br />
+    <ActionButtonGroup width="menu">
+      <ActionButton
+          value="Copy"
+          onClick={() => {
+            copyItems({successCallback:()=>{
+              addToast("Activity copied!", toastType.INFO);
+            }})
+          }}
+      />
+      <ActionButton
+          value="Cut"
+          onClick={() => {
+            cutItems({successCallback:()=>{
+              addToast("Activity cut!", toastType.INFO);
+            }})
+          }}
+      />
+      <ActionButton
+          value="Paste"
+          disabled
+          onClick={() => {
+            console.log("paste")
+          }}
+      />
+    </ActionButtonGroup>
     <br />
     <ButtonGroup vertical>
       <Button
