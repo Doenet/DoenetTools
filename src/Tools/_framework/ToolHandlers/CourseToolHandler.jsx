@@ -186,14 +186,24 @@ export let assignmentDictionarySelector = selectorFamily({
     },
 });
 
-export const variantInfoAtom = atom({
-  key:"variantInfoAtom",
-  default:{index:null,name:null,lastUpdatedIndexOrName:null,requestedVariant:{index:1}}
+export const pageVariantInfoAtom = atom({
+  key:"pageVariantInfoAtom",
+  default:{index:null}
 })
 
-export const variantPanelAtom = atom({
-  key:"variantPanelAtom",
-  default:{index:null,name:null}
+export const pageVariantPanelAtom = atom({
+  key:"pageVariantPanelAtom",
+  default:{index:null, allPossibleVariants: []}
+})
+
+export const activityVariantInfoAtom = atom({
+  key:"activityVariantInfoAtom",
+  default:{index:1}
+})
+
+export const activityVariantPanelAtom = atom({
+  key:"activityVariantPanelAtom",
+  default:{index:1, numberOfVariants: 0}
 })
 
 export function buildTimestamp(){

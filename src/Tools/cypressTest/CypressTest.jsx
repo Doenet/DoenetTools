@@ -53,31 +53,25 @@ function Test() {
   const [_, setRefresh] = useState(0);
   const solutionDisplayMode = "button";
 
-  // let requestedVariant = useRef({ index: 0 });
-  // requestedVariant is undefined by default so that viewer
+  // requestedVariantIndex is undefined by default so that viewer
   // will use attemptNumber for variant
   // unless get a message (from cypress) to select a particular variant
-  let requestedVariant = useRef(undefined);
   let requestedVariantIndex = useRef(undefined);
-
 
 
   //For Cypress Test Use
   window.onmessage = (e) => {
     console.log(e.data);
     if (e.data.doenetML !== undefined) {
-      //Only if defined
-      if (e.data.requestedVariant) {
-        requestedVariant.current = e.data.requestedVariant;
-      }
       setActivityDefinition(null);
       setDoenetML(e.data.doenetML);
     } else if (e.data.activityDefinition !== undefined) {
-      if (e.data.requestedVariantIndex) {
-        requestedVariantIndex.current = e.data.requestedVariantIndex;
-      }
       setDoenetML(null);
       setActivityDefinition(e.data.activityDefinition);
+    }
+
+    if (e.data.requestedVariantIndex !== undefined) {
+      requestedVariantIndex.current = e.data.requestedVariantIndex;
     }
   };
 
@@ -241,7 +235,7 @@ function Test() {
         allowSaveEvents,
       }}
       attemptNumber={attemptNumber}
-      requestedVariant={requestedVariant.current}
+      requestedVariantIndex={requestedVariantIndex.current}
       unbundledCore={!bundledCore}
       doenetId="doenetIdFromCypress"
       pageIsActive={true}

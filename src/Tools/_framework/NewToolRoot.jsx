@@ -402,8 +402,8 @@ let navigationObj = {
       pageName: 'DraftActivity',
       menuPanelCap: 'AssignmentInfoCap',
       currentMainPanel: 'DraftAssignmentViewer',
-      currentMenus: [], //Variant control
-      menusTitles: [],
+      currentMenus: ['ActivityVariant'],
+      menusTitles: ['Activity Variant'],
       menusInitOpen: [],
       headerControls: ['AssignmentBreadCrumb'],
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
@@ -479,12 +479,12 @@ let navigationObj = {
       menuPanelCap: 'EditorInfoCap',
       currentMainPanel: 'EditorViewer',
       currentMenus: [
-        'Variant',
+        'PageVariant',
         'AssignmentSettingsMenu',
         'SupportingFilesMenu',
       ],
       menusTitles: [
-        'Variant',
+        'Page Variant',
         'Assignment Settings',
         'Supporting Files',
       ],

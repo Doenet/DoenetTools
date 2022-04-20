@@ -6,12 +6,17 @@ import {
   useRecoilCallback,
   useSetRecoilState,
   useRecoilValueLoadable,
+  useRecoilState,
 } from 'recoil';
 import {
   searchParamAtomFamily,
   suppressMenusAtom,
   profileAtom,
 } from '../NewToolRoot';
+import {
+  activityVariantInfoAtom,
+  activityVariantPanelAtom,
+} from '../ToolHandlers/CourseToolHandler';
 
 import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';
@@ -20,7 +25,7 @@ import { determineNumberOfActivityVariants, parseActivityDefinition } from '../.
 
 
 export const creditAchievedAtom = atom({
-  key: 'creditAchievedAtom',
+  key: 'creditAchievedAtom2',
   default: {
     creditByItem: [1, 0, 0.5],
     // creditByItem:[],
@@ -33,15 +38,16 @@ export const creditAchievedAtom = atom({
 
 
 export default function DraftAssignmentViewer() {
-  console.log(">>>===DraftAssignmentViewer")
+  // console.log(">>>===DraftAssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const recoilRequestedVariant = useRecoilValue(searchParamAtomFamily('requestedVariant'));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+  const [variantInfo, setVariantInfo] = useRecoilState(activityVariantInfoAtom);
+  const setVariantPanel = useSetRecoilState(activityVariantPanelAtom);
   let [stage, setStage] = useState('Initializing');
   let [message, setMessage] = useState('');
   const [
     {
-      requestedVariantIndex,
       attemptNumber,
       showCorrectness,
       showFeedback,
@@ -63,6 +69,16 @@ export default function DraftAssignmentViewer() {
   userId.current = loadProfile.contents.userId;
 
 
+  function variantCallback(variantIndex, numberOfVariants) {
+    // console.log(">>>variantCallback",variantIndex,numberOfVariants)
+    setVariantPanel({
+      index: variantIndex,
+      numberOfVariants
+    });
+    setVariantInfo({
+      index: variantIndex,
+    });
+  }
 
   const initializeValues = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -117,9 +133,6 @@ export default function DraftAssignmentViewer() {
           cid = resp.data.cid;
         }
 
-        console.log(`retrieved cid: ${cid}`);
-
-
         let result = await returnNumberOfActivityVariants(cid);
 
         if (!result.success) {
@@ -130,11 +143,7 @@ export default function DraftAssignmentViewer() {
 
         allPossibleVariants.current = [...Array(result.numberOfVariants).keys()].map(x => (x + 1));
 
-        // TODO: select variants from a variant menu
-        let requestedVariantIndex = Number(recoilRequestedVariant);
-
         setLoad({
-          requestedVariantIndex,
           attemptNumber,
           showCorrectness,
           showFeedback,
@@ -207,10 +216,10 @@ export default function DraftAssignmentViewer() {
           allowSaveEvents: false,
         }}
         attemptNumber={attemptNumber}
-        requestedVariantIndex={requestedVariantIndex}
+        requestedVariantIndex={variantInfo.index}
         updateCreditAchievedCallback={updateCreditAchieved}
         // updateAttemptNumber={setRecoilAttemptNumber}
-      // generatedVariantCallback={variantCallback}
+        generatedVariantCallback={variantCallback}
       />
     </>
   );
@@ -225,7 +234,7 @@ async function returnNumberOfActivityVariants(cid) {
 
   let result = parseActivityDefinition(activityDefinitionDoenetML);
 
-  if(!result.success) {
+  if (!result.success) {
     return result;
   }
 

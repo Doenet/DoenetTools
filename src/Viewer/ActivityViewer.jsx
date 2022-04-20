@@ -220,6 +220,7 @@ export default function ActivityViewer(props) {
     let loadedState = false;
     let newItemWeights;
     let newCurrentPage;
+    let newVariantIndex;
 
     if (props.flags.allowLocalState) {
 
@@ -270,9 +271,10 @@ export default function ActivityViewer(props) {
         newCurrentPage = localInfo.activityState.currentPage
         setCurrentPage(newCurrentPage);
 
-        // activityInfo is orderWithCids and variantsByPage
+        // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
         let newActivityInfo = localInfo.activityInfo;
-        setVariantIndex(localInfo.variantIndex);
+        newVariantIndex = localInfo.variantIndex;
+        setVariantIndex(newVariantIndex);
         setNPages(newActivityInfo.orderWithCids.length);
         setOrder(newActivityInfo.orderWithCids);
         setVariantsByPage(newActivityInfo.variantsByPage);
@@ -306,8 +308,10 @@ export default function ActivityViewer(props) {
         }
       }
 
+      let resp;
+
       try {
-        let resp = await axios.get('/api/loadActivityState.php', payload);
+        resp = await axios.get('/api/loadActivityState.php', payload);
 
         if (!resp.data.success) {
           if (props.flags.allowLoadState) {
@@ -322,57 +326,6 @@ export default function ActivityViewer(props) {
           }
 
         }
-
-        if (resp.data.loadedState) {
-
-          let newActivityInfo = JSON.parse(resp.data.activityInfo);
-          let activityState = JSON.parse(resp.data.activityState);
-
-          // activityState is just currentPage
-          newCurrentPage = activityState.currentPage;
-          setCurrentPage(newCurrentPage);
-
-          // activityInfo is orderWithCids and variantsByPage
-          setVariantIndex(resp.data.variantIndex);
-          setNPages(newActivityInfo.orderWithCids.length);
-          setOrder(newActivityInfo.orderWithCids);
-          setVariantsByPage(newActivityInfo.variantsByPage);
-          setItemWeights(newActivityInfo.itemWeights);
-          newItemWeights = newActivityInfo.itemWeights;
-
-
-          activityInfo.current = newActivityInfo;
-          activityInfoString.current = JSON.stringify(activityInfo.current);
-
-        } else {
-
-          // get initial state and info
-
-          // state at page 1
-          newCurrentPage = 1;
-          setCurrentPage(1);
-
-          let results = await calculateOrderAndVariants();
-          if (!results.success) {
-            if (props.setIsInErrorState) {
-              props.setIsInErrorState(true)
-            }
-            setErrMsg(`Error initializing activity state: ${results.message}`);
-            return;
-          }
-          setVariantIndex(results.variantIndex);
-          setNPages(results.order.length);
-          setOrder(results.order);
-          setVariantsByPage(results.variantsByPage);
-          setItemWeights(results.itemWeights);
-          newItemWeights = results.itemWeights;
-
-          activityInfo.current = results.activityInfo;
-          activityInfoString.current = JSON.stringify(activityInfo.current);
-
-        }
-
-
       } catch (e) {
 
         if (props.flags.allowLoadState) {
@@ -389,10 +342,64 @@ export default function ActivityViewer(props) {
 
       }
 
+      if (resp.data.loadedState) {
+
+        let newActivityInfo = JSON.parse(resp.data.activityInfo);
+        let activityState = JSON.parse(resp.data.activityState);
+
+        // activityState is just currentPage
+        newCurrentPage = activityState.currentPage;
+        setCurrentPage(newCurrentPage);
+
+        // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
+        newVariantIndex = resp.data.variantIndex;
+        setVariantIndex(variantIndex);
+        setNPages(newActivityInfo.orderWithCids.length);
+        setOrder(newActivityInfo.orderWithCids);
+        setVariantsByPage(newActivityInfo.variantsByPage);
+        setItemWeights(newActivityInfo.itemWeights);
+        newItemWeights = newActivityInfo.itemWeights;
+
+
+        activityInfo.current = newActivityInfo;
+        activityInfoString.current = JSON.stringify(activityInfo.current);
+
+      } else {
+
+        // get initial state and info
+
+        // state at page 1
+        newCurrentPage = 1;
+        setCurrentPage(1);
+
+        let results;
+        results = await calculateOrderAndVariants();
+        if (!results.success) {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true)
+          }
+          setErrMsg(`Error initializing activity state: ${results.message}`);
+          return;
+        }
+
+        newVariantIndex = results.variantIndex;
+        setVariantIndex(newVariantIndex);
+        setNPages(results.order.length);
+        setOrder(results.order);
+        setVariantsByPage(results.variantsByPage);
+        setItemWeights(results.itemWeights);
+        newItemWeights = results.itemWeights;
+
+        activityInfo.current = results.activityInfo;
+        activityInfoString.current = JSON.stringify(activityInfo.current);
+
+      }
+
+
     }
 
 
-    return { newItemWeights };
+    return { newItemWeights, newVariantIndex };
 
   }
 
@@ -466,9 +473,10 @@ export default function ActivityViewer(props) {
 
     let activityVariantResult = await determineNumberOfActivityVariants(activityDefinition);
 
-    console.log('activityVariantResult', activityVariantResult)
-
     let variantIndex = (requestedVariantIndex - 1) % activityVariantResult.numberOfVariants + 1;
+    if(variantIndex < 1) {
+      variantIndex += activityVariantResult.numberOfVariants;
+    }
 
     let rng = new rngClass(variantIndex.toString());
 
@@ -572,7 +580,8 @@ export default function ActivityViewer(props) {
     let activityInfo = {
       orderWithCids,
       variantsByPage,
-      itemWeights
+      itemWeights,
+      numberOfVariants: activityVariantResult.numberOfVariants,
     };
 
     return {
@@ -885,6 +894,7 @@ export default function ActivityViewer(props) {
     loadState().then(results => {
       if (results) {
         initializeUserAssignmentTables(results.newItemWeights);
+        props.generatedVariantCallback?.(results.newVariantIndex, activityInfo.current.numberOfVariants);
       }
     })
 
@@ -922,7 +932,7 @@ export default function ActivityViewer(props) {
           itemNumber={itemNumber}
           attemptNumber={attemptNumber}
           flags={flags}
-          requestedVariant={{ index: variantsByPage[ind] }}
+          requestedVariantIndex={variantsByPage[ind]}
           unbundledCore={props.unbundledCore}
           updateCreditAchievedCallback={props.updateCreditAchievedCallback}
           setIsInErrorState={props.setIsInErrorState}
@@ -942,11 +952,18 @@ export default function ActivityViewer(props) {
     </div>
   }
 
+  let pageControls = null;
+  if (nPages > 1) {
+    pageControls = <>
+      <button data-cy={"previous"} disabled={currentPage === 1} onClick={() => setCurrentPage((was) => Math.max(1, was - 1))}>Previous page</button>
+      <button data-cy={"next"} disabled={currentPage === nPages} onClick={() => setCurrentPage((was) => Math.min(nPages, was + 1))}>Next page</button>
+      <p>Page {currentPage} of {nPages}</p>
+    </>
+  }
+
   return <div style={{ marginBottom: "200px" }}>
     {cidChangedAlert}
-    <button data-cy={"previous"} disabled={currentPage === 1} onClick={() => setCurrentPage((was) => Math.max(1, was - 1))}>Previous page</button>
-    <button data-cy={"next"} disabled={currentPage === nPages} onClick={() => setCurrentPage((was) => Math.min(nPages, was + 1))}>Next page</button>
-    <p>Page {currentPage} of {nPages}</p>
+    {pageControls}
     {title}
     {pages}
   </div>
