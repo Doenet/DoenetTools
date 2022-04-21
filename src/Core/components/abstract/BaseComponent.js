@@ -724,13 +724,17 @@ export default class BaseComponent {
           stateVariableDescriptions[varName].isArray = true;
           stateVariableDescriptions[varName].nDimensions = theStateDef.nDimensions === undefined ? 1 : theStateDef.nDimensions;
           stateVariableDescriptions[varName].wrappingComponents = theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents() : [];
+          let entryPrefixes;
           if (theStateDef.entryPrefixes) {
-            for (let prefix of theStateDef.entryPrefixes) {
-              arrayEntryPrefixes[prefix] = {
-                arrayVariableName: varName,
-                nDimensions: theStateDef.returnEntryDimensions ? theStateDef.returnEntryDimensions(prefix) : 1,
-                wrappingComponents: theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents(prefix) : []
-              }
+            entryPrefixes = theStateDef.entryPrefixes;
+          } else {
+            entryPrefixes = [varName];
+          }
+          for (let prefix of entryPrefixes) {
+            arrayEntryPrefixes[prefix] = {
+              arrayVariableName: varName,
+              nDimensions: theStateDef.returnEntryDimensions ? theStateDef.returnEntryDimensions(prefix) : 1,
+              wrappingComponents: theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents(prefix) : []
             }
           }
           if (theStateDef.getArrayKeysFromVarName) {

@@ -83,18 +83,29 @@ export default class Extract extends CompositeComponent {
       stateVariablesDeterminingDependencies: [
         "propName", "componentIndex", "propIndex"
       ],
-      returnDependencies: ({ stateValues }) => ({
-        children: {
-          dependencyType: "child",
-          childGroups: ["anything"],
-          variableNames: [stateValues.propName],
-          variablesOptional: true,
-          componentIndex: stateValues.componentIndex,
-          propIndex: stateValues.propIndex,
-          publicCaseInsensitiveVariableMatch: true,
-          useMappedVariableNames: true,
+      returnDependencies: function ({ stateValues }) {
+        let childIndices;
+        let componentIndex;
+
+        if (stateValues.componentIndex !== null) {
+          componentIndex = Number(stateValues.componentIndex)
         }
-      }),
+        if (Number.isInteger(componentIndex)) {
+          childIndices = [componentIndex - 1];
+        }
+        return {
+          children: {
+            dependencyType: "child",
+            childGroups: ["anything"],
+            variableNames: [stateValues.propName],
+            variablesOptional: true,
+            childIndices,
+            propIndex: stateValues.propIndex,
+            publicCaseInsensitiveVariableMatch: true,
+            useMappedVariableNames: true,
+          }
+        }
+      },
       definition: ({ dependencyValues }) => ({
         setValue: {
           sourceComponents: dependencyValues.children
@@ -215,7 +226,7 @@ export default class Extract extends CompositeComponent {
     let serializedReplacements = results.serializedReplacements;
     let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,

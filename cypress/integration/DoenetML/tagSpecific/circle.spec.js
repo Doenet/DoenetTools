@@ -8935,14 +8935,9 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/circ'].stateValues.numericalRadius).eq(3);
     })
 
+    cy.wait(2000);  // wait for 1 second debounce
 
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: '<text>b</text>',
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({

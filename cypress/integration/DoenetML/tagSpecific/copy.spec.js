@@ -2838,9 +2838,7 @@ describe('Copy Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariant: {
-          index: 1
-        }
+        requestedVariantIndex: 1
       }, "*");
     });
 
@@ -2870,9 +2868,7 @@ describe('Copy Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariant: {
-          index: 1
-        }
+        requestedVariantIndex: 1
       }, "*");
     });
 
@@ -2895,6 +2891,776 @@ describe('Copy Tag Tests', function () {
     })
 
 
+  });
+
+
+  it('copy with newNamespace retains original names, even with group', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p>values: <group name="grp"><number>1</number> <number>2</number></group> <number>3</number></p>
+      
+      <section><copy name="c1" target="_p1" newNamespace /></section>
+      
+      <copy name="c2" target="c1" />
+      <copy name="c3" target="c1" assignNames="p1a" />
+      <copy name="c4" target="c1" newNamespace />
+      <copy name="c5" target="c1" newNamespace assignNames="p1b" />
+      <copy name="c6" target="c1" newNamespace assignNames="grp" />
+      
+      <copy name="c7" target="_section1" />
+      <copy name="c8" target="_section1" assignNames="s1a" />
+      <copy name="c9" target="_section1" newNamespace />
+      <copy name="c10" target="_section1" newNamespace assignNames="s1b" />
+      <copy name="c11" target="_section1" newNamespace assignNames="grp" />
+    
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');
+    cy.get(cesc('#/_number1')).should('have.text', '1');
+    cy.get(cesc('#/_number2')).should('have.text', '2');
+    cy.get(cesc('#/_number3')).should('have.text', '3');
+
+    cy.get(cesc('#/c1/_number1')).should('have.text', '1');
+    cy.get(cesc('#/c1/_number2')).should('have.text', '2');
+    cy.get(cesc('#/c1/_number3')).should('have.text', '3');
+
+    cy.get(cesc('#/c4/_number1')).should('have.text', '1');
+    cy.get(cesc('#/c4/_number2')).should('have.text', '2');
+    cy.get(cesc('#/c4/_number3')).should('have.text', '3');
+
+    cy.get(cesc('#/c9/c1/_number1')).should('have.text', '1');
+    cy.get(cesc('#/c9/c1/_number2')).should('have.text', '2');
+    cy.get(cesc('#/c9/c1/_number3')).should('have.text', '3');
+
+    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/c6/grp')).should('have.text', 'values: 1 2 3')
+
+    cy.get(cesc('#/_section1')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/s1a')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/c10/s1b')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/c11/grp')).should('have.text', 'Section 1values: 1 2 3')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let c2p = stateVariables["/c2"].replacements[0].componentName;
+      let c3p = stateVariables["/c3"].replacements[0].componentName;
+      let c4p = stateVariables["/c4"].replacements[0].componentName;
+      let c5p = stateVariables["/c5"].replacements[0].componentName;
+      let c6p = stateVariables["/c6"].replacements[0].componentName;
+      let c7s = stateVariables["/c7"].replacements[0].componentName;
+      let c8s = stateVariables["/c8"].replacements[0].componentName;
+      let c9s = stateVariables["/c9"].replacements[0].componentName;
+      let c10s = stateVariables["/c10"].replacements[0].componentName;
+      let c11s = stateVariables["/c11"].replacements[0].componentName;
+
+      cy.get(cesc('#' + c2p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c3p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c6p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c7s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c8s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c9s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c10s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c11s)).should('have.text', 'Section 1values: 1 2 3')
+
+      // put in window just so happens after above
+      cy.window().then(async (win) => {
+        expect(stateVariables["/c1/_number1"].stateValues.value).eq(1)
+        expect(stateVariables["/c1/_number2"].stateValues.value).eq(2)
+        expect(stateVariables["/c1/_number3"].stateValues.value).eq(3)
+
+        // c2p's children should have gotten unique names (so begin with two underscores)
+        let c2pChildNames = stateVariables[c2p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c2pChildNames[0].slice(0, 3)).eq("/__")
+        expect(c2pChildNames[1].slice(0, 3)).eq("/__")
+        expect(c2pChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c2pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c2pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c2pChildNames[2]].stateValues.value).eq(3);
+
+        // c3p's children should have gotten unique names (so begin with two underscores)
+        let c3pChildNames = stateVariables[c3p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c3pChildNames[0].slice(0, 3)).eq("/__")
+        expect(c3pChildNames[1].slice(0, 3)).eq("/__")
+        expect(c3pChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c3pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c3pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c3pChildNames[2]].stateValues.value).eq(3);
+
+        // c4p's children should have retained their original names
+        let c4pChildNames = stateVariables[c4p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c4pChildNames[0]).eq("/c4/_number1")
+        expect(c4pChildNames[1]).eq("/c4/_number2")
+        expect(c4pChildNames[2]).eq("/c4/_number3")
+        expect(stateVariables[c4pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c4pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c4pChildNames[2]].stateValues.value).eq(3);
+
+        // c5p's children should have gotten unique names (so begin with two underscores after namespace)
+        let c5pChildNames = stateVariables[c5p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c5pChildNames[0].slice(0, 6)).eq("/c5/__")
+        expect(c5pChildNames[1].slice(0, 6)).eq("/c5/__")
+        expect(c5pChildNames[2].slice(0, 6)).eq("/c5/__")
+        expect(stateVariables[c5pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c5pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c5pChildNames[2]].stateValues.value).eq(3);
+
+        // c6p's children should have gotten unique names (so begin with two underscores after namespace)
+        let c6pChildNames = stateVariables[c6p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c6pChildNames[0].slice(0, 6)).eq("/c6/__")
+        expect(c6pChildNames[1].slice(0, 6)).eq("/c6/__")
+        expect(c6pChildNames[2].slice(0, 6)).eq("/c6/__")
+        expect(stateVariables[c6pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c6pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c6pChildNames[2]].stateValues.value).eq(3);
+
+
+        // c7s's grandchildren should have gotten unique names (so begin with two underscores)
+        let c7sChildName = stateVariables[c7s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c7sGrandChildNames = stateVariables[c7sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c7sGrandChildNames[0].slice(0, 3)).eq("/__")
+        expect(c7sGrandChildNames[1].slice(0, 3)).eq("/__")
+        expect(c7sGrandChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c7sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c7sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c7sGrandChildNames[2]].stateValues.value).eq(3);
+
+        // c8s's grandchildren should have gotten unique names (so begin with two underscores)
+        let c8sChildName = stateVariables[c8s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c8sGrandChildNames = stateVariables[c8sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c8sGrandChildNames[0].slice(0, 3)).eq("/__")
+        expect(c8sGrandChildNames[1].slice(0, 3)).eq("/__")
+        expect(c8sGrandChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c8sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c8sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c8sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c9s's grandchildren should have retained their original names
+        let c9sChildName = stateVariables[c9s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c9sGrandChildNames = stateVariables[c9sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c9sGrandChildNames[0]).eq("/c9/c1/_number1")
+        expect(c9sGrandChildNames[1]).eq("/c9/c1/_number2")
+        expect(c9sGrandChildNames[2]).eq("/c9/c1/_number3")
+        expect(stateVariables[c9sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c9sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c9sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c10s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        let c10sChildName = stateVariables[c10s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c10sGrandChildNames = stateVariables[c10sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c10sGrandChildNames[0].slice(0, 7)).eq("/c10/__")
+        expect(c10sGrandChildNames[1].slice(0, 7)).eq("/c10/__")
+        expect(c10sGrandChildNames[2].slice(0, 7)).eq("/c10/__")
+        expect(stateVariables[c10sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c10sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c10sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c11s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        let c11sChildName = stateVariables[c11s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c11sGrandChildNames = stateVariables[c11sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c11sGrandChildNames[0].slice(0, 7)).eq("/c11/__")
+        expect(c11sGrandChildNames[1].slice(0, 7)).eq("/c11/__")
+        expect(c11sGrandChildNames[2].slice(0, 7)).eq("/c11/__")
+        expect(stateVariables[c11sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c11sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c11sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+      })
+
+
+    })
+  });
+
+
+  it('copy with newNamespace retains original names, even with group that assigns names', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p>values: <group name="grp" assignNames="n1 n2"><number>1</number> <number>2</number></group> <number name="n3">3</number></p>
+      
+      <section><copy name="c1" target="_p1" newNamespace /></section>
+      
+      <copy name="c2" target="c1" />
+      <copy name="c3" target="c1" assignNames="p1a" />
+      <copy name="c4" target="c1" newNamespace />
+      <copy name="c5" target="c1" newNamespace assignNames="p1b" />
+      <copy name="c6" target="c1" newNamespace assignNames="grp" />
+      
+      <copy name="c7" target="_section1" />
+      <copy name="c8" target="_section1" assignNames="s1a" />
+      <copy name="c9" target="_section1" newNamespace />
+      <copy name="c10" target="_section1" newNamespace assignNames="s1b" />
+      <copy name="c11" target="_section1" newNamespace assignNames="grp" />
+    
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');
+    cy.get(cesc('#/n1')).should('have.text', '1');
+    cy.get(cesc('#/n2')).should('have.text', '2');
+    cy.get(cesc('#/n3')).should('have.text', '3');
+
+    cy.get(cesc('#/c1/n1')).should('have.text', '1');
+    cy.get(cesc('#/c1/n2')).should('have.text', '2');
+    cy.get(cesc('#/c1/n3')).should('have.text', '3');
+
+    cy.get(cesc('#/c4/n1')).should('have.text', '1');
+    cy.get(cesc('#/c4/n2')).should('have.text', '2');
+    cy.get(cesc('#/c4/n3')).should('have.text', '3');
+
+    cy.get(cesc('#/c9/c1/n1')).should('have.text', '1');
+    cy.get(cesc('#/c9/c1/n2')).should('have.text', '2');
+    cy.get(cesc('#/c9/c1/n3')).should('have.text', '3');
+
+    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/c6/grp')).should('have.text', 'values: 1 2 3')
+
+    cy.get(cesc('#/_section1')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/s1a')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/c10/s1b')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/c11/grp')).should('have.text', 'Section 1values: 1 2 3')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let c2p = stateVariables["/c2"].replacements[0].componentName;
+      let c3p = stateVariables["/c3"].replacements[0].componentName;
+      let c4p = stateVariables["/c4"].replacements[0].componentName;
+      let c5p = stateVariables["/c5"].replacements[0].componentName;
+      let c6p = stateVariables["/c6"].replacements[0].componentName;
+      let c7s = stateVariables["/c7"].replacements[0].componentName;
+      let c8s = stateVariables["/c8"].replacements[0].componentName;
+      let c9s = stateVariables["/c9"].replacements[0].componentName;
+      let c10s = stateVariables["/c10"].replacements[0].componentName;
+      let c11s = stateVariables["/c11"].replacements[0].componentName;
+
+      cy.get(cesc('#' + c2p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c3p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c6p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c7s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c8s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c9s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c10s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c11s)).should('have.text', 'Section 1values: 1 2 3')
+
+      // put in window just so happens after above
+      cy.window().then(async (win) => {
+        expect(stateVariables["/c1/n1"].stateValues.value).eq(1)
+        expect(stateVariables["/c1/n2"].stateValues.value).eq(2)
+        expect(stateVariables["/c1/n3"].stateValues.value).eq(3)
+
+        // c2p's children should have gotten unique names (so begin with two underscores)
+        let c2pChildNames = stateVariables[c2p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c2pChildNames[0].slice(0, 3)).eq("/__")
+        expect(c2pChildNames[1].slice(0, 3)).eq("/__")
+        expect(c2pChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c2pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c2pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c2pChildNames[2]].stateValues.value).eq(3);
+
+        // c3p's children should have gotten unique names (so begin with two underscores)
+        let c3pChildNames = stateVariables[c3p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c3pChildNames[0].slice(0, 3)).eq("/__")
+        expect(c3pChildNames[1].slice(0, 3)).eq("/__")
+        expect(c3pChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c3pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c3pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c3pChildNames[2]].stateValues.value).eq(3);
+
+        // c4p's children should have retained their original names
+        let c4pChildNames = stateVariables[c4p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c4pChildNames[0]).eq("/c4/n1")
+        expect(c4pChildNames[1]).eq("/c4/n2")
+        expect(c4pChildNames[2]).eq("/c4/n3")
+        expect(stateVariables[c4pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c4pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c4pChildNames[2]].stateValues.value).eq(3);
+
+        // c5p's children should have gotten unique names (so begin with two underscores after namespace)
+        let c5pChildNames = stateVariables[c5p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c5pChildNames[0].slice(0, 6)).eq("/c5/__")
+        expect(c5pChildNames[1].slice(0, 6)).eq("/c5/__")
+        expect(c5pChildNames[2].slice(0, 6)).eq("/c5/__")
+        expect(stateVariables[c5pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c5pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c5pChildNames[2]].stateValues.value).eq(3);
+
+        // c6p's children should have gotten unique names (so begin with two underscores after namespace)
+        let c6pChildNames = stateVariables[c6p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c6pChildNames[0].slice(0, 6)).eq("/c6/__")
+        expect(c6pChildNames[1].slice(0, 6)).eq("/c6/__")
+        expect(c6pChildNames[2].slice(0, 6)).eq("/c6/__")
+        expect(stateVariables[c6pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c6pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c6pChildNames[2]].stateValues.value).eq(3);
+
+
+        // c7s's grandchildren should have gotten unique names (so begin with two underscores)
+        let c7sChildName = stateVariables[c7s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c7sGrandChildNames = stateVariables[c7sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c7sGrandChildNames[0].slice(0, 3)).eq("/__")
+        expect(c7sGrandChildNames[1].slice(0, 3)).eq("/__")
+        expect(c7sGrandChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c7sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c7sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c7sGrandChildNames[2]].stateValues.value).eq(3);
+
+        // c8s's grandchildren should have gotten unique names (so begin with two underscores)
+        let c8sChildName = stateVariables[c8s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c8sGrandChildNames = stateVariables[c8sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c8sGrandChildNames[0].slice(0, 3)).eq("/__")
+        expect(c8sGrandChildNames[1].slice(0, 3)).eq("/__")
+        expect(c8sGrandChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c8sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c8sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c8sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c9s's grandchildren should have retained their original names
+        let c9sChildName = stateVariables[c9s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c9sGrandChildNames = stateVariables[c9sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c9sGrandChildNames[0]).eq("/c9/c1/n1")
+        expect(c9sGrandChildNames[1]).eq("/c9/c1/n2")
+        expect(c9sGrandChildNames[2]).eq("/c9/c1/n3")
+        expect(stateVariables[c9sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c9sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c9sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c10s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        let c10sChildName = stateVariables[c10s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c10sGrandChildNames = stateVariables[c10sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c10sGrandChildNames[0].slice(0, 7)).eq("/c10/__")
+        expect(c10sGrandChildNames[1].slice(0, 7)).eq("/c10/__")
+        expect(c10sGrandChildNames[2].slice(0, 7)).eq("/c10/__")
+        expect(stateVariables[c10sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c10sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c10sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c11s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        let c11sChildName = stateVariables[c11s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c11sGrandChildNames = stateVariables[c11sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c11sGrandChildNames[0].slice(0, 7)).eq("/c11/__")
+        expect(c11sGrandChildNames[1].slice(0, 7)).eq("/c11/__")
+        expect(c11sGrandChildNames[2].slice(0, 7)).eq("/c11/__")
+        expect(stateVariables[c11sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c11sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c11sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+      })
+
+
+    })
+  });
+
+  it('copy with newNamespace retains original names, even with group that has new namespace', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p>values: <group name="grp" newNamespace><number>1</number> <number>2</number></group> <number>3</number></p>
+      
+      <section><copy name="c1" target="_p1" newNamespace /></section>
+      
+      <copy name="c2" target="c1" />
+      <copy name="c3" target="c1" assignNames="p1a" />
+      <copy name="c4" target="c1" newNamespace />
+      <copy name="c5" target="c1" newNamespace assignNames="p1b" />
+      <copy name="c6" target="c1" newNamespace assignNames="grp" />
+      
+      <copy name="c7" target="_section1" />
+      <copy name="c8" target="_section1" assignNames="s1a" />
+      <copy name="c9" target="_section1" newNamespace />
+      <copy name="c10" target="_section1" newNamespace assignNames="s1b" />
+      <copy name="c11" target="_section1" newNamespace assignNames="grp" />
+    
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');
+    cy.get(cesc('#/grp/_number1')).should('have.text', '1');
+    cy.get(cesc('#/grp/_number2')).should('have.text', '2');
+    cy.get(cesc('#/_number1')).should('have.text', '3');
+
+    cy.get(cesc('#/c1/grp/_number1')).should('have.text', '1');
+    cy.get(cesc('#/c1/grp/_number2')).should('have.text', '2');
+    cy.get(cesc('#/c1/_number1')).should('have.text', '3');
+
+    cy.get(cesc('#/c4/grp/_number1')).should('have.text', '1');
+    cy.get(cesc('#/c4/grp/_number2')).should('have.text', '2');
+    cy.get(cesc('#/c4/_number1')).should('have.text', '3');
+
+    cy.get(cesc('#/c9/c1/grp/_number1')).should('have.text', '1');
+    cy.get(cesc('#/c9/c1/grp/_number2')).should('have.text', '2');
+    cy.get(cesc('#/c9/c1/_number1')).should('have.text', '3');
+
+    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/c6/grp')).should('have.text', 'values: 1 2 3')
+
+    cy.get(cesc('#/_section1')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/s1a')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/c10/s1b')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/c11/grp')).should('have.text', 'Section 1values: 1 2 3')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let c2p = stateVariables["/c2"].replacements[0].componentName;
+      let c3p = stateVariables["/c3"].replacements[0].componentName;
+      let c4p = stateVariables["/c4"].replacements[0].componentName;
+      let c5p = stateVariables["/c5"].replacements[0].componentName;
+      let c6p = stateVariables["/c6"].replacements[0].componentName;
+      let c7s = stateVariables["/c7"].replacements[0].componentName;
+      let c8s = stateVariables["/c8"].replacements[0].componentName;
+      let c9s = stateVariables["/c9"].replacements[0].componentName;
+      let c10s = stateVariables["/c10"].replacements[0].componentName;
+      let c11s = stateVariables["/c11"].replacements[0].componentName;
+
+      cy.get(cesc('#' + c2p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c3p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c6p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c7s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c8s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c9s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c10s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c11s)).should('have.text', 'Section 1values: 1 2 3')
+
+      // put in window just so happens after above
+      cy.window().then(async (win) => {
+        expect(stateVariables["/c1/grp/_number1"].stateValues.value).eq(1)
+        expect(stateVariables["/c1/grp/_number2"].stateValues.value).eq(2)
+        expect(stateVariables["/c1/_number1"].stateValues.value).eq(3)
+
+        // c2p's children should have gotten unique names (so begin with two underscores)
+        let c2pChildNames = stateVariables[c2p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c2pChildNames[0].slice(0, 3)).eq("/__")
+        expect(c2pChildNames[1].slice(0, 3)).eq("/__")
+        expect(c2pChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c2pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c2pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c2pChildNames[2]].stateValues.value).eq(3);
+
+        // c3p's children should have gotten unique names (so begin with two underscores)
+        let c3pChildNames = stateVariables[c3p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c3pChildNames[0].slice(0, 3)).eq("/__")
+        expect(c3pChildNames[1].slice(0, 3)).eq("/__")
+        expect(c3pChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c3pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c3pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c3pChildNames[2]].stateValues.value).eq(3);
+
+        // c4p's children should have retained their original names
+        let c4pChildNames = stateVariables[c4p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c4pChildNames[0]).eq("/c4/grp/_number1")
+        expect(c4pChildNames[1]).eq("/c4/grp/_number2")
+        expect(c4pChildNames[2]).eq("/c4/_number1")
+        expect(stateVariables[c4pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c4pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c4pChildNames[2]].stateValues.value).eq(3);
+
+        // c5p's children should have gotten unique names (so begin with two underscores after namespace)
+        let c5pChildNames = stateVariables[c5p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c5pChildNames[0].slice(0, 6)).eq("/c5/__")
+        expect(c5pChildNames[1].slice(0, 6)).eq("/c5/__")
+        expect(c5pChildNames[2].slice(0, 6)).eq("/c5/__")
+        expect(stateVariables[c5pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c5pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c5pChildNames[2]].stateValues.value).eq(3);
+
+        // c6p's children should have gotten unique names (so begin with two underscores after namespace)
+        let c6pChildNames = stateVariables[c6p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c6pChildNames[0].slice(0, 6)).eq("/c6/__")
+        expect(c6pChildNames[1].slice(0, 6)).eq("/c6/__")
+        expect(c6pChildNames[2].slice(0, 6)).eq("/c6/__")
+        expect(stateVariables[c6pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c6pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c6pChildNames[2]].stateValues.value).eq(3);
+
+
+        // c7s's grandchildren should have gotten unique names (so begin with two underscores)
+        let c7sChildName = stateVariables[c7s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c7sGrandChildNames = stateVariables[c7sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c7sGrandChildNames[0].slice(0, 3)).eq("/__")
+        expect(c7sGrandChildNames[1].slice(0, 3)).eq("/__")
+        expect(c7sGrandChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c7sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c7sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c7sGrandChildNames[2]].stateValues.value).eq(3);
+
+        // c8s's grandchildren should have gotten unique names (so begin with two underscores)
+        let c8sChildName = stateVariables[c8s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c8sGrandChildNames = stateVariables[c8sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c8sGrandChildNames[0].slice(0, 3)).eq("/__")
+        expect(c8sGrandChildNames[1].slice(0, 3)).eq("/__")
+        expect(c8sGrandChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c8sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c8sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c8sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c9s's grandchildren should have retained their original names
+        let c9sChildName = stateVariables[c9s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c9sGrandChildNames = stateVariables[c9sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c9sGrandChildNames[0]).eq("/c9/c1/grp/_number1")
+        expect(c9sGrandChildNames[1]).eq("/c9/c1/grp/_number2")
+        expect(c9sGrandChildNames[2]).eq("/c9/c1/_number1")
+        expect(stateVariables[c9sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c9sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c9sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c10s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        let c10sChildName = stateVariables[c10s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c10sGrandChildNames = stateVariables[c10sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c10sGrandChildNames[0].slice(0, 7)).eq("/c10/__")
+        expect(c10sGrandChildNames[1].slice(0, 7)).eq("/c10/__")
+        expect(c10sGrandChildNames[2].slice(0, 7)).eq("/c10/__")
+        expect(stateVariables[c10sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c10sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c10sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c11s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        let c11sChildName = stateVariables[c11s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c11sGrandChildNames = stateVariables[c11sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c11sGrandChildNames[0].slice(0, 7)).eq("/c11/__")
+        expect(c11sGrandChildNames[1].slice(0, 7)).eq("/c11/__")
+        expect(c11sGrandChildNames[2].slice(0, 7)).eq("/c11/__")
+        expect(stateVariables[c11sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c11sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c11sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+      })
+
+
+    })
+  });
+
+  it('copy with newNamespace retains original names, even with group that has new namespace and assigns names', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p>values: <group name="grp" newNamespace assignNames="n1 n2"><number>1</number> <number>2</number></group> <number name="n1">3</number></p>
+      
+      <section><copy name="c1" target="_p1" newNamespace /></section>
+      
+      <copy name="c2" target="c1" />
+      <copy name="c3" target="c1" assignNames="p1a" />
+      <copy name="c4" target="c1" newNamespace />
+      <copy name="c5" target="c1" newNamespace assignNames="p1b" />
+      <copy name="c6" target="c1" newNamespace assignNames="grp" />
+      
+      <copy name="c7" target="_section1" />
+      <copy name="c8" target="_section1" assignNames="s1a" />
+      <copy name="c9" target="_section1" newNamespace />
+      <copy name="c10" target="_section1" newNamespace assignNames="s1b" />
+      <copy name="c11" target="_section1" newNamespace assignNames="grp" />
+    
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');
+    cy.get(cesc('#/grp/n1')).should('have.text', '1');
+    cy.get(cesc('#/grp/n2')).should('have.text', '2');
+    cy.get(cesc('#/n1')).should('have.text', '3');
+
+    cy.get(cesc('#/c1/grp/n1')).should('have.text', '1');
+    cy.get(cesc('#/c1/grp/n2')).should('have.text', '2');
+    cy.get(cesc('#/c1/n1')).should('have.text', '3');
+
+    cy.get(cesc('#/c4/grp/n1')).should('have.text', '1');
+    cy.get(cesc('#/c4/grp/n2')).should('have.text', '2');
+    cy.get(cesc('#/c4/n1')).should('have.text', '3');
+
+    cy.get(cesc('#/c9/c1/grp/n1')).should('have.text', '1');
+    cy.get(cesc('#/c9/c1/grp/n2')).should('have.text', '2');
+    cy.get(cesc('#/c9/c1/n1')).should('have.text', '3');
+
+    cy.get(cesc('#/_p1')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/p1a')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
+    cy.get(cesc('#/c6/grp')).should('have.text', 'values: 1 2 3')
+
+    cy.get(cesc('#/_section1')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/s1a')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/c10/s1b')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/c11/grp')).should('have.text', 'Section 1values: 1 2 3')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let c2p = stateVariables["/c2"].replacements[0].componentName;
+      let c3p = stateVariables["/c3"].replacements[0].componentName;
+      let c4p = stateVariables["/c4"].replacements[0].componentName;
+      let c5p = stateVariables["/c5"].replacements[0].componentName;
+      let c6p = stateVariables["/c6"].replacements[0].componentName;
+      let c7s = stateVariables["/c7"].replacements[0].componentName;
+      let c8s = stateVariables["/c8"].replacements[0].componentName;
+      let c9s = stateVariables["/c9"].replacements[0].componentName;
+      let c10s = stateVariables["/c10"].replacements[0].componentName;
+      let c11s = stateVariables["/c11"].replacements[0].componentName;
+
+      cy.get(cesc('#' + c2p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c3p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c6p)).should('have.text', 'values: 1 2 3')
+      cy.get(cesc('#' + c7s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c8s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c9s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c10s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c11s)).should('have.text', 'Section 1values: 1 2 3')
+
+      // put in window just so happens after above
+      cy.window().then(async (win) => {
+        expect(stateVariables["/c1/grp/n1"].stateValues.value).eq(1)
+        expect(stateVariables["/c1/grp/n2"].stateValues.value).eq(2)
+        expect(stateVariables["/c1/n1"].stateValues.value).eq(3)
+
+        // c2p's children should have gotten unique names (so begin with two underscores)
+        let c2pChildNames = stateVariables[c2p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c2pChildNames[0].slice(0, 3)).eq("/__")
+        expect(c2pChildNames[1].slice(0, 3)).eq("/__")
+        expect(c2pChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c2pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c2pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c2pChildNames[2]].stateValues.value).eq(3);
+
+        // c3p's children should have gotten unique names (so begin with two underscores)
+        let c3pChildNames = stateVariables[c3p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c3pChildNames[0].slice(0, 3)).eq("/__")
+        expect(c3pChildNames[1].slice(0, 3)).eq("/__")
+        expect(c3pChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c3pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c3pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c3pChildNames[2]].stateValues.value).eq(3);
+
+        // c4p's children should have retained their original names
+        let c4pChildNames = stateVariables[c4p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c4pChildNames[0]).eq("/c4/grp/n1")
+        expect(c4pChildNames[1]).eq("/c4/grp/n2")
+        expect(c4pChildNames[2]).eq("/c4/n1")
+        expect(stateVariables[c4pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c4pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c4pChildNames[2]].stateValues.value).eq(3);
+
+        // c5p's children should have gotten unique names (so begin with two underscores after namespace)
+        let c5pChildNames = stateVariables[c5p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c5pChildNames[0].slice(0, 6)).eq("/c5/__")
+        expect(c5pChildNames[1].slice(0, 6)).eq("/c5/__")
+        expect(c5pChildNames[2].slice(0, 6)).eq("/c5/__")
+        expect(stateVariables[c5pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c5pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c5pChildNames[2]].stateValues.value).eq(3);
+
+        // c6p's children should have gotten unique names (so begin with two underscores after namespace)
+        let c6pChildNames = stateVariables[c6p].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+        expect(c6pChildNames[0].slice(0, 6)).eq("/c6/__")
+        expect(c6pChildNames[1].slice(0, 6)).eq("/c6/__")
+        expect(c6pChildNames[2].slice(0, 6)).eq("/c6/__")
+        expect(stateVariables[c6pChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c6pChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c6pChildNames[2]].stateValues.value).eq(3);
+
+
+        // c7s's grandchildren should have gotten unique names (so begin with two underscores)
+        let c7sChildName = stateVariables[c7s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c7sGrandChildNames = stateVariables[c7sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c7sGrandChildNames[0].slice(0, 3)).eq("/__")
+        expect(c7sGrandChildNames[1].slice(0, 3)).eq("/__")
+        expect(c7sGrandChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c7sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c7sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c7sGrandChildNames[2]].stateValues.value).eq(3);
+
+        // c8s's grandchildren should have gotten unique names (so begin with two underscores)
+        let c8sChildName = stateVariables[c8s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c8sGrandChildNames = stateVariables[c8sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c8sGrandChildNames[0].slice(0, 3)).eq("/__")
+        expect(c8sGrandChildNames[1].slice(0, 3)).eq("/__")
+        expect(c8sGrandChildNames[2].slice(0, 3)).eq("/__")
+        expect(stateVariables[c8sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c8sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c8sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c9s's grandchildren should have retained their original names
+        let c9sChildName = stateVariables[c9s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c9sGrandChildNames = stateVariables[c9sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c9sGrandChildNames[0]).eq("/c9/c1/grp/n1")
+        expect(c9sGrandChildNames[1]).eq("/c9/c1/grp/n2")
+        expect(c9sGrandChildNames[2]).eq("/c9/c1/n1")
+        expect(stateVariables[c9sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c9sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c9sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c10s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        let c10sChildName = stateVariables[c10s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c10sGrandChildNames = stateVariables[c10sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c10sGrandChildNames[0].slice(0, 7)).eq("/c10/__")
+        expect(c10sGrandChildNames[1].slice(0, 7)).eq("/c10/__")
+        expect(c10sGrandChildNames[2].slice(0, 7)).eq("/c10/__")
+        expect(stateVariables[c10sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c10sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c10sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+        // c11s's grandchildren should have gotten unique names (so begin with two underscores after namespace)
+        let c11sChildName = stateVariables[c11s].activeChildren.filter(x => x.componentName)[0].componentName;
+        let c11sGrandChildNames = stateVariables[c11sChildName].activeChildren.filter(x => x.componentName).map(x => x.componentName);
+
+        expect(c11sGrandChildNames[0].slice(0, 7)).eq("/c11/__")
+        expect(c11sGrandChildNames[1].slice(0, 7)).eq("/c11/__")
+        expect(c11sGrandChildNames[2].slice(0, 7)).eq("/c11/__")
+        expect(stateVariables[c11sGrandChildNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[c11sGrandChildNames[1]].stateValues.value).eq(2);
+        expect(stateVariables[c11sGrandChildNames[2]].stateValues.value).eq(3);
+
+
+      })
+
+
+    })
   });
 
 

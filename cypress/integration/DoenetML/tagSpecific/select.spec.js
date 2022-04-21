@@ -1519,7 +1519,7 @@ describe('Select Tag Tests', function () {
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
-        requestedVariant: { index: 2 }
+        requestedVariantIndex: 2
       }, "*");
     });
 
@@ -1574,7 +1574,7 @@ describe('Select Tag Tests', function () {
     <p>Selected variables repeated: <aslist><copy name="s2" target="_select1" /></aslist></p>
 
     `,
-        requestedVariant: { index: 3 }
+        requestedVariantIndex: 3
       }, "*");
     });
 
@@ -2014,7 +2014,7 @@ describe('Select Tag Tests', function () {
     </select>
     </aslist>
     `,
-        requestedVariant: { index: 0 },
+        requestedVariantIndex: 0
       }, "*");
     });
 

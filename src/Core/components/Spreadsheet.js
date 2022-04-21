@@ -427,6 +427,17 @@ export default class Spreadsheet extends BlockComponent {
         }
 
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName.slice(0, 3) === "row") {
+          let rowNum = varName.slice(3);
+          return `cell(${rowNum},${propIndex})`
+        }
+        if (varName.slice(0, 6) === "column") {
+          let columnNum = varName.slice(6);
+          return `cell(${propIndex},${columnNum})`
+        }
+        return null;
+      },
       arrayVarNameFromArrayKey(arrayKey) {
         return "cell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
       },
@@ -687,6 +698,17 @@ export default class Spreadsheet extends BlockComponent {
       arrayVarNameFromArrayKey(arrayKey) {
         return "evaluatedCell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName.slice(0, 12) === "evaluatedRow") {
+          let rowNum = varName.slice(12);
+          return `evaluatedCell(${rowNum},${propIndex})`
+        }
+        if (varName.slice(0, 15) === "evaluatedColumn") {
+          let columnNum = varName.slice(15);
+          return `evaluatedCell(${propIndex},${columnNum})`
+        }
+        return null;
+      },
       arrayDefinitionByKey({ globalDependencyValues }) {
 
         // console.log(`array definition of evaluatedCells`)
@@ -902,6 +924,17 @@ export default class Spreadsheet extends BlockComponent {
       arrayVarNameFromArrayKey(arrayKey) {
         return "pointsInCell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName.slice(0, 11) === "pointsInRow") {
+          let rowNum = varName.slice(11);
+          return `pointsInCell(${rowNum},${propIndex})`
+        }
+        if (varName.slice(0, 14) === "pointsInColumn") {
+          let columnNum = varName.slice(14);
+          return `pointsInCell(${propIndex},${columnNum})`
+        }
+        return null;
+      },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
 
@@ -924,14 +957,14 @@ export default class Spreadsheet extends BlockComponent {
         for (let arrayKey of arrayKeys) {
           let cellText = dependencyValuesByKey[arrayKey].cellText;
           if (!cellText) {
-            pointsInCells[arrayKey] = null;
+            pointsInCells[arrayKey] = me.fromAst("\uff3f");
             continue;
           }
           let cellME;
           try {
             cellME = me.fromAst(textToAst.convert(cellText));
           } catch (e) {
-            pointsInCells[arrayKey] = null;
+            pointsInCells[arrayKey] = me.fromAst("\uff3f");
             continue;
           }
 
@@ -940,7 +973,7 @@ export default class Spreadsheet extends BlockComponent {
           )) {
             pointsInCells[arrayKey] = cellME;
           } else {
-            pointsInCells[arrayKey] = null;
+            pointsInCells[arrayKey] = me.fromAst("\uff3f");
           }
         }
 

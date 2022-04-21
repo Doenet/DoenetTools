@@ -532,7 +532,7 @@ export default class Select extends CompositeComponent {
       }
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let assignNames = component.doenetAttributes.assignNames;
 
@@ -618,7 +618,7 @@ export default class Select extends CompositeComponent {
     }
 
     for (let child of serializedComponent.children) {
-      if (child.attributes.selectWeight || child.attributes.selectForVariantNames) {
+      if (child.attributes?.selectWeight || child.attributes?.selectForVariantNames) {
         // uniqueVariants disabled if have a child with selectWeight or selectForVariantNames specified
         console.log(`Unique variants for select disabled if have an option with selectWeight or selectForVariantNames specified`)
         return { success: false }

@@ -216,7 +216,6 @@ export default class Collect extends CompositeComponent {
         if (stateValues.propName) {
           descendants.variableNames = [stateValues.propName];
           descendants.variablesOptional = true;
-          descendants.componentIndex = stateValues.componentIndex;
           descendants.propIndex = stateValues.propIndex;
           descendants.publicCaseInsensitiveVariableMatch = true;
           descendants.useMappedVariableNames = true;
@@ -388,7 +387,7 @@ export default class Collect extends CompositeComponent {
       return { serializedReplacements, propVariablesCopiedByReplacement };
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let propName = await component.stateValues.propName;
     if (propName) {
