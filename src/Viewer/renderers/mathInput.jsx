@@ -263,11 +263,18 @@ export default function MathInput(props) {
           <span>(no attempts remaining)</span>
         </>
       );
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+      checkWorkButton = (
+        <>
+          {checkWorkButton}
+          <span>(1 attempt remaining)</span>
+        </>
+      );
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
       checkWorkButton = (
         <>
           {checkWorkButton}
-          <span>(attempts remaining: {SVs.numberOfAttemptsLeft})</span>
+          <span>({SVs.numberOfAttemptsLeft} attempts remaining)</span>
         </>
       );
     }

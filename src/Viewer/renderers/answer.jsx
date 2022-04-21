@@ -66,7 +66,6 @@ export default function Answer(props) {
       display: inline-block;
       padding: 1px 6px 1px 6px;
       color: white;
-      font-size: 14px;
       /* font-weight: bold; */
       padding: 2px;
       margin-right: 4px;
@@ -156,12 +155,18 @@ export default function Answer(props) {
           (no attempts remaining)
         </span>
       </>
-    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
-
+    } else if (SVs.numberOfAttemptsLeft == 1) {
       checkworkComponent = <>
         {checkworkComponent}
         <span>
-          (attempts remaining: {SVs.numberOfAttemptsLeft})
+          (1 attempt remaining)
+        </span>
+      </>
+    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
+      checkworkComponent = <>
+        {checkworkComponent}
+        <span>
+          ({SVs.numberOfAttemptsLeft} attempts remaining)
         </span>
       </>
     }

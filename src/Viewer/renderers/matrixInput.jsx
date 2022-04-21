@@ -12,8 +12,8 @@ const Matrix = styled.div`
   margin: 6px;
   display: inline-block;
   vertical-align: middle;
-  width:auto;
-  border-style: none;
+  width: auto;
+  /* margin: 20px; */
 
   :before {
     content: "";
@@ -173,12 +173,20 @@ export default function MatrixInput(props) {
           (no attempts remaining)
         </span>
       </>
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+
+      checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (1 attempt remaining)
+        </span>
+      </>
     } else if (SVs.numberOfAttemptsLeft < Infinity) {
 
       checkWorkButton = <>
         {checkWorkButton}
         <span>
-          (attempts remaining: {SVs.numberOfAttemptsLeft})
+          ({SVs.numberOfAttemptsLeft} attempts remaining)
         </span>
       </>
     }
@@ -209,8 +217,8 @@ export default function MatrixInput(props) {
 
   let rowNumControls = null;
   if (SVs.showSizeControls) {
-    rowNumControls =
-      <ActionButtonGroup style={{margin: "10px"}}>
+    rowNumControls = <span style={{marginLeft: "20px", marginTop: "10px"}}>
+      <ActionButtonGroup>
       <ActionButton id={name + "_rowDecrement"} value="r-" onClick={() => callAction({
         action: actions.updateNumRows,
         args: { numRows: SVs.numRows - 1 }
@@ -224,10 +232,11 @@ export default function MatrixInput(props) {
         r+
       </ActionButton>
       </ActionButtonGroup>
+    </span>
   }
   let colNumControls = null;
   if (SVs.showSizeControls) {
-    colNumControls =
+    colNumControls = <span style={{marginLeft: "20px", marginTop: "10px"}}>
       <ActionButtonGroup>
       <ActionButton id={name + "_columnDecrement"} value="c-" onClick={() => callAction({
         action: actions.updateNumColumns,
@@ -242,12 +251,13 @@ export default function MatrixInput(props) {
         c+
       </ActionButton>
       </ActionButtonGroup>
+    </span>
   }
 
 
   return <React.Fragment>
     <a name={name} />
-    <div>
+    <div style={{display: "flex"}}>
     <Matrix className="matrixInputSurroundingBox" id={name}>
       <table><tbody>
         {matrixInputs}
