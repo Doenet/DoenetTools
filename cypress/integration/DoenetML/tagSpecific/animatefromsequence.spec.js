@@ -202,7 +202,7 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let lastValue = stateVariables['/x'].stateValues.value;
-      console.log(`lastValue: ` , lastValue)
+      console.log(`lastValue: `, lastValue)
       expect(lastValue === "z" || lastValue === "w").be.true;
       expect(stateVariables['/a'].stateValues.value).eq(lastValue);
       expect(stateVariables['/a2'].stateValues.value).eq(lastValue);
@@ -767,20 +767,27 @@ describe('AnimateFromSequence Tag Tests', function () {
     cy.get('#\\/cad').should('have.text', 'increase')
     cy.get('#\\/anmode_input').should('have.value', 'increase')
 
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/anmode"].stateValues.value).eq('increase');
+      expect(stateVariables["/an"].stateValues.animationMode).eq('increase');
+    })
+
 
     cy.get('#\\/anmode_input').clear().type('decrease{enter}')
 
     cy.get('#\\/cad').should('have.text', 'decrease')
     cy.get('#\\/anmode_input').should('have.value', 'decrease')
 
-
     cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: '<text>b</text>',
-      }, "*");
-    });
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/anmode"].stateValues.value).eq('decrease');
+      expect(stateVariables["/an"].stateValues.animationMode).eq('decrease');
+    })
 
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+    cy.wait(2000);  // wait for 1 second debounce
+
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -790,9 +797,20 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/anmode"];
+    }))
+
     cy.get('#\\/cad').should('have.text', 'decrease')
     cy.get('#\\/anmode_input').should('have.value', 'decrease')
 
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/anmode"].stateValues.value).eq('decrease');
+      expect(stateVariables["/an"].stateValues.animationMode).eq('decrease');
+    })
 
   })
 
@@ -884,7 +902,7 @@ describe('AnimateFromSequence Tag Tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
         return stateVariables['/x'].stateValues.animationOn === false;
       }))
-  
+
       cy.get('#\\/a').should('have.text', `${lastValue}`)
       cy.get('#\\/a2').should('have.text', `${lastValue}`)
 
@@ -927,6 +945,271 @@ describe('AnimateFromSequence Tag Tests', function () {
 
     })
 
+
+  })
+
+  it('animate componentIndex', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>values: <group name="grp">
+    <number>1</number>
+    <number>2</number>
+    <number>3</number>
+  </group>
+  </p>
+
+  <p name="plist"><aslist><collect componentTypes="number" target="grp" name="col" assignNames="n1 n2 n3" /></aslist></p>
+    
+  <p>Index to animate: <mathinput prefill="1" name="ind" /></p>
+
+  <animateFromSequence name="x" animationMode='increase' animationOn='$b' target='col' animationInterval='100' componentIndex="$ind" />
+
+  <booleaninput name="b" />
+
+  <p>copy: <copy target="grp" name="c2" newNamespace /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_number1').should('have.text', '1')
+    cy.get('#\\/_number2').should('have.text', '2')
+    cy.get('#\\/_number3').should('have.text', '3')
+    cy.get('#\\/n1').should('have.text', '1')
+    cy.get('#\\/n2').should('have.text', '2')
+    cy.get('#\\/n3').should('have.text', '3')
+    cy.get('#\\/c2\\/_number1').should('have.text', '1')
+    cy.get('#\\/c2\\/_number2').should('have.text', '2')
+    cy.get('#\\/c2\\/_number3').should('have.text', '3')
+    cy.get('#\\/plist').should('have.text', '1, 2, 3')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x'].stateValues.value).eq(1);
+      expect(stateVariables['/_number1'].stateValues.value).eq(1);
+      expect(stateVariables['/_number2'].stateValues.value).eq(2);
+      expect(stateVariables['/_number3'].stateValues.value).eq(3);
+      expect(stateVariables['/n1'].stateValues.value).eq(1);
+      expect(stateVariables['/n2'].stateValues.value).eq(2);
+      expect(stateVariables['/n3'].stateValues.value).eq(3);
+      expect(stateVariables['/c2/_number1'].stateValues.value).eq(1);
+      expect(stateVariables['/c2/_number2'].stateValues.value).eq(2);
+      expect(stateVariables['/c2/_number3'].stateValues.value).eq(3);
+      expect(stateVariables['/x'].stateValues.selectedIndex).eq(1);
+      expect(stateVariables['/x'].stateValues.animationOn).eq(false);
+    })
+
+    cy.get(`#\\/b_input`).click();
+    cy.get('#\\/_number1').should('have.text', '2')
+    cy.get('#\\/n1').should('have.text', '2')
+    cy.get('#\\/c2\\/_number1').should('have.text', '2')
+    cy.get('#\\/_number1').should('have.text', '3')
+    cy.get('#\\/n1').should('have.text', '3')
+    cy.get('#\\/c2\\/_number1').should('have.text', '3')
+    cy.get('#\\/_number1').should('have.text', '4')
+    cy.get('#\\/n1').should('have.text', '4')
+    cy.get('#\\/c2\\/_number1').should('have.text', '4')
+    cy.get('#\\/_number1').should('have.text', '5')
+    cy.get('#\\/n1').should('have.text', '5')
+    cy.get('#\\/c2\\/_number1').should('have.text', '5')
+    cy.get('#\\/_number1').should('have.text', '6')
+    cy.get('#\\/n1').should('have.text', '6')
+    cy.get('#\\/c2\\/_number1').should('have.text', '6')
+    cy.get('#\\/_number1').should('have.text', '7')
+    cy.get('#\\/n1').should('have.text', '7')
+    cy.get('#\\/c2\\/_number1').should('have.text', '7')
+    cy.get('#\\/_number1').should('have.text', '8')
+    cy.get('#\\/n1').should('have.text', '8')
+    cy.get('#\\/c2\\/_number1').should('have.text', '8')
+    cy.get('#\\/_number1').should('have.text', '9')
+    cy.get('#\\/n1').should('have.text', '9')
+    cy.get('#\\/c2\\/_number1').should('have.text', '9')
+    cy.get('#\\/_number1').should('have.text', '10')
+    cy.get('#\\/n1').should('have.text', '10')
+    cy.get('#\\/c2\\/_number1').should('have.text', '10')
+    cy.get('#\\/_number1').should('have.text', '1')
+    cy.get('#\\/n1').should('have.text', '1')
+    cy.get('#\\/c2\\/_number1').should('have.text', '1')
+    cy.get('#\\/_number1').should('have.text', '2')
+    cy.get('#\\/n1').should('have.text', '2')
+    cy.get('#\\/c2\\/_number1').should('have.text', '2')
+
+    cy.get(`#\\/b_input`).click();
+
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables['/x'].stateValues.animationOn === false;
+    }))
+
+    // should stop at 2 or 3
+    cy.get('#\\/_number1').contains(/2|3/)
+
+    let lastValue1;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      lastValue1 = stateVariables['/x'].stateValues.value;
+      expect(lastValue1 === 2 || lastValue1 === 3).be.true;
+
+      expect(stateVariables['/_number1'].stateValues.value).eq(lastValue1);
+      expect(stateVariables['/_number2'].stateValues.value).eq(2);
+      expect(stateVariables['/_number3'].stateValues.value).eq(3);
+      expect(stateVariables['/n1'].stateValues.value).eq(lastValue1);
+      expect(stateVariables['/n2'].stateValues.value).eq(2);
+      expect(stateVariables['/n3'].stateValues.value).eq(3);
+      expect(stateVariables['/c2/_number1'].stateValues.value).eq(lastValue1);
+      expect(stateVariables['/c2/_number2'].stateValues.value).eq(2);
+      expect(stateVariables['/c2/_number3'].stateValues.value).eq(3);
+      expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue1);
+      expect(stateVariables['/x'].stateValues.animationOn).eq(false);
+
+      cy.get('#\\/_number1').should('have.text', `${lastValue1}`)
+      cy.get('#\\/_number2').should('have.text', '2')
+      cy.get('#\\/_number3').should('have.text', '3')
+      cy.get('#\\/n1').should('have.text', `${lastValue1}`)
+      cy.get('#\\/n2').should('have.text', '2')
+      cy.get('#\\/n3').should('have.text', '3')
+      cy.get('#\\/c2\\/_number1').should('have.text', `${lastValue1}`)
+      cy.get('#\\/c2\\/_number2').should('have.text', '2')
+      cy.get('#\\/c2\\/_number3').should('have.text', '3')
+      cy.get('#\\/plist').should('have.text', `${lastValue1}, 2, 3`)
+
+
+    })
+
+    cy.log('Animate index 2');
+
+    cy.get('#\\/ind textarea').type("{end}{backspace}2{enter}", { force: true });
+
+    cy.get(`#\\/b_input`).click();
+    cy.get('#\\/_number2').should('have.text', '3')
+    cy.get('#\\/n2').should('have.text', '3')
+    cy.get('#\\/c2\\/_number2').should('have.text', '3')
+    cy.get('#\\/_number2').should('have.text', '4')
+    cy.get('#\\/n2').should('have.text', '4')
+    cy.get('#\\/c2\\/_number2').should('have.text', '4')
+    cy.get('#\\/_number2').should('have.text', '5')
+    cy.get('#\\/n2').should('have.text', '5')
+    cy.get('#\\/c2\\/_number2').should('have.text', '5')
+    cy.get('#\\/_number2').should('have.text', '6')
+    cy.get('#\\/n2').should('have.text', '6')
+    cy.get('#\\/c2\\/_number2').should('have.text', '6')
+    cy.get('#\\/_number2').should('have.text', '7')
+    cy.get('#\\/n2').should('have.text', '7')
+    cy.get('#\\/c2\\/_number2').should('have.text', '7')
+    cy.get('#\\/_number2').should('have.text', '8')
+    cy.get('#\\/n2').should('have.text', '8')
+    cy.get('#\\/c2\\/_number2').should('have.text', '8')
+
+    cy.get(`#\\/b_input`).click();
+
+    // should stop at 9 or 0
+    cy.get('#\\/_number2').contains(/8|9/)
+
+
+    let lastValue2;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      lastValue2 = stateVariables['/x'].stateValues.value;
+      expect(lastValue2 === 8 || lastValue2 === 9).be.true;
+
+      expect(stateVariables['/_number1'].stateValues.value).eq(lastValue1);
+      expect(stateVariables['/_number2'].stateValues.value).eq(lastValue2);
+      expect(stateVariables['/_number3'].stateValues.value).eq(3);
+      expect(stateVariables['/n1'].stateValues.value).eq(lastValue1);
+      expect(stateVariables['/n2'].stateValues.value).eq(lastValue2);
+      expect(stateVariables['/n3'].stateValues.value).eq(3);
+      expect(stateVariables['/c2/_number1'].stateValues.value).eq(lastValue1);
+      expect(stateVariables['/c2/_number2'].stateValues.value).eq(lastValue2);
+      expect(stateVariables['/c2/_number3'].stateValues.value).eq(3);
+      expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue2);
+      expect(stateVariables['/x'].stateValues.animationOn).eq(false);
+
+      cy.get('#\\/_number1').should('have.text', `${lastValue1}`)
+      cy.get('#\\/_number2').should('have.text', `${lastValue2}`)
+      cy.get('#\\/_number3').should('have.text', '3')
+      cy.get('#\\/n1').should('have.text', `${lastValue1}`)
+      cy.get('#\\/n2').should('have.text', `${lastValue2}`)
+      cy.get('#\\/n3').should('have.text', '3')
+      cy.get('#\\/c2\\/_number1').should('have.text', `${lastValue1}`)
+      cy.get('#\\/c2\\/_number2').should('have.text', `${lastValue2}`)
+      cy.get('#\\/c2\\/_number3').should('have.text', '3')
+      cy.get('#\\/plist').should('have.text', `${lastValue1}, ${lastValue2}, 3`)
+
+
+    })
+
+    cy.log('Switch to animate index 3 while animating');
+
+    cy.get(`#\\/b_input`).click();
+    cy.get('#\\/_number2').should('have.text', '10')
+    cy.get('#\\/n2').should('have.text', '10')
+    cy.get('#\\/c2\\/_number2').should('have.text', '10')
+    cy.get('#\\/_number2').should('have.text', '1')
+    cy.get('#\\/n2').should('have.text', '1')
+    cy.get('#\\/c2\\/_number2').should('have.text', '1')
+
+    cy.get('#\\/ind textarea').type("{end}{backspace}3{enter}", { force: true });
+
+    cy.get('#\\/_number3').should('have.text', '4')
+    cy.get('#\\/n3').should('have.text', '4')
+    cy.get('#\\/c2\\/_number3').should('have.text', '4')
+    cy.get('#\\/_number3').should('have.text', '5')
+    cy.get('#\\/n3').should('have.text', '5')
+    cy.get('#\\/c2\\/_number3').should('have.text', '5')
+    cy.get('#\\/_number3').should('have.text', '6')
+    cy.get('#\\/n3').should('have.text', '6')
+    cy.get('#\\/c2\\/_number3').should('have.text', '6')
+    cy.get('#\\/_number3').should('have.text', '7')
+    cy.get('#\\/n3').should('have.text', '7')
+    cy.get('#\\/c2\\/_number3').should('have.text', '7')
+
+    cy.get(`#\\/b_input`).click();
+
+    // should stop at 7 or 8
+    cy.get('#\\/_number3').contains(/7|8/)
+
+    // previous should have stopped at 1 or 2
+    cy.get('#\\/_number2').contains(/1|2/)
+
+    let lastValue3;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      lastValue3 = stateVariables['/x'].stateValues.value;
+      expect(lastValue3 === 7 || lastValue3 === 8).be.true;
+      lastValue2 = stateVariables['/_number2'].stateValues.value;
+      expect(lastValue2 === 1 || lastValue2 === 2).be.true;
+
+      expect(stateVariables['/_number1'].stateValues.value).eq(lastValue1);
+      expect(stateVariables['/_number3'].stateValues.value).eq(lastValue3);
+      expect(stateVariables['/n1'].stateValues.value).eq(lastValue1);
+      expect(stateVariables['/n2'].stateValues.value).eq(lastValue2);
+      expect(stateVariables['/n3'].stateValues.value).eq(lastValue3);
+      expect(stateVariables['/c2/_number1'].stateValues.value).eq(lastValue1);
+      expect(stateVariables['/c2/_number2'].stateValues.value).eq(lastValue2);
+      expect(stateVariables['/c2/_number3'].stateValues.value).eq(lastValue3);
+      expect(stateVariables['/x'].stateValues.selectedIndex).eq(lastValue3);
+      expect(stateVariables['/x'].stateValues.animationOn).eq(false);
+
+      cy.get('#\\/_number1').should('have.text', `${lastValue1}`)
+      cy.get('#\\/_number2').should('have.text', `${lastValue2}`)
+      cy.get('#\\/_number3').should('have.text', `${lastValue3}`)
+      cy.get('#\\/n1').should('have.text', `${lastValue1}`)
+      cy.get('#\\/n2').should('have.text', `${lastValue2}`)
+      cy.get('#\\/n3').should('have.text', `${lastValue3}`)
+      cy.get('#\\/c2\\/_number1').should('have.text', `${lastValue1}`)
+      cy.get('#\\/c2\\/_number2').should('have.text', `${lastValue2}`)
+      cy.get('#\\/c2\\/_number3').should('have.text', `${lastValue3}`)
+      cy.get('#\\/plist').should('have.text', `${lastValue1}, ${lastValue2}, ${lastValue3}`)
+
+
+    })
 
   })
 

@@ -9424,17 +9424,10 @@ describe('Line Tag Tests', function () {
       expect(stateVariables['/B'].stateValues.xs).eqls([6, 7]);
     });
 
-
+    cy.wait(2000);  // wait for 1 second debounce
 
     cy.log('reload page')
-
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: "<text>b</text>"
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -9478,15 +9471,10 @@ describe('Line Tag Tests', function () {
     });
 
 
+    cy.wait(2000);  // wait for 1 second debounce
+
     cy.log('reload page')
-
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: "<text>b</text>"
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
