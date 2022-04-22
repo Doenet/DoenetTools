@@ -1,7 +1,7 @@
 // import React from 'react';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { useRecoilCallback } from 'recoil';
-import { authorItemByDoenetId, selectedCourseItems } from '../../../_reactComponents/Course/CourseActions';
+import { authorItemByDoenetId, copiedCourseItems, cutCourseItems, selectedCourseItems } from '../../../_reactComponents/Course/CourseActions';
 
 export default function NavigationLeave(){
   // console.log(">>>===NavigationLeave")
@@ -16,6 +16,17 @@ export default function NavigationLeave(){
     }
     set(selectedCourseItems,[]);
     set(selectedMenuPanelAtom,"");
+    //Undo copy and cut on leave
+    let cutObjs = await snapshot.getPromise(cutCourseItems);
+    for (let cutObj of cutObjs){
+      set(authorItemByDoenetId(cutObj.doenetId),(prev)=>{
+        let next = {...prev};
+        next['isBeingCut'] = false;
+        return next;
+      })
+    }
+    set(cutCourseItems,[]);
+    set(copiedCourseItems,[]);
   })
   clearSelections()
 

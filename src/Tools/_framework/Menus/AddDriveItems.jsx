@@ -5,12 +5,15 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { useCourse } from '../../../_reactComponents/Course/CourseActions';
+// import { useToast, toastType } from '@Toast';
 
 export default function AddDriveItems() {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const { create } = useCourse(courseId);
+  // const addToast = useToast();
 
   return (
+ <>
     <ButtonGroup vertical>
       <Button
         width="menu"
@@ -32,5 +35,6 @@ export default function AddDriveItems() {
         Add Section
       </Button>
     </ButtonGroup>
+ </>
   );
 }
