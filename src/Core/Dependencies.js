@@ -2239,7 +2239,7 @@ export class DependencyHandler {
             inheritedComponentType: component.componentType,
             baseComponentType: "_composite"
           })
-          if (isComposite && !(component.attributes.componentType && component.attributes.componentType.primitive)) {
+          if (isComposite && !(component.attributes.componentType?.primitive)) {
             if (stateVariable === "readyToExpandWhenResolved") {
               compositesWithReadyToExpandWhenResolved.push(componentName)
             } else if (stateVariable === component.constructor.stateVariableToEvaluateAfterReplacements) {
@@ -2559,12 +2559,11 @@ class Dependency {
       }
 
       if (this.propIndex !== undefined) {
-        console.warn(`Need to implement propIndex!`)
-        // mappedVarNames = this.dependencyHandler.core.arrayEntryNameFromPropIndex({
-        //   stateVariables: mappedVarNames,
-        //   component: downComponent,
-        //   propIndex: this.propIndex
-        // });
+        mappedVarNames = await this.dependencyHandler.core.arrayEntryNamesFromPropIndex({
+          stateVariables: mappedVarNames,
+          component: downComponent,
+          propIndex: this.propIndex
+        });
       }
 
       // Note: mappedVarNames contains all original variables mapped with any aliases.
@@ -4200,7 +4199,7 @@ class ChildDependency extends Dependency {
               }
             }
             let compositeComp = this.dependencyHandler._components[compositeNotReady];
-            if (compositeComp.attributes.componentType && compositeComp.attributes.componentType.primitive) {
+            if (compositeComp.attributes.componentType?.primitive) {
               compositesBlockingWithComponentType.push(compositeNotReady);
             } else {
               compositesBlockingWithoutComponentType.push(compositeNotReady)
@@ -4418,6 +4417,10 @@ class DescendantDependency extends Dependency {
     // of all composites except copies of external content
     this.ignoreReplacementsOfEncounteredComposites = this.definition.ignoreReplacementsOfEncounteredComposites;
 
+    if (Number.isInteger(this.definition.componentIndex)) {
+      this.componentIndex = this.definition.componentIndex;
+    }
+
   }
 
   async determineDownstreamComponents() {
@@ -4555,6 +4558,15 @@ class DescendantDependency extends Dependency {
       ignoreReplacementsOfEncounteredComposites: this.ignoreReplacementsOfEncounteredComposites,
       componentInfoObjects: this.dependencyHandler.componentInfoObjects,
     });
+
+    if (this.componentIndex !== undefined) {
+      let theDescendant = descendants[this.componentIndex - 1];
+      if (theDescendant) {
+        descendants = [theDescendant]
+      } else {
+        descendants = [];
+      }
+    }
 
     return {
       success: true,
@@ -6371,7 +6383,7 @@ class ExpandTargetNameDependency extends Dependency {
   async getValue() {
 
     let parent = this.dependencyHandler._components[this.parentName];
-    let parentCreatesNewNamespace = parent.attributes.newNamespace && parent.attributes.newNamespace.primitive;
+    let parentCreatesNewNamespace = parent.attributes.newNamespace?.primitive;
 
     let namespaceStack = this.parentName.split('/').map(x => ({ namespace: x }))
 

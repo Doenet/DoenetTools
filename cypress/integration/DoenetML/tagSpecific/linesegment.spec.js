@@ -3185,4 +3185,50 @@ describe('LineSegment Tag Tests', function () {
     })
 
   })
+
+  it('copy propIndex of points', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <linesegment endpoints="(2,-3) (3,4)" />
+    </graph>
+ 
+    <p><mathinput name="n" /></p>
+
+    <p><copy prop="endpoints" target="_linesegment1" propIndex="$n" assignNames="P1 P2" /></p>
+
+    <p><copy prop="endpoint2" target="_linesegment1" propIndex="$n" assignNames="x" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 2, t1y = -3;
+    let t2x = 3, t2y = 4;
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+  
+    cy.get('#\\/n textarea').type("1{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+  
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+  
+
+  });
+
 });

@@ -73,14 +73,14 @@ describe('Lorem Tag Tests', function () {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text',  stateVariables[repl.componentName].activeChildren[0])
+        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text', stateVariables[repl.componentName].activeChildren[0])
       }
 
       for (let [ind, repl] of stateVariables["/words/lWords"].replacements.entries()) {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text',  stateVariables[repl.componentName].activeChildren[0])
+        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text', stateVariables[repl.componentName].activeChildren[0])
       }
 
 
@@ -102,21 +102,21 @@ describe('Lorem Tag Tests', function () {
       expect(stateVariables["/words/lWords"].replacements.length).eq(2 * nWords - 1);
 
       for (let [ind, repl] of stateVariables["/paragraphs/lPars"].replacements.entries()) {
-        cy.get(cesc(`#/paragraphs/${names[ind]}`)).should('have.text',  stateVariables[repl.componentName].activeChildren[0])
+        cy.get(cesc(`#/paragraphs/${names[ind]}`)).should('have.text', stateVariables[repl.componentName].activeChildren[0])
       }
 
       for (let [ind, repl] of stateVariables["/sentences/lSens"].replacements.entries()) {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text',  stateVariables[repl.componentName].activeChildren[0])
+        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text', stateVariables[repl.componentName].activeChildren[0])
       }
 
       for (let [ind, repl] of stateVariables["/words/lWords"].replacements.entries()) {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text',  stateVariables[repl.componentName].activeChildren[0])
+        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text', stateVariables[repl.componentName].activeChildren[0])
       }
 
 
@@ -131,7 +131,7 @@ describe('Lorem Tag Tests', function () {
   <text>a</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
   `,
-        requestedVariant: { index: 0 },
+        requestedVariantIndex: 0
       }, "*");
     });
 
@@ -148,14 +148,14 @@ describe('Lorem Tag Tests', function () {
 
     });
 
-    
+
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>b</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
   `,
-        requestedVariant: { index: 0 },
+        requestedVariantIndex: 0
       }, "*");
     });
 
@@ -171,14 +171,14 @@ describe('Lorem Tag Tests', function () {
 
     });
 
-    
+
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>c</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
   `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1
       }, "*");
     });
 
@@ -189,7 +189,7 @@ describe('Lorem Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables["/lPars"].replacements.length).eq(1);
-      
+
       paragraph1 = stateVariables[stateVariables["/lPars"].replacements[0].componentName].activeChildren[0];
       expect(paragraph1).not.eq(paragraph0);
       cy.get(cesc('#/a')).should('have.text', paragraph1)
@@ -204,7 +204,7 @@ describe('Lorem Tag Tests', function () {
   <text>d</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
   `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1
       }, "*");
     });
 

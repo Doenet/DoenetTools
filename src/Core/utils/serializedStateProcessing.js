@@ -1567,7 +1567,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
 
     let newNamespace;
-    if (attributes.newNamespace && attributes.newNamespace.primitive ||
+    if (attributes.newNamespace?.primitive ||
       (useOriginalNames && serializedComponent.originalAttributes
         && serializedComponent.originalAttributes.newNamespace)
     ) {
@@ -2422,7 +2422,7 @@ function createComponentNamesFromParentName({
 
 
   let useOriginalNames;
-  if (component.attributes.newNamespace && component.attributes.newNamespace.primitive
+  if (component.attributes.newNamespace?.primitive
     || originalNamesAreConsistent
   ) {
     useOriginalNames = true;
@@ -2558,7 +2558,7 @@ function moveComponentNamesToOriginalNames(components) {
   }
 }
 
-function markToCreateAllUniqueNames(components) {
+export function markToCreateAllUniqueNames(components) {
   for (let component of components) {
     if (typeof component !== "object") {
       continue;
@@ -2568,18 +2568,22 @@ function markToCreateAllUniqueNames(components) {
       component.doenetAttributes = {};
     }
     component.doenetAttributes.createUniqueName = true;
-    if (component.doenetAttributes.assignNames) {
-      component.doenetAttributes.createUniqueAssignNames = true;
-      component.doenetAttributes.originalAssignNames = component.doenetAttributes.assignNames;
-      delete component.doenetAttributes.assignNames;
-    } else if (component.originalDoenetAttributes && component.originalDoenetAttributes.assignNames) {
-      component.doenetAttributes.createUniqueAssignNames = true;
-      component.doenetAttributes.originalAssignNames = component.originalDoenetAttributes.assignNames;
-    }
     delete component.doenetAttributes.prescribedName;
-    if (component.children) {
-      markToCreateAllUniqueNames(component.children);
+
+    if (!component.attributes?.newNamespace?.primitive) {
+      if (component.doenetAttributes.assignNames) {
+        component.doenetAttributes.createUniqueAssignNames = true;
+        component.doenetAttributes.originalAssignNames = component.doenetAttributes.assignNames;
+        delete component.doenetAttributes.assignNames;
+      } else if (component.originalDoenetAttributes && component.originalDoenetAttributes.assignNames) {
+        component.doenetAttributes.createUniqueAssignNames = true;
+        component.doenetAttributes.originalAssignNames = component.originalDoenetAttributes.assignNames;
+      }
+      if (component.children) {
+        markToCreateAllUniqueNames(component.children);
+      }
     }
+
     if (component.attributes) {
       for (let attrName in component.attributes) {
         let attribute = component.attributes[attrName];
@@ -2670,7 +2674,7 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
         adjustedNamespace = component.componentName + "/";
       }
       let namespaceForChildren = parentNamespace;
-      if (component.attributes && component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+      if (component.attributes && component.attributes.newNamespace?.primitive) {
         namespaceForChildren = component.componentName;
       }
       restrictTNamesToNamespace({
