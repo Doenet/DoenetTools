@@ -90,6 +90,10 @@ export default function ActivityViewer(props) {
     }
   })
 
+  useEffect(() => {
+    props.pageChangedCallback?.(currentPage);
+  }, [currentPage])
+
   function resetActivity({ changedOnDevice, newCid, newAttemptNumber }) {
     console.log('resetActivity', changedOnDevice, newCid, newAttemptNumber);
 

@@ -641,7 +641,7 @@ export default function PageViewer(props) {
 
   function startCore() {
 
-    console.log(`send message to create core ${pageId}`)
+    // console.log(`send message to create core ${pageId}`)
 
     coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : 'viewer/core.js', { type: 'module' });
 

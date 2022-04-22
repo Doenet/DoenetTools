@@ -440,6 +440,9 @@ export default function AssignmentViewer() {
       },
   );
 
+  function pageChanged(pageNumber) {
+    console.log(`page changed to ${pageNumber}`)
+  }
 
   // console.log(`>>>>stage -${stage}-`);
 
@@ -486,6 +489,7 @@ export default function AssignmentViewer() {
         requestedVariantIndex={requestedVariantIndex}
         updateCreditAchievedCallback={updateCreditAchieved}
         updateAttemptNumber={setRecoilAttemptNumber}
+        pageChangedCallback={pageChanged}
       // generatedVariantCallback={variantCallback}
       />
     </>
