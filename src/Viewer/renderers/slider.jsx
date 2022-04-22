@@ -25,7 +25,7 @@ const SubContainer2 = styled.div`
 const StyledSlider = styled.div`
   position: relative;
   border-radius: 3px;
-  background: #888888 ; // black?
+  background: black; // black?
   height: 1px;
   width: ${props => props.width};
   user-select: none;
@@ -43,7 +43,7 @@ const StyledThumb = styled.div`
   position: relative;
   top: -4px;
   opacity: 1;
-  background: ${props => props.disabled ? "#404040" : `${doenetComponentForegroundActive}`}; // var(--mainBlue)?
+  background: ${props => props.disabled ? "var(--mainGray)" : "var(--mainBlue)"}; // var(--mainBlue)?
   cursor: pointer;
 `;
 
@@ -51,8 +51,8 @@ const Tick = styled.div`
     position: absolute;
     border-left: 2px solid var(--mainGray);
     height: 10px;
-    top:1px;
-    z-Index:-2;
+    top: 1px;
+    z-Index: -2;
     left: ${props => props.x};
     user-select: none;
 `;
@@ -60,9 +60,9 @@ const Tick = styled.div`
 const Label = styled.p`
     position: absolute;
     left: ${props => props.x};
-    color: ${doenetComponentForegroundInactive};
+    color: black;
     font-size: 12px;
-    top:1px;
+    top: 1px;
     user-select: none;
 `;
 
