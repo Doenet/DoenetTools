@@ -172,7 +172,6 @@ export default function SelectedActivity() {
           onClick={() => {
             compileActivity({
               activityDoenetId:doenetId,courseId,successCallback:()=>{
-                addToast("Activity compiled!", toastType.INFO);
                 setPageToolView({
                   page: 'course',
                   tool: 'draftactivity',
@@ -196,7 +195,6 @@ export default function SelectedActivity() {
               tool: 'assignment',
               view: '',
               params: {
-                madeUpstuff:'mystuff',
                 courseId,
                 doenetId,
               },
@@ -254,11 +252,11 @@ export default function SelectedActivity() {
     <br />
     <ActionButton
           width="menu"
-          value="Assign Assignment (FAKE)"
+          value="Assign Activity"
           onClick={() => {
             compileActivity({
               activityDoenetId:doenetId,isAssigned:true,courseId,successCallback:()=>{
-                addToast("Activity compiled and Assigned!", toastType.INFO);
+                addToast("Activity Assigned.", toastType.INFO);
               }
             })
           }}

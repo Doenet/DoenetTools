@@ -51,18 +51,36 @@ if ($success) {
     
     fwrite($newfile, $dangerousActivityDoenetML);
     fclose($newfile);
-    $column = '$.draftCid';
+
     if ($isAssigned){
-        $column = '$.assignedCid';
+        $sql = "
+        UPDATE course_content
+        SET isAssigned='1',
+        jsonDefinition=JSON_SET(jsonDefinition,'$.assignedCid','$cid')
+        WHERE doenetId='$doenetId'
+        AND courseId='$courseId'
+        ";
+        $result = $conn->query($sql);
+        $sql = "
+        INSERT INTO assignment
+        (doenetId,courseId)
+        VALUES
+        ('$doenetId','$courseId')
+        ";
+        $result = $conn->query($sql);
+    }else{
+        $sql = "
+        UPDATE course_content
+        SET jsonDefinition=JSON_SET(jsonDefinition,'$.draftCid','$cid')
+        WHERE doenetId='$doenetId'
+        AND courseId='$courseId'
+        ";
+        $result = $conn->query($sql);
     }
-    //save updated cid to database
-    $sql = "
-    UPDATE course_content
-    SET jsonDefinition=JSON_SET(jsonDefinition,'$column','$cid')
-    WHERE doenetId='$doenetId'
-    AND courseId='$courseId'
-    ";
-    $result = $conn->query($sql);
+
+
+
+
 }
 
 
