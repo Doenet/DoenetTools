@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react';
 import styled from "styled-components";
 import useDoenetRender from './useDoenetRenderer';
+import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
+import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 
 
 const TextNoSelect = styled.text`
@@ -37,72 +39,63 @@ export default function subsetOfReals(props) {
   }
 
   //Build control buttons
-  const activeButtonColor = "lightblue";
-  const inactiveButtonColor = "lightgrey";
-  let primaryColor = "red";
+  // const activeButtonColor = "var(--lightBlue)";
+  // const inactiveButtonColor = "var(--mainGray)";
+  // let primaryColor = "red";
 
 
-  let addRemovePointsStyle = { backgroundColor: inactiveButtonColor };
-  if (mode === "add remove points") {
-    addRemovePointsStyle = { backgroundColor: activeButtonColor };
-  }
+  // let addRemovePointsStyle = { backgroundColor: inactiveButtonColor };
+  // if (mode === "add remove points") {
+  //   addRemovePointsStyle = { backgroundColor: activeButtonColor };
+  // }
 
-  let toggleStyle = { backgroundColor: inactiveButtonColor };
-  if (mode === "toggle") {
-    toggleStyle = { backgroundColor: activeButtonColor };
-  }
+  // let toggleStyle = { backgroundColor: inactiveButtonColor };
+  // if (mode === "toggle") {
+  //   toggleStyle = { backgroundColor: activeButtonColor };
+  // }
 
-  let movePointsStyle = { backgroundColor: inactiveButtonColor };
-  if (mode === "move points") {
-    movePointsStyle = { backgroundColor: activeButtonColor };
-  }
+  // let movePointsStyle = { backgroundColor: inactiveButtonColor };
+  // if (mode === "move points") {
+  //   movePointsStyle = { backgroundColor: activeButtonColor };
+  // }
 
   let controlButtons = null;
   if(!SVs.fixed) {
-    controlButtons = <>
-      <span>
-        <ModeButton
-          style={addRemovePointsStyle}
+    controlButtons =
+      <ActionButtonGroup>
+        <ActionButton
+          // style={addRemovePointsStyle}
           onClick={() => setMode("add remove points")}
+          value="Add/Remove points"
         >
-          Add/Remove points
-        </ModeButton>
-      </span>
-      <span>
-        <ModeButton
-          style={toggleStyle}
+        </ActionButton>
+        <ActionButton
+          // style={toggleStyle}
           onClick={() => setMode("toggle")}
+          value="Toggle points and intervals"
         >
-          Toggle points and intervals
-        </ModeButton>
-      </span>
-      <span>
-        <ModeButton
-          style={movePointsStyle}
+        </ActionButton>
+        <ActionButton
+          // style={movePointsStyle}
           onClick={() => setMode("move points")}
+          value="Move Points"
         >
-          Move Points
-        </ModeButton>
-      </span>
-      <span>
-        <button
+        </ActionButton>
+        <ActionButton
           onClick={()=> callAction({
             action: actions.clear,
           })}
+          value="Clear"
         >
-          Clear
-        </button>
-      </span>
-      <span>
-        <button
+        </ActionButton>
+        <ActionButton
           onClick={()=> callAction({
             action: actions.setToR,
           })}
+          value="R"
         >
-          R
-        </button>
-      </span>
-    </>
+        </ActionButton>
+      </ActionButtonGroup>
   }
 
   //Build axis
@@ -146,7 +139,7 @@ export default function subsetOfReals(props) {
 
     let xPosition = xValueToXPosition(pt.value);
 
-    let currentFillColor = primaryColor;
+    let currentFillColor = "var(--mainRed)";
     if (!closed) {
       currentFillColor = "white";
     }
@@ -177,7 +170,7 @@ export default function subsetOfReals(props) {
     const higherPointKey = `higherIntervalPoint${higherXPosition}`;
     const lineKey = `line${lowerXPosition}-${higherXPosition}`;
 
-    let currentFillColor = primaryColor;
+    let currentFillColor = "var(--mainRed)";
 
     let lowerLine = lowerXPosition;
     let higherLine = higherXPosition;
