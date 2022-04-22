@@ -228,6 +228,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     CreateCourse:lazy(() => import('../Menus/CreateCourse')),
     CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
     AddDriveItems:lazy(() => import('../Menus/AddDriveItems')),
+    PasteOptionsMenu:lazy(() => import('../Menus/PasteOptionsMenu')),
     EnrollStudents:lazy(() => import('../Menus/EnrollStudents')),
     DoenetMLSettings:lazy(() => import('../Menus/DoenetMLSettings')),
     VersionHistory:lazy(() => import('../Menus/VersionHistory')),

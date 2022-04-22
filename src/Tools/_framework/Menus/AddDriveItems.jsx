@@ -5,31 +5,15 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { useCourse } from '../../../_reactComponents/Course/CourseActions';
-import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import { useToast, toastType } from '@Toast';
+// import { useToast, toastType } from '@Toast';
 
 export default function AddDriveItems() {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const { create, pasteItems } = useCourse(courseId);
-  const addToast = useToast();
+  const { create } = useCourse(courseId);
+  // const addToast = useToast();
 
   return (
  <>
-    <ActionButton
-      width="menu"
-      value="Paste"
-        onClick={() => {
-          pasteItems({
-            successCallback:()=>{
-              addToast("Items Pasted!", toastType.INFO);
-            },
-            failureCallback:(message)=>{
-              addToast(message, toastType.INFO);
-            },
-         })
-        }}
-    />
-    <br />
     <ButtonGroup vertical>
       <Button
         width="menu"

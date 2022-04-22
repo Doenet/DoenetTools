@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 include "lexicographicalRankingSort.php";
+include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -14,15 +15,57 @@ $userId = $jwtArray['userId'];
 $success = TRUE;
 $message = "";
 
-$previousContainingDoenetId = mysqli_real_escape_string($conn,$_REQUEST["previousContainingDoenetId"]);
-$itemType = mysqli_real_escape_string($conn,$_REQUEST["itemType"]);
-$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
-$placeInFolderFlag = mysqli_real_escape_string($conn,$_REQUEST["placeInFolderFlag"]);
+$_POST = json_decode(file_get_contents('php://input'), true);
+
+if (!array_key_exists('courseId', $_POST)) {
+    $success = false;
+    $message = 'Missing courseId';
+} elseif (!array_key_exists('previousContainingDoenetId', $_POST)) {
+    $success = false;
+    $message = 'Missing previousContainingDoenetId';
+} elseif (!array_key_exists('itemType', $_POST)) {
+    $success = false;
+    $message = 'Missing itemType';
+} elseif (!array_key_exists('placeInFolderFlag', $_POST)) {
+    $success = false;
+    $message = 'Missing placeInFolderFlag';
+} 
 
 if ($userId == ''){
   $success = FALSE;
-  $message = "You need to be signed in to make a course";
+  $message = "You need to be signed in to make changes to a course";
 }
+
+//Test Permission to edit content
+if ($success){
+  $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
+  $itemType = mysqli_real_escape_string($conn,$_POST["itemType"]);
+  $previousContainingDoenetId = $_POST["previousContainingDoenetId"];
+  $placeInFolderFlag = $_POST["placeInFolderFlag"];
+
+  //Optional cloneMode is '1' for true or '' for false
+  $cloneMode = mysqli_real_escape_string($conn,$_POST["cloneMode"]);
+  $pageDoenetIds = array_map(function ($item) use ($conn) {
+      return mysqli_real_escape_string($conn, $item);
+  }, $_POST["pageDoenetIds"]);
+  $pageLabels = array_map(function ($item) use ($conn) {
+    return mysqli_real_escape_string($conn, $item);
+}, $_POST["pageLabels"]);
+  $orderDoenetIds = array_map(function ($item) use ($conn) {
+    return mysqli_real_escape_string($conn, $item);
+}, $_POST["orderDoenetIds"]);
+  $activityLabel = mysqli_real_escape_string($conn,$_POST["activityLabel"]);
+  $DangerousActivityObj = json_encode($_POST['activityObj']);
+
+
+
+  $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
+  if ($permissions["canEditContent"] != '1'){
+    $success = FALSE;
+    $message = "You need permission to edit content.";
+  }
+}
+
 
 if ($success){
   $doenetId = include "randomId.php";
@@ -60,6 +103,26 @@ if ($itemType == 'section'){
   $orderDoenetId = include "randomId.php";
   $jsonDefinition = '{"type":"activity","version": "0.1.0","isSinglePage": true,"order":{"type":"order","doenetId":"'.$orderDoenetId.'","behavior":"sequence","content":["'.$pageDoenetId.'"]},"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
 
+   //We need to clone an existing item
+ if ($cloneMode == '1'){
+  //  echo "\n\nDangerousActivityOrder\n\n";
+  //  var_dump($DangerousActivityObj);
+   $label = "copy of $activityLabel";
+   $clonePageDoenetIds = [];
+   foreach ($pageDoenetIds as $pageDoenetId){
+    $clonePageDoenetId = include "randomId.php";
+    array_push($clonePageDoenetIds,$clonePageDoenetId);
+    $DangerousActivityObj = str_replace($pageDoenetId,$clonePageDoenetId,$DangerousActivityObj);
+   }
+   foreach ($orderDoenetIds as $sourceOrderDoenetId){
+    $cloneOrderDoenetId = include "randomId.php";
+    $DangerousActivityObj = str_replace($sourceOrderDoenetId,$cloneOrderDoenetId,$DangerousActivityObj);
+   }
+
+  $jsonDefinition = $DangerousActivityObj;
+  
+  }
+  
 }else if($itemType == 'bank'){
   $jsonDefinition = '{"type":"bank","pages":[]}';
 }else{
@@ -81,43 +144,84 @@ if ($success){
         courseId,
         doenetId,
         parentDoenetId,
+        label,
         creationDate,
         sortOrder,
         jsonDefinition)
         VALUES
-        ('$itemType','$courseId','$doenetId','$parentDoenetId',NOW(),'$sortOrder','$jsonDefinition');
+        ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',NOW(),'$sortOrder','$jsonDefinition');
         ";
         $conn->query($sql);
 
-        $sql = "
-        INSERT INTO pages (courseId,containingDoenetId,doenetId) 
-          VALUES('$courseId','$doenetId','$pageDoenetId');
-        ";
-        $conn->query($sql);
-        $pageEntered = array(
-          "type"=>"page",
-          "label"=>"Untitled",
-          "containingDoenetId"=>$doenetId,
-          "doenetId"=>$pageDoenetId,
-          "cid"=>"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
-        );
+        //ONLY in CLONE MODE
+        if ($cloneMode == '1'){
+
+          $pagesEntered = [];
+          for ($i = 0; $i < count($clonePageDoenetIds);$i++){
+            $clonePageDoenetId = $clonePageDoenetIds[$i];
+            $sourcePageDoenetId = $pageDoenetIds[$i];
+            $sourcePageLabel = $pageLabels[$i];
+            // echo "\nclone $clonePageDoenetId sourceLabel $sourcePageLabel sourcedoenetId $sourcePageDoenetId\n";
+
+            $sql = "
+            INSERT INTO pages (courseId,containingDoenetId,doenetId,label) 
+              VALUES('$courseId','$doenetId','$clonePageDoenetId','$sourcePageLabel');
+            ";
+            $conn->query($sql);
+
+            array_push($pagesEntered,array(
+              "type"=>"page",
+              "label"=>$sourcePageLabel,
+              "containingDoenetId"=>$doenetId,
+              "doenetId"=>$clonePageDoenetId,
+            ));
+
+            //Create a copy of original file for page
+            $sourceFilePath = "../media/bydoenetid/$sourcePageDoenetId.doenet";
+            $destFilePath = "../media/bydoenetid/$clonePageDoenetId.doenet";
+            if (!copy($sourceFilePath, $destFilePath)) {
+              $success = false;
+              $message = "failed to copy media\n";
+            }
         
-  
-        //Create blank file for page
-        $filename = "../media/bydoenetid/$pageDoenetId.doenet";
-        $dirname = dirname($filename);
-        if (!is_dir($dirname)) {
-            mkdir($dirname, 0755, true);
-        }
+          }
+       
+          
+    
+          
 
-        $newfile = fopen($filename, "w");
-        if ($newfile === false) {
-            $success = false;
-            $message = "Unable to open file!";
-        } else {
-            // don't write anything to file so that it is a blank file
-            fclose($newfile);
+        }else{
+          $sql = "
+          INSERT INTO pages (courseId,containingDoenetId,doenetId) 
+            VALUES('$courseId','$doenetId','$pageDoenetId');
+          ";
+          $conn->query($sql);
+          $pageEntered = array(
+            "type"=>"page",
+            "label"=>"Untitled",
+            "containingDoenetId"=>$doenetId,
+            "doenetId"=>$pageDoenetId,
+            "cid"=>"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+          );
+          
+    
+          //Create blank file for page
+          $filename = "../media/bydoenetid/$pageDoenetId.doenet";
+          $dirname = dirname($filename);
+          if (!is_dir($dirname)) {
+              mkdir($dirname, 0755, true);
+          }
+  
+          $newfile = fopen($filename, "w");
+          if ($newfile === false) {
+              $success = false;
+              $message = "Unable to open file!";
+          } else {
+              // don't write anything to file so that it is a blank file
+              fclose($newfile);
+          }
         }
+        
 
         /* If code reaches this point without errors then commit the data in the database */
         // $conn->commit();
@@ -147,8 +251,6 @@ if ($success){
     $result = $conn->query($sql); 
 
   }
-
-
 
 }
 
@@ -190,19 +292,6 @@ $itemEntered = array_merge($json,$itemEntered);
 $itemEntered['isOpen'] = false;
 $itemEntered['isSelected'] = false;
 
-//Get new order
-$sql = "
-SELECT doenetId
-FROM course_content
-WHERE courseId='$courseId'
-ORDER BY sortOrder
-";
-
-$result = $conn->query($sql); 
-$order = [];
-while($row = $result->fetch_assoc()){
-  array_push($order,$row['doenetId']);
-}
 }
 
 $response_arr = array(
@@ -211,8 +300,8 @@ $response_arr = array(
   "doenetId"=>$doenetId,
   "itemEntered"=>$itemEntered,
   "pageEntered"=>$pageEntered,
+  "pagesEntered"=>$pagesEntered,
   "pageDoenetId"=>$pageDoenetId,
-  "order"=>$order,
   );
 
 
