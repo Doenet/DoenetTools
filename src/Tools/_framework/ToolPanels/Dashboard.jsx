@@ -56,9 +56,9 @@ export default function Dashboard(props) {
             }
           />
           <Card 
-            name='Surveys' 
+            name='Data' 
             icon={<FontAwesomeIcon icon={faChartPie}/>}
-            value="Surveys"
+            value="Data"
             onClick={() =>
               setPageToolView({
                 page: 'course',

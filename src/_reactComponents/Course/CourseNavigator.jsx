@@ -266,7 +266,7 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
   let recoilPageInfo = useRecoilValue(authorItemByDoenetId(doenetId));
   // console.log("Page recoilPageInfo",recoilPageInfo,"doenetId",doenetId)
   //TODO: numbered
-  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} />
+  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
 }
 
 
