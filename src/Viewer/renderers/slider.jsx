@@ -4,8 +4,8 @@ import me from 'math-expressions';
 import styled from "styled-components";
 // import { Spring } from '@react-spring/web';
 import useDoenetRender from './useDoenetRenderer';
-import Button from "../../_reactComponents/PanelHeaderComponents/Button";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup";
+import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton";
+import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 import { doenetComponentForegroundActive, doenetComponentForegroundInactive, doenetLightGray } from "../../_reactComponents/PanelHeaderComponents/theme"
 
 
@@ -25,7 +25,7 @@ const SubContainer2 = styled.div`
 const StyledSlider = styled.div`
   position: relative;
   border-radius: 3px;
-  background: #888888 ;
+  background: #888888 ; // black?
   height: 1px;
   width: ${props => props.width};
   user-select: none;
@@ -43,13 +43,13 @@ const StyledThumb = styled.div`
   position: relative;
   top: -4px;
   opacity: 1;
-  background: ${props => props.disabled ? "#404040" : `${doenetComponentForegroundActive}`};
+  background: ${props => props.disabled ? "#404040" : `${doenetComponentForegroundActive}`}; // var(--mainBlue)?
   cursor: pointer;
 `;
 
 const Tick = styled.div`
     position: absolute;
-    border-left: 2px solid  ${doenetLightGray};
+    border-left: 2px solid var(--mainGray);
     height: 10px;
     top:1px;
     z-Index:-2;
@@ -356,15 +356,15 @@ export default function Slider(props) {
   if (SVs.disabled) {
     let controls = '';
     if (SVs.showControls) {
-      controls = <ButtonGroup
+      controls = <ActionButtonGroup
       >
-        <Button
+        <ActionButton
           style={{ marginTop: '-20px' }}
           value="Prev" onClick={(e) => handlePrevious(e)} disabled />
-        <Button
+        <ActionButton
           style={{ marginTop: '-20px' }}
           value="Next" onClick={(e) => handleNext(e)} disabled />
-      </ButtonGroup>
+      </ActionButtonGroup>
     } else {
       controls = null;
     }
@@ -555,20 +555,20 @@ export default function Slider(props) {
   }
   let controls = '';
   if (SVs.showControls) {
-    controls = <ButtonGroup >
-      <Button
+    controls = <ActionButtonGroup >
+      <ActionButton
         style={{ marginTop: '-20px' }}
         value="Prev"
         onClick={(e) => handlePrevious(e)}
         data-cy={`${name}-prevbutton`}
-      ></Button>
-      <Button
+      ></ActionButton>
+      <ActionButton
         style={{ marginTop: '-20px' }}
         value="Next"
         onClick={(e) => handleNext(e)}
         data-cy={`${name}-nextbutton`}
-      ></Button>
-    </ButtonGroup>
+      ></ActionButton>
+    </ActionButtonGroup>
   } else {
     null
   }
