@@ -20,7 +20,7 @@ export default function SelectedPage() {
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
   const containingObj = useRecoilValue(authorItemByDoenetId(itemObj.containingDoenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
-  const { create, renameItem, compileActivity, deleteItem } = useCourse(courseId);
+  const { create, renameItem, compileActivity, deleteItem, copyItems, cutItems } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
   const addToast = useToast();
 
@@ -102,6 +102,25 @@ export default function SelectedPage() {
       }}
       onBlur={handelLabelModfication}
     />
+    <br />
+    <ActionButtonGroup width="menu">
+      <ActionButton
+          value="Copy"
+          onClick={() => {
+            copyItems({successCallback:()=>{
+              addToast("Page copied!", toastType.INFO);
+            }})
+          }}
+      />
+      <ActionButton
+          value="Cut"
+          onClick={() => {
+            cutItems({successCallback:()=>{
+              addToast("Page cut!", toastType.INFO);
+            }})
+          }}
+      />
+    </ActionButtonGroup>
     <br />
     <ButtonGroup vertical>
     {containingObj.type == 'activity' ? 

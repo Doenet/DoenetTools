@@ -1144,6 +1144,7 @@ export const useCourse = (courseId) => {
 
     return orderDoenetIds;
   }
+
   const updateOrderBehavior = useRecoilCallback(
     ({ set,snapshot }) =>
       async ({doenetId, behavior, numberToSelect, withReplacement, successCallback, failureCallback = defaultFailure}) => {
@@ -1381,6 +1382,7 @@ export const useCourse = (courseId) => {
         let cutObjs = await snapshot.getPromise(cutCourseItems);
         let copiedObjs = await snapshot.getPromise(copiedCourseItems);
         let selectedDoenetIds = await snapshot.getPromise(selectedCourseItems);
+        let singleSelectedObj = null;
 
         //Test if we have any items to copy or cut
         if (cutObjs.length == 0 && copiedObjs.length == 0){
@@ -1394,9 +1396,9 @@ export const useCourse = (courseId) => {
           sectionId = courseId;
         }
         if (selectedDoenetIds.length == 1){
-          let selectedObj = await snapshot.getPromise(authorItemByDoenetId(selectedDoenetIds[0]));
-          if (selectedObj.type == 'section'){
-            sectionId = selectedObj.doenetId;
+          singleSelectedObj = await snapshot.getPromise(authorItemByDoenetId(selectedDoenetIds[0]));
+          if (singleSelectedObj.type == 'section'){
+            sectionId = singleSelectedObj.doenetId;
           }
         }else if (selectedDoenetIds.length > 1){
           failureCallback("Can only paste to one location.")
@@ -1405,6 +1407,7 @@ export const useCourse = (courseId) => {
 
         //Try cut 
         if (cutObjs.length > 0){
+
           //If destination is the same as source then fail
           // if (cutObjs[0].parentDoenetId == sectionId){
           //   failureCallback("Destination is the same as the source.")
@@ -1446,17 +1449,48 @@ export const useCourse = (courseId) => {
 
               nextOrder.splice(nextOrder.indexOf(sectionId)+1+doenetIdsInTheSection.length,0,...removedDoenetIds); //Insert
               set(authorCourseItemOrderByCourseId(courseId),nextOrder)
-            }
-            set(authorItemByDoenetId(cutObj.doenetId),nextObj);
 
+              //update the database
+              let resp = await axios.post('/api/moveContent.php',{
+                courseId,
+                courseContentTableDoenetIds,
+                courseContentTableNewParentDoenetId,
+                previousContainingDoenetIds,
+              })
+
+            }
+            if (cutObj.type == 'page'){
+              if (!singleSelectedObj || (singleSelectedObj.type != 'bank' && singleSelectedObj.type != 'order')){
+                failureCallback("Pages can only be pasted into an order or a collection.")
+                return;
+              }
+              let sourceContainingObj = await snapshot.getPromise(authorItemByDoenetId(cutObj.containingDoenetId));
+              //Remove from Activity
+              if (sourceContainingObj.type == 'activity'){
+                console.log("from activity")
+              }
+              //Remove from Collection
+              if (sourceContainingObj.type == 'bank'){
+                console.log("from collection")
+
+              }
+              console.log("sourceContainingObj",sourceContainingObj)
+              //Add to Collection
+              if (singleSelectedObj.type == 'bank'){
+
+                console.log('into collection')
+              }
+              //Add to Activity
+              if (singleSelectedObj.type == 'order'){
+                console.log('into order')
+              }
+              console.log("Cut Page!",nextObj)
+            }
+
+
+            set(authorItemByDoenetId(cutObj.doenetId),nextObj);
           }
-          //update the database
-          let resp = await axios.post('/api/moveContent.php',{
-            courseId,
-            courseContentTableDoenetIds,
-            courseContentTableNewParentDoenetId,
-            previousContainingDoenetIds,
-          })
+          
           // console.log("resp.data",resp.data);
           //Transfer cut to copy so we don't get duplicate doenetIds
           set(copiedCourseItems,[...cutObjs])
@@ -1493,56 +1527,71 @@ export const useCourse = (courseId) => {
                 let pageObj = await snapshot.getPromise(authorItemByDoenetId(pageDoenetId));
                 pageLabels.push(pageObj.label);
               }
+              //Trim off the navigation parts of the activity
+              let activityObj = {...copiedObj};
+              delete activityObj.isOpen;
+              delete activityObj.isSelected;
+              delete activityObj.label;
+              delete activityObj.doenetId;
+              delete activityObj.creationDate;
+              delete activityObj.isPublic;
+              delete activityObj.isAssigned;
+              delete activityObj.isGloballyAssigned;
+              activityObj.parentDoenetId = sectionId;
+              
+              let activityLabel = copiedObj.label; 
+              if (copiedObj.label == 'Untitled'){
+                activityLabel = 'Untitled';
+              }
+              
+              let resp = await axios.post('/api/createCourseItem.php', {
+                courseId,
+                previousContainingDoenetId,
+                placeInFolderFlag,
+                itemType:copiedObj.type,
+                cloneMode:'1',
+                pageDoenetIds,
+                pageLabels,
+                orderDoenetIds,
+                activityLabel,
+                activityObj
+              });
+              // console.log("copied data",resp.data)
+              let createdDoenetIds = [resp.data.doenetId]
+              set(authorItemByDoenetId(resp.data.doenetId),resp.data.itemEntered);
+              for (let pageObj of resp.data.pagesEntered){
+                createdDoenetIds.push(pageObj.doenetId);
+                set(authorItemByDoenetId(pageObj.doenetId),pageObj);
+              }
+              set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
+                let next;
+                if (sectionId == courseId){
+                  next = [...prev,...createdDoenetIds]
+                }else{
+                  next = [...prev];
+                  next.splice(next.indexOf(previousContainingDoenetId)+1,0,...createdDoenetIds)
+                }
+                return next;
+              })
+              
+              successCallback();
             }
-            //Trim off the navigation parts of the activity
-            let activityObj = {...copiedObj};
-            delete activityObj.isOpen;
-            delete activityObj.isSelected;
-            delete activityObj.label;
-            delete activityObj.doenetId;
-            delete activityObj.creationDate;
-            delete activityObj.isPublic;
-            delete activityObj.isAssigned;
-            delete activityObj.isGloballyAssigned;
-            activityObj.parentDoenetId = sectionId;
+            if (copiedObj.type == 'page'){
+              if (!singleSelectedObj || (singleSelectedObj.type != 'bank' && singleSelectedObj.type != 'order')){
+                failureCallback("Pages can only be pasted into an order or a collection.")
+                return;
+              }
+              let pageObj = {...copiedObj};
+              console.log("Copy Page!",pageObj)
 
-            let activityLabel = copiedObj.label; 
-            if (copiedObj.label == 'Untitled'){
-              activityLabel = 'Untitled';
+              if (singleSelectedObj.type == 'bank'){
+                console.log('into collection')
+              }
+              if (singleSelectedObj.type == 'order'){
+                console.log('into order')
+              }
             }
-
-            let resp = await axios.post('/api/createCourseItem.php', {
-              courseId,
-              previousContainingDoenetId,
-              placeInFolderFlag,
-              itemType:copiedObj.type,
-              cloneMode:'1',
-              pageDoenetIds,
-              pageLabels,
-              orderDoenetIds,
-              activityLabel,
-              activityObj
-            });
-          // console.log("copied data",resp.data)
-          let createdDoenetIds = [resp.data.doenetId]
-          set(authorItemByDoenetId(resp.data.doenetId),resp.data.itemEntered);
-          for (let pageObj of resp.data.pagesEntered){
-            createdDoenetIds.push(pageObj.doenetId);
-            set(authorItemByDoenetId(pageObj.doenetId),pageObj);
           }
-          set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
-            let next;
-            if (sectionId == courseId){
-              next = [...prev,...createdDoenetIds]
-            }else{
-              next = [...prev];
-              next.splice(next.indexOf(previousContainingDoenetId)+1,0,...createdDoenetIds)
-            }
-            return next;
-          })
-          }
-
-        successCallback();
         }
   });
 
