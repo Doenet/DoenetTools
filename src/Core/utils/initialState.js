@@ -84,7 +84,7 @@ function calculateInitialRendererState({ doenetML, cid, doenetId, requestedVaria
   coreWorker.onmessage = function (e) {
     // console.log('message from core', e.data)
     if (e.data.messageType === "updateRenderers") {
-      for (let instruction of e.data.args) {
+      for (let instruction of e.data.args.updateInstructions) {
         if (instruction.instructionType === "updateRendererStates") {
           for (let { componentName, stateValues, childrenInstructions } of instruction.rendererStatesToUpdate
           ) {

@@ -783,7 +783,7 @@ export default class Document extends BaseComponent {
 
     serializedComponent.variants.numberOfVariants = numberOfVariants;
 
-    console.log("Actual number of variants for document is " + numberOfVariants)
+    // console.log("Actual number of variants for document is " + numberOfVariants)
 
     return {
       success: true,
