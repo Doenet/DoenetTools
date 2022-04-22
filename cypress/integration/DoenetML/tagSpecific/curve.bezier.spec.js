@@ -10192,5 +10192,124 @@ describe('Curve Tag Bezier Tests', function () {
     });
   })
 
+  it('copy props with propIndex', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>n: <mathinput name="n" prefill="2" /></p>
+
+  <graph name="g">
+    <curve name="c" through="(1,2) (3,4) (-2,6) (-4,7) (2,9) (6,5)" >
+      <bezierControls>
+        (-1,0) (0,-1) (1,0) (0,-1) (-1,0) (-1,0)
+      </bezierControls>
+    </curve>
+  </graph>
+  
+  <p><aslist><copy prop="xCriticalPoints" target="c" propIndex="$n" assignNames="Px1 Px2" /></aslist></p>
+  <p><aslist><copy prop="yCriticalPoints" target="c" propIndex="$n" assignNames="Py1 Py2 Py3 Py4" /></aslist></p>
+  <p><aslist><copy prop="curvatureChangePoints" target="c" propIndex="$n" assignNames="Pc1 Pc2" /></aslist></p>
+
+  <p><aslist><copy prop="xCriticalPoint1" target="c" propIndex="$n" assignNames="x1 x2" /></aslist></p>
+  <p><aslist><copy prop="yCriticalPoint1" target="c" propIndex="$n" assignNames="y1 y2" /></aslist></p>
+  <p><aslist><copy prop="curvatureChangePoint1" target="c" propIndex="$n" assignNames="c1 c2" /></aslist></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/Px1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−4,7)")
+    })
+    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−2,6)")
+    })
+    cy.get('#\\/Pc1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(4,7)")
+    })
+    cy.get('#\\/x1').should('have.text', "4")
+    cy.get('#\\/y1').should('have.text', "2")
+    cy.get('#\\/c1').should('have.text', "6")
+
+
+    cy.log('set propIndex to 1')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true });
+
+    cy.get('#\\/Px1 .mjx-mrow').should('contain.text', "(3,4)")
+    cy.get('#\\/Px1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(3,4)")
+    })
+    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(1,2)")
+    })
+    cy.get('#\\/Pc1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−2,6)")
+    })
+    cy.get('#\\/x1').should('have.text', "3")
+    cy.get('#\\/y1').should('have.text', "1")
+    cy.get('#\\/c1').should('have.text', "-2")
+
+
+    
+    cy.log('erase propIndex')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true });
+
+    cy.get('#\\/Px2 .mjx-mrow').should('contain.text', "(−4,7)")
+    cy.get('#\\/Px1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(3,4)")
+    })
+    cy.get('#\\/Px2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−4,7)")
+    })
+    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(1,2)")
+    })
+    cy.get('#\\/Py2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−2,6)")
+    })
+    cy.get('#\\/Py3 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(2,9)")
+    })
+    cy.get('#\\/Py4 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(6,5)")
+    })
+    cy.get('#\\/Pc1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−2,6)")
+    })
+    cy.get('#\\/Pc2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(4,7)")
+    })
+    cy.get('#\\/x1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(3,4)")
+    })
+    cy.get('#\\/y1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(1,2)")
+    })
+    cy.get('#\\/c1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−2,6)")
+    })
+
+
+    cy.log('set propIndex to 4')
+
+    cy.get('#\\/n textarea').type("4{enter}", { force: true });
+
+    cy.get('#\\/Py1 .mjx-mrow').should('contain.text', "(6,5)")
+    cy.get('#\\/Px1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(6,5)")
+    })
+    cy.get('#\\/Pc1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/x1').should('not.exist')
+    cy.get('#\\/y1').should('not.exist')
+    cy.get('#\\/c1').should('not.exist')
+
+
+  })
 
 });

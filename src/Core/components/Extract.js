@@ -83,6 +83,7 @@ export default class Extract extends CompositeComponent {
       stateVariablesDeterminingDependencies: [
         "propName", "componentIndex", "propIndex"
       ],
+      additionalStateVariablesDefined: ["effectivePropNameBySource"],
       returnDependencies: function ({ stateValues }) {
         let childIndices;
         let componentIndex;
@@ -103,14 +104,35 @@ export default class Extract extends CompositeComponent {
             propIndex: stateValues.propIndex,
             publicCaseInsensitiveVariableMatch: true,
             useMappedVariableNames: true,
+          },
+          propName: {
+            dependencyType: "stateVariable",
+            variableName: "propName"
           }
         }
       },
-      definition: ({ dependencyValues }) => ({
-        setValue: {
-          sourceComponents: dependencyValues.children
+      definition: function ({ dependencyValues }) {
+        let sourceComponents = dependencyValues.children;
+
+        let effectivePropNameBySource = [];
+
+        for (let comp of sourceComponents) {
+          let propName;
+          if (comp.stateValues) {
+            propName = Object.keys(comp.stateValues)[0];
+          }
+          if (!propName) {
+            propName = dependencyValues.propName;
+          }
+          effectivePropNameBySource.push(propName)
         }
-      })
+
+        return {
+          setValue: {
+            sourceComponents, effectivePropNameBySource
+          }
+        }
+      }
     }
 
 
@@ -212,10 +234,12 @@ export default class Extract extends CompositeComponent {
 
     // console.log(`create replacement for source ${sourceNum}, ${numReplacementsSoFar} of ${component.componentName}`)
 
+    let propName = (await component.stateValues.effectivePropNameBySource)[sourceNum];
+
     let results = await replacementFromProp({
       component, components,
       replacementSource: (await component.stateValues.sourceComponents)[sourceNum],
-      propName: await component.stateValues.propName,
+      propName,
       // numReplacementsSoFar,
       uniqueIdentifiersUsed,
       compositeAttributesObj,

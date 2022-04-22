@@ -41,6 +41,13 @@ export default class UpdateValue extends InlineComponent {
       public: true,
     };
 
+    attributes.propIndex = {
+      createComponentOfType: "number",
+      createStateVariable: "propIndex",
+      defaultValue: null,
+      public: true,
+    };
+
     attributes.triggerWhen = {
       createComponentOfType: "boolean",
       createStateVariable: "triggerWhen",
@@ -165,7 +172,7 @@ export default class UpdateValue extends InlineComponent {
 
     stateVariableDefinitions.targets = {
       stateVariablesDeterminingDependencies: [
-        "targetIdentities", "propName"
+        "targetIdentities", "propName", "propIndex"
       ],
       returnDependencies: function ({ stateValues }) {
 

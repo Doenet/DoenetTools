@@ -1,7 +1,7 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { enumerateSelectionCombinations, enumerateCombinations } from '../utils/enumeration';
 import { deepClone } from '../utils/deepFunctions';
-import { gatherVariantComponents, processAssignNames } from '../utils/serializedStateProcessing';
+import { gatherVariantComponents, markToCreateAllUniqueNames, processAssignNames } from '../utils/serializedStateProcessing';
 import me from 'math-expressions';
 import { textToAst } from '../utils/math';
 import { returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
@@ -37,9 +37,9 @@ export default class Select extends CompositeComponent {
     attributes.type = {
       createPrimitiveOfType: "string"
     }
-    attributes.skipOptionsInAssignNames = {
+    attributes.addLevelToAssignNames = {
       createPrimitiveOfType: "boolean",
-      createStateVariable: "skipOptionsInAssignNames",
+      createStateVariable: "addLevelToAssignNames",
       defaultValue: false
     }
 
@@ -91,7 +91,7 @@ export default class Select extends CompositeComponent {
         }))
 
         let newAttributes = {
-          skipOptionsInAssignNames: {
+          addLevelToAssignNames: {
             primitive: true
           }
         }
@@ -536,8 +536,14 @@ export default class Select extends CompositeComponent {
 
     let assignNames = component.doenetAttributes.assignNames;
 
-    if (assignNames && await component.stateValues.skipOptionsInAssignNames) {
+    if (assignNames && await component.stateValues.addLevelToAssignNames) {
       assignNames = assignNames.map(x => [x])
+    }
+
+    for (let rep of replacements) {
+      if (!rep.attributes?.newNamespace?.primitive && rep.children) {
+        markToCreateAllUniqueNames(rep.children)
+      }
     }
 
     let processResult = processAssignNames({

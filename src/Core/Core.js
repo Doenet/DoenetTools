@@ -2084,8 +2084,13 @@ export default class Core {
       let originalNamesAreConsistent = newNamespace
         || (mediatingNewNamespace && !mediatingAssignNames);
 
+      let assignNames = component.doenetAttributes.assignNames;
+      if (assignNames && await component.stateValues.addLevelToAssignNames) {
+        assignNames = assignNames.map(x => [x])
+      }
+
       let processResult = serializeFunctions.processAssignNames({
-        assignNames: component.doenetAttributes.assignNames,
+        assignNames,
         serializedComponents: serializedReplacements,
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
@@ -7559,8 +7564,13 @@ export default class Core {
           let originalNamesAreConsistent = shadowingNewNamespace
             || (mediatingNewNamespace && !mediatingAssignNames);
 
+          let assignNames = shadowingComponent.doenetAttributes.assignNames;
+          if (assignNames && await shadowingComponent.stateValues.addLevelToAssignNames) {
+            assignNames = assignNames.map(x => [x])
+          }
+
           let processResult = serializeFunctions.processAssignNames({
-            assignNames: shadowingComponent.doenetAttributes.assignNames,
+            assignNames,
             indOffset: assignNamesOffset,
             serializedComponents: newSerializedReplacements,
             parentName: shadowingComponent.componentName,

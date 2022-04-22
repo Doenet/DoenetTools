@@ -3364,5 +3364,72 @@ describe('Select Tag Tests', function () {
     })
   });
 
+  it("add level to assign names even in shadow", () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><select name="s" assignnames="q">a b</select></p>
+    <copy target="_p1" name="c" newNamespace />
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let q = stateVariables["/q"].stateValues.value;
+
+      expect(stateVariables["/c/q"].stateValues.value).eq(q);
+
+
+    })
+  });
+
+  it("ensure unique names", () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <select numberToSelect="3" withReplacement>
+      <option><p>What is <text>this</text>?</p></option>
+    </select>
+    
+    <select numberToSelect="3" withReplacement assignNames="A B C">
+      <option><p>What is <text>this</text>?</p></option>
+    </select>
+    
+    <select numberToSelect="3" withReplacement assignNames="(D) (E) (F)">
+      <option><p>What is <text>this</text>?</p></option>
+    </select>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let pNames1 = stateVariables["/_select1"].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName)
+      for (let pn of pNames1) {
+        cy.get(cesc('#' + pn)).should('have.text', 'What is this?')
+      }
+
+      let pNames2 = ["/A", "/B", "/C"].map(x => stateVariables[x].replacements[0].componentName);
+      for (let pn of pNames2) {
+        cy.get(cesc('#' + pn)).should('have.text', 'What is this?')
+      }
+
+      for (let pn of ["/D", "/E", "/F"]) {
+        cy.get(cesc('#' + pn)).should('have.text', 'What is this?')
+      }
+
+
+    })
+  });
+
 
 });

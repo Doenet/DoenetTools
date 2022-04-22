@@ -427,6 +427,9 @@ export default class Spreadsheet extends BlockComponent {
         }
 
       },
+      arrayVarNameFromArrayKey(arrayKey) {
+        return "cell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
+      },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName.slice(0, 3) === "row") {
           let rowNum = varName.slice(3);
@@ -437,9 +440,6 @@ export default class Spreadsheet extends BlockComponent {
           return `cell(${propIndex},${columnNum})`
         }
         return null;
-      },
-      arrayVarNameFromArrayKey(arrayKey) {
-        return "cell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
       },
       returnArrayDependenciesByKey({ stateValues, arrayKeys }) {
         let dependenciesByKey = {};
@@ -537,14 +537,19 @@ export default class Spreadsheet extends BlockComponent {
       returnArraySize({ dependencyValues }) {
         return [dependencyValues.numRows, dependencyValues.numColumns];
       },
-      returnArrayDependenciesByKey: () => ({
-        globalDependencies: {
-          cells: {
-            dependencyType: "stateVariable",
-            variableName: "cells"
-          }
+      returnEntryDimensions: prefix => prefix === "range" ? 2 : 1,
+      returnWrappingComponents(prefix) {
+        if (prefix === "evaluatedCell") {
+          return [];
+        } else if (prefix === "evaluatedRow") {
+          return [["row"]];
+        } else if (prefix === "evaluatedColumn") {
+          return [["column"]];
+        } else {
+          // range or entire array
+          return [["row"], ["cellBlock"]]
         }
-      }),
+      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "evaluatedCell") {
           // accept two formats: evaluatedCellB1 or evaluatedCell(1,2)
@@ -709,6 +714,14 @@ export default class Spreadsheet extends BlockComponent {
         }
         return null;
       },
+      returnArrayDependenciesByKey: () => ({
+        globalDependencies: {
+          cells: {
+            dependencyType: "stateVariable",
+            variableName: "cells"
+          }
+        }
+      }),
       arrayDefinitionByKey({ globalDependencyValues }) {
 
         // console.log(`array definition of evaluatedCells`)
@@ -952,19 +965,25 @@ export default class Spreadsheet extends BlockComponent {
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
 
+        // Note: if don't find a point return null
+        // so that removeEmptyArrayEntries can be used to remove entries without a point.
+        // Unfortunately, that means without removeEmptyArrayEntries,
+        // entries without a point return (0,0), because that is what <point></point> now returns.
+        // TODO: a better approach?
+
         let pointsInCells = {};
 
         for (let arrayKey of arrayKeys) {
           let cellText = dependencyValuesByKey[arrayKey].cellText;
           if (!cellText) {
-            pointsInCells[arrayKey] = me.fromAst("\uff3f");
+            pointsInCells[arrayKey] = null;
             continue;
           }
           let cellME;
           try {
             cellME = me.fromAst(textToAst.convert(cellText));
           } catch (e) {
-            pointsInCells[arrayKey] = me.fromAst("\uff3f");
+            pointsInCells[arrayKey] = null;
             continue;
           }
 
@@ -973,7 +992,7 @@ export default class Spreadsheet extends BlockComponent {
           )) {
             pointsInCells[arrayKey] = cellME;
           } else {
-            pointsInCells[arrayKey] = me.fromAst("\uff3f");
+            pointsInCells[arrayKey] = null;
           }
         }
 

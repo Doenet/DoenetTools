@@ -2568,20 +2568,22 @@ export function markToCreateAllUniqueNames(components) {
       component.doenetAttributes = {};
     }
     component.doenetAttributes.createUniqueName = true;
-    if (component.doenetAttributes.assignNames) {
-      component.doenetAttributes.createUniqueAssignNames = true;
-      component.doenetAttributes.originalAssignNames = component.doenetAttributes.assignNames;
-      delete component.doenetAttributes.assignNames;
-    } else if (component.originalDoenetAttributes && component.originalDoenetAttributes.assignNames) {
-      component.doenetAttributes.createUniqueAssignNames = true;
-      component.doenetAttributes.originalAssignNames = component.originalDoenetAttributes.assignNames;
-    }
     delete component.doenetAttributes.prescribedName;
-    if (component.children) {
-      if(!component.attributes?.newNamespace?.primitive) {
+
+    if (!component.attributes?.newNamespace?.primitive) {
+      if (component.doenetAttributes.assignNames) {
+        component.doenetAttributes.createUniqueAssignNames = true;
+        component.doenetAttributes.originalAssignNames = component.doenetAttributes.assignNames;
+        delete component.doenetAttributes.assignNames;
+      } else if (component.originalDoenetAttributes && component.originalDoenetAttributes.assignNames) {
+        component.doenetAttributes.createUniqueAssignNames = true;
+        component.doenetAttributes.originalAssignNames = component.originalDoenetAttributes.assignNames;
+      }
+      if (component.children) {
         markToCreateAllUniqueNames(component.children);
       }
     }
+
     if (component.attributes) {
       for (let attrName in component.attributes) {
         let attribute = component.attributes[attrName];
