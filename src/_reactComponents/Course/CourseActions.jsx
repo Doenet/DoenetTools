@@ -861,6 +861,19 @@ export const useCourse = (courseId) => {
   const renameItem = useRecoilCallback( ({ snapshot,set }) =>
   async (doenetId,newLabel, successCallback, failureCallback = defaultFailure) => {
     try {
+        //Undo copy and cut
+        let cutObjs = await snapshot.getPromise(cutCourseItems);
+        for (let cutObj of cutObjs){
+          set(authorItemByDoenetId(cutObj.doenetId),(prev)=>{
+            let next = {...prev};
+            next['isBeingCut'] = false;
+            return next;
+          })
+        }
+        set(cutCourseItems,[]);
+        set(copiedCourseItems,[]);
+
+
       let itemObj = await snapshot.getPromise(authorItemByDoenetId(doenetId))
       let resp = await axios.get('/api/renameCourseItem.php', {params:{ courseId,doenetId,newLabel,type:itemObj.type } });
       if (resp.status < 300) {
@@ -1444,10 +1457,11 @@ export const useCourse = (courseId) => {
             courseContentTableNewParentDoenetId,
             previousContainingDoenetIds,
           })
-          console.log("resp.data",resp.data);
+          // console.log("resp.data",resp.data);
           //Transfer cut to copy so we don't get duplicate doenetIds
           set(copiedCourseItems,[...cutObjs])
           set(cutCourseItems,[]);
+          return;
         }
 
         if (copiedObjs.length > 0){
@@ -1516,7 +1530,6 @@ export const useCourse = (courseId) => {
             createdDoenetIds.push(pageObj.doenetId);
             set(authorItemByDoenetId(pageObj.doenetId),pageObj);
           }
-          console.log("createdDoenetIds",createdDoenetIds)
           set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
             let next;
             if (sectionId == courseId){

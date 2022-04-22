@@ -233,13 +233,6 @@ export default function SelectedActivity() {
             }})
           }}
       />
-      <ActionButton
-          value="Paste"
-          disabled
-          onClick={() => {
-            console.log("paste")
-          }}
-      />
     </ActionButtonGroup>
     <br />
     <ButtonGroup vertical>
