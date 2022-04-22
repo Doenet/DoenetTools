@@ -84,13 +84,13 @@ export default function Section(props) {
     content = 
     <div style={{ border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)" }} >
       <div 
-        style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: "var(--mainBorder)" }} 
+        style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: "var(--mainBorder)", borderTopLeftRadius:"var(--mainBorderRadius)", borderTopRightRadius:"var(--mainBorderRadius)" }} 
         onClick={() => callAction({action: SVs.open ? actions.closeSection : actions.revealSection})}
       >
         <a name={name} />
         {heading}
       </div>
-      <div style={{ display: SVs.open ? "block" : "none", backgroundColor: "white", padding: SVs.boxed && "6px" }}>
+      <div style={{ display: SVs.open ? "block" : "none", padding: SVs.boxed && "6px" }}>
         {children}
         {checkworkComponent}
       </div>
@@ -127,11 +127,11 @@ export default function Section(props) {
   } else if (SVs.boxed) {
     content = 
     <div style={{ border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)" }}>
-      <div style={{ padding: "6px", borderBottom: "var(--mainBorder)", backgroundColor: "var(--mainGray)" }}>
+      <div style={{ padding: "6px", borderBottom: "var(--mainBorder)", backgroundColor: "var(--mainGray)", borderTopLeftRadius:"var(--mainBorderRadius)", borderTopRightRadius:"var(--mainBorderRadius)" }}>
         <a name={name} />
         {heading}<br/>
       </div>
-      <div style={{ display: "block", padding: "6px", backgroundColor: "white" }}>
+      <div style={{ display: "block", padding: "6px" }}>
         {children}
         {checkworkComponent}
       </div>
