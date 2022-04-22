@@ -36,7 +36,6 @@ cypress/videos
 cypress/screenshots
 
 src/tempcodes
-src/Media
 
 # Docker testing environment
 docker\ deb/
