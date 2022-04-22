@@ -1525,7 +1525,6 @@ export const useCourse = (courseId) => {
               next = [...prev];
               next.splice(next.indexOf(previousContainingDoenetId)+1,0,...createdDoenetIds)
             }
-            console.log("navigation doenetIds order",next)
             return next;
           })
           }

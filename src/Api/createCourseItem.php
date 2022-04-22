@@ -176,21 +176,14 @@ if ($success){
               "doenetId"=>$clonePageDoenetId,
             ));
 
-            // //Create a copy of original file for page
-            // $filename = "../media/bydoenetid/$pageDoenetId.doenet";
-            // $dirname = dirname($filename);
-            // if (!is_dir($dirname)) {
-            //     mkdir($dirname, 0755, true);
-            // }
-    
-            // $newfile = fopen($filename, "w");
-            // if ($newfile === false) {
-            //     $success = false;
-            //     $message = "Unable to open file!";
-            // } else {
-            //     // don't write anything to file so that it is a blank file
-            //     fclose($newfile);
-            // }
+            //Create a copy of original file for page
+            $sourceFilePath = "../media/bydoenetid/$sourcePageDoenetId.doenet";
+            $destFilePath = "../media/bydoenetid/$clonePageDoenetId.doenet";
+            if (!copy($sourceFilePath, $destFilePath)) {
+              $success = false;
+              $message = "failed to copy media\n";
+            }
+        
           }
        
           
@@ -259,8 +252,6 @@ if ($success){
 
   }
 
-
-
 }
 
 
@@ -301,19 +292,6 @@ $itemEntered = array_merge($json,$itemEntered);
 $itemEntered['isOpen'] = false;
 $itemEntered['isSelected'] = false;
 
-// //Get new order
-// $sql = "
-// SELECT doenetId
-// FROM course_content
-// WHERE courseId='$courseId'
-// ORDER BY sortOrder
-// ";
-
-// $result = $conn->query($sql); 
-// $order = [];
-// while($row = $result->fetch_assoc()){
-//   array_push($order,$row['doenetId']);
-// }
 }
 
 $response_arr = array(
@@ -324,7 +302,6 @@ $response_arr = array(
   "pageEntered"=>$pageEntered,
   "pagesEntered"=>$pagesEntered,
   "pageDoenetId"=>$pageDoenetId,
-  // "order"=>$order,
   );
 
 
