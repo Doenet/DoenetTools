@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-04-10 12:23:37 +0000
+# Generation Time: 2022-04-22 20:20:35 +0000
 # ************************************************************
 
 
@@ -52,19 +52,17 @@ DROP TABLE IF EXISTS `assignment`;
 CREATE TABLE `assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `pinnedAfterDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means shows immediately',
   `pinnedUntilDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never stops being pinned',
   `dueDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never closes',
   `timeLimit` int(11) DEFAULT NULL COMMENT 'NULL means it''s not timed',
   `numberOfAttemptsAllowed` int(11) DEFAULT NULL COMMENT 'NULL means infinite, Assignment Level Number Of Attempts',
-  `sortOrder` int(11) DEFAULT NULL,
-  `attemptAggregation` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `totalPointsOrPercent` float DEFAULT NULL COMMENT 'Assignment level',
+  `attemptAggregation` char(1) COLLATE utf8_unicode_ci DEFAULT 'm',
+  `totalPointsOrPercent` float DEFAULT '10' COMMENT 'Assignment level',
   `gradeCategory` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `individualize` tinyint(1) NOT NULL DEFAULT '0',
-  `multipleAttempts` tinyint(1) NOT NULL DEFAULT '0',
   `showSolution` tinyint(1) NOT NULL DEFAULT '1',
   `showSolutionInGradebook` tinyint(1) NOT NULL DEFAULT '1',
   `showFeedback` tinyint(1) NOT NULL DEFAULT '1',
@@ -72,20 +70,10 @@ CREATE TABLE `assignment` (
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
   `showCreditAchievedMenu` tinyint(1) NOT NULL DEFAULT '1',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
-  `examCoverHTML` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-LOCK TABLES `assignment` WRITE;
-/*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
-
-INSERT INTO `assignment` (`id`, `doenetId`, `driveId`, `assignedDate`, `pinnedAfterDate`, `pinnedUntilDate`, `dueDate`, `timeLimit`, `numberOfAttemptsAllowed`, `sortOrder`, `attemptAggregation`, `totalPointsOrPercent`, `gradeCategory`, `individualize`, `multipleAttempts`, `showSolution`, `showSolutionInGradebook`, `showFeedback`, `showHints`, `showCorrectness`, `showCreditAchievedMenu`, `proctorMakesAvailable`, `examCoverHTML`)
-VALUES
-	(488,'doenetId','driveId','2021-06-04 08:20:07',NULL,NULL,'2021-06-09 08:20:07',101000,2,NULL,'m',0,'l',0,0,1,1,1,1,1,1,0,NULL);
-
-/*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table class_times

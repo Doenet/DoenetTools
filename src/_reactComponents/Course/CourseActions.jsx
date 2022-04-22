@@ -1007,7 +1007,7 @@ export const useCourse = (courseId) => {
         } catch (err) {
           failureCallback(err);
         }
-      });
+  });
 
   function updateOrder({orderObj,needleDoenetId,changesObj}){
     let nextOrderObj = {...orderObj};
