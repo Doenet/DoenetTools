@@ -257,7 +257,7 @@ export default function MatrixInput(props) {
 
   return <React.Fragment>
     <a name={name} />
-    <div style={{display: "flex"}}>
+    <div style={{display: "flex", marginBottom: "12px"}}>
     <Matrix className="matrixInputSurroundingBox" id={name}>
       <table><tbody>
         {matrixInputs}

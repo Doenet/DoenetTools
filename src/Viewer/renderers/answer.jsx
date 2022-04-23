@@ -171,13 +171,13 @@ export default function Answer(props) {
       </>
     }
 
-    return <span id={name}>
+    return <span id={name} style={{marginBottom: "12px"}}>
       <a name={name} />
       {inputChildrenToRender}
       {checkworkComponent}
     </span>;
   } else {
-    return <span id={name}><a name={name} />{inputChildrenToRender}</span>;
+    return <span id={name} style={{marginBottom: "12px"}}><a name={name} />{inputChildrenToRender}</span>;
   }
 
 }

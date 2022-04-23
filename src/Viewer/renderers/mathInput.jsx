@@ -284,8 +284,8 @@ export default function MathInput(props) {
     <React.Fragment>
       <a name={name} />
 
-      <span className="textInputSurroundingBox" id={name}>
-        <span style={{}}>
+      <span className="textInputSurroundingBox" id={name} style={{marginBottom: "12px"}}>
+        <span>
           <EditableMathField
             style={{border: "var(--mainBorder)"}}
             latex={rendererValue.current}
