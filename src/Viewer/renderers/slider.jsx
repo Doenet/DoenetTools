@@ -27,7 +27,7 @@ const StyledSlider = styled.div`
   position: relative;
   border-radius: 3px;
   background: black; // black?
-  height: 1px;
+  height: 2px;
   width: ${props => props.width};
   user-select: none;
 `;
