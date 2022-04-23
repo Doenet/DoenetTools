@@ -30,6 +30,7 @@ import RandomizedTextList from './components/RandomizedTextList';
 import MathList from './components/MathList';
 import TupleList from './components/TupleList';
 import NumberList from './components/NumberList';
+import NumberListFromString from './components/NumberListFromString';
 import P from './components/P';
 import BooleanComponent from './components/Boolean';
 import BooleanList from './components/BooleanList';
@@ -206,6 +207,7 @@ const componentTypeArray = [
   MathComponent, MathList,
   TupleList,
   NumberList,
+  NumberListFromString,
   Copy,
   Extract,
   Collect,

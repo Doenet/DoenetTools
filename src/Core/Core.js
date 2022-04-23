@@ -196,7 +196,7 @@ export default class Core {
     let numVariants = serializeFunctions.getNumberOfVariants({
       serializedComponent: serializedComponents[0],
       componentInfoObjects: this.componentInfoObjects
-    }).numberOfVariants;
+    }).numberOfVariantsPreIgnore;
 
 
     if (!this.requestedVariant) {
@@ -276,6 +276,7 @@ export default class Core {
     this.coreInfo = {
       generatedVariantString: this.canonicalGeneratedVariantString,
       allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
+      variantIndicesToIgnore: deepClone(await this.document.sharedParameters.variantIndicesToIgnore),
       rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
       documentToRender: this.documentRendererInstructions,
     };

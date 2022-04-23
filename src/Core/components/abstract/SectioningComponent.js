@@ -672,6 +672,7 @@ export default class SectioningComponent extends BlockComponent {
       sharedParameters.variantIndex = await variantControlChild.state.selectedVariantIndex.value;
       sharedParameters.variantRng = await variantControlChild.state.variantRng.value;
       sharedParameters.allPossibleVariants = await variantControlChild.state.variantNames.value;
+      sharedParameters.variantIndicesToIgnore = await variantControlChild.state.variantIndicesToIgnore.value;
     }
 
     // console.log("****Variant for sectioning component****")
@@ -737,9 +738,24 @@ export default class SectioningComponent extends BlockComponent {
       numberOfVariants = 100;
     }
 
+    let numberOfVariantsPreIgnore = numberOfVariants;
+
+    let indicesToIgnore = [];
+    if (variantControlChild.attributes.variantIndicesToIgnore) {
+      indicesToIgnore = variantControlChild.attributes.variantIndicesToIgnore.component
+        .children.map(Number)
+        .filter(x => Number.isInteger(x) && x >= 1 && x <= numberOfVariants)
+        .sort((a, b) => a - b);
+    }
+
     if (!variantControlChild.attributes.uniqueVariants?.primitive) {
+      if (indicesToIgnore.length > 0) {
+        serializedComponent.variants.indicesToIgnore = indicesToIgnore;
+        numberOfVariants -= indicesToIgnore.length;
+      }
+      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
       serializedComponent.variants.numberOfVariants = numberOfVariants;
-      return { success: true, numberOfVariants }
+      return { success: true, numberOfVariants, numberOfVariantsPreIgnore }
     }
 
 
@@ -749,12 +765,27 @@ export default class SectioningComponent extends BlockComponent {
       // even if didn't successfully determine number of unique variants
       // still report it as a success, as will have exactly number of variants
       // given by the variant control
+      if (indicesToIgnore.length > 0) {
+        serializedComponent.variants.indicesToIgnore = indicesToIgnore;
+        numberOfVariants -= indicesToIgnore.length;
+      }
+      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
       serializedComponent.variants.numberOfVariants = numberOfVariants;
-      return { success: true, numberOfVariants }
+      return { success: true, numberOfVariants, numberOfVariantsPreIgnore }
     }
 
     numberOfVariants = Math.min(result.numberOfVariants, numberOfVariants);
+    numberOfVariantsPreIgnore = numberOfVariants;
 
+    if (indicesToIgnore.length > 0) {
+      indicesToIgnore = indicesToIgnore.filter(x => x <= numberOfVariants);
+      if (indicesToIgnore.length > 0) {
+        serializedComponent.variants.indicesToIgnore = indicesToIgnore;
+        numberOfVariants -= indicesToIgnore.length;
+      }
+    }
+
+    serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
     serializedComponent.variants.numberOfVariants = numberOfVariants;
     serializedComponent.variants.uniqueVariants = true;
 
@@ -762,7 +793,8 @@ export default class SectioningComponent extends BlockComponent {
 
     return {
       success: true,
-      numberOfVariants
+      numberOfVariants,
+      numberOfVariantsPreIgnore
     };
 
 
@@ -773,6 +805,10 @@ export default class SectioningComponent extends BlockComponent {
     let numberOfVariants = serializedComponent.variants?.numberOfVariants;
     if (numberOfVariants === undefined) {
       return { success: false }
+    }
+
+    if (serializedComponent.variants.desiredVariantFromDocument) {
+      numberOfVariants = serializedComponent.variants.numberOfVariantsPreIgnore;
     }
 
     if (!Number.isInteger(variantIndex) || variantIndex < 1 || variantIndex > numberOfVariants) {
@@ -793,6 +829,18 @@ export default class SectioningComponent extends BlockComponent {
       return super.getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects });
     }
 
+    if (!serializedComponent.variants.desiredVariantFromDocument) {
+      if (serializedComponent.variants.indicesToIgnore) {
+        // adjust variantIndex so it counts only non-ignored indices
+        for (let ind of serializedComponent.variants.indicesToIgnore) {
+          if (variantIndex >= ind) {
+            variantIndex++;
+          } else {
+            break;
+          }
+        }
+      }
+    }
 
     if (!serializedComponent.variants.uniqueVariants) {
       // it don't have unique variants, then just return variantIndex

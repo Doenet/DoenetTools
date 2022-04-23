@@ -23,6 +23,12 @@ export default class VariantControl extends BaseComponent {
       public: true,
     };
 
+    attributes.variantIndicesToIgnore = {
+      createComponentOfType: "numberListFromString",
+      createStateVariable: "variantIndicesToIgnorePreliminary",
+      defaultValue: [],
+    }
+
     attributes.variantNames = {
       createComponentOfType: "variantNames"
     }
@@ -47,7 +53,7 @@ export default class VariantControl extends BaseComponent {
         },
         numberOfVariantsFromSharedParameters: {
           dependencyType: "value",
-          value: sharedParameters.numberOfVariants,
+          value: sharedParameters.numberOfVariantsPreIgnore,
         },
         nVariants: {
           dependencyType: "stateVariable",
@@ -73,6 +79,29 @@ export default class VariantControl extends BaseComponent {
         }
 
         return { setValue: { nVariantsSpecified } };
+      }
+    }
+
+
+    stateVariableDefinitions.variantIndicesToIgnore = {
+      returnDependencies: () => ({
+        variantIndicesToIgnorePreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "variantIndicesToIgnorePreliminary"
+        },
+        nVariantsSpecified: {
+          dependencyType: "stateVariable",
+          variableName: "nVariantsSpecified"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let variantIndicesToIgnore = dependencyValues.variantIndicesToIgnorePreliminary
+          .filter(x => Number.isInteger(x) && x >= 1 && x <= dependencyValues.nVariantsSpecified)
+          .sort((a, b) => a - b);
+
+        return {
+          setValue: { variantIndicesToIgnore }
+        }
       }
     }
 
@@ -226,6 +255,10 @@ export default class VariantControl extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "nVariantsSpecified"
         },
+        variantIndicesToIgnore: {
+          dependencyType: "stateVariable",
+          variableName: "variantIndicesToIgnore"
+        },
         variantRng: {
           dependencyType: "value",
           value: sharedParameters.variantRng,
@@ -277,12 +310,50 @@ export default class VariantControl extends BaseComponent {
         if (dependencyValues.variantRng) {
           // random number in [0, 1)
           let rand = dependencyValues.variantRng();
+
+          let nVariants = dependencyValues.nVariantsSpecified;
+          let indicesToIgnore = dependencyValues.variantIndicesToIgnore;
+          if (indicesToIgnore.length > 0) {
+            indicesToIgnore = indicesToIgnore
+              .filter(x => Number.isInteger(x) && x >= 1 && x <= nVariants)
+              .sort((a, b) => a - b);
+
+            nVariants -= indicesToIgnore.length;
+          }
+
           // random integer from 1 to nVariants
-          selectedVariantIndex = Math.floor(rand * dependencyValues.nVariantsSpecified) + 1;
+          selectedVariantIndex = Math.floor(rand * nVariants) + 1;
+
+          if (indicesToIgnore.length > 0) {
+            // adjust selectedVariantIndex so it counts only non-ignored indices
+            for (let ind of indicesToIgnore) {
+              if (selectedVariantIndex >= ind) {
+                selectedVariantIndex++;
+              } else {
+                break;
+              }
+            }
+          }
         } else {
           // if variantRng does not exist, we are in document
           // Just choose the first variant
           selectedVariantIndex = 1;
+          let indicesToIgnore = dependencyValues.variantIndicesToIgnore;
+          if (indicesToIgnore.length > 0) {
+            indicesToIgnore = indicesToIgnore
+              .filter(x => Number.isInteger(x) && x >= 1 && x <= nVariants)
+              .sort((a, b) => a - b);
+
+            // adjust selectedVariantIndex so it counts only non-ignored indices
+            for (let ind of indicesToIgnore) {
+              if (selectedVariantIndex >= ind) {
+                selectedVariantIndex++;
+              } else {
+                break;
+              }
+            }
+
+          }
         }
 
         return {

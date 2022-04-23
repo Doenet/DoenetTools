@@ -286,7 +286,8 @@ export default function PageViewer(props) {
     if (props.generatedVariantCallback) {
       props.generatedVariantCallback(
         JSON.parse(coreInfo.current.generatedVariantString, serializedComponentsReviver),
-        coreInfo.current.allPossibleVariants
+        coreInfo.current.allPossibleVariants,
+        coreInfo.current.variantIndicesToIgnore
       );
     }
 
