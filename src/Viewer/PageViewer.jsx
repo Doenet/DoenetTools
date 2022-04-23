@@ -286,7 +286,8 @@ export default function PageViewer(props) {
     if (props.generatedVariantCallback) {
       props.generatedVariantCallback(
         JSON.parse(coreInfo.current.generatedVariantString, serializedComponentsReviver),
-        coreInfo.current.allPossibleVariants
+        coreInfo.current.allPossibleVariants,
+        coreInfo.current.variantIndicesToIgnore
       );
     }
 
@@ -641,7 +642,7 @@ export default function PageViewer(props) {
 
   function startCore() {
 
-    console.log(`send message to create core ${pageId}`)
+    // console.log(`send message to create core ${pageId}`)
 
     coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : 'viewer/core.js', { type: 'module' });
 

@@ -188,12 +188,12 @@ export let assignmentDictionarySelector = selectorFamily({
 
 export const pageVariantInfoAtom = atom({
   key:"pageVariantInfoAtom",
-  default:{index:null}
+  default:{index:1}
 })
 
 export const pageVariantPanelAtom = atom({
   key:"pageVariantPanelAtom",
-  default:{index:null, allPossibleVariants: []}
+  default:{index:1, allPossibleVariants: [], variantIndicesToIgnore: []}
 })
 
 export const activityVariantInfoAtom = atom({

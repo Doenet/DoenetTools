@@ -102,12 +102,13 @@ export default function EditorViewer() {
   let solutionDisplayMode = "button";
 
 
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
+  function variantCallback(generatedVariantInfo, allPossibleVariants, variantIndicesToIgnore) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
     setVariantPanel({
       index: cleanGeneratedVariant.index,
-      allPossibleVariants
+      allPossibleVariants,
+      variantIndicesToIgnore,
     });
     setVariantInfo({
       index: cleanGeneratedVariant.index,

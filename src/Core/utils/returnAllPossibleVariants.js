@@ -33,7 +33,7 @@ export async function returnAllPossibleVariants({
     componentInfoObjects
   })
 
-  let nVariants = results.numberOfVariants;
+  let nVariants = results.numberOfVariantsPreIgnore;
 
   let allPossibleVariants;
 
@@ -69,7 +69,9 @@ export async function returnAllPossibleVariants({
 
   }
 
-  return { allPossibleVariants, doenetML, cid };
+  let variantIndicesToIgnore = results.indicesToIgnore;
+
+  return { allPossibleVariants, variantIndicesToIgnore, doenetML, cid };
 }
 
 

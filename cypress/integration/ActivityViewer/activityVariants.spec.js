@@ -63,7 +63,7 @@ describe('Activity variants tests', function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq((ind - 1) % 100 + 1);
+        expect(activityData.variantIndex).eq((ind - 1) % 1000 + 1);
         expect(activityData.variantsByPage).eqls([(ind - 1) % 100 + 1])
 
         let stateVariables = await win.returnAllStateVariables1();
@@ -183,7 +183,7 @@ describe('Activity variants tests', function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq((ind - 1) % 3 + 1);
+        expect(activityData.variantIndex).eq((ind - 1) % 100 + 1);
         expect(activityData.variantsByPage).eqls([(ind - 1) % 3 + 1]);
 
         let stateVariables = await win.returnAllStateVariables1();
@@ -301,7 +301,7 @@ describe('Activity variants tests', function () {
         let activityData = win.returnActivityData();
 
         expect(activityData.requestedVariantIndex).eq(ind);
-        expect(activityData.variantIndex).eq((ind - 1) % 3 + 1);
+        expect(activityData.variantIndex).eq((ind - 1) % 1000 + 1);
         expect(activityData.variantsByPage).eqls([(ind - 1) % 3 + 1]);
 
         let stateVariables = await win.returnAllStateVariables1();
@@ -406,8 +406,8 @@ describe('Activity variants tests', function () {
         expect(activityData.requestedVariantIndex).eq(ind);
         expect(activityData.variantIndex).eq((ind - 1) % 1000 + 1);
         expect(activityData.variantsByPage.length).eq(2);
-        expect(activityData.variantsByPage[0]).eq((activityData.variantIndex-1) % 2 + 1);
-        expect(activityData.variantsByPage[1]).eq((activityData.variantIndex-1) % 3 + 1);
+        expect(activityData.variantsByPage[0]).eq((activityData.variantIndex - 1) % 2 + 1);
+        expect(activityData.variantsByPage[1]).eq((activityData.variantIndex - 1) % 3 + 1);
 
 
         let stateVariables1 = await win.returnAllStateVariables1();
@@ -889,6 +889,412 @@ describe('Activity variants tests', function () {
 
 
   })
+
+  it("Two pages, unique variants, variant indices to ignore", () => {
+
+    let activityDefinition = `
+    <document type="activity">
+      <order>
+        <page>
+          <text>a</text>
+          <variantControl uniqueVariants variantIndicesToIgnore="1 3 4" />
+          <selectFromSequence from="1" to="5" assignNames="n" />
+        </page>
+        <page>
+          <text>b</text>
+          <variantControl uniqueVariants variantIndicesToIgnore="2 3 4 6" />
+          <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+        </page>
+      </order>
+    </document>
+    `;
+
+    for (let ind = 1; ind <= 20; ind += 5) {
+
+      if (ind > 1) {
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          activityDefinition,
+          requestedVariantIndex: ind
+        }, "*");
+      })
+
+      let variantOptions1 = [2, 5];
+      let variantOptions2 = [1, 5, 7];
+
+      cy.get('#\\/_text1').should('have.text', 'a');
+
+
+      cy.window().then(async (win) => {
+        let activityData = win.returnActivityData();
+
+        expect(activityData.requestedVariantIndex).eq(ind);
+        expect(activityData.variantIndex).eq((ind - 1) % 1000 + 1);
+        expect(activityData.variantsByPage.length).eq(2);
+        expect(activityData.variantsByPage[0]).eq(variantOptions1[(activityData.variantIndex - 1) % 2]);
+        expect(activityData.variantsByPage[1]).eq(variantOptions2[(activityData.variantIndex - 1) % 3]);
+
+
+        let stateVariables1 = await win.returnAllStateVariables1();
+
+        expect(stateVariables1["/n"].stateValues.value).eq(activityData.variantsByPage[0])
+
+
+        cy.get('[data-cy=next]').click();
+
+        cy.get('#\\/_text1').should('have.text', 'b');
+
+        cy.window().then(async (win) => {
+          let stateVariables2 = await win.returnAllStateVariables2();
+
+          expect(stateVariables2["/l"].stateValues.value).eq(numberToLetters(activityData.variantsByPage[1], true));
+
+        })
+      })
+
+
+    }
+
+
+  })
+
+  it("Two pages, named variants, variant indices to ignore", () => {
+
+    let activityDefinition = `
+    <document type="activity">
+      <order>
+        <page>
+          <text>a</text>
+          <variantControl nVariants="5" variantIndicesToIgnore="1 3 4" />
+          <select assignNames="(n)">
+            <option selectForVariantNames="a"><number>1</number></option>
+            <option selectForVariantNames="b"><number>2</number></option>
+            <option selectForVariantNames="c"><number>3</number></option>
+            <option selectForVariantNames="d"><number>4</number></option>
+            <option selectForVariantNames="e"><number>5</number></option>
+          </select>
+        </page>
+        <page>
+          <text>b</text>
+          <variantControl nVariants="7" variantIndicesToIgnore="2 3 4 6" />
+          <select assignNames="(l)">
+            <option selectForVariantNames="a"><text>a</text></option>
+            <option selectForVariantNames="b"><text>b</text></option>
+            <option selectForVariantNames="c"><text>c</text></option>
+            <option selectForVariantNames="d"><text>d</text></option>
+            <option selectForVariantNames="e"><text>e</text></option>
+            <option selectForVariantNames="f"><text>f</text></option>
+            <option selectForVariantNames="g"><text>g</text></option>
+          </select>
+        </page>
+      </order>
+    </document>
+    `;
+
+    for (let ind = 1; ind <= 20; ind += 5) {
+
+      if (ind > 1) {
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          activityDefinition,
+          requestedVariantIndex: ind
+        }, "*");
+      })
+
+      let variantOptions1 = [2, 5];
+      let variantOptions2 = [1, 5, 7];
+
+      cy.get('#\\/_text1').should('have.text', 'a');
+
+
+      cy.window().then(async (win) => {
+        let activityData = win.returnActivityData();
+
+        expect(activityData.requestedVariantIndex).eq(ind);
+        expect(activityData.variantIndex).eq((ind - 1) % 1000 + 1);
+        expect(activityData.variantsByPage.length).eq(2);
+        expect(activityData.variantsByPage[0]).eq(variantOptions1[(activityData.variantIndex - 1) % 2]);
+        expect(activityData.variantsByPage[1]).eq(variantOptions2[(activityData.variantIndex - 1) % 3]);
+
+
+        let stateVariables1 = await win.returnAllStateVariables1();
+
+        expect(stateVariables1["/n"].stateValues.value).eq(activityData.variantsByPage[0])
+
+
+        cy.get('[data-cy=next]').click();
+
+        cy.get('#\\/_text1').should('have.text', 'b');
+
+        cy.window().then(async (win) => {
+          let stateVariables2 = await win.returnAllStateVariables2();
+
+          expect(stateVariables2["/l"].stateValues.value).eq(numberToLetters(activityData.variantsByPage[1], true));
+
+        })
+      })
+
+
+    }
+
+
+  })
+
+  it("Two pages, variants from problem, variant indices to ignore", () => {
+
+    let activityDefinition = `
+    <document type="activity">
+      <order>
+        <page>
+          <problem>
+            <text>a</text>
+            <variantControl nVariants="5" variantIndicesToIgnore="1 3 4" />
+            <select assignNames="(n)">
+              <option selectForVariantNames="a"><number>1</number></option>
+              <option selectForVariantNames="b"><number>2</number></option>
+              <option selectForVariantNames="c"><number>3</number></option>
+              <option selectForVariantNames="d"><number>4</number></option>
+              <option selectForVariantNames="e"><number>5</number></option>
+            </select>
+          </problem>
+        </page>
+        <page>
+          <problem>
+            <text>b</text>
+            <variantControl uniqueVariants variantIndicesToIgnore="2 3 4 6" />
+            <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+          </problem>
+        </page>
+      </order>
+    </document>
+    `;
+
+    for (let ind = 1; ind <= 20; ind += 5) {
+
+      if (ind > 1) {
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          activityDefinition,
+          requestedVariantIndex: ind
+        }, "*");
+      })
+
+      let variantOptions1 = [2, 5];
+      let variantOptions2 = [1, 5, 7];
+
+      cy.get('#\\/_text1').should('have.text', 'a');
+
+
+      cy.window().then(async (win) => {
+        let activityData = win.returnActivityData();
+
+        expect(activityData.requestedVariantIndex).eq(ind);
+        expect(activityData.variantIndex).eq((ind - 1) % 1000 + 1);
+        expect(activityData.variantsByPage.length).eq(2);
+        expect(activityData.variantsByPage[0]).eq(variantOptions1[(activityData.variantIndex - 1) % 2]);
+        expect(activityData.variantsByPage[1]).eq(variantOptions2[(activityData.variantIndex - 1) % 3]);
+
+
+        let stateVariables1 = await win.returnAllStateVariables1();
+
+        expect(stateVariables1["/n"].stateValues.value).eq(activityData.variantsByPage[0])
+
+
+        cy.get('[data-cy=next]').click();
+
+        cy.get('#\\/_text1').should('have.text', 'b');
+
+        cy.window().then(async (win) => {
+          let stateVariables2 = await win.returnAllStateVariables2();
+
+          expect(stateVariables2["/l"].stateValues.value).eq(numberToLetters(activityData.variantsByPage[1], true));
+
+        })
+      })
+
+
+    }
+
+
+  })
+
+  it("Two pages, variants from document and problem, variant indices to ignore in problem", () => {
+
+    let activityDefinition = `
+    <document type="activity">
+      <order>
+        <page>
+          <variantControl uniqueVariants />
+          <problem>
+            <text>a</text>
+            <variantControl nVariants="5" variantIndicesToIgnore="1 3 4" />
+            <select assignNames="(n)">
+              <option selectForVariantNames="a"><number>1</number></option>
+              <option selectForVariantNames="b"><number>2</number></option>
+              <option selectForVariantNames="c"><number>3</number></option>
+              <option selectForVariantNames="d"><number>4</number></option>
+              <option selectForVariantNames="e"><number>5</number></option>
+            </select>
+          </problem>
+        </page>
+        <page>
+          <variantControl uniqueVariants />
+          <problem>
+            <text>b</text>
+            <variantControl uniqueVariants variantIndicesToIgnore="2 3 4 6" />
+            <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+          </problem>
+        </page>
+      </order>
+    </document>
+    `;
+
+    for (let ind = 1; ind <= 20; ind += 5) {
+
+      if (ind > 1) {
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          activityDefinition,
+          requestedVariantIndex: ind
+        }, "*");
+      })
+
+      let variantOptions1 = [2, 5];
+      let variantOptions2 = [1, 5, 7];
+
+      cy.get('#\\/_text1').should('have.text', 'a');
+
+
+      cy.window().then(async (win) => {
+        let activityData = win.returnActivityData();
+
+        expect(activityData.requestedVariantIndex).eq(ind);
+        expect(activityData.variantIndex).eq((ind - 1) % 1000 + 1);
+        expect(activityData.variantsByPage.length).eq(2);
+        expect(activityData.variantsByPage[0]).eq((activityData.variantIndex - 1) % 2 + 1);
+        expect(activityData.variantsByPage[1]).eq((activityData.variantIndex - 1) % 3 + 1);
+
+
+        let stateVariables1 = await win.returnAllStateVariables1();
+
+        expect(stateVariables1["/n"].stateValues.value).eq(variantOptions1[activityData.variantsByPage[0] - 1])
+
+
+        cy.get('[data-cy=next]').click();
+
+        cy.get('#\\/_text1').should('have.text', 'b');
+
+        cy.window().then(async (win) => {
+          let stateVariables2 = await win.returnAllStateVariables2();
+
+          expect(stateVariables2["/l"].stateValues.value).eq(numberToLetters(variantOptions2[activityData.variantsByPage[1] - 1], true));
+
+        })
+      })
+
+
+    }
+
+
+  })
+
+  it("Two pages, variants from document and problem, variant indices to ignore in document and problem", () => {
+
+    let activityDefinition = `
+    <document type="activity">
+      <order>
+        <page>
+          <variantControl uniqueVariants variantIndicesToIgnore="2" />
+          <problem>
+            <text>a</text>
+            <variantControl nVariants="5" variantIndicesToIgnore="1 4" />
+            <select assignNames="(n)">
+              <option selectForVariantNames="a"><number>1</number></option>
+              <option selectForVariantNames="b"><number>2</number></option>
+              <option selectForVariantNames="c"><number>3</number></option>
+              <option selectForVariantNames="d"><number>4</number></option>
+              <option selectForVariantNames="e"><number>5</number></option>
+            </select>
+          </problem>
+        </page>
+        <page>
+          <variantControl uniqueVariants variantIndicesToIgnore="3" />
+          <problem>
+            <text>b</text>
+            <variantControl uniqueVariants variantIndicesToIgnore="2 3 4" />
+            <selectFromSequence type="letters" from="a" to="g" assignNames="l" />
+          </problem>
+        </page>
+      </order>
+    </document>
+    `;
+
+    for (let ind = 1; ind <= 20; ind += 5) {
+
+      if (ind > 1) {
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          activityDefinition,
+          requestedVariantIndex: ind
+        }, "*");
+      })
+
+      let docVariantOptions1 = [1, 3];
+      let docVariantOptions2 = [1, 2, 4];
+      let pageVariantOptions1 = [2, undefined, 5];
+      let pageVariantOptions2 = [1, 5, undefined, 7];
+
+      cy.get('#\\/_text1').should('have.text', 'a');
+
+
+      cy.window().then(async (win) => {
+        let activityData = win.returnActivityData();
+
+        expect(activityData.requestedVariantIndex).eq(ind);
+        expect(activityData.variantIndex).eq((ind - 1) % 1000 + 1);
+        expect(activityData.variantsByPage.length).eq(2);
+        expect(activityData.variantsByPage[0]).eq(docVariantOptions1[(activityData.variantIndex - 1) % 2]);
+        expect(activityData.variantsByPage[1]).eq(docVariantOptions2[(activityData.variantIndex - 1) % 3]);
+
+
+        let stateVariables1 = await win.returnAllStateVariables1();
+
+        expect(stateVariables1["/n"].stateValues.value).eq(pageVariantOptions1[activityData.variantsByPage[0] - 1])
+
+
+        cy.get('[data-cy=next]').click();
+
+        cy.get('#\\/_text1').should('have.text', 'b');
+
+        cy.window().then(async (win) => {
+          let stateVariables2 = await win.returnAllStateVariables2();
+
+          expect(stateVariables2["/l"].stateValues.value).eq(numberToLetters(pageVariantOptions2[activityData.variantsByPage[1] - 1], true));
+
+        })
+      })
+
+
+    }
+
+
+  })
+
 
 
 })

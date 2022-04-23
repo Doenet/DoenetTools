@@ -144,6 +144,8 @@ export async function expandDoenetMLsToFullSerializedComponents({
     let serializedComponents = parseAndCompile(doenetML);
     // let serializedComponents = doenetMLToSerializedComponents(doenetML);
 
+    serializedComponents = cleanIfHaveJustDocument(serializedComponents);
+
     substituteDeprecations(serializedComponents);
 
     correctComponentTypeCapitalization(serializedComponents, componentInfoObjects.componentTypeLowerCaseMapping);
@@ -494,6 +496,18 @@ function substituteDeprecations(serializedComponents) {
   }
 
 
+}
+
+function cleanIfHaveJustDocument(serializedComponents) {
+  let componentsWithoutBlankStrings = serializedComponents.filter(
+    x => typeof x !== "string" || x.trim() !== ""
+  )
+
+  if (componentsWithoutBlankStrings.length === 1 && componentsWithoutBlankStrings[0].componentType === 'document') {
+    return componentsWithoutBlankStrings;
+  } else {
+    return serializedComponents
+  }
 }
 
 export function correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping) {
@@ -2120,18 +2134,36 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
         });
 
 
-        serializedComponent.variants.numberOfVariants = results.numberOfVariants;
-        serializedComponent.variants.variantNames = results.variantNames;
-        serializedComponent.variants.variantsFromChild = true;
+        if (results.success) {
+          serializedComponent.variants.numberOfVariants = results.numberOfVariants;
+          serializedComponent.variants.variantNames = results.variantNames;
+          serializedComponent.variants.variantsFromChild = true;
+          serializedComponent.variants.numberOfVariantsPreIgnore = results.numberOfVariantsPreIgnore;
+          serializedComponent.variants.indicesToIgnore = results.indicesToIgnore;
 
-        return results;
+          return results;
+
+        }
 
       }
+
+      // either didn't have a single section child or get number of varants wan't successful
+
+      serializedComponent.variants.numberOfVariantsPreIgnore = 100;
+      serializedComponent.variants.numberOfVariants = 100;
+      serializedComponent.variants.indicesToIgnore = [];
+
+      return {
+        success: true,
+        numberOfVariants: 100,
+        numberOfVariantsPreIgnore: 100,
+        indicesToIgnore: []
+      };
+
+    } else {
+      // if are a section without a variant control, it doesn't determine variants
+      return { success: false }
     }
-
-    serializedComponent.variants.numberOfVariants = 100;
-
-    return { numberOfVariants: 100 };
 
   }
 
@@ -2144,12 +2176,29 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
   let variantNames = variantControlChild.attributes.variantNames?.component?.children
     .map(x => x.toLowerCase().substring(0, 1000));
 
+  let indicesToIgnore = [];
+  if (variantControlChild.attributes.variantIndicesToIgnore) {
+    indicesToIgnore = variantControlChild.attributes.variantIndicesToIgnore.component
+      .children.map(Number)
+      .filter(x => Number.isInteger(x) && x >= 1 && x <= numberOfVariants)
+      .sort((a, b) => a - b);
+  }
+
+  let numberOfVariantsPreIgnore = numberOfVariants;
 
   if (!variantControlChild.attributes.uniqueVariants?.primitive) {
+    if (indicesToIgnore.length > 0) {
+      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
+      serializedComponent.variants.indicesToIgnore = indicesToIgnore;
+      numberOfVariants -= indicesToIgnore.length;
+    }
     serializedComponent.variants.numberOfVariants = numberOfVariants;
     return {
+      success: true,
       numberOfVariants,
-      variantNames
+      variantNames,
+      numberOfVariantsPreIgnore,
+      indicesToIgnore,
     }
   }
 
@@ -2162,16 +2211,26 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
   })
 
   if (result.success) {
+    numberOfVariantsPreIgnore = result.numberOfVariantsPreIgnore;
     numberOfVariants = result.numberOfVariants;
     serializedComponent.variants.uniqueVariants = true;
+
+    indicesToIgnore = indicesToIgnore.filter(x => x <= numberOfVariantsPreIgnore);
 
     // don't have to add to serializedComponent.variants.numberOfVariants 
     // as determineNumberOfUniqueVariants does it in this case
   } else {
+    serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
     serializedComponent.variants.numberOfVariants = numberOfVariants;
   }
 
-  return { numberOfVariants, variantNames };
+  return {
+    success: true,
+    numberOfVariants,
+    variantNames,
+    numberOfVariantsPreIgnore,
+    indicesToIgnore,
+  };
 
 }
 

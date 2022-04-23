@@ -156,7 +156,6 @@ export default function useSockets(nsp) {
           isPublished: '0',
           cid:
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-          multipleAttempts: true, //TODO: is this ignored? should we delete it?
           numberOfAttemptsAllowed: '1',
           proctorMakesAvailable: false,
           showCorrectness: true,
@@ -182,7 +181,6 @@ export default function useSockets(nsp) {
           isPublished: '0',
           cid:
             'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-          multipleAttempts: false,
           numberOfAttemptsAllowed: '1',
           proctorMakesAvailable: false,
           showCorrectness: true,
