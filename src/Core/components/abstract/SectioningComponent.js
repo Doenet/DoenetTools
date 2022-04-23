@@ -789,7 +789,7 @@ export default class SectioningComponent extends BlockComponent {
     serializedComponent.variants.numberOfVariants = numberOfVariants;
     serializedComponent.variants.uniqueVariants = true;
 
-    console.log("Actual number of variants for section is " + numberOfVariants)
+    // console.log("Actual number of variants for section is " + numberOfVariants)
 
     return {
       success: true,

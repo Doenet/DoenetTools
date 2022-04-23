@@ -144,6 +144,8 @@ export async function expandDoenetMLsToFullSerializedComponents({
     let serializedComponents = parseAndCompile(doenetML);
     // let serializedComponents = doenetMLToSerializedComponents(doenetML);
 
+    serializedComponents = cleanIfHaveJustDocument(serializedComponents);
+
     substituteDeprecations(serializedComponents);
 
     correctComponentTypeCapitalization(serializedComponents, componentInfoObjects.componentTypeLowerCaseMapping);
@@ -494,6 +496,18 @@ function substituteDeprecations(serializedComponents) {
   }
 
 
+}
+
+function cleanIfHaveJustDocument(serializedComponents) {
+  let componentsWithoutBlankStrings = serializedComponents.filter(
+    x => typeof x !== "string" || x.trim() !== ""
+  )
+
+  if (componentsWithoutBlankStrings.length === 1 && componentsWithoutBlankStrings[0].componentType === 'document') {
+    return componentsWithoutBlankStrings;
+  } else {
+    return serializedComponents
+  }
 }
 
 export function correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping) {

@@ -112,15 +112,7 @@ export function parseActivityDefinition(activityDefDoenetML) {
 
   } else if (documentProps.type.toLowerCase() === "page") {
 
-    let page = { type: "page" };
-
-    if (cidFromProps) {
-      page.cid = cidFromProps
-    }
-    if (activityDefinitionFromProps) {
-      page.doenetML = activityDefinitionFromProps;
-    }
-
+    let page = { type: "page", doenetML: activityDefDoenetML };
 
     let jsonDefinition = {
       type: "activity",
