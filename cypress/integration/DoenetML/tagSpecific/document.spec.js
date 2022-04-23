@@ -191,6 +191,32 @@ describe('Document Tag Tests', function () {
     });
   })
 
+  it('explicit document tag, ignore outer blank strings', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+
+  <document>a</document>
+
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_document1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(Object.keys(stateVariables).length).eq(1);
+
+      expect(stateVariables["/_document1"].activeChildren).eqls(["a"]);
+
+
+    });
+
+  })
+
 
 })
 
