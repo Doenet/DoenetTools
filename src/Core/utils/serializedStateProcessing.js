@@ -2129,21 +2129,23 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
 
           return results;
 
-        } else {
-          serializedComponent.variants.numberOfVariantsPreIgnore = 100;
-          serializedComponent.variants.numberOfVariants = 100;
-          serializedComponent.variants.indicesToIgnore = [];
-
-          return {
-            success: true,
-            numberOfVariants: 100,
-            numberOfVariantsPreIgnore: 100,
-            indicesToIgnore: []
-          };
-
         }
 
       }
+
+      // either didn't have a single section child or get number of varants wan't successful
+
+      serializedComponent.variants.numberOfVariantsPreIgnore = 100;
+      serializedComponent.variants.numberOfVariants = 100;
+      serializedComponent.variants.indicesToIgnore = [];
+
+      return {
+        success: true,
+        numberOfVariants: 100,
+        numberOfVariantsPreIgnore: 100,
+        indicesToIgnore: []
+      };
+
     } else {
       // if are a section without a variant control, it doesn't determine variants
       return { success: false }

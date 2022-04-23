@@ -753,7 +753,7 @@ export default class Document extends BaseComponent {
 
   static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
     if (serializedComponent.children === undefined) {
-      return { success: true, numberOfVariants: 1 };
+      return { success: true, numberOfVariants: 1, numberOfVariantsPreIgnore: 1 };
     }
 
     let variantControlChild;
@@ -765,7 +765,7 @@ export default class Document extends BaseComponent {
     }
 
     if (!variantControlChild) {
-      return { success: true, numberOfVariants: 100 }
+      return { success: true, numberOfVariants: 100, numberOfVariantsPreIgnore: 100 }
     }
 
     let numberOfVariants = variantControlChild.attributes.nVariants?.primitive;
@@ -775,7 +775,7 @@ export default class Document extends BaseComponent {
     }
 
     if (!variantControlChild.attributes.uniqueVariants?.primitive) {
-      return { success: true, numberOfVariants }
+      return { success: true, numberOfVariants, numberOfVariantsPreIgnore: numberOfVariants }
     }
 
 
@@ -793,7 +793,8 @@ export default class Document extends BaseComponent {
 
     return {
       success: true,
-      numberOfVariants
+      numberOfVariants,
+      numberOfVariantsPreIgnore: numberOfVariants
     };
 
 

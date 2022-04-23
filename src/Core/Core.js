@@ -1142,7 +1142,7 @@ export default class Core {
             }
 
             if (serializedComponent.variants.uniqueVariants) {
-              sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+              sharedParameters.numberOfVariantsPreIgnore = serializedComponent.variants.numberOfVariantsPreIgnore;
             }
           }
 
