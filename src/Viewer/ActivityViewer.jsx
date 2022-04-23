@@ -478,7 +478,7 @@ export default function ActivityViewer(props) {
     let activityVariantResult = await determineNumberOfActivityVariants(activityDefinition);
 
     let variantIndex = (requestedVariantIndex - 1) % activityVariantResult.numberOfVariants + 1;
-    if(variantIndex < 1) {
+    if (variantIndex < 1) {
       variantIndex += activityVariantResult.numberOfVariants;
     }
 
@@ -538,7 +538,23 @@ export default function ActivityViewer(props) {
 
     let variantForEachPage;
 
-    let numberOfVariantsPerPage = pageVariantsResult.map(x => x.allPossibleVariants.length);
+    // filter out the ignored variants for each page
+    let allPossibleNonIgnoredPerPage = [], indicesToIgnorePerPage = [];
+    let numberOfVariantsPerPage = [];
+
+    for (let pageResult of pageVariantsResult) {
+      let allPossibleVariants = [...pageResult.allPossibleVariants];
+      let indicesToIgnore = [...pageResult.variantIndicesToIgnore]
+      for (let ind of indicesToIgnore) {
+        delete allPossibleVariants[ind];
+      }
+      let numberOfVariants = allPossibleVariants.filter(x => x !== undefined).length;
+
+      allPossibleNonIgnoredPerPage.push(allPossibleVariants);
+      indicesToIgnorePerPage.push(indicesToIgnore);
+      numberOfVariantsPerPage.push(numberOfVariants);
+    }
+
     let numberOfPageVariantCombinations = numberOfVariantsPerPage.reduce((a, c) => a * c, 1)
 
     if (numberOfPageVariantCombinations <= activityVariantResult.numberOfVariants) {
@@ -560,6 +576,16 @@ export default function ActivityViewer(props) {
     for (let [ind, possibleVariants] of pageVariantsResult.entries()) {
 
       let pageVariantIndex = variantForEachPage[ind];
+
+      let indicesToIgnore = indicesToIgnorePerPage[ind];
+
+      for (let i of indicesToIgnore) {
+        if (pageVariantIndex >= i) {
+          pageVariantIndex++;
+        } else {
+          break;
+        }
+      }
 
       variantsByPage.push(pageVariantIndex);
 
