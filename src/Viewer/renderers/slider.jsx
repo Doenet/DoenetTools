@@ -14,6 +14,7 @@ let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
 const SliderContainer = styled.div`
     width: fit-content;
     height: ${props => (props.labeled && props.noTicked) ? "60px" : props.labeled ? "80px" : props.noTicked ? "40px" : "60px"};
+    margin-bottom: 12px;
     &:focus {outline: 0;};
 `;
 
@@ -356,13 +357,11 @@ export default function Slider(props) {
   if (SVs.disabled) {
     let controls = '';
     if (SVs.showControls) {
-      controls = <ActionButtonGroup
+      controls = <ActionButtonGroup style={{marginBottom: "12px"}}
       >
         <ActionButton
-          style={{ marginTop: '-20px' }}
           value="Prev" onClick={(e) => handlePrevious(e)} disabled />
         <ActionButton
-          style={{ marginTop: '-20px' }}
           value="Next" onClick={(e) => handleNext(e)} disabled />
       </ActionButtonGroup>
     } else {
@@ -555,15 +554,13 @@ export default function Slider(props) {
   }
   let controls = '';
   if (SVs.showControls) {
-    controls = <ActionButtonGroup >
+    controls = <ActionButtonGroup style={{marginBottom: "12px"}}>
       <ActionButton
-        style={{ marginTop: '-20px' }}
         value="Prev"
         onClick={(e) => handlePrevious(e)}
         data-cy={`${name}-prevbutton`}
       ></ActionButton>
       <ActionButton
-        style={{ marginTop: '-20px' }}
         value="Next"
         onClick={(e) => handleNext(e)}
         data-cy={`${name}-nextbutton`}
