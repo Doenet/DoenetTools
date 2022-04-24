@@ -7,7 +7,7 @@ import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 import { authorItemByDoenetId, coursePermissionsAndSettingsByCourseId, useCourse } from '../../../_reactComponents/Course/CourseActions';
 
 
-export default function AssignmentInfoCap(){
+export default function DraftActivityCap(){
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
@@ -69,7 +69,7 @@ let image = course.image;
     <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
       <img src={image} style={{ position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)" }}  />
     </div>
-    <b>Assignment</b>
+    <b>Draft Activity</b>
     {/* <div style={{ padding:'16px 12px' }}>
       <span style={{ marginBottom: "15px" }}>{courseLabel ?? ''}</span> <br />
       <span style={{ marginBottom: "15px" }}>{contentLabel}</span> <br />

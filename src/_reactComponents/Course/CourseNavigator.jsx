@@ -51,7 +51,8 @@ import {
   coursePermissionsAndSettingsByCourseId, 
   useInitCourseItems,
   selectedCourseItems,
-  authorCourseItemOrderByCourseIdBySection
+  authorCourseItemOrderByCourseIdBySection,
+  findFirstPageOfActivity
 } from '../../_reactComponents/Course/CourseActions';
 
 /**
@@ -471,38 +472,10 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   //Used to open editor or assignment
   let handleDoubleClick = useRecoilCallback(({snapshot})=> async (e)=>{
     let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-    console.log("Double CLICK!",doenetId,clickedItem)
+    // console.log("Double CLICK!",doenetId,clickedItem)
     e.preventDefault();
     e.stopPropagation();
 
-    function findFirstPage(orderObj){
-      //No pages or orders in order so return null
-      if (orderObj.content.length == 0){
-        return null;
-      }
-      let response = null;
-
-      for (let item of orderObj.content){
-        console.log("item",item)
-
-        if (typeof item === 'string' || item instanceof String){
-          //First content is a string so return the doenetId
-          response = item;
-          break;
-        }else{
-          //First item of content is another order
-          let nextOrderResponse = findFirstPage(item);
-        
-          if (typeof nextOrderResponse === 'string' || nextOrderResponse instanceof String){
-            response = nextOrderResponse;
-            break;
-          }
-        }
-      }
-
-      return response; //if didn't find any pages
-
-    }
     //TODO: use item type and role to determine what to update
     if (clickedItem.type == 'page'){
       setPageToolView((prev)=>{return {
@@ -514,7 +487,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     }else if (clickedItem.type == 'activity'){
       
       //Find first page
-      let pageDoenetId = findFirstPage(clickedItem.order);
+      let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
       if (pageDoenetId == null){
         addToast(`ERROR: No page found in activity`, toastType.INFO);
       }else{

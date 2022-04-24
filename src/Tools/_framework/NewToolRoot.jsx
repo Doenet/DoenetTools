@@ -400,7 +400,7 @@ let navigationObj = {
     },
     draftactivity: {
       pageName: 'DraftActivity',
-      menuPanelCap: 'AssignmentInfoCap',
+      menuPanelCap: 'DraftActivityCap',
       currentMainPanel: 'DraftAssignmentViewer',
       currentMenus: ['ActivityVariant'],
       menusTitles: ['Activity Variant'],

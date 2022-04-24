@@ -55,7 +55,7 @@ import { pageToolViewAtom } from '../NewToolRoot';
 // } from '../ToolHandlers/CourseToolHandler';
 import { useToast, toastType } from '@Toast';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { authorItemByDoenetId, findFirstPageOfActivity, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
@@ -96,12 +96,19 @@ export default function SelectedActivity() {
   const { renameItem, create, compileActivity, deleteItem, copyItems, cutItems } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
   const addToast = useToast();
+  console.log("SelectedActivity itemObj",itemObj)
+  console.log("SelectedActivity doenetId",doenetId)
 
   useEffect(()=>{
     if (itemTextFieldLabel !== itemObj.label){
       setItemTextFieldLabel(itemObj.label)
     }
   },[doenetId])
+
+  if (doenetId == undefined){
+    return null;
+  }
+  let firstPageDoenetId = findFirstPageOfActivity(itemObj.order);
 
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
@@ -155,15 +162,17 @@ export default function SelectedActivity() {
           width="menu"
           value="Edit Activity"
           onClick={() => {
-            setPageToolView({
-              page: 'course',
-              tool: 'editor',
-              view: '',
-              params: {
-                courseId,
-                doenetId,
-              },
-            });
+            if (firstPageDoenetId == null){
+              addToast(`ERROR: No page found in activity`, toastType.INFO);
+            }else{
+              setPageToolView((prev)=>{return {
+                page: 'course',
+                tool: 'editor',
+                view: prev.view,
+                params: { doenetId:firstPageDoenetId, sectionId: itemObj.parentDoenetId, courseId: prev.params.courseId },
+                }})
+            }
+          
           }}
         />
   <ActionButton
