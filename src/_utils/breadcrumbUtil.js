@@ -14,6 +14,7 @@ import {
 import {
   authorItemByDoenetId,
   coursePermissionsAndSettingsByCourseId,
+  findFirstPageOfActivity,
 } from '../_reactComponents/Course/CourseActions';
 
 export function useCourseChooserCrumb() {
@@ -122,22 +123,22 @@ export function useNavigationCrumbs(courseId, parentDoenetId) {
           },
         });
         break;
-      case 'activity':
-        crumbs.push({
-          label,
-          onClick: () => {
-            setPageToolView({
-              page: 'course',
-              tool: 'activity',
-              view: '',
-              params: {
-                courseId,
-                sectionId: parentDoenetId,
-              },
-            });
-          },
-        });
-        break;
+      // case 'activity':
+      //   crumbs.push({
+      //     label,
+      //     onClick: () => {
+      //       setPageToolView({
+      //         page: 'course',
+      //         tool: 'activity',
+      //         view: '',
+      //         params: {
+      //           courseId,
+      //           sectionId: parentDoenetId,
+      //         },
+      //       });
+      //     },
+      //   });
+      //   break;
       default:
         console.warn(`Unsupported navigration crumb type: ${type}`);
     }
@@ -148,10 +149,13 @@ export function useNavigationCrumbs(courseId, parentDoenetId) {
 
 export function useEditorCrumb({ doenetId, sectionId, courseId }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const { label } = useRecoilValue(authorItemByDoenetId(doenetId));
+  const pageObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  let {label:pageLabel} = pageObj;
+  const activityObj = useRecoilValue(authorItemByDoenetId(pageObj.containingDoenetId));
+  let { label:activityLabel } = activityObj;
 
-  return {
-    label: label ?? '_',
+  let crumbs = [{
+    label: activityLabel ?? '_',
     onClick: () => {
       setPageToolView({
         page: 'course',
@@ -164,7 +168,43 @@ export function useEditorCrumb({ doenetId, sectionId, courseId }) {
         },
       });
     },
-  };
+  }]
+
+  if (!activityObj.isSinglePage){
+    let firstPageDoenetId = findFirstPageOfActivity(activityObj.order);
+    crumbs = [
+      {
+      label: activityLabel ?? '_',
+      onClick: () => {
+        setPageToolView({
+          page: 'course',
+          tool: 'editor',
+          view: '',
+          params: {
+            courseId,
+            sectionId,
+            doenetId:firstPageDoenetId,
+          },
+        });
+      },
+    },
+    {
+      label: pageLabel ?? '_',
+      onClick: () => {
+        setPageToolView({
+          page: 'course',
+          tool: 'editor',
+          view: '',
+          params: {
+            courseId,
+            sectionId,
+            doenetId,
+          },
+        });
+      },
+    }]
+  }
+  return crumbs;
 }
 
 export function useAssignmentCrumb({ doenetId, courseId, sectionId }) {
