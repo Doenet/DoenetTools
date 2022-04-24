@@ -13,6 +13,9 @@ import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { fileByDoenetId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 
 export function findFirstPageOfActivity(orderObj){
+  if (!orderObj?.content){
+    return null;
+  }
   //No pages or orders in order so return null
   if (orderObj.content.length == 0){
     return null;

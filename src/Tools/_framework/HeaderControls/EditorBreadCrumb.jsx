@@ -26,7 +26,7 @@ export default function EditorBreadCrumb() {
           chooserCrumb,
           dashboardCrumb,
           ...navigationCrumbs,
-          editorCrumb,
+          ...editorCrumb,
         ]}
         offset={68}
       />

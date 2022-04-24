@@ -155,6 +155,12 @@ export default function SelectedActivity() {
     );
   }
   
+
+let assignActivityText = "Assign Activity";
+if (itemObj.assignedCid != null){
+  assignActivityText = "Update Assigned Activity";
+}
+
   return <>
   {heading}
   <ActionButtonGroup vertical>
@@ -188,6 +194,7 @@ export default function SelectedActivity() {
                   params: {
                     courseId,
                     doenetId,
+                    sectionId: itemObj.parentDoenetId,
                     requestedVariant: 1
                   },
                 });
@@ -205,6 +212,7 @@ export default function SelectedActivity() {
               view: '',
               params: {
                 courseId,
+                sectionId: itemObj.parentDoenetId,
                 doenetId,
               },
             });
@@ -261,7 +269,7 @@ export default function SelectedActivity() {
     <br />
     <ActionButton
           width="menu"
-          value="Assign Activity"
+          value={assignActivityText}
           onClick={() => {
             compileActivity({
               activityDoenetId:doenetId,isAssigned:true,courseId,successCallback:()=>{
