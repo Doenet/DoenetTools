@@ -1,8 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
-// import Button from '../../_reactComponents/PanelHeaderComponents/Button.jsx';
+import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
 
 export default function Answer(props) {
@@ -51,28 +50,22 @@ export default function Answer(props) {
     }
 
     let checkWorkStyle = {
-      // height: "23px",
-      // display: "inline-block",
       cursor: 'pointer',
       backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
-      // padding: "1px 6px 1px 6px",
-      // color: "white",
-      // fontWeight: "bold",
-      //marginBottom: "30px",  //Space after check work
     }
 
+    // Moved most of checkWorkStyle styling into Button
     const Button = styled.button `
-      height: 26px;
+      height: 26.5px;
       display: inline-block;
       padding: 1px 6px 1px 6px;
       color: white;
-      /* font-weight: bold; */
       padding: 2px;
       margin-right: 4px;
       border: var(--mainBorder);
       border-radius: 0 5px 5px 0;
       border-left: none;
-    `
+    `;
 
     if (disabled) {
       checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
@@ -86,7 +79,6 @@ export default function Answer(props) {
       <Button id={name + "_submit"}
         tabIndex="0"
         disabled={disabled}
-        // backgroundColor={props.backgroundColor}
         style={checkWorkStyle}
         onClick={submitAnswer}
         onKeyPress={(e) => {

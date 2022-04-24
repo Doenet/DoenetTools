@@ -1,6 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import me from 'math-expressions';
+// import me from 'math-expressions';
 import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -13,7 +13,6 @@ const Matrix = styled.div`
   display: inline-block;
   vertical-align: middle;
   width: auto;
-  /* margin: 20px; */
 
   :before {
     content: "";
@@ -40,7 +39,7 @@ const Matrix = styled.div`
     padding-top: 6px;
     padding-bottom: 3px;
   }
-`
+`;
 
 export default function MatrixInput(props) {
   let { name, SVs, actions, children, ignoreUpdate, callAction } = useDoenetRender(props);
@@ -92,6 +91,7 @@ export default function MatrixInput(props) {
     padding: "2px",
     zIndex: "0",
   }
+
   //Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {

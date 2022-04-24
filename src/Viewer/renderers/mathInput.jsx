@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
@@ -151,37 +151,25 @@ export default function MathInput(props) {
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
     let checkWorkStyle = {
-      // position: 'relative',
-      // width: '30px',
-      // height: '24px',
-      // fontSize: '20px',
-      // fontWeight: 'bold',
-      // color: '#ffffff',
-      // display: 'inline-block',
-      // textAlign: 'center',
-      // top: '3px',
-      // padding: '2px',
-      // zIndex: '0',
       cursor: 'pointer',
       backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
   }
 
+  // Moved most of checkWorkStyle styling into Button
   const Button = styled.button `
     position: relative;
     width: 30px;
-    height: 26px;
-    /* font-weight: bold; */
+    height: 26.5px;
     color: #ffffff;
     display: inline-block;
     text-align: center;
-    /* top: 2px; */
     padding: 2px;
     margin-right: 4px;
     z-index: 0;
     border: var(--mainBorder);
     border-radius: 0 5px 5px 0;
     border-left: none;
-  `
+  `;
 
     if (validationState.current === 'unvalidated') {
       if (SVs.disabled) {
