@@ -12,6 +12,35 @@ import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPane
 import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { fileByDoenetId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 
+export function findFirstPageOfActivity(orderObj){
+  //No pages or orders in order so return null
+  if (orderObj.content.length == 0){
+    return null;
+  }
+  let response = null;
+
+  for (let item of orderObj.content){
+    // console.log("item",item)
+
+    if (typeof item === 'string' || item instanceof String){
+      //First content is a string so return the doenetId
+      response = item;
+      break;
+    }else{
+      //First item of content is another order
+      let nextOrderResponse = findFirstPageOfActivity(item);
+    
+      if (typeof nextOrderResponse === 'string' || nextOrderResponse instanceof String){
+        response = nextOrderResponse;
+        break;
+      }
+    }
+  }
+
+  return response; //if didn't find any pages
+
+}
+
 export function useInitCourseItems(courseId) {
   const getDataAndSetRecoil = useRecoilCallback(
      ({ snapshot,set }) =>
