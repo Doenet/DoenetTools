@@ -52,15 +52,15 @@ export default function Answer(props) {
     let checkWorkStyle = {
       cursor: 'pointer',
       backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
+      verticalAlign: 'middle'
     }
 
     // Moved most of checkWorkStyle styling into Button
     const Button = styled.button `
-      height: 26.5px;
+      height: 26px;
       display: inline-block;
-      padding: 1px 6px 1px 6px;
       color: white;
-      padding: 2px;
+      /* padding: 2px; */
       margin-right: 4px;
       border: var(--mainBorder);
       border-radius: 0 5px 5px 0;

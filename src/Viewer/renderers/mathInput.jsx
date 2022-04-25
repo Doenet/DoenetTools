@@ -159,7 +159,7 @@ export default function MathInput(props) {
   const Button = styled.button `
     position: relative;
     width: 30px;
-    height: 26.5px;
+    height: 26px;
     color: #ffffff;
     display: inline-block;
     text-align: center;

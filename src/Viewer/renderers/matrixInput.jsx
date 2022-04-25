@@ -73,7 +73,7 @@ export default function MatrixInput(props) {
 
   // const inputKey = name + '_input';
 
-  let surroundingBorderColor = "#efefef";
+  let surroundingBorderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
   // if (this.focused) {
   //   surroundingBorderColor = "#82a5ff";
   // }
