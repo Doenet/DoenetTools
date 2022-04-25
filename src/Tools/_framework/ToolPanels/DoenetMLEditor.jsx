@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { editorDoenetIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom } from '../ToolPanels/EditorViewer'
+import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom } from '../ToolPanels/EditorViewer'
 import {
   atom,
   useRecoilValue,
@@ -25,7 +25,7 @@ export default function DoenetMLEditor(props) {
 
   const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
   const paramCourseId = useRecoilValue(searchParamAtomFamily('courseId'))
-  const initializedPageId = useRecoilValue(editorDoenetIdInitAtom);
+  const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   let editorRef = useRef(null);
   let timeout = useRef(null);
 

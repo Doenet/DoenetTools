@@ -32,8 +32,8 @@ export const updateTextEditorDoenetMLAtom = atom({
 
 // TODO: change to pageId
 //Boolean initialized editor tool start up
-export const editorDoenetIdInitAtom = atom({
-  key: "editorDoenetIdInitAtom",
+export const editorPageIdInitAtom = atom({
+  key: "editorPageIdInitAtom",
   default: ""
 })
 
@@ -55,10 +55,10 @@ export default function EditorViewer() {
   const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
-  const initializedPageId = useRecoilValue(editorDoenetIdInitAtom);
+  const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
-  const setEditorInit = useSetRecoilState(editorDoenetIdInitAtom);
+  const setEditorInit = useSetRecoilState(editorPageIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
   const pageObj = useRecoilValue(authorItemByDoenetId(paramPageId))
@@ -81,7 +81,7 @@ export default function EditorViewer() {
     set(updateTextEditorDoenetMLAtom, doenetML);
     set(textEditorDoenetMLAtom, doenetML)
     set(viewerDoenetMLAtom, doenetML)
-    set(editorDoenetIdInitAtom, pageId);
+    set(editorPageIdInitAtom, pageId);
   }, [])
 
 
