@@ -482,7 +482,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
         page: 'course',
         tool: 'editor',
         view: prev.view,
-        params: { doenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId },
+        params: { pageId: doenetId, doenetId: clickedItem.containingDoenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId },
         }})
     }else if (clickedItem.type == 'activity'){
       
@@ -495,7 +495,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
           page: 'course',
           tool: 'editor',
           view: prev.view,
-          params: { doenetId:pageDoenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId },
+          params: { pageId:pageDoenetId, doenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId },
           }})
       }
     }else if (clickedItem.type == 'section'){

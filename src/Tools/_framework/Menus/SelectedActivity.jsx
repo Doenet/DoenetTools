@@ -175,7 +175,7 @@ if (itemObj.assignedCid != null){
                 page: 'course',
                 tool: 'editor',
                 view: prev.view,
-                params: { doenetId:firstPageDoenetId, sectionId: itemObj.parentDoenetId, courseId: prev.params.courseId },
+                params: { doenetId, pageId:firstPageDoenetId, sectionId: itemObj.parentDoenetId, courseId: prev.params.courseId },
                 }})
             }
           

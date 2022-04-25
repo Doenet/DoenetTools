@@ -970,7 +970,7 @@ export const useCourse = (courseId) => {
 
           let params = {
             doenetML: pageDoenetML,
-            doenetId: pageDoenetId,
+            pageId: pageDoenetId,
             courseId,
             saveAsCid: true,
           }

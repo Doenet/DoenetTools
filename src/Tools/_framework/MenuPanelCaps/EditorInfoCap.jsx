@@ -7,10 +7,11 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 export default function EditorInfoCap(){
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const pageId = useRecoilValue(searchParamAtomFamily('pageId'));
   let {color, image, label:course_label} = useCourse(courseId);
 
-  const pageInfo = useRecoilValue(authorItemByDoenetId(doenetId));
-  const activityInfo = useRecoilValue(authorItemByDoenetId(pageInfo.containingDoenetId));
+  const pageInfo = useRecoilValue(authorItemByDoenetId(pageId));
+  const activityInfo = useRecoilValue(authorItemByDoenetId(doenetId));
 
   if (!pageInfo){ return null;}
  if (image != 'none'){
