@@ -12,11 +12,12 @@ function cesc(s) {
 describe('sequence and map assignName Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
   it('assignNames to dynamic copied sequence', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -561,7 +562,7 @@ describe('sequence and map assignName Tests', function () {
   })
 
   it('assignNames to dynamic copied map of sequence', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1510,7 +1511,7 @@ describe('sequence and map assignName Tests', function () {
   })
 
   it('copy source and index assign names', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1772,7 +1773,7 @@ describe('sequence and map assignName Tests', function () {
   })
 
   it('copy source and index assign names, no new template namespace', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -1817,7 +1818,7 @@ describe('sequence and map assignName Tests', function () {
   })
 
   it('copy source and index assign names, no new template namespace, inside namespace', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>

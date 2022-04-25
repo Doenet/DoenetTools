@@ -12,16 +12,17 @@ function cesc(s) {
 describe('Specifying subvariants tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
-  it('specify indices of a select', () => {
+  it.skip('specify indices of a select', () => {
 
     let values = ["u", "v", "w", "x", "y", "z"]
 
     cy.log("specify each index in turn")
     for (let ind = 1; ind <= 6; ind++) {
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -37,11 +38,11 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        expect(components['/x'].stateValues.value).eq(values[ind - 1]);
-        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/x'].stateValues.value).eq(values[ind - 1]);
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 1,
           name: 'a',
           meta: {
@@ -60,7 +61,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('specify two indices of a select, ignores withReplacement', () => {
+  it.skip('specify two indices of a select, ignores withReplacement', () => {
 
     let values = ["x", "y", "z"]
 
@@ -68,7 +69,7 @@ describe('Specifying subvariants tests', function () {
     for (let ind1 = 1; ind1 <= 3; ind1++) {
       for (let ind2 = 1; ind2 <= 3; ind2++) {
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `
       <text>${ind1}</text>
@@ -87,12 +88,12 @@ describe('Specifying subvariants tests', function () {
         cy.get('#\\/_text1').should('have.text', `${ind1}`)
         cy.get('#\\/_text2').should('have.text', `${ind2}`)
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/x'].stateValues.value).eq(values[ind1 - 1]);
-          expect(components['/y'].stateValues.value).eq(values[ind2 - 1]);
-          expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables['/x'].stateValues.value).eq(values[ind1 - 1]);
+          expect(stateVariables['/y'].stateValues.value).eq(values[ind2 - 1]);
+          expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
             index: 1,
             name: 'a',
             meta: {
@@ -112,14 +113,14 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('specify indices of a selectfromsequence', () => {
+  it.skip('specify indices of a selectfromsequence', () => {
 
     let values = [...Array(10).keys()].map(x => x + 1);
 
     cy.log("specify each index in turn")
     for (let ind = 1; ind <= 10; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -136,11 +137,11 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        expect(components['/n'].stateValues.value).eq(values[ind - 1]);
-        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/n'].stateValues.value).eq(values[ind - 1]);
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 1,
           name: 'a',
           meta: {
@@ -157,7 +158,7 @@ describe('Specifying subvariants tests', function () {
     }
   })
 
-  it('specify two indices of a selectfromsequence, ignores withReplacement', () => {
+  it.skip('specify two indices of a selectfromsequence, ignores withReplacement', () => {
 
     let values = [...Array(4).keys()].map(x => x + 1);
 
@@ -165,7 +166,7 @@ describe('Specifying subvariants tests', function () {
     for (let ind1 = 1; ind1 <= 4; ind1++) {
       for (let ind2 = 1; ind2 <= 4; ind2++) {
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `
         <text>${ind1}</text>
@@ -183,12 +184,12 @@ describe('Specifying subvariants tests', function () {
         cy.get('#\\/_text1').should('have.text', `${ind1}`)
         cy.get('#\\/_text2').should('have.text', `${ind2}`)
 
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
-          let components = Object.assign({}, win.state.components);
-          expect(components['/x'].stateValues.value).eq(values[ind1 - 1]);
-          expect(components['/y'].stateValues.value).eq(values[ind2 - 1]);
-          expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables['/x'].stateValues.value).eq(values[ind1 - 1]);
+          expect(stateVariables['/y'].stateValues.value).eq(values[ind2 - 1]);
+          expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
             index: 1,
             name: 'a',
             meta: {
@@ -205,7 +206,7 @@ describe('Specifying subvariants tests', function () {
     }
   });
 
-  it('specify indices of selects, ignores variant names', () => {
+  it.skip('specify indices of selects, ignores variant names', () => {
 
     let directions = ["north", "south", "east", "west"];
     let directionIndByVariantName = {
@@ -234,7 +235,7 @@ describe('Specifying subvariants tests', function () {
 
       let variantName = variantNames[ind - 1];
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -264,15 +265,15 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        expect(components['/direction'].stateValues.value).eq(directionsByVariantName[variantName]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/direction'].stateValues.value).eq(directionsByVariantName[variantName]);
 
-        let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
+        let sidesSelected = [stateVariables['/side1'].stateValues.value, stateVariables['/side2'].stateValues.value];
         let sideOrder = sidesSelected.map(x => sides.indexOf(x) + 1)
         expect(sidesSelected.sort()).eqls(sidesByVariantName[variantName]);
-        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: ind,
           name: numberToLetters(ind, true),
           meta: {
@@ -300,7 +301,7 @@ describe('Specifying subvariants tests', function () {
       let variantName = variantNames[ind % 4];
       let directionInd = directionToChoose[ind];
       let direction = directions[directionInd - 1];
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -333,15 +334,15 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        expect(components['/direction'].stateValues.value).eq(direction);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/direction'].stateValues.value).eq(direction);
 
-        let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
+        let sidesSelected = [stateVariables['/side1'].stateValues.value, stateVariables['/side2'].stateValues.value];
         let sideOrder = sidesSelected.map(x => sides.indexOf(x) + 1)
         expect(sidesSelected.sort()).eqls(sidesByVariantName[variantName]);
-        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: (ind % 4) + 1,
           name: numberToLetters((ind % 4) + 1, true),
           meta: {
@@ -370,7 +371,7 @@ describe('Specifying subvariants tests', function () {
       let direction = directions[ind % 4];
       let sideInds = sidesToChoose[ind];
       let sidesChosen = sideInds.map(x => sides[x - 1])
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -404,14 +405,14 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        expect(components['/direction'].stateValues.value).eq(direction);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/direction'].stateValues.value).eq(direction);
 
-        let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
+        let sidesSelected = [stateVariables['/side1'].stateValues.value, stateVariables['/side2'].stateValues.value];
         expect(sidesSelected).eqls(sidesChosen);
-        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: (ind % 4) + 1,
           name: numberToLetters((ind % 4) + 1, true),
           meta: {
@@ -438,7 +439,7 @@ describe('Specifying subvariants tests', function () {
       let direction = directions[directionInd - 1];
       let sideInds = sidesToChoose[ind];
       let sidesChosen = sideInds.map(x => sides[x - 1])
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -472,15 +473,15 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        expect(components['/direction'].stateValues.value).eq(direction);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/direction'].stateValues.value).eq(direction);
 
-        let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
+        let sidesSelected = [stateVariables['/side1'].stateValues.value, stateVariables['/side2'].stateValues.value];
         expect(sidesSelected).eqls(sidesChosen);
 
-        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 1,
           name: 'a',
           meta: {
@@ -502,7 +503,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('nested selects', () => {
+  it.skip('nested selects', () => {
 
     let firstStringsToInd = {
       "Favorite color:": 1,
@@ -517,7 +518,7 @@ describe('Specifying subvariants tests', function () {
 
     cy.log("Select options from first group")
     for (let ind = 1; ind <= 10; ind++) {
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -556,16 +557,16 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let p = components['/p'];
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let p = stateVariables['/p'];
 
         let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
         expect(variantInd).eq(1);
 
         expect(p.activeChildren[1].stateValues.value).eq(colorsByInd[(ind - 1) % 5])
 
-        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 1,
           name: 'a',
           meta: {
@@ -589,7 +590,7 @@ describe('Specifying subvariants tests', function () {
     cy.log("Select options from second group")
     for (let ind1 = 1; ind1 <= 4; ind1++) {
       for (let ind2 = 1; ind2 <= 2000; ind2 += 300) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `
         <text>${ind1}</text>
@@ -633,9 +634,9 @@ describe('Specifying subvariants tests', function () {
         cy.get('#\\/_text1').should('have.text', `${ind1}`)
         cy.get('#\\/_text2').should('have.text', `${ind2}`)
 
-        cy.window().then((win) => {
-          let components = Object.assign({}, win.state.components);
-          let p = components['/p'];
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          let p = stateVariables['/p'];
 
           let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
           expect(variantInd).eq(2);
@@ -651,7 +652,7 @@ describe('Specifying subvariants tests', function () {
             expect(num).eq(-1001 + effectiveInd2);
           }
 
-          expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
             index: 1,
             name: 'a',
             meta: {
@@ -677,7 +678,7 @@ describe('Specifying subvariants tests', function () {
 
     cy.log("Select options from third group")
     for (let ind = 1; ind <= 10; ind++) {
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -716,16 +717,16 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let p = components['/p'];
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let p = stateVariables['/p'];
 
         let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
         expect(variantInd).eq(3);
 
         expect(p.activeChildren[1].stateValues.value).eq(lettersByInd[(ind - 1) % 5])
 
-        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 1,
           name: 'a',
           meta: {
@@ -748,7 +749,7 @@ describe('Specifying subvariants tests', function () {
 
     cy.log("Select options from fourth group")
     for (let ind = 1; ind <= 12; ind++) {
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -787,16 +788,16 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let p = components['/p'];
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let p = stateVariables['/p'];
 
         let variantInd = firstStringsToInd[p.activeChildren[0].trim()];
         expect(variantInd).eq(4);
 
         expect(p.activeChildren[1].stateValues.value.tree).eq(lettersByInd2[(ind - 1) % 6])
 
-        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 1,
           name: 'a',
           meta: {
@@ -819,7 +820,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('selected problems', () => {
+  it.skip('selected problems', () => {
 
     let titlesToInd = {
       "A word problem": 1,
@@ -839,7 +840,7 @@ describe('Specifying subvariants tests', function () {
           for (let ind4 = 1; ind4 <= 2; ind4++) {
             for (let ind5 = 3; ind5 <= 4; ind5++) {
               for (let ind6 = 5; ind6 <= 5; ind6++) {
-                cy.window().then((win) => {
+                cy.window().then(async (win) => {
                   win.postMessage({
                     doenetML: `
                 <text>${ind1}</text>
@@ -896,8 +897,8 @@ describe('Specifying subvariants tests', function () {
                 cy.get('#\\/_text5').should('have.text', `${ind5}`)
                 cy.get('#\\/_text6').should('have.text', `${ind6}`)
 
-                cy.window().then((win) => {
-                  let components = Object.assign({}, win.state.components);
+                cy.window().then(async (win) => {
+                  let stateVariables = await win.returnAllStateVariables1();
 
                   let generatedVariantInfo = {
                     index: 1,
@@ -918,7 +919,7 @@ describe('Specifying subvariants tests', function () {
                   let problemVariantInds = [ind4, ind5, ind6];
 
                   for (let i = 1; i <= 3; i++) {
-                    let problem = components['/problem' + i];
+                    let problem = stateVariables['/problem' + i];
                     let variantInd = titlesToInd[problem.stateValues.title];
                     expect(variantInd).eq(problemInds[i - 1]);
                     generatedVariantInfo.subvariants[0].indices.push(variantInd);
@@ -966,11 +967,11 @@ describe('Specifying subvariants tests', function () {
 
                   }
 
-                  expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+                  expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls(
                     generatedVariantInfo
                   )
 
-                  expect(components["/_document1"].stateValues.itemVariantInfo).eqls(
+                  expect(stateVariables["/_document1"].stateValues.itemVariantInfo).eqls(
                     generatedVariantInfo.subvariants[0].subvariants
                   )
                 })
@@ -983,7 +984,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('selected problems, one outside select', () => {
+  it.skip('selected problems, one outside select', () => {
 
     let titlesToInd = {
       "A word problem": 1,
@@ -1002,7 +1003,7 @@ describe('Specifying subvariants tests', function () {
         for (let ind4 = 1; ind4 <= 2; ind4++) {
           for (let ind5 = 3; ind5 <= 4; ind5++) {
             for (let ind6 = 5; ind6 <= 5; ind6++) {
-              cy.window().then((win) => {
+              cy.window().then(async (win) => {
                 win.postMessage({
                   doenetML: `
                 <text>${ind2}</text>
@@ -1069,8 +1070,8 @@ describe('Specifying subvariants tests', function () {
               cy.get('#\\/_text4').should('have.text', `${ind5}`)
               cy.get('#\\/_text5').should('have.text', `${ind6}`)
 
-              cy.window().then((win) => {
-                let components = Object.assign({}, win.state.components);
+              cy.window().then(async (win) => {
+                let stateVariables = await win.returnAllStateVariables1();
 
                 let generatedVariantInfo = {
                   index: 1,
@@ -1093,7 +1094,7 @@ describe('Specifying subvariants tests', function () {
                 let problemVariantInds = [ind4, ind5, ind6];
 
                 for (let i = 1; i <= 3; i++) {
-                  let problem = components['/problem' + i];
+                  let problem = stateVariables['/problem' + i];
                   let variantInd = titlesToInd[problem.stateValues.title];
                   expect(variantInd).eq(problemInds[i - 1]);
                   if (i !== 1) {
@@ -1156,10 +1157,10 @@ describe('Specifying subvariants tests', function () {
 
                 }
 
-                expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+                expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls(
                   generatedVariantInfo
                 )
-                expect(components["/_document1"].stateValues.itemVariantInfo).eqls(
+                expect(stateVariables["/_document1"].stateValues.itemVariantInfo).eqls(
                   itemVariantInfo
                 )
               })
@@ -1171,7 +1172,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('selected problems, specify options directly', () => {
+  it.skip('selected problems, specify options directly', () => {
 
     let titlesToInd = {
       "A word problem": 1,
@@ -1188,7 +1189,7 @@ describe('Specifying subvariants tests', function () {
           for (let ind4 = 1; ind4 <= 2; ind4++) {
             for (let ind5 = 3; ind5 <= 4; ind5++) {
               for (let ind6 = 5; ind6 <= 5; ind6++) {
-                cy.window().then((win) => {
+                cy.window().then(async (win) => {
                   win.postMessage({
                     doenetML: `
                   <text>${ind1}</text>
@@ -1249,8 +1250,8 @@ describe('Specifying subvariants tests', function () {
                 cy.get('#\\/_text5').should('have.text', `${ind5}`)
                 cy.get('#\\/_text6').should('have.text', `${ind6}`)
 
-                cy.window().then((win) => {
-                  let components = Object.assign({}, win.state.components);
+                cy.window().then(async (win) => {
+                  let stateVariables = await win.returnAllStateVariables1();
 
                   let generatedVariantInfo = {
                     index: 1,
@@ -1271,7 +1272,7 @@ describe('Specifying subvariants tests', function () {
                   let selectInds = [ind4, ind5, ind6];
 
                   for (let i = 1; i <= 3; i++) {
-                    let problem = components['/problem' + i];
+                    let problem = stateVariables['/problem' + i];
                     let variantInd = titlesToInd[problem.stateValues.title];
                     expect(variantInd).eq(problemInds[i - 1]);
                     generatedVariantInfo.subvariants[0].indices.push(variantInd);
@@ -1310,10 +1311,10 @@ describe('Specifying subvariants tests', function () {
                     }
                   }
 
-                  expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+                  expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls(
                     generatedVariantInfo
                   )
-                  expect(components["/_document1"].stateValues.itemVariantInfo).eqls(
+                  expect(stateVariables["/_document1"].stateValues.itemVariantInfo).eqls(
                     generatedVariantInfo.subvariants[0].subvariants
                   )
 
@@ -1327,7 +1328,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('selected problems, one outside select, specify options directly', () => {
+  it.skip('selected problems, one outside select, specify options directly', () => {
 
     let titlesToInd = {
       "A word problem": 1,
@@ -1343,7 +1344,7 @@ describe('Specifying subvariants tests', function () {
         for (let ind4 = 1; ind4 <= 2; ind4++) {
           for (let ind5 = 3; ind5 <= 4; ind5++) {
             for (let ind6 = 5; ind6 <= 5; ind6++) {
-              cy.window().then((win) => {
+              cy.window().then(async (win) => {
                 win.postMessage({
                   doenetML: `
                   <text>${ind2}</text>
@@ -1414,8 +1415,8 @@ describe('Specifying subvariants tests', function () {
               cy.get('#\\/_text4').should('have.text', `${ind5}`)
               cy.get('#\\/_text5').should('have.text', `${ind6}`)
 
-              cy.window().then((win) => {
-                let components = Object.assign({}, win.state.components);
+              cy.window().then(async (win) => {
+                let stateVariables = await win.returnAllStateVariables1();
 
                 let generatedVariantInfo = {
                   index: 1,
@@ -1437,7 +1438,7 @@ describe('Specifying subvariants tests', function () {
                 let selectInds = [ind4, ind5, ind6];
 
                 for (let i = 1; i <= 3; i++) {
-                  let problem = components['/problem' + i];
+                  let problem = stateVariables['/problem' + i];
                   let variantInd = titlesToInd[problem.stateValues.title];
                   expect(variantInd).eq(problemInds[i - 1]);
 
@@ -1491,10 +1492,10 @@ describe('Specifying subvariants tests', function () {
                   }
                 }
 
-                expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+                expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls(
                   generatedVariantInfo
                 )
-                expect(components["/_document1"].stateValues.itemVariantInfo).eqls(
+                expect(stateVariables["/_document1"].stateValues.itemVariantInfo).eqls(
                   itemVariantInfo
                 )
 
@@ -1507,7 +1508,7 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('selected problems, one without variantcontrol, specify options directly', () => {
+  it.skip('selected problems, one without variantcontrol, specify options directly', () => {
 
     let titlesToInd = {
       "A word problem": 1,
@@ -1524,7 +1525,7 @@ describe('Specifying subvariants tests', function () {
           for (let ind4 = 1; ind4 <= 2; ind4++) {
             for (let ind5 = 3; ind5 <= 4; ind5++) {
               for (let ind6 = 5; ind6 <= 5; ind6++) {
-                cy.window().then((win) => {
+                cy.window().then(async (win) => {
                   win.postMessage({
                     doenetML: `
                   <text>${ind1}</text>
@@ -1585,8 +1586,8 @@ describe('Specifying subvariants tests', function () {
                 cy.get('#\\/_text5').should('have.text', `${ind5}`)
                 cy.get('#\\/_text6').should('have.text', `${ind6}`)
 
-                cy.window().then((win) => {
-                  let components = Object.assign({}, win.state.components);
+                cy.window().then(async (win) => {
+                  let stateVariables = await win.returnAllStateVariables1();
 
                   let generatedVariantInfo = {
                     index: 1,
@@ -1607,7 +1608,7 @@ describe('Specifying subvariants tests', function () {
                   let selectInds = [ind4, ind5, ind6];
 
                   for (let i = 1; i <= 3; i++) {
-                    let problem = components['/problem' + i];
+                    let problem = stateVariables['/problem' + i];
                     let variantInd = titlesToInd[problem.stateValues.title];
                     expect(variantInd).eq(problemInds[i - 1]);
                     generatedVariantInfo.subvariants[0].indices.push(variantInd);
@@ -1646,10 +1647,10 @@ describe('Specifying subvariants tests', function () {
                     }
                   }
 
-                  expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+                  expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls(
                     generatedVariantInfo
                   )
-                  expect(components["/_document1"].stateValues.itemVariantInfo).eqls(
+                  expect(stateVariables["/_document1"].stateValues.itemVariantInfo).eqls(
                     generatedVariantInfo.subvariants[0].subvariants
                   )
 
@@ -1663,14 +1664,14 @@ describe('Specifying subvariants tests', function () {
 
   });
 
-  it('specify values of a selectRandomNumbers', () => {
+  it.skip('specify values of a selectRandomNumbers', () => {
 
     let values = [0.150382373817, 502385.24839203, -3.18593023941];
 
     cy.log("specify values, even if out of range of distribution")
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
@@ -1687,11 +1688,11 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `${ind}`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
-        expect(components['/n'].stateValues.value).eq(values[ind]);
-        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/n'].stateValues.value).eq(values[ind]);
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 1,
           name: 'a',
           meta: {
@@ -1708,7 +1709,7 @@ describe('Specifying subvariants tests', function () {
     }
   })
 
-  it('problem variants are the same in multiple contexts', () => {
+  it.skip('problem variants are the same in multiple contexts', () => {
 
 
     let problemAlone = `
@@ -1953,9 +1954,9 @@ describe('Specifying subvariants tests', function () {
 
     let problemRepeatedAsExternalCopies = `
       <text>a</text>
-      <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem1" />
-      <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem2" />
-      <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem3" />
+      <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem1" />
+      <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem2" />
+      <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem3" />
     `
 
     // TODO: how to make this work?
@@ -2013,41 +2014,41 @@ describe('Specifying subvariants tests', function () {
       <text>a</text>
       <paginatorControls paginatorTname="pgn" name="pcontrols" />
       <paginator name="pgn">
-        <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem1" />
-        <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem2" />
-        <copy uri="doenet:contentId=bb4ca2c44eba4f691b4591a7e20ef8007e5a825dd45f48bc4758d3a43f5af2fa" componentType="problem" assignNames="problem3" />
+        <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem1" />
+        <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem2" />
+        <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem3" />
       </paginator>
     `
 
 
     function checkProblemInstance({ probName, probInfo, components, enterValues = false }) {
 
-      expect(components[`${probName}/a`].stateValues.value.toString()).eq(probInfo.a.toString())
-      expect(components[`${probName}/v`].stateValues.value.toString()).eq(probInfo.v.toString())
-      expect(components[`${probName}/o1/m`].stateValues.value.toString()).eq(probInfo.o1m.toString())
-      expect(components[`${probName}/o1/t`].stateValues.value.toString()).eq(probInfo.o1t.toString())
-      expect(components[`${probName}/o2/m`].stateValues.value.toString()).eq(probInfo.o2m.toString())
-      expect(components[`${probName}/o2/t`].stateValues.value.toString()).eq(probInfo.o2t.toString())
+      expect(stateVariables[`${probName}/a`].stateValues.value.toString()).eq(probInfo.a.toString())
+      expect(stateVariables[`${probName}/v`].stateValues.value.toString()).eq(probInfo.v.toString())
+      expect(stateVariables[`${probName}/o1/m`].stateValues.value.toString()).eq(probInfo.o1m.toString())
+      expect(stateVariables[`${probName}/o1/t`].stateValues.value.toString()).eq(probInfo.o1t.toString())
+      expect(stateVariables[`${probName}/o2/m`].stateValues.value.toString()).eq(probInfo.o2m.toString())
+      expect(stateVariables[`${probName}/o2/t`].stateValues.value.toString()).eq(probInfo.o2t.toString())
 
 
       if (enterValues) {
-        let mathinput1Name = components[`${probName}/ans1`].stateValues.inputChildren[0].componentName;
+        let mathinput1Name = stateVariables[`${probName}/ans1`].stateValues.inputChildren[0].componentName;
         let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
         let answer1Correct = cesc('#' + mathinput1Name + "_correct");
 
-        let mathinput2Name = components[`${probName}/ans2`].stateValues.inputChildren[0].componentName;
+        let mathinput2Name = stateVariables[`${probName}/ans2`].stateValues.inputChildren[0].componentName;
         let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
         let answer2Correct = cesc('#' + mathinput2Name + "_correct");
 
-        let textinput3Name = components[`${probName}/ans3`].stateValues.inputChildren[0].componentName;
+        let textinput3Name = stateVariables[`${probName}/ans3`].stateValues.inputChildren[0].componentName;
         let textinput3Anchor = cesc('#' + textinput3Name) + "_input";
         let answer3Correct = cesc('#' + textinput3Name + "_correct");
 
-        let mathinput4Name = components[`${probName}/ans4`].stateValues.inputChildren[0].componentName;
+        let mathinput4Name = stateVariables[`${probName}/ans4`].stateValues.inputChildren[0].componentName;
         let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
         let answer4Correct = cesc('#' + mathinput4Name + "_correct");
 
-        let textinput5Name = components[`${probName}/ans5`].stateValues.inputChildren[0].componentName;
+        let textinput5Name = stateVariables[`${probName}/ans5`].stateValues.inputChildren[0].componentName;
         let textinput5Anchor = cesc('#' + textinput5Name) + "_input";
         let answer5Correct = cesc('#' + textinput5Name + "_correct");
 
@@ -2077,7 +2078,7 @@ describe('Specifying subvariants tests', function () {
 
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -2086,7 +2087,7 @@ describe('Specifying subvariants tests', function () {
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: problemAlone,
           requestedVariant: {
@@ -2100,21 +2101,21 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `a`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(ind + 1)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(ind + 1)
 
         let thisProbInfo = {};
         let thisProbName = "";
 
-        thisProbInfo.a = components[`${thisProbName}/a`].stateValues.value;
-        thisProbInfo.v = components[`${thisProbName}/v`].stateValues.value;
-        thisProbInfo.o1m = components[`${thisProbName}/o1/m`].stateValues.value;
-        thisProbInfo.o1t = components[`${thisProbName}/o1/t`].stateValues.value;
-        thisProbInfo.o2m = components[`${thisProbName}/o2/m`].stateValues.value;
-        thisProbInfo.o2t = components[`${thisProbName}/o2/t`].stateValues.value;
+        thisProbInfo.a = stateVariables[`${thisProbName}/a`].stateValues.value;
+        thisProbInfo.v = stateVariables[`${thisProbName}/v`].stateValues.value;
+        thisProbInfo.o1m = stateVariables[`${thisProbName}/o1/m`].stateValues.value;
+        thisProbInfo.o1t = stateVariables[`${thisProbName}/o1/t`].stateValues.value;
+        thisProbInfo.o2m = stateVariables[`${thisProbName}/o2/m`].stateValues.value;
+        thisProbInfo.o2t = stateVariables[`${thisProbName}/o2/t`].stateValues.value;
 
 
         problemInfo.push(thisProbInfo);
@@ -2128,7 +2129,7 @@ describe('Specifying subvariants tests', function () {
 
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -2137,7 +2138,7 @@ describe('Specifying subvariants tests', function () {
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: problemAlone,
           requestedVariant: {
@@ -2151,11 +2152,11 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `a`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(ind + 1)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(ind + 1)
 
         checkProblemInstance({
           probName: "",
@@ -2174,7 +2175,7 @@ describe('Specifying subvariants tests', function () {
 
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -2183,7 +2184,7 @@ describe('Specifying subvariants tests', function () {
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: problemWithSiblings,
           requestedVariant: {
@@ -2199,11 +2200,11 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `a`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq(ind + 1)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq(ind + 1)
 
         checkProblemInstance({
           probName: "/problem2",
@@ -2221,7 +2222,7 @@ describe('Specifying subvariants tests', function () {
 
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -2230,7 +2231,7 @@ describe('Specifying subvariants tests', function () {
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: problemRepeated,
           requestedVariant: {
@@ -2246,13 +2247,13 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `a`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
 
         checkProblemInstance({
           probName: "/problem1",
@@ -2285,7 +2286,7 @@ describe('Specifying subvariants tests', function () {
 
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -2294,7 +2295,7 @@ describe('Specifying subvariants tests', function () {
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: problemRepeatedAsExternalCopies,
           requestedVariant: {
@@ -2310,13 +2311,13 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `a`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
 
         checkProblemInstance({
           probName: "/problem1",
@@ -2350,7 +2351,7 @@ describe('Specifying subvariants tests', function () {
 
     // for (let ind = 0; ind < 3; ind++) {
 
-    //   cy.window().then((win) => {
+    //   cy.window().then(async (win) => {
     //     win.postMessage({
     //       doenetML: `
     //   <text>b</text>
@@ -2359,7 +2360,7 @@ describe('Specifying subvariants tests', function () {
     //   cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
 
-    //   cy.window().then((win) => {
+    //   cy.window().then(async (win) => {
     //     win.postMessage({
     //       doenetML: problemRepeatedAsCopies,
     //       requestedVariant: {
@@ -2375,17 +2376,17 @@ describe('Specifying subvariants tests', function () {
     //   // to wait for page to load
     //   cy.get('#\\/_text1').should('have.text', `a`)
 
-    //   cy.window().then((win) => {
+    //   cy.window().then(async (win) => {
 
-    //     let components = Object.assign({}, win.state.components);
+    //     let stateVariables = await win.returnAllStateVariables1();
 
-    //     console.log(JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo)))
+    //     console.log(JSON.parse(JSON.stringify(stateVariables["/_document1"].stateValues.generatedVariantInfo)))
 
     //     console.log(components)
 
-    //     expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
-    //     expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
-    //     expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
+    //     expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
+    //     expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
+    //     expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
 
     //     checkProblemInstance({
     //       probName: "/problem1",
@@ -2417,7 +2418,7 @@ describe('Specifying subvariants tests', function () {
 
     for (let ind = 0; ind < 3; ind++) {
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `
       <text>b</text>
@@ -2426,7 +2427,7 @@ describe('Specifying subvariants tests', function () {
       cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         win.postMessage({
           doenetML: problemRepeatedAsExternalCopiesInPaginator,
           requestedVariant: {
@@ -2442,13 +2443,13 @@ describe('Specifying subvariants tests', function () {
       // to wait for page to load
       cy.get('#\\/_text1').should('have.text', `a`)
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
 
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
-        expect(components["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[0].index).eq(3 - ind)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[1].index).eq((ind + 1) % 3 + 1)
+        expect(stateVariables["/_document1"].stateValues.generatedVariantInfo.subvariants[2].index).eq((4 - ind) % 3 + 1)
 
         checkProblemInstance({
           probName: "/problem1",
@@ -2459,9 +2460,9 @@ describe('Specifying subvariants tests', function () {
 
         cy.get(cesc('#/pcontrols_next')).click()
         cy.wait(100)
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
-          let components = Object.assign({}, win.state.components);
+          let stateVariables = await win.returnAllStateVariables1();
           checkProblemInstance({
             probName: "/problem2",
             probInfo: problemInfo[(ind + 1) % 3],
@@ -2472,9 +2473,9 @@ describe('Specifying subvariants tests', function () {
 
         cy.get(cesc('#/pcontrols_next')).click()
         cy.wait(100)
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
 
-          let components = Object.assign({}, win.state.components);
+          let stateVariables = await win.returnAllStateVariables1();
           checkProblemInstance({
             probName: "/problem3",
             probInfo: problemInfo[(4 - ind) % 3],

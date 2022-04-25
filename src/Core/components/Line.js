@@ -11,8 +11,8 @@ export default class Line extends GraphicalComponent {
   };
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",
@@ -448,6 +448,19 @@ export default class Line extends GraphicalComponent {
           }
         }
 
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "points") {
+          return "point" + propIndex;
+        }
+        if (varName.slice(0, 5) === "point") {
+          // could be point or pointX
+          let pointNum = Number(varName.slice(5));
+          if (Number.isInteger(pointNum) && pointNum > 0) {
+            return `pointX${pointNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       stateVariablesDeterminingDependencies: [
         "equationIdentity", "nPointsPrescribed", "basedOnSlope"
@@ -1387,7 +1400,7 @@ export default class Line extends GraphicalComponent {
 
   static adapters = ["equation"];
 
-  async moveLine({ point1coords, point2coords, transient }) {
+  async moveLine({ point1coords, point2coords, transient, actionId }) {
 
     let desiredPoints = {
       "0,0": me.fromAst(point1coords[0]),
@@ -1407,6 +1420,7 @@ export default class Line extends GraphicalComponent {
           value: desiredPoints
         }],
         transient: true,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -1416,6 +1430,7 @@ export default class Line extends GraphicalComponent {
           stateVariable: "points",
           value: desiredPoints
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {

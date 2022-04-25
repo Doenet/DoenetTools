@@ -119,11 +119,11 @@ export default function ToolRoot() {
     GradebookAttempt: lazy(() => import('./ToolPanels/GradebookAttempt')),
     EditorViewer: lazy(() => import('./ToolPanels/EditorViewer')),
     AssignmentViewer: lazy(() => import('./ToolPanels/AssignmentViewer')),
+    DraftAssignmentViewer: lazy(() => import('./ToolPanels/DraftAssignmentViewer')),
     SurveyListViewer: lazy(() => import('./ToolPanels/SurveyListViewer')),
     SurveyDataViewer: lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor: lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment: lazy(() => import('./ToolPanels/Enrollment')),
-    CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
   }).current;
@@ -135,9 +135,6 @@ export default function ToolRoot() {
     ),
     NavigationBreadCrumb: lazy(() =>
       import('./HeaderControls/NavigationBreadCrumb'),
-    ),
-    CollectionBreadCrumb: lazy(() =>
-      import('./HeaderControls/CollectionBreadCrumb'),
     ),
     ChooserBreadCrumb: lazy(() => import('./HeaderControls/ChooserBreadCrumb')),
     DashboardBreadCrumb: lazy(() =>
@@ -510,6 +507,16 @@ let navigationObj = {
       onLeave: 'DashboardLeave',
       waitForMenuSuppression: true,
     },
+    draftactivity: {
+      pageName: 'DraftActivity',
+      menuPanelCap: 'DraftActivityCap',
+      currentMainPanel: 'DraftAssignmentViewer',
+      currentMenus: ['ActivityVariant'],
+      menusTitles: ['Activity Variant'],
+      menusInitOpen: [],
+      headerControls: ['AssignmentBreadCrumb'],
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
+    },
     gradebook: {
       pageName: 'Gradebook',
       currentMainPanel: 'Gradebook',
@@ -568,9 +575,9 @@ let navigationObj = {
       pageName: 'Course',
       currentMainPanel: 'NavigationPanel',
       menuPanelCap: 'DriveInfoCap',
-      currentMenus: ['AddDriveItems'],
-      menusTitles: ['Add Items'],
-      menusInitOpen: [true],
+      currentMenus: ['AddDriveItems','PasteOptionsMenu'],
+      menusTitles: ['Add Items','Paste Options'],
+      menusInitOpen: [true,true],
       headerControls: ['NavigationBreadCrumb'],
       onLeave: 'NavigationLeave',
       waitForMenuSuppression: true,
@@ -581,31 +588,22 @@ let navigationObj = {
       menuPanelCap: 'EditorInfoCap',
       currentMainPanel: 'EditorViewer',
       currentMenus: [
-        'VersionHistory',
-        'Variant',
+        'PageVariant',
         'AssignmentSettingsMenu',
         'SupportingFilesMenu',
       ],
       menusTitles: [
-        'Version History',
-        'Variant',
+        'Page Variant',
         'Assignment Settings',
         'Supporting Files',
       ],
-      menusInitOpen: [false, false, false],
+      menusInitOpen: [false, false],
       supportPanelOptions: ['DoenetMLEditor'],
       supportPanelTitles: ['DoenetML Editor'],
       supportPanelIndex: 0,
       headerControls: ['EditorBreadCrumb', 'ViewerUpdateButton'],
-      onLeave: 'EditorLeave',
+      // onLeave: 'EditorLeave',
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
-    },
-    collection: {
-      currentMainPanel: 'CollectionEditor',
-      headerControls: ['CollectionBreadCrumb'],
-      currentMenus: ['AssignmentSettingsMenu', 'GroupSettings'],
-      menusTitles: ['Assignment Settings', 'Group Settings'],
-      menusInitOpen: [false, false],
     },
     enrollment: {
       //allStudentsInCourse
@@ -736,7 +734,7 @@ function OnLeave() {
 
   const LazyEnterLeaveObj = useRef({
     NavigationLeave: lazy(() => import('./EnterLeave/NavigationLeave')),
-    EditorLeave: lazy(() => import('./EnterLeave/EditorLeave')),
+    // EditorLeave: lazy(() => import('./EnterLeave/EditorLeave')),
     CourseChooserLeave: lazy(() => import('./EnterLeave/CourseChooserLeave')),
     DashboardLeave: lazy(() => import('./EnterLeave/DashboardLeave')),
     GradebookAssignmentLeave: lazy(() =>

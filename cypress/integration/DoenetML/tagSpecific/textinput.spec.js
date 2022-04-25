@@ -11,6 +11,7 @@ function cesc(s) {
 describe('TextInput Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
@@ -54,7 +55,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq('hello');
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq('hello');
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq('');
@@ -83,7 +84,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq('hello2');
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq('hello2');
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq('');
@@ -112,7 +113,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq('hello2');
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq('hello2');
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq('');
@@ -141,7 +142,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("hello you");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("hello you");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq('');
@@ -169,7 +170,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("hello you");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("hello you");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq('');
@@ -198,7 +199,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("hello you");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("hello you");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq('bye');
@@ -228,7 +229,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("hello you");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("hello you");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("bye");
@@ -257,7 +258,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("abc");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("abc");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("bye");
@@ -286,7 +287,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("abc");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("abc");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("bye");
@@ -314,7 +315,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("abc");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("abc");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("bye");
@@ -343,7 +344,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("abc");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("abc");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("saludos");
@@ -372,7 +373,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("abcd");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("abcd");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("saludos");
@@ -399,7 +400,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("abcd");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("abcd");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("saludos");
@@ -426,7 +427,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("saludos");
@@ -452,7 +453,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("abcd");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("abcd");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("saludos");
@@ -478,7 +479,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("abcde");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("abcde");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("saludos");
@@ -505,7 +506,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("abcde");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("abcde");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("saludos");
@@ -533,7 +534,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("abcf");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("abcf");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("saludos");
@@ -560,7 +561,7 @@ describe('TextInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/ti1'].stateValues.immediateValue).eq("abcde");
       expect(stateVariables['/ti1a'].stateValues.immediateValue).eq("abcde");
       expect(stateVariables['/ti2'].stateValues.immediateValue).eq("saludos");
@@ -588,7 +589,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/textinput2_input').should('have.value', 'hello there');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.value).eq('hello there');
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('hello there');
       expect(stateVariables['/_text1'].stateValues.value).eq('hello there');
@@ -606,7 +607,7 @@ describe('TextInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.value).eq('bye now');
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('bye now');
       expect(stateVariables['/_text1'].stateValues.value).eq('bye now');
@@ -646,7 +647,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/iv').should('have.text', `can't update me`);
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.value).eq(`can't update me`);
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq(`can't update me`);
       expect(stateVariables['/_text1'].stateValues.value).eq(`can't update me`);
@@ -662,7 +663,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/iv').should('have.text', `disappear`);
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.value).eq(`can't update me`);
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq(`disappear`);
       expect(stateVariables['/_text1'].stateValues.value).eq(`can't update me`);
@@ -678,7 +679,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/iv').should('have.text', `can't update me`);
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.value).eq(`can't update me`);
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq(`can't update me`);
       expect(stateVariables['/_text1'].stateValues.value).eq(`can't update me`);
@@ -708,7 +709,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/secondvalue').should('have.text', 'hello there');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('hello there');
       expect(stateVariables['/_textinput1'].stateValues.value).eq('hello there');
       expect(stateVariables['/_textinput2'].stateValues.immediateValue).eq('hello there');
@@ -727,7 +728,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/secondvalue').should('have.text', 'hello there');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('bye now');
       expect(stateVariables['/_textinput1'].stateValues.value).eq('hello there');
       expect(stateVariables['/_textinput2'].stateValues.immediateValue).eq('hello there');
@@ -746,7 +747,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/secondvalue').should('have.text', 'bye now');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('bye now');
       expect(stateVariables['/_textinput1'].stateValues.value).eq('bye now');
       expect(stateVariables['/_textinput2'].stateValues.immediateValue).eq('bye now');
@@ -766,7 +767,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/secondvalue').should('have.text', 'bye now');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('bye now');
       expect(stateVariables['/_textinput1'].stateValues.value).eq('bye now');
       expect(stateVariables['/_textinput2'].stateValues.immediateValue).eq('Hello again');
@@ -787,7 +788,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/secondvalue').should('have.text', 'Hello again');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('Hello again');
       expect(stateVariables['/_textinput1'].stateValues.value).eq('Hello again');
       expect(stateVariables['/_textinput2'].stateValues.immediateValue).eq('Hello again');
@@ -819,7 +820,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/secondvalue').should('have.text', 'hello there');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('hello there');
       expect(stateVariables['/_textinput1'].stateValues.value).eq('hello there');
       expect(stateVariables['/_textinput2'].stateValues.immediateValue).eq('hello there');
@@ -837,7 +838,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/secondvalue').should('have.text', 'bye now');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('bye now');
       expect(stateVariables['/_textinput1'].stateValues.value).eq('hello there');
       expect(stateVariables['/_textinput2'].stateValues.immediateValue).eq('bye now');
@@ -855,7 +856,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/secondvalue').should('have.text', 'bye now');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('bye now');
       expect(stateVariables['/_textinput1'].stateValues.value).eq('bye now');
       expect(stateVariables['/_textinput2'].stateValues.immediateValue).eq('bye now');
@@ -874,7 +875,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/secondvalue').should('have.text', 'bye now');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('bye now');
       expect(stateVariables['/_textinput1'].stateValues.value).eq('bye now');
       expect(stateVariables['/_textinput2'].stateValues.immediateValue).eq('Hello again');
@@ -892,7 +893,7 @@ describe('TextInput Tag Tests', function () {
     cy.get('#\\/secondvalue').should('have.text', 'Hello again');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_textinput1'].stateValues.immediateValue).eq('Hello again');
       expect(stateVariables['/_textinput1'].stateValues.value).eq('Hello again');
       expect(stateVariables['/_textinput2'].stateValues.immediateValue).eq('Hello again');

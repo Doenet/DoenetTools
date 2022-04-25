@@ -33,8 +33,8 @@ export default class Textinput extends Input {
 
   static variableForPlainMacro = "value";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.prefill = {
       createComponentOfType: "text",
       createStateVariable: "prefill",
@@ -227,10 +227,12 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: text,
-          sourceInformation: { actionId }
         }],
         transient: true,
+        actionId,
       })
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -245,7 +247,6 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "value",
           value: immediateValue,
-          sourceInformation: { actionId }
         },
         // in case value ended up being a different value than requested
         // we set immediate value to whatever was the result
@@ -283,6 +284,7 @@ export default class Textinput extends Input {
 
         await this.coreFunctions.performUpdate({
           updateInstructions,
+          actionId,
           event
         });
 
@@ -293,6 +295,9 @@ export default class Textinput extends Input {
       }
 
     }
+    
+    this.coreFunctions.resolveAction({ actionId });
+    
   }
 
 }

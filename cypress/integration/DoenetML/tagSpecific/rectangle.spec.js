@@ -1,6 +1,17 @@
+import me from 'math-expressions';
+
+function nInDOM(n) {
+  if (n < 0) {
+    return `−${Math.abs(n)}`
+  } else {
+    return String(n);
+  }
+}
+
 describe('Rectangle Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
@@ -213,51 +224,59 @@ describe('Rectangle Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    async function checkTransformedRectangleValues({ components, v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4 }) {
+    async function checkTransformedRectangleValues({ stateVariables, v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4 }) {
 
-      await checkRectangleValues({
-        rectangles: [components["/g1/r1"], components["/g2/r1"]]
+      checkRectangleValues({
+        rectangleNames: ["/g1/r1", "/g2/r1"]
       }, {
         v0x: v0x1,
         v0y: v0y1,
         v2x: v2x1,
         v2y: v2y1
-      })
+      },
+        stateVariables
+      )
 
-      await checkRectangleValues({
-        rectangles: [components["/g1/r2"], components["/g2/r2"]]
+      checkRectangleValues({
+        rectangleNames: ["/g1/r2", "/g2/r2"]
       }, {
         v0x: v0x2,
         v0y: v0y2,
         v2x: v2x2,
         v2y: v2y2
-      })
+      },
+        stateVariables
+      )
 
-      await checkRectangleValues({
-        rectangles: [components["/g1/r3"], components["/g2/r3"]]
+      checkRectangleValues({
+        rectangleNames: ["/g1/r3", "/g2/r3"]
       }, {
         v0x: v0x2,
         v0y: v0y2,
         v2x: v2x3,
         v2y: v2y2
-      })
+      },
+        stateVariables
+      )
 
-      await checkRectangleValues({
-        rectangles: [components["/g1/r4"], components["/g2/r4"]]
+      checkRectangleValues({
+        rectangleNames: ["/g1/r4", "/g2/r4"]
       }, {
         v0x: v0x2,
         v0y: v0y2,
         v2x: v2x4,
         v2y: v2y4
-      })
+      },
+        stateVariables
+      )
     }
 
     let v0x1 = 0, v0y1 = 0, v2x1 = 1, v2y1 = 1, v0x2 = 3, v0y2 = 4, v2x2 = 4, v2y2 = 5, v2x3 = 8, v2x4 = 5, v2y4 = 6;
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       await checkTransformedRectangleValues({
-        components,
+        stateVariables,
         v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
       })
 
@@ -266,7 +285,6 @@ describe('Rectangle Tag Tests', function () {
     cy.log('shift g1/r1')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
       let dx = -2;
       let dy = 4;
 
@@ -275,10 +293,17 @@ describe('Rectangle Tag Tests', function () {
       v2x1 += dx;
       v2y1 += dy;
 
-      await components["/g1/r1"].movePolygon({ pointCoords: { 0: [v0x1, v0y1], 2: [v2x1, v2y1] } })
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g1/r1",
+        args: {
+          pointCoords: { 0: [v0x1, v0y1], 2: [v2x1, v2y1] }
+        }
+      })
 
+      let stateVariables = await win.returnAllStateVariables1();
       await checkTransformedRectangleValues({
-        components,
+        stateVariables,
         v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
       })
     })
@@ -286,7 +311,6 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 0 of g2/r1')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       v0x1 = 1;
       v0y1 = 8;
@@ -298,10 +322,17 @@ describe('Rectangle Tag Tests', function () {
       v2y2 = v0y2 + height;
 
 
-      await components["/g2/r1"].movePolygon({ pointCoords: { 0: [v0x1, v0y1] } })
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g2/r1",
+        args: {
+          pointCoords: { 0: [v0x1, v0y1] }
+        }
+      })
 
+      let stateVariables = await win.returnAllStateVariables1();
       await checkTransformedRectangleValues({
-        components,
+        stateVariables,
         v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
       })
 
@@ -310,7 +341,6 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 1 of g1/r2')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -332,10 +362,17 @@ describe('Rectangle Tag Tests', function () {
       v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g1/r2"].movePolygon({ pointCoords: { 0: [v0x2, v0y2] } })
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g1/r2",
+        args: {
+          pointCoords: { 0: [v0x2, v0y2] }
+        }
+      })
 
+      let stateVariables = await win.returnAllStateVariables1();
       await checkTransformedRectangleValues({
-        components,
+        stateVariables,
         v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
       })
 
@@ -345,7 +382,6 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 2 of g2/r2')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -367,10 +403,17 @@ describe('Rectangle Tag Tests', function () {
       v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g2/r2"].movePolygon({ pointCoords: { 1: [v2x2, v0y2] } })
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g2/r2",
+        args: {
+          pointCoords: { 1: [v2x2, v0y2] }
+        }
+      })
 
+      let stateVariables = await win.returnAllStateVariables1();
       await checkTransformedRectangleValues({
-        components,
+        stateVariables,
         v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
       })
 
@@ -380,7 +423,6 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 3 of g1/r3')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -402,10 +444,17 @@ describe('Rectangle Tag Tests', function () {
       // v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g1/r3"].movePolygon({ pointCoords: { 2: [v2x3, v2y2] } })
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g1/r3",
+        args: {
+          pointCoords: { 2: [v2x3, v2y2] }
+        }
+      })
 
+      let stateVariables = await win.returnAllStateVariables1();
       await checkTransformedRectangleValues({
-        components,
+        stateVariables,
         v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
       })
 
@@ -416,7 +465,6 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 4 of g2/r3')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -441,10 +489,17 @@ describe('Rectangle Tag Tests', function () {
       // v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g2/r3"].movePolygon({ pointCoords: { 3: [v0x2, v2y2] } })
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g2/r3",
+        args: {
+          pointCoords: { 3: [v0x2, v2y2] }
+        }
+      })
 
+      let stateVariables = await win.returnAllStateVariables1();
       await checkTransformedRectangleValues({
-        components,
+        stateVariables,
         v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
       })
 
@@ -455,7 +510,6 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 2 of g1/r4')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -480,10 +534,17 @@ describe('Rectangle Tag Tests', function () {
       // v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g1/r4"].movePolygon({ pointCoords: { 1: [v2x4, v0y2] } })
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g1/r4",
+        args: {
+          pointCoords: { 1: [v2x4, v0y2] }
+        }
+      })
 
+      let stateVariables = await win.returnAllStateVariables1();
       await checkTransformedRectangleValues({
-        components,
+        stateVariables,
         v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
       })
 
@@ -494,7 +555,6 @@ describe('Rectangle Tag Tests', function () {
     cy.log('move vertex 3 of g2/r4')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
 
       let center4x = (v2x4 + v0x2) / 2;
       let center4y = (v2y4 + v0y2) / 2;
@@ -519,16 +579,93 @@ describe('Rectangle Tag Tests', function () {
       // v2y4 = 2 * center4y - v0y2;
 
 
-      await components["/g1/r4"].movePolygon({ pointCoords: { 2: [v2x4, v2y4] } })
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: "/g1/r4",
+        args: {
+          pointCoords: { 2: [v2x4, v2y4] }
+        }
+      })
 
+      let stateVariables = await win.returnAllStateVariables1();
       await checkTransformedRectangleValues({
-        components,
+        stateVariables,
         v0x1, v0y1, v2x1, v2y1, v0x2, v0y2, v2x2, v2y2, v2x3, v2x4, v2y4
       })
 
     })
 
   })
+
+  it('copy propIndex of vertices', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <rectangle vertices="(2,-3) (3,4)" />
+    </graph>
+ 
+    <p><mathinput name="n" /></p>
+
+    <p><copy prop="vertices" target="_rectangle1" propIndex="$n" assignNames="P1 P2 P3 P4" /></p>
+
+    <p><copy prop="vertex2" target="_rectangle1" propIndex="$n" assignNames="x" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 2, t1y = -3;
+    let t2x = 3, t2y = -3;
+    let t3x = 3, t3y = 4;
+    let t4x = 2, t4y = 4;
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P3 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', `(${nInDOM(t4x)},${nInDOM(t4y)})`);
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t4x)},${nInDOM(t4y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+
+
+  });
+
 
 });
 
@@ -568,118 +705,164 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
   cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
   cy.window().then(async (win) => {
-    let components = Object.assign({}, win.state.components);
+    let stateVariables = await win.returnAllStateVariables1();
 
-    let rectangle = components["/_rectangle1"];
-    let centerPoint = components["/centerPoint"].replacements[0];
-    let v0 = components["/v1"].replacements[0];
-    let v1 = components["/v2"].replacements[0];
-    let v2 = components["/v3"].replacements[0];
-    let v3 = components["/v4"].replacements[0];
-    let rectangleCopy = components["/rectangleCopy"].replacements[0];
-    let rectangleCopy2 = components["/graph4"].replacements[0].activeChildren[0];
-    let widthInput = components["/_mathinput1"];
-    let heightInput = components["/_mathinput2"];
+    let rectangleName = "/_rectangle1";
+    let centerPointName = stateVariables["/centerPoint"].replacements[0].componentName;
+    let v0Name = stateVariables["/v1"].replacements[0].componentName;
+    let v1Name = stateVariables["/v2"].replacements[0].componentName;
+    let v2Name = stateVariables["/v3"].replacements[0].componentName;
+    let v3Name = stateVariables["/v4"].replacements[0].componentName;
+    let rectangleCopyName = stateVariables["/rectangleCopy"].replacements[0].componentName;
+    let rectangleCopy2Name = stateVariables[stateVariables["/graph4"].replacements[0].componentName].activeChildren[0].componentName;
+    let widthInputName = "/_mathinput1";
+    let heightInputName = "/_mathinput2";
 
     let inputs = {
-      rectangles: [rectangle, rectangleCopy, rectangleCopy2],
-      vertices: [v0, v1, v2, v3],
-      widthInput,
-      heightInput,
-      centerPoint
+      rectangleNames: [rectangleName, rectangleCopyName, rectangleCopy2Name],
+      vertexNames: [v0Name, v1Name, v2Name, v3Name],
+      widthInputName,
+      heightInputName,
+      centerPointName
     }
 
     cy.window().then(async (win) => {
-      await checkRectangleValues(
+      checkRectangleValues(
         inputs,
         {
           v0x,
           v0y,
           v2x,
           v2y,
-        }
+        },
+        stateVariables
       );
     })
 
     cy.log("move rectangle points individually");
     cy.window().then(async (win) => {
-      await rectangle.movePolygon({ pointCoords: { 0: [2, -1] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleName,
+        args: {
+          pointCoords: { 0: [2, -1] }
+        }
+      })
+
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 2,
           v0y: -1,
           v2x,
           v2y,
-        }
+        },
+        stateVariables
       );
 
-      await rectangle.movePolygon({ pointCoords: { 1: [0, 2] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleName,
+        args: {
+          pointCoords: { 1: [0, 2] }
+        }
+      })
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 2,
           v0y: 2,
           v2x: 0,
           v2y,
-        }
+        },
+        stateVariables
       );
 
-      await rectangle.movePolygon({ pointCoords: { 2: [-4, -5] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleName,
+        args: {
+          pointCoords: { 2: [-4, -5] }
+        }
+      })
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 2,
           v0y: 2,
           v2x: -4,
           v2y: -5,
-        }
+        },
+        stateVariables
       );
 
-      await rectangle.movePolygon({ pointCoords: { 3: [3, 4] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleName,
+        args: {
+          pointCoords: { 3: [3, 4] }
+        }
+      })
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 3,
           v0y: 2,
           v2x: -4,
           v2y: 4,
-        }
+        },
+        stateVariables
       );
     })
 
     cy.log("move rectangle points together");
     cy.window().then(async (win) => {
-      await rectangle.movePolygon({
-        pointCoords: {
-          0: [4, 3],
-          1: [-3, 3],
-          2: [-3, 5],
-          3: [4, 5]
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleName,
+        args: {
+          pointCoords: {
+            0: [4, 3],
+            1: [-3, 3],
+            2: [-3, 5],
+            3: [4, 5]
+          }
         }
       })
-      await checkRectangleValues(
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 4,
           v0y: 3,
           v2x: -3,
           v2y: 5,
-        }
+        },
+        stateVariables
       );
     })
 
     cy.log("move center point");
     cy.window().then(async (win) => {
-      await centerPoint.movePoint({ x: 0, y: 0 });
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: centerPointName,
+        args: { x: 0, y: 0 }
+      });
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 3.5,
           v0y: -1,
           v2x: -3.5,
           v2y: 1,
-        }
+        },
+        stateVariables
       );
     })
 
@@ -688,286 +871,438 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
       if (cornerDependencyState === 0) {
         // natural behaviour
 
-        await v0.movePoint({ x: 0, y: 0 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v0Name,
+          args: { x: 0, y: 0 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: 0,
             v0y: 0,
             v2x: -3.5,
             v2y: 1,
-          }
+          },
+          stateVariables
         );
 
-        await v1.movePoint({ x: 1, y: -1 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v1Name,
+          args: { x: 1, y: -1 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: 0,
             v0y: -1,
             v2x: 1,
             v2y: 1,
-          }
+          },
+          stateVariables
         );
 
-        await v2.movePoint({ x: 2.25, y: 2.25 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v2Name,
+          args: { x: 2.25, y: 2.25 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: 0,
             v0y: -1,
             v2x: 2.25,
             v2y: 2.25,
-          }
+          },
+          stateVariables
         );
 
-        await v3.movePoint({ x: -1, y: -5 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v3Name,
+          args: { x: -1, y: -5 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: -1,
             v0y: -1,
             v2x: 2.25,
             v2y: -5,
-          }
+          },
+          stateVariables
         );
       } else if (cornerDependencyState === 1) {
         // corner, width and height
 
-        await v0.movePoint({ x: 0, y: 0 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v0Name,
+          args: { x: 0, y: 0 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: 0,
             v0y: 0,
             v2x: -7,
             v2y: 2,
-          }
+          },
+          stateVariables
         );
 
-        await v1.movePoint({ x: 1, y: -1 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v1Name,
+          args: { x: 1, y: -1 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: 0,
             v0y: -1,
             v2x: 1,
             v2y: 1,
-          }
+          },
+          stateVariables
         );
 
-        await v2.movePoint({ x: 2.25, y: 2.25 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v2Name,
+          args: { x: 2.25, y: 2.25 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: 0,
             v0y: -1,
             v2x: 2.25,
             v2y: 2.25,
-          }
+          },
+          stateVariables
         );
 
-        await v3.movePoint({ x: -1, y: -5 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v3Name,
+          args: { x: -1, y: -5 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: -1,
             v0y: -1,
             v2x: 1.25,
             v2y: -5,
-          }
+          },
+          stateVariables
         );
       } else if (cornerDependencyState === 2) {
         //TODO: corner and center
 
-        await v0.movePoint({ x: 0, y: 0 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v0Name,
+          args: { x: 0, y: 0 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: 0,
             v0y: 0,
             v2x: 0,
             v2y: 0,
-          }
+          },
+          stateVariables
         );
 
-        await v1.movePoint({ x: 1, y: -1 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v1Name,
+          args: { x: 1, y: -1 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: 0,
             v0y: -1,
             v2x: 1,
             v2y: 1,
-          }
+          },
+          stateVariables
         );
 
-        await v2.movePoint({ x: 2.25, y: 2.25 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v2Name,
+          args: { x: 2.25, y: 2.25 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: 0,
             v0y: -1,
             v2x: 2.25,
             v2y: 2.25,
-          }
+          },
+          stateVariables
         );
 
-        await v3.movePoint({ x: -1, y: -5 });
-        await checkRectangleValues(
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: v3Name,
+          args: { x: -1, y: -5 }
+        });
+        stateVariables = await win.returnAllStateVariables1();
+        checkRectangleValues(
           inputs,
           {
             v0x: -1,
             v0y: -1,
             v2x: 3.25,
             v2y: -5,
-          }
+          },
+          stateVariables
         );
       }
     })
 
     cy.log("rectangleCopy together");
     cy.window().then(async (win) => {
-      await rectangleCopy.movePolygon({
-        pointCoords: {
-          0: [0, 0],
-          1: [1, 0],
-          2: [1, 1],
-          3: [0, 1]
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleCopyName,
+        args: {
+          pointCoords: {
+            0: [0, 0],
+            1: [1, 0],
+            2: [1, 1],
+            3: [0, 1]
+          }
         }
       })
-      await checkRectangleValues(
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 0,
           v0y: 0,
           v2x: 1,
           v2y: 1,
-        }
+        },
+        stateVariables
       );
     })
 
     cy.log("rectangleCopy individually");
     cy.window().then(async (win) => {
-      await rectangleCopy.movePolygon({ pointCoords: { 0: [2, -1] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleCopyName,
+        args: {
+          pointCoords: { 0: [2, -1] }
+        }
+      })
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 2,
           v0y: -1,
           v2x: 1,
           v2y: 1,
-        }
+        },
+        stateVariables
       );
 
-      await rectangleCopy.movePolygon({ pointCoords: { 1: [0, 2] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleCopyName,
+        args: {
+          pointCoords: { 1: [0, 2] }
+        }
+      })
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 2,
           v0y: 2,
           v2x: 0,
           v2y: 1,
-        }
+        },
+        stateVariables
       );
 
-      await rectangleCopy.movePolygon({ pointCoords: { 2: [-4, -5] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleCopyName,
+        args: {
+          pointCoords: { 2: [-4, -5] }
+        }
+      })
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 2,
           v0y: 2,
           v2x: -4,
           v2y: -5,
-        }
+        },
+        stateVariables
       );
 
-      await rectangleCopy.movePolygon({ pointCoords: { 3: [3, 4] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleCopyName,
+        args: {
+          pointCoords: { 3: [3, 4] }
+        }
+      })
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 3,
           v0y: 2,
           v2x: -4,
           v2y: 4,
-        }
+        },
+        stateVariables
       );
     })
 
     cy.log("rectangleCopy2 together");
     cy.window().then(async (win) => {
-      await rectangleCopy2.movePolygon({
-        pointCoords: {
-          0: [0, 0],
-          1: [1, 0],
-          2: [1, 1],
-          3: [0, 1]
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleCopy2Name,
+        args: {
+          pointCoords: {
+            0: [0, 0],
+            1: [1, 0],
+            2: [1, 1],
+            3: [0, 1]
+          }
         }
       })
-      await checkRectangleValues(
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 0,
           v0y: 0,
           v2x: 1,
           v2y: 1,
-        }
+        },
+        stateVariables
       );
     })
 
     cy.log("rectangleCopy2 individually");
     cy.window().then(async (win) => {
-      await rectangleCopy2.movePolygon({ pointCoords: { 0: [2, -1] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleCopy2Name,
+        args: {
+          pointCoords: { 0: [2, -1] }
+        }
+      })
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 2,
           v0y: -1,
           v2x: 1,
           v2y: 1,
-        }
+        },
+        stateVariables
       );
 
-      await rectangleCopy2.movePolygon({ pointCoords: { 1: [0, 2] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleCopy2Name,
+        args: {
+          pointCoords: { 1: [0, 2] }
+        }
+      })
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 2,
           v0y: 2,
           v2x: 0,
           v2y: 1,
-        }
+        },
+        stateVariables
       );
 
-      await rectangleCopy2.movePolygon({ pointCoords: { 2: [-4, -5] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleCopy2Name,
+        args: {
+          pointCoords: { 2: [-4, -5] }
+        }
+      })
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 2,
           v0y: 2,
           v2x: -4,
           v2y: -5,
-        }
+        },
+        stateVariables
       );
 
-      await rectangleCopy2.movePolygon({ pointCoords: { 3: [3, 4] } })
-      await checkRectangleValues(
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleCopy2Name,
+        args: {
+          pointCoords: { 3: [3, 4] }
+        }
+      })
+      stateVariables = await win.returnAllStateVariables1();
+      checkRectangleValues(
         inputs,
         {
           v0x: 3,
           v0y: 2,
           v2x: -4,
           v2y: 4,
-        }
+        },
+        stateVariables
       );
 
       // reset polygon
-      await rectangle.movePolygon({
-        pointCoords: {
-          0: [0, 0],
-          1: [1, 0],
-          2: [1, 1],
-          3: [0, 1]
+      await win.callAction1({
+        actionName: "movePolygon",
+        componentName: rectangleName,
+        args: {
+          pointCoords: {
+            0: [0, 0],
+            1: [1, 0],
+            2: [1, 1],
+            3: [0, 1]
+          }
         }
       })
     })
@@ -975,39 +1310,44 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
   })
 }
 
-async function checkRectangleValues({
-  rectangles,
-  vertices,
-  widthInput,
-  heightInput,
-  centerPoint
+function checkRectangleValues({
+  rectangleNames,
+  vertexNames,
+  widthInputName,
+  heightInputName,
+  centerPointName
 }, {
   v0x,
   v0y,
   v2x,
   v2y
-}) {
+},
+  stateVariables
+) {
 
   let vertexCoords = [[v0x, v0y], [v2x, v0y], [v2x, v2y], [v0x, v2y]];
   let centerCoords = [(v0x + v2x) / 2, (v0y + v2y) / 2];
   let widthValue = Math.abs(v2x - v0x);
   let heightValue = Math.abs(v2y - v0y);
 
-  for (let rectangle of rectangles) {
-    expect((await rectangle.stateValues.vertices).map(x => x.map(y => y.evaluate_to_constant()))).eqls(vertexCoords);
-    expect((await rectangle.stateValues.center).map(x => x.evaluate_to_constant())).eqls(centerCoords);
-    expect((await rectangle.stateValues.width)).eq(widthValue);
-    expect((await rectangle.stateValues.height)).eq(heightValue);
+  for (let rectangleName of rectangleNames) {
+    let rectangle = stateVariables[rectangleName];
+    expect((rectangle.stateValues.vertices).map(x => x.map(y => me.fromAst(y).evaluate_to_constant()))).eqls(vertexCoords);
+    expect((rectangle.stateValues.center).map(x => me.fromAst(x).evaluate_to_constant())).eqls(centerCoords);
+    expect((rectangle.stateValues.width)).eq(widthValue);
+    expect((rectangle.stateValues.height)).eq(heightValue);
   }
 
-  if (vertices) {
-    for (let [index, vertex] of vertices.entries()) {
-      expect((await vertex.stateValues.xs).map(x => x.evaluate_to_constant())).eqls(vertexCoords[index]);
+  if (vertexNames) {
+    for (let [index, vertexName] of vertexNames.entries()) {
+      let vertex = stateVariables[vertexName];
+      expect((vertex.stateValues.xs).map(x => me.fromAst(x).evaluate_to_constant())).eqls(vertexCoords[index]);
     }
   }
 
-  if (centerPoint) {
-    expect((await centerPoint.stateValues.xs).map(x => x.evaluate_to_constant())).eqls(centerCoords);
+  if (centerPointName) {
+    let centerPoint = stateVariables[centerPointName];
+    expect((centerPoint.stateValues.xs).map(x => me.fromAst(x).evaluate_to_constant())).eqls(centerCoords);
   }
   // expect(widthInput.stateValues.value.tree).eq(widthValue);
   // expect(heightInput.stateValues.value.tree).eq(heightValue);

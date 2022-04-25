@@ -5,88 +5,67 @@ header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Credentials: true");
 //header('Content-Type: application/json');
 
-
 include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
-$userId = $jwtArray['userId'];
-$examUserId = array_key_exists("examineeUserId",$jwtArray) ? $jwtArray['examineeUserId'] : "";
-$examDoenetId = array_key_exists("doenetId",$jwtArray) ? $jwtArray['doenetId'] : "";
+$userId = $jwtArray["userId"];
+$examUserId = array_key_exists("examineeUserId", $jwtArray)
+    ? $jwtArray["examineeUserId"]
+    : "";
+$examDoenetId = array_key_exists("doenetId", $jwtArray)
+    ? $jwtArray["doenetId"]
+    : "";
 
-$doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
+$doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
 
-$success = TRUE;
+$success = true;
 $message = "";
 
-if ($doenetId == ""){
-$success = FALSE;
-$message = 'Internal Error: missing doenetId';
-}else if ($userId == ""){
-        if ($examUserId == ""){
-                $success = FALSE;
-                $message = "No access - Need to sign in";
-        }else if ($examDoenetId != $doenetId){
-                $success = FALSE;
-                $message = "No access for doenetId: $doenetId";
-        }else{
-                $userId = $examUserId;
-        }
-
+if ($doenetId == "") {
+    $success = false;
+    $message = "Internal Error: missing doenetId";
+} elseif ($userId == "") {
+    if ($examUserId == "") {
+        $success = false;
+        $message = "No access - Need to sign in";
+    } elseif ($examDoenetId != $doenetId) {
+        $success = false;
+        $message = "No access for doenetId: $doenetId";
+    } else {
+        $userId = $examUserId;
+    }
 }
 
+$variants = [];
+$attemptNumbers = [];
 
+if ($success) {
+    $sql = "SELECT uaa.attemptNumber as attemptNumber,
+        a.variantIndex as variantIndex
+        FROM user_assignment_attempt as uaa
+        LEFT JOIN activity_state as a
+        ON uaa.doenetId = a.doenetId AND uaa.userId=a.userId AND uaa.attemptNumber=a.attemptNumber
+        WHERE uaa.userId='$userId'
+        AND uaa.doenetId='$doenetId'
+        ORDER BY uaa.attemptNumber ASC";
 
-$variants = array();
-$starts = array();
-$attemptNumbers = array();
-
-if ($success){
-
-  $sql = "
-        SELECT e.timeLimitMultiplier AS timeLimitMultiplier
-        FROM enrollment AS e
-        LEFT JOIN drive_content AS dc
-        ON e.driveId = dc.driveId
-        WHERE dc.doenetId='$doenetId'
-        AND e.userId = '$userId'";
- 
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
-$timeLimitMultiplier = $row['timeLimitMultiplier'];
-if (!$timeLimitMultiplier){
-        $timeLimitMultiplier = "1";
+    $result = $conn->query($sql);
+    while ($row = $result->fetch_assoc()) {
+        array_push($variants, $row["variantIndex"]);
+        array_push($attemptNumbers, $row["attemptNumber"]);
+    }
 }
 
-  $sql = "SELECT attemptNumber,
-        generatedVariant,
-        began
-        FROM user_assignment_attempt
-        WHERE userId='$userId'
-        AND doenetId='$doenetId'
-        ORDER BY attemptNumber ASC";
-
-  $result = $conn->query($sql);
-  while ($row = $result->fetch_assoc()){
-          array_push($variants,$row["generatedVariant"]);
-          array_push($starts,$row["began"]);
-          array_push($attemptNumbers,$row["attemptNumber"]);
-  }
-}
-
-$response_arr = array(
-        "success"=>$success,
-        "attemptNumbers"=>$attemptNumbers,
-        "variants" => $variants,
-        "starts" => $starts,
-        "timeLimitMultiplier"=> $timeLimitMultiplier,
-        "message"=>$message
-);
+$response_arr = [
+    "success" => $success,
+    "attemptNumbers" => $attemptNumbers,
+    "variants" => $variants,
+    "message" => $message,
+];
 
 http_response_code(200);
 
 echo json_encode($response_arr);
 
 $conn->close();
-
 ?>
-

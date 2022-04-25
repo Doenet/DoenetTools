@@ -2,23 +2,20 @@
  * External dependencies
  */
 import React, { useState, Suspense, useEffect, useLayoutEffect } from 'react';
-import {
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil';
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 /**
  * Internal dependencies
  */
 import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
-import Drive, {
+import {
   selectedDriveAtom,
   selectedDriveItems,
   itemType,
   clearDriveAndItemSelections,
   folderDictionary,
 } from '../../../_reactComponents/Drive/NewDrive';
+
+import CourseNavigator from '../../../_reactComponents/Course/CourseNavigator';
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
@@ -79,7 +76,7 @@ export default function NavigationPanel() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
-  const path = useRecoilValue(searchParamAtomFamily('path'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const [columnTypes, setColumnTypes] = useState([]);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
 
@@ -102,15 +99,15 @@ export default function NavigationPanel() {
     switch (effectiveRole) {
       case 'instructor':
         setColumnTypes(['Released', 'Assigned', 'Public']);
-        setSuppressMenus([])
+        setSuppressMenus([]);
         break;
       case 'student':
         setColumnTypes(['Due Date']);
-        setSuppressMenus(["AddDriveItems"])
+        setSuppressMenus(['AddDriveItems']);
         break;
       default:
     }
-  }, [effectiveRole,setSuppressMenus]);
+  }, [effectiveRole, setSuppressMenus]);
 
   const clickCallback = useRecoilCallback(
     ({ set }) =>
@@ -235,7 +232,6 @@ export default function NavigationPanel() {
               }
               return false;
             } else {
-              console.log('whats up', item.itemType, 'i', item);
               return item.isReleased === '1';
             }
           case 'instructor':
@@ -281,8 +277,8 @@ export default function NavigationPanel() {
           </Table>
         }>
           <Container>
-            <Drive
-              path={path}
+            <CourseNavigator
+              courseId={courseId}
               filterCallback={filterCallback}
               columnTypes={columnTypes}
               urlClickBehavior="select"

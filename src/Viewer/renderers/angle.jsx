@@ -2,6 +2,7 @@ import React, { useEffect, useContext, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 import me from 'math-expressions';
+import { MathJax } from 'better-react-mathjax';
 
 export default function Angle(props) {
   let { name, SVs } = useDoenetRender(props);
@@ -14,13 +15,6 @@ export default function Angle(props) {
   let angleJXG = useRef(null)
   let previousWithLabel = useRef(null);
 
-  useEffect(() => {
-    if (!board && window.MathJax) {
-      window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  })
 
   useEffect(() => {
     //On unmount
@@ -169,7 +163,7 @@ export default function Angle(props) {
     mathJaxify = "\\(" + me.fromAst(SVs.radians).toLatex() + "\\)";
   }
 
-  return <><a name={name} /><span id={name}>{mathJaxify}</span></>
+  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 }
 
 

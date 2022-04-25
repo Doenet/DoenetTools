@@ -1,11 +1,11 @@
-import { CIDFromDoenetML } from "./cid";
+import { cidFromText } from "./cid";
 
-export function retrieveDoenetMLForCID(CID) {
+export function retrieveTextFileForCid(cid, ext = "doenet") {
 
   return new Promise((resolve, reject) => {
 
     // immediately start trying to retrieve from IPFS
-    let resultIPFS = retrieveDoenetMLFromIPFS(CID);
+    let resultIPFS = retrieveTextFileFromIPFS(cid);
 
     let promiseIPFS = resultIPFS.promise;
     let controllerIPFS = resultIPFS.controller;
@@ -43,7 +43,7 @@ export function retrieveDoenetMLForCID(CID) {
 
       // if the timer wasn't cleared then IPFS has not yet retrieved
       // so start retrieving from the server
-      let resultServer = retrieveDoenetMLFromServer(CID);
+      let resultServer = retrieveTextFileFromServer(cid, ext);
 
       let promiseServer = resultServer.promise;
       controllerServer = resultServer.controller;
@@ -80,31 +80,31 @@ export function retrieveDoenetMLForCID(CID) {
 }
 
 
-function retrieveDoenetMLFromIPFS(CID) {
+function retrieveTextFileFromIPFS(cid) {
 
   let controller = new AbortController();
   let signal = controller.signal;
 
   let retrieveFromIPFS = async function () {
     try {
-      let response = await fetch(`https://${CID}.ipfs.dweb.link/`, { signal });
+      let response = await fetch(`https://${cid}.ipfs.dweb.link/`, { signal });
 
       if (response.ok) {
         let doenetML = await response.text();
 
-        let CIDRetrieved = await CIDFromDoenetML(doenetML);
+        let CidRetrieved = await cidFromText(doenetML);
 
-        if (CIDRetrieved === CID) {
+        if (CidRetrieved === cid) {
           return doenetML;
         } else {
-          return Promise.reject(new Error("CID mismatch"));
+          return Promise.reject(new Error("cid mismatch"));
         }
       } else {
-        return Promise.reject(new Error(`CID not found: ${CID}`));
+        return Promise.reject(new Error(`cid not found: ${cid}`));
       }
     }
     catch (e) {
-      return Promise.reject(new Error(`CID not found: ${CID}`));
+      return Promise.reject(new Error(`cid not found: ${cid}`));
     }
   }
 
@@ -117,7 +117,7 @@ function retrieveDoenetMLFromIPFS(CID) {
 }
 
 
-function retrieveDoenetMLFromServer(CID) {
+function retrieveTextFileFromServer(cid, ext) {
 
 
   let controller = new AbortController();
@@ -126,24 +126,25 @@ function retrieveDoenetMLFromServer(CID) {
 
   let retrieveFromServer = async function () {
     try {
-      let response = await fetch(`/media/${CID}.doenet`, { signal });
+      let response = await fetch(`/media/${cid}.${ext}`, { signal });
 
       if (response.ok) {
         let doenetML = await response.text();
 
-        let CIDRetrieved = await CIDFromDoenetML(doenetML);
+        let CidRetrieved = await cidFromText(doenetML);
 
-        if (CIDRetrieved === CID) {
+        if (CidRetrieved === cid) {
           return doenetML;
         } else {
-          return Promise.reject(new Error("CID mismatch"));
+          console.warn(`cid mismatch, ${cid}, ${CidRetrieved}`)
+          return Promise.reject(new Error("cid mismatch"));
         }
       } else {
-        return Promise.reject(new Error(`CID not found: ${CID}`));
+        return Promise.reject(new Error(`cid not found: ${cid}`));
       }
     }
     catch (e) {
-      return Promise.reject(new Error(`CID not found: ${CID}`));
+      return Promise.reject(new Error(`cid not found: ${cid}`));
     }
   }
 
