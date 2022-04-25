@@ -87,8 +87,7 @@ if ($success) {
         WHERE doenetId='$sourceDoenetId'
         AND courseId='$courseId'
         ";
-        echo $sql;
-        // $result = $conn->query($sql);
+        $result = $conn->query($sql);
     }
 
     //UPDATE DESTINATION
@@ -107,11 +106,17 @@ if ($success) {
         WHERE doenetId='$destinationDoenetId'
         AND courseId='$courseId'
         ";
-        echo $sql;
-        // $result = $conn->query($sql);
+        $result = $conn->query($sql);
     }
 
-    //TODO update pages table
+    //Update page in the pages table
+    $sql = "
+    UPDATE pages
+    SET containingDoenetId='$destinationDoenetId'
+    WHERE doenetId='$originalPageDoenetId'
+    AND courseId='$courseId'
+    ";
+    $result = $conn->query($sql);
 
   
     // if ($makeMultiPage){

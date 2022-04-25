@@ -1504,23 +1504,29 @@ export const useCourse = (courseId) => {
               let destinationContainingObj = {};
               let sourceJSON = {};
               let destinationJSON = {};
+              let previousDoenetId;
               
+              // console.log("cut sourceContainingObj",sourceContainingObj)
               //Remove from Activity
               if (sourceContainingObj.type == 'activity'){
-                console.log("from activity")
+                // console.log("from activity",sourceContainingObj)
+                let nextOrder = {...sourceContainingObj.order}
+                // console.log("nextOrder",nextOrder)
               }
               //Remove from Collection
               if (sourceContainingObj.type == 'bank'){
-                sourceJSON = {...sourceContainingObj}
-                let nextPages = [...sourceJSON.pages]
-                nextPages.splice(sourceJSON.pages.indexOf(originalPageDoenetId),1)
-                sourceJSON.pages = nextPages;
+                let nextPages = [...sourceContainingObj.pages]
+                nextPages.splice(sourceContainingObj.pages.indexOf(originalPageDoenetId),1)
+                sourceJSON = nextPages;
               }
               //Add to Collection
               if (singleSelectedObj.type == 'bank'){
-                destinationContainingObj = {...singleSelectedObj};
-                destinationJSON = {...destinationContainingObj};
-                destinationJSON.pages = [...destinationJSON.pages,originalPageDoenetId]
+                destinationContainingObj = {...singleSelectedObj}
+                previousDoenetId = singleSelectedObj.doenetId;
+                if (singleSelectedObj.pages.length > 0){
+                  previousDoenetId = singleSelectedObj.pages[singleSelectedObj.pages.length - 1]
+                }
+                destinationJSON = [...singleSelectedObj.pages,originalPageDoenetId]
               }
               //Add to Activity
               if (singleSelectedObj.type == 'order'){
@@ -1543,34 +1549,68 @@ export const useCourse = (courseId) => {
               sourceJSON,
               destinationJSON,
               })
+
+              console.log("previousDoenetId",previousDoenetId)
               
               //update database
-              try {
-                let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
-                  isCopy:false,
-                  courseId,
-                  originalPageDoenetId,
-                  sourceType,
-                  sourceDoenetId,
-                  destinationType,
-                  destinationDoenetId,
-                  sourceJSON,
-                  destinationJSON,
-                });
-                console.log("resp.data",resp.data)
-                if (resp.status < 300) {
+              // try {
+              //   let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
+              //     isCopy:false,
+              //     courseId,
+              //     originalPageDoenetId,
+              //     sourceType,
+              //     sourceDoenetId,
+              //     destinationType,
+              //     destinationDoenetId,
+              //     sourceJSON,
+              //     destinationJSON,
+              //   });
+              //   console.log("resp.data",resp.data)
+              //   if (resp.status < 300) {
+              //     //Update source
+              //     if (sourceType == 'bank'){
+              //       set(authorItemByDoenetId(sourceDoenetId),(prev)=>{
+              //         let next = {...prev}
+              //         next.pages = sourceJSON;
+              //         console.log("source",sourceDoenetId,next)
+              //         return next;
+              //       })
+              //     }
+              //     //Update destination
+              //     if (destinationType == 'bank'){
+              //       set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
+              //         let next = {...prev}
+              //         next.pages = destinationJSON;
+              //         console.log("dest",destinationDoenetId,next)
+              //         return next;
+              //       })
+              //       //Update page
+              //       set(authorItemByDoenetId(originalPageDoenetId),(prev)=>{
+              //         let next = {...prev}
+              //         next.containingDoenetId = destinationDoenetId;
+              //         next.previousDoenetId = destinationDoenetId;
+              //         next.isBeingCut = false
+              //         return next;
+              //       })
+              //     }
                   
-                  successCallback?.();
-                  //Update recoil
-                  // set(authorItemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
+              //     set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
+              //       let next = [...prev];
+              //       next.splice(next.indexOf(originalPageDoenetId),1);  //remove 
+              //       next.splice(next.indexOf(previousDoenetId),0,originalPageDoenetId);  //insert
+              //       return next
+              //     })
+              //     successCallback?.();
+              //     //Update recoil
+              //     // set(authorItemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
                   
                   
-                } else {
-                  throw new Error(`response code: ${resp.status}`);
-                }
-              } catch (err) {
-                failureCallback(err);
-              }
+              //   } else {
+              //     throw new Error(`response code: ${resp.status}`);
+              //   }
+              // } catch (err) {
+              //   failureCallback(err);
+              // }
             }
               
 
