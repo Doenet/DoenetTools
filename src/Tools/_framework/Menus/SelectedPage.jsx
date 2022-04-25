@@ -73,28 +73,6 @@ export default function SelectedPage() {
             });
           }}
         />
-  <ActionButton
-          width="menu"
-          value="View Page"
-          onClick={() => {
-            compileActivity({
-              activityDoenetId:doenetId,courseId,successCallback:()=>{
-                // addToast("Activity compiled!", toastType.INFO);
-                setPageToolView({
-                  page: 'course',
-                  tool: 'assignment',
-                  view: '',
-                  params: {
-                    courseId,
-                    pageId,
-                    doenetId,
-                    sectionId
-                  },
-                });
-              }
-            })
-          }}
-        />
   </ActionButtonGroup>
   <Textfield
       label="Label"
