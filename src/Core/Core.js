@@ -24,7 +24,7 @@ import axios from 'axios';
 // componentClass to string: componentClass.componentType
 
 export default class Core {
-  constructor({ doenetML, doenetId, pageId, attemptNumber = 1, itemNumber = 1,
+  constructor({ doenetML, doenetId, pageNumber, attemptNumber = 1, itemNumber = 1,
     serverSaveId,
     requestedVariant, requestedVariantIndex,
     flags = {},
@@ -35,7 +35,7 @@ export default class Core {
 
     this.coreId = coreId;
     this.doenetId = doenetId;
-    this.pageId = pageId;
+    this.pageNumber = pageNumber;
     this.attemptNumber = attemptNumber;
     this.itemNumber = itemNumber;
 
@@ -8307,7 +8307,7 @@ export default class Core {
 
     const payload = {
       doenetId: this.doenetId,
-      pageId: this.pageId,
+      pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
       verb: event.verb,
       object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
@@ -9328,7 +9328,7 @@ export default class Core {
 
     if (this.flags.allowLocalState) {
       idb_set(
-        `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.cid}`,
+        `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}`,
         {
           coreState: this.cumulativeStateVariableChanges,
           rendererState: this.rendererState,
@@ -9352,7 +9352,7 @@ export default class Core {
       coreInfo: this.coreInfoString,
       coreState: JSON.stringify(this.cumulativeStateVariableChanges, serializeFunctions.serializedComponentsReplacer),
       rendererState: JSON.stringify(this.rendererState, serializeFunctions.serializedComponentsReplacer),
-      pageId: this.pageId,
+      pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
       doenetId: this.doenetId,
       saveId,
@@ -9444,7 +9444,7 @@ export default class Core {
 
     if (this.flags.allowLocalState) {
       idb_set(
-        `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.cid}|ServerSaveId`,
+        `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}|ServerSaveId`,
         data.saveId
       )
     }
@@ -9457,7 +9457,7 @@ export default class Core {
 
         if (this.flags.allowLocalState) {
           idb_set(
-            `${this.doenetId}|${this.pageId}|${data.attemptNumber}|${data.cid}`,
+            `${this.doenetId}|${this.pageNumber}|${data.attemptNumber}|${data.cid}`,
             {
               coreState: JSON.parse(data.coreState, serializeFunctions.serializedComponentsReviver),
               rendererState: JSON.parse(data.rendererState, serializeFunctions.serializedComponentsReviver),
@@ -9718,7 +9718,7 @@ export default class Core {
       const resp = await axios.post('/api/reportSolutionViewed.php', {
         doenetId: this.doenetId,
         itemNumber: this.itemNumber,
-        pageId: this.pageId,
+        pageNumber: this.pageNumber,
         attemptNumber: this.attemptNumber,
       });
 

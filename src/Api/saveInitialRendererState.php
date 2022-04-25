@@ -62,7 +62,7 @@ if ($success) {
         }
     } else {
         $success = FALSE;
-        $message = "Page not found.";
+        $message = "Assignment not found.";
     }
 }
 
