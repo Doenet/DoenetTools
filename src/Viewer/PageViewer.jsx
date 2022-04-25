@@ -101,7 +101,7 @@ export default function PageViewer(props) {
   const [doenetML, setDoenetML] = useState(null);
 
 
-  const [pageId, setPageId] = useState(null);
+  const [pageNumber, setPageNumber] = useState(null);
   const [attemptNumber, setAttemptNumber] = useState(null);
   const [requestedVariantIndex, setRequestedVariantIndex] = useState(null);
 
@@ -192,8 +192,8 @@ export default function PageViewer(props) {
 
   useEffect(() => {
 
-    if (pageId !== null) {
-      window["returnAllStateVariables" + pageId] = function () {
+    if (pageNumber !== null) {
+      window["returnAllStateVariables" + pageNumber] = function () {
         coreWorker.current.postMessage({
           messageType: "returnAllStateVariables"
         })
@@ -204,7 +204,7 @@ export default function PageViewer(props) {
 
       }
 
-      window["callAction" + pageId] = async function ({ actionName, componentName, args }) {
+      window["callAction" + pageNumber] = async function ({ actionName, componentName, args }) {
         await callAction({
           action: { actionName, componentName },
           args
@@ -214,7 +214,7 @@ export default function PageViewer(props) {
     }
 
 
-  }, [pageId])
+  }, [pageNumber])
 
 
   useEffect(() => {
@@ -442,7 +442,7 @@ export default function PageViewer(props) {
       let localInfo;
 
       try {
-        localInfo = await idb_get(`${props.doenetId}|${pageId}|${attemptNumber}|${cid}`);
+        localInfo = await idb_get(`${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}`);
       } catch (e) {
         // ignore error
       }
@@ -508,7 +508,7 @@ export default function PageViewer(props) {
       const payload = {
         params: {
           cid,
-          pageId,
+          pageNumber,
           attemptNumber,
           doenetId: props.doenetId,
           userId: props.userId,
@@ -575,14 +575,14 @@ export default function PageViewer(props) {
 
   async function saveLoadedLocalStateToDatabase(localInfo) {
 
-    let serverSaveId = await idb_get(`${props.doenetId}|${pageId}|${attemptNumber}|${cid}|ServerSaveId`);
+    let serverSaveId = await idb_get(`${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}|ServerSaveId`);
 
     let pageStateToBeSavedToDatabase = {
       cid,
       coreInfo: JSON.stringify(localInfo.coreInfo, serializedComponentsReplacer),
       coreState: JSON.stringify(localInfo.coreState, serializedComponentsReplacer),
       rendererState: JSON.stringify(localInfo.rendererState, serializedComponentsReplacer),
-      pageId,
+      pageNumber,
       attemptNumber,
       doenetId: props.doenetId,
       saveId: localInfo.saveId,
@@ -609,7 +609,7 @@ export default function PageViewer(props) {
     }
 
     idb_set(
-      `${props.doenetId}|${pageId}|${attemptNumber}|${cid}|ServerSaveId`,
+      `${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}|ServerSaveId`,
       data.saveId
     )
 
@@ -624,7 +624,7 @@ export default function PageViewer(props) {
       }
 
       idb_set(
-        `${props.doenetId}|${pageId}|${data.attemptNumber}|${data.cid}`,
+        `${props.doenetId}|${pageNumber}|${data.attemptNumber}|${data.cid}`,
         newLocalInfo
       );
 
@@ -642,7 +642,7 @@ export default function PageViewer(props) {
 
   function startCore() {
 
-    // console.log(`send message to create core ${pageId}`)
+    // console.log(`send message to create core ${pageNumber}`)
 
     coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : 'viewer/core.js', { type: 'module' });
 
@@ -656,7 +656,7 @@ export default function PageViewer(props) {
         doenetId: props.doenetId,
         flags: props.flags,
         requestedVariantIndex,
-        pageId,
+        pageNumber,
         attemptNumber,
         itemNumber: props.itemNumber,
         updateDataOnContentChange: props.updateDataOnContentChange,
@@ -790,14 +790,14 @@ export default function PageViewer(props) {
     changedState = true;
   }
 
-  //If no pageId prop then set to '1'
-  let propPageId = props.pageId;
-  if (propPageId === undefined) {
-    propPageId = '1';
+  //If no pageNumber prop then set to '1'
+  let propPageNumber = props.pageNumber;
+  if (propPageNumber === undefined) {
+    propPageNumber = '1';
   }
 
-  if (propPageId !== pageId) {
-    setPageId(propPageId);
+  if (propPageNumber !== pageNumber) {
+    setPageNumber(propPageNumber);
     changedState = true;
   }
 

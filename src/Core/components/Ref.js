@@ -119,6 +119,18 @@ export default class Ref extends InlineComponent {
       additionalStateVariablesDefined: [{
         variableName: "doenetId",
         forRenderer: true,
+      },{
+        variableName: "pageNumber",
+        forRenderer: true,
+      },{
+        variableName: "variantIndex",
+        forRenderer: true,
+      },{
+        variableName: "edit",
+        forRenderer: true,
+      },{
+        variableName: "draft",
+        forRenderer: true,
       }],
       returnDependencies: () => ({
         uri: {
@@ -135,7 +147,8 @@ export default class Ref extends InlineComponent {
           }
         }
 
-        let cid = null, doenetId = null;
+        let cid = null, doenetId = null, pageNumber = null, variantIndex = null;
+        let draft = null, edit = null;
 
         let result = dependencyValues.uri.match(/[:&]cid=([^&]+)/i);
         if (result) {
@@ -145,8 +158,40 @@ export default class Ref extends InlineComponent {
         if (result) {
           doenetId = result[1];
         }
+        result = dependencyValues.uri.match(/[:&]page=([^&]+)/i);
+        if (result) {
+          pageNumber = Number(result[1]);
+          if(!Number.isInteger(pageNumber) && pageNumber >=1) {
+            pageNumber = 1;
+          }
+        }
+        result = dependencyValues.uri.match(/[:&]variant=([^&]+)/i);
+        if (result) {
+          variantIndex = Number(result[1]);
+          if(!Number.isInteger(variantIndex) && variantIndex >=1) {
+            variantIndex = 1;
+          }
+        }
+        result = dependencyValues.uri.match(/[:&]edit=([^&]+)/i);
+        if (result) {
+          if(result[1].toLowerCase() === "true") {
+            edit = true;
+          } else {
+            edit = false;
+          }
+        }
+        result = dependencyValues.uri.match(/[:&]draft=([^&]+)/i);
+        if (result) {
+          if(result[1].toLowerCase() === "true") {
+            draft = true;
+          } else {
+            draft = false;
+          }
+        }
 
-        return { setValue: { cid, doenetId } };
+        console.log('url parameter results', { cid, doenetId, pageNumber, variantIndex, edit, draft })
+
+        return { setValue: { cid, doenetId, pageNumber, variantIndex, edit, draft } };
       },
     };
 

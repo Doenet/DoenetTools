@@ -17,7 +17,7 @@ $device = $jwtArray["deviceName"];
 $_POST = json_decode(file_get_contents("php://input"), true);
 $doenetId = mysqli_real_escape_string($conn, $_POST["doenetId"]);
 $cid = mysqli_real_escape_string($conn, $_POST["cid"]);
-$pageId = mysqli_real_escape_string($conn, $_POST["pageId"]);
+$pageNumber = mysqli_real_escape_string($conn, $_POST["pageNumber"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_POST["attemptNumber"]);
 $coreInfo = mysqli_real_escape_string($conn, $_POST["coreInfo"]);
 $coreState = mysqli_real_escape_string($conn, $_POST["coreState"]);
@@ -37,9 +37,9 @@ if ($doenetId == "") {
 } elseif ($cid == "") {
     $success = false;
     $message = "Internal Error: missing cid";
-} elseif ($pageId == "") {
+} elseif ($pageNumber == "") {
     $success = false;
-    $message = "Internal Error: missing pageId";
+    $message = "Internal Error: missing pageNumber";
 } elseif ($attemptNumber == "") {
     $success = false;
     $message = "Internal Error: missing attemptNumber";
@@ -86,7 +86,7 @@ if ($success) {
             deviceName = '$device'
             WHERE userId='$userId'
             AND doenetId='$doenetId'
-            AND pageId='$pageId'
+            AND pageNumber='$pageNumber'
             AND attemptNumber='$attemptNumber'
             AND cid = '$cid'
             AND saveId = '$serverSaveId'
@@ -138,8 +138,8 @@ if ($success) {
             // attempt to insert a rows in page_state
 
             $sql = "INSERT INTO page_state
-                (userId,doenetId,cid,pageId,attemptNumber,deviceName,saveId,coreInfo,coreState,rendererState)
-                VALUES ('$userId','$doenetId','$cid','$pageId','$attemptNumber','$device','$saveId','$coreInfo','$coreState','$rendererState')
+                (userId,doenetId,cid,pageNumber,attemptNumber,deviceName,saveId,coreInfo,coreState,rendererState)
+                VALUES ('$userId','$doenetId','$cid','$pageNumber','$attemptNumber','$device','$saveId','$coreInfo','$coreState','$rendererState')
             ";
 
             $conn->query($sql);
@@ -158,7 +158,7 @@ if ($success) {
                     FROM page_state
                     WHERE userId='$userId'
                     AND doenetId='$doenetId'
-                    AND pageId = '$pageId'
+                    AND pageNumber = '$pageNumber'
                     AND attemptNumber = '$attemptNumber'
                     ";
 
@@ -178,7 +178,7 @@ if ($success) {
                             deviceName = '$device'
                             WHERE userId='$userId'
                             AND doenetId='$doenetId'
-                            AND pageId='$pageId'
+                            AND pageNumber='$pageNumber'
                             AND attemptNumber='$attemptNumber'
                             ";
 
@@ -202,11 +202,11 @@ if ($success) {
                     $stateOverwritten = true;
                     $newAttemptNumber = $attemptNumber;
 
-                    $sql = "SELECT cid, pageId, attemptNumber, saveId, deviceName, coreInfo, coreState, rendererState
+                    $sql = "SELECT cid, pageNumber, attemptNumber, saveId, deviceName, coreInfo, coreState, rendererState
                         FROM page_state
                         WHERE userId = '$userId'
                         AND doenetId = '$doenetId'
-                        AND pageId = '$pageId'
+                        AND pageNumber = '$pageNumber'
                         AND attemptNumber ='$attemptNumber'
                         ";
 
