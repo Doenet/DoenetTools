@@ -9,7 +9,7 @@ import {
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { itemHistoryAtom } from '../ToolHandlers/CourseToolHandler';
 import { 
-  editorDoenetIdInitAtom, 
+  editorPageIdInitAtom, 
   updateTextEditorDoenetMLAtom,
   textEditorDoenetMLAtom,
   viewerDoenetMLAtom,
@@ -43,7 +43,7 @@ console.log(">>>===VersionHistory")
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const path = decodeURIComponent(useRecoilValue(searchParamAtomFamily('path')));
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(doenetId))
-  const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
+  const initializedDoenetId = useRecoilValue(editorPageIdInitAtom);
   const selectedVersionId = useRecoilValue(selectedVersionIdAtom);
   const addToast = useToast();
   const currentDraftSelected = useRecoilValue(currentDraftSelectedAtom)
