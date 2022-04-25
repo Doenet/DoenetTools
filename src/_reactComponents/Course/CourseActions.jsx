@@ -1504,6 +1504,7 @@ export const useCourse = (courseId) => {
               let destinationContainingObj = {};
               let sourceJSON = {};
               let destinationJSON = {};
+              let previousDoenetId;
               
               //Remove from Activity
               if (sourceContainingObj.type == 'activity'){
@@ -1511,16 +1512,18 @@ export const useCourse = (courseId) => {
               }
               //Remove from Collection
               if (sourceContainingObj.type == 'bank'){
-                sourceJSON = {...sourceContainingObj}
-                let nextPages = [...sourceJSON.pages]
-                nextPages.splice(sourceJSON.pages.indexOf(originalPageDoenetId),1)
-                sourceJSON.pages = nextPages;
+                let nextPages = [...sourceContainingObj.pages]
+                nextPages.splice(sourceContainingObj.pages.indexOf(originalPageDoenetId),1)
+                sourceJSON = nextPages;
               }
               //Add to Collection
               if (singleSelectedObj.type == 'bank'){
-                destinationContainingObj = {...singleSelectedObj};
-                destinationJSON = {...destinationContainingObj};
-                destinationJSON.pages = [...destinationJSON.pages,originalPageDoenetId]
+                destinationContainingObj = {...singleSelectedObj}
+                previousDoenetId = singleSelectedObj.doenetId;
+                if (singleSelectedObj.pages.length > 0){
+                  previousDoenetId = singleSelectedObj.pages[singleSelectedObj.pages.length - 1]
+                }
+                destinationJSON = [...singleSelectedObj.pages,originalPageDoenetId]
               }
               //Add to Activity
               if (singleSelectedObj.type == 'order'){
@@ -1543,6 +1546,8 @@ export const useCourse = (courseId) => {
               sourceJSON,
               destinationJSON,
               })
+
+              console.log("previousDoenetId",previousDoenetId)
               
               //update database
               try {
@@ -1559,7 +1564,39 @@ export const useCourse = (courseId) => {
                 });
                 console.log("resp.data",resp.data)
                 if (resp.status < 300) {
+                  //Update source
+                  if (sourceType == 'bank'){
+                    set(authorItemByDoenetId(sourceDoenetId),(prev)=>{
+                      let next = {...prev}
+                      next.pages = sourceJSON;
+                      console.log("source",sourceDoenetId,next)
+                      return next;
+                    })
+                  }
+                  //Update destination
+                  if (destinationType == 'bank'){
+                    set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
+                      let next = {...prev}
+                      next.pages = destinationJSON;
+                      console.log("dest",destinationDoenetId,next)
+                      return next;
+                    })
+                    //Update page
+                    set(authorItemByDoenetId(originalPageDoenetId),(prev)=>{
+                      let next = {...prev}
+                      next.containingDoenetId = destinationDoenetId;
+                      next.previousDoenetId = destinationDoenetId;
+                      next.isBeingCut = false
+                      return next;
+                    })
+                  }
                   
+                  set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
+                    let next = [...prev];
+                    next.splice(next.indexOf(originalPageDoenetId),1);  //remove 
+                    next.splice(next.indexOf(previousDoenetId),0,originalPageDoenetId);  //insert
+                    return next
+                  })
                   successCallback?.();
                   //Update recoil
                   // set(authorItemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
