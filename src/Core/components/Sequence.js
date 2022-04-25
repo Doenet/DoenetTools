@@ -10,8 +10,8 @@ export default class Sequence extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.fixed = {
       leaveRaw: true
@@ -102,7 +102,7 @@ export default class Sequence extends CompositeComponent {
       exclude,
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
 
     let sequenceValues = returnSequenceValues({
@@ -325,7 +325,7 @@ export default class Sequence extends CompositeComponent {
         // Need to add more replacement components
 
         let newSerializedReplacements = [];
-        let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+        let newNamespace = component.attributes.newNamespace?.primitive;
 
         for (let ind = prevlength; ind < await component.stateValues.length; ind++) {
           let componentValue = returnSequenceValueForIndex({

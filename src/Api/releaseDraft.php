@@ -19,7 +19,7 @@ $timestamp = mysqli_real_escape_string($conn,$_POST["timestamp"]);
 $newVersionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 
 $SHA = hash('sha256', $dangerousDoenetML);
-$contentId = cidFromSHA($SHA);
+$cid = cidFromSHA($SHA);
 
 $success = TRUE;
 $message = "";
@@ -36,7 +36,7 @@ if ($doenetId == ""){
 }
 
 if ($success){
-  $newfile = fopen("../media/$contentId.doenet", "w") or die("Unable to open file!");
+  $newfile = fopen("../media/$cid.doenet", "w") or die("Unable to open file!");
   $status = fwrite($newfile, $dangerousDoenetML);
   if ($status === false){
     $success = FALSE;
@@ -84,9 +84,9 @@ if ($success){
 
   $sql = "
   INSERT INTO content
-  (doenetId,contentId,versionId,title,timestamp,isDraft,isNamed,isReleased)
+  (doenetId,cid,versionId,title,timestamp,isDraft,isNamed,isReleased)
   VALUES
-  ('$doenetId','$contentId','$newVersionId','$title','$timestamp','0','1','1')
+  ('$doenetId','$cid','$newVersionId','$title','$timestamp','0','1','1')
   ";
   $result = $conn->query($sql);
 }

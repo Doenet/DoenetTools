@@ -27,7 +27,7 @@ async function testLineCopiedTwice({ x1, y1, x2, y2,
   cy.get(`#${cesc(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
   cy.window().then(async (win) => {
-    let stateVariables = await win.returnAllStateVariables();
+    let stateVariables = await win.returnAllStateVariables1();
     expect(stateVariables[graph1Name + lineName].stateValues.points[0]).eqls([x1, y1]);
     expect(stateVariables[graph1Name + lineName].stateValues.points[1]).eqls([x2, y2]);
     expect(stateVariables[graph2Name + lineName].stateValues.points[0]).eqls([x1, y1]);
@@ -57,7 +57,7 @@ async function testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope,
   cy.get(`#${cesc(point2InDomName)} .mjx-mrow`).should('contain.text', `,${nInDOM(y2).substring(0, 6)}`)
 
   cy.window().then(async (win) => {
-    let stateVariables = await win.returnAllStateVariables();
+    let stateVariables = await win.returnAllStateVariables1();
     expect(me.fromAst(stateVariables[graph1Name + lineName].stateValues.points[0][0]).evaluate_to_constant()).closeTo(x1, 1E-12);
     expect(me.fromAst(stateVariables[graph1Name + lineName].stateValues.points[0][1]).evaluate_to_constant()).closeTo(y1, 1E-12);
     expect(me.fromAst(stateVariables[graph1Name + lineName].stateValues.points[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
@@ -100,6 +100,7 @@ async function testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope,
 describe('Line Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
@@ -119,9 +120,11 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    cy.get("#\\/p1a .mjx-mrow").should('contain.text', `(${nInDOM(3)},${nInDOM(5)})`)
+
     cy.log('move point P to (5,-5)')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 5, y: -5 }
@@ -131,7 +134,7 @@ describe('Line Tag Tests', function () {
     cy.get("#\\/p1a .mjx-mrow").should('contain.text', `(${nInDOM(5)},${nInDOM(-5)})`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_point1'].stateValues.xs[0]).eq(5)
       expect(stateVariables['/_point1'].stateValues.xs[1]).eq(-5)
       expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', 5, -5])
@@ -160,7 +163,7 @@ describe('Line Tag Tests', function () {
 
     cy.log('points are where they should be')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables["/p1"].stateValues.xs)[0]).eq(1)
       expect((stateVariables["/p1"].stateValues.xs)[1]).eq(2)
       expect((stateVariables["/p1"].stateValues.coords)).eqls(['vector', 1, 2])
@@ -193,16 +196,16 @@ describe('Line Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(1)
-      expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(2)
-      expect((await stateVariables["/p1"].stateValues.coords)).eqls(['vector', 1, 2])
-      expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(4)
-      expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(7)
-      expect((await stateVariables["/p2"].stateValues.coords)).eqls(['vector', 4, 7])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables["/p1"].stateValues.xs)[0]).eq(1)
+      expect((stateVariables["/p1"].stateValues.xs)[1]).eq(2)
+      expect((stateVariables["/p1"].stateValues.coords)).eqls(['vector', 1, 2])
+      expect((stateVariables["/p2"].stateValues.xs)[0]).eq(4)
+      expect((stateVariables["/p2"].stateValues.xs)[1]).eq(7)
+      expect((stateVariables["/p2"].stateValues.coords)).eqls(['vector', 4, 7])
 
-      expect(await stateVariables['/_line1'].stateValues.label).eq('l')
-      expect((await stateVariables['/_line1'].stateValues.slope)).eqls(['/', 5, 3])
+      expect(stateVariables['/_line1'].stateValues.label).eq('l')
+      expect((stateVariables['/_line1'].stateValues.slope)).eqls(['/', 5, 3])
 
     })
   })
@@ -227,7 +230,7 @@ describe('Line Tag Tests', function () {
 
     cy.log('equation is what it should be')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       // have to create unproxied version of equation for equals to work
       let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
@@ -236,7 +239,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("Move line right 1 and down 3");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
         (stateVariables['/_line1'].stateValues.points)[0][0],
@@ -255,7 +258,7 @@ describe('Line Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -268,7 +271,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let newEquation = me.fromText("5x-2y=3").substitute({
           'x': ['+', 'x', -moveX],
@@ -304,7 +307,7 @@ describe('Line Tag Tests', function () {
 
     cy.log('equation is what it should be')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       // have to create unproxied version of equation for equals to work
       let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
@@ -337,7 +340,7 @@ describe('Line Tag Tests', function () {
 
     cy.log('equation is what it should be')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       // have to create unproxied version of equation for equals to work
       let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
@@ -346,15 +349,15 @@ describe('Line Tag Tests', function () {
 
     cy.log("Move line right 1 and down 3");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
-        (await stateVariables['/_line1'].stateValues.points)[0][0],
-        (await stateVariables['/_line1'].stateValues.points)[0][1],
+        (stateVariables['/_line1'].stateValues.points)[0][0],
+        (stateVariables['/_line1'].stateValues.points)[0][1],
       ];
       let point2coords = [
-        (await stateVariables['/_line1'].stateValues.points)[1][0],
-        (await stateVariables['/_line1'].stateValues.points)[1][1],
+        (stateVariables['/_line1'].stateValues.points)[1][0],
+        (stateVariables['/_line1'].stateValues.points)[1][1],
       ];
 
       let moveX = 1;
@@ -365,7 +368,7 @@ describe('Line Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -378,7 +381,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
 
         let newEquation = me.fromText("5x-2y=3").substitute({
@@ -415,7 +418,7 @@ describe('Line Tag Tests', function () {
 
     cy.log('equation is what it should be')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       // have to create unproxied version of equation for equals to work
       let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
@@ -453,7 +456,7 @@ describe('Line Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       // have to create unproxied version of equation for equals to work
       let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
@@ -463,24 +466,24 @@ describe('Line Tag Tests', function () {
       expect(stateVariables['/_line1'].stateValues.coeff0).eq(-3);
       expect(stateVariables['/_line1'].stateValues.coeffvar1).eq(5);
       expect(stateVariables['/_line1'].stateValues.coeffvar2).eq(-2);
-      expect((await stateVariables['/_line1'].stateValues.slope)).eqls(['/', 5, 2]);
-      expect((await stateVariables['/_line1'].stateValues.xintercept)).eqls(['/', 3, 5]);
-      expect((await stateVariables['/_line1'].stateValues.yintercept)).eqls(['/', -3, 2]);
+      expect((stateVariables['/_line1'].stateValues.slope)).eqls(['/', 5, 2]);
+      expect((stateVariables['/_line1'].stateValues.xintercept)).eqls(['/', 3, 5]);
+      expect((stateVariables['/_line1'].stateValues.yintercept)).eqls(['/', -3, 2]);
       expect(stateVariables['/var1'].stateValues.value).eq("u");
       expect(stateVariables['/var2'].stateValues.value).eq("v");
     })
 
     cy.log("Move line right 1 and down 3");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
-        (await stateVariables['/_line1'].stateValues.points)[0][0],
-        (await stateVariables['/_line1'].stateValues.points)[0][1],
+        (stateVariables['/_line1'].stateValues.points)[0][0],
+        (stateVariables['/_line1'].stateValues.points)[0][1],
       ];
       let point2coords = [
-        (await stateVariables['/_line1'].stateValues.points)[1][0],
-        (await stateVariables['/_line1'].stateValues.points)[1][1],
+        (stateVariables['/_line1'].stateValues.points)[1][0],
+        (stateVariables['/_line1'].stateValues.points)[1][1],
       ];
 
       let moveX = 1;
@@ -491,7 +494,7 @@ describe('Line Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -504,7 +507,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let newEquation = me.fromText("5u-2v=3").substitute({
           'u': ['+', 'u', -moveX],
@@ -549,14 +552,16 @@ describe('Line Tag Tests', function () {
     let slope = (point1y - point2y) / (point1x - point2x);
     let yintercept = point2y - slope * point2x;
 
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1x).substring(0, 4)}`)
+
     cy.log('points and line match constraints')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point2'].stateValues.xs[0]).closeTo(point2x, 1E-12);
       expect(stateVariables['/_point2'].stateValues.xs[1]).closeTo(point2y, 1E-12);
 
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
 
       expect(stateVariables['/_point1'].stateValues.xs[0]).closeTo(point1x, 1E-12);
       expect(stateVariables['/_point1'].stateValues.xs[1]).closeTo(point1y, 1E-12);
@@ -579,7 +584,7 @@ describe('Line Tag Tests', function () {
       yintercept = point2y - slope * point2x;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: point1x, y: point1y }
@@ -592,11 +597,11 @@ describe('Line Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_point2'].stateValues.xs[0]).closeTo(point2x, 1E-12);
         expect(stateVariables['/_point2'].stateValues.xs[1]).closeTo(point2y, 1E-12);
 
-        expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+        expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
 
         expect(stateVariables['/_point1'].stateValues.xs[0]).closeTo(point1x, 1E-12);
         expect(stateVariables['/_point1'].stateValues.xs[1]).closeTo(point1y, 1E-12);
@@ -610,15 +615,15 @@ describe('Line Tag Tests', function () {
 
     cy.log('move line')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
-        (await stateVariables['/_line1'].stateValues.points)[0][0],
-        (await stateVariables['/_line1'].stateValues.points)[0][1],
+        (stateVariables['/_line1'].stateValues.points)[0][0],
+        (stateVariables['/_line1'].stateValues.points)[0][1],
       ];
       let point2coords = [
-        (await stateVariables['/_line1'].stateValues.points)[1][0],
-        (await stateVariables['/_line1'].stateValues.points)[1][1],
+        (stateVariables['/_line1'].stateValues.points)[1][0],
+        (stateVariables['/_line1'].stateValues.points)[1][1],
       ];
 
       let moveX = -5;
@@ -629,7 +634,7 @@ describe('Line Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -667,12 +672,12 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `,${nInDOM(point2y).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(stateVariables['/_point2'].stateValues.xs[0]).closeTo(point2x, 1E-12);
         expect(stateVariables['/_point2'].stateValues.xs[1]).closeTo(point2y, 1E-12);
 
-        expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+        expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
 
         expect(stateVariables['/_point1'].stateValues.xs[0]).closeTo(point1x, 1E-12);
         expect(stateVariables['/_point1'].stateValues.xs[1]).closeTo(point1y, 1E-12);
@@ -708,8 +713,11 @@ describe('Line Tag Tests', function () {
 
 
     cy.log('line starts off correctly')
+
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(0)},${nInDOM(0)}`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(me.fromAst(stateVariables["/l2"].stateValues.slope).evaluate_to_constant()).closeTo(3, 1E-12);
       expect(me.fromAst(stateVariables["/l2"].stateValues.yintercept).evaluate_to_constant()).closeTo(0, 1E-12);
     });
@@ -717,12 +725,12 @@ describe('Line Tag Tests', function () {
     cy.log('move points')
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
         args: { x: -3, y: 5 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2",
         args: { x: 5, y: 1 }
@@ -734,22 +742,22 @@ describe('Line Tag Tests', function () {
     cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(5)},${nInDOM(1)}`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(me.fromAst(stateVariables["/l2"].stateValues.slope).evaluate_to_constant()).closeTo(-0.5, 1E-12);
       expect(me.fromAst(stateVariables["/l2"].stateValues.yintercept).evaluate_to_constant()).closeTo(3.5, 1E-12);
     });
 
     cy.log('move line1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
-        (await stateVariables['/_line1'].stateValues.points)[0][0],
-        (await stateVariables['/_line1'].stateValues.points)[0][1],
+        (stateVariables['/_line1'].stateValues.points)[0][0],
+        (stateVariables['/_line1'].stateValues.points)[0][1],
       ];
       let point2coords = [
-        (await stateVariables['/_line1'].stateValues.points)[1][0],
-        (await stateVariables['/_line1'].stateValues.points)[1][1],
+        (stateVariables['/_line1'].stateValues.points)[1][0],
+        (stateVariables['/_line1'].stateValues.points)[1][1],
       ];
 
       let moveX = -2;
@@ -761,7 +769,7 @@ describe('Line Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -774,7 +782,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables["/l2"].stateValues.slope).evaluate_to_constant()).closeTo(-0.5, 1E-12);
         expect(me.fromAst(stateVariables["/l2"].stateValues.yintercept).evaluate_to_constant()).closeTo(1.5, 1E-12);
@@ -783,15 +791,15 @@ describe('Line Tag Tests', function () {
 
     cy.log('move line2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
-        (await stateVariables['/_line1'].stateValues.points)[0][0],
-        (await stateVariables['/_line1'].stateValues.points)[0][1],
+        (stateVariables['/_line1'].stateValues.points)[0][0],
+        (stateVariables['/_line1'].stateValues.points)[0][1],
       ];
       let point2coords = [
-        (await stateVariables['/_line1'].stateValues.points)[1][0],
-        (await stateVariables['/_line1'].stateValues.points)[1][1],
+        (stateVariables['/_line1'].stateValues.points)[1][0],
+        (stateVariables['/_line1'].stateValues.points)[1][1],
       ];
 
       let moveX = -5;
@@ -803,7 +811,7 @@ describe('Line Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/l2",
         args: {
@@ -816,7 +824,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(me.fromAst(stateVariables["/l2"].stateValues.slope).evaluate_to_constant()).closeTo(-0.5, 1E-12);
         expect(me.fromAst(stateVariables["/l2"].stateValues.yintercept).evaluate_to_constant()).closeTo(-3, 1E-12);
       })
@@ -846,8 +854,11 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.log('line starts off correctly')
+
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(-0.8)}`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(me.fromAst(stateVariables["/_line1"].stateValues.slope).evaluate_to_constant()).closeTo(2, 1E-12);
       expect(me.fromAst(stateVariables["/_line1"].stateValues.yintercept).evaluate_to_constant()).closeTo(1, 1E-12);
       expect(me.fromAst(stateVariables["/l2"].stateValues.slope).evaluate_to_constant()).closeTo(2, 1E-12);
@@ -858,7 +869,7 @@ describe('Line Tag Tests', function () {
 
     cy.log('move line1')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let point1coords = [
         (stateVariables['/_line1'].stateValues.points)[0][0],
         (stateVariables['/_line1'].stateValues.points)[0][1],
@@ -878,7 +889,7 @@ describe('Line Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -892,7 +903,7 @@ describe('Line Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(me.fromAst(stateVariables["/_line1"].stateValues.slope).evaluate_to_constant()).closeTo(2, 1E-12);
         expect(me.fromAst(stateVariables["/_line1"].stateValues.yintercept).evaluate_to_constant()).closeTo(4, 1E-12);
         expect(me.fromAst(stateVariables["/l2"].stateValues.slope).evaluate_to_constant()).closeTo(2, 1E-12);
@@ -902,7 +913,7 @@ describe('Line Tag Tests', function () {
 
     cy.log('move line2')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
         (stateVariables['/_line1'].stateValues.points)[0][0],
@@ -923,7 +934,7 @@ describe('Line Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/l2",
         args: {
@@ -936,7 +947,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(me.fromAst(stateVariables["/_line1"].stateValues.slope).evaluate_to_constant()).closeTo(2, 1E-12);
         expect(me.fromAst(stateVariables["/_line1"].stateValues.yintercept).evaluate_to_constant()).closeTo(12, 1E-12);
         expect(me.fromAst(stateVariables["/l2"].stateValues.slope).evaluate_to_constant()).closeTo(2, 1E-12);
@@ -969,7 +980,7 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let p1x = 1;
       let p1y = 2;
       let p2x = 3;
@@ -982,13 +993,14 @@ describe('Line Tag Tests', function () {
       expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
       expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
       expect(stateVariables["/p2a"].stateValues.xs[1]).eq(p2y)
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
     })
 
     cy.log('move first individually copied point');
     cy.window().then(async (win) => {
       let p1x = -2;
       let p1y = -5;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
         args: { x: p1x, y: p1y }
@@ -997,13 +1009,13 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let p2x = 3;
         let p2y = 4;
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
@@ -1015,7 +1027,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       let p2x = 8;
       let p2y = -1;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2",
         args: { x: p2x, y: p2y }
@@ -1024,13 +1036,13 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2b .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let p1x = -2;
         let p1y = -5;
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
@@ -1042,7 +1054,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       let p2x = -6;
       let p2y = 4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2a",
         args: { x: p2x, y: p2y }
@@ -1051,13 +1063,13 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2b .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let p1x = -2;
         let p1y = -5;
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
@@ -1069,7 +1081,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       let p1x = 0;
       let p1y = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1a",
         args: { x: p1x, y: p1y }
@@ -1078,13 +1090,13 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let p2x = -6;
         let p2y = 4;
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
@@ -1094,15 +1106,15 @@ describe('Line Tag Tests', function () {
 
     cy.log('move line up and to the right')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
-        (await stateVariables['/_line1'].stateValues.points)[0][0],
-        (await stateVariables['/_line1'].stateValues.points)[0][1],
+        (stateVariables['/_line1'].stateValues.points)[0][0],
+        (stateVariables['/_line1'].stateValues.points)[0][1],
       ];
       let point2coords = [
-        (await stateVariables['/_line1'].stateValues.points)[1][0],
-        (await stateVariables['/_line1'].stateValues.points)[1][1],
+        (stateVariables['/_line1'].stateValues.points)[1][0],
+        (stateVariables['/_line1'].stateValues.points)[1][1],
       ];
 
       let moveX = 4;
@@ -1113,7 +1125,7 @@ describe('Line Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -1126,12 +1138,12 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(point1coords[0])
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(point1coords[1])
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(point2coords[0])
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(point2coords[1])
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(point1coords[0])
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(point1coords[1])
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(point2coords[0])
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(point2coords[1])
         expect(stateVariables["/p1a"].stateValues.xs[0]).eq(point1coords[0])
         expect(stateVariables["/p1a"].stateValues.xs[1]).eq(point1coords[1])
         expect(stateVariables["/p2a"].stateValues.xs[0]).eq(point2coords[0])
@@ -1162,36 +1174,37 @@ describe('Line Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let p1x = -1;
       let p1y = -2;
       let p2x = -3;
       let p2y = -4;
-      expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-      expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-      expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-      expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+      expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+      expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+      expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+      expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
       expect(stateVariables["/p1"].stateValues.xs[0]).eq(p1x)
       expect(stateVariables["/p1"].stateValues.xs[1]).eq(p1y)
       expect(stateVariables["/p2"].stateValues.xs[0]).eq(p2x)
       expect(stateVariables["/p2"].stateValues.xs[1]).eq(p2y)
-      expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([p1x, p1y]);
-      expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([p2x, p2y]);
+      expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([p1x, p1y]);
+      expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([p2x, p2y]);
       expect(stateVariables['/_line2'].stateValues.points[0]).eqls([p1x, p1y]);
       expect(stateVariables['/_line2'].stateValues.points[1]).eqls([p2x, p2y]);
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
     })
 
     cy.log('move first line up and to the right')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
-        (await stateVariables['/_line1'].stateValues.points)[0][0],
-        (await stateVariables['/_line1'].stateValues.points)[0][1],
+        (stateVariables['/_line1'].stateValues.points)[0][0],
+        (stateVariables['/_line1'].stateValues.points)[0][1],
       ];
       let point2coords = [
-        (await stateVariables['/_line1'].stateValues.points)[1][0],
-        (await stateVariables['/_line1'].stateValues.points)[1][1],
+        (stateVariables['/_line1'].stateValues.points)[1][0],
+        (stateVariables['/_line1'].stateValues.points)[1][1],
       ];
 
       let moveX = 4;
@@ -1202,7 +1215,7 @@ describe('Line Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -1215,7 +1228,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
 
         let p1x = -1 + moveX;
@@ -1223,16 +1236,16 @@ describe('Line Tag Tests', function () {
         let p2x = -3 + moveX;
         let p2y = -4 + moveY;
 
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2"].stateValues.xs[0]).eq(p2x)
         expect(stateVariables["/p2"].stateValues.xs[1]).eq(p2y)
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([p1x, p1y]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([p2x, p2y]);
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([p1x, p1y]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([p2x, p2y]);
         expect(stateVariables['/_line2'].stateValues.points[0]).eqls([p1x, p1y]);
         expect(stateVariables['/_line2'].stateValues.points[1]).eqls([p2x, p2y]);
       })
@@ -1241,7 +1254,7 @@ describe('Line Tag Tests', function () {
 
     cy.log('move second line up and to the left')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
         stateVariables['/_line2'].stateValues.points[0][0],
@@ -1260,7 +1273,7 @@ describe('Line Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line2",
         args: {
@@ -1273,7 +1286,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         moveX = 4 + moveX;
         moveY = 2 + moveY;
@@ -1282,16 +1295,16 @@ describe('Line Tag Tests', function () {
         let p2x = -3 + moveX;
         let p2y = -4 + moveY;
 
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2"].stateValues.xs[0]).eq(p2x)
         expect(stateVariables["/p2"].stateValues.xs[1]).eq(p2y)
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([p1x, p1y]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([p2x, p2y]);
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([p1x, p1y]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([p2x, p2y]);
         expect(stateVariables['/_line2'].stateValues.points[0]).eqls([p1x, p1y]);
         expect(stateVariables['/_line2'].stateValues.points[1]).eqls([p2x, p2y]);
       })
@@ -1335,15 +1348,15 @@ describe('Line Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       // have to create unproxied version of equation for equals to work
       let unproxiedEquationInLine = me.fromAst(stateVariables['/_line1'].stateValues.equation);
       expect(unproxiedEquationInLine.equals(me.fromText('y = -2x+6'))).to.be.true;
       expect(stateVariables['/_line1'].stateValues.var1).eq("x");
       expect(stateVariables['/_line1'].stateValues.var2).eq("y");
-      expect((await stateVariables['/_line1'].stateValues.slope)).eq(-2);
-      expect((await stateVariables['/_line1'].stateValues.xintercept)).eq(3);
-      expect((await stateVariables['/_line1'].stateValues.yintercept)).eq(6);
+      expect((stateVariables['/_line1'].stateValues.slope)).eq(-2);
+      expect((stateVariables['/_line1'].stateValues.xintercept)).eq(3);
+      expect((stateVariables['/_line1'].stateValues.yintercept)).eq(6);
       expect(stateVariables["/var1"].stateValues.value).eq("x");
       expect(stateVariables["/var2"].stateValues.value).eq("y");
       expect(stateVariables["/xintercept"].stateValues.value).eq(3);
@@ -1378,7 +1391,7 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       // have to create unproxied version of equation for equals to work
       let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
@@ -1389,30 +1402,30 @@ describe('Line Tag Tests', function () {
       expect(unproxiedEquation.equals(me.fromText('v = 6-u'))).to.be.true;
       expect(stateVariables['/_line1'].stateValues.variables[0]).eq("x");
       expect(stateVariables['/_line1'].stateValues.variables[1]).eq("y");
-      expect((await stateVariables['/_line1'].stateValues.slope)).eq(-1);
-      expect((await stateVariables['/_line1'].stateValues.xintercept)).eq(6);
-      expect((await stateVariables['/_line1'].stateValues.yintercept)).eq(6);
+      expect((stateVariables['/_line1'].stateValues.slope)).eq(-1);
+      expect((stateVariables['/_line1'].stateValues.xintercept)).eq(6);
+      expect((stateVariables['/_line1'].stateValues.yintercept)).eq(6);
       expect(stateVariables['/_line2'].stateValues.variables[0]).eq("x");
       expect(stateVariables['/_line2'].stateValues.variables[1]).eq("y");
-      expect((await stateVariables['/_line2'].stateValues.slope)).eq(-1);
-      expect((await stateVariables['/_line2'].stateValues.xintercept)).eq(6);
-      expect((await stateVariables['/_line2'].stateValues.yintercept)).eq(6);
+      expect((stateVariables['/_line2'].stateValues.slope)).eq(-1);
+      expect((stateVariables['/_line2'].stateValues.xintercept)).eq(6);
+      expect((stateVariables['/_line2'].stateValues.yintercept)).eq(6);
       expect(stateVariables['/_line3'].stateValues.variables[0]).eq("u");
       expect(stateVariables['/_line3'].stateValues.variables[1]).eq("v");
-      expect((await stateVariables['/_line3'].stateValues.slope)).eq(-1);
-      expect((await stateVariables['/_line3'].stateValues.xintercept)).eq(6);
-      expect((await stateVariables['/_line3'].stateValues.yintercept)).eq(6);
+      expect((stateVariables['/_line3'].stateValues.slope)).eq(-1);
+      expect((stateVariables['/_line3'].stateValues.xintercept)).eq(6);
+      expect((stateVariables['/_line3'].stateValues.yintercept)).eq(6);
     })
 
     cy.log("move points")
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
         args: { x: 4, y: 4 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2",
         args: { x: 6, y: 8 }
@@ -1423,7 +1436,7 @@ describe('Line Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         // have to create unproxied version of equation for equals to work
         let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
@@ -1432,15 +1445,15 @@ describe('Line Tag Tests', function () {
         expect(unproxiedEquation.equals(me.fromText('y = 2x-4'))).to.be.true;
         unproxiedEquation = me.fromAst(stateVariables['/_line3'].stateValues.equation);
         expect(unproxiedEquation.equals(me.fromText('v = 2u-4'))).to.be.true;
-        expect((await stateVariables['/_line1'].stateValues.slope)).eq(2);
-        expect((await stateVariables['/_line1'].stateValues.xintercept)).eq(2);
-        expect((await stateVariables['/_line1'].stateValues.yintercept)).eq(-4);
-        expect((await stateVariables['/_line2'].stateValues.slope)).eq(2);
-        expect((await stateVariables['/_line2'].stateValues.xintercept)).eq(2);
-        expect((await stateVariables['/_line2'].stateValues.yintercept)).eq(-4);
-        expect((await stateVariables['/_line3'].stateValues.slope)).eq(2);
-        expect((await stateVariables['/_line3'].stateValues.xintercept)).eq(2);
-        expect((await stateVariables['/_line3'].stateValues.yintercept)).eq(-4);
+        expect((stateVariables['/_line1'].stateValues.slope)).eq(2);
+        expect((stateVariables['/_line1'].stateValues.xintercept)).eq(2);
+        expect((stateVariables['/_line1'].stateValues.yintercept)).eq(-4);
+        expect((stateVariables['/_line2'].stateValues.slope)).eq(2);
+        expect((stateVariables['/_line2'].stateValues.xintercept)).eq(2);
+        expect((stateVariables['/_line2'].stateValues.yintercept)).eq(-4);
+        expect((stateVariables['/_line3'].stateValues.slope)).eq(2);
+        expect((stateVariables['/_line3'].stateValues.xintercept)).eq(2);
+        expect((stateVariables['/_line3'].stateValues.yintercept)).eq(-4);
       })
     })
   });
@@ -1477,9 +1490,9 @@ describe('Line Tag Tests', function () {
     let x = 1, y = 2;
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x, y]);
-      expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([y, x]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x, y]);
+      expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([y, x]);
       expect(stateVariables['/x1'].stateValues.xs[0]).eq(x);
       expect(stateVariables['/x2'].stateValues.xs[0]).eq(y);
       expect(stateVariables['/y1'].stateValues.xs[1]).eq(y);
@@ -1491,7 +1504,7 @@ describe('Line Tag Tests', function () {
 
       x = 3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/x1",
         args: { x }
@@ -1501,10 +1514,10 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x, y]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([y, x]);
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x, y]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([y, x]);
         expect(stateVariables['/x1'].stateValues.xs[0]).eq(x);
         expect(stateVariables['/x2'].stateValues.xs[0]).eq(y);
         expect(stateVariables['/y1'].stateValues.xs[1]).eq(y);
@@ -1517,7 +1530,7 @@ describe('Line Tag Tests', function () {
 
       y = 4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/x2",
         args: { x: y }
@@ -1527,9 +1540,9 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x, y]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([y, x]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x, y]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([y, x]);
         expect(stateVariables['/x1'].stateValues.xs[0]).eq(x);
         expect(stateVariables['/x2'].stateValues.xs[0]).eq(y);
         expect(stateVariables['/y1'].stateValues.xs[1]).eq(y);
@@ -1542,7 +1555,7 @@ describe('Line Tag Tests', function () {
 
       y = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/y1",
         args: { y }
@@ -1552,9 +1565,9 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x, y]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([y, x]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x, y]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([y, x]);
         expect(stateVariables['/x1'].stateValues.xs[0]).eq(x);
         expect(stateVariables['/x2'].stateValues.xs[0]).eq(y);
         expect(stateVariables['/y1'].stateValues.xs[1]).eq(y);
@@ -1567,7 +1580,7 @@ describe('Line Tag Tests', function () {
 
       x = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/y2",
         args: { y: x }
@@ -1577,9 +1590,9 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x, y]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([y, x]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x, y]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([y, x]);
         expect(stateVariables['/x1'].stateValues.xs[0]).eq(x);
         expect(stateVariables['/x2'].stateValues.xs[0]).eq(y);
         expect(stateVariables['/y1'].stateValues.xs[1]).eq(y);
@@ -1615,10 +1628,12 @@ describe('Line Tag Tests', function () {
     let x2 = 3, y2 = 2;
     let x3 = -1, y3 = 4;
 
+    cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
-      expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
+      expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
       expect(stateVariables['/_line2'].stateValues.points[0]).eqls([x3, y3]);
       expect(stateVariables['/_line2'].stateValues.points[1]).eqls([x2, y2]);
       expect(stateVariables['/_line3'].stateValues.points[0]).eqls([x1, y1]);
@@ -1631,7 +1646,7 @@ describe('Line Tag Tests', function () {
       x2 = 7;
       y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p11",
         args: { x: x2, y: y2 }
@@ -1640,9 +1655,9 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
         expect(stateVariables['/_line2'].stateValues.points[0]).eqls([x3, y3]);
         expect(stateVariables['/_line2'].stateValues.points[1]).eqls([x2, y2]);
         expect(stateVariables['/_line3'].stateValues.points[0]).eqls([x1, y1]);
@@ -1655,7 +1670,7 @@ describe('Line Tag Tests', function () {
       x1 = -1;
       y1 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p12",
         args: { x: x1, y: y1 }
@@ -1664,9 +1679,9 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p12 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
         expect(stateVariables['/_line2'].stateValues.points[0]).eqls([x3, y3]);
         expect(stateVariables['/_line2'].stateValues.points[1]).eqls([x2, y2]);
         expect(stateVariables['/_line3'].stateValues.points[0]).eqls([x1, y1]);
@@ -1679,7 +1694,7 @@ describe('Line Tag Tests', function () {
       x3 = 9;
       y3 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p21",
         args: { x: x3, y: y3 }
@@ -1688,9 +1703,9 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p21 .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
         expect(stateVariables['/_line2'].stateValues.points[0]).eqls([x3, y3]);
         expect(stateVariables['/_line2'].stateValues.points[1]).eqls([x2, y2]);
         expect(stateVariables['/_line3'].stateValues.points[0]).eqls([x1, y1]);
@@ -1703,7 +1718,7 @@ describe('Line Tag Tests', function () {
       x2 = 3;
       y2 = 2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p22",
         args: { x: x2, y: y2 }
@@ -1712,9 +1727,9 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p22 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
         expect(stateVariables['/_line2'].stateValues.points[0]).eqls([x3, y3]);
         expect(stateVariables['/_line2'].stateValues.points[1]).eqls([x2, y2]);
         expect(stateVariables['/_line3'].stateValues.points[0]).eqls([x1, y1]);
@@ -1727,7 +1742,7 @@ describe('Line Tag Tests', function () {
       x1 = -5;
       y1 = 8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p31",
         args: { x: x1, y: y1 }
@@ -1736,9 +1751,9 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p31 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
         expect(stateVariables['/_line2'].stateValues.points[0]).eqls([x3, y3]);
         expect(stateVariables['/_line2'].stateValues.points[1]).eqls([x2, y2]);
         expect(stateVariables['/_line3'].stateValues.points[0]).eqls([x1, y1]);
@@ -1751,7 +1766,7 @@ describe('Line Tag Tests', function () {
       x3 = 0;
       y3 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p32",
         args: { x: x3, y: y3 }
@@ -1760,9 +1775,9 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p32 .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x1, y1]);
         expect(stateVariables['/_line2'].stateValues.points[0]).eqls([x3, y3]);
         expect(stateVariables['/_line2'].stateValues.points[1]).eqls([x2, y2]);
         expect(stateVariables['/_line3'].stateValues.points[0]).eqls([x1, y1]);
@@ -1808,7 +1823,7 @@ describe('Line Tag Tests', function () {
       x1 = 7;
       y1 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -1823,7 +1838,7 @@ describe('Line Tag Tests', function () {
       x2 = -1;
       y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -1841,7 +1856,7 @@ describe('Line Tag Tests', function () {
       x2 = -7;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -1859,7 +1874,7 @@ describe('Line Tag Tests', function () {
       x1 = -1;
       y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -1874,7 +1889,7 @@ describe('Line Tag Tests', function () {
       x2 = 6;
       y2 = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -1892,7 +1907,7 @@ describe('Line Tag Tests', function () {
       x2 = 8;
       y2 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -1910,7 +1925,7 @@ describe('Line Tag Tests', function () {
       x1 = -3;
       y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -1925,7 +1940,7 @@ describe('Line Tag Tests', function () {
       x2 = -8;
       y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -1943,7 +1958,7 @@ describe('Line Tag Tests', function () {
       x2 = 2;
       y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -1996,7 +2011,7 @@ describe('Line Tag Tests', function () {
       x1 = 7;
       y1 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -2011,7 +2026,7 @@ describe('Line Tag Tests', function () {
       x2 = -1;
       y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -2029,7 +2044,7 @@ describe('Line Tag Tests', function () {
       x2 = -7;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -2047,7 +2062,7 @@ describe('Line Tag Tests', function () {
       x1 = -1;
       y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -2062,7 +2077,7 @@ describe('Line Tag Tests', function () {
       x2 = 6;
       y2 = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -2080,7 +2095,7 @@ describe('Line Tag Tests', function () {
       x2 = 8;
       y2 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -2098,7 +2113,7 @@ describe('Line Tag Tests', function () {
       x1 = -3;
       y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -2113,7 +2128,7 @@ describe('Line Tag Tests', function () {
       x2 = -8;
       y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -2131,7 +2146,7 @@ describe('Line Tag Tests', function () {
       x2 = 2;
       y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -2183,7 +2198,7 @@ describe('Line Tag Tests', function () {
       x1 = 7;
       y1 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -2198,7 +2213,7 @@ describe('Line Tag Tests', function () {
       x2 = -1;
       y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -2216,7 +2231,7 @@ describe('Line Tag Tests', function () {
       x2 = -7;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -2234,7 +2249,7 @@ describe('Line Tag Tests', function () {
       x1 = -1;
       y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -2249,7 +2264,7 @@ describe('Line Tag Tests', function () {
       x2 = 6;
       y2 = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -2267,7 +2282,7 @@ describe('Line Tag Tests', function () {
       x2 = 8;
       y2 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -2285,7 +2300,7 @@ describe('Line Tag Tests', function () {
       x1 = -3;
       y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -2300,7 +2315,7 @@ describe('Line Tag Tests', function () {
       x2 = -8;
       y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -2318,7 +2333,7 @@ describe('Line Tag Tests', function () {
       x2 = 2;
       y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -2372,7 +2387,7 @@ describe('Line Tag Tests', function () {
       x1 = 7;
       y1 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -2387,7 +2402,7 @@ describe('Line Tag Tests', function () {
       x2 = -1;
       y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -2405,7 +2420,7 @@ describe('Line Tag Tests', function () {
       x2 = -7;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -2423,7 +2438,7 @@ describe('Line Tag Tests', function () {
       x1 = -1;
       y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -2438,7 +2453,7 @@ describe('Line Tag Tests', function () {
       x2 = 6;
       y2 = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -2456,7 +2471,7 @@ describe('Line Tag Tests', function () {
       x2 = 8;
       y2 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -2474,7 +2489,7 @@ describe('Line Tag Tests', function () {
       x1 = -3;
       y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -2489,7 +2504,7 @@ describe('Line Tag Tests', function () {
       x2 = -8;
       y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -2507,7 +2522,7 @@ describe('Line Tag Tests', function () {
       x2 = 2;
       y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -2575,7 +2590,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/y12 .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][0]).evaluate_to_constant()).closeTo(x11, 1E-12);
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][1]).evaluate_to_constant()).closeTo(y11, 1E-12);
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[1][0]).evaluate_to_constant()).closeTo(x2, 1E-12);
@@ -2640,7 +2655,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x11 = 7;
       y11 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x11, y: y11 }
@@ -2652,7 +2667,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -1;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -2669,7 +2684,7 @@ describe('Line Tag Tests', function () {
       x2 = -7;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g1/l',
         args: {
@@ -2687,7 +2702,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = -1;
       y12 = 0;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x12, y: y12 }
@@ -2700,7 +2715,7 @@ describe('Line Tag Tests', function () {
       x2 = 6;
       y2 = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -2718,7 +2733,7 @@ describe('Line Tag Tests', function () {
       y2 = 7;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g2/l',
         args: {
@@ -2736,7 +2751,7 @@ describe('Line Tag Tests', function () {
       x12 = -3;
       y12 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x12, y: y12 }
@@ -2750,7 +2765,7 @@ describe('Line Tag Tests', function () {
       x2 = -8;
       y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -2767,7 +2782,7 @@ describe('Line Tag Tests', function () {
       x2 = 2;
       y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g3/l',
         args: {
@@ -2786,7 +2801,7 @@ describe('Line Tag Tests', function () {
       x12 = 9;
       y12 = 8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: x12, y: y12 }
@@ -2799,7 +2814,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -9;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/B",
         args: { x: x2, y: y2 }
@@ -2815,7 +2830,7 @@ describe('Line Tag Tests', function () {
       y12 = 4;
       x2 = -5;
       y2 = 6;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g4/l',
         args: {
@@ -2833,7 +2848,7 @@ describe('Line Tag Tests', function () {
       x12 = 1;
       y12 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/A",
         args: { x: x12, y: y12 }
@@ -2846,7 +2861,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 0;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/B",
         args: { x: x2, y: y2 }
@@ -2863,7 +2878,7 @@ describe('Line Tag Tests', function () {
       x2 = -6;
       y2 = -7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g5/l',
         args: {
@@ -2939,7 +2954,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/y12 .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][0]).evaluate_to_constant()).closeTo(x11, 1E-12);
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][1]).evaluate_to_constant()).closeTo(y11, 1E-12);
@@ -3006,7 +3021,7 @@ describe('Line Tag Tests', function () {
       x11 = 7;
       y11 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x11, y: y11 }
@@ -3018,7 +3033,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -1;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -3035,7 +3050,7 @@ describe('Line Tag Tests', function () {
       x2 = -7;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g1/l',
         args: {
@@ -3053,7 +3068,7 @@ describe('Line Tag Tests', function () {
       x12 = -1;
       y12 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x12, y: y12 }
@@ -3065,7 +3080,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -6;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -3082,7 +3097,7 @@ describe('Line Tag Tests', function () {
       x2 = 8;
       y2 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g2/l',
         args: {
@@ -3098,7 +3113,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = -3;
       y12 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x12, y: y12 }
@@ -3111,7 +3126,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -8;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -3127,7 +3142,7 @@ describe('Line Tag Tests', function () {
       y12 = -1;
       x2 = 2;
       y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g3/l',
         args: {
@@ -3144,7 +3159,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = 9;
       y12 = 8;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: x12, y: y12 }
@@ -3157,7 +3172,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -9;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/B",
         args: { x: x2, y: y2 }
@@ -3173,7 +3188,7 @@ describe('Line Tag Tests', function () {
       y12 = 4;
       x2 = -5;
       y2 = 6;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g4/l',
         args: {
@@ -3190,7 +3205,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = 1;
       y12 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/A",
         args: { x: x12, y: y12 }
@@ -3203,7 +3218,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 0;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/B",
         args: { x: x2, y: y2 }
@@ -3219,7 +3234,7 @@ describe('Line Tag Tests', function () {
       y12 = 5;
       x2 = -6;
       y2 = -7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g5/l',
         args: {
@@ -3248,7 +3263,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x11 = 7;
       y11 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x11, y: y11 }
@@ -3260,7 +3275,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -1;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -3276,7 +3291,7 @@ describe('Line Tag Tests', function () {
       y11 = 3;
       x2 = -7;
       y2 = -8;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g1/l',
         args: {
@@ -3293,7 +3308,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = -1;
       y12 = 0;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x12, y: y12 }
@@ -3305,7 +3320,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -6;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -3321,7 +3336,7 @@ describe('Line Tag Tests', function () {
       y12 = 9;
       x2 = 8;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g2/l',
         args: {
@@ -3337,7 +3352,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = -3;
       y12 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x12, y: y12 }
@@ -3350,7 +3365,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -8;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -3366,7 +3381,7 @@ describe('Line Tag Tests', function () {
       y12 = -1;
       x2 = 2;
       y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g3/l',
         args: {
@@ -3383,7 +3398,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = 9;
       y12 = 8;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: x12, y: y12 }
@@ -3396,7 +3411,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -9;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/B",
         args: { x: x2, y: y2 }
@@ -3412,7 +3427,7 @@ describe('Line Tag Tests', function () {
       y12 = 4;
       x2 = -5;
       y2 = 6;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g4/l',
         args: {
@@ -3429,7 +3444,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = 1;
       y12 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/A",
         args: { x: x12, y: y12 }
@@ -3442,7 +3457,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 0;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/B",
         args: { x: x2, y: y2 }
@@ -3458,7 +3473,7 @@ describe('Line Tag Tests', function () {
       y12 = 5;
       x2 = -6;
       y2 = -7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: '/g5/l',
         args: {
@@ -3508,7 +3523,7 @@ describe('Line Tag Tests', function () {
     cy.log("can't move point 1")
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: 7, y: -3 }
@@ -3525,7 +3540,7 @@ describe('Line Tag Tests', function () {
       x2 = -1;
       y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -3541,7 +3556,7 @@ describe('Line Tag Tests', function () {
       x2 = -7;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -3559,7 +3574,7 @@ describe('Line Tag Tests', function () {
     cy.log("move point A2")
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: -1, y: 0 }
@@ -3574,7 +3589,7 @@ describe('Line Tag Tests', function () {
       x2 = 6;
       y2 = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -3590,7 +3605,7 @@ describe('Line Tag Tests', function () {
       x2 = 8;
       y2 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -3607,7 +3622,7 @@ describe('Line Tag Tests', function () {
     cy.log("move point A3")
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: -3, y: 7 }
@@ -3622,7 +3637,7 @@ describe('Line Tag Tests', function () {
       x2 = -8;
       y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -3638,7 +3653,7 @@ describe('Line Tag Tests', function () {
       x2 = 2;
       y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -3707,7 +3722,7 @@ describe('Line Tag Tests', function () {
       x1Essential = x1 = 7;
       y1Essential = y1 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -3722,7 +3737,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = -1;
       y2Essential = y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -3741,7 +3756,7 @@ describe('Line Tag Tests', function () {
       y2Essential = y2 = -8;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -3759,7 +3774,7 @@ describe('Line Tag Tests', function () {
       x1Essential = x1 = -1;
       y1Essential = y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -3774,7 +3789,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = 6;
       y2Essential = y2 = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -3792,7 +3807,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = 8;
       y2Essential = y2 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -3810,7 +3825,7 @@ describe('Line Tag Tests', function () {
       x1Essential = x1 = -3;
       y1Essential = y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -3825,7 +3840,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = -8;
       y2Essential = y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -3843,7 +3858,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = 2;
       y2Essential = y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -3873,7 +3888,7 @@ describe('Line Tag Tests', function () {
       x1 = 8;
       y1 = -2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -3888,7 +3903,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = 0;
       y2Essential = y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -3906,7 +3921,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = -6;
       y2Essential = y2 = -7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -3923,7 +3938,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = 0;
       y1 = 1;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -3938,7 +3953,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = 7;
       y2Essential = y2 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -3956,7 +3971,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = 9;
       y2Essential = y2 = 8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -3973,7 +3988,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = -2;
       y1 = 8;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -3987,7 +4002,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2Essential = x2 = -7;
       y2Essential = y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -4005,7 +4020,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = 3;
       y2Essential = y2 = -2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -4034,7 +4049,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = 6;
       y1 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -4048,7 +4063,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -2;
       y2 = -5;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -4065,7 +4080,7 @@ describe('Line Tag Tests', function () {
       y1 = 2;
       x2 = -8;
       y2 = -9;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -4082,7 +4097,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = -2;
       y1 = -1;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -4096,7 +4111,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 5;
       y2 = -7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -4113,7 +4128,7 @@ describe('Line Tag Tests', function () {
       y1 = 8;
       x2 = 7;
       y2 = 6;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -4130,7 +4145,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = -4;
       y1 = 6;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -4144,7 +4159,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -9;
       y2 = -5;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -4161,7 +4176,7 @@ describe('Line Tag Tests', function () {
       y1 = -2;
       x2 = 1;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -4190,7 +4205,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = 7;
       y1 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -4204,7 +4219,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -1;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -4221,7 +4236,7 @@ describe('Line Tag Tests', function () {
       y1 = 3;
       x2 = -7;
       y2 = -8;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -4238,7 +4253,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = -1;
       y1 = 0;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -4252,7 +4267,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -6;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -4269,7 +4284,7 @@ describe('Line Tag Tests', function () {
       y1 = 9;
       x2 = 8;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -4286,7 +4301,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = -3;
       y1 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -4300,7 +4315,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -8;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -4317,7 +4332,7 @@ describe('Line Tag Tests', function () {
       y1 = -1;
       x2 = 2;
       y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -4346,7 +4361,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = 7;
       y1 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -4360,7 +4375,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -1;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -4377,7 +4392,7 @@ describe('Line Tag Tests', function () {
       y1 = 3;
       x2 = -7;
       y2 = -8;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -4394,7 +4409,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = -1;
       y1 = 0;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -4408,7 +4423,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -6;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -4425,7 +4440,7 @@ describe('Line Tag Tests', function () {
       y1 = 9;
       x2 = 8;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -4442,7 +4457,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = -3;
       y1 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -4456,7 +4471,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -8;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -4473,7 +4488,7 @@ describe('Line Tag Tests', function () {
       y1 = -1;
       x2 = 2;
       y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -4540,7 +4555,7 @@ describe('Line Tag Tests', function () {
       x1Essential = x1 = 7;
       y1Essential = y1 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -4555,7 +4570,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = -1;
       y2Essential = y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -4574,7 +4589,7 @@ describe('Line Tag Tests', function () {
       y2Essential = y2 = -8;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -4592,7 +4607,7 @@ describe('Line Tag Tests', function () {
       x1Essential = x1 = -1;
       y1Essential = y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -4607,7 +4622,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = 6;
       y2Essential = y2 = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -4625,7 +4640,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = 8;
       y2Essential = y2 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -4643,7 +4658,7 @@ describe('Line Tag Tests', function () {
       x1Essential = x1 = -3;
       y1Essential = y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -4658,7 +4673,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = -8;
       y2Essential = y2 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -4676,7 +4691,7 @@ describe('Line Tag Tests', function () {
       x2Essential = x2 = 2;
       y2Essential = y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -4704,7 +4719,7 @@ describe('Line Tag Tests', function () {
     cy.log("move point A")
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: 7, y: -3 }
@@ -4718,7 +4733,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 0;
       y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -4733,7 +4748,7 @@ describe('Line Tag Tests', function () {
 
       x2 = -6;
       y2 = -7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -4749,7 +4764,7 @@ describe('Line Tag Tests', function () {
     cy.log("move point A2")
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: -1, y: 0 }
@@ -4763,7 +4778,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 7;
       y2 = -5;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -4778,7 +4793,7 @@ describe('Line Tag Tests', function () {
 
       x2 = 9;
       y2 = 8;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -4794,7 +4809,7 @@ describe('Line Tag Tests', function () {
     cy.log("move point A3")
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: -3, y: 7 }
@@ -4808,7 +4823,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -7;
       y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -4823,7 +4838,7 @@ describe('Line Tag Tests', function () {
 
       x2Essential = x2 = 3;
       y2Essential = y2 = -2;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -4850,7 +4865,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move point A")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: 7, y: -3 }
@@ -4862,7 +4877,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move point B")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: -1, y: -4 }
@@ -4874,7 +4889,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move line 1")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -4889,7 +4904,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move point A2")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: -1, y: 0 }
@@ -4901,7 +4916,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move point B2")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: 6, y: -6 }
@@ -4913,7 +4928,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move line 2")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -4928,7 +4943,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move point A3")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: -3, y: 7 }
@@ -4940,7 +4955,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move point B3")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: -8, y: -4 }
@@ -4952,7 +4967,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move line 3")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -4979,7 +4994,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move point A")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: 7, y: -3 }
@@ -4993,7 +5008,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -1;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -5008,7 +5023,7 @@ describe('Line Tag Tests', function () {
 
       x2 = -7;
       y2 = -8;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -5023,7 +5038,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move point A2")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: -1, y: 0 }
@@ -5037,7 +5052,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -6;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -5052,7 +5067,7 @@ describe('Line Tag Tests', function () {
 
       x2 = 8;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -5067,7 +5082,7 @@ describe('Line Tag Tests', function () {
 
     cy.log("move point A3")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: -3, y: 7 }
@@ -5081,7 +5096,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -8;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -5096,7 +5111,7 @@ describe('Line Tag Tests', function () {
 
       x2 = 2;
       y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -5125,7 +5140,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = 7;
       y1 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -5139,7 +5154,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -1;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -5156,7 +5171,7 @@ describe('Line Tag Tests', function () {
       y1 = 3;
       x2 = -7;
       y2 = -8;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -5173,7 +5188,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = -1;
       y1 = 0;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -5187,7 +5202,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -6;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -5204,7 +5219,7 @@ describe('Line Tag Tests', function () {
       y1 = 9;
       x2 = 8;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -5221,7 +5236,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x1 = -3;
       y1 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -5235,7 +5250,7 @@ describe('Line Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -8;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -5252,7 +5267,7 @@ describe('Line Tag Tests', function () {
       y1 = -1;
       x2 = 2;
       y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -5297,16 +5312,18 @@ describe('Line Tag Tests', function () {
     let x1 = 3, y1 = 3;
     let x2 = 4, y2 = 5;
 
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-      expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-      expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-      expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-      expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-      expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-      expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-      expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+      expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+      expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+      expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+      expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+      expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+      expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+      expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
 
     })
 
@@ -5316,7 +5333,7 @@ describe('Line Tag Tests', function () {
       x1 = y1 = 7;
       let y1try = 13;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
         args: { x: x1, y: y1try }
@@ -5325,15 +5342,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5343,7 +5360,7 @@ describe('Line Tag Tests', function () {
       x2 = -3
       y2 = 9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2",
         args: { x: x2, y: y2 }
@@ -5352,15 +5369,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5371,7 +5388,7 @@ describe('Line Tag Tests', function () {
       x1 = y1 = -1;
       let y1try = -21;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1a",
         args: { x: x1, y: y1try }
@@ -5380,15 +5397,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5399,7 +5416,7 @@ describe('Line Tag Tests', function () {
       x2 = -5
       y2 = 6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2a",
         args: { x: x2, y: y2 }
@@ -5408,15 +5425,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5431,7 +5448,7 @@ describe('Line Tag Tests', function () {
       x2 = x2 + dx;
       y2 = y2 + dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -5444,15 +5461,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5467,7 +5484,7 @@ describe('Line Tag Tests', function () {
       x2 = x2 + dx;
       y2 = y2 + dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/la",
         args: {
@@ -5480,15 +5497,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5521,16 +5538,18 @@ describe('Line Tag Tests', function () {
     let x1 = 3, y1 = 3;
     let x2 = 4, y2 = 5;
 
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-      expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-      expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-      expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-      expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-      expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-      expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-      expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+      expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+      expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+      expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+      expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+      expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+      expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+      expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
 
     })
 
@@ -5540,7 +5559,7 @@ describe('Line Tag Tests', function () {
       x1 = y1 = 7;
       let y1try = 13;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
         args: { x: x1, y: y1try }
@@ -5549,15 +5568,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5567,7 +5586,7 @@ describe('Line Tag Tests', function () {
       x2 = -3
       y2 = 9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2",
         args: { x: x2, y: y2 }
@@ -5576,15 +5595,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5595,7 +5614,7 @@ describe('Line Tag Tests', function () {
       x1 = y1 = -1;
       let y1try = -21;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1a",
         args: { x: x1, y: y1try }
@@ -5604,15 +5623,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5623,7 +5642,7 @@ describe('Line Tag Tests', function () {
       x2 = -5
       y2 = 6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2a",
         args: { x: x2, y: y2 }
@@ -5632,15 +5651,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5655,7 +5674,7 @@ describe('Line Tag Tests', function () {
       x2 = x2 + dx;
       y2 = y2 + dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -5668,15 +5687,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5691,7 +5710,7 @@ describe('Line Tag Tests', function () {
       x2 = x2 + dx;
       y2 = y2 + dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/la",
         args: {
@@ -5704,15 +5723,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5750,16 +5769,18 @@ describe('Line Tag Tests', function () {
     let x2 = x1 + 1;
     let y1 = 2 * x2 + 1;
 
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-      expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-      expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-      expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-      expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-      expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-      expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-      expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+      expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+      expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+      expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+      expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+      expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+      expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+      expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
 
     })
 
@@ -5773,7 +5794,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + 1;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
         args: { x: x1, y: y1try }
@@ -5783,15 +5804,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5805,7 +5826,7 @@ describe('Line Tag Tests', function () {
       y2 = (x1 - 1) / 2;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2",
         args: { x: x2, y: y2try }
@@ -5815,15 +5836,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5838,7 +5859,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + 1;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1a",
         args: { x: x1, y: y1try }
@@ -5848,15 +5869,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5871,7 +5892,7 @@ describe('Line Tag Tests', function () {
       y2 = (x1 - 1) / 2;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2a",
         args: { x: x2, y: y2try }
@@ -5881,15 +5902,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5908,7 +5929,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + 1;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -5921,15 +5942,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -5948,7 +5969,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + 1;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/la",
         args: {
@@ -5961,15 +5982,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -6007,16 +6028,18 @@ describe('Line Tag Tests', function () {
     let x2 = x1 + 1;
     let y1 = 2 * x2 + 1;
 
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-      expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-      expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-      expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-      expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-      expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-      expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-      expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+      expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+      expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+      expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+      expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+      expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+      expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+      expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
 
     })
 
@@ -6030,7 +6053,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + 1;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
         args: { x: x1, y: y1try }
@@ -6040,15 +6063,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -6062,7 +6085,7 @@ describe('Line Tag Tests', function () {
       y2 = (x1 - 1) / 2;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2",
         args: { x: x2, y: y2try }
@@ -6072,15 +6095,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -6095,7 +6118,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + 1;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1a",
         args: { x: x1, y: y1try }
@@ -6105,15 +6128,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -6128,7 +6151,7 @@ describe('Line Tag Tests', function () {
       y2 = (x1 - 1) / 2;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2a",
         args: { x: x2, y: y2try }
@@ -6138,15 +6161,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -6165,7 +6188,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + 1;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/_line1",
         args: {
@@ -6178,15 +6201,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -6205,7 +6228,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + 1;
       y1 = 2 * x2 + 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/la",
         args: {
@@ -6218,15 +6241,15 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
-        expect((await stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
-        expect((await stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
-        expect((await stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
-        expect((await stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_line1'].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/la"].stateValues.points)[0]).eqls([x1, y1]);
+        expect((stateVariables["/la"].stateValues.points)[1]).eqls([x2, y2]);
+        expect((stateVariables["/p1"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2"].stateValues.coords)).eqls(["vector", x2, y2]);
+        expect((stateVariables["/p1a"].stateValues.coords)).eqls(["vector", x1, y1]);
+        expect((stateVariables["/p2a"].stateValues.coords)).eqls(["vector", x2, y2]);
       })
     })
 
@@ -6274,7 +6297,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -6290,7 +6313,7 @@ describe('Line Tag Tests', function () {
       y2 = -4;
       slope = -Infinity;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -6309,7 +6332,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -6329,7 +6352,7 @@ describe('Line Tag Tests', function () {
       y2 = 10;
       slope = Infinity;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -6366,7 +6389,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -6382,7 +6405,7 @@ describe('Line Tag Tests', function () {
       y2 = -6;
       slope = (y2 - y1) / (x2 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -6401,7 +6424,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -6422,7 +6445,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -6440,7 +6463,7 @@ describe('Line Tag Tests', function () {
       slope = (y2 - y1) / (x2 - x1);
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -6463,7 +6486,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + d * Math.cos(theta);
       y2 = y1 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope })
 
@@ -6478,7 +6501,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -6550,7 +6573,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/y22 .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][0]).evaluate_to_constant()).closeTo(x1, 1E-12);
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][1]).evaluate_to_constant()).closeTo(y1, 1E-12);
@@ -6656,7 +6679,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -6675,7 +6698,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x21, y: y21 }
@@ -6695,7 +6718,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -6735,7 +6758,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -6757,7 +6780,7 @@ describe('Line Tag Tests', function () {
       x21 = x1 + d * Math.cos(theta1);
       y21 = y1 + d * Math.sin(theta1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x22, y: y22 }
@@ -6778,7 +6801,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -6801,7 +6824,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -6823,7 +6846,7 @@ describe('Line Tag Tests', function () {
       x21 = x1 + d * Math.cos(theta1);
       y21 = y1 + d * Math.sin(theta1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x22, y: y22 }
@@ -6846,7 +6869,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope2 textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -6863,7 +6886,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -6886,7 +6909,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: x1, y: y1 }
@@ -6909,7 +6932,7 @@ describe('Line Tag Tests', function () {
       x21 = x1 + d * Math.cos(theta1);
       y21 = y1 + d * Math.sin(theta1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/B",
         args: { x: x22, y: y22 }
@@ -6931,7 +6954,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g4/l",
         args: {
@@ -6955,7 +6978,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/A",
         args: { x: x1, y: y1 }
@@ -6979,7 +7002,7 @@ describe('Line Tag Tests', function () {
       y21 = y1 + d * Math.sin(theta1);
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/B",
         args: { x: x22, y: y22 }
@@ -7001,7 +7024,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g5/l",
         args: {
@@ -7073,7 +7096,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/y22 .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][0]).evaluate_to_constant()).closeTo(x1, 1E-12);
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][1]).evaluate_to_constant()).closeTo(y1, 1E-12);
@@ -7179,7 +7202,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -7195,7 +7218,7 @@ describe('Line Tag Tests', function () {
       y21 = -4;
       slope1 = -Infinity;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x21, y: y21 }
@@ -7217,7 +7240,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -7241,7 +7264,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -7259,7 +7282,7 @@ describe('Line Tag Tests', function () {
 
       theta2 = Math.atan(slope2)
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x22, y: y22 }
@@ -7281,7 +7304,7 @@ describe('Line Tag Tests', function () {
       slope1 = (y21 - y1) / (x21 - x1);
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -7304,7 +7327,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -7322,7 +7345,7 @@ describe('Line Tag Tests', function () {
 
       theta2 = Math.atan(slope2)
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x22, y: y22 }
@@ -7345,7 +7368,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -7362,7 +7385,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -7386,7 +7409,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: x1, y: y1 }
@@ -7404,7 +7427,7 @@ describe('Line Tag Tests', function () {
 
       theta2 = Math.atan(slope2)
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/B",
         args: { x: x22, y: y22 }
@@ -7426,7 +7449,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g4/l",
         args: {
@@ -7451,7 +7474,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/A",
         args: { x: x1, y: y1 }
@@ -7469,7 +7492,7 @@ describe('Line Tag Tests', function () {
 
       theta2 = Math.atan(slope2)
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/B",
         args: { x: x22, y: y22 }
@@ -7491,7 +7514,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g5/l",
         args: {
@@ -7549,7 +7572,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -7565,7 +7588,7 @@ describe('Line Tag Tests', function () {
       y2 = -7;
       slope = -Infinity;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -7584,7 +7607,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -7604,7 +7627,7 @@ describe('Line Tag Tests', function () {
       y2 = 9;
       slope = Infinity;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -7641,7 +7664,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -7657,7 +7680,7 @@ describe('Line Tag Tests', function () {
       y2 = -6;
       slope = (y2 - y1) / (x2 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -7676,7 +7699,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -7697,7 +7720,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -7715,7 +7738,7 @@ describe('Line Tag Tests', function () {
       slope = (y2 - y1) / (x2 - x1);
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -7738,7 +7761,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + d * Math.cos(theta);
       y2 = y1 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope })
 
@@ -7753,7 +7776,7 @@ describe('Line Tag Tests', function () {
       x2 += dx;
       y2 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -7824,7 +7847,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/y22 .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][0]).evaluate_to_constant()).closeTo(x1, 1E-12);
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][1]).evaluate_to_constant()).closeTo(y1, 1E-12);
@@ -7931,7 +7954,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -7955,7 +7978,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x21, y: y21 }
@@ -7975,7 +7998,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -8014,7 +8037,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -8036,7 +8059,7 @@ describe('Line Tag Tests', function () {
       x21 = x1 + d * Math.cos(theta1);
       y21 = y1 + d * Math.sin(theta1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x22, y: y22 }
@@ -8057,7 +8080,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -8080,7 +8103,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -8102,7 +8125,7 @@ describe('Line Tag Tests', function () {
       x21 = x1 + d * Math.cos(theta1);
       y21 = y1 + d * Math.sin(theta1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x22, y: y22 }
@@ -8125,7 +8148,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope2 textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -8142,7 +8165,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -8165,7 +8188,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: x1, y: y1 }
@@ -8188,7 +8211,7 @@ describe('Line Tag Tests', function () {
       x21 = x1 + d * Math.cos(theta1);
       y21 = y1 + d * Math.sin(theta1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/B",
         args: { x: x22, y: y22 }
@@ -8210,7 +8233,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g4/l",
         args: {
@@ -8234,7 +8257,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/A",
         args: { x: x1, y: y1 }
@@ -8257,7 +8280,7 @@ describe('Line Tag Tests', function () {
       x21 = x1 + d * Math.cos(theta1);
       y21 = y1 + d * Math.sin(theta1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/B",
         args: { x: x22, y: y22 }
@@ -8279,7 +8302,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g5/l",
         args: {
@@ -8356,7 +8379,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/y22 .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][0]).evaluate_to_constant()).closeTo(x11, 1E-12);
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[0][1]).evaluate_to_constant()).closeTo(y11, 1E-12);
@@ -8461,7 +8484,7 @@ describe('Line Tag Tests', function () {
       x21 += dx;
       y21 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x11, y: y11 }
@@ -8482,7 +8505,7 @@ describe('Line Tag Tests', function () {
 
       slope = (y21 - y11) / (x21 - x11);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x21, y: y21 }
@@ -8502,7 +8525,7 @@ describe('Line Tag Tests', function () {
       x21 += dx;
       y21 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -8525,7 +8548,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x12, y: y12 }
@@ -8546,7 +8569,7 @@ describe('Line Tag Tests', function () {
       x21 = x11 + x22 - x12;
       y21 = y11 + y22 - y12;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x22, y: y22 }
@@ -8567,7 +8590,7 @@ describe('Line Tag Tests', function () {
       y22 += dy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -8589,7 +8612,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x12, y: y12 }
@@ -8609,7 +8632,7 @@ describe('Line Tag Tests', function () {
       x21 = x11 + x22 - x12;
       y21 = y11 + y22 - y12;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x22, y: y22 }
@@ -8635,7 +8658,7 @@ describe('Line Tag Tests', function () {
       x21 = x11 + d * Math.cos(theta);
       y21 = y11 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
       await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope })
 
     })
@@ -8650,7 +8673,7 @@ describe('Line Tag Tests', function () {
       y22 += dy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -8673,7 +8696,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: x12, y: y12 }
@@ -8693,7 +8716,7 @@ describe('Line Tag Tests', function () {
       x21 = x11 + x22 - x12;
       y21 = y11 + y22 - y12;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/B",
         args: { x: x22, y: y22 }
@@ -8714,7 +8737,7 @@ describe('Line Tag Tests', function () {
       y22 += dy;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g4/l",
         args: {
@@ -8736,7 +8759,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/A",
         args: { x: x12, y: y12 }
@@ -8757,7 +8780,7 @@ describe('Line Tag Tests', function () {
       x21 = x11 + x22 - x12;
       y21 = y11 + y22 - y12;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/B",
         args: { x: x22, y: y22 }
@@ -8777,7 +8800,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g5/l",
         args: {
@@ -8850,7 +8873,7 @@ describe('Line Tag Tests', function () {
       cy.get("#\\/y22 .mjx-mrow").should('contain.text', `${nInDOM(y22).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[1][0]).evaluate_to_constant()).closeTo(x1, 1E-12);
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.points[1][1]).evaluate_to_constant()).closeTo(y1, 1E-12);
@@ -8957,7 +8980,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x1, y: y1 }
@@ -8972,7 +8995,7 @@ describe('Line Tag Tests', function () {
       y21 = -4;
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x21, y: y21 }
@@ -8994,7 +9017,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g1/l",
         args: {
@@ -9018,7 +9041,7 @@ describe('Line Tag Tests', function () {
       x22 += dx;
       y22 += dy;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x1, y: y1 }
@@ -9036,7 +9059,7 @@ describe('Line Tag Tests', function () {
 
       theta2 = Math.atan(slope2)
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x22, y: y22 }
@@ -9058,7 +9081,7 @@ describe('Line Tag Tests', function () {
       slope1 = (y21 - y1) / (x21 - x1);
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g2/l",
         args: {
@@ -9081,7 +9104,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x1, y: y1 }
@@ -9099,7 +9122,7 @@ describe('Line Tag Tests', function () {
 
       theta2 = Math.atan(slope2)
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x22, y: y22 }
@@ -9122,7 +9145,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -9139,7 +9162,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g3/l",
         args: {
@@ -9163,7 +9186,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: x1, y: y1 }
@@ -9181,7 +9204,7 @@ describe('Line Tag Tests', function () {
 
       theta2 = Math.atan(slope2)
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/B",
         args: { x: x22, y: y22 }
@@ -9203,7 +9226,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g4/l",
         args: {
@@ -9228,7 +9251,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/A",
         args: { x: x1, y: y1 }
@@ -9246,7 +9269,7 @@ describe('Line Tag Tests', function () {
 
       theta2 = Math.atan(slope2)
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/B",
         args: { x: x22, y: y22 }
@@ -9268,7 +9291,7 @@ describe('Line Tag Tests', function () {
 
       slope1 = (y21 - y1) / (x21 - x1);
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLine",
         componentName: "/g5/l",
         args: {
@@ -9305,8 +9328,11 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point on line, close to origin`);
+
+    cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.00')
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = stateVariables['/P'].stateValues.xs[0];
       let y = stateVariables['/P'].stateValues.xs[1];
 
@@ -9318,7 +9344,7 @@ describe('Line Tag Tests', function () {
 
     cy.log(`move point`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -100, y: 0.05 }
@@ -9327,7 +9353,7 @@ describe('Line Tag Tests', function () {
       cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.04')
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let x = stateVariables['/P'].stateValues.xs[0];
         let y = stateVariables['/P'].stateValues.xs[1];
         expect(y).lessThan(0.05);
@@ -9353,12 +9379,12 @@ describe('Line Tag Tests', function () {
     `;
 
     cy.get('#testRunner_toggleControls').click();
-    cy.get('#testRunner_allowLocalPageState').click()
+    cy.get('#testRunner_allowLocalState').click()
     cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -9371,18 +9397,18 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(3,4)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/A'].stateValues.xs).eqls([1, 2]);
       expect(stateVariables['/B'].stateValues.xs).eqls([3, 4]);
     });
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 9, y: 8 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: 6, y: 7 }
@@ -9393,24 +9419,17 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/A'].stateValues.xs).eqls([9, 8]);
       expect(stateVariables['/B'].stateValues.xs).eqls([6, 7]);
     });
 
-
+    cy.wait(2000);  // wait for 1 second debounce
 
     cy.log('reload page')
+    cy.reload();
 
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: "<text>b</text>"
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
-
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -9418,18 +9437,24 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/A"];
+    }))
+
     cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(9,8)')
     cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/A'].stateValues.xs).eqls([9, 8]);
       expect(stateVariables['/B'].stateValues.xs).eqls([6, 7]);
     });
 
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.5, y: 3.5 }
@@ -9440,23 +9465,18 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/A'].stateValues.xs).eqls([0.5, 3.5]);
       expect(stateVariables['/B'].stateValues.xs).eqls([6, 7]);
     });
 
 
+    cy.wait(2000);  // wait for 1 second debounce
+
     cy.log('reload page')
+    cy.reload();
 
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: "<text>b</text>"
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
-
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML
       }, "*");
@@ -9464,19 +9484,24 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/A"];
+    }))
 
     cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(0.5,3.5)')
     cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/A'].stateValues.xs).eqls([0.5, 3.5]);
       expect(stateVariables['/B'].stateValues.xs).eqls([6, 7]);
     });
 
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 8.5, y: 1.5 }
@@ -9487,12 +9512,58 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/A'].stateValues.xs).eqls([8.5, 1.5]);
       expect(stateVariables['/B'].stateValues.xs).eqls([6, 7]);
     });
 
 
+
+  });
+
+
+  it('copy propIndex of points', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <line through="(2,-3) (3,4)" />
+    </graph>
+ 
+    <p><mathinput name="n" /></p>
+
+    <p><copy prop="points" target="_line1" propIndex="$n" assignNames="P1 P2" /></p>
+
+    <p><copy prop="point2" target="_line1" propIndex="$n" assignNames="x" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 2, t1y = -3;
+    let t2x = 3, t2y = 4;
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+  
+    cy.get('#\\/n textarea').type("1{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+  
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+  
 
   });
 

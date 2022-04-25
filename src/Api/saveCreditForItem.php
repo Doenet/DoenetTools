@@ -17,7 +17,6 @@ $examDoenetId = array_key_exists("doenetId",$jwtArray) ? $jwtArray['doenetId'] :
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
-$contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $credit = mysqli_real_escape_string($conn,$_POST["credit"]);
 $itemNumber = mysqli_real_escape_string($conn,$_POST["itemNumber"]);
@@ -31,9 +30,6 @@ $message = "";
 if ($doenetId == ""){
 $success = FALSE;
 $message = 'Internal Error: missing doenetId';
-}elseif ($contentId == ""){
-$success = FALSE;
-$message = 'Internal Error: missing contentId';
 }elseif ($attemptNumber == ""){
   $success = FALSE;
   $message = 'Internal Error: missing attemptNumber';
@@ -262,9 +258,9 @@ if ($result->num_rows < 1){
 //Specifically we want to store the credit of that actual submission
 $sql = "
 INSERT INTO user_assignment_attempt_item_submission
-(doenetId,contentId,userId,attemptNumber,itemNumber,submissionNumber,componentsSubmitted,credit,submittedDate,valid)
+(doenetId,userId,attemptNumber,itemNumber,submissionNumber,componentsSubmitted,credit,submittedDate,valid)
 VALUES
-('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$componentsSubmitted','$credit',NOW(),'$valid')
+('$doenetId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$componentsSubmitted','$credit',NOW(),'$valid')
 ";
 
 $result = $conn->query($sql);
@@ -295,7 +291,7 @@ if ($valid){
     }else if ($attemptAggregation == 'l'){
       $credit_for_item = $credit;
     }
-        
+
 
     // Store credit in user_assignment_attempt_item
     $sql = "UPDATE user_assignment_attempt_item

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   atom,
   useRecoilCallback,
@@ -8,7 +8,7 @@ import {
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 // import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
-import { fetchDrivesQuery } from '../Drive/NewDrive';
+import { coursePermissionsAndSettingsByCourseId } from '../Course/CourseActions';
 import DropdownMenu from './DropdownMenu';
 
 export const effectiveRoleAtom = atom({
@@ -30,17 +30,8 @@ export function RoleDropdown() {
   const { tool } = useRecoilValue(pageToolViewAtom);
   const [effectiveRole, setEffectiveRole] = useRecoilState(effectiveRoleAtom);
   const [permittedRole, setPermittedRole] = useRecoilState(permittedRoleAtom);
-  const path = useRecoilValue(searchParamAtomFamily('path'));
-  const searchDriveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId')) ?? '';
   const recoilDriveId = useRecoilValue(permsForDriveIdAtom);
-
-  let driveId = '';
-  if (path) {
-    [driveId] = path.split(':');
-  }
-  if (searchDriveId !== '') {
-    driveId = searchDriveId;
-  }
 
   const initilizeEffectiveRole = useRecoilCallback(
     ({ set, snapshot }) =>
@@ -48,31 +39,23 @@ export function RoleDropdown() {
         let role = 'instructor';
 
         //If driveId then test if intructor is available
-        // const path = await snapshot.getPromise(searchParamAtomFamily('path'));
         if (driveId !== '') {
-          const driveInfo = await snapshot.getPromise(fetchDrivesQuery);
-
-          for (let drive of driveInfo.driveIdsAndLabels) {
-            if (drive.driveId === driveId) {
-              if (drive.role.length === 1 && drive.role[0] === 'Student') {
-                role = 'student';
-              }
-            }
+          let permissionsAndSettings = await snapshot.getPromise(coursePermissionsAndSettingsByCourseId(driveId));
+          if (permissionsAndSettings?.roleLabels?.[0] == 'Student'){
+            role = 'student';
           }
-        } else {
-          role = 'student';
         }
 
         set(effectiveRoleAtom, role);
         set(permsForDriveIdAtom, driveId);
         setPermittedRole(role);
       },
-    [driveId],
+    [setPermittedRole],
   );
 
-  if (effectiveRole === '' || (recoilDriveId !== driveId && driveId !== '')) {
+  if (effectiveRole === '' || (recoilDriveId !== courseId && courseId !== '')) {
     //first time through so initialize
-    initilizeEffectiveRole(driveId);
+    initilizeEffectiveRole(courseId);
     return null;
   }
 

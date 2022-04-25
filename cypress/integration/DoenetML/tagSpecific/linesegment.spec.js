@@ -28,7 +28,7 @@ async function testLineSegmentCopiedTwice({ x1, y1, x2, y2,
   cy.get(`#${cesc(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
   cy.window().then(async (win) => {
-    let stateVariables = await win.returnAllStateVariables();
+    let stateVariables = await win.returnAllStateVariables1();
     expect(stateVariables[graph1Name + lineSegmentName].stateValues.endpoints[0]).eqls([x1, y1]);
     expect(stateVariables[graph1Name + lineSegmentName].stateValues.endpoints[1]).eqls([x2, y2]);
     expect(stateVariables[graph2Name + lineSegmentName].stateValues.endpoints[0]).eqls([x1, y1]);
@@ -48,7 +48,7 @@ async function testLineSegmentCopiedTwiceWithEndpoints({ x1, y1, x2, y2,
   cy.get(`#${cesc(point2InDomName)} .mjx-mrow`).should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
   cy.window().then(async (win) => {
-    let stateVariables = await win.returnAllStateVariables();
+    let stateVariables = await win.returnAllStateVariables1();
     expect(stateVariables[graph1Name + lineSegmentName].stateValues.endpoints[0]).eqls([x1, y1]);
     expect(stateVariables[graph1Name + lineSegmentName].stateValues.endpoints[1]).eqls([x2, y2]);
     expect(stateVariables[graph2Name + lineSegmentName].stateValues.endpoints[0]).eqls([x1, y1]);
@@ -68,6 +68,7 @@ async function testLineSegmentCopiedTwiceWithEndpoints({ x1, y1, x2, y2,
 describe('LineSegment Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
@@ -103,7 +104,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 3;
       y1 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -120,7 +121,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -7;
       y2 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -137,7 +138,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 6;
       y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -154,7 +155,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = 9;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -171,7 +172,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = -5;
       y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -188,7 +189,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -1;
       y2 = 3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -234,7 +235,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 3;
       y1 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -251,7 +252,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -7;
       y2 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -268,7 +269,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 6;
       y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -285,7 +286,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = 9;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -302,7 +303,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = -5;
       y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -319,7 +320,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -1;
       y2 = 3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -365,7 +366,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 3;
       y1 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -382,7 +383,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -7;
       y2 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -399,7 +400,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 6;
       y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -416,7 +417,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = 9;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -433,7 +434,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = -5;
       y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -450,7 +451,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -1;
       y2 = 3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -496,7 +497,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 3;
       y1 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -513,7 +514,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -7;
       y2 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -530,7 +531,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 6;
       y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -547,7 +548,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = 9;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -564,7 +565,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = -5;
       y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -581,7 +582,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -1;
       y2 = 3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -634,7 +635,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 5;
       y1 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x1, y: y1 }
@@ -654,7 +655,7 @@ describe('LineSegment Tag Tests', function () {
       y1 += moveY;
       y2 += moveY;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -674,7 +675,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -1;
       y2 = 8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -716,7 +717,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 3;
       y1 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -733,7 +734,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -7;
       y2 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -750,7 +751,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 6;
       y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -767,7 +768,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = 9;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -784,7 +785,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = -5;
       y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -801,7 +802,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -1;
       y2 = 3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -822,7 +823,7 @@ describe('LineSegment Tag Tests', function () {
   <text>a</text>
   <number>3</number>
   <graph>
-  <linesegment "/>
+  <linesegment />
   </graph>
   <graph name="g1" newNamespace>
     <point>(-2,1)</point>
@@ -850,7 +851,7 @@ describe('LineSegment Tag Tests', function () {
     testLineSegmentCopiedTwice({ x1, y1, x2, y2 })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g1/_point1'].stateValues.xs).eqls([-2, 1]);
       expect(stateVariables['/_number1'].stateValues.value).eq(3);
     })
@@ -861,7 +862,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 3;
       y1 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -878,7 +879,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -7;
       y2 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -895,7 +896,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 6;
       y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -912,7 +913,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = 9;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -929,7 +930,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = -5;
       y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -946,7 +947,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -1;
       y2 = 3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -1002,7 +1003,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 3;
       y1 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -1019,7 +1020,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -7;
       y2 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g1/ls",
         args: {
@@ -1036,7 +1037,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = 6;
       y1 = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -1053,7 +1054,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = 9;
       y2 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g2/ls",
         args: {
@@ -1070,7 +1071,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = -5;
       y1 = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -1087,7 +1088,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = -1;
       y2 = 3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/g3/ls",
         args: {
@@ -1119,9 +1120,9 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log('check initial values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls(["q", 2]);
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([-2, 3]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls(["q", 2]);
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([-2, 3]);
     });
 
     cy.log('change point to be numeric');
@@ -1130,9 +1131,9 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#\\/p1 .mjx-mrow').should('contain.text', '(5,2)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([5, 2]);
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([-2, 3]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([5, 2]);
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([-2, 3]);
 
     })
   })
@@ -1190,7 +1191,7 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/y12 .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x11, 1E-12);
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y11, 1E-12);
@@ -1257,7 +1258,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x11 = 7;
       y11 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x11, y: y11 }
@@ -1269,7 +1270,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -1;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -1285,7 +1286,7 @@ describe('LineSegment Tag Tests', function () {
       y11 = 3;
       x2 = -7;
       y2 = -8;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g1/l',
         args: {
@@ -1302,7 +1303,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = -1;
       y12 = 0;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x12, y: y12 }
@@ -1314,7 +1315,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -6;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -1330,7 +1331,7 @@ describe('LineSegment Tag Tests', function () {
       y12 = 9;
       x2 = 8;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g2/l',
         args: {
@@ -1347,7 +1348,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = -3;
       y12 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x12, y: y12 }
@@ -1360,7 +1361,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -8;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -1376,7 +1377,7 @@ describe('LineSegment Tag Tests', function () {
       y12 = -1;
       x2 = 2;
       y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g3/l',
         args: {
@@ -1393,7 +1394,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = 9;
       y12 = 8;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: x12, y: y12 }
@@ -1406,7 +1407,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -9;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/B",
         args: { x: x2, y: y2 }
@@ -1422,7 +1423,7 @@ describe('LineSegment Tag Tests', function () {
       y12 = 4;
       x2 = -5;
       y2 = 6;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g4/l',
         args: {
@@ -1439,7 +1440,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = 1;
       y12 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/A",
         args: { x: x12, y: y12 }
@@ -1452,7 +1453,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 0;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/B",
         args: { x: x2, y: y2 }
@@ -1463,13 +1464,13 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log("move line g5/l")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       x12 = 4;
       y12 = 5;
       x2 = -6;
       y2 = -7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g5/l',
         args: {
@@ -1545,7 +1546,7 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/y12 .mjx-mrow").should('contain.text', `${nInDOM(y12).substring(0, 6)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[0][0]).evaluate_to_constant()).closeTo(x11, 1E-12);
         expect(me.fromAst(stateVariables['/g1/l'].stateValues.endpoints[0][1]).evaluate_to_constant()).closeTo(y11, 1E-12);
@@ -1611,7 +1612,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x11 = 7;
       y11 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x11, y: y11 }
@@ -1623,7 +1624,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -1;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -1639,7 +1640,7 @@ describe('LineSegment Tag Tests', function () {
       y11 = 3;
       x2 = -7;
       y2 = -8;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g1/l',
         args: {
@@ -1656,7 +1657,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = -1;
       y12 = 0;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x12, y: y12 }
@@ -1668,7 +1669,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -6;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -1684,7 +1685,7 @@ describe('LineSegment Tag Tests', function () {
       y12 = 9;
       x2 = 8;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g2/l',
         args: {
@@ -1700,7 +1701,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = -3;
       y12 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x12, y: y12 }
@@ -1713,7 +1714,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -8;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -1729,7 +1730,7 @@ describe('LineSegment Tag Tests', function () {
       y12 = -1;
       x2 = 2;
       y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g3/l',
         args: {
@@ -1746,7 +1747,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = 9;
       y12 = 8;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: x12, y: y12 }
@@ -1759,7 +1760,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -9;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/B",
         args: { x: x2, y: y2 }
@@ -1775,7 +1776,7 @@ describe('LineSegment Tag Tests', function () {
       y12 = 4;
       x2 = -5;
       y2 = 6;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g4/l',
         args: {
@@ -1792,7 +1793,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = 1;
       y12 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/A",
         args: { x: x12, y: y12 }
@@ -1805,7 +1806,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 0;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/B",
         args: { x: x2, y: y2 }
@@ -1821,7 +1822,7 @@ describe('LineSegment Tag Tests', function () {
       y12 = 5;
       x2 = -6;
       y2 = -7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g5/l',
         args: {
@@ -1850,7 +1851,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x11 = 7;
       y11 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/A",
         args: { x: x11, y: y11 }
@@ -1862,7 +1863,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -1;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/B",
         args: { x: x2, y: y2 }
@@ -1878,7 +1879,7 @@ describe('LineSegment Tag Tests', function () {
       y11 = 3;
       x2 = -7;
       y2 = -8;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g1/l',
         args: {
@@ -1895,7 +1896,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = -1;
       y12 = 0;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/A",
         args: { x: x12, y: y12 }
@@ -1907,7 +1908,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -6;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/B",
         args: { x: x2, y: y2 }
@@ -1923,7 +1924,7 @@ describe('LineSegment Tag Tests', function () {
       y12 = 9;
       x2 = 8;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g2/l',
         args: {
@@ -1939,7 +1940,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = -3;
       y12 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/A",
         args: { x: x12, y: y12 }
@@ -1952,7 +1953,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = -8;
       y2 = -4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g3/B",
         args: { x: x2, y: y2 }
@@ -1968,7 +1969,7 @@ describe('LineSegment Tag Tests', function () {
       y12 = -1;
       x2 = 2;
       y2 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g3/l',
         args: {
@@ -1985,7 +1986,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = 9;
       y12 = 8;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/A",
         args: { x: x12, y: y12 }
@@ -1998,7 +1999,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 6;
       y2 = -9;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g4/B",
         args: { x: x2, y: y2 }
@@ -2014,7 +2015,7 @@ describe('LineSegment Tag Tests', function () {
       y12 = 4;
       x2 = -5;
       y2 = 6;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g4/l',
         args: {
@@ -2031,7 +2032,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x12 = 1;
       y12 = -3;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/A",
         args: { x: x12, y: y12 }
@@ -2044,7 +2045,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       x2 = 0;
       y2 = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g5/B",
         args: { x: x2, y: y2 }
@@ -2060,7 +2061,7 @@ describe('LineSegment Tag Tests', function () {
       y12 = 5;
       x2 = -6;
       y2 = -7;
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/g5/l',
         args: {
@@ -2099,18 +2100,21 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.log('check initial values')
+
+    cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([1, 2]);
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([3, 4]);
-      expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([1, 2]);
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([3, 4]);
+      expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(2);
     });
 
     cy.log('move line segment to 45 degrees')
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/_linesegment1',
         args: {
@@ -2122,10 +2126,10 @@ describe('LineSegment Tag Tests', function () {
       cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(-4)},${nInDOM(4)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([-4, 4]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([4, -4]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([-4, 4]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([4, -4]);
 
         let xorig = -5;
         let yorig = 2;
@@ -2138,8 +2142,8 @@ describe('LineSegment Tag Tests', function () {
         let p5x = temp;
         let p5y = -temp;
 
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
       });
     })
 
@@ -2148,7 +2152,7 @@ describe('LineSegment Tag Tests', function () {
       let xorig = 10;
       let yorig = 1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -2166,9 +2170,9 @@ describe('LineSegment Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
       });
     })
 
@@ -2177,7 +2181,7 @@ describe('LineSegment Tag Tests', function () {
       let xorig = 9;
       let yorig = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -2196,9 +2200,9 @@ describe('LineSegment Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
       });
     })
 
@@ -2207,7 +2211,7 @@ describe('LineSegment Tag Tests', function () {
       let xorig = -9;
       let yorig = 7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -2226,9 +2230,9 @@ describe('LineSegment Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
       });
     })
 
@@ -2258,18 +2262,21 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.log('check initial values')
+
+    cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(1)},${nInDOM(2)})`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([1, 2]);
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([3, 4]);
-      expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(-5);
-      expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([1, 2]);
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([3, 4]);
+      expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(-5);
+      expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(2);
     });
 
     cy.log('move line segment to 45 degrees')
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: '/_linesegment1',
         args: {
@@ -2281,11 +2288,11 @@ describe('LineSegment Tag Tests', function () {
       cy.get('#\\/ep1a .mjx-mrow').should('contain.text', `(${nInDOM(-4)},${nInDOM(4)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([-4, 4]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([4, -4]);
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(-5)
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(2)
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([-4, 4]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([4, -4]);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(-5)
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(2)
       })
     });
 
@@ -2294,7 +2301,7 @@ describe('LineSegment Tag Tests', function () {
       let xorig = 3.3;
       let yorig = -3.6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -2313,9 +2320,9 @@ describe('LineSegment Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
       })
     });
 
@@ -2324,7 +2331,7 @@ describe('LineSegment Tag Tests', function () {
       let xorig = 4.3;
       let yorig = -4.6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -2334,9 +2341,9 @@ describe('LineSegment Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(xorig)},${nInDOM(yorig)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(4.3, 1E-12);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(-4.6, 1E-12);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).closeTo(4.3, 1E-12);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).closeTo(-4.6, 1E-12);
       })
     });
 
@@ -2345,7 +2352,7 @@ describe('LineSegment Tag Tests', function () {
       let xorig = -2.4;
       let yorig = 2.8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -2364,9 +2371,9 @@ describe('LineSegment Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(Math.round(p5x * 1000) / 1000)},${nInDOM(Math.round(p5y * 1000) / 1000)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
       })
     });
 
@@ -2375,7 +2382,7 @@ describe('LineSegment Tag Tests', function () {
       let xorig = -4.2;
       let yorig = 4.3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: xorig, y: yorig }
@@ -2394,9 +2401,9 @@ describe('LineSegment Tag Tests', function () {
       cy.get('#\\/p3a .mjx-mrow').should('contain.text', `(${nInDOM(p5x)},${nInDOM(p5y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).closeTo(p5x, 1E-12);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).closeTo(p5y, 1E-12);
       })
     });
 
@@ -2424,10 +2431,13 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point on line segment, close to origin`);
+
+    cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.00')
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      let x = (await stateVariables['/P'].stateValues.xs)[0];
-      let y = (await stateVariables['/P'].stateValues.xs)[1];
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = (stateVariables['/P'].stateValues.xs)[0];
+      let y = (stateVariables['/P'].stateValues.xs)[1];
 
       expect(y).greaterThan(0);
       expect(y).lessThan(0.01);
@@ -2438,7 +2448,7 @@ describe('LineSegment Tag Tests', function () {
     cy.log(`move point`);
     cy.window().then(async (win) => {
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -100, y: 0.05 }
@@ -2447,9 +2457,9 @@ describe('LineSegment Tag Tests', function () {
       cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.04')
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        let x = (await stateVariables['/P'].stateValues.xs)[0];
-        let y = (await stateVariables['/P'].stateValues.xs)[1];
+        let stateVariables = await win.returnAllStateVariables1();
+        let x = (stateVariables['/P'].stateValues.xs)[0];
+        let y = (stateVariables['/P'].stateValues.xs)[1];
         expect(y).lessThan(0.05);
         expect(y).greaterThan(0.04);
         expect(x).closeTo(20 * y, 1E-10)
@@ -2458,7 +2468,7 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log(`move point past endpoint`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: -100, y: 0.1 }
@@ -2466,9 +2476,9 @@ describe('LineSegment Tag Tests', function () {
 
       cy.get('#\\/P1a .mjx-mrow').should('contain.text', ',0.05')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        let x = (await stateVariables['/P'].stateValues.xs)[0];
-        let y = (await stateVariables['/P'].stateValues.xs)[1];
+        let stateVariables = await win.returnAllStateVariables1();
+        let x = (stateVariables['/P'].stateValues.xs)[0];
+        let y = (stateVariables['/P'].stateValues.xs)[1];
         expect(y).eq(0.05);
         expect(x).closeTo(20 * y, 1E-10)
       })
@@ -2500,7 +2510,7 @@ describe('LineSegment Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let p1x = 1;
       let p1y = 2;
       let p2x = 3;
@@ -2513,13 +2523,16 @@ describe('LineSegment Tag Tests', function () {
       expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
       expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
       expect(stateVariables["/p2a"].stateValues.xs[1]).eq(p2y)
+
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
+
     })
 
     cy.log('move first individually copied point');
     cy.window().then(async (win) => {
       let p1x = -2;
       let p1y = -5;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1",
         args: { x: p1x, y: p1y }
@@ -2528,13 +2541,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let p2x = 3;
         let p2y = 4;
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
@@ -2546,7 +2559,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       let p2x = 8;
       let p2y = -1;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2",
         args: { x: p2x, y: p2y }
@@ -2555,13 +2568,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p2b .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let p1x = -2;
         let p1y = -5;
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
@@ -2573,7 +2586,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       let p2x = -6;
       let p2y = 4;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p2a",
         args: { x: p2x, y: p2y }
@@ -2582,13 +2595,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p2b .mjx-mrow").should('contain.text', `(${nInDOM(p2x)},${nInDOM(p2y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let p1x = -2;
         let p1y = -5;
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
@@ -2600,7 +2613,7 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then(async (win) => {
       let p1x = 0;
       let p1y = 7;
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p1a",
         args: { x: p1x, y: p1y }
@@ -2609,13 +2622,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         let p2x = -6;
         let p2y = 4;
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1a"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1a"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2a"].stateValues.xs[0]).eq(p2x)
@@ -2625,15 +2638,15 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log('move line up and to the right')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
-        (await stateVariables['/_linesegment1'].stateValues.endpoints)[0][0],
-        (await stateVariables['/_linesegment1'].stateValues.endpoints)[0][1],
+        (stateVariables['/_linesegment1'].stateValues.endpoints)[0][0],
+        (stateVariables['/_linesegment1'].stateValues.endpoints)[0][1],
       ];
       let point2coords = [
-        (await stateVariables['/_linesegment1'].stateValues.endpoints)[1][0],
-        (await stateVariables['/_linesegment1'].stateValues.endpoints)[1][1],
+        (stateVariables['/_linesegment1'].stateValues.endpoints)[1][0],
+        (stateVariables['/_linesegment1'].stateValues.endpoints)[1][1],
       ];
 
       let moveX = 4;
@@ -2644,7 +2657,7 @@ describe('LineSegment Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/_linesegment1",
         args: {
@@ -2657,12 +2670,12 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(point1coords[0])
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(point1coords[1])
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(point2coords[0])
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(point2coords[1])
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(point1coords[0])
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(point1coords[1])
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(point2coords[0])
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(point2coords[1])
         expect(stateVariables["/p1a"].stateValues.xs[0]).eq(point1coords[0])
         expect(stateVariables["/p1a"].stateValues.xs[1]).eq(point1coords[1])
         expect(stateVariables["/p2a"].stateValues.xs[0]).eq(point2coords[0])
@@ -2693,36 +2706,37 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let p1x = -1;
       let p1y = -2;
       let p2x = -3;
       let p2y = -4;
-      expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-      expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-      expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-      expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+      expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+      expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+      expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+      expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
       expect(stateVariables["/p1"].stateValues.xs[0]).eq(p1x)
       expect(stateVariables["/p1"].stateValues.xs[1]).eq(p1y)
       expect(stateVariables["/p2"].stateValues.xs[0]).eq(p2x)
       expect(stateVariables["/p2"].stateValues.xs[1]).eq(p2y)
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([p1x, p1y]);
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([p2x, p2y]);
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([p1x, p1y]);
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([p2x, p2y]);
       expect(stateVariables['/_linesegment2'].stateValues.endpoints[0]).eqls([p1x, p1y]);
       expect(stateVariables['/_linesegment2'].stateValues.endpoints[1]).eqls([p2x, p2y]);
+      cy.get("#\\/p1b .mjx-mrow").should('contain.text', `(${nInDOM(p1x)},${nInDOM(p1y)}`)
     })
 
     cy.log('move first line segment up and to the right')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
-        (await stateVariables['/_linesegment1'].stateValues.endpoints)[0][0],
-        (await stateVariables['/_linesegment1'].stateValues.endpoints)[0][1],
+        (stateVariables['/_linesegment1'].stateValues.endpoints)[0][0],
+        (stateVariables['/_linesegment1'].stateValues.endpoints)[0][1],
       ];
       let point2coords = [
-        (await stateVariables['/_linesegment1'].stateValues.endpoints)[1][0],
-        (await stateVariables['/_linesegment1'].stateValues.endpoints)[1][1],
+        (stateVariables['/_linesegment1'].stateValues.endpoints)[1][0],
+        (stateVariables['/_linesegment1'].stateValues.endpoints)[1][1],
       ];
 
       let moveX = 4;
@@ -2733,7 +2747,7 @@ describe('LineSegment Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/_linesegment1",
         args: {
@@ -2746,23 +2760,23 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let p1x = -1 + moveX;
         let p1y = -2 + moveY;
         let p2x = -3 + moveX;
         let p2y = -4 + moveY;
 
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2"].stateValues.xs[0]).eq(p2x)
         expect(stateVariables["/p2"].stateValues.xs[1]).eq(p2y)
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([p1x, p1y]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([p2x, p2y]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([p1x, p1y]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([p2x, p2y]);
         expect(stateVariables['/_linesegment2'].stateValues.endpoints[0]).eqls([p1x, p1y]);
         expect(stateVariables['/_linesegment2'].stateValues.endpoints[1]).eqls([p2x, p2y]);
 
@@ -2772,15 +2786,15 @@ describe('LineSegment Tag Tests', function () {
 
     cy.log('move second line segment up and to the left')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let point1coords = [
-        (await stateVariables['/_linesegment2'].stateValues.endpoints)[0][0],
-        (await stateVariables['/_linesegment2'].stateValues.endpoints)[0][1],
+        (stateVariables['/_linesegment2'].stateValues.endpoints)[0][0],
+        (stateVariables['/_linesegment2'].stateValues.endpoints)[0][1],
       ];
       let point2coords = [
-        (await stateVariables['/_linesegment2'].stateValues.endpoints)[1][0],
-        (await stateVariables['/_linesegment2'].stateValues.endpoints)[1][1],
+        (stateVariables['/_linesegment2'].stateValues.endpoints)[1][0],
+        (stateVariables['/_linesegment2'].stateValues.endpoints)[1][1],
       ];
 
       let moveX = -7;
@@ -2791,7 +2805,7 @@ describe('LineSegment Tag Tests', function () {
       point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
       point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
 
-      win.callAction({
+      win.callAction1({
         actionName: "moveLineSegment",
         componentName: "/_linesegment2",
         args: {
@@ -2804,7 +2818,7 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p1b .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         moveX = 4 + moveX;
         moveY = 2 + moveY;
@@ -2814,16 +2828,16 @@ describe('LineSegment Tag Tests', function () {
         let p2y = -4 + moveY;
 
 
-        expect((await stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
-        expect((await stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
-        expect((await stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
-        expect((await stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
+        expect((stateVariables["/p1"].stateValues.xs)[0]).eq(p1x)
+        expect((stateVariables["/p1"].stateValues.xs)[1]).eq(p1y)
+        expect((stateVariables["/p2"].stateValues.xs)[0]).eq(p2x)
+        expect((stateVariables["/p2"].stateValues.xs)[1]).eq(p2y)
         expect(stateVariables["/p1"].stateValues.xs[0]).eq(p1x)
         expect(stateVariables["/p1"].stateValues.xs[1]).eq(p1y)
         expect(stateVariables["/p2"].stateValues.xs[0]).eq(p2x)
         expect(stateVariables["/p2"].stateValues.xs[1]).eq(p2y)
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([p1x, p1y]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([p2x, p2y]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([p1x, p1y]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([p2x, p2y]);
         expect(stateVariables['/_linesegment2'].stateValues.endpoints[0]).eqls([p1x, p1y]);
         expect(stateVariables['/_linesegment2'].stateValues.endpoints[1]).eqls([p2x, p2y]);
       })
@@ -2866,14 +2880,16 @@ describe('LineSegment Tag Tests', function () {
 
     let x = 1, y = 2;
 
+    cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(x)},${nInDOM(y)})`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
-      expect((await stateVariables['/x1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/x2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/y1'].stateValues.xs)[1]).eq(y);
-      expect((await stateVariables['/y2'].stateValues.xs)[1]).eq(x);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
+      expect((stateVariables['/x1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/x2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/y1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/y2'].stateValues.xs)[1]).eq(x);
     })
 
     cy.log("move x point 1")
@@ -2881,7 +2897,7 @@ describe('LineSegment Tag Tests', function () {
 
       x = 3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/x1",
         args: { x }
@@ -2891,13 +2907,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
-        expect((await stateVariables['/x1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/x2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/y1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/y2'].stateValues.xs)[1]).eq(x);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
+        expect((stateVariables['/x1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/x2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/y1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/y2'].stateValues.xs)[1]).eq(x);
       })
     })
 
@@ -2906,7 +2922,7 @@ describe('LineSegment Tag Tests', function () {
 
       y = 4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/x2",
         args: { x: y }
@@ -2916,13 +2932,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
-        expect((await stateVariables['/x1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/x2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/y1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/y2'].stateValues.xs)[1]).eq(x);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
+        expect((stateVariables['/x1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/x2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/y1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/y2'].stateValues.xs)[1]).eq(x);
       })
     })
 
@@ -2931,7 +2947,7 @@ describe('LineSegment Tag Tests', function () {
 
       y = -6;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/y1",
         args: { y }
@@ -2941,13 +2957,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
-        expect((await stateVariables['/x1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/x2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/y1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/y2'].stateValues.xs)[1]).eq(x);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
+        expect((stateVariables['/x1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/x2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/y1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/y2'].stateValues.xs)[1]).eq(x);
       })
     })
 
@@ -2956,7 +2972,7 @@ describe('LineSegment Tag Tests', function () {
 
       x = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/y2",
         args: { y: x }
@@ -2966,13 +2982,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p2 .mjx-mrow").should('contain.text', `(${nInDOM(y)},${nInDOM(x)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
-        expect((await stateVariables['/x1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/x2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/y1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/y2'].stateValues.xs)[1]).eq(x);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x, y]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([y, x]);
+        expect((stateVariables['/x1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/x2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/y1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/y2'].stateValues.xs)[1]).eq(x);
       })
     })
 
@@ -3004,14 +3020,16 @@ describe('LineSegment Tag Tests', function () {
     let x2 = 3, y2 = 2;
     let x3 = -1, y3 = 4;
 
+    cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
-      expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
-      expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
-      expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
-      expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
-      expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+      expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+      expect((stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+      expect((stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+      expect((stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+      expect((stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
 
     })
 
@@ -3021,7 +3039,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = 7;
       y2 = -3
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p11",
         args: { x: x2, y: y2 }
@@ -3030,13 +3048,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();;
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+        let stateVariables = await win.returnAllStateVariables1();;
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
       })
     })
 
@@ -3046,7 +3064,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = -1;
       y1 = -4;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p12",
         args: { x: x1, y: y1 }
@@ -3055,13 +3073,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p12 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
       })
     })
 
@@ -3071,7 +3089,7 @@ describe('LineSegment Tag Tests', function () {
       x3 = 9;
       y3 = -8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p21",
         args: { x: x3, y: y3 }
@@ -3080,13 +3098,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p21 .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
       })
     })
 
@@ -3096,7 +3114,7 @@ describe('LineSegment Tag Tests', function () {
       x2 = 3;
       y2 = 2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p22",
         args: { x: x2, y: y2 }
@@ -3105,13 +3123,13 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p22 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
       })
     })
 
@@ -3121,7 +3139,7 @@ describe('LineSegment Tag Tests', function () {
       x1 = -5;
       y1 = 8;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p31",
         args: { x: x1, y: y1 }
@@ -3130,24 +3148,24 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p31 .mjx-mrow").should('contain.text', `(${nInDOM(x1)},${nInDOM(y1)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
       })
     })
 
     cy.log("move point 2 of line segment 3")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       x3 = 0;
       y3 = -5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p32",
         args: { x: x3, y: y3 }
@@ -3156,15 +3174,61 @@ describe('LineSegment Tag Tests', function () {
       cy.get("#\\/p32 .mjx-mrow").should('contain.text', `(${nInDOM(x3)},${nInDOM(y3)})`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
-        expect((await stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
-        expect((await stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[0]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment1'].stateValues.endpoints)[1]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[0]).eqls([x3, y3]);
+        expect((stateVariables['/_linesegment2'].stateValues.endpoints)[1]).eqls([x2, y2]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[0]).eqls([x1, y1]);
+        expect((stateVariables['/_linesegment3'].stateValues.endpoints)[1]).eqls([x3, y3]);
       })
     })
 
   })
+
+  it('copy propIndex of points', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <linesegment endpoints="(2,-3) (3,4)" />
+    </graph>
+ 
+    <p><mathinput name="n" /></p>
+
+    <p><copy prop="endpoints" target="_linesegment1" propIndex="$n" assignNames="P1 P2" /></p>
+
+    <p><copy prop="endpoint2" target="_linesegment1" propIndex="$n" assignNames="x" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 2, t1y = -3;
+    let t2x = 3, t2y = 4;
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+  
+    cy.get('#\\/n textarea').type("1{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+  
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+  
+
+  });
+
 });

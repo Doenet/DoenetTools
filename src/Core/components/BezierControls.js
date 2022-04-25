@@ -6,8 +6,8 @@ export default class BezierControls extends BaseComponent {
   static componentType = "bezierControls";
   static rendererType = "container";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.alwaysVisible = {
       createComponentOfType: "boolean",

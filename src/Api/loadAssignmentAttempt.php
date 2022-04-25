@@ -50,7 +50,7 @@ if (!isset($_REQUEST["doenetId"])) {
 	ua.creditOverride as assignmentCreditOverride,
 	uaa.credit as attemptCredit,
 	uaa.creditOverride AS attemptCreditOverride,
-    uaa.contentId as contentId,
+    uaa.cid as cid,
     ci.stateVariables AS stateVariables,
     ci.variant AS variant,
     ci.timestamp AS timestamp,
@@ -83,7 +83,7 @@ if (!isset($_REQUEST["doenetId"])) {
             "attemptCredit"=>$row['attemptCredit'],
             "attemptCreditOverride"=>$row['attemptCreditOverride'],
             "timestamp"=>$row['timestamp'],
-            "contentId"=>$row['contentId'],
+            "cid"=>$row['cid'],
         );
 
         // set response code - 200 OK
@@ -102,7 +102,7 @@ if (!isset($_REQUEST["doenetId"])) {
     //     LEFT JOIN assignment AS a
     //     ON a.assignmentId = '$assignmentId'
     //     LEFT JOIN content AS c
-    //     ON a.contentId = c.contentId
+    //     ON a.cid = c.cid
     //     WHERE ua.userId = '$userId'
     //     AND ua.assignmentId = '$assignmentId'; 
     //     ";

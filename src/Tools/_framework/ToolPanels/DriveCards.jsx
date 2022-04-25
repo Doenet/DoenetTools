@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   useRecoilCallback,
   useSetRecoilState,
   useRecoilState,
-  useRecoilValueLoadable,
+  useRecoilValue,
 } from 'recoil';
 import { useTransition, a } from '@react-spring/web';
 import useMeasure from 'react-use-measure';
@@ -12,21 +12,15 @@ import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import { pageToolViewAtom } from '../NewToolRoot';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
-import { clearDriveAndItemSelections, fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { coursePermissionsAndSettings } from '../../../_reactComponents/Course/CourseActions';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import useMedia from './useMedia';
 import './driveCardsStyle.css';
 
-export default function DriveCardsNew(props) {
-  console.log('>>>===DriveCards');
+export default function CourseCards(props) {
+  console.log('>>>===CourseCards');
 
-  const driveInfo = useRecoilValueLoadable(fetchDrivesQuery);
-
-  let driveIdsAndLabelsInfo = '';
-
-  if (driveInfo.state == 'hasValue') {
-    driveIdsAndLabelsInfo = driveInfo.contents.driveIdsAndLabels;
-  }
+  const courses = useRecoilValue(coursePermissionsAndSettings);
 
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
 
@@ -44,22 +38,26 @@ export default function DriveCardsNew(props) {
     ]);
   }, [setMainPanelClear]);
 
+
+  if (courses.length == 0){
+    return null;
+  }
+
   return (
     <div style={props.style}>
-      {driveIdsAndLabelsInfo && (
-        <DriveCardWrapper
-          driveInfo={driveIdsAndLabelsInfo}
+     <CourseCardWrapper
+          courses={courses}
           drivePathSyncKey="main"
           types={['course']}
           isOneDriveSelect={false}
         />
-      )}
     </div>
   );
+  
 }
 
-const DriveCardWrapper = (props) => {
-  const { isOneDriveSelect, driveInfo, drivePathSyncKey, types } = props;
+const CourseCardWrapper = (props) => {
+  const { isOneDriveSelect, courses, drivePathSyncKey, types } = props;
 
   const [drivecardSelectedValue, setDrivecardSelection] = useRecoilState(
     drivecardSelectedNodesAtom,
@@ -80,12 +78,13 @@ const DriveCardWrapper = (props) => {
 
   let showCards = [];
   if (types[0] === 'course' && width !== 0) {
-    showCards = driveInfo;
+    showCards = courses;
   }
 
+  //TODO move showcards into the memo to make it effective (currenlty has no effect)
   const [heights, driveCardItems] = useMemo(() => {
     let heights = new Array(columns).fill(0); // Each column gets a height starting with zero
-    let driveCardItems = showCards.map((child, i) => {
+    let driveCardItems = showCards.map((child) => {
       const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
       const x = (width / columns) * column + 20; // x = container width / number of columns * column index,
       const y = (heights[column] += 270) - 270; // y = it's just the height of the current column
@@ -101,10 +100,10 @@ const DriveCardWrapper = (props) => {
     return [heights, driveCardItems];
   }, [columns, showCards, width]);
 
-  console.log('>>> driveInfo', driveCardItems);
+  // console.log('>>> driveInfo', driveCardItems);
 
   const transitions = useTransition(driveCardItems, {
-    key: (item) => item.driveId,
+    key: (item) => item.courseId,
     from: ({x, y, width, height}) => ({ opacity: 0, x, y, width, height}), // Drive cards fade onto the screen when the page loads
     enter: ({ opacity: 1 }),
     update: ({ x, y, width, height }) => ({ x, y, width, height }),
@@ -117,15 +116,15 @@ const DriveCardWrapper = (props) => {
     set(selectedMenuPanelAtom, 'SelectedCourse');
   });
 
-  const handleKeyDown = (e, item) => {
-    if (e.key === 'Enter') {
-      setPageToolView({
-        tool: 'navigation',
-        params: {
-          path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`,
-        },
-      });
-    }
+  const handleSelect = (e, item) => {
+    setPageToolView({
+      page: 'course',
+      tool: 'dashboard',
+      view: '',
+      params: {
+        courseId: item.courseId,
+      },
+    });
   };
 
   
@@ -147,13 +146,13 @@ const DriveCardWrapper = (props) => {
     if (isOneDriveSelect) {
       if (!e.shiftKey && !e.metaKey) {
         // one item
-        setDrivecardSelection((old) => [item]);
+        setDrivecardSelection(() => [item]);
         setSelectedCourseMenu();
       }
     } else {
       if (!e.shiftKey && !e.metaKey) {
         // one item
-        setDrivecardSelection((old) => [item]);
+        setDrivecardSelection(() => [item]);
         setSelectedCourseMenu();
       } else if (e.shiftKey && !e.metaKey) {
         // range to item
@@ -227,7 +226,7 @@ const DriveCardWrapper = (props) => {
     }
     let availableCard = drivecardSelectedValue.filter(
       (i) =>
-        i.driveId === cardItem.driveId &&
+        i.courseId === cardItem.courseId &&
         i.drivePathSyncKey === drivePathSyncKey,
     );
     return availableCard.length > 0 ? true : false;
@@ -241,7 +240,7 @@ const DriveCardWrapper = (props) => {
         style={{ height: Math.max(...heights) }}
       >
         {transitions((style, item, t, index) => {
-          console.log('');
+          // console.log('');
           let isSelected = getSelectedCard(item);
           return (
             <a.div style={style} >
@@ -255,20 +254,16 @@ const DriveCardWrapper = (props) => {
                   drivecardselection(e, item, props);
                 }}
                 onBlur={() => handleOnBlur()}
-                onKeyDown={(e) => handleKeyDown(e, item)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSelect(e, item)
+                  }
+                }}
                 onKeyUp={(e) => handleKeyUp(e, item)}
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setDrivecardSelection([]); //TODO: on leave instead
-                  setPageToolView({
-                    page: 'course',
-                    tool: 'dashboard',
-                    view: '',
-                    params: {
-                      path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`,
-                    },
-                  });
+                  handleSelect(e, item);
                 }}>
           
                 <DriveCard
@@ -276,7 +271,7 @@ const DriveCardWrapper = (props) => {
                   color={item.color}
                   label={item.label}
                   isSelected={isSelected}
-                  role={item.role}
+                  role={item.roleLabels}
                 />
               </div>
             </a.div>

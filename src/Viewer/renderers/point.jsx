@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 import me from 'math-expressions';
+import { MathJax } from 'better-react-mathjax';
 
 export default function Point(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
@@ -26,13 +27,6 @@ export default function Point(props) {
 
   lastPositionFromCore.current = SVs.numericalXs;
 
-  useEffect(() => {
-    if (!board && window.MathJax) {
-      window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  })
 
   useEffect(() => {
     //On unmount
@@ -355,7 +349,7 @@ export default function Point(props) {
   //Render text coordinates when outside of graph
 
   let mathJaxify = "\\(" + me.fromAst(SVs.coordsForDisplay).toLatex() + "\\)";
-  return <><a name={name} /><span id={name}>{mathJaxify}</span></>
+  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 
 
 }

@@ -16,16 +16,17 @@ $device = $jwtArray["deviceName"];
 
 $_POST = json_decode(file_get_contents("php://input"), true);
 $doenetId = mysqli_real_escape_string($conn, $_POST["doenetId"]);
-$CID = mysqli_real_escape_string($conn, $_POST["CID"]);
+$cid = mysqli_real_escape_string($conn, $_POST["cid"]);
+$pageNumber = mysqli_real_escape_string($conn, $_POST["pageNumber"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_POST["attemptNumber"]);
 $coreInfo = mysqli_real_escape_string($conn, $_POST["coreInfo"]);
 $coreState = mysqli_real_escape_string($conn, $_POST["coreState"]);
 $rendererState = mysqli_real_escape_string($conn, $_POST["rendererState"]);
 $saveId = mysqli_real_escape_string($conn, $_POST["saveId"]);
 $serverSaveId = mysqli_real_escape_string($conn, $_POST["serverSaveId"]);
-$updateTableOnContentChange = mysqli_real_escape_string(
+$updateDataOnContentChange = mysqli_real_escape_string(
     $conn,
-    $_POST["updateTableOnContentChange"]
+    $_POST["updateDataOnContentChange"]
 );
 
 $success = true;
@@ -33,9 +34,12 @@ $message = "";
 if ($doenetId == "") {
     $success = false;
     $message = "Internal Error: missing doenetId";
-} elseif ($CID == "") {
+} elseif ($cid == "") {
     $success = false;
-    $message = "Internal Error: missing CID";
+    $message = "Internal Error: missing cid";
+} elseif ($pageNumber == "") {
+    $success = false;
+    $message = "Internal Error: missing pageNumber";
 } elseif ($attemptNumber == "") {
     $success = false;
     $message = "Internal Error: missing attemptNumber";
@@ -66,11 +70,9 @@ if ($doenetId == "") {
     }
 }
 
-// TODO: check if CID of assignment has changed,
-// if so, include {CIDchanged: true} in response
+// TODO: check if cid of assignment has changed,
+// if so, include {cidChanged: true} in response
 // in order to alert the user
-
-// TODO: do we need to save a timestamp?
 
 $stateOverwritten = false;
 $savedState = false;
@@ -81,12 +83,12 @@ if ($success) {
             coreState = '$coreState',
             rendererState = '$rendererState',
             saveId = '$saveId',
-            deviceName = '$device',
-            timestamp = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+            deviceName = '$device'
             WHERE userId='$userId'
             AND doenetId='$doenetId'
+            AND pageNumber='$pageNumber'
             AND attemptNumber='$attemptNumber'
-            AND CID = '$CID'
+            AND cid = '$cid'
             AND saveId = '$serverSaveId'
             ";
 
@@ -101,108 +103,129 @@ if ($success) {
         // so either there is no page_state saved
         // or the saveId was changed by another device
 
-        // attempt to insert a rows in page_state
+        // as long as we aren't updating data on content change
+        // first check if there is a new attept number
+        // (as could be no row at the current attempt number even if we passed it to a new attempt number)
+        if ($updateDataOnContentChange != "1") {
+            // get new attempt number from user_assignment_attempt
+            // since that gets updated as soon as a new attempt is created
 
-        $sql = "INSERT INTO page_state
-            (userId,doenetId,CID,attemptNumber,deviceName,saveId,coreInfo,coreState,rendererState,timestamp)
-            VALUES ('$userId','$doenetId','$CID','$attemptNumber','$device','$saveId','$coreInfo','$coreState','$rendererState',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-        ";
-
-        $conn->query($sql);
-
-        if ($conn->affected_rows > 0) {
-            // successfully added a new row to page_state
-
-            // if attemptNumber is greater than 1, then delete the saveId from previous attempts
-            // so that updating that saveId from any other device will fail
-
-            if ($attemptNumber > 1) {
-                $sql = "UPDATE page_state SET
-                saveId = NULL
-                WHERE userId='$userId'
-                AND doenetId='$doenetId'
-                AND attemptNumber < '$attemptNumber'
+            $sql = "SELECT MAX(attemptNumber) as maxAttemptNumber
+                FROM user_assignment_attempt 
+                WHERE userId = '$userId' 
+                AND doenetId = '$doenetId'
                 ";
 
-                $conn->query($sql);
+            $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $newAttemptNumber = $row["maxAttemptNumber"];
+            } else {
+                // something strange happened
+                $success = false;
+                $message = "Database error 1";
             }
-        } else {
-            // no rows were inserted
-            // so the saveId was changed by another device
 
-            $modifiedDBRecord = false;
+            if ($newAttemptNumber !== $attemptNumber) {
+                $stateOverwritten = true;
 
-            if ($updateTableOnContentChange == "1") {
-                // if the CID changed,
-                // then update the table rather than getting information from the table
+                // Note: don't need any more information if attempt number changes
+                // as will reset activity
+            }
+        }
 
-                $sql = "SELECT CID
+        if ($success && !$stateOverwritten) {
+            // attempt to insert a rows in page_state
+
+            $sql = "INSERT INTO page_state
+                (userId,doenetId,cid,pageNumber,attemptNumber,deviceName,saveId,coreInfo,coreState,rendererState)
+                VALUES ('$userId','$doenetId','$cid','$pageNumber','$attemptNumber','$device','$saveId','$coreInfo','$coreState','$rendererState')
+            ";
+
+            $conn->query($sql);
+
+            if ($conn->affected_rows < 1) {
+                // no rows were inserted
+                // so the saveId was changed by another device
+
+                $modifiedDBRecord = false;
+
+                if ($updateDataOnContentChange == "1") {
+                    // if the cid changed,
+                    // then update the table rather than getting information from the table
+
+                    $sql = "SELECT cid
                     FROM page_state
                     WHERE userId='$userId'
                     AND doenetId='$doenetId'
+                    AND pageNumber = '$pageNumber'
                     AND attemptNumber = '$attemptNumber'
                     ";
 
-                $result = $conn->query($sql);
+                    $result = $conn->query($sql);
 
-                if ($result->num_rows > 0) {
-                    $row = $result->fetch_assoc();
-                    if ($row["CID"] != $CID) {
-                        // update the matching row in page_state
-                        // to match current CID and state
-                        $sql = "UPDATE page_state SET
-                            CID = '$CID',
+                    if ($result->num_rows > 0) {
+                        $row = $result->fetch_assoc();
+                        if ($row["cid"] != $cid) {
+                            // update the matching row in page_state
+                            // to match current cid and state
+                            $sql = "UPDATE page_state SET
+                            cid = '$cid',
+                            coreInfo = '$coreInfo',
                             coreState = '$coreState',
                             rendererState = '$rendererState',
                             saveId = '$saveId',
-                            deviceName = '$device',
-                            timestamp = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+                            deviceName = '$device'
                             WHERE userId='$userId'
                             AND doenetId='$doenetId'
+                            AND pageNumber='$pageNumber'
                             AND attemptNumber='$attemptNumber'
                             ";
 
-                        $conn->query($sql);
+                            $conn->query($sql);
 
-                        $modifiedDBRecord = true;
+                            $modifiedDBRecord = true;
 
-                        if (!($conn->affected_rows > 0)) {
-                            // something went wrong
-                            $success = false;
-                            $message = "Database error 1";
+                            if (!($conn->affected_rows > 0)) {
+                                // something went wrong
+                                $success = false;
+                                $message = "Database error 2";
+                            }
                         }
                     }
                 }
-            }
 
-            if (!$modifiedDBRecord) {
-                // get information from the latest attemptNumber
+                if (!$modifiedDBRecord) {
 
-                $stateOverwritten = true;
+                    // need additional information since keeping same attempt number
 
-                $sql = "SELECT CID, attemptNumber, saveId, deviceName, coreInfo, coreState, rendererState
-                    FROM page_state
-                    WHERE userId = '$userId'
-                    AND doenetId = '$doenetId'
-                    AND attemptNumber = (SELECT MAX(attemptNumber) FROM page_state WHERE userId = '$userId' AND doenetId = '$doenetId')
-                    ";
+                    $stateOverwritten = true;
+                    $newAttemptNumber = $attemptNumber;
 
-                $result = $conn->query($sql);
+                    $sql = "SELECT cid, pageNumber, attemptNumber, saveId, deviceName, coreInfo, coreState, rendererState
+                        FROM page_state
+                        WHERE userId = '$userId'
+                        AND doenetId = '$doenetId'
+                        AND pageNumber = '$pageNumber'
+                        AND attemptNumber ='$attemptNumber'
+                        ";
 
-                if ($result->num_rows > 0) {
-                    $row = $result->fetch_assoc();
+                    $result = $conn->query($sql);
 
-                    $newCID = $row["CID"];
-                    $newAttemptNumber = $row["attemptNumber"];
-                    $saveId = $row["saveId"];
-                    $newDevice = $row["deviceName"];
-                    $newCoreInfo = $row["coreInfo"];
-                    $newCoreState = $row["coreState"];
-                    $newRendererState = $row["rendererState"];
-                } else {
-                    // something strange happened (another process changed the database in between queries?)
-                    $success = false;
-                    $message = "Database error 2";
+                    if ($result->num_rows > 0) {
+                        $row = $result->fetch_assoc();
+
+                        $newCid = $row["cid"];
+                        $saveId = $row["saveId"];
+                        $newDevice = $row["deviceName"];
+                        $newCoreInfo = $row["coreInfo"];
+                        $newCoreState = $row["coreState"];
+                        $newRendererState = $row["rendererState"];
+                    } else {
+                        // something strange happened (another process changed the database in between queries?)
+                        $success = false;
+                        $message = "Database error 2";
+                    }
                 }
             }
         }
@@ -213,7 +236,7 @@ $response_arr = [
     "success" => $success,
     "saveId" => $saveId,
     "stateOverwritten" => $stateOverwritten,
-    "CID" => $newCID,
+    "cid" => $newCid,
     "attemptNumber" => $newAttemptNumber,
     "coreInfo" => $newCoreInfo,
     "coreState" => $newCoreState,

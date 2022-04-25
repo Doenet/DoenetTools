@@ -4,8 +4,8 @@ import { findFiniteNumericalValue } from '../utils/math';
 export default class ConstrainToGrid extends ConstraintComponent {
   static componentType = "constrainToGrid";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.dx = {
       createComponentOfType: "number",
       createStateVariable: "dx",

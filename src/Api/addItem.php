@@ -19,7 +19,7 @@ $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 $label = mysqli_real_escape_string($conn,$_POST["label"]);
 $type = mysqli_real_escape_string($conn,$_POST["type"]);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
-$contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
+$cid = mysqli_real_escape_string($conn,$_POST["cid"]);
 $sortOrder = mysqli_real_escape_string($conn,$_POST["sortOrder"]);
 $isNewCopy = mysqli_real_escape_string($conn,$_POST["isNewCopy"]);
 
@@ -32,7 +32,6 @@ $attemptAggregation = mysqli_real_escape_string($conn,$_POST["attemptAggregation
 $totalPointsOrPercent = mysqli_real_escape_string($conn,$_POST["totalPointsOrPercent"]);
 $gradeCategory = mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
 $individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
-$multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
 $showSolutionInGradebook = mysqli_real_escape_string($conn,$_POST["showSolutionInGradebook"]);
 $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
@@ -43,7 +42,6 @@ if ($timeLimit == ''){$timeLimit = 'NULL';} else {$timeLimit = "'$timeLimit'"; }
 if ($dueDate == ''){$dueDate = 'NULL';} else {$dueDate = "'$dueDate'"; }
 if ($assignedDate == ''){$assignedDate = 'NULL';} else {$assignedDate = "'$assignedDate'"; }
 if ($individualize){ $individualize = '1'; } else { $individualize = '0'; }
-if ($multipleAttempts){ $multipleAttempts = '1'; } else { $multipleAttempts = '0'; }
 if ($showSolution){ $showSolution = '1'; } else { $showSolution = '0'; }
 if ($showSolutionInGradebook){ $showSolutionInGradebook = '1'; } else { $showSolutionInGradebook = '0'; }
 if ($showFeedback){ $showFeedback = '1'; } else { $showFeedback = '0'; }
@@ -135,7 +133,7 @@ if ($success) {
         case 'DoenetML':
             if ($isNewCopy != '1') {
                 $emptyContentId =
-                    'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+                    'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku';
                 $fileName = $emptyContentId;
                 //TODO: Config file needed for server
                 ($newfile = fopen("../media/$fileName.doenet", 'w')) or
@@ -155,7 +153,7 @@ if ($success) {
                 $result = $conn->query($sql);
                 $sql = "
                   INSERT INTO content
-                  (doenetId,versionId,contentId,title,timestamp,isDraft,removedFlag,public)
+                  (doenetId,versionId,cid,title,timestamp,isDraft,removedFlag,public)
                   VALUES
                   ('$doenetId','$versionId','$emptyContentId','Draft',NOW(),'1','0','1')
                   ";
@@ -167,7 +165,7 @@ if ($success) {
             INSERT INTO assignment
             (
             doenetId,
-            contentId,
+            cid,
             driveId,
             assignedDate,
             dueDate,
@@ -177,7 +175,6 @@ if ($success) {
             totalPointsOrPercent,
             gradeCategory,
             individualize,
-            multipleAttempts,
             showSolution,
             showSolutionInGradebook,
             showFeedback,
@@ -187,7 +184,7 @@ if ($success) {
             VALUES
             (
             '$doenetId',
-            '$contentId',
+            '$cid',
             '$driveId',
             $assignedDate,
             $dueDate,
@@ -197,7 +194,6 @@ if ($success) {
             '$totalPointsOrPercent',
             '$gradeCategory',
             '$individualize',
-            '$multipleAttempts',
             '$showSolution',
             '$showSolutionInGradebook',
             '$showFeedback',
@@ -232,7 +228,7 @@ if ($success) {
                 $result = $conn->query($sql);
                 $sql = "
                   INSERT INTO content
-                  (doenetId,versionId,contentId,title,timestamp,isDraft,removedFlag,public)
+                  (doenetId,versionId,cid,title,timestamp,isDraft,removedFlag,public)
                   VALUES
                   ('$doenetId','$versionId','$emptyContentId','Draft',NOW(),'1','0','1')
                   ";
@@ -244,7 +240,7 @@ if ($success) {
                 INSERT INTO assignment
                 (
                 doenetId,
-                contentId,
+                cid,
                 driveId,
                 assignedDate,
                 dueDate,
@@ -254,7 +250,6 @@ if ($success) {
                 totalPointsOrPercent,
                 gradeCategory,
                 individualize,
-                multipleAttempts,
                 showSolution,
                 showSolutionInGradebook,
                 showFeedback,
@@ -264,7 +259,7 @@ if ($success) {
                 VALUES
                 (
                 '$doenetId',
-                '$contentId',
+                '$cid',
                 '$driveId',
                 $assignedDate,
                 $dueDate,
@@ -274,7 +269,6 @@ if ($success) {
                 '$totalPointsOrPercent',
                 '$gradeCategory',
                 '$individualize',
-                '$multipleAttempts',
                 '$showSolution',
                 '$showSolutionInGradebook',
                 '$showFeedback',
