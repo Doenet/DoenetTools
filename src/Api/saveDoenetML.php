@@ -15,7 +15,7 @@ $userId = $jwtArray["userId"];
 $_POST = json_decode(file_get_contents("php://input"), true);
 
 $dangerousDoenetML = $_POST["doenetML"];
-$doenetId = mysqli_real_escape_string($conn, $_POST["doenetId"]);
+$pageId = mysqli_real_escape_string($conn, $_POST["pageId"]);
 $courseId = mysqli_real_escape_string($conn, $_POST["courseId"]);
 $saveAsCid = mysqli_real_escape_string($conn, $_POST["saveAsCid"]);
 
@@ -26,9 +26,9 @@ $cid = null;
 // set default response code - 200 OK
 http_response_code(200);
 
-if ($doenetId == "") {
+if ($pageId == "") {
     $success = false;
-    $message = "Internal Error: missing doenetId";
+    $message = "Internal Error: missing pageId";
 } elseif ($courseId == "") {
     $success = false;
     $message = "Internal Error: missing courseId";
@@ -51,11 +51,11 @@ if ($success) {
     }
 }
 
-// check if doenetId belongs to courseId
+// check if pageId belongs to courseId
 if ($success) {
     $sql = "SELECT doenetId
         FROM pages
-        WHERE courseId='$courseId' AND doenetId='$doenetId'
+        WHERE courseId='$courseId' AND doenetId='$pageId'
         ";
 
     $result = $conn->query($sql);
@@ -73,7 +73,7 @@ if ($success) {
         $cid = cidFromSHA($SHA);
         $filename = $cid;
     } else {
-        $filename = "bydoenetid/$doenetId";
+        $filename = "bydoenetid/$pageId";
     }
 
     //TODO: Config file needed for server

@@ -36,7 +36,7 @@ export default function DoenetMLEditor(props) {
     // localStorage.setItem(cid,doenetML)
 
     try {
-      const { data } = await axios.post("/api/saveDoenetML.php", { doenetML, doenetId: pageId, courseId })
+      const { data } = await axios.post("/api/saveDoenetML.php", { doenetML, pageId, courseId })
       set(fileByDoenetId(pageId),doenetML);
       if (!data.success) {
         //TODO: Toast here
