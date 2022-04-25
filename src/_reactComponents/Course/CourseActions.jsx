@@ -1497,30 +1497,85 @@ export const useCourse = (courseId) => {
                 return;
               }
               let sourceContainingObj = await snapshot.getPromise(authorItemByDoenetId(cutObj.containingDoenetId));
+
+              let originalPageDoenetId = cutObj.doenetId;
+              let sourceType = sourceContainingObj.type;
+              let sourceDoenetId = sourceContainingObj.doenetId;
+              let destinationContainingObj = {};
+              let sourceJSON = {};
+              let destinationJSON = {};
+              
               //Remove from Activity
               if (sourceContainingObj.type == 'activity'){
                 console.log("from activity")
               }
               //Remove from Collection
               if (sourceContainingObj.type == 'bank'){
-                console.log("from collection")
-
+                sourceJSON = {...sourceContainingObj}
+                let nextPages = [...sourceJSON.pages]
+                nextPages.splice(sourceJSON.pages.indexOf(originalPageDoenetId),1)
+                sourceJSON.pages = nextPages;
               }
-              console.log("sourceContainingObj",sourceContainingObj)
               //Add to Collection
               if (singleSelectedObj.type == 'bank'){
-
-                console.log('into collection')
+                destinationContainingObj = {...singleSelectedObj};
+                destinationJSON = {...destinationContainingObj};
+                destinationJSON.pages = [...destinationJSON.pages,originalPageDoenetId]
               }
               //Add to Activity
               if (singleSelectedObj.type == 'order'){
+                destinationContainingObj = await snapshot.getPromise(authorItemByDoenetId(singleSelectedObj.containingDoenetId));
+
                 console.log('into order')
               }
               console.log("Cut Page!",nextObj)
+              let destinationType = destinationContainingObj.type;
+              let destinationDoenetId = destinationContainingObj.doenetId;
+
+              console.log("DB params",{
+                isCopy:false,
+                courseId,
+                originalPageDoenetId,
+              sourceType,
+              sourceDoenetId,
+              destinationType,
+              destinationDoenetId,
+              sourceJSON,
+              destinationJSON,
+              })
+              
+              //update database
+              try {
+                let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
+                  isCopy:false,
+                  courseId,
+                  originalPageDoenetId,
+                  sourceType,
+                  sourceDoenetId,
+                  destinationType,
+                  destinationDoenetId,
+                  sourceJSON,
+                  destinationJSON,
+                });
+                console.log("resp.data",resp.data)
+                if (resp.status < 300) {
+                  
+                  successCallback?.();
+                  //Update recoil
+                  // set(authorItemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
+                  
+                  
+                } else {
+                  throw new Error(`response code: ${resp.status}`);
+                }
+              } catch (err) {
+                failureCallback(err);
+              }
             }
+              
 
 
-            set(authorItemByDoenetId(cutObj.doenetId),nextObj);
+
           }
           
           // console.log("resp.data",resp.data);
