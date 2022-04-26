@@ -957,7 +957,7 @@ export default function ActivityViewer(props) {
           doenetId={props.doenetId}
           cid={page.cid}
           doenetML={page.doenetML}
-          pageId={(ind + 1).toString()}
+          pageNumber={(ind + 1).toString()}
           pageIsActive={ind + 1 === currentPage}
           itemNumber={itemNumber}
           attemptNumber={attemptNumber}
