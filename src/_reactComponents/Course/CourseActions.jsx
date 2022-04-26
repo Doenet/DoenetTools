@@ -315,7 +315,7 @@ export const useCourse = (courseId) => {
   );
   const addToast = useToast();
 
-  function addPageOrOrderToOrder({
+  function insertPageOrOrderToOrder({
     parentOrderObj,
     needleOrderDoenetId,
     itemType,
@@ -357,7 +357,7 @@ export const useCourse = (courseId) => {
         return {newOrderObj,insertedAfterDoenetId};
       }
       if (item?.type == 'order'){
-        let {newOrderObj:subOrder,insertedAfterDoenetId} = addPageOrOrderToOrder({
+        let {newOrderObj:subOrder,insertedAfterDoenetId} = insertPageOrOrderToOrder({
           parentOrderObj:item,
           needleOrderDoenetId,
           itemType,
@@ -418,7 +418,7 @@ export const useCourse = (courseId) => {
     return orderAndPagesDoenetIds;
   }
 
-  function addPageOrOrderToOrderUsingPage({
+  function insertPageOrOrderIntoOrderUsingPage({
     parentOrderObj,
     needlePageDoenetId,
     itemType,
@@ -441,7 +441,7 @@ export const useCourse = (courseId) => {
       }
       if (item?.type == 'order'){
         //Recurse into the order every time we see one
-        let subOrder = addPageOrOrderToOrderUsingPage({
+        let subOrder = insertPageOrOrderIntoOrderUsingPage({
           parentOrderObj:item,
           needlePageDoenetId,
           itemType,
@@ -721,7 +721,7 @@ export const useCourse = (courseId) => {
             let orderDoenetId = selectedItemObj.doenetId;
             const containingItemObj = await snapshot.getPromise(authorItemByDoenetId(selectedItemObj.containingDoenetId));
 
-            let { newOrderObj, insertedAfterDoenetId } = addPageOrOrderToOrder({
+            let { newOrderObj, insertedAfterDoenetId } = insertPageOrOrderToOrder({
               parentOrderObj:containingItemObj.order,
               needleOrderDoenetId:orderDoenetId,
               itemType,
@@ -790,7 +790,7 @@ export const useCourse = (courseId) => {
               let insertedAfterDoenetId = selectedItemObj.doenetId;
 
               let newJSON = {...containingItemObj.order};
-              newJSON = addPageOrOrderToOrderUsingPage({
+              newJSON = insertPageOrOrderIntoOrderUsingPage({
                 parentOrderObj:newJSON,
                 needlePageDoenetId:insertedAfterDoenetId,
                 itemType,
@@ -1408,6 +1408,35 @@ export const useCourse = (courseId) => {
         successCallback();
   });
 
+  function addPageToOrder({orderObj,needleOrderDoenetId,pageToAddDoenetId}){
+    let nextOrderObj = {...orderObj};
+
+    if (nextOrderObj.doenetId == needleOrderDoenetId){
+      let previousDoenetId = nextOrderObj.doenetId;
+      if (nextOrderObj.content.length > 0){
+        previousDoenetId = nextOrderObj.content[nextOrderObj.content.length -1];
+        if (previousDoenetId?.type == 'order'){ //If last element was an order get it's doenetId
+          previousDoenetId = previousDoenetId.doenetId;
+        }
+      }
+      nextOrderObj.content = [...nextOrderObj.content,pageToAddDoenetId];
+      return {order:nextOrderObj,previousDoenetId}
+    }
+
+    for (let [i,item] of Object.entries(orderObj.content)){
+      if (item?.type == 'order'){
+        let childOrderObj = addPageToOrder({orderObj:item,needleOrderDoenetId,pageToAddDoenetId})
+        if (childOrderObj.order != null){
+          nextOrderObj.content = [...nextOrderObj.content]
+          nextOrderObj.content.splice(i,1,childOrderObj);
+          return {order:nextOrderObj,previousDoenetId:childOrderObj.previousDoenetId}
+        }
+      }
+    }
+    //Didn't find needle
+    return {order:null,previousDoenetId:null};
+  }
+
   const pasteItems = useRecoilCallback(
     ({ set,snapshot }) =>
       async ({successCallback, failureCallback = defaultFailure}) => {
@@ -1507,15 +1536,14 @@ export const useCourse = (courseId) => {
               let previousDoenetId;
               
               // console.log("cut sourceContainingObj",sourceContainingObj)
-              //Remove from Activity
               if (sourceContainingObj.type == 'activity'){
+                //Remove from Activity
                 // console.log("from activity",sourceContainingObj)
                 // let nextOrder = {...sourceContainingObj.order}
                 sourceJSON = deletePageFromOrder({orderObj:sourceContainingObj.order,needleDoenetId:originalPageDoenetId})
                 console.log("sourceContainingObj.order",sourceContainingObj.order)
-              }
-              //Remove from Collection
-              if (sourceContainingObj.type == 'bank'){
+              }else if (sourceContainingObj.type == 'bank'){
+                //Remove from Collection
                 let nextPages = [...sourceContainingObj.pages]
                 nextPages.splice(sourceContainingObj.pages.indexOf(originalPageDoenetId),1)
                 sourceJSON = nextPages;
@@ -1528,12 +1556,14 @@ export const useCourse = (courseId) => {
                   previousDoenetId = singleSelectedObj.pages[singleSelectedObj.pages.length - 1]
                 }
                 destinationJSON = [...singleSelectedObj.pages,originalPageDoenetId]
-              }
-              //Add to Activity
-              if (singleSelectedObj.type == 'order'){
+              }else if (singleSelectedObj.type == 'order'){
+                //Add to Activity
                 destinationContainingObj = await snapshot.getPromise(authorItemByDoenetId(singleSelectedObj.containingDoenetId));
-
-                console.log('into order')
+                ({order:destinationJSON,previousDoenetId} = addPageToOrder({
+                  orderObj:destinationContainingObj.order,
+                  needleOrderDoenetId:singleSelectedObj.doenetId,
+                  pageToAddDoenetId:originalPageDoenetId})
+                )
               }
               console.log("Cut Page!",nextObj)
               let destinationType = destinationContainingObj.type;
@@ -1597,7 +1627,22 @@ export const useCourse = (courseId) => {
                     set(authorItemByDoenetId(originalPageDoenetId),(prev)=>{
                       let next = {...prev}
                       next.containingDoenetId = destinationDoenetId;
-                      next.previousDoenetId = destinationDoenetId;
+                      next.parentDoenetId = singleSelectedObj.doenetId;
+                      next.isBeingCut = false
+                      return next;
+                    })
+                  }else if (destinationType == 'activity'){
+                    set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
+                      let next = {...prev}
+                      next.order = destinationJSON;
+                      console.log("dest",destinationDoenetId,next)
+                      return next;
+                    })
+                    //Update page
+                    set(authorItemByDoenetId(originalPageDoenetId),(prev)=>{
+                      let next = {...prev}
+                      next.containingDoenetId = destinationDoenetId;
+                      next.parentDoenetId = singleSelectedObj.doenetId;
                       next.isBeingCut = false
                       return next;
                     })
@@ -1606,7 +1651,9 @@ export const useCourse = (courseId) => {
                   set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
                     let next = [...prev];
                     next.splice(next.indexOf(originalPageDoenetId),1);  //remove 
-                    next.splice(next.indexOf(previousDoenetId),0,originalPageDoenetId);  //insert
+                    next.splice(next.indexOf(previousDoenetId)+1,0,originalPageDoenetId);  //insert
+                    console.log("prev",prev)
+                    console.log("next",next)
                     return next
                   })
                   successCallback?.();

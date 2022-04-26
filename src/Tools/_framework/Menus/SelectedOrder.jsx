@@ -27,7 +27,7 @@ export default function SelectedOrder() {
   const [numberToSelect,setNumberToSelect] = useState(itemObj.numberToSelect);
   const [withReplacement,setWithReplacement] = useState(itemObj.withReplacement);
   let { create, updateOrderBehavior, deleteItem } = useCourse(courseId);
-  console.log("parentItemObj",parentItemObj)
+  // console.log("parentItemObj",parentItemObj)
   //Can't delete top order
   let deleteDisabled = false;
   if (parentItemObj.type == 'activity'){
