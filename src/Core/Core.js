@@ -1,24 +1,22 @@
-import readOnlyProxyHandler from './ReadOnlyProxyHandler';
-import ParameterStack from './ParameterStack';
-import Numerics from './Numerics';
-import { prng_alea } from 'esm-seedrandom';
-import me from 'math-expressions';
-import { createUniqueName, getNamespaceFromName } from './utils/naming';
-import * as serializeFunctions from './utils/serializedStateProcessing';
-import { deepCompare, deepClone } from './utils/deepFunctions';
-import createStateProxyHandler from './StateProxyHandler';
-import { convertAttributesForComponentType, postProcessCopy } from './utils/copy';
-import { flattenDeep, mapDeep } from './utils/array';
-import { DependencyHandler } from './Dependencies';
-import { preprocessMathInverseDefinition } from './utils/math';
-import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
-import { nanoid } from 'nanoid';
-import { cidFromText } from './utils/cid';
-import { removeFunctionsMathExpressionClass } from './CoreWorker';
-import createComponentInfoObjects from './utils/componentInfoObjects';
-import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { toastType } from '@Toast';
 import axios from 'axios';
+import { prng_alea } from 'esm-seedrandom';
+import { set as idb_set } from 'idb-keyval';
+import me from 'math-expressions';
+import { nanoid } from 'nanoid';
+import { removeFunctionsMathExpressionClass } from './CoreWorker';
+import { DependencyHandler } from './Dependencies';
+import Numerics from './Numerics';
+import ParameterStack from './ParameterStack';
+import { flattenDeep } from './utils/array';
+import { cidFromText } from './utils/cid';
+import createComponentInfoObjects from './utils/componentInfoObjects';
+import { convertAttributesForComponentType, postProcessCopy } from './utils/copy';
+import { deepClone } from './utils/deepFunctions';
+import { preprocessMathInverseDefinition } from './utils/math';
+import { createUniqueName, getNamespaceFromName } from './utils/naming';
+import * as serializeFunctions from './utils/serializedStateProcessing';
+import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 
 // string to componentClass: this.componentInfoObjects.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType

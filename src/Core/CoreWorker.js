@@ -1,5 +1,5 @@
-import Core from './Core';
 import me from 'math-expressions';
+import Core from './Core';
 
 let core;
 
