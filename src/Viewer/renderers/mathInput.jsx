@@ -166,7 +166,8 @@ export default function MathInput(props) {
     text-align: center;
     padding: 2px;
     z-index: 0;
-    border: var(--mainBorder);
+    /* border: var(--mainBorder); */
+    border: none;
     border-radius: var(--mainBorderRadius);
     margin: 0px 10px 12px 10px;
 

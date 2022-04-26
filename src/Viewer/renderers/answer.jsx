@@ -62,7 +62,8 @@ export default function Answer(props) {
       display: inline-block;
       color: white;
       background-color: var(--mainBlue);
-      border: var(--mainBorder);
+      /* border: var(--mainBorder); */
+      border: none;
       border-radius: var(--mainBorderRadius);
       margin: 0px 10px 12px 10px;
 
