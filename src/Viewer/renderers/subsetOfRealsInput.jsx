@@ -139,7 +139,7 @@ export default function subsetOfReals(props) {
 
     let xPosition = xValueToXPosition(pt.value);
 
-    let currentFillColor = "var(--mainRed)";
+    let currentFillColor = "var(--lightPurple)";
     if (!closed) {
       currentFillColor = "white";
     }
@@ -170,7 +170,7 @@ export default function subsetOfReals(props) {
     const higherPointKey = `higherIntervalPoint${higherXPosition}`;
     const lineKey = `line${lowerXPosition}-${higherXPosition}`;
 
-    let currentFillColor = "var(--mainRed)";
+    let currentFillColor = "var(--lightPurple)";
 
     let lowerLine = lowerXPosition;
     let higherLine = higherXPosition;
