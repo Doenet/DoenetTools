@@ -51,20 +51,25 @@ export default function Answer(props) {
 
     let checkWorkStyle = {
       cursor: 'pointer',
-      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
-      verticalAlign: 'middle'
+      // backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
+      // verticalAlign: 'middle',
     }
 
     // Moved most of checkWorkStyle styling into Button
     const Button = styled.button `
+      position: relative;
       height: 26px;
       display: inline-block;
       color: white;
-      /* padding: 2px; */
-      margin-right: 4px;
+      background-color: var(--mainBlue);
       border: var(--mainBorder);
-      border-radius: 0 5px 5px 0;
-      border-left: none;
+      border-radius: var(--mainBorderRadius);
+      margin: 0px 10px 12px 10px;
+
+      &:hover {
+        background-color: var(--lightBlue);
+        color: black;
+      };
     `;
 
     if (disabled) {
@@ -87,7 +92,7 @@ export default function Answer(props) {
           }
         }}
       >
-        <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        <FontAwesomeIcon style={{marginRight: "4px"}} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         &nbsp;
         {checkWorkText}
       </Button>);

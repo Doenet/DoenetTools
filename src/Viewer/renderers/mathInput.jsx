@@ -152,7 +152,7 @@ export default function MathInput(props) {
   if (SVs.includeCheckWork) {
     let checkWorkStyle = {
       cursor: 'pointer',
-      backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
+      // backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
   }
 
   // Moved most of checkWorkStyle styling into Button
@@ -161,23 +161,25 @@ export default function MathInput(props) {
     width: 30px;
     height: 26px;
     color: #ffffff;
+    background-color: var(--mainBlue);
     display: inline-block;
     text-align: center;
     padding: 2px;
-    margin-right: 4px;
     z-index: 0;
     border: var(--mainBorder);
-    border-radius: 0 5px 5px 0;
-    border-left: none;
+    border-radius: var(--mainBorderRadius);
+    margin: 0px 10px 12px 10px;
+
+    &:hover {
+      background-color: var(--lightBlue);
+      color: black;
+    };
   `;
 
     if (validationState.current === 'unvalidated') {
       if (SVs.disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
         checkWorkStyle.cursor = 'not-allowed'
-        ;
-      } else {
-        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue")
         ;
       }
       checkWorkButton = (
