@@ -2,12 +2,13 @@
 describe('Text Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
 
   it('spaces preserved between tags', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><text>Hello</text> <text>there</text>!</p>
@@ -22,7 +23,7 @@ describe('Text Tag Tests', function () {
   })
 
   it('components adapt to text', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p>boolean: <text><boolean>true</boolean></text></p>
@@ -38,7 +39,7 @@ describe('Text Tag Tests', function () {
   })
 
   it('text from paragraph components', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p name="orig"><q>Hello,</q> said the <em>cow</em>.  <sq>Bye,</sq> came the <alert>reply</alert>.  The <attr>text</attr> attribute of <tag>text</tag> or <tage>text</tage> doesn't <term>do</term> <c>much</c>.</p>
@@ -53,17 +54,17 @@ describe('Text Tag Tests', function () {
     cy.get('#\\/textOnly').should('have.text', `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
     cy.get('#\\/insideText').should('have.text', `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/t'].stateValues.value).eq(`"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
-      expect(components['/t2'].stateValues.value).eq(`"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/t'].stateValues.value).eq(`"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
+      expect(stateVariables['/t2'].stateValues.value).eq(`"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
     })
 
 
   })
 
   it('text from single character components', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p name="orig">Pick a number from 1 <ndash/> 2 <mdash/> no, maybe from<nbsp/>3<ellipsis /></p>
@@ -78,10 +79,10 @@ describe('Text Tag Tests', function () {
     cy.get('#\\/textOnly').should('have.text', 'Pick a number from 1 – 2 — no, maybe from\u00a03…')
     cy.get('#\\/insideText').should('have.text', 'Pick a number from 1 – 2 — no, maybe from\u00a03…')
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/t'].stateValues.value).eq(`Pick a number from 1 – 2 — no, maybe from\u00a03…`)
-      expect(components['/t2'].stateValues.value).eq(`Pick a number from 1 – 2 — no, maybe from\u00a03…`)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/t'].stateValues.value).eq(`Pick a number from 1 – 2 — no, maybe from\u00a03…`)
+      expect(stateVariables['/t2'].stateValues.value).eq(`Pick a number from 1 – 2 — no, maybe from\u00a03…`)
     })
 
 

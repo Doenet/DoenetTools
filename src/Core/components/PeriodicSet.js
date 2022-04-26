@@ -7,8 +7,8 @@ export default class PeriodicSet extends MathComponent {
   static rendererType = undefined;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.minIndex = {
       createComponentOfType: "integer",

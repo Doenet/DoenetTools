@@ -3,13 +3,17 @@ import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { sizeToCSS } from './utils/css';
+import { rendererState } from './useDoenetRenderer';
+import { useSetRecoilState } from 'recoil';
 
 export default function TextInput(props) {
-  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction } = useDoenetRender(props);
+  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   TextInput.baseStateVariable = "immediateValue";
 
   const [rendererValue, setRendererValue] = useState(SVs.immediateValue);
+
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
 
   let valueToRevertTo = useRef(SVs.immediateValue);
   let focused = useRef(null);
@@ -101,6 +105,12 @@ export default function TextInput(props) {
     if (newValue !== rendererValue) {
 
       setRendererValue(newValue);
+
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
       immediateValueWhenSetState.current = SVs.immediateValue;
 
       callAction({

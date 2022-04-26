@@ -113,16 +113,16 @@ export default function SupportingFilesMenu(props){
   let [uploadProgress,setUploadProgress] = useState([]); // {fileName,size,progressPercent}
   let numberOfFilesUploading = useRef(0);
 
-  const updateDescription = useRecoilCallback(({set})=> async (description,contentId)=>{
-    // console.log("updateDescription",description,contentId,doenetId);
-    let { data } = await axios.get('/api/updateFileDescription.php',{params:{doenetId,contentId,description}});
+  const updateDescription = useRecoilCallback(({set})=> async (description,cid)=>{
+    // console.log("updateDescription",description,cid,doenetId);
+    let { data } = await axios.get('/api/updateFileDescription.php',{params:{doenetId,cid,description}});
     // console.log("updateDescription data",data)
     // let { userQuotaBytesAvailable } = data;
     set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
       let newObj = {...was};
       let newSupportingFiles = [...was.supportingFiles];
       newSupportingFiles.map((file,index)=>{
-        if (file.contentId === contentId){
+        if (file.cid === cid){
           newSupportingFiles[index] = {...newSupportingFiles[index]}
           newSupportingFiles[index].description = description;
         }
@@ -132,16 +132,16 @@ export default function SupportingFilesMenu(props){
     })
   },[doenetId]);
 
-  const updateAsFileName = useRecoilCallback(({set})=> async (asFileName,contentId)=>{
-    // console.log("updateasFileName",asFileName,contentId,doenetId);
-    let { data } = await axios.get('/api/updateFileAsFileName.php',{params:{doenetId,contentId,asFileName}});
+  const updateAsFileName = useRecoilCallback(({set})=> async (asFileName,cid)=>{
+    // console.log("updateasFileName",asFileName,cid,doenetId);
+    let { data } = await axios.get('/api/updateFileAsFileName.php',{params:{doenetId,cid,asFileName}});
     // console.log("updateasFileName data",data)
     // let { userQuotaBytesAvailable } = data;
     set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
       let newObj = {...was};
       let newSupportingFiles = [...was.supportingFiles];
       newSupportingFiles.map((file,index)=>{
-        if (file.contentId === contentId){
+        if (file.cid === cid){
           newSupportingFiles[index] = {...newSupportingFiles[index]}
           newSupportingFiles[index].asFileName = asFileName;
         }
@@ -151,15 +151,15 @@ export default function SupportingFilesMenu(props){
     })
   },[doenetId]);
 
-  const deleteFile = useRecoilCallback(({set})=> async (contentId)=>{
-    // console.log("Delete file",{doenetId,contentId});
+  const deleteFile = useRecoilCallback(({set})=> async (cid)=>{
+    // console.log("Delete file",{doenetId,cid});
     //Update quota info using the server's records
-    let { data } = await axios.get('/api/deleteFile.php',{params:{doenetId,contentId}});
+    let { data } = await axios.get('/api/deleteFile.php',{params:{doenetId,cid}});
     // console.log("deleteFile data",data)
     let { userQuotaBytesAvailable } = data;
     set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
       let newObj = {...was};
-      newObj.supportingFiles = was.supportingFiles.filter((file)=>file.contentId !== contentId);
+      newObj.supportingFiles = was.supportingFiles.filter((file)=>file.cid !== cid);
       newObj.userQuotaBytesAvailable = userQuotaBytesAvailable;
       return newObj;
     })
@@ -243,7 +243,7 @@ export default function SupportingFilesMenu(props){
         //test if all uploads are finished then clear it out
         numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
         if (numberOfFilesUploading.current < 1){setUploadProgress([])}
-        let {success, fileName, contentId, asFileName, width, height, msg, userQuotaBytesAvailable} = data;
+        let {success, fileName, cid, asFileName, width, height, msg, userQuotaBytesAvailable} = data;
         // console.log(">>data",data)
         // console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
         if (msg){
@@ -258,7 +258,7 @@ export default function SupportingFilesMenu(props){
             let newObj = {...was}
             let newSupportingFiles = [...was.supportingFiles];
             newSupportingFiles.push({
-              contentId,
+              cid,
               fileName,
               fileType:file.type,
               width,
@@ -311,7 +311,7 @@ export default function SupportingFilesMenu(props){
   let supportFilesJSX = [];
 
   supportingFiles.map(({
-    contentId,
+    cid,
     fileName,
     fileType,
     width,
@@ -320,7 +320,7 @@ export default function SupportingFilesMenu(props){
     asFileName
   })=>{
     let doenetMLCode = 'Error';
-    let source = `doenet:cid=${contentId}`;
+    let source = `doenet:cid=${cid}`;
     if (fileType === 'image/jpeg' || fileType === 'image/png'){
       doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}' width='${width}' height='${height}' mimeType='${fileType}' />`
     }else if (fileType === 'text/csv'){
@@ -336,15 +336,15 @@ export default function SupportingFilesMenu(props){
     <div>
       <div>
         <span style={{width:'116px'}}>asFileName:</span>
-        <EditableText text={asFileName} submit={(text)=>{updateAsFileName(text,contentId)}}/>
+        <EditableText text={asFileName} submit={(text)=>{updateAsFileName(text,cid)}}/>
       </div>
       <div style={description_required_css}>
         <span style={{width:'116px'}}>description:</span>
-        <EditableText text={description} submit={(text)=>{updateDescription(text,contentId)}}/>
+        <EditableText text={description} submit={(text)=>{updateDescription(text,cid)}}/>
       </div>
       <div>
         <button onClick={()=>{
-          deleteFile(contentId);
+          deleteFile(cid);
         }}>delete</button>
         <CopyToClipboard onCopy={()=>addToast('Code copied to clipboard!', toastType.SUCCESS)} text={doenetMLCode}>
           <button onClick={()=>{

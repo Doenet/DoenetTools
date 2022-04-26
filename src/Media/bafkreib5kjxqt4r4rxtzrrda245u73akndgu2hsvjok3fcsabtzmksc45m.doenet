@@ -31,11 +31,11 @@
     </point>
 
     <boolean name="initialCorrect">$initialPoint = ($x0,0)</boolean>
-    <copy prop="fractionCorrectVerticesAdjusted" tname="cobwebPolyline" assignNames="fractionCorrectCobweb" />
+    <copy prop="fractionCorrectVerticesAdjusted" target="cobwebPolyline" assignNames="fractionCorrectCobweb" />
   </setup>
 
-  <updateValue label="Add line" name="addLine" tname="nPoints" newValue="$nPoints+1" type="number" />
-  <updateValue label="Delete line" name="deleteLine" tname="nPoints" newValue="$nPoints-1" type="number" disabled="$nPoints <= 1" />
+  <updateValue label="Add line" name="addLine" target="nPoints" newValue="$nPoints+1" type="number" />
+  <updateValue label="Delete line" name="deleteLine" target="nPoints" newValue="$nPoints-1" type="number" disabled="$nPoints <= 1" />
 
   <graph width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="$(variable)_$timeVariable" ylabel="$(variable)_{$timeVariable+1}" showNavigation="$showNavigation" identicalAxisScales grid="$grid">
     <cobwebpolyline function="$f" nPoints="$nPoints" name="cobwebPolyline" initialPoint="$initialPoint" nIterationsRequired="$nIterationsRequired" attractThreshold="$attractThreshold" variable="$variable" defaultPoint="$defaultPoint" />
@@ -52,7 +52,7 @@
         </mrow>
       </template>
       <sources alias="x" indexAlias="i">
-        <copy prop="iterateValues" tname="cobwebPolyline" />
+        <copy prop="iterateValues" target="cobwebPolyline" />
       </sources>
     </map>
     </md>

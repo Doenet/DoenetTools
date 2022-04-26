@@ -6,8 +6,8 @@ export class StyleDefinition extends BaseComponent {
   static componentType = "styleDefinition";
   static rendererType = undefined;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.styleNumber = {
       createPrimitiveOfType: "number",

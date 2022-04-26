@@ -1,19 +1,12 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Solution extends BlockComponent {
-  constructor(args) {
-    super(args);
-
-    this.revealSolution = this.revealSolution.bind(this);
-    this.finishRevealSolution = this.finishRevealSolution.bind(this);
-
-  }
   static componentType = "solution";
   static renderChildren = true;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.hide = {
       createComponentOfType: "boolean"
     }
@@ -208,14 +201,9 @@ export default class Solution extends BlockComponent {
   }
 
 
-  async revealSolution() {
+  async revealSolution({ actionId }) {
 
-    let { scoredItemNumber, scoredComponent } = await this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName);
-
-    let { allowView, message } = await this.coreFunctions.recordSolutionView({
-      itemNumber: scoredItemNumber,
-      scoredComponent: scoredComponent,
-    });
+    let { allowView, message, scoredComponent } = await this.coreFunctions.recordSolutionView();
 
 
     let updateInstructions = [{
@@ -250,14 +238,14 @@ export default class Solution extends BlockComponent {
     }
 
     return await this.coreFunctions.performUpdate({
-      updateInstructions,
+      updateInstructions, actionId,
       event,
       overrideReadOnly: true,
     })
 
   }
 
-  async closeSolution() {
+  async closeSolution({ actionId }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -266,6 +254,7 @@ export default class Solution extends BlockComponent {
         stateVariable: "open",
         value: false
       }],
+      actionId,
       event: {
         verb: "closed",
         object: {

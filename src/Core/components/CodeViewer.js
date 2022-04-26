@@ -4,8 +4,8 @@ export default class CodeViewer extends BlockComponent {
   static componentType = "codeViewer";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.codeSource = {
       createPrimitiveOfType: "string",

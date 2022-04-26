@@ -29,7 +29,7 @@ export const enrolllearnerAtom = atom({
   default: '',
 });
 
-export default function Enrollment(props) {
+export default function Enrollment() {
   console.log('>>>===Enrollment');
 
   const toast = useToast();
@@ -41,14 +41,14 @@ export default function Enrollment(props) {
   const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
   const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
 
-  const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   let [showWithdrawn, setShowWithdrawn] = useState(false);
 
   //Load Enrollment Data When CourseId changes
   useEffect(() => {
-    if (driveId !== '') {
+    if (courseId !== '') {
       axios
-        .get('/api/getEnrollment.php', { params: { driveId } })
+        .get('/api/getEnrollment.php', { params: { driveId: courseId } })
         .then((resp) => {
           // console.log(">>>>resp",resp.data)
           //TODO: Make sure we don't overwrite existing data
@@ -60,9 +60,9 @@ export default function Enrollment(props) {
           console.warn(error);
         });
     }
-  }, [driveId]);
+  }, [courseId, setEnrollmentTableDataAtom, setProcess]);
 
-  if (!driveId) {
+  if (!courseId) {
     return null;
   }
 
@@ -255,7 +255,7 @@ export default function Enrollment(props) {
             key="merge"
             onClick={() => {
               const payload = {
-                driveId,
+                driveId: courseId,
                 mergeHeads,
                 mergeId,
                 mergeFirstName,
@@ -304,10 +304,10 @@ export default function Enrollment(props) {
 
     let payload = {
       email: enrollLearner,
-      driveId: driveId,
+      driveId: courseId,
     };
-    axios.post('/api/unWithDrawStudents.php', payload).then((resp) => {
-      const payload = { params: { driveId } };
+    axios.post('/api/unWithDrawStudents.php', payload).then(() => {
+      const payload = { params: { driveId: courseId } };
       axios
         .get('/api/getEnrollment.php', payload)
         .then((resp) => {
@@ -326,10 +326,10 @@ export default function Enrollment(props) {
 
     let payload = {
       email: withdrewLearner,
-      driveId: driveId,
+      driveId: courseId,
     };
-    axios.post('/api/withDrawStudents.php', payload).then((resp) => {
-      const payload = { params: { driveId } };
+    axios.post('/api/withDrawStudents.php', payload).then(() => {
+      const payload = { params: { driveId: courseId } };
       axios
         .get('/api/getEnrollment.php', payload)
         .then((resp) => {
@@ -364,7 +364,7 @@ export default function Enrollment(props) {
         <div>
           Show Withdrawn{' '}
           <Checkbox
-            onClick={(e) => {
+            onClick={() => {
               setShowWithdrawn(!showWithdrawn);
             }}
             checked={showWithdrawn}

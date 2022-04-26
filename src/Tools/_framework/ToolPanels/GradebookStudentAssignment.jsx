@@ -50,7 +50,7 @@ export default function GradebookStudentAssignmentView(){
     // let [attemptNumber,setAttemptNumber] = useState(1); //Start with attempt 1
     const attemptsObj =  attempts?.contents?.[userId]?.attempts;
     let [attemptNumber,setAttemptNumber] = useState(null);
-    let [attemptsInfo,setAttemptsInfo] = useState(null); //array of {contentId,variant}
+    let [attemptsInfo,setAttemptsInfo] = useState(null); //array of {cid,variant}
     let assignmentsTable = {}
     let maxAttempts = 0;
 
@@ -98,22 +98,22 @@ export default function GradebookStudentAssignmentView(){
         for (let attempt of data.attemptInfo){
             let attemptNumber = attempt.attemptNumber;
             let gvariant = JSON.parse(attempt.variant, serializedComponentsReviver);
-            let doenetML = contentIdToDoenetML[attempt.contentId];
+            let doenetML = contentIdToDoenetML[attempt.cid];
 
             if (doenetML){
                 dataAttemptInfo[attemptNumber] = {
-                    contentId:attempt.contentId,
+                    cid:attempt.cid,
                     variant:{name:gvariant?.name},
                     doenetML,
                     solutionDisplayMode
                     }
             }else{
-                const { data } = await axios.get(`/media/${attempt.contentId}.doenet`); 
+                const { data } = await axios.get(`/media/${attempt.cid}.doenet`); 
   
-                contentIdToDoenetML[attempt.contentId] = data;
+                contentIdToDoenetML[attempt.cid] = data;
            
                 dataAttemptInfo[attemptNumber] = {
-                    contentId:attempt.contentId,
+                    cid:attempt.cid,
                     variant:{name:gvariant?.name},
                     doenetML: data,
                     solutionDisplayMode
@@ -239,9 +239,9 @@ export default function GradebookStudentAssignmentView(){
     let attemptNumberJSX = null;
     if (attemptNumber > 0 && 
         attemptsInfo[attemptNumber] &&
-        attemptsInfo[attemptNumber].contentId !== 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+        attemptsInfo[attemptNumber].cid !== 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
         ){
-        // let contentId = attemptsInfo[attemptNumber].contentId
+        // let cid = attemptsInfo[attemptNumber].cid
         let variant = attemptsInfo[attemptNumber].variant;
         let doenetML = attemptsInfo[attemptNumber].doenetML;
         let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
@@ -259,9 +259,9 @@ export default function GradebookStudentAssignmentView(){
           showFeedback: true,
           showHints: true,
           isAssignment: true,
-          allowLoadPageState: true,
-          allowSavePageState: false,
-          allowLocalPageState: false,
+          allowLoadState: true,
+          allowSaveState: false,
+          allowLocalState: false,
           allowSaveSubmissions: false,
           allowSaveEvents: false,
           pageStateSource: "submissions",
