@@ -803,7 +803,7 @@ CREATE TABLE `user_assignment` (
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'NULL means no group',
   `doenetIdOverride` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no override',
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
-  `numberOfAttemptsAllowedOverride` int(11) DEFAULT NULL,
+  `numberOfAttemptsAllowedAdjustment` int(11) DEFAULT NULL,
   `groupId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `groupName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `completed` bit(1) DEFAULT NULL COMMENT 'For ToDo list',
@@ -955,4 +955,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-25 13:41:46
+-- Dump completed on 2022-04-27  3:30:55
