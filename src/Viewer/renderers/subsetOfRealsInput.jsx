@@ -3,7 +3,8 @@ import styled from "styled-components";
 import useDoenetRender from './useDoenetRenderer';
 import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
-
+import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
+import ToggleButtonGroup from '../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup';
 
 const TextNoSelect = styled.text`
   -webkit-user-select: none;
@@ -62,25 +63,28 @@ export default function subsetOfReals(props) {
   let controlButtons = null;
   if(!SVs.fixed) {
     controlButtons =
-      <ActionButtonGroup>
-        <ActionButton
+    <>
+      <ToggleButtonGroup>
+        <ToggleButton
           // style={addRemovePointsStyle}
           onClick={() => setMode("add remove points")}
           value="Add/Remove points"
         >
-        </ActionButton>
-        <ActionButton
+        </ToggleButton>
+        <ToggleButton
           // style={toggleStyle}
           onClick={() => setMode("toggle")}
           value="Toggle points and intervals"
         >
-        </ActionButton>
-        <ActionButton
+        </ToggleButton>
+        <ToggleButton
           // style={movePointsStyle}
           onClick={() => setMode("move points")}
           value="Move Points"
         >
-        </ActionButton>
+        </ToggleButton>
+      </ToggleButtonGroup>
+      <ActionButtonGroup>
         <ActionButton
           onClick={()=> callAction({
             action: actions.clear,
@@ -96,6 +100,7 @@ export default function subsetOfReals(props) {
         >
         </ActionButton>
       </ActionButtonGroup>
+    </>
   }
 
   //Build axis
