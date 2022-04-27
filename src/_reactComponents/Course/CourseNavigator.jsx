@@ -315,7 +315,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   e.stopPropagation();
   let selectedItems = await snapshot.getPromise(selectedCourseItems);
   let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-  console.log("clickedItem",clickedItem)
+  console.log("clickedItem",clickedItem.type,clickedItem.doenetId,clickedItem)
   
   let newSelectedItems = [];
 

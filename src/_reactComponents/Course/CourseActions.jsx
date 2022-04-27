@@ -315,7 +315,7 @@ export const useCourse = (courseId) => {
   );
   const addToast = useToast();
 
-  function addPageOrOrderToOrder({
+  function insertPageOrOrderToOrder({
     parentOrderObj,
     needleOrderDoenetId,
     itemType,
@@ -357,7 +357,7 @@ export const useCourse = (courseId) => {
         return {newOrderObj,insertedAfterDoenetId};
       }
       if (item?.type == 'order'){
-        let {newOrderObj:subOrder,insertedAfterDoenetId} = addPageOrOrderToOrder({
+        let {newOrderObj:subOrder,insertedAfterDoenetId} = insertPageOrOrderToOrder({
           parentOrderObj:item,
           needleOrderDoenetId,
           itemType,
@@ -418,7 +418,7 @@ export const useCourse = (courseId) => {
     return orderAndPagesDoenetIds;
   }
 
-  function addPageOrOrderToOrderUsingPage({
+  function insertPageOrOrderIntoOrderUsingPage({
     parentOrderObj,
     needlePageDoenetId,
     itemType,
@@ -441,7 +441,7 @@ export const useCourse = (courseId) => {
       }
       if (item?.type == 'order'){
         //Recurse into the order every time we see one
-        let subOrder = addPageOrOrderToOrderUsingPage({
+        let subOrder = insertPageOrOrderIntoOrderUsingPage({
           parentOrderObj:item,
           needlePageDoenetId,
           itemType,
@@ -721,7 +721,7 @@ export const useCourse = (courseId) => {
             let orderDoenetId = selectedItemObj.doenetId;
             const containingItemObj = await snapshot.getPromise(authorItemByDoenetId(selectedItemObj.containingDoenetId));
 
-            let { newOrderObj, insertedAfterDoenetId } = addPageOrOrderToOrder({
+            let { newOrderObj, insertedAfterDoenetId } = insertPageOrOrderToOrder({
               parentOrderObj:containingItemObj.order,
               needleOrderDoenetId:orderDoenetId,
               itemType,
@@ -790,7 +790,7 @@ export const useCourse = (courseId) => {
               let insertedAfterDoenetId = selectedItemObj.doenetId;
 
               let newJSON = {...containingItemObj.order};
-              newJSON = addPageOrOrderToOrderUsingPage({
+              newJSON = insertPageOrOrderIntoOrderUsingPage({
                 parentOrderObj:newJSON,
                 needlePageDoenetId:insertedAfterDoenetId,
                 itemType,
@@ -1408,6 +1408,38 @@ export const useCourse = (courseId) => {
         successCallback();
   });
 
+  function addPageToOrder({orderObj,needleOrderDoenetId,pageToAddDoenetId}){
+    let nextOrderObj = {...orderObj};
+
+    if (nextOrderObj.doenetId == needleOrderDoenetId){
+      let previousDoenetId = nextOrderObj.doenetId;
+      if (nextOrderObj.content.length > 0){
+        previousDoenetId = nextOrderObj.content[nextOrderObj.content.length -1];
+        if (previousDoenetId?.type == 'order'){ //If last element was an order get it's doenetId
+          previousDoenetId = previousDoenetId.doenetId;
+        }
+      }
+      nextOrderObj.content = [...nextOrderObj.content,pageToAddDoenetId];
+      return {order:nextOrderObj,previousDoenetId}
+    }
+
+    for (let [i,item] of Object.entries(orderObj.content)){
+      if (item?.type == 'order'){
+ 
+        let {order:childOrderObj,previousDoenetId} = 
+          addPageToOrder({orderObj:item,needleOrderDoenetId,pageToAddDoenetId})
+
+        if (childOrderObj != null){
+          nextOrderObj.content = [...nextOrderObj.content]
+          nextOrderObj.content.splice(i,1,childOrderObj);
+          return {order:nextOrderObj,previousDoenetId}
+        }
+      }
+    }
+    //Didn't find needle
+    return {order:null,previousDoenetId:null};
+  }
+
   const pasteItems = useRecoilCallback(
     ({ set,snapshot }) =>
       async ({successCallback, failureCallback = defaultFailure}) => {
@@ -1505,112 +1537,139 @@ export const useCourse = (courseId) => {
               let sourceJSON = {};
               let destinationJSON = {};
               let previousDoenetId;
+
+         
               
               // console.log("cut sourceContainingObj",sourceContainingObj)
-              //Remove from Activity
               if (sourceContainingObj.type == 'activity'){
-                // console.log("from activity",sourceContainingObj)
-                let nextOrder = {...sourceContainingObj.order}
-                // console.log("nextOrder",nextOrder)
-              }
-              //Remove from Collection
-              if (sourceContainingObj.type == 'bank'){
+                //Remove from Activity
+                sourceJSON = deletePageFromOrder({orderObj:sourceContainingObj.order,needleDoenetId:originalPageDoenetId})
+              }else if (sourceContainingObj.type == 'bank'){
+                //Remove from Collection
                 let nextPages = [...sourceContainingObj.pages]
                 nextPages.splice(sourceContainingObj.pages.indexOf(originalPageDoenetId),1)
                 sourceJSON = nextPages;
               }
-              //Add to Collection
-              if (singleSelectedObj.type == 'bank'){
-                destinationContainingObj = {...singleSelectedObj}
-                previousDoenetId = singleSelectedObj.doenetId;
-                if (singleSelectedObj.pages.length > 0){
-                  previousDoenetId = singleSelectedObj.pages[singleSelectedObj.pages.length - 1]
-                }
-                destinationJSON = [...singleSelectedObj.pages,originalPageDoenetId]
-              }
-              //Add to Activity
-              if (singleSelectedObj.type == 'order'){
-                destinationContainingObj = await snapshot.getPromise(authorItemByDoenetId(singleSelectedObj.containingDoenetId));
 
-                console.log('into order')
+              //Add changes to sourceJSON if source containing item 
+              //is the destination containing item
+              if (singleSelectedObj.type == 'bank'){
+                //Add to Collection
+                destinationContainingObj = {...singleSelectedObj}
+                if (destinationContainingObj.doenetId == sourceDoenetId){
+                  previousDoenetId = singleSelectedObj.doenetId;
+                  if (sourceJSON.length > 0){
+                    previousDoenetId = sourceJSON[sourceJSON.length - 1]
+                  }
+                  sourceJSON = [...sourceJSON,originalPageDoenetId];
+                }else{
+                  previousDoenetId = singleSelectedObj.doenetId;
+                  if (singleSelectedObj.pages.length > 0){
+                    previousDoenetId = singleSelectedObj.pages[singleSelectedObj.pages.length - 1]
+                  }
+                  destinationJSON = [...singleSelectedObj.pages,originalPageDoenetId]
+                }
+                
+              }else if (singleSelectedObj.type == 'order'){
+                //Add to Activity
+                destinationContainingObj = await snapshot.getPromise(authorItemByDoenetId(singleSelectedObj.containingDoenetId));
+                if (destinationContainingObj.doenetId == sourceDoenetId){
+                  ({order:sourceJSON,previousDoenetId} = addPageToOrder({
+                    orderObj:sourceJSON,
+                    needleOrderDoenetId:singleSelectedObj.doenetId,
+                    pageToAddDoenetId:originalPageDoenetId})
+                  )
+                }else{
+                  ({order:destinationJSON,previousDoenetId} = addPageToOrder({
+                    orderObj:destinationContainingObj.order,
+                    needleOrderDoenetId:singleSelectedObj.doenetId,
+                    pageToAddDoenetId:originalPageDoenetId})
+                  )
+                }
               }
-              console.log("Cut Page!",nextObj)
               let destinationType = destinationContainingObj.type;
               let destinationDoenetId = destinationContainingObj.doenetId;
 
-              console.log("DB params",{
-                isCopy:false,
-                courseId,
-                originalPageDoenetId,
-              sourceType,
-              sourceDoenetId,
-              destinationType,
-              destinationDoenetId,
-              sourceJSON,
-              destinationJSON,
-              })
-
-              console.log("previousDoenetId",previousDoenetId)
-              
               //update database
-              // try {
-              //   let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
-              //     isCopy:false,
-              //     courseId,
-              //     originalPageDoenetId,
-              //     sourceType,
-              //     sourceDoenetId,
-              //     destinationType,
-              //     destinationDoenetId,
-              //     sourceJSON,
-              //     destinationJSON,
-              //   });
-              //   console.log("resp.data",resp.data)
-              //   if (resp.status < 300) {
-              //     //Update source
-              //     if (sourceType == 'bank'){
-              //       set(authorItemByDoenetId(sourceDoenetId),(prev)=>{
-              //         let next = {...prev}
-              //         next.pages = sourceJSON;
-              //         console.log("source",sourceDoenetId,next)
-              //         return next;
-              //       })
-              //     }
-              //     //Update destination
-              //     if (destinationType == 'bank'){
-              //       set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
-              //         let next = {...prev}
-              //         next.pages = destinationJSON;
-              //         console.log("dest",destinationDoenetId,next)
-              //         return next;
-              //       })
-              //       //Update page
-              //       set(authorItemByDoenetId(originalPageDoenetId),(prev)=>{
-              //         let next = {...prev}
-              //         next.containingDoenetId = destinationDoenetId;
-              //         next.previousDoenetId = destinationDoenetId;
-              //         next.isBeingCut = false
-              //         return next;
-              //       })
-              //     }
+              try {
+                let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
+                  isCopy:false,
+                  courseId,
+                  originalPageDoenetId,
+                  sourceType,
+                  sourceDoenetId,
+                  destinationType,
+                  destinationDoenetId,
+                  sourceJSON,
+                  destinationJSON,
+                });
+                // console.log("resp.data",resp.data)
+                if (resp.status < 300) {
+                  //Update source
+                  if (sourceType == 'bank'){
+                    set(authorItemByDoenetId(sourceDoenetId),(prev)=>{
+                      let next = {...prev}
+                      next.pages = sourceJSON;
+                      return next;
+                    })
+                  } else if (sourceType == 'activity'){
+                    set(authorItemByDoenetId(sourceDoenetId),(prev)=>{
+                      let next = {...prev}
+                      next.order = sourceJSON;
+                      return next;
+                    })
+                  }
+
+                  //Update destination
+                  if (destinationDoenetId != sourceDoenetId){
+                    if (destinationType == 'bank'){
+                      set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
+                        let next = {...prev}
+                        next.pages = destinationJSON;
+                        return next;
+                      })
+                      //Update page
+                      set(authorItemByDoenetId(originalPageDoenetId),(prev)=>{
+                        let next = {...prev}
+                        next.containingDoenetId = destinationDoenetId;
+                        next.parentDoenetId = singleSelectedObj.doenetId;
+                        next.isBeingCut = false
+                        return next;
+                      })
+                    }else if (destinationType == 'activity'){
+                      set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
+                        let next = {...prev}
+                        next.order = destinationJSON;
+                        return next;
+                      })
+                  }
+                }
+                    //Update page
+                    set(authorItemByDoenetId(originalPageDoenetId),(prev)=>{
+                      let next = {...prev}
+                      next.containingDoenetId = destinationDoenetId;
+                      next.parentDoenetId = singleSelectedObj.doenetId;
+                      next.isBeingCut = false
+                      return next;
+                    })
                   
-              //     set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
-              //       let next = [...prev];
-              //       next.splice(next.indexOf(originalPageDoenetId),1);  //remove 
-              //       next.splice(next.indexOf(previousDoenetId),0,originalPageDoenetId);  //insert
-              //       return next
-              //     })
-              //     successCallback?.();
-              //     //Update recoil
-              //     // set(authorItemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
+                  set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
+                    let next = [...prev];
+                    next.splice(next.indexOf(originalPageDoenetId),1);  //remove 
+                    next.splice(next.indexOf(previousDoenetId)+1,0,originalPageDoenetId);  //insert
+                    return next
+                  })
+                  successCallback?.();
+                  //Update recoil
+                  // set(authorItemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
                   
                   
-              //   } else {
-              //     throw new Error(`response code: ${resp.status}`);
-              //   }
-              // } catch (err) {
-              //   failureCallback(err);
-              // }
+                } else {
+                  throw new Error(`response code: ${resp.status}`);
+                }
+              } catch (err) {
+                failureCallback(err);
+              }
             }
               
 
@@ -1709,14 +1768,102 @@ export const useCourse = (courseId) => {
                 return;
               }
               let pageObj = {...copiedObj};
-              console.log("Copy Page!",pageObj)
+
+              let originalPageDoenetId = copiedObj.doenetId;
+              let sourceType = "na";
+              let sourceDoenetId = "na";
+              let destinationContainingObj = {};
+              let sourceJSON = {};
+              let destinationJSON = {};
+              let previousDoenetId;
+              let replaceMeDoenetId = `${originalPageDoenetId}2`
+              let clonePageLabel = `copy of ${pageObj.label}`
+              let clonePageParent = singleSelectedObj.doenetId;
 
               if (singleSelectedObj.type == 'bank'){
-                console.log('into collection')
+                //Add to Collection
+                destinationContainingObj = {...singleSelectedObj}
+
+                  previousDoenetId = singleSelectedObj.doenetId;
+                  if (singleSelectedObj.pages.length > 0){
+                    previousDoenetId = singleSelectedObj.pages[singleSelectedObj.pages.length - 1]
+                  }
+                  destinationJSON = [...singleSelectedObj.pages,replaceMeDoenetId]
               }
               if (singleSelectedObj.type == 'order'){
-                console.log('into order')
+                //Add to Activity's order
+                destinationContainingObj = await snapshot.getPromise(authorItemByDoenetId(singleSelectedObj.containingDoenetId));
+                ({order:destinationJSON,previousDoenetId} = addPageToOrder({
+                  orderObj:destinationContainingObj.order,
+                  needleOrderDoenetId:singleSelectedObj.doenetId,
+                  pageToAddDoenetId:replaceMeDoenetId})
+                )
               }
+
+              let destinationType = destinationContainingObj.type;
+              let destinationDoenetId = destinationContainingObj.doenetId;
+
+
+              //update database
+              try {
+                let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
+                  isCopy:true,
+                  courseId,
+                  originalPageDoenetId,
+                  sourceType,
+                  sourceDoenetId,
+                  destinationType,
+                  destinationDoenetId,
+                  sourceJSON,
+                  destinationJSON,
+                  clonePageLabel,
+                  clonePageParent
+                });
+                // console.log("resp.data",resp.data)
+                if (resp.status < 300) {
+                  let insertedPage = {...resp.data.pageInserted}
+                  insertedPage['isSelected'] = false;
+                  //Insert page
+                  set(authorItemByDoenetId(insertedPage.doenetId),insertedPage)
+                                    
+                  set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
+                    let next = [...prev];
+                    next.splice(next.indexOf(previousDoenetId)+1,0,insertedPage.doenetId);  //insert
+                    return next
+                  })
+                //Update the doenetId for the new page
+                let serializedDestinationJSON = JSON.stringify(destinationJSON);
+                serializedDestinationJSON = serializedDestinationJSON.replace(replaceMeDoenetId,insertedPage.doenetId)
+                destinationJSON = JSON.parse(serializedDestinationJSON);
+                  //Update destination
+                if (destinationType == 'bank'){
+                  set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
+                    let next = {...prev}
+                    next.pages = destinationJSON;
+                    return next;
+                  })
+          
+                }else if (destinationType == 'activity'){
+                      set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
+                        let next = {...prev}
+                        next.order = destinationJSON;
+                        return next;
+                      })
+                  }
+                  
+
+                  
+                  successCallback?.();
+                  
+                } else {
+                  throw new Error(`response code: ${resp.status}`);
+                }
+              } catch (err) {
+                failureCallback(err);
+              }
+
+
+
             }
           }
         }

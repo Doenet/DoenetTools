@@ -103,8 +103,6 @@ export default function SelectedActivity() {
   } = useCourse(courseId);
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(itemObj.label);
   const addToast = useToast();
-  console.log('SelectedActivity itemObj', itemObj);
-  console.log('SelectedActivity doenetId', doenetId);
 
   useEffect(() => {
     if (itemTextFieldLabel !== itemObj.label) {
