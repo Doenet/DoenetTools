@@ -24,19 +24,6 @@ import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
 
 
-export const creditAchievedAtom = atom({
-  key: 'creditAchievedAtom2',
-  default: {
-    creditByItem: [1, 0, 0.5],
-    // creditByItem:[],
-    creditForAttempt: 0,
-    creditForAssignment: 0,
-    totalPointsOrPercent: 0,
-  },
-});
-
-
-
 export default function DraftAssignmentViewer() {
   // console.log(">>>===DraftAssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
@@ -90,24 +77,12 @@ export default function DraftAssignmentViewer() {
         startedInitOfDoenetId.current = doenetId;
 
         const {
-          timeLimit,
           showCorrectness,
-          showCreditAchievedMenu,
           showFeedback,
           showHints,
           showSolution,
           proctorMakesAvailable,
         } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
-        let suppress = [];
-        if (timeLimit === null) {
-          suppress.push('TimerMenu');
-        }
-
-        if (!showCorrectness || !showCreditAchievedMenu) {
-          suppress.push('CreditAchieved');
-        }
-
-        setSuppressMenus(suppress);
 
         let solutionDisplayMode = 'button';
         if (!showSolution) {
@@ -160,25 +135,6 @@ export default function DraftAssignmentViewer() {
   );
 
 
-  const updateCreditAchieved = useRecoilCallback(
-    ({ set }) =>
-      async ({
-        creditByItem,
-        creditForAssignment,
-        creditForAttempt,
-        totalPointsOrPercent,
-      }) => {
-        // console.log(">>>>UPDATE",{ creditByItem, creditForAssignment, creditForAttempt })
-        set(creditAchievedAtom, {
-          creditByItem,
-          creditForAssignment,
-          creditForAttempt,
-          totalPointsOrPercent,
-        });
-      },
-  );
-
-
   // console.log(`>>>>stage -${stage}-`);
 
   //Wait for doenetId to be defined to start
@@ -217,7 +173,7 @@ export default function DraftAssignmentViewer() {
         }}
         attemptNumber={attemptNumber}
         requestedVariantIndex={variantInfo.index}
-        updateCreditAchievedCallback={updateCreditAchieved}
+        // updateCreditAchievedCallback={updateCreditAchieved}
         // updateAttemptNumber={setRecoilAttemptNumber}
         generatedVariantCallback={variantCallback}
       />

@@ -10,7 +10,6 @@ import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { cidFromText } from '../Core/utils/cid';
 import { useToast, toastType } from '@Toast';
 import { nanoid } from 'nanoid';
-import { parseAndCompile } from '../Parser/parser';
 import { enumerateCombinations } from '../Core/utils/enumeration';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../_utils/activityUtils';
 
