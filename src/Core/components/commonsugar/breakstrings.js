@@ -478,7 +478,7 @@ export function breakIntoVectorComponents(compList) {
 //         // found one equal sign
 //         if (foundEqualSign) {
 //           // found second equal sign
-//           return { succes: false };
+//           return { success: false };
 //         }
 //         foundEqualSign = true;
 //         let l = result[1];

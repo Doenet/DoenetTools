@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { AssignmentSettings } from './SelectedDoenetML';
+import { AssignmentSettings } from './SelectedActivity';
 import { searchParamAtomFamily } from '../NewToolRoot';
 
 export default function AssignmentSettingsMenu(){

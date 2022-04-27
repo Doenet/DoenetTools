@@ -31,8 +31,8 @@ import {
 // import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 // import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-// import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import axios from 'axios';
+import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
@@ -240,36 +240,39 @@ function buildRows({
       continue;
     }
 
-    let checkbox = <input type='checkbox' checked={checked} onClick={(e)=>{
-      e.stopPropagation();
-    if (checked){
-      setCompletedArray((was)=>{
-        let newObj = [...was];
-        newObj.splice(newObj.indexOf(assignment.doenetId),1)
-        return newObj;
-      })
-    }else{
-      setCompletedArray((was)=>{
-        let newObj = [assignment.doenetId,...was]
-        return newObj;
-      })
-    }
+    let checkbox = 
+    <Checkbox 
+      checked={checked} 
+      onClick={(e)=>{
+        e.stopPropagation();
+        if (checked){
+          setCompletedArray((was)=>{
+            let newObj = [...was];
+            newObj.splice(newObj.indexOf(assignment.doenetId),1)
+            return newObj;
+          })
+        } else {
+          setCompletedArray((was)=>{
+            let newObj = [assignment.doenetId,...was]
+            return newObj;
+        })
+      }
 
     axios.get('/api/saveCompleted.php',{params:{doenetId:assignment.doenetId}})
     // .then(({data})=>{
       // console.log(">>>>data",data)
     // })
-   
       }
 
       
     }
-    style={{
-      height: '18px',
-      width: '177px',
-      border: '2px solid black',
-      borderRadius: '5px',
-    }}/>
+    // style={{
+    //   height: '18px',
+    //   width: '177px',
+    //   border: '2px solid black',
+    //   borderRadius: '5px',
+    // }}
+    />
     if (isFirstRow){
           isFirstRow = false;
 

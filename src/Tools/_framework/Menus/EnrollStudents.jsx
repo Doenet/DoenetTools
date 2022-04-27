@@ -6,14 +6,13 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 
 
 
-export default function EnrollStudents(props){
+export default function EnrollStudents(){
 const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
-const path = useRecoilValue(searchParamAtomFamily('path'))
-const driveId = path.split(':')[0];
+const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
   
   return <ButtonGroup vertical>
-  <Button width="menu" onClick={()=>setPageToolView({page:'course',tool:"enrollment",view:"",params:{driveId}})} value="Go to Enrollment">Go to Enrollment</Button>
+  <Button width="menu" onClick={()=>setPageToolView({page:'course',tool:"enrollment",view:"",params:{courseId}})} value="Go to Enrollment">Go to Enrollment</Button>
   </ButtonGroup>
 }
 

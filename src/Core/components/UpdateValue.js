@@ -6,8 +6,8 @@ export default class UpdateValue extends InlineComponent {
 
   static acceptTarget = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     // attributes.width = {default: 300};
     // attributes.height = {default: 50};
     attributes.label = {
@@ -37,6 +37,13 @@ export default class UpdateValue extends InlineComponent {
     attributes.componentIndex = {
       createComponentOfType: "number",
       createStateVariable: "componentIndex",
+      defaultValue: null,
+      public: true,
+    };
+
+    attributes.propIndex = {
+      createComponentOfType: "number",
+      createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
     };
@@ -165,7 +172,7 @@ export default class UpdateValue extends InlineComponent {
 
     stateVariableDefinitions.targets = {
       stateVariablesDeterminingDependencies: [
-        "targetIdentities", "propName"
+        "targetIdentities", "propName", "propIndex"
       ],
       returnDependencies: function ({ stateValues }) {
 
@@ -384,7 +391,7 @@ export default class UpdateValue extends InlineComponent {
   }
 
 
-  async updateValue() {
+  async updateValue({ actionId }) {
 
     let targets = await this.stateValues.targets;
     let newValue = await this.stateValues.newValue;
@@ -416,6 +423,7 @@ export default class UpdateValue extends InlineComponent {
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "selected",
         object: {
@@ -434,17 +442,17 @@ export default class UpdateValue extends InlineComponent {
     });
 
 
-
-
   }
 
-  async updateValueIfTriggerNewlyTrue({ stateValues, previousValues }) {
+  async updateValueIfTriggerNewlyTrue({ stateValues, previousValues, actionId }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
     if (await stateValues.triggerWhen && previousValues.triggerWhen === false &&
       !await this.stateValues.insideTriggerSet
     ) {
-      return await this.updateValue();
+      return await this.updateValue({ actionId });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

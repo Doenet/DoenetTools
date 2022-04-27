@@ -11,6 +11,7 @@ function cesc(s) {
 describe('Answer Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
@@ -29,7 +30,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -46,7 +47,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -72,7 +73,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -99,7 +100,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -109,7 +110,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Enter wrong answer")
-      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}x`, { force: true }).blur();
+      cy.get(mathinputAnchor).type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
@@ -124,7 +125,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -149,7 +150,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -177,7 +178,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -194,7 +195,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -220,7 +221,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -249,7 +250,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test internal values')
         cy.window().then(async (win) => {
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
           expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
           expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -259,7 +260,7 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter wrong answer")
-        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}x`, { force: true }).blur();
+        cy.get(mathinputAnchor).type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
@@ -274,7 +275,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test internal values')
         cy.window().then(async (win) => {
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
           expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
           expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -299,7 +300,7 @@ describe('Answer Tag Tests', function () {
 
         cy.log('Test internal values')
         cy.window().then(async (win) => {
-          let stateVariables = await win.returnAllStateVariables();
+          let stateVariables = await win.returnAllStateVariables1();
           expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
           expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
           expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -328,7 +329,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -345,7 +346,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -371,7 +372,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -397,7 +398,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -407,7 +408,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Enter wrong answer")
-      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}x`, { force: true }).blur();
+      cy.get(mathinputAnchor).type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinputAnchor).should('have.value', 'x');
@@ -422,7 +423,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -447,7 +448,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -475,7 +476,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -488,7 +489,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -507,7 +508,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -528,7 +529,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -548,7 +549,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -567,7 +568,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
@@ -594,7 +595,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -607,7 +608,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -626,7 +627,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -646,7 +647,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -666,7 +667,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -685,7 +686,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
@@ -712,7 +713,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -725,7 +726,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -744,7 +745,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -764,7 +765,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -784,7 +785,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -803,7 +804,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
@@ -830,7 +831,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -843,7 +844,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -862,7 +863,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hellothere ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -882,7 +883,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hellothere ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hellothere ']);
@@ -902,7 +903,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hellothere ']);
@@ -921,7 +922,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello there']);
@@ -947,7 +948,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -963,7 +964,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/sr1').should('have.text', ' hello there ')
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -980,7 +981,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
 
@@ -1000,7 +1001,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
@@ -1027,7 +1028,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
@@ -1038,7 +1039,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1054,7 +1055,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([true]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1072,7 +1073,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([true]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([true]);
@@ -1090,7 +1091,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([true]);
@@ -1107,7 +1108,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([false]);
@@ -1133,7 +1134,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
@@ -1144,7 +1145,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1160,7 +1161,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([true]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1178,7 +1179,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([true]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([true]);
@@ -1196,7 +1197,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([true]);
@@ -1213,7 +1214,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([false]);
@@ -1237,7 +1238,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -1254,7 +1255,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1279,7 +1280,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1304,7 +1305,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -1329,7 +1330,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -1354,7 +1355,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -1379,7 +1380,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -1396,7 +1397,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1421,7 +1422,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1446,7 +1447,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -1471,7 +1472,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -1496,7 +1497,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -1522,7 +1523,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -1539,7 +1540,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1564,7 +1565,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1589,7 +1590,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -1614,7 +1615,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -1639,7 +1640,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -1665,7 +1666,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -1682,7 +1683,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1707,7 +1708,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1732,7 +1733,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -1757,7 +1758,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -1782,7 +1783,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -1814,7 +1815,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -1831,7 +1832,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1856,7 +1857,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1881,7 +1882,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -1906,7 +1907,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -1931,7 +1932,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -1956,7 +1957,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -1973,7 +1974,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -1997,7 +1998,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["list", ['+', 'x', 'y'], "z"]]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2020,7 +2021,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["list", ['+', 'x', 'y'], "z"]]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([["list", ['+', 'x', 'y'], "z"]]);
@@ -2043,7 +2044,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["list", 'x', "z"]]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([["list", ['+', 'x', 'y'], "z"]]);
@@ -2066,7 +2067,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["list", 'x', "z"]]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([["list", 'x', "z"]]);
@@ -2097,7 +2098,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -2107,7 +2108,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log('Submit other partially correct answer')
-      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}z{enter}`, { force: true, delay: 100 });
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}z`, { force: true, delay: 100 });
       // Note: have to wait for core to respond to at least first keystroke
       // or the renderer will not be set to allow a submission
       // (delayed typing to make sure can test case where submit before core has responded to all, 
@@ -2129,7 +2130,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['z']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['z']);
@@ -2154,7 +2155,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -2167,7 +2168,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2186,7 +2187,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2206,7 +2207,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -2226,7 +2227,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -2245,7 +2246,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
@@ -2270,7 +2271,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -2283,7 +2284,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2302,7 +2303,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2322,7 +2323,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -2342,7 +2343,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -2361,7 +2362,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
@@ -2387,7 +2388,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -2400,7 +2401,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2419,7 +2420,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2439,7 +2440,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -2459,7 +2460,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -2478,7 +2479,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
@@ -2513,7 +2514,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -2526,7 +2527,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2545,7 +2546,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2565,7 +2566,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -2585,7 +2586,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -2604,7 +2605,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
@@ -2629,7 +2630,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -2642,7 +2643,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2660,7 +2661,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello  , there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2679,7 +2680,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello  , there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello  , there ']);
@@ -2698,7 +2699,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello,then']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello  , there ']);
@@ -2716,7 +2717,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello,then']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello,then']);
@@ -2741,7 +2742,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['hello there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['hello there']);
@@ -2766,7 +2767,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['there']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['there']);
@@ -2791,7 +2792,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
@@ -2802,7 +2803,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2818,7 +2819,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([true]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2836,7 +2837,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([true]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([true]);
@@ -2854,7 +2855,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([true]);
@@ -2871,7 +2872,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([false]);
@@ -2897,7 +2898,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let booleaninputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let booleaninputAnchor = cesc('#' + booleaninputName + '_input');
       let booleaninputSubmitAnchor = cesc('#' + booleaninputName + '_submit');
@@ -2908,7 +2909,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2924,7 +2925,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([true]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -2942,7 +2943,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([true]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([true]);
@@ -2960,7 +2961,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([true]);
@@ -2977,7 +2978,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([false]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([false]);
@@ -3002,7 +3003,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -3019,7 +3020,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -3045,7 +3046,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -3070,7 +3071,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -3095,7 +3096,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -3121,7 +3122,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -3147,7 +3148,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -3172,7 +3173,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['y']);
@@ -3207,7 +3208,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -3224,7 +3225,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -3250,7 +3251,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -3275,7 +3276,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([['+', 'x', 'y']]);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -3300,7 +3301,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([['+', 'x', 'y']]);
@@ -3326,7 +3327,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -3351,7 +3352,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x']);
@@ -3376,7 +3377,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['y']);
@@ -3402,7 +3403,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -3415,7 +3416,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -3434,7 +3435,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -3454,7 +3455,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -3474,7 +3475,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['bye']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
@@ -3493,7 +3494,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['bye']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['bye']);
@@ -3513,7 +3514,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['bye']);
@@ -3532,7 +3533,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
         expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y']);
         expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['y']);
@@ -3564,7 +3565,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/s/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -3581,10 +3582,10 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['\uFF3F']);
-        expect(await stateVariables['/s/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['\uFF3F']);
+        expect(stateVariables['/s/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinputName].stateValues.value).eq('\uFF3F');
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eq('\uFF3F');
       });
@@ -3607,10 +3608,10 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls([['+', 'x', 'y']]);
-        expect(await stateVariables['/s/_answer1'].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls([['+', 'x', 'y']]);
+        expect(stateVariables['/s/_answer1'].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinputName].stateValues.value).eqls(['+', 'x', 'y']);
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eq('\uFF3F');
       });
@@ -3632,10 +3633,10 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls([['+', 'x', 'y']]);
-        expect((await stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls([['+', 'x', 'y']]);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls([['+', 'x', 'y']]);
+        expect((stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls([['+', 'x', 'y']]);
         expect(stateVariables[mathinputName].stateValues.value).eqls(['+', 'x', 'y']);
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eqls(['+', 'x', 'y']);
       });
@@ -3657,10 +3658,10 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['x']);
-        expect((await stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls([['+', 'x', 'y']]);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['x']);
+        expect((stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls([['+', 'x', 'y']]);
         expect(stateVariables[mathinputName].stateValues.value).eqls('x');
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eqls(['+', 'x', 'y']);
       });
@@ -3683,10 +3684,10 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['x']);
-        expect((await stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['x']);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['x']);
+        expect((stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['x']);
         expect(stateVariables[mathinputName].stateValues.value).eqls('x');
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eqls('x');
       });
@@ -3708,10 +3709,10 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['y']);
-        expect((await stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['x']);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['y']);
+        expect((stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['x']);
         expect(stateVariables[mathinputName].stateValues.value).eqls('y');
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eqls('x');
       });
@@ -3733,10 +3734,10 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/s/_answer1'].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['y']);
-        expect((await stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['y']);
+        expect((stateVariables['/s/_answer1'].stateValues.currentResponses)).eqls(['y']);
+        expect((stateVariables['/s/_answer1'].stateValues.submittedResponses)).eqls(['y']);
         expect(stateVariables[mathinputName].stateValues.value).eqls('y');
         // expect(stateVariables[mathinputName].stateValues.submittedValue).eqls('y');
       });
@@ -3806,26 +3807,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F', '\uFF3F']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('\uFF3F')
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls('\uFF3F')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('\uFF3F')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls('\uFF3F')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
       expect(stateVariables['/_mathinput1'].stateValues.value).eq('\uFF3F');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eq('\uFF3F');
       expect(stateVariables['/_mathinput2'].stateValues.value).eq('\uFF3F');
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect((await stateVariables['/cr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/cr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/cr2'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/crsa'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/crsb'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/crsa'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/crsb'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -3886,26 +3887,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(["+", 'x', 'y']);
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eq('\uFF3F');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect((await stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -3964,26 +3965,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(["+", 'x', 'y']);
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls(["+", 'x', 'y']);
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/srsa'].stateValues.value).eqls(["+", 'x', 'y'])
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -4046,26 +4047,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('x');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls(["+", 'x', 'y']);
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('x')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/srsa'].stateValues.value).eqls(["+", 'x', 'y'])
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -4125,26 +4126,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('x');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('x');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('x')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('x')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -4205,26 +4206,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('y');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('x');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('y')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('x')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -4281,26 +4282,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('y');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('y');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('y')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('y')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4372,26 +4373,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F', '\uFF3F']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('\uFF3F')
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls('\uFF3F')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('\uFF3F')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls('\uFF3F')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
       expect(stateVariables['/_mathinput1'].stateValues.value).eq('\uFF3F');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eq('\uFF3F');
       expect(stateVariables['/_mathinput2'].stateValues.value).eq('\uFF3F');
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect((await stateVariables['/cr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/cr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/cr2'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/crsa'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/crsb'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/crsa'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/crsb'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4442,26 +4443,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(["+", 'x', 'y']);
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eq('\uFF3F');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect((await stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
-      expect((await stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/sr'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr1'].stateValues.value)).eq('\uFF3F')
+      expect((stateVariables['/sr2'].stateValues.value)).eq('\uFF3F')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4513,26 +4514,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(["+", 'x', 'y']);
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls(["+", 'x', 'y']);
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/srsa'].stateValues.value).eqls(["+", 'x', 'y'])
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -4584,26 +4585,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls(["+", 'x', 'y']);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('x');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls(["+", 'x', 'y']);
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('x')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr1'].stateValues.value)).eqls(["+", 'x', 'y'])
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/srsa'].stateValues.value).eqls(["+", 'x', 'y'])
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -4656,26 +4657,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('x');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('x');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('x')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('x')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -4726,26 +4727,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['x', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('x');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('y');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('x');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('x')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('y')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('x')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('x')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -4796,26 +4797,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.currentResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['y', ["+", 3, ['-', 'x']]]);
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('y');
-      expect((await stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse1)).eqls('y');
+      expect((stateVariables['/_answer1'].stateValues.submittedResponse2)).eqls(["+", 3, ['-', 'x']]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls('y');
       // expect(stateVariables['/_mathinput1'].stateValues.submittedValue).eqls('y');
       expect(stateVariables['/_mathinput2'].stateValues.value).eqls(["+", 3, ['-', 'x']]);
       // expect(stateVariables['/_mathinput2'].stateValues.submittedValue).eqls(["+", 3, ['-', 'x']]);
-      expect((await stateVariables['/cr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/crsa'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
-      expect((await stateVariables['/sr'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/sr1'].stateValues.value)).eqls('y')
-      expect((await stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/cr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/cr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/crsa'].stateValues.value)).eqls('y')
+      expect((stateVariables['/crsb'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
+      expect((stateVariables['/sr'].stateValues.value)).eqls('y')
+      expect((stateVariables['/sr1'].stateValues.value)).eqls('y')
+      expect((stateVariables['/sr2'].stateValues.value)).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/srsa'].stateValues.value).eqls('y')
       expect(stateVariables['/srsb'].stateValues.value).eqls(["+", 3, ['-', 'x']])
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4870,26 +4871,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['', '']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
       expect(stateVariables['/_textinput1'].stateValues.value).eq('');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('\uFF3F');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect(await stateVariables['/cr'].stateValues.value).eq('')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('')
-      expect(await stateVariables['/sr'].stateValues.value).eq('')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('')
+      expect(stateVariables['/cr'].stateValues.value).eq('')
+      expect(stateVariables['/cr1'].stateValues.value).eq('')
+      expect(stateVariables['/cr2'].stateValues.value).eq('')
+      expect(stateVariables['/crsa'].stateValues.value).eq('')
+      expect(stateVariables['/crsb'].stateValues.value).eq('')
+      expect(stateVariables['/sr'].stateValues.value).eq('')
+      expect(stateVariables['/sr1'].stateValues.value).eq('')
+      expect(stateVariables['/sr2'].stateValues.value).eq('')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4917,26 +4918,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['rain', 'snow']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
-      expect(await stateVariables['/_textinput1'].stateValues.value).eq('rain');
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+      expect(stateVariables['/_textinput1'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('\uFF3F');
-      expect(await stateVariables['/_textinput2'].stateValues.value).eq('snow');
+      expect(stateVariables['/_textinput2'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('\uFF3F');
-      expect(await stateVariables['/cr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr'].stateValues.value).eq('')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('')
+      expect(stateVariables['/cr'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsa'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsb'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr'].stateValues.value).eq('')
+      expect(stateVariables['/sr1'].stateValues.value).eq('')
+      expect(stateVariables['/sr2'].stateValues.value).eq('')
       // expect(stateVariables['/srsa'].stateValues.value).eq('\uFF3F')
       // expect(stateVariables['/srsb'].stateValues.value).eq('\uFF3F')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -4964,26 +4965,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['rain', 'snow']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'snow'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('rain');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('snow');
-      expect(await stateVariables['/cr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsa'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsb'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr2'].stateValues.value).eq('snow')
       expect(stateVariables['/srsa'].stateValues.value).eq('rain')
       expect(stateVariables['/srsb'].stateValues.value).eq('snow')
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -5013,26 +5014,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['rain', 'rain']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'snow'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('rain');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('snow');
-      expect(await stateVariables['/cr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsa'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsb'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr2'].stateValues.value).eq('snow')
       expect(stateVariables['/srsa'].stateValues.value).eq('rain')
       expect(stateVariables['/srsb'].stateValues.value).eq('snow')
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -5059,26 +5060,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['rain', 'rain']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'rain'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('rain');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('rain');
-      expect(await stateVariables['/cr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsa'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsb'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr2'].stateValues.value).eq('rain')
       expect(stateVariables['/srsa'].stateValues.value).eq('rain')
       expect(stateVariables['/srsb'].stateValues.value).eq('rain')
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -5107,26 +5108,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['snow', 'rain']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['rain', 'rain'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('rain');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('rain');
-      expect(await stateVariables['/cr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsa'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsb'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr1'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr2'].stateValues.value).eq('rain')
       expect(stateVariables['/srsa'].stateValues.value).eq('rain')
       expect(stateVariables['/srsb'].stateValues.value).eq('rain')
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -5153,26 +5154,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['snow', 'rain']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('rain')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'rain'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('snow');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('rain');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('rain');
-      expect(await stateVariables['/cr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('rain')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('rain')
-      expect(await stateVariables['/sr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/crsa'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsb'].stateValues.value).eq('rain')
+      expect(stateVariables['/sr'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr2'].stateValues.value).eq('rain')
       expect(stateVariables['/srsa'].stateValues.value).eq('snow')
       expect(stateVariables['/srsb'].stateValues.value).eq('rain')
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -5201,26 +5202,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['snow', 'snow']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'rain'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('rain')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('snow');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('rain');
-      expect(await stateVariables['/cr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('rain')
+      expect(stateVariables['/cr'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsa'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsb'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr2'].stateValues.value).eq('rain')
       expect(stateVariables['/srsa'].stateValues.value).eq('snow')
       expect(stateVariables['/srsb'].stateValues.value).eq('rain')
       expect(stateVariables['/ca'].stateValues.value).eq(1)
@@ -5248,26 +5249,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['snow', 'snow']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('snow')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'snow'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('snow');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('snow');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('snow');
-      expect(await stateVariables['/cr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('snow')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsa'].stateValues.value).eq('snow')
+      expect(stateVariables['/crsb'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr2'].stateValues.value).eq('snow')
       expect(stateVariables['/srsa'].stateValues.value).eq('snow')
       expect(stateVariables['/srsb'].stateValues.value).eq('snow')
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -5298,26 +5299,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['fog', 'hail']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('fog')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('hail')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('fog')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('hail')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['snow', 'snow'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('snow')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('snow')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('fog');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('snow');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('hail');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('snow');
-      expect(await stateVariables['/cr'].stateValues.value).eq('fog')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('fog')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('hail')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('fog')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('hail')
-      expect(await stateVariables['/sr'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('snow')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('snow')
+      expect(stateVariables['/cr'].stateValues.value).eq('fog')
+      expect(stateVariables['/cr1'].stateValues.value).eq('fog')
+      expect(stateVariables['/cr2'].stateValues.value).eq('hail')
+      expect(stateVariables['/crsa'].stateValues.value).eq('fog')
+      expect(stateVariables['/crsb'].stateValues.value).eq('hail')
+      expect(stateVariables['/sr'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr1'].stateValues.value).eq('snow')
+      expect(stateVariables['/sr2'].stateValues.value).eq('snow')
       expect(stateVariables['/srsa'].stateValues.value).eq('snow')
       expect(stateVariables['/srsb'].stateValues.value).eq('snow')
       expect(stateVariables['/ca'].stateValues.value).eq(0.5)
@@ -5345,26 +5346,26 @@ describe('Answer Tag Tests', function () {
 
     cy.log('Test internal values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['fog', 'hail']);
-      expect((await stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('fog')
-      expect(await stateVariables['/_answer1'].stateValues.currentResponse2).eqls('hail')
+      expect((stateVariables['/_answer1'].stateValues.currentResponse1)).eqls('fog')
+      expect(stateVariables['/_answer1'].stateValues.currentResponse2).eqls('hail')
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['fog', 'hail'])
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('fog')
-      expect(await stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('hail')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse1).eqls('fog')
+      expect(stateVariables['/_answer1'].stateValues.submittedResponse2).eqls('hail')
       expect(stateVariables['/_textinput1'].stateValues.value).eq('fog');
       // expect(stateVariables['/_textinput1'].stateValues.submittedValue).eq('fog');
       expect(stateVariables['/_textinput2'].stateValues.value).eq('hail');
       // expect(stateVariables['/_textinput2'].stateValues.submittedValue).eq('hail');
-      expect(await stateVariables['/cr'].stateValues.value).eq('fog')
-      expect(await stateVariables['/cr1'].stateValues.value).eq('fog')
-      expect(await stateVariables['/cr2'].stateValues.value).eq('hail')
-      expect(await stateVariables['/crsa'].stateValues.value).eq('fog')
-      expect(await stateVariables['/crsb'].stateValues.value).eq('hail')
-      expect(await stateVariables['/sr'].stateValues.value).eq('fog')
-      expect(await stateVariables['/sr1'].stateValues.value).eq('fog')
-      expect(await stateVariables['/sr2'].stateValues.value).eq('hail')
+      expect(stateVariables['/cr'].stateValues.value).eq('fog')
+      expect(stateVariables['/cr1'].stateValues.value).eq('fog')
+      expect(stateVariables['/cr2'].stateValues.value).eq('hail')
+      expect(stateVariables['/crsa'].stateValues.value).eq('fog')
+      expect(stateVariables['/crsb'].stateValues.value).eq('hail')
+      expect(stateVariables['/sr'].stateValues.value).eq('fog')
+      expect(stateVariables['/sr1'].stateValues.value).eq('fog')
+      expect(stateVariables['/sr2'].stateValues.value).eq('hail')
       expect(stateVariables['/srsa'].stateValues.value).eq('fog')
       expect(stateVariables['/srsb'].stateValues.value).eq('hail')
       expect(stateVariables['/ca'].stateValues.value).eq(0)
@@ -5457,7 +5458,7 @@ describe('Answer Tag Tests', function () {
     let answers1 = { "1": "1", "-1": "1", "0.5": "1", "1.1": "0", "-2": "0", "x-x": "1", "x": "0" }
 
     for (let answerString in answers1) {
-      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}" + answerString, { delay: 5, force: true });
+      cy.get('#\\/_mathinput1 textarea').type("{ctrl+home}{shift+end}{backspace}" + answerString, { delay: 5, force: true });
       cy.get('#\\/_mathinput1_submit').click();
 
       cy.get(`#\\/sr .mjx-mrow`).should('have.text', answerString.replace(/-/g, '−'))
@@ -5486,7 +5487,7 @@ describe('Answer Tag Tests', function () {
 
     let answers2 = { "1": "0", "-1": "0", "0.5": "1", "0.99": "1", "-2": "0", "x-x": "1", "x": "0" }
     for (let answerString in answers2) {
-      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}" + answerString, { delay: 5, force: true });
+      cy.get('#\\/_mathinput1 textarea').type("{ctrl+home}{shift+end}{backspace}" + answerString, { delay: 5, force: true });
       cy.get('#\\/_mathinput1_submit').click();
 
       cy.get(`#\\/sr .mjx-mrow`).should('have.text', answerString.replace(/-/g, '−'))
@@ -5516,7 +5517,7 @@ describe('Answer Tag Tests', function () {
     let answers3 = { "1": "0", "-1": "1", "0.5": "1", "0.99": "1", "-2": "0", "x-x": "1", "x": "0" }
 
     for (let answerString in answers3) {
-      cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}" + answerString, { delay: 5, force: true });
+      cy.get('#\\/_mathinput1 textarea').type("{ctrl+home}{shift+end}{backspace}" + answerString, { delay: 5, force: true });
       cy.get('#\\/_mathinput1_submit').click();
 
       cy.get(`#\\/sr .mjx-mrow`).should('have.text', answerString.replace(/-/g, '−'))
@@ -5556,7 +5557,7 @@ describe('Answer Tag Tests', function () {
 
     for (let answer of answers1) {
       cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}" + answer[1], { delay: 5, force: true }).blur();
-      cy.get('#\\/_mathinput2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}" + answer[2], { delay: 5, force: true }).blur();
+      cy.get('#\\/_mathinput2 textarea').type("{ctrl+home}{shift+end}{backspace}" + answer[2], { delay: 5, force: true }).blur();
       cy.get('#\\/_mathinput3 textarea').type("{end}{backspace}" + answer[3], { delay: 5, force: true }).blur();
       cy.get('#\\/_answer1_submit').click();
 
@@ -5590,7 +5591,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let mathinput1Name = stateVariables['/a/_answer1'].stateValues.inputChildren[0].componentName;
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
@@ -5632,20 +5633,20 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/a/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
-        expect(await stateVariables["/a/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
+        expect(stateVariables["/a/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput1Name].stateValues.value).eq('\uFF3F');
         // expect(stateVariables[mathinput1Name].stateValues.submittedValue).eq('\uFF3F');
         expect(stateVariables["/b/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
-        expect(await stateVariables["/b/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
+        expect(stateVariables["/b/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput2Name].stateValues.value).eq('\uFF3F');
         // expect(stateVariables[mathinput2Name].stateValues.submittedValue).eq('\uFF3F');
         expect(stateVariables["/c/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
-        expect(await stateVariables["/c/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['\uFF3F']);
+        expect(stateVariables["/c/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput3Name].stateValues.value).eq('\uFF3F');
         // expect(stateVariables[mathinput3Name].stateValues.submittedValue).eq('\uFF3F');
       });
@@ -5689,20 +5690,20 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/a/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['x']);
-        expect(await stateVariables["/a/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['x']);
+        expect(stateVariables["/a/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput1Name].stateValues.value).eq('x');
         // expect(stateVariables[mathinput1Name].stateValues.submittedValue).eq('\uFF3F');
         expect(stateVariables["/b/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 2]]);
-        expect(await stateVariables["/b/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 2]]);
+        expect(stateVariables["/b/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput2Name].stateValues.value).eqls(['^', 'x', 2]);
         // expect(stateVariables[mathinput2Name].stateValues.submittedValue).eq('\uFF3F');
         expect(stateVariables["/c/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 3]]);
-        expect(await stateVariables["/c/_answer1"].stateValues.submittedResponses).eqls([]);
+        expect((stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 3]]);
+        expect(stateVariables["/c/_answer1"].stateValues.submittedResponses).eqls([]);
         expect(stateVariables[mathinput3Name].stateValues.value).eqls(['^', 'x', 3]);
         // expect(stateVariables[mathinput3Name].stateValues.submittedValue).eq('\uFF3F');
       });
@@ -5746,28 +5747,28 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/a/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['x']);
-        expect((await stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['x']);
+        expect((stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['x']);
+        expect((stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['x']);
         expect(stateVariables[mathinput1Name].stateValues.value).eq('x');
         // expect(stateVariables[mathinput1Name].stateValues.submittedValue).eq('x');
         expect(stateVariables["/b/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 2]]);
-        expect((await stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 2]]);
+        expect((stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 2]]);
+        expect((stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 2]]);
         expect(stateVariables[mathinput2Name].stateValues.value).eqls(['^', 'x', 2]);
         // expect(stateVariables[mathinput2Name].stateValues.submittedValue).eqls(['^', 'x', 2]);
         expect(stateVariables["/c/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 3]]);
-        expect((await stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 3]]);
+        expect((stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls([['^', 'x', 3]]);
+        expect((stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 3]]);
         expect(stateVariables[mathinput3Name].stateValues.value).eqls(['^', 'x', 3]);
         // expect(stateVariables[mathinput3Name].stateValues.submittedValue).eqls(['^', 'x', 3]);
       });
 
       cy.log("Enter wrong answers")
       cy.get(mathinput1Anchor).type(`{end}{backspace}u`, { force: true }).blur();
-      cy.get(mathinput2Anchor).type(`{end}{backspace}{backspace}{backspace}{backspace}v`, { force: true }).blur();
-      cy.get(mathinput3Anchor).type(`{end}{backspace}{backspace}{backspace}{backspace}w`, { force: true }).blur();
+      cy.get(mathinput2Anchor).type(`{ctrl+home}{shift+end}{backspace}v`, { force: true }).blur();
+      cy.get(mathinput3Anchor).type(`{ctrl+home}{shift+end}{backspace}w`, { force: true }).blur();
 
       cy.log('Test value displayed in browser')
       // cy.get(mathinput1Anchor).should('have.value', 'u');
@@ -5806,20 +5807,20 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/a/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['u']);
-        expect((await stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['x']);
+        expect((stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['u']);
+        expect((stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['x']);
         expect(stateVariables[mathinput1Name].stateValues.value).eq('u');
         // expect(stateVariables[mathinput1Name].stateValues.submittedValue).eq('x');
         expect(stateVariables["/b/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['v']);
-        expect((await stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 2]]);
+        expect((stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['v']);
+        expect((stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 2]]);
         expect(stateVariables[mathinput2Name].stateValues.value).eq('v');
         // expect(stateVariables[mathinput2Name].stateValues.submittedValue).eqls(['^', 'x', 2]);
         expect(stateVariables["/c/_answer1"].stateValues.creditAchieved).eq(1);
-        expect((await stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['w']);
-        expect((await stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 3]]);
+        expect((stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['w']);
+        expect((stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls([['^', 'x', 3]]);
         expect(stateVariables[mathinput3Name].stateValues.value).eq('w');
         // expect(stateVariables[mathinput3Name].stateValues.submittedValue).eqls(['^', 'x', 3]);
       });
@@ -5864,20 +5865,20 @@ describe('Answer Tag Tests', function () {
 
       cy.log('Test internal values')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/a/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['u']);
-        expect((await stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['u']);
+        expect((stateVariables["/a/_answer1"].stateValues.currentResponses)).eqls(['u']);
+        expect((stateVariables["/a/_answer1"].stateValues.submittedResponses)).eqls(['u']);
         expect(stateVariables[mathinput1Name].stateValues.value).eq('u');
         // expect(stateVariables[mathinput1Name].stateValues.submittedValue).eq('u');
         expect(stateVariables["/b/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['v']);
-        expect((await stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls(['v']);
+        expect((stateVariables["/b/_answer1"].stateValues.currentResponses)).eqls(['v']);
+        expect((stateVariables["/b/_answer1"].stateValues.submittedResponses)).eqls(['v']);
         expect(stateVariables[mathinput2Name].stateValues.value).eq('v');
         // expect(stateVariables[mathinput2Name].stateValues.submittedValue).eq('v');
         expect(stateVariables["/c/_answer1"].stateValues.creditAchieved).eq(0);
-        expect((await stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['w']);
-        expect((await stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls(['w']);
+        expect((stateVariables["/c/_answer1"].stateValues.currentResponses)).eqls(['w']);
+        expect((stateVariables["/c/_answer1"].stateValues.submittedResponses)).eqls(['w']);
         expect(stateVariables[mathinput3Name].stateValues.value).eq('w');
         // expect(stateVariables[mathinput3Name].stateValues.submittedValue).eq('w');
       });
@@ -5901,7 +5902,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -6166,7 +6167,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
@@ -6512,8 +6513,8 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Enter partially correct answer")
-    cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}{backspace}{backspace}x`, { force: true }).blur();
-    cy.get('#\\/_mathinput2 textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}3-x`, { force: true }).blur();
+    cy.get('#\\/_mathinput1 textarea').type(`{ctrl+home}{shift+end}{backspace}x`, { force: true }).blur();
+    cy.get('#\\/_mathinput2 textarea').type(`{ctrl+home}{shift+end}{backspace}3-x`, { force: true }).blur();
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').should('not.exist');
@@ -7059,7 +7060,7 @@ describe('Answer Tag Tests', function () {
 
     let indexByName = {};
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       for (let [ind, val] of stateVariables['/_choiceinput1'].stateValues.choiceTexts.entries()) {
         indexByName[val] = ind + 1;
@@ -7085,7 +7086,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -7105,7 +7106,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -7125,7 +7126,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -7145,7 +7146,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -7165,7 +7166,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -7185,7 +7186,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7206,7 +7207,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7227,7 +7228,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7247,7 +7248,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7289,7 +7290,7 @@ describe('Answer Tag Tests', function () {
 
     let indexByName = {};
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       for (let [ind, val] of stateVariables['/_choiceinput1'].stateValues.choiceTexts.entries()) {
         indexByName[val] = ind + 1;
@@ -7315,7 +7316,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -7335,7 +7336,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -7355,7 +7356,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -7375,7 +7376,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -7395,7 +7396,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -7415,7 +7416,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7436,7 +7437,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7457,7 +7458,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7477,7 +7478,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7521,7 +7522,7 @@ describe('Answer Tag Tests', function () {
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       for (let [ind, val] of stateVariables['/_choiceinput1'].stateValues.choiceTexts.entries()) {
         expect(indexByName[val]).eq(ind + 1);
@@ -7547,7 +7548,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -7567,7 +7568,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -7587,7 +7588,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -7607,7 +7608,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -7627,7 +7628,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -7647,7 +7648,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7668,7 +7669,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7689,7 +7690,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7710,7 +7711,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -7756,7 +7757,7 @@ describe('Answer Tag Tests', function () {
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       for (let [ind, val] of stateVariables['/_choiceinput1'].stateValues.choiceTexts.entries()) {
         expect(indexByName[val]).eq(ind + 1);
@@ -7782,7 +7783,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -7802,7 +7803,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -7823,7 +7824,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -7844,7 +7845,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
@@ -7865,7 +7866,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
@@ -7885,7 +7886,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -7905,7 +7906,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -7925,7 +7926,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.6666666667')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(2 / 3);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
@@ -7946,7 +7947,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.6666666667')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(2 / 3);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
@@ -7966,7 +7967,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.3333333333')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1 / 3);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog', 'monkey']);
@@ -8012,7 +8013,7 @@ describe('Answer Tag Tests', function () {
 
     let indexByName = {};
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       for (let [ind, val] of stateVariables['/_choiceinput1'].stateValues.choiceTexts.entries()) {
         indexByName[val] = ind + 1;
@@ -8040,7 +8041,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -8062,7 +8063,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -8084,7 +8085,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -8106,7 +8107,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -8128,7 +8129,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -8150,7 +8151,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -8173,7 +8174,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -8196,7 +8197,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -8219,7 +8220,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
@@ -8261,7 +8262,7 @@ describe('Answer Tag Tests', function () {
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       for (let [ind, val] of stateVariables['/_choiceinput1'].stateValues.choiceTexts.entries()) {
         expect(indexByName[val]).eq(ind + 1);
@@ -8287,7 +8288,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -8307,7 +8308,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -8328,7 +8329,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -8349,7 +8350,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
@@ -8372,7 +8373,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
@@ -8392,7 +8393,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -8413,7 +8414,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -8433,7 +8434,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
@@ -8454,7 +8455,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
@@ -8474,7 +8475,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog', 'monkey']);
@@ -8516,7 +8517,7 @@ describe('Answer Tag Tests', function () {
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       for (let [ind, val] of stateVariables['/_choiceinput1'].stateValues.choiceTexts.entries()) {
         expect(indexByName[val]).eq(ind + 1);
@@ -8542,7 +8543,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
@@ -8562,7 +8563,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -8583,7 +8584,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.5')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
@@ -8604,7 +8605,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
@@ -8627,7 +8628,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
@@ -8647,7 +8648,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -8668,7 +8669,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
@@ -8688,7 +8689,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.6666666667')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(2 / 3);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
@@ -8709,7 +8710,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.6666666667')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(2 / 3);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
@@ -8729,7 +8730,7 @@ describe('Answer Tag Tests', function () {
     cy.get("#\\/credit").should('have.text', '0.3333333333')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1 / 3);
       expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog', 'monkey']);
@@ -8831,7 +8832,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1_partial').should('not.exist');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_choiceinput1'].stateValues.choiceTexts.length).eq(3);
     })
 
@@ -8895,7 +8896,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1 li:nth-of-type(4)').should('be.visible')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_choiceinput1'].stateValues.choiceTexts.length).eq(4);
     })
 
@@ -8986,7 +8987,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1 li:nth-of-type(4)').should('not.exist')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_choiceinput1'].stateValues.choiceTexts.length).eq(3);
     })
 
@@ -9059,7 +9060,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1 li:nth-of-type(6)').should('be.visible')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_choiceinput1'].stateValues.choiceTexts.length).eq(6);
     })
 
@@ -9203,7 +9204,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let choiceinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
@@ -9368,7 +9369,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let choiceinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
@@ -9479,7 +9480,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/userx_input_incorrect').should('be.visible');
 
     cy.log("Enter another letter")
-    cy.get("#\\/userx_input textarea").type("{end}{backspace}{backspace}{backspace}q", { force: true });
+    cy.get("#\\/userx_input textarea").type("{ctrl+home}{shift+end}{backspace}q", { force: true });
     cy.get('#\\/userx_input_submit').click();
     cy.get('#\\/userx_input_correct').should('be.visible');
 
@@ -9523,7 +9524,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/element_incorrect').should('be.visible');
 
     cy.log("Enter a letter")
-    cy.get("#\\/element textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}c", { force: true });
+    cy.get("#\\/element textarea").type("{ctrl+home}{shift+end}{backspace}c", { force: true });
     cy.get('#\\/element_submit').click();
     cy.get('#\\/element_incorrect').should('be.visible');
 
@@ -9553,12 +9554,12 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/element_correct').should('be.visible');
 
     cy.log("Enter another of the expressions")
-    cy.get("#\\/element textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}e^(x^2{rightarrow} + y)", { force: true });
+    cy.get("#\\/element textarea").type("{ctrl+home}{shift+end}{backspace}e^(x^2{rightarrow} + y)", { force: true });
     cy.get('#\\/element_submit').click();
     cy.get('#\\/element_correct').should('be.visible');
 
     cy.log("Enter third expression")
-    cy.get("#\\/element textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x+2y-x/2{rightarrow}-3y/2", { force: true });
+    cy.get("#\\/element textarea").type("{ctrl+home}{shift+end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x+2y-x/2{rightarrow}-3y/2", { force: true });
     cy.get('#\\/element_submit').click();
     cy.get('#\\/element_correct').should('be.visible');
 
@@ -9834,7 +9835,7 @@ describe('Answer Tag Tests', function () {
     cy.get(`#\\/ca`).should('have.text', '0');
 
     cy.window().then(async (win) => {
-      await win.callAction({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 3, y: -3 }
@@ -9884,7 +9885,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      await win.callAction({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 8, y: 9 }
@@ -9928,7 +9929,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -9947,7 +9948,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Incorrect answer")
-      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x`, { force: true });
+      cy.get(mathinputAnchor).type(`{ctrl+home}{shift+end}{backspace}x`, { force: true });
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('not.exist');
@@ -9995,7 +9996,7 @@ describe('Answer Tag Tests', function () {
     cy.get(`#\\/ca`).should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/a"].stateValues.nResponses).eq(1)
     });
 
@@ -10077,7 +10078,7 @@ describe('Answer Tag Tests', function () {
     cy.get(`#\\/ca`).should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/a"].stateValues.nResponses).eq(2)
     });
 
@@ -10546,7 +10547,7 @@ describe('Answer Tag Tests', function () {
           </answer>
         </p>
         `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       });
 
@@ -10606,7 +10607,7 @@ describe('Answer Tag Tests', function () {
           </answer>
         </p>
         `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       });
 
@@ -10614,7 +10615,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/_text1').should('have.text', `${ind}`);  // to wait until loaded
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let textinputName = stateVariables['/ans'].stateValues.inputChildren[0].componentName
         let textinputAnchor = cesc('#' + textinputName + '_input');
@@ -11599,7 +11600,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/nsubs2').should('have.text', 0);
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(0);
       expect(stateVariables["/nsubs1"].stateValues.value).eq(0);
       expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
@@ -11619,7 +11620,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/nsubs1').should('have.text', 1)
       cy.get('#\\/nsubs2').should('have.text', 0)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(1);
         expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
@@ -11631,7 +11632,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/nsubs1').should('have.text', 1)
       cy.get('#\\/nsubs2').should('have.text', 0)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(1);
         expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
@@ -11642,7 +11643,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/nsubs1').should('have.text', 1)
       cy.get('#\\/nsubs2').should('have.text', 0)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(1);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(1);
         expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
@@ -11655,7 +11656,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/nsubs1').should('have.text', 2)
       cy.get('#\\/nsubs2').should('have.text', 0)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(2);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(2);
         expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(0);
@@ -11668,7 +11669,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/nsubs2').should('have.text', 1)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(2);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(2);
         expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(1);
@@ -11682,7 +11683,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/nsubs1').should('have.text', 2)
       cy.get('#\\/nsubs2').should('have.text', 1)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(2);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(2);
         expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(1);
@@ -11694,7 +11695,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/nsubs1').should('have.text', 3)
       cy.get('#\\/nsubs2').should('have.text', 1)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(3);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(3);
         expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(1);
@@ -11705,7 +11706,7 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/nsubs1').should('have.text', 3)
       cy.get('#\\/nsubs2').should('have.text', 2)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_answer1"].stateValues.nSubmissions).eq(3);
         expect(stateVariables["/nsubs1"].stateValues.value).eq(3);
         expect(stateVariables["/_answer2"].stateValues.nSubmissions).eq(2);
@@ -11847,7 +11848,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let inputNames = [...Array(20).keys()].map(n => stateVariables[`/_answer${n + 1}`].stateValues.inputChildren[0].componentName);
 
@@ -12121,7 +12122,7 @@ describe('Answer Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let inputNames = [...Array(20).keys()].map(n => stateVariables[`/_answer${n + 1}`].stateValues.inputChildren[0].componentName);
 
@@ -12389,7 +12390,7 @@ describe('Answer Tag Tests', function () {
 
     cy.log('submit first correct answers')
     cy.window().then(async (win) => {
-      await win.callAction({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 3, y: 4 }
@@ -12408,7 +12409,7 @@ describe('Answer Tag Tests', function () {
 
     cy.log('submit second correct answers')
     cy.window().then(async (win) => {
-      await win.callAction({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -5, y: 6 }
@@ -12430,7 +12431,7 @@ describe('Answer Tag Tests', function () {
 
     cy.log('submit second incorrect answers')
     cy.window().then(async (win) => {
-      await win.callAction({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 1, y: -1 }
@@ -12495,7 +12496,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinput1Name = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
       let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
@@ -12548,7 +12549,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/mi_correct').should('be.visible')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/ans"].stateValues.value).eqls("xyz");
       expect(stateVariables["/mi"].stateValues.value).eqls("xyz");
     })
@@ -12561,7 +12562,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/mi_correct').should('be.visible')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/ans"].stateValues.value).eqls(["*", "x", "y", "z"]);
       expect(stateVariables["/mi"].stateValues.value).eqls(["*", "x", "y", "z"]);
     })
@@ -12576,7 +12577,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/mi_correct').should('be.visible')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/ans"].stateValues.value).eqls("xyz");
       expect(stateVariables["/mi"].stateValues.value).eqls("xyz");
     })
@@ -12782,7 +12783,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/nr').should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/an'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -12839,7 +12840,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/nr').should('have.text', '1')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let mathinputName = stateVariables['/an'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -12950,7 +12951,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let mathinput1Name = stateVariables['/ans1'].stateValues.inputChildren[0].componentName
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
@@ -13117,7 +13118,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let mathinput1Name = stateVariables['/ans1'].stateValues.inputChildren[0].componentName
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
@@ -13385,7 +13386,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let mathinputName = stateVariables['/ans'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -13407,7 +13408,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('check that have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let stateVarObj = stateVariables["/_award1"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
@@ -13421,10 +13422,10 @@ describe('Answer Tag Tests', function () {
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
 
         expect(stateVariables["/ans"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award1"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
-        expect(await stateVariables["/_award2"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award2"].state.fractionSatisfied.value).eq(0);
+        expect(stateVariables["/_award1"].state.creditAchieved.value).eq(0);
+        expect(stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
+        expect(stateVariables["/_award2"].state.creditAchieved.value).eq(0);
+        expect(stateVariables["/_award2"].state.fractionSatisfied.value).eq(0);
 
 
       })
@@ -13449,7 +13450,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('check that still have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let stateVarObj = stateVariables["/_award1"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
@@ -13463,10 +13464,10 @@ describe('Answer Tag Tests', function () {
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
 
         expect(stateVariables["/ans"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award1"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
-        expect(await stateVariables["/_award2"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award2"].state.fractionSatisfied.value).eq(0);
+        expect(stateVariables["/_award1"].state.creditAchieved.value).eq(0);
+        expect(stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
+        expect(stateVariables["/_award2"].state.creditAchieved.value).eq(0);
+        expect(stateVariables["/_award2"].state.fractionSatisfied.value).eq(0);
 
       })
 
@@ -13491,7 +13492,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('check that no longer have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let stateVarObj = stateVariables["/_award1"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
@@ -13506,12 +13507,12 @@ describe('Answer Tag Tests', function () {
 
         expect(stateVariables["/_award1"].state.creditAchievedIfSubmit.value).eq(1);
         expect(stateVariables["/_award1"].state.fractionSatisfiedIfSubmit.value).eq(1);
-        expect(await stateVariables["/_award1"].state.creditAchieved.value).eq(1);
-        expect(await stateVariables["/_award1"].state.fractionSatisfied.value).eq(1);
+        expect(stateVariables["/_award1"].state.creditAchieved.value).eq(1);
+        expect(stateVariables["/_award1"].state.fractionSatisfied.value).eq(1);
         expect(stateVariables["/_award2"].state.creditAchievedIfSubmit.value).eq(0.5);
         expect(stateVariables["/_award2"].state.fractionSatisfiedIfSubmit.value).eq(1);
-        expect(await stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
-        expect(await stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
+        expect(stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
         expect(stateVariables["/ans"].state.creditAchievedIfSubmit.value).eq(1);
         expect(stateVariables["/ans"].state.creditAchieved.value).eq(1);
 
@@ -13537,7 +13538,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('check that still have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let stateVarObj = stateVariables["/_award1"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
@@ -13551,10 +13552,10 @@ describe('Answer Tag Tests', function () {
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.true;
 
         expect(stateVariables["/ans"].state.creditAchieved.value).eq(1);
-        expect(await stateVariables["/_award1"].state.creditAchieved.value).eq(1);
-        expect(await stateVariables["/_award1"].state.fractionSatisfied.value).eq(1);
-        expect(await stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
-        expect(await stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
+        expect(stateVariables["/_award1"].state.creditAchieved.value).eq(1);
+        expect(stateVariables["/_award1"].state.fractionSatisfied.value).eq(1);
+        expect(stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
 
       })
 
@@ -13579,7 +13580,7 @@ describe('Answer Tag Tests', function () {
 
       cy.log('check that no longer have getters for creditAchievedIfSubmit/fractionSatisfiedIfSubmit')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
         let stateVarObj = stateVariables["/_award1"].state.creditAchievedIfSubmit;
         expect(Boolean(Object.getOwnPropertyDescriptor(stateVarObj, 'value').get || stateVarObj.immutable)).to.be.false;
@@ -13594,12 +13595,12 @@ describe('Answer Tag Tests', function () {
 
         expect(stateVariables["/_award1"].state.creditAchievedIfSubmit.value).eq(0);
         expect(stateVariables["/_award1"].state.fractionSatisfiedIfSubmit.value).eq(0);
-        expect(await stateVariables["/_award1"].state.creditAchieved.value).eq(0);
-        expect(await stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
+        expect(stateVariables["/_award1"].state.creditAchieved.value).eq(0);
+        expect(stateVariables["/_award1"].state.fractionSatisfied.value).eq(0);
         expect(stateVariables["/_award2"].state.creditAchievedIfSubmit.value).eq(0.5);
         expect(stateVariables["/_award2"].state.fractionSatisfiedIfSubmit.value).eq(1);
-        expect(await stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
-        expect(await stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
+        expect(stateVariables["/_award2"].state.creditAchieved.value).eq(0.5);
+        expect(stateVariables["/_award2"].state.fractionSatisfied.value).eq(1);
         expect(stateVariables["/ans"].state.creditAchievedIfSubmit.value).eq(0.5);
         expect(stateVariables["/ans"].state.creditAchieved.value).eq(0.5);
 

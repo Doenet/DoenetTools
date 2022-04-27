@@ -27,8 +27,8 @@ const ModeButton = styled.button`
 
 
 export default function subsetOfReals(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props,false);
-  let [mode,setMode] = useState("add remove points");
+  let { name, SVs, actions, callAction } = useDoenetRender(props, false);
+  let [mode, setMode] = useState("add remove points");
   let bounds = useRef(null);
   let pointGrabbed = useRef(null);
 
@@ -58,7 +58,7 @@ export default function subsetOfReals(props) {
   }
 
   let controlButtons = null;
-  if(!SVs.fixed) {
+  if (!SVs.fixed) {
     controlButtons = <>
       <span>
         <ModeButton
@@ -86,7 +86,7 @@ export default function subsetOfReals(props) {
       </span>
       <span>
         <button
-          onClick={()=> callAction({
+          onClick={() => callAction({
             action: actions.clear,
           })}
         >
@@ -95,7 +95,7 @@ export default function subsetOfReals(props) {
       </span>
       <span>
         <button
-          onClick={()=> callAction({
+          onClick={() => callAction({
             action: actions.setToR,
           })}
         >
@@ -259,71 +259,71 @@ export default function subsetOfReals(props) {
 
       if (mode === "move points") {
         if (pointGrabbed.current !== null) {
- 
-        callAction({
-          action: actions.movePoint,
-          args: {
-            pointInd: pointGrabbed.current,
-            value: xPosition,
-            transient: false
-          }
-        })
-        pointGrabbed.current = null;
 
-        }
-
-      } 
-
-        if (mode === "add remove points") {
-          if (pointGrabbed.current !== null) {
-            callAction({
-              action: actions.deletePoint,
-              args: pointGrabbed.current
-            })
-          } else if (!SVs.points.map(x => x.value).includes(xPosition)) {
-            callAction({
-              action: actions.addPoint,
-              args: xPosition
-            })
-          }
-        } else if (mode === "toggle") {
-          if (pointGrabbed.current !== null) {
-            callAction({
-              action: actions.togglePoint,
-              args: pointGrabbed.current
-            })
-          } else {
-            let intervalInd = 0;
-            for (let pt of SVs.points) {
-              if (pt.value < xPosition) {
-                intervalInd++;
-              }
+          callAction({
+            action: actions.movePoint,
+            args: {
+              pointInd: pointGrabbed.current,
+              value: xPosition,
+              transient: false
             }
-            callAction({
-              action: actions.toggleInterval,
-              args: intervalInd
-            })
-          }
+          })
+          pointGrabbed.current = null;
+
         }
+
+      }
+
+      if (mode === "add remove points") {
+        if (pointGrabbed.current !== null) {
+          callAction({
+            action: actions.deletePoint,
+            args: { pointInd: pointGrabbed.current }
+          })
+        } else if (!SVs.points.map(x => x.value).includes(xPosition)) {
+          callAction({
+            action: actions.addPoint,
+            args: { value: xPosition }
+          })
+        }
+      } else if (mode === "toggle") {
+        if (pointGrabbed.current !== null) {
+          callAction({
+            action: actions.togglePoint,
+            args: { pointInd: pointGrabbed.current }
+          })
+        } else {
+          let intervalInd = 0;
+          for (let pt of SVs.points) {
+            if (pt.value < xPosition) {
+              intervalInd++;
+            }
+          }
+          callAction({
+            action: actions.toggleInterval,
+            args: { intervalInd }
+          })
+        }
+      }
 
     } else if (inputState === "down") {
 
-        let pointInd = null;
-        for (let [ind, pt] of SVs.points.entries()) {
-          if (Math.abs(pt.value - xPosition) < pointHitTolerance) {
-            pointInd = ind;
-            break;
-          }
+      let pointInd = null;
+      for (let [ind, pt] of SVs.points.entries()) {
+        if (Math.abs(pt.value - xPosition) < pointHitTolerance) {
+          pointInd = ind;
+          break;
         }
+      }
 
-        if (pointInd !== null) {
-          pointGrabbed.current = pointInd;
-        }else{
-          pointGrabbed.current = null;
-        }
+      if (pointInd !== null) {
+        pointGrabbed.current = pointInd;
+      } else {
+        pointGrabbed.current = null;
+      }
     } else if (inputState === "move") {
       if (mode === "move points" && pointGrabbed.current !== null) {
-    
+
         callAction({
           action: actions.movePoint,
           args: {
@@ -355,50 +355,50 @@ export default function subsetOfReals(props) {
 
   }
 
- return  (
-  <>
-    <a name={name} />
-    <div ref={bounds}>
-      {controlButtons}
-    </div>
-    <svg
-      width="808"
-      height="80"
-      style={{ backgroundColor: "white" }}
-      onMouseDown={e => {
-        handleInput(e, "down");
-      }}
-      onMouseUp={e => {
-        handleInput(e, "up");
-      }}
-      onMouseMove={e => {
-        handleInput(e, "move");
-      }}
-      onMouseLeave={e => {
-        handleInput(e, "leave");
-      }}
-    >
-      <polygon
-        points="5,40 20,50 20,30"
-        style={{ fill: "black", stroke: "black", strokeWidth: "1" }}
-      />
-      <polygon
-        points="795,40 780,50 780,30"
-        style={{ fill: "black", stroke: "black", strokeWidth: "1" }}
-      />
-      {storedLines}
-      {hashLines}
-      <line
-        x1="20"
-        y1="40"
-        x2="780"
-        y2="40"
-        style={{ stroke: "black", strokeWidth: "2" }}
-      />
-      {storedPoints}
-      {labels}
-    </svg>
-  </>
+  return (
+    <>
+      <a name={name} />
+      <div ref={bounds}>
+        {controlButtons}
+      </div>
+      <svg
+        width="808"
+        height="80"
+        style={{ backgroundColor: "white" }}
+        onMouseDown={e => {
+          handleInput(e, "down");
+        }}
+        onMouseUp={e => {
+          handleInput(e, "up");
+        }}
+        onMouseMove={e => {
+          handleInput(e, "move");
+        }}
+        onMouseLeave={e => {
+          handleInput(e, "leave");
+        }}
+      >
+        <polygon
+          points="5,40 20,50 20,30"
+          style={{ fill: "black", stroke: "black", strokeWidth: "1" }}
+        />
+        <polygon
+          points="795,40 780,50 780,30"
+          style={{ fill: "black", stroke: "black", strokeWidth: "1" }}
+        />
+        {storedLines}
+        {hashLines}
+        <line
+          x1="20"
+          y1="40"
+          x2="780"
+          y2="40"
+          style={{ stroke: "black", strokeWidth: "2" }}
+        />
+        {storedPoints}
+        {labels}
+      </svg>
+    </>
   );
 
 }

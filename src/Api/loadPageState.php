@@ -14,25 +14,29 @@ $examDoenetId = $jwtArray["doenetId"];
 
 // $device = $jwtArray['deviceName'];
 
-$CID = mysqli_real_escape_string($conn, $_REQUEST["CID"]);
+$cid = mysqli_real_escape_string($conn, $_REQUEST["cid"]);
+$pageNumber = mysqli_real_escape_string($conn, $_REQUEST["pageNumber"]);
 $attemptNumber = mysqli_real_escape_string($conn, $_REQUEST["attemptNumber"]);
 $doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
 $requestedVariantIndex = mysqli_real_escape_string(
     $conn,
     $_REQUEST["requestedVariantIndex"]
 );
-$allowLoadPageState = mysqli_real_escape_string(
+$allowLoadState = mysqli_real_escape_string(
     $conn,
-    $_REQUEST["allowLoadPageState"]
+    $_REQUEST["allowLoadState"]
 );
 
 $paramUserId = mysqli_real_escape_string($conn, $_REQUEST["userId"]);
 
 $success = true;
 $message = "";
-if ($CID == "") {
+if ($cid == "") {
     $success = false;
-    $message = "Internal Error: missing CID";
+    $message = "Internal Error: missing cid";
+} elseif ($pageNumber == "") {
+    $success = false;
+    $message = "Internal Error: missing pageNumber";
 } elseif ($attemptNumber == "") {
     $success = false;
     $message = "Internal Error: missing attemptNumber";
@@ -42,9 +46,9 @@ if ($CID == "") {
 } elseif ($requestedVariantIndex == "") {
     $success = false;
     $message = "Internal Error: missing requestedVariantIndex";
-} elseif ($allowLoadPageState == "") {
+} elseif ($allowLoadState == "") {
     $success = false;
-    $message = "Internal Error: missing allowLoadPageState";
+    $message = "Internal Error: missing allowLoadState";
 } elseif ($userId == "") {
     if ($examUserId == "") {
         $success = false;
@@ -79,12 +83,13 @@ if ($success) {
 
     $loadedState = false;
 
-    if ($allowLoadPageState == "true") {
+    if ($allowLoadState == "true") {
         $sql = "SELECT saveId, coreInfo, coreState, rendererState
             FROM page_state
             WHERE userId = '$effectiveUserId'
             AND doenetId = '$doenetId'
-            AND CID = '$CID'
+            AND cid = '$cid'
+            AND pageNumber='$pageNumber'
             AND attemptNumber='$attemptNumber'
             ";
 
@@ -99,17 +104,17 @@ if ($success) {
             $saveId = $row["saveId"];
             $loadedState = true;
 
-            // TODO: check if instructor changed CID
+            // TODO: check if instructor changed cid
         }
     }
 
-    if ($sucess && !$loadedState) {
+    if ($success && !$loadedState) {
         // no saved page state (or flag set to now allow loading page state),
         // look up initial renderer state
 
         $sql = "SELECT rendererState, coreInfo
             FROM initial_renderer_state
-            WHERE CID = '$CID'
+            WHERE cid = '$cid'
             AND variantIndex = '$requestedVariantIndex'
             ";
 
@@ -121,6 +126,7 @@ if ($success) {
             $coreState = null;
             $rendererState = $row["rendererState"];
             $coreInfo = $row["coreInfo"];
+            $loadedState = true;
         } else {
             // value missing from initial_renderer_state
             // will need to initialize core to determine rendererState

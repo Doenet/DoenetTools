@@ -5,7 +5,6 @@ entity {
   Element |
   Comment |
   MismatchedCloseTag |
-  Macro |
   incompleteStartCloseTag
 }
 
@@ -17,16 +16,15 @@ Element {
 topLevel {
   Text |
   Comment |
-  Macro |
   Element
 }
 
 OpenTag[closedBy="CloseTag MissingCloseTag"] {
-  StartTag TagName ws* (Attribute ws*)* endTag
+  StartTag TagName ws* Attribute* endTag
 }
 
 SelfClosingTag {
-  StartTag TagName ws* (Attribute ws*)* selfCloseEndTag
+  StartTag TagName ws* Attribute* selfCloseEndTag
 }
 
 CloseTag[openedBy=OpenTag] {
@@ -38,8 +36,8 @@ MismatchedCloseTag {
 }
 
 Attribute {
-  AttributeName  |
-   AttributeName Is AttributeValue
+  AttributeName ws* |
+   AttributeName ws* Is ws* AttributeValue ws*
 }
 
 AttributeValue {singleQuoteAttributeValue | doubleQuoteAttributeValue}
@@ -58,8 +56,8 @@ Comment { beginComment commentContent* "-->" }
 
 @external tokens commentContent from "./tokens.js" { commentContent }
 
-singleQuoteAttributeValue { "'" (attributeContentSingleQuote | Macro)* "'" }
-doubleQuoteAttributeValue { "\"" (attributeContentDoubleQuote | Macro)* "\"" }
+singleQuoteAttributeValue { "'" attributeContentSingleQuote* "'" }
+doubleQuoteAttributeValue { "\"" attributeContentDoubleQuote* "\"" }
 
 @tokens {
   endTag { ">" }
@@ -76,22 +74,17 @@ doubleQuoteAttributeValue { "\"" (attributeContentDoubleQuote | Macro)* "\"" }
 
   TagName { identifier }
 
-  Macro { "$" "$"? identifier | "$" "$"? "(" ![)]+ ")" }
-
   AttributeName { identifier }
 
-  attributeContentSingleQuote { "$" |  !['$ \t\r\n]  !['$]* }
+  attributeContentSingleQuote { ![']+ }
 
-  attributeContentDoubleQuote { "$" |  !["$ \t\r\n]  !["$]* }
+  attributeContentDoubleQuote { !["]+ }
 
   Is { "=" }
 
-  Text { ("< " | ![<$])+  }
+  Text { ("< " | "<=" | ![<])+  }
 
   ws { std.whitespace+ }
-
-  @precedence {Macro, attributeContentSingleQuote}
-  @precedence {Macro, attributeContentDoubleQuote}
 
 }
 @detectDelim

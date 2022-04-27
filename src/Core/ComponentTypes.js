@@ -28,7 +28,9 @@ import Text from './components/Text';
 import TextList from './components/TextList';
 import RandomizedTextList from './components/RandomizedTextList';
 import MathList from './components/MathList';
+import TupleList from './components/TupleList';
 import NumberList from './components/NumberList';
+import NumberListFromString from './components/NumberListFromString';
 import P from './components/P';
 import BooleanComponent from './components/Boolean';
 import BooleanList from './components/BooleanList';
@@ -150,6 +152,7 @@ import CodeEditor from './components/CodeEditor';
 import CodeViewer from './components/CodeViewer';
 import RenderDoenetML from './components/RenderDoenetML';
 import OrbitalDiagramInput from './components/OrbitalDiagramInput';
+import OrbitalDiagram from './components/OrbitalDiagram';
 
 
 //Extended
@@ -202,7 +205,9 @@ const componentTypeArray = [
   P,
   BooleanComponent, BooleanList,
   MathComponent, MathList,
+  TupleList,
   NumberList,
+  NumberListFromString,
   Copy,
   Extract,
   Collect,
@@ -298,6 +303,7 @@ const componentTypeArray = [
   CodeViewer,
   RenderDoenetML,
   OrbitalDiagramInput,
+  OrbitalDiagram,
 
 
   BaseComponent,
@@ -362,28 +368,4 @@ export function componentTypesCreatingVariants() {
   return componentClasses;
 }
 
-
-export function componentTypeWithPotentialVariants() {
-  const componentClasses = {};
-  const lowerCaseComponentTypes = new Set();
-  for (let ct of componentTypeArray) {
-    if (ct.createsVariants ||
-      ct.setUpVariantIfVariantControlChild ||
-      ct.setUpVariantUnlessAttributePrimitive ||
-      ct.alwaysSetUpVariant
-    ) {
-      let newComponentType = ct.componentType;
-      if (newComponentType === undefined) {
-        throw Error("Cannot create component as componentType is undefined for class " + ct)
-      }
-      let lowerCaseType = newComponentType.toLowerCase();
-      if (lowerCaseComponentTypes.has(lowerCaseType)) {
-        throw Error("component type " + newComponentType + " defined in two classes");
-      }
-      componentClasses[newComponentType] = ct;
-      lowerCaseComponentTypes.add(lowerCaseType);
-    }
-  }
-  return componentClasses;
-}
 

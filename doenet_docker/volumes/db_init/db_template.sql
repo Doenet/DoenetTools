@@ -26,6 +26,40 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `doenet_local` /*!40100 DEFAULT CHARACT
 USE `doenet_local`;
 
 --
+-- Table structure for table `activity_state`
+--
+
+DROP TABLE IF EXISTS `activity_state`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `activity_state` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `attemptNumber` int(11) NOT NULL,
+  `saveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `variantIndex` int(11) NOT NULL,
+  `activityInfo` mediumtext COLLATE utf8_unicode_ci,
+  `activityState` mediumtext COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `userId-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`),
+  KEY `saveId` (`saveId`),
+  KEY `cid` (`cid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `activity_state`
+--
+
+LOCK TABLES `activity_state` WRITE;
+/*!40000 ALTER TABLE `activity_state` DISABLE KEYS */;
+/*!40000 ALTER TABLE `activity_state` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `assignment`
 --
 
@@ -34,21 +68,18 @@ DROP TABLE IF EXISTS `assignment`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'matches code table contentId',
-  `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'matches code table contentId',
-  `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `pinnedAfterDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means shows immediately',
   `pinnedUntilDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never stops being pinned',
   `dueDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never closes',
   `timeLimit` int(11) DEFAULT NULL COMMENT 'NULL means it''s not timed',
   `numberOfAttemptsAllowed` int(11) DEFAULT NULL COMMENT 'NULL means infinite, Assignment Level Number Of Attempts',
-  `sortOrder` int(11) DEFAULT NULL,
-  `attemptAggregation` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `totalPointsOrPercent` float DEFAULT NULL COMMENT 'Assignment level',
+  `attemptAggregation` char(1) COLLATE utf8_unicode_ci DEFAULT 'm',
+  `totalPointsOrPercent` float DEFAULT '10' COMMENT 'Assignment level',
   `gradeCategory` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `individualize` tinyint(1) NOT NULL DEFAULT '0',
-  `multipleAttempts` tinyint(1) NOT NULL DEFAULT '0',
   `showSolution` tinyint(1) NOT NULL DEFAULT '1',
   `showSolutionInGradebook` tinyint(1) NOT NULL DEFAULT '1',
   `showFeedback` tinyint(1) NOT NULL DEFAULT '1',
@@ -56,10 +87,9 @@ CREATE TABLE `assignment` (
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
   `showCreditAchievedMenu` tinyint(1) NOT NULL DEFAULT '1',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
-  `examCoverHTML` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`)
-) ENGINE=InnoDB AUTO_INCREMENT=489 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,7 +98,6 @@ CREATE TABLE `assignment` (
 
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
-INSERT INTO `assignment` VALUES (488,'doenetId',NULL,'driveId','2021-06-04 08:20:07',NULL,NULL,'2021-06-09 08:20:07',101000,2,NULL,'m',0,'l',0,0,1,1,1,1,1,1,0,NULL);
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,7 +110,7 @@ DROP TABLE IF EXISTS `class_times`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `class_times` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `driveId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `dotwIndex` int(1) NOT NULL,
   `startTime` time NOT NULL,
   `endTime` time NOT NULL,
@@ -162,8 +191,8 @@ DROP TABLE IF EXISTS `content`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT '0',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `cid` char(64) COLLATE utf8_unicode_ci DEFAULT '0',
   `versionId` char(21) COLLATE utf8_unicode_ci DEFAULT '0',
   `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
@@ -174,7 +203,7 @@ CREATE TABLE `content` (
   `removedFlag` tinyint(1) NOT NULL DEFAULT '0',
   `public` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  KEY `contentId` (`contentId`),
+  KEY `cid` (`cid`),
   KEY `doenetId` (`doenetId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -199,7 +228,7 @@ CREATE TABLE `content_interactions` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `stateVariables` mediumtext COLLATE utf8_unicode_ci,
   `variant` text COLLATE utf8_unicode_ci NOT NULL,
@@ -208,7 +237,7 @@ CREATE TABLE `content_interactions` (
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `should_be_unique` (`userId`,`doenetId`,`attemptNumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -217,7 +246,74 @@ CREATE TABLE `content_interactions` (
 
 LOCK TABLES `content_interactions` WRITE;
 /*!40000 ALTER TABLE `content_interactions` DISABLE KEYS */;
+INSERT INTO `content_interactions` VALUES (1,'devuserid','Rubber fig','jCig69KJ8-Vg8n29eI_IT','e0ed824db15dea742250f59c536a03de0cdc3c5fb4127a1100c0710cb241eed2','{\"/__mathinput_KXh6glTyP5\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":\"ï¼¿\"},\"rawRendererValue\":\"ï¼¿\"},\"/__math_d9bmzOvKly\":{\"expressionWithCodes\":{\"objectType\":\"math-expression\",\"tree\":2}},\"/_answer1\":{\"justSubmitted\":true,\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":\"ï¼¿\"},\"mergeObject\":true},\"submittedResponsesComponentType\":[\"math\"],\"creditAchievedDependenciesAtSubmit\":\"n54ElwqKNsTmUihVxGz6Hx0Mcfo=\",\"nSubmissions\":2,\"hasBeenCorrect\":true},\"/__award_XTZPmlFGuS\":{\"awarded\":true,\"creditAchieved\":1,\"fractionSatisfied\":1}}','{\"index\":14,\"name\":\"n\",\"meta\":{\"createdBy\":\"/_document1\",\"subvariantsSpecified\":false},\"subvariants\":[]}',2,NULL,'2022-03-11 16:47:18');
 /*!40000 ALTER TABLE `content_interactions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `course`
+--
+
+DROP TABLE IF EXISTS `course`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `course` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'Untitled',
+  `isPublic` tinyint(1) DEFAULT '0' COMMENT 'Course is findable in search and drive_content isPublic content is available',
+  `isDeleted` tinyint(1) DEFAULT '0',
+  `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `color` char(6) COLLATE utf8_unicode_ci DEFAULT 'none',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `driveId` (`courseId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `course`
+--
+
+LOCK TABLES `course` WRITE;
+/*!40000 ALTER TABLE `course` DISABLE KEYS */;
+/*!40000 ALTER TABLE `course` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `course_content`
+--
+
+DROP TABLE IF EXISTS `course_content`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `course_content` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `cid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled',
+  `creationDate` timestamp NULL DEFAULT NULL,
+  `isDeleted` int(1) NOT NULL DEFAULT '0',
+  `isAssigned` int(1) NOT NULL DEFAULT '0' COMMENT 'The content or folder shows to the student',
+  `isGloballyAssigned` int(1) NOT NULL DEFAULT '1' COMMENT 'The content from cid shows to all students without a cidOverride',
+  `isPublic` int(1) NOT NULL DEFAULT '0' COMMENT 'The course is available to search for and this content is available',
+  `sortOrder` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `jsonDefinition` json DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `doenetId` (`doenetId`),
+  KEY `courseId` (`courseId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `course_content`
+--
+
+LOCK TABLES `course_content` WRITE;
+/*!40000 ALTER TABLE `course_content` DISABLE KEYS */;
+/*!40000 ALTER TABLE `course_content` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -229,7 +325,7 @@ DROP TABLE IF EXISTS `course_grade_category`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `course_grade_category` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `courseId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `gradeCategory` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `totalPointsOrPercent` float NOT NULL DEFAULT '0',
   `numberToDrop` int(11) NOT NULL DEFAULT '0',
@@ -249,6 +345,46 @@ LOCK TABLES `course_grade_category` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `course_user`
+--
+
+DROP TABLE IF EXISTS `course_user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `course_user` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `canViewCourse` tinyint(1) DEFAULT '0',
+  `canViewContentSource` tinyint(1) DEFAULT '0',
+  `canEditContent` tinyint(1) DEFAULT '0',
+  `canPublishContent` tinyint(1) DEFAULT '0',
+  `canViewUnassignedContent` tinyint(1) DEFAULT '0',
+  `canProctor` tinyint(1) DEFAULT '0',
+  `canViewAndModifyGrades` tinyint(1) DEFAULT '0',
+  `canViewActivitySettings` tinyint(1) DEFAULT '0',
+  `canModifyCourseSettings` tinyint(1) DEFAULT '0',
+  `canViewUsers` tinyint(1) DEFAULT '0',
+  `canManageUsers` tinyint(1) DEFAULT '0',
+  `canModifyRoles` tinyint(1) DEFAULT '0',
+  `isOwner` tinyint(1) DEFAULT '0',
+  `sectionPermissionOnly` int(255) DEFAULT NULL,
+  `roleLabels` json DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `userDrive` (`userId`,`courseId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `course_user`
+--
+
+LOCK TABLES `course_user` WRITE;
+/*!40000 ALTER TABLE `course_user` DISABLE KEYS */;
+/*!40000 ALTER TABLE `course_user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `drive`
 --
 
@@ -257,7 +393,7 @@ DROP TABLE IF EXISTS `drive`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `drive` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `driveType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `isShared` tinyint(1) DEFAULT '0',
@@ -290,9 +426,9 @@ DROP TABLE IF EXISTS `drive_content`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `drive_content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `itemId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `parentFolderId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentFolderId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `creationDate` timestamp NULL DEFAULT NULL,
   `isDeleted` int(1) NOT NULL DEFAULT '0',
@@ -329,7 +465,7 @@ DROP TABLE IF EXISTS `drive_user`;
 CREATE TABLE `drive_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `canEditContent` tinyint(1) DEFAULT '0',
   `canViewDrive` tinyint(1) DEFAULT '0',
   `canDeleteDrive` tinyint(1) DEFAULT '0',
@@ -367,7 +503,7 @@ DROP TABLE IF EXISTS `enrollment`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `enrollment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `firstName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lastName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -409,8 +545,8 @@ CREATE TABLE `event` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `verb` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) DEFAULT NULL,
   `variant` text COLLATE utf8_unicode_ci NOT NULL,
   `object` mediumtext COLLATE utf8_unicode_ci,
@@ -444,7 +580,7 @@ DROP TABLE IF EXISTS `experiment`;
 CREATE TABLE `experiment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `experimentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `waitingContentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `waitingCid` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `creationDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `hasBegun` int(1) DEFAULT '0',
@@ -471,12 +607,12 @@ DROP TABLE IF EXISTS `initial_renderer_state`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `initial_renderer_state` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `CID` char(64) NOT NULL,
+  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
   `variantIndex` int(11) NOT NULL,
-  `rendererState` mediumtext,
-  `coreInfo` mediumtext,
+  `rendererState` mediumtext COLLATE utf8_unicode_ci,
+  `coreInfo` mediumtext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `CID-variantIndex` (`CID`,`variantIndex`)
+  UNIQUE KEY `cid-variantIndex` (`cid`,`variantIndex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -498,7 +634,7 @@ DROP TABLE IF EXISTS `ipfs_to_upload`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ipfs_to_upload` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `contentId` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `cid` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `fileType` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL,
   `sizeInBytes` int(11) DEFAULT NULL,
   `timestamp` timestamp NULL DEFAULT NULL,
@@ -526,8 +662,9 @@ CREATE TABLE `page_state` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL,
-  `CID` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `pageNumber` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `attemptNumber` int(11) DEFAULT NULL,
   `saveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `coreInfo` mediumtext COLLATE utf8_unicode_ci,
@@ -535,9 +672,9 @@ CREATE TABLE `page_state` (
   `rendererState` mediumtext COLLATE utf8_unicode_ci,
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `userId-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`),
+  UNIQUE KEY `userId-doenetId-pageNumber-attemptNumber` (`userId`,`doenetId`,`pageNumber`,`attemptNumber`),
   KEY `saveId` (`saveId`),
-  KEY `CID` (`CID`)
+  KEY `cid` (`cid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -551,6 +688,36 @@ LOCK TABLES `page_state` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `pages`
+--
+
+DROP TABLE IF EXISTS `pages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pages` (
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `containingDoenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `draftCid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
+  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
+  `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled',
+  `isDeleted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`containingDoenetId`,`doenetId`),
+  KEY `doenetId` (`doenetId`),
+  CONSTRAINT `pages_ibfk_1` FOREIGN KEY (`containingDoenetId`) REFERENCES `course_content` (`doenetId`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pages`
+--
+
+LOCK TABLES `pages` WRITE;
+/*!40000 ALTER TABLE `pages` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pages` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `support_files`
 --
 
@@ -560,8 +727,8 @@ DROP TABLE IF EXISTS `support_files`;
 CREATE TABLE `support_files` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT '0',
-  `contentId` char(80) COLLATE utf8_unicode_ci DEFAULT '0',
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `cid` char(80) COLLATE utf8_unicode_ci DEFAULT '0',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `fileType` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `description` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `asFileName` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -632,11 +799,11 @@ DROP TABLE IF EXISTS `user_assignment`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'NULL means no group',
+  `doenetIdOverride` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no override',
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
-  `numberOfAttemptsAllowedOverride` int(11) DEFAULT NULL,
+  `numberOfAttemptsAllowedAdjustment` int(11) DEFAULT NULL,
   `groupId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `groupName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `completed` bit(1) DEFAULT NULL COMMENT 'For ToDo list',
@@ -644,7 +811,7 @@ CREATE TABLE `user_assignment` (
   `credit` double NOT NULL DEFAULT '0' COMMENT 'Overwritten by metric used to calculate it from other tables. Always 0-1 scale.',
   `creditOverride` double DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `assignment-userId` (`doenetId`,`userId`)
+  UNIQUE KEY `doenetId-userId` (`doenetId`,`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -666,18 +833,15 @@ DROP TABLE IF EXISTS `user_assignment_attempt`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_assignment_attempt` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `attemptNumber` int(11) NOT NULL DEFAULT '1',
   `credit` double DEFAULT NULL,
   `creditOverride` double DEFAULT NULL,
-  `assignedVariant` text COLLATE utf8_unicode_ci COMMENT 'Like seed. Informs the selects what values to use for the content. NULL means didn''t view yet.',
-  `generatedVariant` text COLLATE utf8_unicode_ci COMMENT 'Based on code',
   `began` datetime DEFAULT NULL,
   `finished` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `userid-assignmentid-attemptnum` (`userId`,`doenetId`,`attemptNumber`)
+  UNIQUE KEY `userid-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -699,15 +863,13 @@ DROP TABLE IF EXISTS `user_assignment_attempt_item`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_assignment_attempt_item` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) NOT NULL,
   `itemNumber` int(11) NOT NULL COMMENT 'The number of the scored item found in the Doenet code.',
   `credit` double DEFAULT NULL COMMENT 'maximum credit',
   `creditOverride` double DEFAULT NULL,
   `weight` float NOT NULL DEFAULT '1' COMMENT 'Weight comes from Doenet code.',
-  `generatedVariant` text COLLATE utf8_unicode_ci,
   `viewedSolution` tinyint(1) DEFAULT '0',
   `viewedSolutionDate` datetime DEFAULT NULL COMMENT 'Datetime when they first viewed the solution',
   PRIMARY KEY (`id`),
@@ -733,8 +895,7 @@ DROP TABLE IF EXISTS `user_assignment_attempt_item_submission`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_assignment_attempt_item_submission` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) NOT NULL,
   `itemNumber` int(11) NOT NULL,
@@ -794,4 +955,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-03-01 18:15:33
+-- Dump completed on 2022-04-27  3:30:55

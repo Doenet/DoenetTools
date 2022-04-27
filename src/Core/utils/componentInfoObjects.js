@@ -1,11 +1,10 @@
 import * as ComponentTypes from '../ComponentTypes'
 
 
-export default function createComponentInfoObjects(flags) {
+export default function createComponentInfoObjects() {
 
   let allComponentClasses = ComponentTypes.allComponentClasses();
   let componentTypesCreatingVariants = ComponentTypes.componentTypesCreatingVariants();
-  let componentTypeWithPotentialVariants = ComponentTypes.componentTypeWithPotentialVariants();
 
   let componentTypeLowerCaseMapping = {};
   for (let componentType in allComponentClasses) {
@@ -16,7 +15,7 @@ export default function createComponentInfoObjects(flags) {
   for (let componentType in allComponentClasses) {
     Object.defineProperty(stateVariableInfo, componentType, {
       get: function () {
-        let info = allComponentClasses[componentType].returnStateVariableInfo({ flags: flags });
+        let info = allComponentClasses[componentType].returnStateVariableInfo();
         delete stateVariableInfo[componentType];
         return stateVariableInfo[componentType] = info;
       }.bind(this),
@@ -29,7 +28,7 @@ export default function createComponentInfoObjects(flags) {
     Object.defineProperty(publicStateVariableInfo, componentType, {
       get: function () {
         let info = allComponentClasses[componentType].returnStateVariableInfo({
-          onlyPublic: true, flags: flags
+          onlyPublic: true
         });
         delete publicStateVariableInfo[componentType];
         return publicStateVariableInfo[componentType] = info;
@@ -78,7 +77,6 @@ export default function createComponentInfoObjects(flags) {
   return {
     allComponentClasses,
     componentTypesCreatingVariants,
-    componentTypeWithPotentialVariants,
     componentTypeLowerCaseMapping,
     isInheritedComponentType,
     isCompositeComponent,

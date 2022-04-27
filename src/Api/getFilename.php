@@ -1,13 +1,13 @@
 <?php
 
-function getFileName($CID,$fileType){
+function getFileName($cid,$fileType){
   if ($fileType == 'image/jpeg'){
-    return "$CID.jpg";
+    return "$cid.jpg";
   }else if ($fileType == 'image/png'){
-    return "$CID.png";
+    return "$cid.png";
   }else if ($fileType == 'text/doenetML'){
     //consider munged XML as the mimetype
-    return "$CID.doenet";
+    return "$cid.doenet";
   }
 }
 

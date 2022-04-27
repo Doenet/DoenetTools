@@ -7,6 +7,8 @@ import useDoenetRender from './useDoenetRenderer';
 import Button from "../../_reactComponents/PanelHeaderComponents/Button";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup";
 import { doenetComponentForegroundActive, doenetComponentForegroundInactive, doenetLightGray } from "../../_reactComponents/PanelHeaderComponents/theme"
+import { useSetRecoilState } from 'recoil';
+import { rendererState } from './useDoenetRenderer';
 
 
 let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
@@ -309,13 +311,17 @@ function nearestValue(refval, points, SVs) {
 }
 
 export default function Slider(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props);
-  // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
+  let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
+  // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index, "ignoreUpdate", ignoreUpdate);
   // console.log(SVs)
+
+  Slider.baseStateVariable = 'index';
 
   const containerRef = useRef(null);
   // console.log("SVs",SVs);
   // let sorted_points = [...SVs.items].sort((p1, p2) => p1 - p2);
+
+  const setRendererState =  useSetRecoilState(rendererState(rendererName));
 
   const [thumbXPos, setThumbXPos] = useState(0);
   const [thumbValue, setThumbValue] = useState(SVs.firstItem);
@@ -336,7 +342,7 @@ export default function Slider(props) {
 
   useEffect(() => {
     //console.log("ran");
-    if (!isMouseDown) {
+    if (!isMouseDown && !ignoreUpdate) {
       setThumbValue(SVs.value);
       setIndex(SVs.index);
       if (!(SVs.type === "text")) {
@@ -416,14 +422,31 @@ export default function Slider(props) {
       setIndex(valindexpair[1]);
 
 
-
-      callAction({action:actions.changeValue, args:{ value: valindexpair[0], transient: true }})
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: valindexpair[0], transient: true },
+        baseVariableValue: valindexpair[1],
+      })
     } else {
       let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
       setIndex(i);
       setThumbValue(SVs.items[i]);
 
-      callAction({action:actions.changeValue, args:{ value: SVs.items[i], transient: true }})
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: SVs.items[i], transient: true },
+        baseVariableValue: i,
+      })
 
     }
   }
@@ -453,7 +476,16 @@ export default function Slider(props) {
 
       setThumbXPos(valindexpair[1] * divisionWidth);
 
-      callAction({action:actions.changeValue, args:{ value: valindexpair[0]}})
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: valindexpair[0] },
+        baseVariableValue: valindexpair[1]
+      })
 
     } else {
       let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
@@ -464,7 +496,16 @@ export default function Slider(props) {
 
       setThumbXPos(i * divisionWidth);
 
-      callAction({action:actions.changeValue, args:{ value: SVs.items[i]}})
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: SVs.items[i] },
+        baseVariableValue: i
+      })
 
 
     }
@@ -481,14 +522,32 @@ export default function Slider(props) {
         setThumbValue(valindexpair[0]);
         setIndex(valindexpair[1]);
 
-      callAction({action:actions.changeValue, args:{ value: valindexpair[0], transient: true, skippable: true }})
+        setRendererState((was) => {
+          let newObj = {...was};
+          newObj.ignoreUpdate = true;
+          return newObj;
+        })
+        callAction({
+          action: actions.changeValue,
+          args: { value: valindexpair[0], transient: true, skippable: true },
+          baseVariableValue: valindexpair[1]
+        })
 
       } else {
         let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
         setIndex(i);
         setThumbValue(SVs.items[i]);
 
-      callAction({action:actions.changeValue, args:{ value: SVs.items[i], transient: true, skippable: true }})
+        setRendererState((was) => {
+          let newObj = {...was};
+          newObj.ignoreUpdate = true;
+          return newObj;
+        })
+        callAction({
+          action: actions.changeValue,
+          args: { value: SVs.items[i], transient: true, skippable: true },
+          baseVariableValue: i
+        })
 
       }
     }
@@ -507,7 +566,16 @@ export default function Slider(props) {
       val = SVs.items[index + 1];
     }
 
-    callAction({action:actions.changeValue, args:{ value: val }})
+    setRendererState((was) => {
+      let newObj = {...was};
+      newObj.ignoreUpdate = true;
+      return newObj;
+    })
+    callAction({
+      action: actions.changeValue,
+      args: { value: val },
+      baseVariableValue: index + 1
+    })
 
     setThumbValue(val);
     setIndex(index + 1);
@@ -527,7 +595,16 @@ export default function Slider(props) {
       val = SVs.items[index - 1];
     }
 
-    callAction({action:actions.changeValue, args:{ value: val }})
+    setRendererState((was) => {
+      let newObj = {...was};
+      newObj.ignoreUpdate = true;
+      return newObj;
+    })
+    callAction({
+      action: actions.changeValue,
+      args: { value: val },
+      baseVariableValue: index - 1
+    })
 
     setThumbValue(val);
     setIndex(index - 1);
@@ -584,7 +661,7 @@ export default function Slider(props) {
         {SVs.label ? <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel> : null}
       </div>
       <SubContainer2 onMouseDown={handleDragEnter} onMouseUp={handleDragExit} onMouseMove={handleDragThrough} onMouseLeave={handleDragExit}>
-        <StyledSlider width={(`${SVs.width.size}px`)} data-cy="slider1">
+        <StyledSlider width={(`${SVs.width.size}px`)} data-cy={`${name}`}>
           {/* {valueDisplay} */}
           <StyledThumb style={{ left: `${thumbXPos - 4}px` }}
             data-cy={`${name}-handle`} />

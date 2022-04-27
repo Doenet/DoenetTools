@@ -1,6 +1,7 @@
 describe('Graph Reference Test 2', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
@@ -61,7 +62,7 @@ describe('Graph Reference Test 2', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
       // let originalVectors = [0, 2, 6]
       // let displacementsA = [1, 4];
@@ -75,138 +76,138 @@ describe('Graph Reference Test 2', function () {
       // let pointShift = 6;
       // let nShifts = 6;
 
-      let graph1 = components["/graph1"];
-      let graph2 = components["/graph2"];
-      let graph3 = components["/graph3"];
-      let graph4 = components["/graph4"];
-      let graph5 = components['/graph5'].replacements[0];
-      let graph6 = components['/graph6'].replacements[0];
-      let graph7 = components['/graph7'].replacements[0];
-      let graph8 = components['/graph8'].replacements[0];
-      let graph9 = components['/graph9'].replacements[0];
-      let graph10 = components['/graph10'].replacements[0];
-      let graph11 = components['/graph11'].replacements[0];
-      let graph12 = components['/graph12'].replacements[0];
+      let graph1 = stateVariables["/graph1"];
+      let graph2 = stateVariables["/graph2"];
+      let graph3 = stateVariables["/graph3"];
+      let graph4 = stateVariables["/graph4"];
+      let graph5 = stateVariables[stateVariables['/graph5'].replacements[0].componentName];
+      let graph6 = stateVariables[stateVariables['/graph6'].replacements[0].componentName];
+      let graph7 = stateVariables[stateVariables['/graph7'].replacements[0].componentName];
+      let graph8 = stateVariables[stateVariables['/graph8'].replacements[0].componentName];
+      let graph9 = stateVariables[stateVariables['/graph9'].replacements[0].componentName];
+      let graph10 = stateVariables[stateVariables['/graph10'].replacements[0].componentName];
+      let graph11 = stateVariables[stateVariables['/graph11'].replacements[0].componentName];
+      let graph12 = stateVariables[stateVariables['/graph12'].replacements[0].componentName];
 
-      let graph1A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[0];
-      let graph2A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[1];
-      let graph3A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[2];
-      let graph4A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[3];
-      let graph5A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[0];
-      let graph6A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[1];
-      let graph7A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[2];
-      let graph8A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[3];
-      let graph9A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[0];
-      let graph10A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[1];
-      let graph11A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[2];
-      let graph12A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[3];
+      let graph1A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[0].componentName];
+      let graph2A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[1].componentName];
+      let graph3A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[2].componentName];
+      let graph4A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[0].componentName].activeChildren[3].componentName];
+      let graph5A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[1].componentName].activeChildren[0].componentName];
+      let graph6A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[1].componentName].activeChildren[1].componentName];
+      let graph7A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[1].componentName].activeChildren[2].componentName];
+      let graph8A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[1].componentName].activeChildren[3].componentName];
+      let graph9A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[2].componentName].activeChildren[0].componentName];
+      let graph10A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[2].componentName].activeChildren[1].componentName];
+      let graph11A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[2].componentName].activeChildren[2].componentName];
+      let graph12A = stateVariables[stateVariables[stateVariables[stateVariables['/sbsgroup2'].replacements[0].componentName].activeChildren[2].componentName].activeChildren[3].componentName];
 
       let vectors = [
-        graph1.activeChildren[0],
-        graph2.activeChildren[3],
-        graph4.activeChildren[3],
-        graph5.activeChildren[0],
-        graph6.activeChildren[3],
-        graph8.activeChildren[3],
-        graph9.activeChildren[0],
-        graph10.activeChildren[3],
-        graph12.activeChildren[3],
-        graph1A.activeChildren[0],
-        graph2A.activeChildren[3],
-        graph4A.activeChildren[3],
-        graph5A.activeChildren[0],
-        graph6A.activeChildren[3],
-        graph8A.activeChildren[3],
-        graph9A.activeChildren[0],
-        graph10A.activeChildren[3],
-        graph12A.activeChildren[3],
+        graph1.activeChildren[0].componentName,
+        graph2.activeChildren[3].componentName,
+        graph4.activeChildren[3].componentName,
+        graph5.activeChildren[0].componentName,
+        graph6.activeChildren[3].componentName,
+        graph8.activeChildren[3].componentName,
+        graph9.activeChildren[0].componentName,
+        graph10.activeChildren[3].componentName,
+        graph12.activeChildren[3].componentName,
+        graph1A.activeChildren[0].componentName,
+        graph2A.activeChildren[3].componentName,
+        graph4A.activeChildren[3].componentName,
+        graph5A.activeChildren[0].componentName,
+        graph6A.activeChildren[3].componentName,
+        graph8A.activeChildren[3].componentName,
+        graph9A.activeChildren[0].componentName,
+        graph10A.activeChildren[3].componentName,
+        graph12A.activeChildren[3].componentName,
       ];
 
       let displacementsA = [
-        graph2.activeChildren[2],
-        graph3.activeChildren[3],
-        graph6.activeChildren[2],
-        graph7.activeChildren[3],
-        graph10.activeChildren[2],
-        graph11.activeChildren[3],
-        graph2A.activeChildren[2],
-        graph3A.activeChildren[3],
-        graph6A.activeChildren[2],
-        graph7A.activeChildren[3],
-        graph10A.activeChildren[2],
-        graph11A.activeChildren[3],
+        graph2.activeChildren[2].componentName,
+        graph3.activeChildren[3].componentName,
+        graph6.activeChildren[2].componentName,
+        graph7.activeChildren[3].componentName,
+        graph10.activeChildren[2].componentName,
+        graph11.activeChildren[3].componentName,
+        graph2A.activeChildren[2].componentName,
+        graph3A.activeChildren[3].componentName,
+        graph6A.activeChildren[2].componentName,
+        graph7A.activeChildren[3].componentName,
+        graph10A.activeChildren[2].componentName,
+        graph11A.activeChildren[3].componentName,
       ];
 
       let displacementsB = [
-        graph3.activeChildren[2],
-        graph7.activeChildren[2],
-        graph11.activeChildren[2],
-        graph3A.activeChildren[2],
-        graph7A.activeChildren[2],
-        graph11A.activeChildren[2],
+        graph3.activeChildren[2].componentName,
+        graph7.activeChildren[2].componentName,
+        graph11.activeChildren[2].componentName,
+        graph3A.activeChildren[2].componentName,
+        graph7A.activeChildren[2].componentName,
+        graph11A.activeChildren[2].componentName,
       ];
 
       let displacementsC = [
-        graph4.activeChildren[2],
-        graph8.activeChildren[2],
-        graph12.activeChildren[2],
-        graph4A.activeChildren[2],
-        graph8A.activeChildren[2],
-        graph12A.activeChildren[2],
+        graph4.activeChildren[2].componentName,
+        graph8.activeChildren[2].componentName,
+        graph12.activeChildren[2].componentName,
+        graph4A.activeChildren[2].componentName,
+        graph8A.activeChildren[2].componentName,
+        graph12A.activeChildren[2].componentName,
       ];
 
       let tails = [
-        graph2.activeChildren[0],
-        graph4.activeChildren[0],
-        graph6.activeChildren[0],
-        graph8.activeChildren[0],
-        graph10.activeChildren[0],
-        graph12.activeChildren[0],
-        graph2A.activeChildren[0],
-        graph4A.activeChildren[0],
-        graph6A.activeChildren[0],
-        graph8A.activeChildren[0],
-        graph10A.activeChildren[0],
-        graph12A.activeChildren[0],
+        graph2.activeChildren[0].componentName,
+        graph4.activeChildren[0].componentName,
+        graph6.activeChildren[0].componentName,
+        graph8.activeChildren[0].componentName,
+        graph10.activeChildren[0].componentName,
+        graph12.activeChildren[0].componentName,
+        graph2A.activeChildren[0].componentName,
+        graph4A.activeChildren[0].componentName,
+        graph6A.activeChildren[0].componentName,
+        graph8A.activeChildren[0].componentName,
+        graph10A.activeChildren[0].componentName,
+        graph12A.activeChildren[0].componentName,
       ]
 
       let heads = [
-        graph2.activeChildren[1],
-        graph4.activeChildren[1],
-        graph6.activeChildren[1],
-        graph8.activeChildren[1],
-        graph10.activeChildren[1],
-        graph12.activeChildren[1],
-        graph2A.activeChildren[1],
-        graph4A.activeChildren[1],
-        graph6A.activeChildren[1],
-        graph8A.activeChildren[1],
-        graph10A.activeChildren[1],
-        graph12A.activeChildren[1],
+        graph2.activeChildren[1].componentName,
+        graph4.activeChildren[1].componentName,
+        graph6.activeChildren[1].componentName,
+        graph8.activeChildren[1].componentName,
+        graph10.activeChildren[1].componentName,
+        graph12.activeChildren[1].componentName,
+        graph2A.activeChildren[1].componentName,
+        graph4A.activeChildren[1].componentName,
+        graph6A.activeChildren[1].componentName,
+        graph8A.activeChildren[1].componentName,
+        graph10A.activeChildren[1].componentName,
+        graph12A.activeChildren[1].componentName,
       ]
 
       let displacementTails = [
-        graph3.activeChildren[0],
-        graph7.activeChildren[0],
-        graph11.activeChildren[0],
-        graph3A.activeChildren[0],
-        graph7A.activeChildren[0],
-        graph11A.activeChildren[0],
+        graph3.activeChildren[0].componentName,
+        graph7.activeChildren[0].componentName,
+        graph11.activeChildren[0].componentName,
+        graph3A.activeChildren[0].componentName,
+        graph7A.activeChildren[0].componentName,
+        graph11A.activeChildren[0].componentName,
       ]
 
 
       let displacementHeads = [
-        graph3.activeChildren[1],
-        graph7.activeChildren[1],
-        graph11.activeChildren[1],
-        graph3A.activeChildren[1],
-        graph7A.activeChildren[1],
-        graph11A.activeChildren[1],
+        graph3.activeChildren[1].componentName,
+        graph7.activeChildren[1].componentName,
+        graph11.activeChildren[1].componentName,
+        graph3A.activeChildren[1].componentName,
+        graph7A.activeChildren[1].componentName,
+        graph11A.activeChildren[1].componentName,
       ]
 
       cy.log(`check original configuration`);
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
+        let stateVariables = await win.returnAllStateVariables1();
 
         let ov_t = [3, 5];
         let ov_h = [-4, 2];
@@ -219,42 +220,41 @@ describe('Graph Reference Test 2', function () {
         let d3_h = d3_t.map((x, i) => x + d[i]);
 
         for (let vector of vectors) {
-          expect(vector.stateValues.tail.map(x => x.tree)).eqls([...ov_t]);
-          expect(vector.stateValues.head.map(x => x.tree)).eqls([...ov_h]);
-          expect(vector.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[vector].stateValues.tail).eqls([...ov_t]);
+          expect(stateVariables[vector].stateValues.head).eqls([...ov_h]);
+          expect(stateVariables[vector].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsA) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d1_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d1_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d1_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d1_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsB) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d2_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d2_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d2_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d2_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsC) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d3_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d3_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d3_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d3_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let tail of tails) {
-          expect(tail.stateValues.xs.map(x => x.tree)).eqls([...ov_t]);
+          expect(stateVariables[tail].stateValues.xs).eqls([...ov_t]);
         }
         for (let head of heads) {
-          expect(head.stateValues.xs.map(x => x.tree)).eqls([...ov_h]);
+          expect(stateVariables[head].stateValues.xs).eqls([...ov_h]);
         }
         for (let dTail of displacementTails) {
-          expect(dTail.stateValues.xs.map(x => x.tree)).eqls([...d1_t]);
+          expect(stateVariables[dTail].stateValues.xs).eqls([...d1_t]);
         }
         for (let dHead of displacementHeads) {
-          expect(dHead.stateValues.xs.map(x => x.tree)).eqls([...d1_h]);
+          expect(stateVariables[dHead].stateValues.xs).eqls([...d1_h]);
         }
       })
 
       cy.log(`move an original vector`);
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
 
         let ov_t = [-1, 7];
         let ov_h = [0, -2];
@@ -266,48 +266,52 @@ describe('Graph Reference Test 2', function () {
         let d3_t = [0, 0];
         let d3_h = d3_t.map((x, i) => x + d[i]);
 
-        await vectors[8].moveVector({
-          tailcoords: ov_t,
-          headcoords: ov_h
+        await win.callAction1({
+          actionName: "moveVector",
+          componentName: vectors[8],
+          args: {
+            tailcoords: ov_t,
+            headcoords: ov_h
+          }
         })
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let vector of vectors) {
-          expect(vector.stateValues.tail.map(x => x.tree)).eqls([...ov_t]);
-          expect(vector.stateValues.head.map(x => x.tree)).eqls([...ov_h]);
-          expect(vector.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[vector].stateValues.tail).eqls([...ov_t]);
+          expect(stateVariables[vector].stateValues.head).eqls([...ov_h]);
+          expect(stateVariables[vector].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsA) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d1_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d1_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d1_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d1_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsB) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d2_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d2_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d2_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d2_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsC) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d3_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d3_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d3_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d3_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let tail of tails) {
-          expect(tail.stateValues.xs.map(x => x.tree)).eqls([...ov_t]);
+          expect(stateVariables[tail].stateValues.xs).eqls([...ov_t]);
         }
         for (let head of heads) {
-          expect(head.stateValues.xs.map(x => x.tree)).eqls([...ov_h]);
+          expect(stateVariables[head].stateValues.xs).eqls([...ov_h]);
         }
         for (let dTail of displacementTails) {
-          expect(dTail.stateValues.xs.map(x => x.tree)).eqls([...d1_t]);
+          expect(stateVariables[dTail].stateValues.xs).eqls([...d1_t]);
         }
         for (let dHead of displacementHeads) {
-          expect(dHead.stateValues.xs.map(x => x.tree)).eqls([...d1_h]);
+          expect(stateVariables[dHead].stateValues.xs).eqls([...d1_h]);
         }
       })
 
       cy.log(`move displacementA vector`);
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
 
         let d1_t = [2, 5];
         let d1_h = [7, 1];
@@ -320,48 +324,52 @@ describe('Graph Reference Test 2', function () {
         let d3_t = [0, 0];
         let d3_h = d3_t.map((x, i) => x + d[i]);
 
-        await displacementsA[1].moveVector({
-          tailcoords: d1_t,
-          headcoords: d1_h
+        await win.callAction1({
+          actionName: "moveVector",
+          componentName: displacementsA[1],
+          args: {
+            tailcoords: d1_t,
+            headcoords: d1_h
+          }
         })
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let vector of vectors) {
-          expect(vector.stateValues.tail.map(x => x.tree)).eqls([...ov_t]);
-          expect(vector.stateValues.head.map(x => x.tree)).eqls([...ov_h]);
-          expect(vector.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[vector].stateValues.tail).eqls([...ov_t]);
+          expect(stateVariables[vector].stateValues.head).eqls([...ov_h]);
+          expect(stateVariables[vector].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsA) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d1_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d1_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d1_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d1_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsB) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d2_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d2_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d2_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d2_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsC) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d3_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d3_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d3_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d3_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let tail of tails) {
-          expect(tail.stateValues.xs.map(x => x.tree)).eqls([...ov_t]);
+          expect(stateVariables[tail].stateValues.xs).eqls([...ov_t]);
         }
         for (let head of heads) {
-          expect(head.stateValues.xs.map(x => x.tree)).eqls([...ov_h]);
+          expect(stateVariables[head].stateValues.xs).eqls([...ov_h]);
         }
         for (let dTail of displacementTails) {
-          expect(dTail.stateValues.xs.map(x => x.tree)).eqls([...d1_t]);
+          expect(stateVariables[dTail].stateValues.xs).eqls([...d1_t]);
         }
         for (let dHead of displacementHeads) {
-          expect(dHead.stateValues.xs.map(x => x.tree)).eqls([...d1_h]);
+          expect(stateVariables[dHead].stateValues.xs).eqls([...d1_h]);
         }
       })
 
       cy.log(`move displacementB vector`);
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
 
         let d2_t = [-2, 3];
         let d2_h = [5, -5];
@@ -374,48 +382,52 @@ describe('Graph Reference Test 2', function () {
         let d3_t = [0, 0];
         let d3_h = d3_t.map((x, i) => x + d[i]);
 
-        await displacementsB[2].moveVector({
-          tailcoords: d2_t,
-          headcoords: d2_h
+        await win.callAction1({
+          actionName: "moveVector",
+          componentName: displacementsB[2],
+          args: {
+            tailcoords: d2_t,
+            headcoords: d2_h
+          }
         })
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let vector of vectors) {
-          expect(vector.stateValues.tail.map(x => x.tree)).eqls([...ov_t]);
-          expect(vector.stateValues.head.map(x => x.tree)).eqls([...ov_h]);
-          expect(vector.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[vector].stateValues.tail).eqls([...ov_t]);
+          expect(stateVariables[vector].stateValues.head).eqls([...ov_h]);
+          expect(stateVariables[vector].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsA) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d1_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d1_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d1_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d1_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsB) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d2_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d2_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d2_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d2_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsC) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d3_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d3_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d3_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d3_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let tail of tails) {
-          expect(tail.stateValues.xs.map(x => x.tree)).eqls([...ov_t]);
+          expect(stateVariables[tail].stateValues.xs).eqls([...ov_t]);
         }
         for (let head of heads) {
-          expect(head.stateValues.xs.map(x => x.tree)).eqls([...ov_h]);
+          expect(stateVariables[head].stateValues.xs).eqls([...ov_h]);
         }
         for (let dTail of displacementTails) {
-          expect(dTail.stateValues.xs.map(x => x.tree)).eqls([...d1_t]);
+          expect(stateVariables[dTail].stateValues.xs).eqls([...d1_t]);
         }
         for (let dHead of displacementHeads) {
-          expect(dHead.stateValues.xs.map(x => x.tree)).eqls([...d1_h]);
+          expect(stateVariables[dHead].stateValues.xs).eqls([...d1_h]);
         }
       })
 
       cy.log(`move displacementC vector`);
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
 
         let d3_t = [9, 8];
         let d3_h = [7, 4];
@@ -428,42 +440,47 @@ describe('Graph Reference Test 2', function () {
         let d2_t = [-2, 3]
         let d2_h = d2_t.map((x, i) => x + d[i]);
 
-        await displacementsC[5].moveVector({
-          tailcoords: d3_t,
-          headcoords: d3_h
+        await win.callAction1({
+          actionName: "moveVector",
+          componentName: displacementsC[5],
+          args: {
+            tailcoords: d3_t,
+            headcoords: d3_h
+          }
         })
+        let stateVariables = await win.returnAllStateVariables1();
 
         for (let vector of vectors) {
-          expect(vector.stateValues.tail.map(x => x.tree)).eqls([...ov_t]);
-          expect(vector.stateValues.head.map(x => x.tree)).eqls([...ov_h]);
-          expect(vector.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[vector].stateValues.tail).eqls([...ov_t]);
+          expect(stateVariables[vector].stateValues.head).eqls([...ov_h]);
+          expect(stateVariables[vector].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsA) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d1_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d1_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d1_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d1_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsB) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d2_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d2_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d2_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d2_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let displacement of displacementsC) {
-          expect(displacement.stateValues.tail.map(x => x.tree)).eqls([...d3_t]);
-          expect(displacement.stateValues.head.map(x => x.tree)).eqls([...d3_h]);
-          expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([...d]);
+          expect(stateVariables[displacement].stateValues.tail).eqls([...d3_t]);
+          expect(stateVariables[displacement].stateValues.head).eqls([...d3_h]);
+          expect(stateVariables[displacement].stateValues.displacement).eqls([...d]);
         }
         for (let tail of tails) {
-          expect(tail.stateValues.xs.map(x => x.tree)).eqls([...ov_t]);
+          expect(stateVariables[tail].stateValues.xs).eqls([...ov_t]);
         }
         for (let head of heads) {
-          expect(head.stateValues.xs.map(x => x.tree)).eqls([...ov_h]);
+          expect(stateVariables[head].stateValues.xs).eqls([...ov_h]);
         }
         for (let dTail of displacementTails) {
-          expect(dTail.stateValues.xs.map(x => x.tree)).eqls([...d1_t]);
+          expect(stateVariables[dTail].stateValues.xs).eqls([...d1_t]);
         }
         for (let dHead of displacementHeads) {
-          expect(dHead.stateValues.xs.map(x => x.tree)).eqls([...d1_h]);
+          expect(stateVariables[dHead].stateValues.xs).eqls([...d1_h]);
         }
       })
 
