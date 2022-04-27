@@ -91,22 +91,24 @@ if ($success) {
     }
 
     //UPDATE DESTINATION
-    if ($destinationType == 'bank'){
-        $sql = "
-        UPDATE course_content
-        SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.pages',JSON_MERGE('[]','$destinationJSON'))
-        WHERE doenetId='$destinationDoenetId'
-        AND courseId='$courseId'
-        ";
-        $result = $conn->query($sql);
-    }else if ($destinationType == 'activity'){
-        $sql = "
-        UPDATE course_content
-        SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$destinationJSON'))
-        WHERE doenetId='$destinationDoenetId'
-        AND courseId='$courseId'
-        ";
-        $result = $conn->query($sql);
+    if ($destinationDoenetId != $sourceDoenetId){
+        if ($destinationType == 'bank'){
+            $sql = "
+            UPDATE course_content
+            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.pages',JSON_MERGE('[]','$destinationJSON'))
+            WHERE doenetId='$destinationDoenetId'
+            AND courseId='$courseId'
+            ";
+            $result = $conn->query($sql);
+        }else if ($destinationType == 'activity'){
+            $sql = "
+            UPDATE course_content
+            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$destinationJSON'))
+            WHERE doenetId='$destinationDoenetId'
+            AND courseId='$courseId'
+            ";
+            $result = $conn->query($sql);
+        }
     }
 
     //Update page in the pages table
