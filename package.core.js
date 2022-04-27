@@ -25,9 +25,9 @@ esbuild
     bundle: true,
     minify: false,
     target: ['firefox99', 'chrome99', 'safari15'],
+    loader: { '.js': '.jsx' },
     external: [
       'math-expressions',
-      '@Toast',
       'axios',
       'idb-keyval',
       'hi-base32',
