@@ -8,7 +8,7 @@ import {
  } from 'recoil'
 import axios from "axios";
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { useToast, toastType } from '@Toast';
+import { useToast, toastType } from '../Toast';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 

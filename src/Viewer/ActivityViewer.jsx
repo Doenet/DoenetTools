@@ -8,7 +8,7 @@ import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVarian
 import axios from 'axios';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { cidFromText } from '../Core/utils/cid';
-import { useToast, toastType } from '@Toast';
+import { useToast, toastType } from '../Tools/_framework/Toast';
 import { nanoid } from 'nanoid';
 import { enumerateCombinations } from '../Core/utils/enumeration';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../_utils/activityUtils';

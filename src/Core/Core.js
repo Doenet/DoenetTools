@@ -1,4 +1,4 @@
-import { toastType } from '@Toast';
+import { toastType } from '../Tools/_framework/Toast';
 import axios from 'axios';
 import { prng_alea } from 'esm-seedrandom';
 import { set as idb_set } from 'idb-keyval';

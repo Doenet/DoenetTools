@@ -6,7 +6,7 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 // import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { copiedCourseItems, cutCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import { useToast, toastType } from '@Toast';
+import { useToast, toastType } from '../Toast';
 
 export default function PasteOptionsMenu() {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));

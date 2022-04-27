@@ -23,7 +23,7 @@ import {
   fileByContentId } from '../ToolHandlers/CourseToolHandler';
 import { nanoid } from 'nanoid';
 import axios from "axios";
-import { useToast, toastType } from '@Toast';
+import { useToast, toastType } from '../Toast';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
 import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
 import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
