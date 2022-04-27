@@ -5,7 +5,6 @@ import { faLightbulb as lightOff } from '@fortawesome/free-solid-svg-icons';
 import { faLightbulb as lightOn } from '@fortawesome/free-regular-svg-icons';
 import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
-import { doenetLightGray } from '../../_reactComponents/PanelHeaderComponents/theme';
 
 export default function Hint(props) {
   let { name, SVs, children, actions, callAction } = useDoenetRender(props);
@@ -48,7 +47,7 @@ export default function Hint(props) {
       borderTop: '0px',
       borderBottomLeftRadius: '5px',
       borderBottomRightRadius: '5px',
-      backgroundColor: '#fcfcfc',
+      backgroundColor: 'white',
     };
     onClickFunction = () => {
       callAction({
@@ -70,7 +69,7 @@ export default function Hint(props) {
           borderTopRightRadius: '5px',
           borderBottomLeftRadius: SVs.open ? '0px' : '5px',
           borderBottomRightRadius: SVs.open ? '0px' : '5px',
-          backgroundColor: `${doenetLightGray}`,
+          backgroundColor: 'var(--mainGray)',
           cursor: 'pointer',
         }}
         onClick={onClickFunction}

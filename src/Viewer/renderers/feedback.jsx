@@ -3,8 +3,6 @@ import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment as thoughtBubble } from '@fortawesome/free-regular-svg-icons';
 
-import { doenetLightGray } from '../../_reactComponents/PanelHeaderComponents/theme';
-
 export default function Feedback(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
@@ -24,7 +22,7 @@ export default function Feedback(props) {
           border: '2px solid black',
           borderTopLeftRadius: '5px',
           borderTopRightRadius: '5px',
-          backgroundColor: `${doenetLightGray}`,
+          backgroundColor: 'var(--mainGray)',
         }}
       >
         {icon} Feedback
