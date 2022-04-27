@@ -1768,7 +1768,6 @@ export const useCourse = (courseId) => {
                 return;
               }
               let pageObj = {...copiedObj};
-              console.log("Copy Page!",pageObj)
 
               let originalPageDoenetId = copiedObj.doenetId;
               let sourceType = "na";
@@ -1792,28 +1791,17 @@ export const useCourse = (courseId) => {
                   destinationJSON = [...singleSelectedObj.pages,replaceMeDoenetId]
               }
               if (singleSelectedObj.type == 'order'){
-                console.log('into order')
+                //Add to Activity's order
+                destinationContainingObj = await snapshot.getPromise(authorItemByDoenetId(singleSelectedObj.containingDoenetId));
+                ({order:destinationJSON,previousDoenetId} = addPageToOrder({
+                  orderObj:destinationContainingObj.order,
+                  needleOrderDoenetId:singleSelectedObj.doenetId,
+                  pageToAddDoenetId:replaceMeDoenetId})
+                )
               }
 
               let destinationType = destinationContainingObj.type;
               let destinationDoenetId = destinationContainingObj.doenetId;
-
-              console.log("params",{
-                isCopy:true,
-                courseId,
-                originalPageDoenetId,
-                sourceType,
-                sourceDoenetId,
-                destinationType,
-                destinationDoenetId,
-                sourceJSON,
-                destinationJSON,
-                clonePageLabel,
-                clonePageParent
-              })
-
-
-              console.log("previousDoenetId",previousDoenetId)
 
 
               //update database
@@ -1831,7 +1819,7 @@ export const useCourse = (courseId) => {
                   clonePageLabel,
                   clonePageParent
                 });
-                console.log("resp.data",resp.data)
+                // console.log("resp.data",resp.data)
                 if (resp.status < 300) {
                   let insertedPage = {...resp.data.pageInserted}
                   insertedPage['isSelected'] = false;
@@ -1852,17 +1840,15 @@ export const useCourse = (courseId) => {
                   set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
                     let next = {...prev}
                     next.pages = destinationJSON;
-                    console.log("destination bank prev",prev)
-                    console.log("destination bank next",next)
                     return next;
                   })
           
                 }else if (destinationType == 'activity'){
-                  //     set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
-                  //       let next = {...prev}
-                  //       next.order = destinationJSON;
-                  //       return next;
-                  //     })
+                      set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
+                        let next = {...prev}
+                        next.order = destinationJSON;
+                        return next;
+                      })
                   }
                   
 
