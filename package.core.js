@@ -1,11 +1,12 @@
-import { promises } from 'fs';
-import { build } from 'esbuild';
+const fs = require('fs');
+const esbuild = require('esbuild');
+const { externalGlobalPlugin } = require('esbuild-plugin-external-global');
 
 let processEnv = {
   name: 'processEnv',
   setup(build) {
     build.onLoad({ filter: /.*/ }, async (args) => {
-      let contents = await promises.readFile(args.path, 'utf8');
+      let contents = await fs.promises.readFile(args.path, 'utf8');
       //Uncomment next line to list file paths
       // console.log(args.path,contents.length)
       const re1 = /process\.env/g;
@@ -17,23 +18,22 @@ let processEnv = {
   },
 };
 
-build({
-  entryPoints: ['src/Core/Core.js'],
-  format: 'esm',
-  bundle: true,
-  minify: false,
-  target: ['firefox99', 'chrome99', 'safari15'],
-  // define: {
-  //   'import.meta.env': 'x',
-  // },
-  external: [
-    'math-expressions',
-    '@Toast',
-    'axios',
-    'idb-keyval',
-    'hi-base32',
-    '@lezer',
-  ],
-  plugins: [processEnv],
-  outfile: 'src/Viewer/core.js',
-}).catch(() => process.exit(1));
+esbuild
+  .build({
+    entryPoints: ['src/Core/Core.js'],
+    format: 'iife',
+    bundle: true,
+    minify: false,
+    target: ['firefox99', 'chrome99', 'safari15'],
+    external: [
+      'math-expressions',
+      '@Toast',
+      'axios',
+      'idb-keyval',
+      'hi-base32',
+      '@lezer',
+    ],
+    plugins: [processEnv],
+    outfile: 'src/Viewer/core.js',
+  })
+  .catch(() => process.exit(1));
