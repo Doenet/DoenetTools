@@ -1425,11 +1425,14 @@ export const useCourse = (courseId) => {
 
     for (let [i,item] of Object.entries(orderObj.content)){
       if (item?.type == 'order'){
-        let childOrderObj = addPageToOrder({orderObj:item,needleOrderDoenetId,pageToAddDoenetId})
-        if (childOrderObj.order != null){
+ 
+        let {order:childOrderObj,previousDoenetId} = 
+          addPageToOrder({orderObj:item,needleOrderDoenetId,pageToAddDoenetId})
+
+        if (childOrderObj != null){
           nextOrderObj.content = [...nextOrderObj.content]
           nextOrderObj.content.splice(i,1,childOrderObj);
-          return {order:nextOrderObj,previousDoenetId:childOrderObj.previousDoenetId}
+          return {order:nextOrderObj,previousDoenetId}
         }
       }
     }
@@ -1538,10 +1541,7 @@ export const useCourse = (courseId) => {
               // console.log("cut sourceContainingObj",sourceContainingObj)
               if (sourceContainingObj.type == 'activity'){
                 //Remove from Activity
-                // console.log("from activity",sourceContainingObj)
-                // let nextOrder = {...sourceContainingObj.order}
                 sourceJSON = deletePageFromOrder({orderObj:sourceContainingObj.order,needleDoenetId:originalPageDoenetId})
-                console.log("sourceContainingObj.order",sourceContainingObj.order)
               }else if (sourceContainingObj.type == 'bank'){
                 //Remove from Collection
                 let nextPages = [...sourceContainingObj.pages]
@@ -1635,7 +1635,6 @@ export const useCourse = (courseId) => {
                     set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
                       let next = {...prev}
                       next.order = destinationJSON;
-                      console.log("dest",destinationDoenetId,next)
                       return next;
                     })
                     //Update page
@@ -1652,8 +1651,6 @@ export const useCourse = (courseId) => {
                     let next = [...prev];
                     next.splice(next.indexOf(originalPageDoenetId),1);  //remove 
                     next.splice(next.indexOf(previousDoenetId)+1,0,originalPageDoenetId);  //insert
-                    console.log("prev",prev)
-                    console.log("next",next)
                     return next
                   })
                   successCallback?.();
