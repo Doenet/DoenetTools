@@ -1550,10 +1550,11 @@ export const useCourse = (courseId) => {
                 nextPages.splice(sourceContainingObj.pages.indexOf(originalPageDoenetId),1)
                 sourceJSON = nextPages;
               }
-              //Add to Collection
+
               //Add changes to sourceJSON if source containing item 
               //is the destination containing item
               if (singleSelectedObj.type == 'bank'){
+                //Add to Collection
                 destinationContainingObj = {...singleSelectedObj}
                 if (destinationContainingObj.doenetId == sourceDoenetId){
                   previousDoenetId = singleSelectedObj.doenetId;
@@ -1769,12 +1770,114 @@ export const useCourse = (courseId) => {
               let pageObj = {...copiedObj};
               console.log("Copy Page!",pageObj)
 
+              let originalPageDoenetId = copiedObj.doenetId;
+              let sourceType = "na";
+              let sourceDoenetId = "na";
+              let destinationContainingObj = {};
+              let sourceJSON = {};
+              let destinationJSON = {};
+              let previousDoenetId;
+              let replaceMeDoenetId = `${originalPageDoenetId}2`
+              let clonePageLabel = `copy of ${pageObj.label}`
+              let clonePageParent = singleSelectedObj.doenetId;
+
               if (singleSelectedObj.type == 'bank'){
-                console.log('into collection')
+                //Add to Collection
+                destinationContainingObj = {...singleSelectedObj}
+
+                  previousDoenetId = singleSelectedObj.doenetId;
+                  if (singleSelectedObj.pages.length > 0){
+                    previousDoenetId = singleSelectedObj.pages[singleSelectedObj.pages.length - 1]
+                  }
+                  destinationJSON = [...singleSelectedObj.pages,replaceMeDoenetId]
               }
               if (singleSelectedObj.type == 'order'){
                 console.log('into order')
               }
+
+              let destinationType = destinationContainingObj.type;
+              let destinationDoenetId = destinationContainingObj.doenetId;
+
+              console.log("params",{
+                isCopy:true,
+                courseId,
+                originalPageDoenetId,
+                sourceType,
+                sourceDoenetId,
+                destinationType,
+                destinationDoenetId,
+                sourceJSON,
+                destinationJSON,
+                clonePageLabel,
+                clonePageParent
+              })
+
+
+              console.log("previousDoenetId",previousDoenetId)
+
+
+              //update database
+              try {
+                let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
+                  isCopy:true,
+                  courseId,
+                  originalPageDoenetId,
+                  sourceType,
+                  sourceDoenetId,
+                  destinationType,
+                  destinationDoenetId,
+                  sourceJSON,
+                  destinationJSON,
+                  clonePageLabel,
+                  clonePageParent
+                });
+                console.log("resp.data",resp.data)
+                if (resp.status < 300) {
+                  let insertedPage = {...resp.data.pageInserted}
+                  insertedPage['isSelected'] = false;
+                  //Insert page
+                  set(authorItemByDoenetId(insertedPage.doenetId),insertedPage)
+                                    
+                  set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
+                    let next = [...prev];
+                    next.splice(next.indexOf(previousDoenetId)+1,0,insertedPage.doenetId);  //insert
+                    return next
+                  })
+                //Update the doenetId for the new page
+                let serializedDestinationJSON = JSON.stringify(destinationJSON);
+                serializedDestinationJSON = serializedDestinationJSON.replace(replaceMeDoenetId,insertedPage.doenetId)
+                destinationJSON = JSON.parse(serializedDestinationJSON);
+                  //Update destination
+                if (destinationType == 'bank'){
+                  set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
+                    let next = {...prev}
+                    next.pages = destinationJSON;
+                    console.log("destination bank prev",prev)
+                    console.log("destination bank next",next)
+                    return next;
+                  })
+          
+                }else if (destinationType == 'activity'){
+                  //     set(authorItemByDoenetId(destinationDoenetId),(prev)=>{
+                  //       let next = {...prev}
+                  //       next.order = destinationJSON;
+                  //       return next;
+                  //     })
+                  }
+                  
+
+                  
+                  successCallback?.();
+                  
+                } else {
+                  throw new Error(`response code: ${resp.status}`);
+                }
+              } catch (err) {
+                failureCallback(err);
+              }
+
+
+
             }
           }
         }

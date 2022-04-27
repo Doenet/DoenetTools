@@ -55,6 +55,8 @@ if ($success){
     $sourceDoenetId = mysqli_real_escape_string($conn, $_POST['sourceDoenetId']);
     $destinationType = mysqli_real_escape_string($conn, $_POST['destinationType']);
     $destinationDoenetId = mysqli_real_escape_string($conn, $_POST['destinationDoenetId']);
+    $clonePageLabel = mysqli_real_escape_string($conn, $_POST['clonePageLabel']);
+    $clonePageParent = mysqli_real_escape_string($conn, $_POST['clonePageParent']);
 
     $sourceJSON = json_encode($_POST['sourceJSON']);
     $destinationJSON = json_encode($_POST['destinationJSON']);
@@ -69,29 +71,66 @@ if ($success){
 
 if ($success) {
     if ($isCopy){
-        //TODO replace destinationJSON with new doenetId for page
-    }
-    //UPDATE SOURCE
-    if ($sourceType == 'bank'){
+        $pageInsertedDoenetId = include "randomId.php";
+        
+
+        //Create a copy of original file for page
+        $sourceFilePath = "../media/bydoenetid/$originalPageDoenetId.doenet";
+        $destFilePath = "../media/bydoenetid/$pageInsertedDoenetId.doenet";
+        if (!copy($sourceFilePath, $destFilePath)) {
+          $success = false;
+          $message = "failed to copy media\n";
+        }
+        //Insert page into the pages table
         $sql = "
-        UPDATE course_content
-        SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.pages',JSON_MERGE('[]','$sourceJSON'))
-        WHERE doenetId='$sourceDoenetId'
-        AND courseId='$courseId'
+        INSERT INTO pages
+        (courseId,containingDoenetId,doenetId,label)
+        values
+        ('$courseId','$destinationDoenetId','$pageInsertedDoenetId','$clonePageLabel')
         ";
         $result = $conn->query($sql);
-    }else if ($sourceType == 'activity'){
+        $pageInserted = array(
+            "type"=>"page",
+            "label"=>$clonePageLabel,
+            "containingDoenetId"=>$destinationDoenetId,
+            "doenetId"=>$pageInsertedDoenetId,
+            "parentDoenetId"=>$clonePageParent,
+          );
+    }else{
+        //UPDATE SOURCE
+        if ($sourceType == 'bank'){
+            $sql = "
+            UPDATE course_content
+            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.pages',JSON_MERGE('[]','$sourceJSON'))
+            WHERE doenetId='$sourceDoenetId'
+            AND courseId='$courseId'
+            ";
+            $result = $conn->query($sql);
+        }else if ($sourceType == 'activity'){
+            $sql = "
+            UPDATE course_content
+            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$sourceJSON'))
+            WHERE doenetId='$sourceDoenetId'
+            AND courseId='$courseId'
+            ";
+            $result = $conn->query($sql);
+        }
+        //Update page in the pages table
         $sql = "
-        UPDATE course_content
-        SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$sourceJSON'))
-        WHERE doenetId='$sourceDoenetId'
+        UPDATE pages
+        SET containingDoenetId='$destinationDoenetId'
+        WHERE doenetId='$originalPageDoenetId'
         AND courseId='$courseId'
         ";
         $result = $conn->query($sql);
     }
 
     //UPDATE DESTINATION
-    if ($destinationDoenetId != $sourceDoenetId){
+    if ($isCopy || $destinationDoenetId != $sourceDoenetId){
+        //Replace destinationJSON with new doenetId for page
+        $target = $originalPageDoenetId . "2";
+        $destinationJSON = str_replace($target,$pageInsertedDoenetId,$destinationJSON);
+
         if ($destinationType == 'bank'){
             $sql = "
             UPDATE course_content
@@ -111,14 +150,7 @@ if ($success) {
         }
     }
 
-    //Update page in the pages table
-    $sql = "
-    UPDATE pages
-    SET containingDoenetId='$destinationDoenetId'
-    WHERE doenetId='$originalPageDoenetId'
-    AND courseId='$courseId'
-    ";
-    $result = $conn->query($sql);
+    
 
   
     // if ($makeMultiPage){
@@ -136,6 +168,7 @@ if ($success) {
 $response_arr = array(
     "success"=>$success,
     "message"=>$message,
+    "pageInserted"=>$pageInserted,
     );
   
   
