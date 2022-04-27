@@ -461,6 +461,38 @@ export const useCourse = (courseId) => {
     return null;
   }
 
+  function addPageToOrder({orderObj,needleOrderDoenetId,pageToAddDoenetId}){
+    let nextOrderObj = {...orderObj};
+
+    if (nextOrderObj.doenetId == needleOrderDoenetId){
+      let previousDoenetId = nextOrderObj.doenetId;
+      if (nextOrderObj.content.length > 0){
+        previousDoenetId = nextOrderObj.content[nextOrderObj.content.length -1];
+        if (previousDoenetId?.type == 'order'){ //If last element was an order get it's doenetId
+          previousDoenetId = previousDoenetId.doenetId;
+        }
+      }
+      nextOrderObj.content = [...nextOrderObj.content,pageToAddDoenetId];
+      return {order:nextOrderObj,previousDoenetId}
+    }
+
+    for (let [i,item] of Object.entries(orderObj.content)){
+      if (item?.type == 'order'){
+ 
+        let {order:childOrderObj,previousDoenetId} = 
+          addPageToOrder({orderObj:item,needleOrderDoenetId,pageToAddDoenetId})
+
+        if (childOrderObj != null){
+          nextOrderObj.content = [...nextOrderObj.content]
+          nextOrderObj.content.splice(i,1,childOrderObj);
+          return {order:nextOrderObj,previousDoenetId}
+        }
+      }
+    }
+    //Didn't find needle
+    return {order:null,previousDoenetId:null};
+  }
+
   const create = useRecoilCallback(
     ({ set, snapshot }) =>
       async ({ itemType, placeInFolderFlag, previousDoenetId, previousContainingDoenetId }) => {
@@ -758,14 +790,16 @@ export const useCourse = (courseId) => {
           }else if (selectedItemObj.type == 'page'){
             const containingItemObj = await snapshot.getPromise(authorItemByDoenetId(selectedItemObj.containingDoenetId));
             if (containingItemObj.type == 'bank'){
-              let insertedAfterDoenetId = selectedItemObj.doenetId;
-              let newJSON = [];
-              for (let pageDoenetId of containingItemObj.pages){
-                newJSON.push(pageDoenetId);
-                if (pageDoenetId == selectedItemObj.doenetId){
-                  newJSON.push(pageThatWasCreated.doenetId);
-                }
-              }
+              // let insertedAfterDoenetId = selectedItemObj.doenetId;
+              // let newJSON = [];
+              // for (let pageDoenetId of containingItemObj.pages){
+              //   newJSON.push(pageDoenetId);
+              //   if (pageDoenetId == selectedItemObj.doenetId){
+              //     newJSON.push(pageThatWasCreated.doenetId);
+              //   }
+              // }
+            let insertedAfterDoenetId = containingItemObj.pages[containingItemObj.pages.length -1]
+            let newJSON = [...containingItemObj.pages,pageThatWasCreated.doenetId]
             let newCollectionObj = {...containingItemObj}
             newCollectionObj.pages = newJSON;
        
@@ -1407,38 +1441,6 @@ export const useCourse = (courseId) => {
         //Set all items to cut mode
         successCallback();
   });
-
-  function addPageToOrder({orderObj,needleOrderDoenetId,pageToAddDoenetId}){
-    let nextOrderObj = {...orderObj};
-
-    if (nextOrderObj.doenetId == needleOrderDoenetId){
-      let previousDoenetId = nextOrderObj.doenetId;
-      if (nextOrderObj.content.length > 0){
-        previousDoenetId = nextOrderObj.content[nextOrderObj.content.length -1];
-        if (previousDoenetId?.type == 'order'){ //If last element was an order get it's doenetId
-          previousDoenetId = previousDoenetId.doenetId;
-        }
-      }
-      nextOrderObj.content = [...nextOrderObj.content,pageToAddDoenetId];
-      return {order:nextOrderObj,previousDoenetId}
-    }
-
-    for (let [i,item] of Object.entries(orderObj.content)){
-      if (item?.type == 'order'){
- 
-        let {order:childOrderObj,previousDoenetId} = 
-          addPageToOrder({orderObj:item,needleOrderDoenetId,pageToAddDoenetId})
-
-        if (childOrderObj != null){
-          nextOrderObj.content = [...nextOrderObj.content]
-          nextOrderObj.content.splice(i,1,childOrderObj);
-          return {order:nextOrderObj,previousDoenetId}
-        }
-      }
-    }
-    //Didn't find needle
-    return {order:null,previousDoenetId:null};
-  }
 
   const pasteItems = useRecoilCallback(
     ({ set,snapshot }) =>
