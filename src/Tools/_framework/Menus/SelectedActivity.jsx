@@ -55,7 +55,7 @@ import { pageToolViewAtom } from '../NewToolRoot';
 // } from '../ToolHandlers/CourseToolHandler';
 import { useToast, toastType } from '@Toast';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { authorItemByDoenetId, findFirstPageOfActivity, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
@@ -103,6 +103,11 @@ export default function SelectedActivity() {
     }
   },[doenetId])
 
+  if (doenetId == undefined){
+    return null;
+  }
+  let firstPageDoenetId = findFirstPageOfActivity(itemObj.order);
+
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
     if (itemTextFieldLabel === '') {
@@ -148,6 +153,12 @@ export default function SelectedActivity() {
     );
   }
   
+
+let assignActivityText = "Assign Activity";
+if (itemObj.assignedCid != null){
+  assignActivityText = "Update Assigned Activity";
+}
+
   return <>
   {heading}
   <ActionButtonGroup vertical>
@@ -155,15 +166,17 @@ export default function SelectedActivity() {
           width="menu"
           value="Edit Activity"
           onClick={() => {
-            setPageToolView({
-              page: 'course',
-              tool: 'editor',
-              view: '',
-              params: {
-                courseId,
-                doenetId,
-              },
-            });
+            if (firstPageDoenetId == null){
+              addToast(`ERROR: No page found in activity`, toastType.INFO);
+            }else{
+              setPageToolView((prev)=>{return {
+                page: 'course',
+                tool: 'editor',
+                view: prev.view,
+                params: { doenetId, pageId:firstPageDoenetId, sectionId: itemObj.parentDoenetId, courseId: prev.params.courseId },
+                }})
+            }
+          
           }}
         />
   <ActionButton
@@ -172,7 +185,6 @@ export default function SelectedActivity() {
           onClick={() => {
             compileActivity({
               activityDoenetId:doenetId,courseId,successCallback:()=>{
-                addToast("Activity compiled!", toastType.INFO);
                 setPageToolView({
                   page: 'course',
                   tool: 'draftactivity',
@@ -180,6 +192,7 @@ export default function SelectedActivity() {
                   params: {
                     courseId,
                     doenetId,
+                    sectionId: itemObj.parentDoenetId,
                     requestedVariant: 1
                   },
                 });
@@ -196,8 +209,8 @@ export default function SelectedActivity() {
               tool: 'assignment',
               view: '',
               params: {
-                madeUpstuff:'mystuff',
                 courseId,
+                sectionId: itemObj.parentDoenetId,
                 doenetId,
               },
             });
@@ -254,11 +267,11 @@ export default function SelectedActivity() {
     <br />
     <ActionButton
           width="menu"
-          value="Assign Assignment (FAKE)"
+          value={assignActivityText}
           onClick={() => {
             compileActivity({
               activityDoenetId:doenetId,isAssigned:true,courseId,successCallback:()=>{
-                addToast("Activity compiled and Assigned!", toastType.INFO);
+                addToast("Activity Assigned.", toastType.INFO);
               }
             })
           }}

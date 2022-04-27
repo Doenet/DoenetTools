@@ -11,24 +11,28 @@ import {
 } from '../../../_utils/breadcrumbUtil';
 
 export default function AssignmentBreadCrumb() {
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const [courseId, setCourseId] = useState("");
-  const [parentDoenetId, setParentDoenetId] = useState("");
-
-  useEffect(()=>{
-    axios.get('/api/findCourseIdAndParentDoenetId.php', {
-      params: { doenetId },
-    }).then((resp)=>{
-      // console.log(">>>>resp",resp.data)
-      setCourseId(resp.data.courseId);
-      setParentDoenetId(resp.data.parentDoenetId);
-    })
-  },[doenetId])
 
   const chooserCrumb = useCourseChooserCrumb();
   const dashboardCrumb = useDashboardCrumb(courseId);
-  const navigationCrumbs = useNavigationCrumbs(courseId,parentDoenetId)
-  const assignmentCrumb = useAssignmentCrumb({doenetId,courseId,sectionId: parentDoenetId});
+  const navigationCrumbs = useNavigationCrumbs(courseId, sectionId);
+
+  // const [courseId, setCourseId] = useState("");
+  // const [parentDoenetId, setParentDoenetId] = useState("");
+
+  // useEffect(()=>{
+  //   axios.get('/api/findCourseIdAndParentDoenetId.php', {
+  //     params: { doenetId },
+  //   }).then((resp)=>{
+  //     // console.log(">>>>resp",resp.data)
+  //     setCourseId(resp.data.courseId);
+  //     setParentDoenetId(resp.data.parentDoenetId);
+  //   })
+  // },[doenetId])
+
+  const assignmentCrumb = useAssignmentCrumb({doenetId,courseId,sectionId});
 
   return (
     <Suspense fallback={<div>Loading Breadcrumb...</div>}>

@@ -36,7 +36,7 @@ describe('Specifying unique variant tests', function () {
         <variantControl uniquevariants />
         <select assignnames="x">u v w x y z</select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -71,7 +71,7 @@ describe('Specifying unique variant tests', function () {
         <variantControl uniquevariants />
         <selectfromsequence assignnames="x" length="5" />
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -109,7 +109,7 @@ describe('Specifying unique variant tests', function () {
         <variantControl uniquevariants />
         <selectfromsequence assignnames="x" type="letters" from="c" to="m" step="2" exclude="g k" />
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -171,7 +171,7 @@ describe('Specifying unique variant tests', function () {
         <select assignnames="z">3 7</select>
       </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -222,7 +222,7 @@ describe('Specifying unique variant tests', function () {
         <select assignnames="z">3 7</select>
       </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -286,7 +286,7 @@ describe('Specifying unique variant tests', function () {
           <select assignnames="x y z" numbertoselect="3">w x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -332,7 +332,7 @@ describe('Specifying unique variant tests', function () {
           <select assignnames="x y z" numbertoselect="3">w x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -387,7 +387,7 @@ describe('Specifying unique variant tests', function () {
           <select assignnames="x y z" numbertoselect="3" withreplacement>x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -433,7 +433,7 @@ describe('Specifying unique variant tests', function () {
           <select assignnames="x y z" numbertoselect="3" withreplacement>x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -493,7 +493,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" from="w" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -538,7 +538,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" from="w" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -593,7 +593,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" withreplacement from="x" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -638,7 +638,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" withreplacement from="x" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -695,7 +695,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="w x y z" numbertoselect="4" withreplacement from="u" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -750,7 +750,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="w x y z" numbertoselect="4" withreplacement from="u" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -804,7 +804,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -870,7 +870,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -919,7 +919,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -985,7 +985,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1034,7 +1034,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1100,7 +1100,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1159,7 +1159,7 @@ describe('Specifying unique variant tests', function () {
         </select>
       </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1202,7 +1202,7 @@ describe('Specifying unique variant tests', function () {
         </select>
       </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1249,7 +1249,7 @@ describe('Specifying unique variant tests', function () {
           </select>
         </aslist>
         `,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
         // to wait for page to load
@@ -1346,7 +1346,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1432,7 +1432,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1533,7 +1533,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1623,7 +1623,7 @@ describe('Specifying unique variant tests', function () {
         cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `<text>${ind}</text>${doenetML}`,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
         // to wait for page to load
@@ -1699,7 +1699,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
 
@@ -1756,7 +1756,7 @@ describe('Specifying unique variant tests', function () {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1791,7 +1791,7 @@ describe('Specifying unique variant tests', function () {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
 
@@ -1865,7 +1865,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1894,7 +1894,7 @@ describe('Specifying unique variant tests', function () {
         cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `<text>${ind}</text>${doenetML}`,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
 
@@ -1938,7 +1938,7 @@ describe('Specifying unique variant tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `<text>${ind}</text>${doenetML}`,
-        requestedVariant: { index: ind },
+        requestedVariantIndex: ind,
       }, "*");
     })
     // to wait for page to load
@@ -1987,7 +1987,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -2019,7 +2019,7 @@ describe('Specifying unique variant tests', function () {
         cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `<text>${ind}</text>${doenetML}`,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
 
@@ -2063,7 +2063,7 @@ describe('Specifying unique variant tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `<text>${ind}</text>${doenetML}`,
-        requestedVariant: { index: ind },
+        requestedVariantIndex: ind,
       }, "*");
     })
     // to wait for page to load
@@ -2121,7 +2121,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -2174,7 +2174,7 @@ describe('Specifying unique variant tests', function () {
         cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `<text>${ind}</text>${doenetML}`,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
 
@@ -2275,7 +2275,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -2333,7 +2333,7 @@ describe('Specifying unique variant tests', function () {
         cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `<text>${ind}</text>${doenetML}`,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
 
@@ -2429,7 +2429,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -2470,7 +2470,7 @@ describe('Specifying unique variant tests', function () {
         cy.window().then(async (win) => {
           win.postMessage({
             doenetML,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
 

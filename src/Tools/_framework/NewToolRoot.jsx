@@ -8,7 +8,7 @@ import {
   useRecoilState,
   useSetRecoilState,
 } from 'recoil';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import Toast from './Toast';
 import ContentPanel from './Panels/NewContentPanel';
 import axios from 'axios';
@@ -165,7 +165,67 @@ export default function ToolRoot() {
   mainPanel = (
     <Suspense
       key={MainPanelKey}
-      fallback={<LoadingFallback>loading...</LoadingFallback>}
+      fallback={
+        <LoadingFallback>
+          <Svg>
+            <DonutG1>
+              <Circle
+                id="donut" 
+                fill="rgb(238,161,119)" 
+                r="60" 
+              />
+              <Circle
+                id="donut-topping"
+                fill="rgb(109,68,69)"
+                r="48"
+              />
+              <Circle 
+                id="donut-hole"  
+                fill="hsl(0, 0%, 99%)"
+                r="19"
+              />
+            </DonutG1>
+          </Svg>
+          <Svg>
+            <DonutG2>
+              <Circle
+                id="donut" 
+                fill="rgb(238,161,119)" 
+                r="60" 
+              />
+              <Circle
+                id="donut-topping"
+                fill="rgb(109,68,69)"
+                r="48"
+              />
+              <Circle 
+                id="donut-hole"  
+                fill="hsl(0, 0%, 99%)"
+                r="19"
+              />
+            </DonutG2>
+          </Svg>
+          <Svg>
+            <DonutG3>
+              <Circle
+                id="donut" 
+                fill="rgb(238,161,119)" 
+                r="60" 
+              />
+              <Circle
+                id="donut-topping"
+                fill="rgb(109,68,69)"
+                r="48"
+              />
+              <Circle 
+                id="donut-hole"  
+                fill="hsl(0, 0%, 99%)"
+                r="19"
+              />
+            </DonutG3>
+          </Svg>
+        </LoadingFallback>
+      }
     >
       {React.createElement(
         LazyPanelObj[toolRootMenusAndPanels.currentMainPanel],
@@ -195,7 +255,49 @@ export default function ToolRoot() {
       >
         <Suspense
           key={SupportPanelKey}
-          fallback={<LoadingFallback>loading...</LoadingFallback>}
+          fallback={
+            <LoadingFallback display="static">
+              <Table>
+                <TBody>
+                  <Tr>
+                    <Td className="Td2">
+                    </Td>
+                    <Td className="Td3">
+                      <Td3Span></Td3Span>
+                    </Td>
+                  </Tr>
+                  <Tr>
+                    <Td className="Td2">
+                    </Td>
+                    <Td className="Td3">
+                      <Td3Span></Td3Span>
+                    </Td>
+                  </Tr>
+                  <Tr>
+                    <Td className="Td2">
+                    </Td>
+                    <Td className="Td3">
+                      <Td3Span></Td3Span>
+                    </Td>
+                  </Tr>
+                  <Tr>
+                    <Td className="Td2">
+                    </Td>
+                    <Td className="Td3">
+                      <Td3Span></Td3Span>
+                    </Td>
+                  </Tr>
+                  <Tr>
+                    <Td className="Td2">
+                    </Td>
+                    <Td className="Td3">
+                      <Td3Span></Td3Span>
+                    </Td>
+                  </Tr>
+                </TBody>
+              </Table>
+            </LoadingFallback>
+          }
         >
           {React.createElement(LazyPanelObj[spType], { SupportPanelKey })}
         </Suspense>
@@ -215,7 +317,13 @@ export default function ToolRoot() {
         headerControls.push(
           <Suspense
             key={key}
-            fallback={<LoadingFallback>loading...</LoadingFallback>}
+            fallback={
+              <LoadingFallback>
+                <BreadcrumbContainer>
+                  <BreadcrumbOutline/>
+                </BreadcrumbContainer>
+              </LoadingFallback>
+            }
           >
             {React.createElement(controlObj, { key: { key } })}
           </Suspense>,
@@ -259,6 +367,7 @@ export default function ToolRoot() {
       >
         <Suspense
           key={footerKey}
+          // TODO: loading animation for footer
           fallback={<LoadingFallback>loading...</LoadingFallback>}
         >
           {React.createElement(
@@ -400,7 +509,7 @@ let navigationObj = {
     },
     draftactivity: {
       pageName: 'DraftActivity',
-      menuPanelCap: 'AssignmentInfoCap',
+      menuPanelCap: 'DraftActivityCap',
       currentMainPanel: 'DraftAssignmentViewer',
       currentMenus: ['ActivityVariant'],
       menusTitles: ['Activity Variant'],
@@ -937,13 +1046,132 @@ function RootController(props) {
   return null;
 }
 
+
 const LoadingFallback = styled.div`
   background-color: hsl(0, 0%, 99%);
   border-radius: 4px;
-  display: flex;
+  display: ${props => props.display ? props.display : "flex"};
   justify-content: center;
   align-items: center;
   font-size: 2em;
   width: 100%;
   height: 100%;
+`;
+
+const bouncingDonut = keyframes `
+  from { transform: translate3d(0, 0px, 0);}
+  to { transform: translate3d(0, 20px, 0);}
+`;
+
+const Svg = styled.svg`
+  width: 130px;
+  height: 140px;
+  align-items: center;
+  margin: 25px;
+`;
+
+const DonutG1 = styled.g`
+  position: relative;
+  animation: ${bouncingDonut} 0.5s ease 0s infinite;
+  animation-direction: alternate;
+  transform: translate(279, 394.5);
+  &:after {
+    position: absolute;
+  }
+`;
+
+const DonutG2 = styled.g`
+  position: relative;
+  animation: ${bouncingDonut} 0.5s ease 0.15s infinite;
+  animation-direction: alternate;
+  transform: translate(279, 394.5);
+  &:after {
+    position: absolute;
+  }
+`;
+
+const DonutG3 = styled.g`
+  position: relative;
+  animation: ${bouncingDonut} 0.5s ease 0.25s infinite;
+  animation-direction: alternate;
+  transform: translate(279, 394.5);
+  &:after {
+    position: absolute;
+  }
+`;
+
+const Circle = styled.circle`
+  cx: 65;
+  cy: 60;
+`;
+
+const BreadcrumbContainer = styled.ul`
+  list-style: none;
+  overflow: hidden;
+  height: 21px;
+  display: flex;
+  margin-left: -35px;
+  background-color: white;
+`;
+
+const shimmerAnimation = keyframes `
+  from {
+    background-position: -468px 0
+  }
+  to {
+    background-position: 468px 0
+  }
+`;
+
+const BreadcrumbOutline = styled.li`
+  float: left;
+  border-radius: 15px;
+  padding: 0px 30px 0px 30px;
+  /* background: var(--mainGray); */
+  /* background-color: #F5F5F5; */
+  color: black;
+
+  animation-duration: 3s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: ${shimmerAnimation};
+  animation-timing-function: linear;
+  background: #f6f7f8;
+  background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  background-size: 1000px 640px;
+  position: relative;
+`;
+
+const movingGradient = keyframes `
+  0% { background-position: -250px 0; }
+  100% { background-position: 250px 0; }
+`;
+
+const Table = styled.table `
+  border-radius: 5px;
+  margin: 8px;
+`;
+const Tr = styled.tr `
+  /* border-bottom: 2px solid black; */
+`;
+const Td = styled.td `
+  height: 40px;
+
+  &.Td3 {
+    width: 100%;
+  }
+
+`;
+const TBody = styled.tbody ``;
+const Td3Span = styled.span `
+  display: block;
+  height: 14px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+  background-size: 500px 100px;
+  animation-name: ${movingGradient};
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
 `;

@@ -194,7 +194,7 @@ export default class SelectFromSequence extends Sequence {
       componentType = "text"
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     // allow one to override the fixed (default true) attribute
     // by specifying it on the sequence

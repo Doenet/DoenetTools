@@ -611,6 +611,19 @@ export default class Curve extends GraphicalComponent {
         }
 
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "throughPoints") {
+          return "throughPoint" + propIndex;
+        }
+        if (varName.slice(0, 12) === "throughPoint") {
+          // could be throughPoint or throughPointX
+          let throughPointNum = Number(varName.slice(12));
+          if (Number.isInteger(throughPointNum) && throughPointNum > 0) {
+            return `throughPointX${throughPointNum}_${propIndex}`
+          }
+        }
+        return null;
+      },
       returnArraySizeDependencies: () => ({
         nThroughPoints: {
           dependencyType: "stateVariable",
@@ -2451,6 +2464,19 @@ export default class Curve extends GraphicalComponent {
         }
 
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "xCriticalPoints") {
+          return "xCriticalPoint" + propIndex;
+        }
+        if (varName.slice(0, 14) === "xCriticalPoint") {
+          // could be xCriticalPoint or xCriticalPointX
+          let xCriticalPointNum = Number(varName.slice(14));
+          if (Number.isInteger(xCriticalPointNum) && xCriticalPointNum > 0) {
+            return `xCriticalPointX${xCriticalPointNum}_${propIndex}`
+          }
+        }
+        return null;
+      },
       returnArraySizeDependencies: () => ({
         nXCriticalPoints: {
           dependencyType: "stateVariable",
@@ -2651,6 +2677,19 @@ export default class Curve extends GraphicalComponent {
           }
         }
 
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "yCriticalPoints") {
+          return "yCriticalPoint" + propIndex;
+        }
+        if (varName.slice(0, 14) === "yCriticalPoint") {
+          // could be yCriticalPoint or yCriticalPointX
+          let yCriticalPointNum = Number(varName.slice(14));
+          if (Number.isInteger(yCriticalPointNum) && yCriticalPointNum > 0) {
+            return `yCriticalPointX${yCriticalPointNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nYCriticalPoints: {
@@ -2855,6 +2894,19 @@ export default class Curve extends GraphicalComponent {
           }
         }
 
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "curvatureChangePoints") {
+          return "curvatureChangePoint" + propIndex;
+        }
+        if (varName.slice(0, 20) === "curvatureChangePoint") {
+          // could be curvatureChangePoint or curvatureChangePointX
+          let curvatureChangePointNum = Number(varName.slice(20));
+          if (Number.isInteger(curvatureChangePointNum) && curvatureChangePointNum > 0) {
+            return `curvatureChangePointX${curvatureChangePointNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nCurvatureChangePoints: {

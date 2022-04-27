@@ -8935,14 +8935,9 @@ describe('Circle Tag Tests', function () {
       expect(stateVariables['/circ'].stateValues.numericalRadius).eq(3);
     })
 
+    cy.wait(2000);  // wait for 1 second debounce
 
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: '<text>b</text>',
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -8965,5 +8960,61 @@ describe('Circle Tag Tests', function () {
     })
 
   })
+
+  it('copy propIndex of throughPoints', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <circle through="(2,-3) (3,4) (-3,4)" />
+    </graph>
+ 
+    <p><mathinput name="n" /></p>
+
+    <p><copy prop="throughPoints" target="_circle1" propIndex="$n" assignNames="P1 P2 P3" /></p>
+
+    <p><copy prop="throughPoint2" target="_circle1" propIndex="$n" assignNames="x" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 2, t1y = -3;
+    let t2x = 3, t2y = 4;
+    let t3x = -3, t3y = 4;
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P3 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+  
+    cy.get('#\\/n textarea').type("1{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+  
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+  
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+  
+
+  });
 
 });

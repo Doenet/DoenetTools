@@ -10547,7 +10547,7 @@ describe('Answer Tag Tests', function () {
           </answer>
         </p>
         `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       });
 
@@ -10607,7 +10607,7 @@ describe('Answer Tag Tests', function () {
           </answer>
         </p>
         `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       });
 

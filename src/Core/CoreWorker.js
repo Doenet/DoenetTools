@@ -33,7 +33,7 @@ onmessage = function (e) {
 
 async function createCore(args) {
 
-  console.log('createCore', args)
+  // console.log('createCore', args)
 
   // userId is typically undefined unless attempting to look up
   // state from another user

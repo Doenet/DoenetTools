@@ -1720,7 +1720,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
-        allowedErrorInMean: 0.6,
+        allowedErrorInMean: 0.8,
         allowedErrorInVariance: 0.5,
         checkAllSamples: false,
         stateVariables
@@ -1743,7 +1743,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
-        allowedErrorInMean: 0.6,
+        allowedErrorInMean: 0.8,
         allowedErrorInVariance: 3,
         checkAllSamples: false,
         stateVariables
@@ -1880,7 +1880,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
-    
+
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
@@ -1944,9 +1944,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariant: {
-          index: 1,
-        }
+        requestedVariantIndex: 1
       }, "*");
     });
 
@@ -1974,9 +1972,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariant: {
-          index: 1,
-        }
+        requestedVariantIndex: 1
       }, "*");
     });
 
@@ -1998,9 +1994,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariant: {
-          index: 2,
-        }
+        requestedVariantIndex: 2
       }, "*");
     });
 

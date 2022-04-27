@@ -34,8 +34,6 @@ $gradeCategory = mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
 if ($gradeCategory == ''){ $gradeCategory = '0';}
 $individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
 if ($individualize == ''){ $individualize = '0';}
-$multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
-if ($multipleAttempts == ''){ $multipleAttempts = '0';}
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
 if ($showSolution == ''){ $showSolution = '1';}
 $showSolutionInGradebook = mysqli_real_escape_string($conn,$_POST["showSolutionInGradebook"]);
@@ -85,7 +83,6 @@ attemptAggregation = '$attemptAggregation',
 totalPointsOrPercent = '$totalPointsOrPercent',
 gradeCategory = '$gradeCategory',
 individualize = '$individualize',
-multipleAttempts = '$multipleAttempts',
 showSolution = '$showSolution',
 showSolutionInGradebook = '$showSolutionInGradebook',
 showFeedback = '$showFeedback',
@@ -112,7 +109,6 @@ $result = $conn->query($sql);
   totalPointsOrPercent,
   gradeCategory,
   individualize,
-  multipleAttempts,
   showSolution,
   showSolutionInGradebook,
   showFeedback,
@@ -133,7 +129,6 @@ $result = $conn->query($sql);
   '$totalPointsOrPercent',
   '$gradeCategory',
   '$individualize',
-  '$multipleAttempts',
   '$showSolution',
   '$showSolutionInGradebook',
   '$showFeedback',

@@ -162,6 +162,19 @@ export default class LineSegment extends GraphicalComponent {
           }
         }
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "endpoints") {
+          return "endpoint" + propIndex;
+        }
+        if (varName.slice(0, 8) === "endpoint") {
+          // could be endpoint or endpointX
+          let endpointNum = Number(varName.slice(8));
+          if (Number.isInteger(endpointNum) && endpointNum > 0) {
+            return `endpointX${endpointNum}_${propIndex}`
+          }
+        }
+        return null;
+      },
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",

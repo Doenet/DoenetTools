@@ -209,6 +209,19 @@ export default class Polyline extends GraphicalComponent {
         }
 
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "vertices") {
+          return "vertex" + propIndex;
+        }
+        if (varName.slice(0, 6) === "vertex") {
+          // could be vertex or vertexX
+          let vertexNum = Number(varName.slice(6));
+          if (Number.isInteger(vertexNum) && vertexNum > 0) {
+            return `vertexX${vertexNum}_${propIndex}`
+          }
+        }
+        return null;
+      },
       returnArraySizeDependencies: () => ({
         nVertices: {
           dependencyType: "stateVariable",

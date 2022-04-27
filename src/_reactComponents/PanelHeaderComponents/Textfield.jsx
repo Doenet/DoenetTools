@@ -8,7 +8,6 @@ export default function Textfield(props) {
   const inputRef = useRef(null);
   //Assume small
 
-
   var textfield = {
     margin: '0px 4px 0px 0px',
     height: '24px',

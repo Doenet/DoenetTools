@@ -2981,5 +2981,239 @@ describe('Spreadsheet Tag Tests', function () {
 
   });
 
+  it('copy propIndex of cells', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>A</cell><cell>B</cell><cell>C</cell></row>
+      <row><cell>D</cell><cell>E</cell><cell>F</cell></row>
+      <row><cell>G</cell><cell>H</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+
+    <extract prop="text" assignNames="R1"><copy prop="cellA1" target="_spreadsheet2" /></extract>
+    <extract prop="text" assignNames="R2"><copy prop="cellB1" target="_spreadsheet2" /></extract>
+    <extract prop="text" assignNames="R3"><copy prop="cellC1" target="_spreadsheet2" /></extract>
+  
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy prop="row1" target="_spreadsheet1" propIndex="$n" />
+    </spreadsheet>
+
+    <extract prop="text" assignNames="C1"><copy prop="cellA1" target="_spreadsheet3" /></extract>
+    <extract prop="text" assignNames="C2"><copy prop="cellA2" target="_spreadsheet3" /></extract>
+    <extract prop="text" assignNames="C3"><copy prop="cellA3" target="_spreadsheet3" /></extract>
+
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy prop="column2" target="_spreadsheet1" propIndex="$n" />
+    </spreadsheet>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let row = ["A", "B", "C"];
+    let column = ["B", "E", "H"];
+
+    cy.get('#\\/R1').should('have.text', row[0]);
+    cy.get('#\\/R2').should('have.text', row[1]);
+    cy.get('#\\/R3').should('have.text', row[2]);
+    cy.get('#\\/C1').should('have.text', column[0]);
+    cy.get('#\\/C2').should('have.text', column[1]);
+    cy.get('#\\/C3').should('have.text', column[2]);
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[0]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[0]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[1]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[1]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[2]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[2]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+
+  });
+
+  it('copy propIndex of evaluated cells', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>1</cell><cell>2</cell><cell>=A1+B1</cell></row>
+      <row><cell>D</cell><cell>5</cell><cell>F</cell></row>
+      <row><cell>F</cell><cell>=B1+B2</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+
+    <extract prop="text" assignNames="R1"><copy prop="evaluatedCellA1" target="_spreadsheet2" /></extract>
+    <extract prop="text" assignNames="R2"><copy prop="evaluatedCellB1" target="_spreadsheet2" /></extract>
+    <extract prop="text" assignNames="R3"><copy prop="evaluatedCellC1" target="_spreadsheet2" /></extract>
+  
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy prop="evaluatedRow1" target="_spreadsheet1" propIndex="$n" />
+    </spreadsheet>
+
+    <extract prop="text" assignNames="C1"><copy prop="evaluatedCellA1" target="_spreadsheet3" /></extract>
+    <extract prop="text" assignNames="C2"><copy prop="evaluatedCellA2" target="_spreadsheet3" /></extract>
+    <extract prop="text" assignNames="C3"><copy prop="evaluatedCellA3" target="_spreadsheet3" /></extract>
+
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy prop="evaluatedColumn2" target="_spreadsheet1" propIndex="$n" />
+    </spreadsheet>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let row = ["1", "2", "3"];
+    let column = ["2", "5", "7"];
+
+    cy.get('#\\/R1').should('have.text', row[0]);
+    cy.get('#\\/R2').should('have.text', row[1]);
+    cy.get('#\\/R3').should('have.text', row[2]);
+    cy.get('#\\/C1').should('have.text', column[0]);
+    cy.get('#\\/C2').should('have.text', column[1]);
+    cy.get('#\\/C3').should('have.text', column[2]);
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[0]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[0]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[1]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[1]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[2]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[2]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+
+  });
+
+  it('copy propIndex of points in cells', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>(1,2)</cell><cell>B</cell><cell>(3,4)</cell></row>
+      <row><cell>D</cell><cell>(5,6)</cell><cell>F</cell></row>
+      <row><cell>F</cell><cell>(7,8)</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+
+    <p><copy prop="pointsInRow1" target="_spreadsheet1" propIndex="$n" assignNames="P1 P2 P3" removeEmptyArrayEntries /></p>
+
+    <p><copy prop="pointsInColumn2" target="_spreadsheet1" propIndex="$n" assignNames="P4 P5 P6" removeEmptyArrayEntries /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let c1 = "(1,2)";
+    let c2 = "(3,4)";
+    let c3 = "(5,6)";
+    let c4 = "(7,8)";
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', c2);
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
+    cy.get('#\\/P5 .mjx-mrow').should('contain.text', c4);
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c2);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c4);
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+
+  });
+
+
 });
 

@@ -272,18 +272,14 @@ describe('Point location validation tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([5.9, 3.4])
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
+    cy.wait(2000);  // wait for 1 second debounce
+
     cy.log("Reload page")
-
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: '<text>b</text>',
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -308,6 +304,7 @@ describe('Point location validation tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([5.9, 3.4])
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -342,19 +339,15 @@ describe('Point location validation tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([-8.8, 1.3])
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
 
+    cy.wait(2000);  // wait for 1 second debounce
+
     cy.log("Reload page")
-
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: '<text>b</text>',
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -379,6 +372,7 @@ describe('Point location validation tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([-8.8, 1.3])
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -417,19 +411,15 @@ describe('Point location validation tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([-9.5, -5.1])
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
 
+    cy.wait(2000);  // wait for 1 second debounce
+
     cy.log("Reload page")
-
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: '<text>b</text>',
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -438,7 +428,7 @@ describe('Point location validation tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
-    
+
     // wait until core is loaded
     cy.waitUntil(() => cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -454,6 +444,7 @@ describe('Point location validation tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([-9.5, -5.1])
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 

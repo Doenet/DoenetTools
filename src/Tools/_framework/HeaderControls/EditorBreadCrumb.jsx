@@ -13,11 +13,12 @@ export default function EditorBreadCrumb() {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const pageId = useRecoilValue(searchParamAtomFamily('pageId'));
 
   const chooserCrumb = useCourseChooserCrumb();
   const dashboardCrumb = useDashboardCrumb(courseId);
   const navigationCrumbs = useNavigationCrumbs(courseId, sectionId);
-  const editorCrumb = useEditorCrumb({ courseId, sectionId, doenetId });
+  const editorCrumb = useEditorCrumb({ courseId, sectionId, doenetId, pageId });
 
   return (
     <Suspense fallback={<div>Loading Breadcrumb...</div>}>
@@ -26,7 +27,7 @@ export default function EditorBreadCrumb() {
           chooserCrumb,
           dashboardCrumb,
           ...navigationCrumbs,
-          editorCrumb,
+          ...editorCrumb,
         ]}
         offset={68}
       />

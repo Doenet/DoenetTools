@@ -389,7 +389,7 @@ export default class Substitute extends CompositeComponent {
 
   static async createSerializedReplacements({ component, componentInfoObjects, flags }) {
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let type = await component.stateValues.type;
     let serializedReplacement = {

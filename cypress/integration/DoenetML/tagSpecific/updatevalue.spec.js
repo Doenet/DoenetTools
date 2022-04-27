@@ -296,6 +296,40 @@ describe('UpdateValue Tag Tests', function () {
 
   })
 
+  it('update propIndex', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <point name="p">(3,2,1)</point>
+    
+    <collect componentTypes="point" target="grp" name="col" />
+  
+    <updateValue target="p" prop="xs" newValue="2$(p{prop='x'})" propIndex="2" />
+    <p><booleaninput name="bi" /><copy prop="value" target="bi" assignNames="b" /></p>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,2,1)')
+    })
+
+    cy.get('#\\/_updatevalue1_button').click();
+    cy.waitUntil(() => cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) =>
+      text.trim() === '(3,6,1)'
+    ))
+
+    cy.get('#\\/_updatevalue1_button').click();
+    // nothing has changed even after wait for core to respond to booleaninput
+    cy.get('#\\/bi_input').click();
+    cy.get('#\\/b').should('have.text', 'true');
+    cy.get('#\\/p').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,6,1)')
+    })
+  })
+
   it('update multiple components', () => {
 
     cy.window().then(async (win) => {

@@ -15,26 +15,27 @@ import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/A
 
 export default function SelectedPage() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  // const effectiveRole = useRecoilValue(effectiveRoleAtom);
-  const doenetId = useRecoilValue(selectedCourseItems)[0];
-  const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
-  const containingObj = useRecoilValue(authorItemByDoenetId(itemObj.containingDoenetId));
+  const pageId = useRecoilValue(selectedCourseItems)[0];
+  const pageObj = useRecoilValue(authorItemByDoenetId(pageId));
+  const containingObj = useRecoilValue(authorItemByDoenetId(pageObj.containingDoenetId));
+  const sectionId = containingObj.parentDoenetId;
+  const doenetId = containingObj.doenetId;
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
-  const { create, renameItem, compileActivity, deleteItem } = useCourse(courseId);
-  const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
+  const { create, renameItem, compileActivity, deleteItem, copyItems, cutItems } = useCourse(courseId);
+  const [itemTextFieldLabel,setItemTextFieldLabel] = useState(pageObj.label)
   const addToast = useToast();
 
   useEffect(()=>{
-    if (itemTextFieldLabel !== itemObj.label){
-      setItemTextFieldLabel(itemObj.label)
+    if (itemTextFieldLabel !== pageObj.label){
+      setItemTextFieldLabel(pageObj.label)
     }
-  },[doenetId])
+  },[pageId]) //Only check when the pageId changes
 
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
     if (itemTextFieldLabel === '') {
-      effectiveItemLabel = itemObj.label;
-      if (itemObj.label === ''){
+      effectiveItemLabel = pageObj.label;
+      if (pageObj.label === ''){
         effectiveItemLabel = 'Untitled';
       }
 
@@ -42,13 +43,13 @@ export default function SelectedPage() {
       addToast('Every item must have a label.');
     }
     //Only update the server when it changes
-    if (itemObj.label !== effectiveItemLabel){
-      renameItem(doenetId,effectiveItemLabel)
+    if (pageObj.label !== effectiveItemLabel){
+      renameItem(pageId,effectiveItemLabel)
     }
   };
 
   let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
-    <FontAwesomeIcon icon={faCode} /> {itemObj.label} 
+    <FontAwesomeIcon icon={faCode} /> {pageObj.label} 
   </h2>)
 
   
@@ -65,29 +66,11 @@ export default function SelectedPage() {
               view: '',
               params: {
                 courseId,
+                pageId,
                 doenetId,
+                sectionId
               },
             });
-          }}
-        />
-  <ActionButton
-          width="menu"
-          value="View Page"
-          onClick={() => {
-            compileActivity({
-              activityDoenetId:doenetId,courseId,successCallback:()=>{
-                addToast("Activity compiled!", toastType.INFO);
-                setPageToolView({
-                  page: 'course',
-                  tool: 'assignment',
-                  view: '',
-                  params: {
-                    courseId,
-                    doenetId,
-                  },
-                });
-              }
-            })
           }}
         />
   </ActionButtonGroup>
@@ -102,6 +85,25 @@ export default function SelectedPage() {
       }}
       onBlur={handelLabelModfication}
     />
+    <br />
+    <ActionButtonGroup width="menu">
+      <ActionButton
+          value="Copy"
+          onClick={() => {
+            copyItems({successCallback:()=>{
+              addToast("Page copied!", toastType.INFO);
+            }})
+          }}
+      />
+      <ActionButton
+          value="Cut"
+          onClick={() => {
+            cutItems({successCallback:()=>{
+              addToast("Page cut!", toastType.INFO);
+            }})
+          }}
+      />
+    </ActionButtonGroup>
     <br />
     <ButtonGroup vertical>
     {containingObj.type == 'activity' ? 
@@ -131,7 +133,7 @@ export default function SelectedPage() {
         e.preventDefault();
         e.stopPropagation();
       
-        deleteItem({doenetId});
+        deleteItem({doenetId:pageId});
       }}
     />
   </>

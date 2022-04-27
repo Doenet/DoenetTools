@@ -1980,6 +1980,7 @@ export default class Function extends InlineComponent {
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        console.log('get array keys from varname', { arrayEntryPrefix, varEnding, arraySize })
         if (["minimum", "minimumLocation", "minimumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
           if (Number.isInteger(pointInd) && pointInd >= 0) {
@@ -2037,6 +2038,29 @@ export default class Function extends InlineComponent {
         } else {
           return "minimumValue" + (Number(ind1) + 1)
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "minima") {
+          return "minimum" + propIndex;
+        }
+        if (varName === "minimumLocations") {
+          return "minimumLocation" + propIndex;
+        }
+        if (varName === "minimumValues") {
+          return "minimumValue" + propIndex;
+        }
+        if (varName.slice(0, 7) === "minimum") {
+          // could be minimum, minimumLocation, or minimumValue
+          let componentNum = Number(varName.slice(7));
+          if (Number.isInteger(componentNum) && componentNum > 0) {
+            if(propIndex === 1) {
+              return "minimumLocation" + componentNum;
+            } else if(propIndex === 2) {
+              return "minimumValue" + componentNum;
+            }
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         numberMinima: {
@@ -2554,6 +2578,29 @@ export default class Function extends InlineComponent {
           return "maximumValue" + (Number(ind1) + 1)
         }
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "maxima") {
+          return "maximum" + propIndex;
+        }
+        if (varName === "maximumLocations") {
+          return "maximumLocation" + propIndex;
+        }
+        if (varName === "maximumValues") {
+          return "maximumValue" + propIndex;
+        }
+        if (varName.slice(0, 7) === "maximum") {
+          // could be maximum, maximumLocation, or maximumValue
+          let componentNum = Number(varName.slice(7));
+          if (Number.isInteger(componentNum) && componentNum > 0) {
+            if(propIndex === 1) {
+              return "maximumLocation" + componentNum;
+            } else if(propIndex === 2) {
+              return "maximumValue" + componentNum;
+            }
+          }
+        }
+        return null;
+      },
       returnArraySizeDependencies: () => ({
         numberMaxima: {
           dependencyType: "stateVariable",
@@ -2713,6 +2760,29 @@ export default class Function extends InlineComponent {
         } else {
           return "extremumValue" + (Number(ind1) + 1)
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "extrema") {
+          return "extremum" + propIndex;
+        }
+        if (varName === "extremumLocations") {
+          return "extremumLocation" + propIndex;
+        }
+        if (varName === "extremumValues") {
+          return "extremumValue" + propIndex;
+        }
+        if (varName.slice(0, 8) === "extremum") {
+          // could be extremum, extremumLocation, or extremumValue
+          let componentNum = Number(varName.slice(8));
+          if (Number.isInteger(componentNum) && componentNum > 0) {
+            if(propIndex === 1) {
+              return "extremumLocation" + componentNum;
+            } else if(propIndex === 2) {
+              return "extremumValue" + componentNum;
+            }
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         numberExtrema: {

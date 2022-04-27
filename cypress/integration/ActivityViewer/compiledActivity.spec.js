@@ -71,12 +71,7 @@ describe('Compiled activity tests', function () {
         `}, "*");
     })
 
-    // Note: whitespace added when creating activity definition from page definition
-    cy.get('#\\/_document1').should('contain.text', 'hi')
-    cy.get('#\\/_document1').invoke("text").then(text => {
-      expect(text.trim()).eq("hi")
-    })
-
+    cy.get('#\\/_document1').should('have.text', 'hi')
 
   })
 
@@ -91,12 +86,7 @@ describe('Compiled activity tests', function () {
         `}, "*");
     })
 
-    // Note: whitespace added when creating activity definition from page definition
-    cy.get('#\\/_document1').should('contain.text', 'hi')
-    cy.get('#\\/_document1').invoke("text").then(text => {
-      expect(text.trim()).eq("hi")
-    })
-
+    cy.get('#\\/_document1').should('have.text', 'hi')
 
   })
 

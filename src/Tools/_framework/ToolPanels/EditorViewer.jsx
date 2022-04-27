@@ -30,9 +30,10 @@ export const updateTextEditorDoenetMLAtom = atom({
   default: ""
 })
 
+// TODO: change to pageId
 //Boolean initialized editor tool start up
-export const editorDoenetIdInitAtom = atom({
-  key: "editorDoenetIdInitAtom",
+export const editorPageIdInitAtom = atom({
+  key: "editorPageIdInitAtom",
   default: ""
 })
 
@@ -51,15 +52,16 @@ export default function EditorViewer() {
   // console.log(">>>>===EditorViewer",refreshCount.current)
   // refreshCount.current++;
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
-  const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
+  const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
-  const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
+  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
+  const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
-  const setEditorInit = useSetRecoilState(editorDoenetIdInitAtom);
+  const setEditorInit = useSetRecoilState(editorPageIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
-  const pageObj = useRecoilValue(authorItemByDoenetId(paramDoenetId))
+  const pageObj = useRecoilValue(authorItemByDoenetId(paramPageId))
 
   useInitCourseItems(courseId);
 
@@ -69,8 +71,8 @@ export default function EditorViewer() {
   }
 
 
-  let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (doenetId) => {
-    let response = await snapshot.getPromise(fileByDoenetId(doenetId));
+  let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (pageId) => {
+    let response = await snapshot.getPromise(fileByDoenetId(pageId));
     // if (typeof response === "object"){
     //   response = response.data;
     // }
@@ -79,21 +81,21 @@ export default function EditorViewer() {
     set(updateTextEditorDoenetMLAtom, doenetML);
     set(textEditorDoenetMLAtom, doenetML)
     set(viewerDoenetMLAtom, doenetML)
-    set(editorDoenetIdInitAtom, doenetId);
+    set(editorPageIdInitAtom, pageId);
   }, [])
 
 
   useEffect(() => {
-    if (paramDoenetId !== '' && pageInitiated) {
-      initDoenetML(paramDoenetId)
+    if (paramPageId !== '' && pageInitiated) {
+      initDoenetML(paramPageId)
     }
     return () => {
       setEditorInit("");
     }
-  }, [paramDoenetId, pageInitiated]);
+  }, [paramPageId, pageInitiated]);
 
-  if (paramDoenetId !== initializedDoenetId) {
-    //DoenetML is changing to another DoenetID
+  if (paramPageId !== initializedPageId) {
+    //DoenetML is changing to another PageId
     return null;
   }
 
@@ -102,12 +104,13 @@ export default function EditorViewer() {
   let solutionDisplayMode = "button";
 
 
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
+  function variantCallback(generatedVariantInfo, allPossibleVariants, variantIndicesToIgnore = []) {
     // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
     setVariantPanel({
       index: cleanGeneratedVariant.index,
-      allPossibleVariants
+      allPossibleVariants,
+      variantIndicesToIgnore,
     });
     setVariantInfo({
       index: cleanGeneratedVariant.index,
@@ -137,7 +140,7 @@ export default function EditorViewer() {
       allowSaveSubmissions: false,
       allowSaveEvents: false
     }}
-    doenetId={initializedDoenetId}
+    doenetId={doenetId}
     attemptNumber={attemptNumber}
     generatedVariantCallback={variantCallback} //TODO:Replace
     requestedVariantIndex={variantInfo.index}

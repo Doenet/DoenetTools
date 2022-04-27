@@ -30,7 +30,23 @@ export default function PageVariant(props) {
     return <option key={i + 1} value={i + 1}>{s}</option>
   });
 
-  return <div style={props.style}>
+  let isIgnoredVariant = variantPanel.variantIndicesToIgnore.includes(variantPanel.index)
+
+  let style = {...props.style};
+  let warningVariantIsIgnored = null;
+  if(isIgnoredVariant) {
+    style.backgroundColor="lightgray";
+    warningVariantIsIgnored = <div><b>This variant is ignored!</b></div>
+  }
+
+  let haveIgnoredVariants = variantPanel.variantIndicesToIgnore.length > 0;
+  let ignoredVariantListing = null;
+  if(haveIgnoredVariants) {
+    ignoredVariantListing = <div><label>Variant indices to ignore: </label> {variantPanel.variantIndicesToIgnore.join(", ")}</div>
+  }
+
+  return <div style={style}>
+    {warningVariantIsIgnored}
     <div><label>Variant Index <input type="text" value={variantPanel.index} onKeyDown={(e) => {
       if (e.key === 'Enter') { updateVariantInfoAtom() }
     }} onBlur={() => updateVariantInfoAtom()} onChange={(e) => {
@@ -53,5 +69,7 @@ export default function PageVariant(props) {
       }}>
         {optionsList}
       </select></label></div>
+    {ignoredVariantListing}
+   
   </div>
 }

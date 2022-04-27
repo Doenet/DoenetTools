@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { editorDoenetIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom } from '../ToolPanels/EditorViewer'
+import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom } from '../ToolPanels/EditorViewer'
 import {
   atom,
   useRecoilValue,
@@ -23,21 +23,21 @@ export default function DoenetMLEditor(props) {
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const updateInternalValue = useRecoilValue(updateTextEditorDoenetMLAtom);
 
-  const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
+  const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
   const paramCourseId = useRecoilValue(searchParamAtomFamily('courseId'))
-  const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
+  const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   let editorRef = useRef(null);
   let timeout = useRef(null);
 
-  const saveDraft = useRecoilCallback(({ snapshot, set }) => async (doenetId, courseId) => {
+  const saveDraft = useRecoilCallback(({ snapshot, set }) => async (pageId, courseId) => {
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
 
     //Save in localStorage
     // localStorage.setItem(cid,doenetML)
 
     try {
-      const { data } = await axios.post("/api/saveDoenetML.php", { doenetML, doenetId, courseId })
-      set(fileByDoenetId(doenetId),doenetML);
+      const { data } = await axios.post("/api/saveDoenetML.php", { doenetML, pageId, courseId })
+      set(fileByDoenetId(pageId),doenetML);
       if (!data.success) {
         //TODO: Toast here
         console.log("ERROR", data.message)
@@ -53,9 +53,9 @@ export default function DoenetMLEditor(props) {
 
     return () => {
 
-      if (initializedDoenetId !== "") {
+      if (initializedPageId !== "") {
         // save and stop timers
-        saveDraft(initializedDoenetId, paramCourseId) //Always save on leave
+        saveDraft(initializedPageId, paramCourseId) //Always save on leave
         if (timeout.current !== null) {
           clearTimeout(timeout.current)
         }
@@ -63,10 +63,10 @@ export default function DoenetMLEditor(props) {
 
       }
     }
-  }, [initializedDoenetId, saveDraft])
+  }, [initializedPageId, saveDraft])
 
-  if (paramDoenetId !== initializedDoenetId) {
-    //DoenetML is changing to another DoenetID
+  if (paramPageId !== initializedPageId) {
+    //DoenetML is changing to another PageId
     return null;
   }
 
@@ -83,7 +83,7 @@ export default function DoenetMLEditor(props) {
       clearTimeout(timeout.current);
 
       timeout.current = setTimeout(function () {
-        saveDraft(initializedDoenetId, paramCourseId);
+        saveDraft(initializedPageId, paramCourseId);
         timeout.current = null;
       }, 3000)//3 seconds
     }}

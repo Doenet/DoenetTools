@@ -25,7 +25,7 @@ export function postProcessCopy({ serializedComponents, componentName,
         componentNamesFound.push(component.originalName);
         if (component.originalDoenetAttributes && component.originalDoenetAttributes.assignNames) {
           let originalNamespace;
-          if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+          if (component.attributes.newNamespace?.primitive) {
             originalNamespace = component.originalName;
           } else {
             let lastSlash = component.originalName.lastIndexOf('/');
