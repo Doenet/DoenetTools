@@ -1,29 +1,72 @@
 import React, {useState, Suspense, useEffect, useLayoutEffect} from "../../_snowpack/pkg/react.js";
-import {
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState
-} from "../../_snowpack/pkg/recoil.js";
+import {useRecoilCallback, useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
-import Drive, {
+import {
   selectedDriveAtom,
   selectedDriveItems,
   itemType,
   clearDriveAndItemSelections,
   folderDictionary
 } from "../../_reactComponents/Drive/NewDrive.js";
+import CourseNavigator from "../../_reactComponents/Course/CourseNavigator.js";
 import {DropTargetsProvider} from "../../_reactComponents/DropTarget/index.js";
 import {BreadcrumbProvider} from "../../_reactComponents/Breadcrumb/BreadcrumbProvider.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
 import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import {suppressMenusAtom} from "../NewToolRoot.js";
+import styled, {keyframes} from "../../_snowpack/pkg/styled-components.js";
+const movingGradient = keyframes`
+  0% { background-position: -250px 0; }
+  100% { background-position: 250px 0; }
+`;
+const Table = styled.table`
+  width: 850px;
+  border-radius: 5px;
+  margin-top: 50px;
+  margin-left: 20px;
+`;
+const Tr = styled.tr``;
+const Td = styled.td`
+  height: 40px;
+  vertical-align: middle;
+  padding: 8px;
+  /* border-bottom: 2px solid black; */
+
+  &.Td2 {
+    width: 50px;
+  }
+
+  &.Td3 {
+    width: 400px;
+  }
+
+`;
+const TBody = styled.tbody``;
+const Td2Span = styled.span`
+  display: block; 
+  background-color: rgba(0,0,0,.15);
+  width: 70px;
+  height: 16px;
+  border-radius: 5px;
+`;
+const Td3Span = styled.span`
+  display: block;
+  height: 14px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+  background-size: 500px 100px;
+  animation-name: ${movingGradient};
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+`;
 export default function NavigationPanel() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
-  const path = useRecoilValue(searchParamAtomFamily("path"));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const [columnTypes, setColumnTypes] = useState([]);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   useEffect(() => {
@@ -147,7 +190,6 @@ export default function NavigationPanel() {
           }
           return false;
         } else {
-          console.log("whats up", item.itemType, "i", item);
           return item.isReleased === "1";
         }
       case "instructor":
@@ -157,9 +199,21 @@ export default function NavigationPanel() {
     }
   }, [effectiveRole]);
   return /* @__PURE__ */ React.createElement(BreadcrumbProvider, null, /* @__PURE__ */ React.createElement(DropTargetsProvider, null, /* @__PURE__ */ React.createElement(Suspense, {
-    fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
-  }, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Drive, {
-    path,
+    fallback: /* @__PURE__ */ React.createElement(Table, null, /* @__PURE__ */ React.createElement(TBody, null, /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
+      className: "Td2"
+    }, /* @__PURE__ */ React.createElement(Td2Span, null)), /* @__PURE__ */ React.createElement(Td, {
+      className: "Td3"
+    }, /* @__PURE__ */ React.createElement(Td3Span, null))), /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
+      className: "Td2"
+    }, /* @__PURE__ */ React.createElement(Td2Span, null)), /* @__PURE__ */ React.createElement(Td, {
+      className: "Td3"
+    }, /* @__PURE__ */ React.createElement(Td3Span, null))), /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
+      className: "Td2"
+    }, /* @__PURE__ */ React.createElement(Td2Span, null)), /* @__PURE__ */ React.createElement(Td, {
+      className: "Td3"
+    }, /* @__PURE__ */ React.createElement(Td3Span, null)))))
+  }, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(CourseNavigator, {
+    courseId,
     filterCallback,
     columnTypes,
     urlClickBehavior: "select",

@@ -5,8 +5,8 @@ export default class ConstrainToGraph extends ConstraintComponent {
   static componentType = "constrainToGraph";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.buffer = {
       createComponentOfType: "number",
       createStateVariable: "buffer",

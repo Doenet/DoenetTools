@@ -21,7 +21,7 @@ export default function Table(props) {
   } else {
     title = SVs.title;
   }
-  if (!SVs.suppressTableNameInCaption) {
+  if (!SVs.suppressTableNameInTitle) {
     let tableName = /* @__PURE__ */ React.createElement("strong", null, SVs.tableName);
     if (title) {
       title = /* @__PURE__ */ React.createElement(React.Fragment, null, tableName, ": ", title);
@@ -33,7 +33,8 @@ export default function Table(props) {
     id: name + "_title"
   }, title);
   return /* @__PURE__ */ React.createElement("div", {
-    id: name
+    id: name,
+    style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), heading, childrenToRender);

@@ -5,8 +5,8 @@ export default class CellBlock extends BaseComponent {
   static componentType = "cellBlock";
   static rendererType = "container";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.rowNum = {
       createComponentOfType: "text",

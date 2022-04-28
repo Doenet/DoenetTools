@@ -2,7 +2,7 @@ import Sequence from './Sequence.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
 import { enumerateSelectionCombinations } from '../utils/enumeration.js';
 import { processAssignNames } from '../utils/serializedStateProcessing.js';
-import { textToAst } from '../utils/math.js';
+import { getFromText } from '../utils/math.js';
 import { calculateSequenceParameters, lettersToNumber, returnSequenceValueForIndex, returnSequenceValues } from '../utils/sequence.js';
 import { convertAttributesForComponentType } from '../utils/copy.js';
 
@@ -13,8 +13,8 @@ export default class SelectFromSequence extends Sequence {
 
   static createsVariants = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
     }
@@ -194,7 +194,7 @@ export default class SelectFromSequence extends Sequence {
       componentType = "text"
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     // allow one to override the fixed (default true) attribute
     // by specifying it on the sequence
@@ -241,196 +241,251 @@ export default class SelectFromSequence extends Sequence {
   }
 
   static determineNumberOfUniqueVariants({ serializedComponent }) {
+
     let numberToSelect = 1, withReplacement = false;
-    if (serializedComponent.state !== undefined) {
-      if (serializedComponent.state.numberToSelect !== undefined) {
-        numberToSelect = serializedComponent.state.numberToSelect;
-      }
-      if (serializedComponent.state.withReplacement !== undefined) {
-        withReplacement = serializedComponent.state.withReplacement;
-      }
-      if (serializedComponent.state.type !== undefined) {
-        sequenceType = serializedComponent.state.type;
-      }
-    }
-    if (serializedComponent.children === undefined) {
-      return { succes: false }
-    }
 
-    let stringChild;
-    let sequencePars = {};
-    let excludes = [];
-    for (let child of serializedComponent.children) {
-      let componentType = child.componentType;
-      if (componentType === "numberToSelect") {
-        // calculate numberToSelect only if has its value set directly 
-        // or if has a child that is a string
-        let foundValid = false;
-        if (child.state !== undefined && child.state.value !== undefined) {
-          numberToSelect = Math.round(Number(child.state.value));
-          foundValid = true;
-        }
-        // children overwrite state
-        if (child.children !== undefined) {
-          for (let grandchild of child.children) {
-            if (typeof grandchild === "string") {
-              numberToSelect = Math.round(Number(grandchild));
-              foundValid = true;
-              break;
-            }
-          }
-        }
-        if (!foundValid) {
-          return { success: false }
-        }
-      } else if (componentType === "withReplacement") {
-        // calculate withReplacement only if has its value set directly 
-        // or if has a child that is a string
-        let foundValid = false;
-        if (child.state !== undefined) {
-          if (child.state.value !== undefined) {
-            withReplacement = child.state.value;
-            foundValid = true;
-          }
-        }
-        // children overwrite state
-        if (child.children !== undefined) {
-          for (let grandchild of child.children) {
-            if (typeof grandchild === "string") {
-              foundValid = true;
-              if (grandchild.trim().toLowerCase() === "true") {
-                withReplacement = true;
-              } else {
-                withReplacement = false;
-              }
-              break;
-            }
-          }
-        }
-        if (!foundValid) {
-          return { success: false }
-        }
-      } else if (["type", "to", "from", "step", "length"].includes(componentType)) {
-        // calculate sequencePars only if has its value set directly 
-        // or if has a child that is a string
-        let foundValid = false;
-        if (child.state !== undefined && child.state.value !== undefined) {
-          sequencePars[componentType] = child.state.value;
-          foundValid = true;
-        }
-        // children overwrite state
-        if (child.children !== undefined) {
-          for (let grandchild of child.children) {
-            if (typeof grandchild === "string") {
-              sequencePars[componentType] = grandchild;
-              foundValid = true;
-              break;
-            }
-          }
-        }
-        if (!foundValid) {
-          return { success: false }
-        }
-      } else if (componentType === "exclude") {
-        // calculate exclude if has a string child
-        let foundValid = false;
-        if (child.children !== undefined) {
-          for (let grandchild of child.children) {
-            if (typeof grandchild === "string") {
-              foundValid = true;
-              let stringPieces = grandchild.split(",").map(x => x.trim());
-              excludes.push(...stringPieces);
-              break;
-            }
-          }
-        }
-        if (!foundValid) {
-          return { success: false }
+    let sequenceType = serializedComponent.attributes.type.primitive;
+
+    let numberToSelectComponent = serializedComponent.attributes.numberToSelect?.component;
+    if (numberToSelectComponent) {
+      // only implemented if have an integer with a single string child
+      if (numberToSelectComponent.componentType === "integer"
+        && numberToSelectComponent.children?.length === 1
+        && typeof numberToSelectComponent.children[0] === "string") {
+        numberToSelect = Number(numberToSelectComponent.children[0]);
+
+        if (!(Number.isInteger(numberToSelect) && numberToSelect >= 0)) {
+          console.log(`cannot determine unique variants of selectFromSequence as numberToSelect isn't a non-negative integer.`)
+          return { success: false };
         }
 
-      } else if (typeof child === "string") {
-        stringChild = child;
-      }
-    }
-
-    if (stringChild !== undefined) {
-      if (sequencePars.to !== undefined || sequencePars.from !== undefined) {
-        return { success: false }
-      }
-      let stringPieces = stringChild.split(",");
-      if (stringPieces.length === 1) {
-        sequencePars.to = stringPieces[0].trim();
-      } else if (stringPieces.length === 2) {
-        sequencePars.from = stringPieces[0].trim();
-        sequencePars.to = stringPieces[1].trim();
       } else {
-        return { success: false }
+        console.log(`cannot determine unique variants of selectFromSequence as numberToSelect isn't constant number.`)
+        return { success: false };
       }
     }
 
-    for (let par of ["to", "from", "step"]) {
-      if (sequencePars[par] !== undefined) {
-        if (sequencePars.type === "math") {
-          if (typeof sequencePars[par] === "string") {
-            sequencePars[par] = me.fromAst(textToAst.convert(sequencePars[par]));
-          } else if (sequencePars[par].tree === undefined) {
-            return { success: false }
+
+    let withReplacementComponent = serializedComponent.attributes.withReplacement?.component;
+    if (withReplacementComponent) {
+      // only implemented if have an boolean with a boolean value or a single string child
+      if (withReplacementComponent.componentType === "boolean") {
+        if (withReplacementComponent.children?.length === 1
+          && typeof withReplacementComponent.children[0] === "string") {
+          withReplacement = withReplacementComponent.children[0].toLowerCase() === "true"
+        } else if ((withReplacementComponent.children === undefined || withReplacementComponent.children.length === 0)
+          && typeof withReplacementComponent.state?.value === "boolean"
+        ) {
+          withReplacement = withReplacementComponent.state.value;
+        } else {
+          console.log(`cannot determine unique variants of selectFromSequence as withReplacement isn't constant boolean.`)
+          return { success: false };
+        }
+      } else {
+        console.log(`cannot determine unique variants of selectFromSequence as withReplacement isn't constant boolean.`)
+        return { success: false };
+      }
+
+    }
+
+    let sequencePars = {
+      from: null,
+      to: null,
+      step: null,
+      length: null
+    };
+
+    let fromComponent = serializedComponent.attributes.from?.component;
+    if (fromComponent) {
+      // from itself is a component with selectable type
+      let fromComponent2 = fromComponent.children[0];
+      // only implemented if have a single string child
+      if (fromComponent2.children?.length === 1
+        && typeof fromComponent2.children[0] === "string"
+      ) {
+
+        let from;
+
+        if (sequenceType === "number") {
+          from = Number(fromComponent2.children[0]);
+          if (!Number.isFinite(from)) {
+            console.log(`cannot determine unique variants of selectFromSequence of number type as from isn't a number.`)
+            return { success: false };
           }
-        } else if (sequencePars.type === "letters" && par !== "step") {
-          sequencePars[par] = lettersToNumber(sequencePars[par]);
-          if (sequencePars[par] === undefined) {
-            return { success: false }
+        } else if (sequenceType === "letters") {
+          from = lettersToNumber(fromComponent2.children[0]);
+          if (!Number.isFinite(from)) {
+            console.log(`cannot determine unique variants of selectFromSequence of letters type as from isn't a combination of letters.`)
+            return { success: false };
           }
         } else {
-          sequencePars[par] = Number(sequencePars[par]);
-          if (!Number.isFinite(sequencePars[par])) {
-            return { success: false }
+
+          let fromText = getFromText({
+            functionSymbols: ["f", "g"]
+          });
+          try {
+            from = fromText(fromComponent2.children[0])
+          } catch (e) {
+            console.log(`cannot determine unique variants of selectFromSequence of math type as from isn't a valid math expression.`)
+            return { success: false };
           }
-        }
-      }
-    }
 
-    if (sequencePars.length !== undefined) {
-      if (typeof sequencePars.length === "string") {
-        sequencePars.length = Number(sequencePars.length);
-      }
-      if (!Number.isInteger(sequencePars.length) || sequencePars.length < 0) {
-        return { success: false }
-      }
-    }
+        }
+        sequencePars.from = from;
 
-    for (let [ind, exc] of excludes.entries()) {
-      if (sequencePars.type === "math") {
-        if (typeof exc === "string") {
-          exc = me.fromAst(textToAst.convert(exc));
-        } else if (exc.tree === undefined) {
-          return { success: false }
-        }
-      } else if (sequencePars.type === "letters" && par !== "step") {
-        exc = lettersToNumber(exc);
-        if (exc === undefined) {
-          return { success: false }
-        }
       } else {
-        exc = Number(exc);
-        if (!Number.isFinite(exc)) {
-          return { success: false }
-        }
+        console.log(`cannot determine unique variants of selectFromSequence as from isn't a constant.`)
+        return { success: false };
       }
-      excludes[ind] = exc;
     }
 
-    // TODO: this presumably does not work anymore since
-    // calculateSequenceParameters returns results rather
-    // than modifying input parameters
-    calculateSequenceParameters(sequencePars)
+    let toComponent = serializedComponent.attributes.to?.component;
+    if (toComponent) {
+      // to itself is a component with selectable type
+      let toComponent2 = toComponent.children[0];
+      // only implemented if have a single string child
+      if (toComponent2.children?.length === 1
+        && typeof toComponent2.children[0] === "string"
+      ) {
+
+        let to;
+
+        if (sequenceType === "number") {
+          to = Number(toComponent2.children[0]);
+          if (!Number.isFinite(to)) {
+            console.log(`cannot determine unique variants of selectFromSequence of number type as to isn't a number.`)
+            return { success: false };
+          }
+        } else if (sequenceType === "letters") {
+          to = lettersToNumber(toComponent2.children[0]);
+          if (!Number.isFinite(to)) {
+            console.log(`cannot determine unique variants of selectFromSequence of letters type as to isn't a combination of letters.`)
+            return { success: false };
+          }
+        } else {
+
+          let fromText = getFromText({
+            functionSymbols: ["f", "g"]
+          });
+          try {
+            to = fromText(toComponent2.children[0])
+          } catch (e) {
+            console.log(`cannot determine unique variants of selectFromSequence of math type as to isn't a valid math expression.`)
+            return { success: false };
+          }
+
+        }
+        sequencePars.to = to;
+
+      } else {
+        console.log(`cannot determine unique variants of selectFromSequence as to isn't a constant.`)
+        return { success: false };
+      }
+    }
+
+
+    let stepComponent = serializedComponent.attributes.step?.component;
+    if (stepComponent) {
+      // only implemented if have a single string child
+      if (stepComponent.children?.length === 1
+        && typeof stepComponent.children[0] === "string"
+      ) {
+
+        let step;
+
+        if (sequenceType === "number") {
+          step = Number(stepComponent.children[0]);
+          if (!Number.isFinite(step)) {
+            console.log(`cannot determine unique variants of selectFromSequence of number type as step isn't a number.`)
+            return { success: false };
+          }
+        } else if (sequenceType === "letters") {
+          step = Number(stepComponent.children[0]);
+          if (!Number.isInteger(step)) {
+            console.log(`cannot determine unique variants of selectFromSequence of letters type as step isn't an integer.`)
+            return { success: false };
+          }
+        } else {
+
+          let fromText = getFromText({
+            functionSymbols: ["f", "g"]
+          });
+          try {
+            step = fromText(stepComponent.children[0])
+          } catch (e) {
+            console.log(`cannot determine unique variants of selectFromSequence of math type as step isn't a valid math expression.`)
+            return { success: false };
+          }
+
+        }
+        sequencePars.step = step;
+
+      } else {
+        console.log(`cannot determine unique variants of selectFromSequence as step isn't a constant.`)
+        return { success: false };
+      }
+    }
+
+    let lengthComponent = serializedComponent.attributes.length?.component;
+    if (lengthComponent) {
+      // only implemented if have a single string child
+      if (lengthComponent.children?.length === 1
+        && typeof lengthComponent.children[0] === "string"
+      ) {
+
+        let length = Number(lengthComponent.children[0]);
+        if (!Number.isInteger(length)) {
+          console.log(`cannot determine unique variants of selectFromSequence as length isn't an integer.`)
+          return { success: false };
+        }
+        sequencePars.length = length;
+
+      } else {
+        console.log(`cannot determine unique variants of selectFromSequence as length isn't a constant.`)
+        return { success: false };
+      }
+    }
+
+
+    if (serializedComponent.attributes.excludeCombinations) {
+      console.log('have not implemented unique variants of a selectFromSequence with excludeCombinations')
+      return { success: true };
+    }
+
+    let excludes = [];
+
+    let excludeComponent = serializedComponent.attributes.exclude?.component;
+    if (excludeComponent) {
+      if (sequenceType === "math") {
+        console.log('have not implemented unique variants of a selectFromSequence of type math with exclude')
+
+      }
+      if (!excludeComponent.children.every(x => x.children.length === 1 && typeof x.children[0] === "string")) {
+        console.log('have not implemented unique variants of a selectFromSequence with non-constant exclude')
+        return { success: true };
+      }
+      if (sequenceType === "letters") {
+        excludes = excludeComponent.children.map(x => lettersToNumber(x.children[0]))
+      } else {
+        excludes = excludeComponent.children.map(x => Number(x.children[0]))
+      }
+
+      if (!excludes.every(Number.isFinite)) {
+        console.log('have not implemented unique variants of a selectFromSequence with non-constant exclude')
+        return { success: true };
+      }
+
+    }
+
+    sequencePars = calculateSequenceParameters(sequencePars)
+
 
     let nOptions = sequencePars.length;
     let excludeIndices = [];
     if (excludes.length > 0) {
-      if (sequencePars.type !== math) {
-        excludes.sort();
-        excludes = excludes.filter((x, ind, a) => x != a[ind - 1]);
+      if (sequenceType !== "math") {
+        excludes.sort((a, b) => a - b);
+        excludes = excludes.filter((x, ind, a) => x != a[ind - 1]);  // remove duplicates
         for (let item of excludes) {
           if (item < sequencePars.from) {
             continue;
@@ -452,44 +507,42 @@ export default class SelectFromSequence extends Sequence {
     }
 
     let uniqueVariantData = {
-      excludeIndices: excludeIndices,
-      nOptions: nOptions,
-      numberToSelect: numberToSelect,
-      withReplacement: withReplacement,
+      excludeIndices,
+      nOptions,
+      numberToSelect,
+      withReplacement,
     }
 
+    serializedComponent.variants.uniqueVariantData = uniqueVariantData;
+
+    let numberOfVariants;
+
     if (withReplacement || numberToSelect === 1) {
-      let numberOfVariants = Math.pow(nOptions, numberToSelect);
-      return {
-        success: true,
-        numberOfVariants: numberOfVariants,
-        uniqueVariantData: uniqueVariantData
+      numberOfVariants = Math.pow(nOptions, numberToSelect);
+    } else {
+      numberOfVariants = nOptions;
+      for (let n = nOptions - 1; n > nOptions - numberToSelect; n--) {
+        numberOfVariants *= n;
       }
     }
 
-    let numberOfVariants = nOptions;
-    for (let n = nOptions - 1; n > nOptions - numberToSelect; n--) {
-      numberOfVariants *= n;
-    }
+    serializedComponent.variants.numberOfVariants = numberOfVariants;
+
     return {
       success: true,
       numberOfVariants: numberOfVariants,
-      uniqueVariantData: uniqueVariantData
     }
 
   }
 
   static getUniqueVariant({ serializedComponent, variantIndex }) {
 
-    if (serializedComponent.variants === undefined) {
-      return { succes: false }
-    }
-    let numberOfVariants = serializedComponent.variants.numberOfVariants;
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
     if (numberOfVariants === undefined) {
       return { success: false }
     }
 
-    if (!Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= numberOfVariants) {
+    if (!Number.isInteger(variantIndex) || variantIndex < 1 || variantIndex > numberOfVariants) {
       return { success: false }
     }
 
@@ -502,24 +555,25 @@ export default class SelectFromSequence extends Sequence {
     let getSingleIndex = function (num) {
       let ind = num;
       for (let excludeInd of excludeIndices) {
-        if (ind === excludeInd) {
+        if (ind >= excludeInd) {
           ind++;
         }
       }
+
       return ind;
     }
 
     if (numberToSelect === 1) {
-      return { success: true, desiredVariant: { indices: [getSingleIndex(variantIndex)] } }
+      return { success: true, desiredVariant: { indices: [getSingleIndex(variantIndex - 1) + 1] } }
     }
 
     let numbers = enumerateSelectionCombinations({
       numberOfIndices: numberToSelect,
       numberOfOptions: nOptions,
-      maxNumber: variantIndex + 1,
-      withReplacement: withReplacement,
-    })[variantIndex];
-    let indices = numbers.map(getSingleIndex)
+      maxNumber: variantIndex,
+      withReplacement,
+    })[variantIndex - 1];
+    let indices = numbers.map(getSingleIndex).map(x => x + 1)
     return { success: true, desiredVariant: { indices: indices } }
 
   }

@@ -6,8 +6,11 @@ import {
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import {classTimesAtom} from "../Widgets/Next7Days.js";
 import DropdownMenu from "../../_reactComponents/PanelHeaderComponents/DropdownMenu.js";
+import DateTime from "../../_reactComponents/PanelHeaderComponents/DateTime.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
+import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import {faTimes, faPlus} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 const TimeEntry = ({parentValue, valueCallback = () => {
 }}) => {
   let [time, setTime] = useState(parentValue);
@@ -81,8 +84,7 @@ export default function ClassTimes() {
     newArr.push(newClassTime);
     newArr = sortClassTimes(newArr);
     set(classTimesAtom, newArr);
-    let path = await snapshot.getPromise(searchParamAtomFamily("path"));
-    let [driveId] = path.split(":");
+    let courseId = await snapshot.getPromise(searchParamAtomFamily("courseId"));
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
@@ -91,7 +93,7 @@ export default function ClassTimes() {
       startTimes.push(classTime.startTime);
       endTimes.push(classTime.endTime);
     }
-    let {data} = await axios.post("/api/updateClassTimes.php", {driveId, dotwIndexes, startTimes, endTimes});
+    let {data} = await axios.post("/api/updateClassTimes.php", {driveId: courseId, dotwIndexes, startTimes, endTimes});
     console.log(">>>>data", data);
   });
   const updateClassTime = useRecoilCallback(({set, snapshot}) => async ({index, newClassTime}) => {
@@ -100,8 +102,7 @@ export default function ClassTimes() {
     newArr[index] = {...newClassTime};
     newArr = sortClassTimes(newArr);
     set(classTimesAtom, newArr);
-    let path = await snapshot.getPromise(searchParamAtomFamily("path"));
-    let [driveId] = path.split(":");
+    let courseId = await snapshot.getPromise(searchParamAtomFamily("courseId"));
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
@@ -110,7 +111,7 @@ export default function ClassTimes() {
       startTimes.push(classTime.startTime);
       endTimes.push(classTime.endTime);
     }
-    let {data} = await axios.post("/api/updateClassTimes.php", {driveId, dotwIndexes, startTimes, endTimes});
+    let {data} = await axios.post("/api/updateClassTimes.php", {driveId: courseId, dotwIndexes, startTimes, endTimes});
     console.log(">>>>data", data);
   });
   const deleteClassTime = useRecoilCallback(({set, snapshot}) => async ({index}) => {
@@ -119,8 +120,7 @@ export default function ClassTimes() {
     newArr.splice(index, 1);
     newArr = sortClassTimes(newArr);
     set(classTimesAtom, newArr);
-    let path = await snapshot.getPromise(searchParamAtomFamily("path"));
-    let [driveId] = path.split(":");
+    let courseId = await snapshot.getPromise(searchParamAtomFamily("courseId"));
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
@@ -129,7 +129,7 @@ export default function ClassTimes() {
       startTimes.push(classTime.startTime);
       endTimes.push(classTime.endTime);
     }
-    let {data} = await axios.post("/api/updateClassTimes.php", {driveId, dotwIndexes, startTimes, endTimes});
+    let {data} = await axios.post("/api/updateClassTimes.php", {driveId: courseId, dotwIndexes, startTimes, endTimes});
     console.log(">>>>data", data);
   });
   const dotwItems = [
@@ -154,33 +154,42 @@ export default function ClassTimes() {
         newClassTime.dotwIndex = value;
         updateClassTime({index, newClassTime});
       }
-    })), /* @__PURE__ */ React.createElement("td", {
-      style: {width: "40px"},
-      rowSpan: "2"
-    }, /* @__PURE__ */ React.createElement(Button, {
-      value: "x",
+    })), /* @__PURE__ */ React.createElement(Button, {
+      icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+        icon: faTimes
+      }),
       alert: true,
       onClick: () => {
         deleteClassTime({index});
       }
-    }), " ")));
-    timesJSX.push(/* @__PURE__ */ React.createElement("tr", null, /* @__PURE__ */ React.createElement("td", {
-      style: {width: "190px", textAlign: "center"}
-    }, /* @__PURE__ */ React.createElement(TimeEntry, {
+    })));
+    timesJSX.push(/* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("tr", {
+      style: {width: "190px", display: "flex", alignItems: "center"}
+    }, /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement(DateTime, {
+      datePicker: false,
+      width: "74px",
       parentValue: timeObj.startTime,
       valueCallback: (value) => {
         let newClassTime = {...timeObj};
         newClassTime.startTime = value;
         updateClassTime({index, newClassTime});
       }
-    }), " - ", /* @__PURE__ */ React.createElement(TimeEntry, {
+    })), /* @__PURE__ */ React.createElement("td", {
+      style: {marginLeft: "6px", marginRight: "6px"}
+    }, "-"), /* @__PURE__ */ React.createElement("td", {
+      style: {["--menuPanelMargin"]: "-62px"}
+    }, /* @__PURE__ */ React.createElement(DateTime, {
+      datePicker: false,
+      width: "74px",
       parentValue: timeObj.endTime,
       valueCallback: (value) => {
         let newClassTime = {...timeObj};
         newClassTime.endTime = value;
         updateClassTime({index, newClassTime});
       }
-    }))));
+    }))), /* @__PURE__ */ React.createElement("div", {
+      style: {margin: "10px"}
+    })));
   }
   let classTimesTable = /* @__PURE__ */ React.createElement("div", null, "No times set.");
   if (timesJSX.length > 0) {
@@ -189,8 +198,10 @@ export default function ClassTimes() {
     }, timesJSX);
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, classTimesTable, /* @__PURE__ */ React.createElement(Button, {
-    width: "menu",
-    value: "Add",
+    icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faPlus
+    }),
+    style: {margin: "auto"},
     onClick: () => addClassTime()
   }));
 }

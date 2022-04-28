@@ -63,9 +63,9 @@ if ($success){
   $row = $result->fetch_assoc();
   $attemptNumber = $row['attemptNumber'] + 1;
 
-  //Find contentId
+  //Find cid
   $sql = "
-  SELECT contentId
+  SELECT cid
   FROM content 
   WHERE removedFlag = 0
   AND doenetId = '$doenetId'
@@ -76,14 +76,14 @@ $result = $conn->query($sql);
 $versions_arr = array();         
 if ($result->num_rows > 0){
 $row = $result->fetch_assoc();
-$contentId = $row['contentId'];
+$cid = $row['cid'];
 }else{
   $success = FALSE;
   $message = 'Internal Error: not released!'; 
 }
   if ($success){
     $sql = "INSERT INTO user_assignment_attempt
-    SET contentId='$contentId', doenetId='$doenetId', userId='$userId', attemptNumber='$attemptNumber'
+    SET cid='$cid', doenetId='$doenetId', userId='$userId', attemptNumber='$attemptNumber'
     ";
     $result = $conn->query($sql);
 

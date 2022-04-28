@@ -1,8 +1,8 @@
-import { e as getListWithInsertedItems$2, f as getListWithRemovedItems$2, h as getListWithInsertedItems$3, i as getListWithRemovedItems$3, s as setCaretPosition, j as extend, k as isImmediatePropagationStopped, K as KEY_CODES, l as stopImmediatePropagation, n as TextEditor, o as isDefined, p as addClass, q as getScrollbarWidth, t as outerWidth, u as textRenderer, v as stringify, w as getCaretPosition, x as getSelectionEndPosition, y as pivot, z as offset, A as outerHeight, D as getTrimmingContainer, E as arrayMap, F as stripTags, G as isPrintableChar, I as hasClass, B as BaseEditor, J as EventManager, L as isFunctionKey, M as deepExtend, H as Hooks, N as empty, O as removeClass, P as objectEach, Q as fastInnerHTML, R as EDITOR_STATE, S as getCssTransform, U as resetCssTransform, V as getComputedStyle, W as _register, X as baseRenderer, Y as CellCoords, Z as isEmpty, $ as partial, a0 as isKey, a1 as isNumeric, a2 as rangeEach, a3 as _register$1, a4 as _getEditorInstance, a5 as _register$2, _ as _register$3, T as TextCellType, a6 as defineGetter, a7 as getPluginsNames, a8 as arrayEach, a9 as hasPlugin, aa as hasItem, ab as hasItem$1, ac as hasItem$2, ad as hasItem$3, ae as isObject, af as PhysicalIndexToValueMap, ag as hasOwnProperty, ah as isPercentValue, ai as valueAccordingPercent, aj as ViewportColumnsCalculator, ak as arrayReduce, al as arrayFilter, am as cancelAnimationFrame, an as requestAnimationFrame, ao as CellRange, ap as isVisible, aq as getIncreasedIndexes, ar as getDecreasedIndexes, as as IndexMap, at as warn, au as arrayUnique, av as fastInnerText, aw as LinkedPhysicalIndexToValueMap, ax as isRightClick, ay as staticRegister, az as IndexesSequence, aA as isUndefined, aB as isFunction, aC as isPressedCtrlKey, aD as toSingleLine, aE as mixin, aF as localHooks, aG as debounce, aH as closest, aI as deepClone, aJ as isChildOf, aK as CONTEXTMENU_ITEMS_EDIT_COMMENT, aL as CONTEXTMENU_ITEMS_ADD_COMMENT, aM as CONTEXTMENU_ITEMS_REMOVE_COMMENT, aN as CONTEXTMENU_ITEMS_READ_ONLY_COMMENT, aO as CONTEXTMENU_ITEMS_ALIGNMENT, aP as CONTEXTMENU_ITEMS_ALIGNMENT_LEFT, aQ as CONTEXTMENU_ITEMS_ALIGNMENT_CENTER, aR as CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT, aS as CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY, aT as CONTEXTMENU_ITEMS_ALIGNMENT_TOP, aU as CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE, aV as CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM, aW as CONTEXTMENU_ITEMS_CLEAR_COLUMN, aX as CONTEXTMENU_ITEMS_INSERT_LEFT, aY as CONTEXTMENU_ITEMS_INSERT_RIGHT, aZ as CONTEXTMENU_ITEMS_READ_ONLY, a_ as CONTEXTMENU_ITEMS_REDO, a$ as CONTEXTMENU_ITEMS_REMOVE_COLUMN, b0 as transformSelectionToColumnDistance, b1 as CONTEXTMENU_ITEMS_REMOVE_ROW, b2 as transformSelectionToRowDistance, b3 as CONTEXTMENU_ITEMS_ROW_ABOVE, b4 as CONTEXTMENU_ITEMS_ROW_BELOW, b5 as CONTEXTMENU_ITEMS_NO_ITEMS, b6 as CONTEXTMENU_ITEMS_UNDO, b7 as getWindowScrollTop, b8 as getWindowScrollLeft, b9 as getParentWindow, C as Core, ba as isInput, bb as isWindowsOS, bc as isMobileBrowser, bd as isIpadOS, be as CONTEXTMENU_ITEMS_COPY, bf as CONTEXTMENU_ITEMS_CUT, bg as selectElementIfAllowed, bh as stringify$1, bi as _dataToHTML, bj as sanitize, bk as htmlToGridSettings, bl as parse, bm as getSelectionText, bn as CONTEXTMENU_ITEMS_BORDERS_BOTTOM, bo as CONTEXTMENU_ITEMS_BORDERS_LEFT, bp as CONTEXTMENU_ITEMS_REMOVE_BORDERS, bq as CONTEXTMENU_ITEMS_BORDERS_RIGHT, br as CONTEXTMENU_ITEMS_BORDERS_TOP, bs as detectSelectionType, bt as normalizeSelectionFactory, bu as CONTEXTMENU_ITEMS_BORDERS, bv as clone, bw as substitute, bx as FILTERS_CONDITIONS_NONE, by as FILTERS_CONDITIONS_EMPTY, bz as FILTERS_CONDITIONS_NOT_EMPTY, bA as FILTERS_CONDITIONS_EQUAL, bB as FILTERS_CONDITIONS_NOT_EQUAL, bC as FILTERS_CONDITIONS_GREATER_THAN, bD as FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL, bE as FILTERS_CONDITIONS_LESS_THAN, bF as FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL, bG as FILTERS_CONDITIONS_AFTER, bH as FILTERS_CONDITIONS_BEFORE, bI as FILTERS_CONDITIONS_BETWEEN, bJ as FILTERS_CONDITIONS_NOT_BETWEEN, bK as FILTERS_CONDITIONS_BEGINS_WITH, bL as FILTERS_CONDITIONS_ENDS_WITH, bM as FILTERS_CONDITIONS_CONTAINS, bN as FILTERS_CONDITIONS_NOT_CONTAIN, bO as FILTERS_CONDITIONS_TOMORROW, bP as FILTERS_CONDITIONS_TODAY, bQ as FILTERS_CONDITIONS_YESTERDAY, bR as getComparisonFunction, bS as FILTERS_LABELS_CONJUNCTION, bT as FILTERS_LABELS_DISJUNCTION, bU as FILTERS_NAMESPACE, bV as FILTERS_BUTTONS_PLACEHOLDER_VALUE, bW as FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE, bX as FILTERS_CONDITIONS_NAMESPACE, bY as FILTERS_BUTTONS_PLACEHOLDER_SEARCH, bZ as FILTERS_BUTTONS_SELECT_ALL, b_ as FILTERS_BUTTONS_CLEAR, b$ as dataRowToChangesArray, c0 as FILTERS_VALUES_BLANK_CELLS, c1 as FILTERS_BUTTONS_OK, c2 as FILTERS_BUTTONS_CANCEL, c3 as curry, c4 as TrimmingMap, c5 as FILTERS_DIVS_FILTER_BY_CONDITION, c6 as FILTERS_DIVS_FILTER_BY_VALUE, c7 as isArrayOfArrays, c8 as error, c9 as toUpperCaseFirst, ca as CONTEXTMENU_ITEMS_HIDE_COLUMN, cb as CONTEXTMENU_ITEMS_SHOW_COLUMN, cc as HidingMap, cd as CONTEXTMENU_ITEMS_HIDE_ROW, ce as CONTEXTMENU_ITEMS_SHOW_ROW, cf as CONTEXTMENU_ITEMS_FREEZE_COLUMN, cg as CONTEXTMENU_ITEMS_UNFREEZE_COLUMN, ch as isDetached, ci as ViewportRowsCalculator, cj as rangeEachReverse, ck as CONTEXTMENU_ITEMS_UNMERGE_CELLS, cl as CONTEXTMENU_ITEMS_MERGE_CELLS, cm as HEADER_TYPE, cn as ACTIVE_HEADER_TYPE, co as isLeftClick, cp as CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD, cq as CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD, cr as isArrayOfObjects, cs as isTouchSupported, ct as inherit, cu as registerPlugin } from '../common/textType-e03f1ae5.js';
-import { n as fixRegexpWellKnownSymbolLogic, r as requireObjectCoercible, p as getMethod, t as toString_1, q as anObject, s as regexpExecAbstract, D as collection, E as collectionWeak, d as fails, _ as _export } from '../common/es.string.starts-with-d5b5fac4.js';
-import { h as hooks } from '../common/moment-613ac161.js';
+import { e as getListWithInsertedItems$2, f as getListWithRemovedItems$2, h as getListWithInsertedItems$3, i as getListWithRemovedItems$3, s as setCaretPosition, j as extend, k as isImmediatePropagationStopped, K as KEY_CODES, l as stopImmediatePropagation, n as TextEditor, o as isDefined, p as addClass, q as getScrollbarWidth, t as outerWidth, u as textRenderer, v as stringify, w as getCaretPosition, x as getSelectionEndPosition, y as pivot, z as offset, A as outerHeight, D as getTrimmingContainer, E as arrayMap, F as stripTags, G as isPrintableChar, I as hasClass, B as BaseEditor, J as hooks$1, L as EventManager, M as isFunctionKey, N as deepExtend, H as Hooks, O as empty, P as removeClass, Q as objectEach, R as fastInnerHTML, S as EDITOR_STATE, U as getCssTransform, V as resetCssTransform, W as getComputedStyle, X as _register, Y as baseRenderer, Z as CellCoords, $ as isEmpty, a0 as partial, a1 as isKey, a2 as isNumeric, a3 as rangeEach, a4 as _register$1, a5 as _getEditorInstance, a6 as _register$2, _ as _register$3, T as TextCellType, a7 as defineGetter, a8 as getPluginsNames, a9 as arrayEach, aa as hasPlugin, ab as hasItem, ac as hasItem$1, ad as hasItem$2, ae as hasItem$3, af as isObject, ag as PhysicalIndexToValueMap, ah as hasOwnProperty, ai as isPercentValue, aj as valueAccordingPercent, ak as ViewportColumnsCalculator, al as arrayReduce, am as arrayFilter, an as cancelAnimationFrame, ao as requestAnimationFrame, ap as CellRange, aq as isVisible, ar as getIncreasedIndexes, as as getDecreasedIndexes, at as IndexMap, au as warn, av as arrayUnique, aw as fastInnerText, ax as LinkedPhysicalIndexToValueMap, ay as isRightClick, az as staticRegister, aA as IndexesSequence, aB as isUndefined, aC as isFunction, aD as isPressedCtrlKey, aE as toSingleLine, aF as mixin, aG as localHooks, aH as debounce, aI as closest, aJ as deepClone, aK as isChildOf, aL as CONTEXTMENU_ITEMS_EDIT_COMMENT, aM as CONTEXTMENU_ITEMS_ADD_COMMENT, aN as CONTEXTMENU_ITEMS_REMOVE_COMMENT, aO as CONTEXTMENU_ITEMS_READ_ONLY_COMMENT, aP as CONTEXTMENU_ITEMS_ALIGNMENT, aQ as CONTEXTMENU_ITEMS_ALIGNMENT_LEFT, aR as CONTEXTMENU_ITEMS_ALIGNMENT_CENTER, aS as CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT, aT as CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY, aU as CONTEXTMENU_ITEMS_ALIGNMENT_TOP, aV as CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE, aW as CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM, aX as CONTEXTMENU_ITEMS_CLEAR_COLUMN, aY as CONTEXTMENU_ITEMS_INSERT_LEFT, aZ as CONTEXTMENU_ITEMS_INSERT_RIGHT, a_ as CONTEXTMENU_ITEMS_READ_ONLY, a$ as CONTEXTMENU_ITEMS_REDO, b0 as CONTEXTMENU_ITEMS_REMOVE_COLUMN, b1 as transformSelectionToColumnDistance, b2 as CONTEXTMENU_ITEMS_REMOVE_ROW, b3 as transformSelectionToRowDistance, b4 as CONTEXTMENU_ITEMS_ROW_ABOVE, b5 as CONTEXTMENU_ITEMS_ROW_BELOW, b6 as CONTEXTMENU_ITEMS_NO_ITEMS, b7 as CONTEXTMENU_ITEMS_UNDO, b8 as getWindowScrollTop, b9 as getWindowScrollLeft, ba as getParentWindow, C as Core, bb as isInput, bc as isWindowsOS, bd as isMobileBrowser, be as isIpadOS, bf as CONTEXTMENU_ITEMS_COPY, bg as CONTEXTMENU_ITEMS_CUT, bh as selectElementIfAllowed, bi as stringify$1, bj as _dataToHTML, bk as sanitize, bl as htmlToGridSettings, bm as parse, bn as getSelectionText, bo as CONTEXTMENU_ITEMS_BORDERS_BOTTOM, bp as CONTEXTMENU_ITEMS_BORDERS_LEFT, bq as CONTEXTMENU_ITEMS_REMOVE_BORDERS, br as CONTEXTMENU_ITEMS_BORDERS_RIGHT, bs as CONTEXTMENU_ITEMS_BORDERS_TOP, bt as detectSelectionType, bu as normalizeSelectionFactory, bv as CONTEXTMENU_ITEMS_BORDERS, bw as clone, bx as substitute, by as FILTERS_CONDITIONS_NONE, bz as FILTERS_CONDITIONS_EMPTY, bA as FILTERS_CONDITIONS_NOT_EMPTY, bB as FILTERS_CONDITIONS_EQUAL, bC as FILTERS_CONDITIONS_NOT_EQUAL, bD as FILTERS_CONDITIONS_GREATER_THAN, bE as FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL, bF as FILTERS_CONDITIONS_LESS_THAN, bG as FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL, bH as FILTERS_CONDITIONS_AFTER, bI as FILTERS_CONDITIONS_BEFORE, bJ as FILTERS_CONDITIONS_BETWEEN, bK as FILTERS_CONDITIONS_NOT_BETWEEN, bL as FILTERS_CONDITIONS_BEGINS_WITH, bM as FILTERS_CONDITIONS_ENDS_WITH, bN as FILTERS_CONDITIONS_CONTAINS, bO as FILTERS_CONDITIONS_NOT_CONTAIN, bP as FILTERS_CONDITIONS_TOMORROW, bQ as FILTERS_CONDITIONS_TODAY, bR as FILTERS_CONDITIONS_YESTERDAY, bS as getComparisonFunction, bT as FILTERS_LABELS_CONJUNCTION, bU as FILTERS_LABELS_DISJUNCTION, bV as FILTERS_NAMESPACE, bW as FILTERS_BUTTONS_PLACEHOLDER_VALUE, bX as FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE, bY as FILTERS_CONDITIONS_NAMESPACE, bZ as FILTERS_BUTTONS_PLACEHOLDER_SEARCH, b_ as FILTERS_BUTTONS_SELECT_ALL, b$ as FILTERS_BUTTONS_CLEAR, c0 as dataRowToChangesArray, c1 as FILTERS_VALUES_BLANK_CELLS, c2 as FILTERS_BUTTONS_OK, c3 as FILTERS_BUTTONS_CANCEL, c4 as curry, c5 as TrimmingMap, c6 as FILTERS_DIVS_FILTER_BY_CONDITION, c7 as FILTERS_DIVS_FILTER_BY_VALUE, c8 as isArrayOfArrays, c9 as error, ca as toUpperCaseFirst, cb as CONTEXTMENU_ITEMS_HIDE_COLUMN, cc as CONTEXTMENU_ITEMS_SHOW_COLUMN, cd as HidingMap, ce as CONTEXTMENU_ITEMS_HIDE_ROW, cf as CONTEXTMENU_ITEMS_SHOW_ROW, cg as CONTEXTMENU_ITEMS_FREEZE_COLUMN, ch as CONTEXTMENU_ITEMS_UNFREEZE_COLUMN, ci as isDetached, cj as ViewportRowsCalculator, ck as rangeEachReverse, cl as CONTEXTMENU_ITEMS_UNMERGE_CELLS, cm as CONTEXTMENU_ITEMS_MERGE_CELLS, cn as HEADER_TYPE, co as ACTIVE_HEADER_TYPE, cp as isLeftClick, cq as CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD, cr as CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD, cs as isArrayOfObjects, ct as isTouchSupported, cu as inherit, cv as registerPlugin } from '../common/textType-e768bffe.js';
+import { s as fixRegexpWellKnownSymbolLogic, t as requireObjectCoercible, u as getMethod, v as functionCall, w as toString_1, x as anObject, y as regexpExecAbstract, I as collection, J as collectionWeak, f as functionUncurryThis, k as fails, _ as _export } from '../common/es.string.starts-with-aa41bca0.js';
 import { c as createCommonjsModule, a as commonjsGlobal, d as commonjsRequire } from '../common/_commonjsHelpers-f5d70792.js';
-import '../common/es.string.ends-with-e8fa5a41.js';
+import { h as hooks } from '../common/moment-640234e6.js';
+import '../common/es.string.ends-with-fbb374f8.js';
 
 var alterStrategies = new Map([["indexesSequence", {
   getListWithInsertedItems: getListWithInsertedItems$2,
@@ -2346,7 +2346,7 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
     key: "init",
     value: function init() {
       var _this2 = this;
-      if (typeof hooks !== "function") {
+      if (typeof hooks$1 !== "function") {
         throw new Error("You need to include moment.js to your project.");
       }
       if (typeof pikaday !== "function") {
@@ -2439,8 +2439,8 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
       };
       if (this.originalValue) {
         dateStr = this.originalValue;
-        if (hooks(dateStr, dateFormat, true).isValid()) {
-          this.$datePicker.setMoment(hooks(dateStr, dateFormat), true);
+        if (hooks$1(dateStr, dateFormat, true).isValid()) {
+          this.$datePicker.setMoment(hooks$1(dateStr, dateFormat), true);
         }
         if (this.getValue() !== this.originalValue) {
           this.setValue(this.originalValue);
@@ -2450,8 +2450,8 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
         }
       } else if (this.cellProperties.defaultDate) {
         dateStr = this.cellProperties.defaultDate;
-        if (hooks(dateStr, dateFormat, true).isValid()) {
-          this.$datePicker.setMoment(hooks(dateStr, dateFormat), true);
+        if (hooks$1(dateStr, dateFormat, true).isValid()) {
+          this.$datePicker.setMoment(hooks$1(dateStr, dateFormat), true);
         }
         if (!isMeta && !isMouseDown) {
           this.setValue("");
@@ -2487,7 +2487,7 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
       options.onSelect = function(value) {
         var dateStr = value;
         if (!isNaN(dateStr.getTime())) {
-          dateStr = hooks(dateStr).format(_this4.cellProperties.dateFormat || _this4.defaultDateFormat);
+          dateStr = hooks$1(dateStr).format(_this4.cellProperties.dateFormat || _this4.defaultDateFormat);
         }
         _this4.setValue(dateStr);
         _this4.hideDatepicker();
@@ -3665,7 +3665,7 @@ function process(value, callback) {
 
 // `SameValue` abstract operation
 // https://tc39.es/ecma262/#sec-samevalue
-// eslint-disable-next-line es/no-object-is -- safe
+// eslint-disable-next-line es-x/no-object-is -- safe
 var sameValue = Object.is || function is(x, y) {
   // eslint-disable-next-line no-self-compare -- NaN check
   return x === y ? x !== 0 || 1 / x === 1 / y : x != x && y != y;
@@ -3679,7 +3679,7 @@ fixRegexpWellKnownSymbolLogic('search', function (SEARCH, nativeSearch, maybeCal
     function search(regexp) {
       var O = requireObjectCoercible(this);
       var searcher = regexp == undefined ? undefined : getMethod(regexp, SEARCH);
-      return searcher ? searcher.call(regexp, O) : new RegExp(regexp)[SEARCH](toString_1(O));
+      return searcher ? functionCall(searcher, regexp, O) : new RegExp(regexp)[SEARCH](toString_1(O));
     },
     // `RegExp.prototype[@@search]` method
     // https://tc39.es/ecma262/#sec-regexp.prototype-@@search
@@ -3715,8 +3715,8 @@ function dateValidator(value, callback) {
   if (valueToValidate === null || valueToValidate === void 0) {
     valueToValidate = "";
   }
-  var isValidFormat = hooks(valueToValidate, this.dateFormat || dateEditor.defaultDateFormat, true).isValid();
-  var isValidDate = hooks(new Date(valueToValidate)).isValid() || isValidFormat;
+  var isValidFormat = hooks$1(valueToValidate, this.dateFormat || dateEditor.defaultDateFormat, true).isValid();
+  var isValidDate = hooks$1(new Date(valueToValidate)).isValid() || isValidFormat;
   if (this.allowEmpty && valueToValidate === "") {
     isValidDate = true;
     isValidFormat = true;
@@ -3742,8 +3742,8 @@ function dateValidator(value, callback) {
 }
 dateValidator.VALIDATOR_TYPE = VALIDATOR_TYPE$1;
 function correctFormat(value, dateFormat) {
-  var dateFromDate = hooks(getNormalizedDate(value));
-  var dateFromMoment = hooks(value, dateFormat);
+  var dateFromDate = hooks$1(getNormalizedDate(value));
+  var dateFromMoment = hooks$1(value, dateFormat);
   var isAlphanumeric = value.search(/[A-z]/g) > -1;
   var date;
   if (dateFromDate.isValid() && dateFromDate.format("x") === dateFromMoment.format("x") || !dateFromMoment.isValid() || isAlphanumeric) {
@@ -3788,9 +3788,9 @@ function timeValidator(value, callback) {
   if (twoDigitValue) {
     valueToValidate += ":00";
   }
-  var date = hooks(valueToValidate, STRICT_FORMATS, true).isValid() ? hooks(valueToValidate) : hooks(valueToValidate, timeFormat);
+  var date = hooks$1(valueToValidate, STRICT_FORMATS, true).isValid() ? hooks$1(valueToValidate) : hooks$1(valueToValidate, timeFormat);
   var isValidTime = date.isValid();
-  var isValidFormat = hooks(valueToValidate, timeFormat, true).isValid() && !twoDigitValue;
+  var isValidFormat = hooks$1(valueToValidate, timeFormat, true).isValid() && !twoDigitValue;
   if (this.allowEmpty && valueToValidate === "") {
     isValidTime = true;
     isValidFormat = true;
@@ -7995,8 +7995,8 @@ function compareFunctionFactory$3(sortOrder, columnMeta, columnPluginSettings) {
       return FIRST_BEFORE_SECOND;
     }
     var dateFormat = columnMeta.dateFormat;
-    var firstDate = hooks(value, dateFormat);
-    var nextDate = hooks(nextValue, dateFormat);
+    var firstDate = hooks$1(value, dateFormat);
+    var nextDate = hooks$1(nextValue, dateFormat);
     if (!firstDate.isValid()) {
       return FIRST_AFTER_SECOND;
     }
@@ -16402,8 +16402,8 @@ function _arrayWithHoles$h(arr) {
 var CONDITION_NAME$9 = "date_after";
 function condition$9(dataRow, _ref) {
   var _ref2 = _slicedToArray$g(_ref, 1), value = _ref2[0];
-  var date = hooks(dataRow.value, dataRow.meta.dateFormat);
-  var inputDate = hooks(value, dataRow.meta.dateFormat);
+  var date = hooks$1(dataRow.value, dataRow.meta.dateFormat);
+  var inputDate = hooks$1(value, dataRow.meta.dateFormat);
   if (!date.isValid() || !inputDate.isValid()) {
     return false;
   }
@@ -16477,8 +16477,8 @@ function _arrayWithHoles$i(arr) {
 var CONDITION_NAME$a = "date_before";
 function condition$a(dataRow, _ref) {
   var _ref2 = _slicedToArray$h(_ref, 1), value = _ref2[0];
-  var date = hooks(dataRow.value, dataRow.meta.dateFormat);
-  var inputDate = hooks(value, dataRow.meta.dateFormat);
+  var date = hooks$1(dataRow.value, dataRow.meta.dateFormat);
+  var inputDate = hooks$1(value, dataRow.meta.dateFormat);
   if (!date.isValid() || !inputDate.isValid()) {
     return false;
   }
@@ -16804,11 +16804,11 @@ registerCondition(CONDITION_NAME$g, condition$g, {
 
 var CONDITION_NAME$h = "date_tomorrow";
 function condition$h(dataRow) {
-  var date = hooks(dataRow.value, dataRow.meta.dateFormat);
+  var date = hooks$1(dataRow.value, dataRow.meta.dateFormat);
   if (!date.isValid()) {
     return false;
   }
-  return date.isSame(hooks().subtract(-1, "days").startOf("day"), "d");
+  return date.isSame(hooks$1().subtract(-1, "days").startOf("day"), "d");
 }
 registerCondition(CONDITION_NAME$h, condition$h, {
   name: FILTERS_CONDITIONS_TOMORROW,
@@ -16817,11 +16817,11 @@ registerCondition(CONDITION_NAME$h, condition$h, {
 
 var CONDITION_NAME$i = "date_today";
 function condition$i(dataRow) {
-  var date = hooks(dataRow.value, dataRow.meta.dateFormat);
+  var date = hooks$1(dataRow.value, dataRow.meta.dateFormat);
   if (!date.isValid()) {
     return false;
   }
-  return date.isSame(hooks().startOf("day"), "d");
+  return date.isSame(hooks$1().startOf("day"), "d");
 }
 registerCondition(CONDITION_NAME$i, condition$i, {
   name: FILTERS_CONDITIONS_TODAY,
@@ -16830,11 +16830,11 @@ registerCondition(CONDITION_NAME$i, condition$i, {
 
 var CONDITION_NAME$j = "date_yesterday";
 function condition$j(dataRow) {
-  var date = hooks(dataRow.value, dataRow.meta.dateFormat);
+  var date = hooks$1(dataRow.value, dataRow.meta.dateFormat);
   if (!date.isValid()) {
     return false;
   }
-  return date.isSame(hooks().subtract(1, "days").startOf("day"), "d");
+  return date.isSame(hooks$1().subtract(1, "days").startOf("day"), "d");
 }
 registerCondition(CONDITION_NAME$j, condition$j, {
   name: FILTERS_CONDITIONS_YESTERDAY,
@@ -18460,13 +18460,14 @@ var OperatorsComponent = /* @__PURE__ */ function(_BaseComponent) {
 }(BaseComponent);
 
 var quot = /"/g;
+var replace = functionUncurryThis(''.replace);
 
 // `CreateHTML` abstract operation
 // https://tc39.es/ecma262/#sec-createhtml
 var createHtml = function (string, tag, attribute, value) {
   var S = toString_1(requireObjectCoercible(string));
   var p1 = '<' + tag;
-  if (attribute !== '') p1 += ' ' + attribute + '="' + toString_1(value).replace(quot, '&quot;') + '"';
+  if (attribute !== '') p1 += ' ' + attribute + '="' + replace(toString_1(value), quot, '&quot;') + '"';
   return p1 + '>' + S + '</' + tag + '>';
 };
 

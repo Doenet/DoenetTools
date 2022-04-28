@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DoenetRenderer from './DoenetRenderer';
+// import DoenetRenderer from './DoenetRenderer';
 import me from 'math-expressions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -35,7 +35,11 @@ let EditableMathField = mathquill.EditableMathField;
 //   // left: ${props => `${props.left}px`};
 //   // top: ${props => `${props.top}px`};
 // `;
-
+class DoenetRenderer {
+  render() {
+    return null;
+  }
+}
 export default class MathInput extends DoenetRenderer {
   constructor(props) {
     console.log('old one');

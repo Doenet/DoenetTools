@@ -4,8 +4,8 @@ export default class CodeViewer extends BlockComponent {
   static componentType = "codeViewer";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.codeSource = {
       createPrimitiveOfType: "string",
@@ -45,12 +45,15 @@ export default class CodeViewer extends BlockComponent {
 
       let renderDoenetML = {
         componentType: "renderDoenetML",
-        attributes: {
+      };
+
+      if (componentAttributes.codeSource) {
+        renderDoenetML.attributes = {
           codeSource: {
             primitive: componentAttributes.codeSource
           }
         }
-      };
+      }
 
       if (componentAttributes.renderedName) {
         renderDoenetML.props = { name: componentAttributes.renderedName }

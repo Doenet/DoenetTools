@@ -1,4 +1,4 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
+import React from "../../_snowpack/pkg/react.js";
 import {
   atom,
   useRecoilCallback,
@@ -7,7 +7,7 @@ import {
 } from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom} from "../../_framework/NewToolRoot.js";
 import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
-import {fetchDrivesQuery} from "../Drive/NewDrive.js";
+import {coursePermissionsAndSettingsByCourseId} from "../Course/CourseActions.js";
 import DropdownMenu from "./DropdownMenu.js";
 export const effectiveRoleAtom = atom({
   key: "effectiveRoleAtom",
@@ -25,36 +25,22 @@ export function RoleDropdown() {
   const {tool} = useRecoilValue(pageToolViewAtom);
   const [effectiveRole, setEffectiveRole] = useRecoilState(effectiveRoleAtom);
   const [permittedRole, setPermittedRole] = useRecoilState(permittedRoleAtom);
-  const path = useRecoilValue(searchParamAtomFamily("path"));
-  const searchDriveId = useRecoilValue(searchParamAtomFamily("driveId"));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId")) ?? "";
   const recoilDriveId = useRecoilValue(permsForDriveIdAtom);
-  let driveId = "";
-  if (path) {
-    [driveId] = path.split(":");
-  }
-  if (searchDriveId !== "") {
-    driveId = searchDriveId;
-  }
-  const initilizeEffectiveRole = useRecoilCallback(({set, snapshot}) => async (driveId2) => {
+  const initilizeEffectiveRole = useRecoilCallback(({set, snapshot}) => async (driveId) => {
     let role = "instructor";
-    if (driveId2 !== "") {
-      const driveInfo = await snapshot.getPromise(fetchDrivesQuery);
-      for (let drive of driveInfo.driveIdsAndLabels) {
-        if (drive.driveId === driveId2) {
-          if (drive.role.length === 1 && drive.role[0] === "Student") {
-            role = "student";
-          }
-        }
+    if (driveId !== "") {
+      let permissionsAndSettings = await snapshot.getPromise(coursePermissionsAndSettingsByCourseId(driveId));
+      if (permissionsAndSettings?.roleLabels?.[0] == "Student") {
+        role = "student";
       }
-    } else {
-      role = "student";
     }
     set(effectiveRoleAtom, role);
-    set(permsForDriveIdAtom, driveId2);
+    set(permsForDriveIdAtom, driveId);
     setPermittedRole(role);
-  }, [driveId]);
-  if (effectiveRole === "" || recoilDriveId !== driveId && driveId !== "") {
-    initilizeEffectiveRole(driveId);
+  }, [setPermittedRole]);
+  if (effectiveRole === "" || recoilDriveId !== courseId && courseId !== "") {
+    initilizeEffectiveRole(courseId);
     return null;
   }
   if (tool === "enrollment") {
@@ -75,7 +61,7 @@ export function RoleDropdown() {
     }
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, "Role", /* @__PURE__ */ React.createElement(DropdownMenu, {
-    width: "150px",
+    width: "menu",
     items,
     title: "Role",
     defaultIndex,

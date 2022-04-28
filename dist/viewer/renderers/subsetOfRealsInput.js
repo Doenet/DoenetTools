@@ -193,19 +193,19 @@ export default function subsetOfReals(props) {
         if (pointGrabbed.current !== null) {
           callAction({
             action: actions.deletePoint,
-            args: pointGrabbed.current
+            args: {pointInd: pointGrabbed.current}
           });
         } else if (!SVs.points.map((x) => x.value).includes(xPosition)) {
           callAction({
             action: actions.addPoint,
-            args: xPosition
+            args: {value: xPosition}
           });
         }
       } else if (mode === "toggle") {
         if (pointGrabbed.current !== null) {
           callAction({
             action: actions.togglePoint,
-            args: pointGrabbed.current
+            args: {pointInd: pointGrabbed.current}
           });
         } else {
           let intervalInd = 0;
@@ -216,7 +216,7 @@ export default function subsetOfReals(props) {
           }
           callAction({
             action: actions.toggleInterval,
-            args: intervalInd
+            args: {intervalInd}
           });
         }
       }
