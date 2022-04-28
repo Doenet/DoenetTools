@@ -5,8 +5,8 @@ export default class AttractToGrid extends ConstraintComponent {
   static componentType = "attractToGrid";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.dx = {
       createComponentOfType: "number",
       createStateVariable: "dx",

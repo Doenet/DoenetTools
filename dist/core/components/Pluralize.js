@@ -11,8 +11,8 @@ export default class Pluralize extends Text {
   static componentType = "pluralize";
   static rendererType = "text";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.pluralForm = {
       createComponentOfType: "text",
       createStateVariable: "pluralForm",

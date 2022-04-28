@@ -30,7 +30,7 @@ export default function sideBySide(props) {
   }
   return /* @__PURE__ */ React.createElement("div", {
     id: name,
-    style: {display: "flex", maxWidth: "800px"}
+    style: {display: "flex", maxWidth: "800px", margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), styledChildren);

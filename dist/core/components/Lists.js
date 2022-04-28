@@ -6,8 +6,8 @@ export class Ol extends BlockComponent {
   static rendererType = "list";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.label = {
       createComponentOfType: "text",
       createStateVariable: "label",

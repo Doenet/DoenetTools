@@ -1,5 +1,5 @@
 import React from "../../_snowpack/pkg/react.js";
-import {editorDoenetIdInitAtom} from "../ToolPanels/EditorViewer.js";
+import {editorPageIdInitAtom} from "../ToolPanels/EditorViewer.js";
 import {useToast, toastType} from "../Toast.js";
 import {
   useRecoilValue
@@ -14,11 +14,11 @@ import {
 } from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 export default function DoenetMLSettings(props) {
-  const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
-  const link = `http://${window.location.host}/content/#/?doenetId=${initilizedDoenetId}`;
+  const initializedDoenetId = useRecoilValue(editorPageIdInitAtom);
+  const link = `http://${window.location.host}/content/#/?doenetId=${initializedDoenetId}`;
   const addToast = useToast();
   const paramDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  if (paramDoenetId !== initilizedDoenetId) {
+  if (paramDoenetId !== initializedDoenetId) {
     return /* @__PURE__ */ React.createElement("div", {
       style: props.style
     });

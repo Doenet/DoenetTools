@@ -2,7 +2,6 @@ import React, {useRef, useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
 import cssesc from "../../_snowpack/pkg/cssesc.js";
-import DoenetRenderer from "./DoenetRenderer.js";
 export default function Video(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
   let player = useRef(null);
@@ -171,51 +170,24 @@ export default function Video(props) {
       rate: event.data
     });
   }
-  if (SVs.hidden) {
+  if (SVs.hidden)
     return null;
-  }
-  if (SVs.youtube) {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name
-    }), /* @__PURE__ */ React.createElement("div", {
-      className: "video",
-      id: name
-    }));
-  } else if (SVs.source) {
-    let extension = SVs.source.split("/").pop().split(".").pop();
-    let type;
-    if (extension === "ogg") {
-      type = "video/ogg";
-    } else if (extension === "webm") {
-      type = "video/webm";
-    } else if (extension === "mp4") {
-      type = "video/mp4";
-    } else {
-      console.warn("Haven't implemented video for any extension other than .ogg, .webm, .mp4");
-    }
-    if (type) {
-      return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-        name
-      }), /* @__PURE__ */ React.createElement("video", {
-        className: "video",
-        id: name,
-        style: {objectFit: "fill"},
-        controls: true,
-        width: sizeToCSS(SVs.width),
-        height: sizeToCSS(SVs.height)
-      }, /* @__PURE__ */ React.createElement("source", {
-        src: SVs.source,
-        type
-      }), "Your browser does not support the <video> tag."));
-    } else {
-      return null;
-    }
-  }
-  console.warn("No video returned youtube or no valid sources specified");
-  return null;
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+  return /* @__PURE__ */ React.createElement("div", {
+    style: {margin: "12px 0", display: "flex", justifyContent: "left", alignItems: "center"}
+  }, /* @__PURE__ */ React.createElement("a", {
     name
-  }), /* @__PURE__ */ React.createElement("span", {
+  }), SVs.youtube ? /* @__PURE__ */ React.createElement("div", {
+    className: "video",
+    id: name
+  }) : SVs.source ? /* @__PURE__ */ React.createElement("video", {
+    className: "video",
+    id: name,
+    controls: true,
+    width: "100%"
+  }, /* @__PURE__ */ React.createElement("source", {
+    src: SVs.source,
+    type: `video/${SVs.source.split("/").pop().split(".").pop()}`
+  }), "Your browser does not support the <video> tag.") : /* @__PURE__ */ React.createElement("span", {
     id: name
   }, SVs.text));
 }

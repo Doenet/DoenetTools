@@ -1,6 +1,5 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
-import {doenetComponentForegroundActive} from "./theme.js";
-import styled, {ThemeProvider, css} from "../../_snowpack/pkg/styled-components.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 const ButtonStyling = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;
@@ -8,29 +7,33 @@ const ButtonStyling = styled.button`
   // border-color: black;
   // border-width: 2px;
   color: white;
-  background-color: #1a5a99;
+  background-color: ${(props) => props.alert ? "var(--mainRed)" : "var(--mainBlue)"};
   border-radius: ${(props) => props.theme.borderRadius};
   padding: ${(props) => props.theme.padding};
   cursor: pointer;
   font-size: 12px;
   border-radius: 20px;
- ;
+
+  &:hover {
+    background-color: ${(props) => props.alert ? "var(--lightRed)" : "var(--lightBlue)"};
+    color: black;
+  };
 `;
 ButtonStyling.defaultProps = {
   theme: {
-    margin: "0px 4px 0px 4px",
-    borderRadius: "5px",
-    padding: "0px 10px 0px 10px"
+    margin: 0,
+    borderRadius: "var(--mainBorderRadius)",
+    padding: "0 10px"
   }
 };
 const Label = styled.p`
-  font-size: 12px;
+  font-size: 14px;
   display: ${(props) => props.labelVisible};
   margin-right: 5px;
   margin-bottom: ${(props) => props.align == "flex" ? "none" : "2px"};
 `;
 const Container = styled.div`
-  display: ${(props) => props.align};
+  display: ${(props) => props.align ? props.align : "inline-block"};
   width: auto;
   align-items: center;
 `;
@@ -42,13 +45,14 @@ export default function Button(props) {
   };
   if (props.width) {
     if (props.width === "menu") {
-      button.width = "235px";
+      button.width = "100%";
       if (props.label) {
-        container.width = "235px";
+        container.width = "menu";
         button.width = "100%";
       }
     }
   }
+  ;
   const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
   var label = "";
   if (props.label) {
@@ -57,6 +61,7 @@ export default function Button(props) {
       align = "static";
     }
   }
+  ;
   var icon = "";
   if (props.value || props.icon) {
     if (props.value && props.icon) {
@@ -69,18 +74,18 @@ export default function Button(props) {
       button.value = "";
     }
   }
-  if (props.alert) {
-    button.backgroundColor = "#C1292E";
-  }
+  ;
   if (props.disabled) {
-    button.backgroundColor = "#e2e2e2";
+    button.backgroundColor = "var(--mainGray)";
     button.color = "black";
     button.cursor = "not-allowed";
   }
+  ;
   function handleClick(e) {
     if (props.onClick)
       props.onClick(e);
   }
+  ;
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Container, {
     style: container,
     align
@@ -95,3 +100,4 @@ export default function Button(props) {
     }
   }, icon, " ", button.value)));
 }
+;

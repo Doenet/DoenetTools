@@ -30,22 +30,31 @@ const ControlsWrapper = styled.div`
   // border-bottom: 2px solid #e3e3e3;
 `;
 const OpenButton = styled.button`
-background-color: #1A5A99;
-height: 35px;
-width: 20px;
-color: white;
-border: none;
-position: relative;
-cursor: pointer;
-
+  background-color: #1a5a99;
+  height: 35px;
+  width: 20px;
+  color: white;
+  border: none;
+  position: relative;
+  cursor: pointer;
 `;
-export default function MainPanel({headerControls, children, setMenusOpen, openMenuButton, displaySettings}) {
-  console.log(">>>===main panel");
+export default function MainPanel({
+  headerControls,
+  children,
+  setMenusOpen,
+  openMenuButton,
+  displaySettings,
+  hasNoHeaderPanel
+}) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const mpOnClick = useRecoilCallback(({set, snapshot}) => async () => {
     const atomArray = await snapshot.getPromise(mainPanelClickAtom);
     for (let obj of atomArray) {
-      set(obj.atom, obj.value);
+      if (typeof obj === "function") {
+        obj();
+      } else {
+        set(obj.atom, obj.value);
+      }
     }
   });
   const controls = [];
@@ -70,7 +79,7 @@ export default function MainPanel({headerControls, children, setMenusOpen, openM
   if (children) {
     contents.push(children);
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ControlsWrapper, null, controls), /* @__PURE__ */ React.createElement(ContentWrapper, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, hasNoHeaderPanel === true ? null : /* @__PURE__ */ React.createElement(ControlsWrapper, null, controls), /* @__PURE__ */ React.createElement(ContentWrapper, {
     onClick: mpOnClick
   }, contents));
 }

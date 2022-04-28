@@ -6,7 +6,7 @@ import {
   useRecoilCallback,
 } from 'recoil';
 
-import DoenetViewer from '../../../Viewer/DoenetViewer';
+import DoenetViewer from '../../../Tools/_framework/ToolPanels/AssignmentViewer';
 import { 
   itemHistoryAtom, 
  } from '../ToolHandlers/CourseToolHandler';

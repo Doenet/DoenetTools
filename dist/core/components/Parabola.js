@@ -6,8 +6,8 @@ export default class Parabola extends Curve {
   static componentType = "parabola";
   static rendererType = "curve";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.through = {
       createComponentOfType: "_pointListComponent",
     };
@@ -169,6 +169,19 @@ export default class Parabola extends Curve {
             return [];
           }
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "throughPoints") {
+          return "throughPoint" + propIndex;
+        }
+        if (varName.slice(0, 12) === "throughPoint") {
+          // could be throughPoint or throughPointX
+          let throughPointNum = Number(varName.slice(12));
+          if (Number.isInteger(throughPointNum) && throughPointNum > 0) {
+            return `throughPointX${throughPointNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nThroughPoints: {
@@ -1153,6 +1166,11 @@ export default class Parabola extends Curve {
       forRenderer: true,
       isArray: true,
       entryPrefixes: ["f"],
+      additionalStateVariablesDefined: [{
+        variableName: "fDefinitions",
+        isArray: true,
+        forRenderer: true,
+      }],
       returnArraySizeDependencies: () => ({}),
       returnArraySize: () => [1],
       returnArrayDependenciesByKey() {
@@ -1179,7 +1197,20 @@ export default class Parabola extends Curve {
           return globalDependencyValues.a * x * x + globalDependencyValues.b * x + globalDependencyValues.c
         }
 
-        return { setValue: { fs: [f] } }
+        return {
+          setValue: {
+            fs: [f],
+            fDefinitions: [{
+              functionType: "formula",
+              formula: ['+', ['*', globalDependencyValues.a, 'x', 'x'], ['*', globalDependencyValues.b, 'x'], globalDependencyValues.c],
+              variables: ["x"],
+              nInputs: 1,
+              nOutputs: 1,
+              domain: null,
+
+            }]
+          }
+        }
 
       }
     }

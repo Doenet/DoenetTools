@@ -1,12 +1,13 @@
 import FunctionBaseOperator from './abstract/FunctionBaseOperator.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
 import { returnNVariables } from '../utils/math.js';
+import { functionOperatorDefinitions } from '../utils/function.js';
 
 export class ClampFunction extends FunctionBaseOperator {
   static componentType = "clampFunction";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.lowerValue = {
       createComponentOfType: "number",
@@ -29,6 +30,7 @@ export class ClampFunction extends FunctionBaseOperator {
     let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
 
     stateVariableDefinitions.numericalFunctionOperator = {
+      additionalStateVariablesDefined: ["numericalFunctionOperatorArguments"],
       returnDependencies: () => ({
         lowerValue: {
           dependencyType: "stateVariable",
@@ -43,15 +45,10 @@ export class ClampFunction extends FunctionBaseOperator {
 
         return {
           setValue: {
-            numericalFunctionOperator: function (x) {
-              // if don't have a number, return NaN
-              if (!Number.isFinite(x)) {
-                return NaN;
-              }
-              return Math.max(dependencyValues.lowerValue,
-                Math.min(dependencyValues.upperValue, x)
-              );
-            }
+            numericalFunctionOperator: functionOperatorDefinitions.clampFunction(
+              dependencyValues.lowerValue, dependencyValues.upperValue
+            ),
+            numericalFunctionOperatorArguments: [dependencyValues.lowerValue, dependencyValues.upperValue]
           }
         }
 
@@ -84,8 +81,8 @@ export class ClampFunction extends FunctionBaseOperator {
 export class WrapFunctionPeriodic extends FunctionBaseOperator {
   static componentType = "wrapFunctionPeriodic";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.lowerValue = {
       createComponentOfType: "number",
       createStateVariable: "lowerValue",
@@ -106,6 +103,7 @@ export class WrapFunctionPeriodic extends FunctionBaseOperator {
     let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
 
     stateVariableDefinitions.numericalFunctionOperator = {
+      additionalStateVariablesDefined: ["numericalFunctionOperatorArguments"],
       returnDependencies: () => ({
         lowerValue: {
           dependencyType: "stateVariable",
@@ -120,32 +118,12 @@ export class WrapFunctionPeriodic extends FunctionBaseOperator {
 
         return {
           setValue: {
-            numericalFunctionOperator: function (x) {
-              // if don't have a number, return NaN
-              if (!Number.isFinite(x)) {
-                return NaN;
-              }
-
-              let lower = dependencyValues.lowerValue
-              let upper = dependencyValues.upperValue;
-
-              // if bounds are the same, clamp to that value
-              if (lower === upper) {
-                return lower;
-              }
-
-              // just in case lower is larger than upper, swap values
-              if (lower > upper) {
-                [upper, lower] = [lower, upper];
-              }
-
-              return (lower + me.math.mod(
-                x - lower,
-                upper - lower
-              )
-              )
-
-            }
+            numericalFunctionOperator: functionOperatorDefinitions.wrapFunctionPeriodic(
+              dependencyValues.lowerValue, dependencyValues.upperValue
+            ),
+            numericalFunctionOperatorArguments: [
+              dependencyValues.lowerValue, dependencyValues.upperValue
+            ]
           }
         }
 
@@ -178,8 +156,8 @@ export class WrapFunctionPeriodic extends FunctionBaseOperator {
 export class Derivative extends FunctionBaseOperator {
   static componentType = "derivative";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.derivVariables = {
       createComponentOfType: "variables"
@@ -492,7 +470,6 @@ export class Derivative extends FunctionBaseOperator {
 
     stateVariableDefinitions.numericalFunctionOperator = {
       returnDependencies: () => ({
-
         functionChild: {
           dependencyType: "child",
           childGroups: ["functions"],
@@ -538,6 +515,52 @@ export class Derivative extends FunctionBaseOperator {
         }
       }
     }
+
+
+    stateVariableDefinitions.numericalFunctionOperatorArguments = {
+      returnDependencies: () => ({
+        functionChild: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["numericalDerivativesDefinition"],
+          variablesOptional: true,
+        },
+        derivVariables: {
+          dependencyType: "stateVariable",
+          variableName: "derivVariables"
+        }
+      }),
+      additionalStateVariablesDefined: ["numericalDerivativesDefinition"],
+      definition: function ({ dependencyValues }) {
+
+        if (dependencyValues.functionChild.length === 0
+          || !dependencyValues.functionChild[0].stateValues.numericalDerivativesDefinition
+        ) {
+          return {
+            setValue: {
+              numericalFunctionOperatorArguments: [],
+              numericalDerivativesDefinition: {},
+            }
+          }
+        }
+
+        let derivDefinition = dependencyValues.functionChild[0].stateValues.numericalDerivativesDefinition;
+        let augmentedDerivDefinition = { ...derivDefinition };
+        if(augmentedDerivDefinition.additionalDerivVariables) {
+          augmentedDerivDefinition.additionalDerivVariables = [...dependencyValues.derivVariables,...augmentedDerivDefinition.additionalDerivVariables]
+        } else {
+          augmentedDerivDefinition.additionalDerivVariables = [...dependencyValues.derivVariables];
+        }
+
+        return {
+          setValue: {
+            numericalFunctionOperatorArguments: [derivDefinition, dependencyValues.derivVariables],
+            numericalDerivativesDefinition: augmentedDerivDefinition,
+          }
+        }
+      }
+    }
+
 
     stateVariableDefinitions.symbolicFunctionOperator = {
       returnDependencies: () => ({

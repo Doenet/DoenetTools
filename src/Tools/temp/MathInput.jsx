@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
+import DoenetViewer from '../../Tools/_framework/ToolPanels/AssignmentViewer';
 import testCodeDoenetML from './testCode.doenet';
 import core from '../../Core/Core';
 
-import MathInputPallet from '../_framework/temp/MathInputPallet'
+// import MathInputPallet from '../_framework/temp/MathInputPallet'
 
 function Test() {
   // console.log("===Test")
@@ -256,7 +256,7 @@ function Test() {
       // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
       // functionsSuppliedByChild = {this.functionsSuppliedByChild}
       />
-      <MathInputPallet />
+      {/* <MathInputPallet /> */}
     </>
   )
 }

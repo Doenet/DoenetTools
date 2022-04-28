@@ -18,6 +18,7 @@ import {
 } from "../../_reactComponents/Drive/NewDrive.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import {globalSelectedNodesAtom} from "../../_reactComponents/Drive/NewDrive.js";
@@ -179,8 +180,7 @@ function buildRows({
       if (!showCompleted && checked) {
         continue;
       }
-      let checkbox = /* @__PURE__ */ React.createElement("input", {
-        type: "checkbox",
+      let checkbox = /* @__PURE__ */ React.createElement(Checkbox, {
         checked,
         onClick: (e) => {
           e.stopPropagation();
@@ -197,12 +197,6 @@ function buildRows({
             });
           }
           axios.get("/api/saveCompleted.php", {params: {doenetId: assignment.doenetId}});
-        },
-        style: {
-          height: "18px",
-          width: "177px",
-          border: "2px solid black",
-          borderRadius: "5px"
         }
       });
       if (isFirstRow) {
