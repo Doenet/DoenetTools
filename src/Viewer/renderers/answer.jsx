@@ -58,10 +58,11 @@ export default function Answer(props) {
     // Moved most of checkWorkStyle styling into Button
     const Button = styled.button `
       position: relative;
-      height: 26px;
+      height: 24px;
       display: inline-block;
       color: white;
       background-color: var(--mainBlue);
+      /* padding: 2px; */
       /* border: var(--mainBorder); */
       border: none;
       border-radius: var(--mainBorderRadius);
@@ -93,7 +94,7 @@ export default function Answer(props) {
           }
         }}
       >
-        <FontAwesomeIcon style={{marginRight: "4px"}} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        <FontAwesomeIcon style={{marginRight: "4px", paddingLeft: "2px"}} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         &nbsp;
         {checkWorkText}
       </Button>);
@@ -169,7 +170,7 @@ export default function Answer(props) {
       </>
     }
 
-    return <span id={name} style={{marginBottom: "12px"}}>
+    return <span id={name} style={{display: "flex"}}>
       <a name={name} />
       {inputChildrenToRender}
       {checkworkComponent}

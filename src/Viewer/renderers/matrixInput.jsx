@@ -41,6 +41,26 @@ const Matrix = styled.div`
   }
 `;
 
+  const Button = styled.button `
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    color: white;
+    background-color: var(--mainBlue);
+    /* border: var(--mainBorder); */
+    /* padding: 2px; */
+    border: none;
+    border-radius: var(--mainBorderRadius);
+    margin: 0px 10px 12px 10px;
+
+
+    &:hover {
+      background-color: var(--lightBlue);
+      color: black;
+    };
+  `;
+
 export default function MatrixInput(props) {
   let { name, SVs, actions, children, ignoreUpdate, callAction } = useDoenetRender(props);
 
@@ -79,17 +99,18 @@ export default function MatrixInput(props) {
   // }
 
   let checkWorkStyle = {
-    position: "relative",
-    width: "30px",
-    height: "24px",
-    fontSize: "20px",
-    fontWeight: "bold",
-    color: "#ffffff",
-    display: "inline-block",
-    textAlign: "center",
-    top: "3px",
-    padding: "2px",
-    zIndex: "0",
+    // position: "relative",
+    // width: "30px",
+    // height: "24px",
+    // fontSize: "20px",
+    // fontWeight: "bold",
+    // color: "#ffffff",
+    // display: "inline-block",
+    // textAlign: "center",
+    // top: "3px",
+    // padding: "2px",
+    // zIndex: "0",
+    cursor: "pointer",
   }
 
   //Assume we don't have a check work button
@@ -100,11 +121,8 @@ export default function MatrixInput(props) {
       if (disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray")
         ;
-      } else {
-        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue")
-        ;
       }
-      checkWorkButton = <button
+      checkWorkButton = <Button
         id={name + '_submit'}
         tabIndex="0"
         disabled={disabled}
@@ -121,18 +139,18 @@ export default function MatrixInput(props) {
         }}
       >
         <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-      </button>
+      </Button>
     } else {
       if (SVs.showCorrectness) {
         if (validationState.current === "correct") {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen")
           ;
-          checkWorkButton = <span
+          checkWorkButton = <Button
             id={name + '_correct'}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCheck} />
-          </span>
+          </Button>
         } else if (validationState.current === "partialcorrect") {
           //partial credit
 
@@ -141,27 +159,27 @@ export default function MatrixInput(props) {
           checkWorkStyle.width = "50px";
 
           checkWorkStyle.backgroundColor = "#efab34";
-          checkWorkButton = <span
+          checkWorkButton = <Button
             id={name + '_partial'}
             style={checkWorkStyle}
-          >{partialCreditContents}</span>
+          >{partialCreditContents}</Button>
         } else {
           //incorrect
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed")
           ;
-          checkWorkButton = <span
+          checkWorkButton = <Button
             id={name + '_incorrect'}
             style={checkWorkStyle}
-          ><FontAwesomeIcon icon={faTimes} /></span>
+          ><FontAwesomeIcon icon={faTimes} /></Button>
 
         }
       } else {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-        checkWorkButton = <span
+        checkWorkButton = <Button
           id={name + '_saved'}
           style={checkWorkStyle}
-        ><FontAwesomeIcon icon={faCloud} /></span>
+        ><FontAwesomeIcon icon={faCloud} /></Button>
 
       }
     }
@@ -217,7 +235,7 @@ export default function MatrixInput(props) {
 
   let rowNumControls = null;
   if (SVs.showSizeControls) {
-    rowNumControls = <span style={{marginLeft: "20px", marginTop: "10px"}}>
+    rowNumControls = <span style={{margin: "0px 10px 12px 10px"}}>
       <ActionButtonGroup>
       <ActionButton id={name + "_rowDecrement"} value="r-" onClick={() => callAction({
         action: actions.updateNumRows,
@@ -236,7 +254,7 @@ export default function MatrixInput(props) {
   }
   let colNumControls = null;
   if (SVs.showSizeControls) {
-    colNumControls = <span style={{marginLeft: "20px", marginTop: "10px"}}>
+    colNumControls = <span style={{margin: "0px 10px 12px 10px"}}>
       <ActionButtonGroup>
       <ActionButton id={name + "_columnDecrement"} value="c-" onClick={() => callAction({
         action: actions.updateNumColumns,
@@ -257,16 +275,17 @@ export default function MatrixInput(props) {
 
   return <React.Fragment>
     <a name={name} />
-    <div style={{display: "flex", marginBottom: "12px"}}>
-    <Matrix className="matrixInputSurroundingBox" id={name}>
-      <table><tbody>
-        {matrixInputs}
-      </tbody></table>
-    </Matrix>
-    {rowNumControls}
-    {colNumControls}
-    {checkWorkButton}
-    </div>
+      <div style={{display: "flex", marginBottom: "12px"}}>
+        <Matrix className="matrixInputSurroundingBox" id={name}>
+          <table><tbody>
+            {matrixInputs}
+          </tbody></table>
+        </Matrix>
+        {rowNumControls}
+        {colNumControls}
+        {checkWorkButton}
+      </div>
+      {/* {checkWorkButton} */}
   </React.Fragment>
 
 }

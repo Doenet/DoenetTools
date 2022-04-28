@@ -158,8 +158,8 @@ export default function MathInput(props) {
   // Moved most of checkWorkStyle styling into Button
   const Button = styled.button `
     position: relative;
-    width: 30px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     color: #ffffff;
     background-color: var(--mainBlue);
     display: inline-block;
