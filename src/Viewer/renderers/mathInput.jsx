@@ -152,7 +152,6 @@ export default function MathInput(props) {
   if (SVs.includeCheckWork) {
     let checkWorkStyle = {
       cursor: 'pointer',
-      // backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
   }
 
   // Moved most of checkWorkStyle styling into Button

@@ -51,8 +51,6 @@ export default function Answer(props) {
 
     let checkWorkStyle = {
       cursor: 'pointer',
-      // backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue"),
-      // verticalAlign: 'middle',
     }
 
     // Moved most of checkWorkStyle styling into Button

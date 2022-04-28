@@ -99,17 +99,6 @@ export default function MatrixInput(props) {
   // }
 
   let checkWorkStyle = {
-    // position: "relative",
-    // width: "30px",
-    // height: "24px",
-    // fontSize: "20px",
-    // fontWeight: "bold",
-    // color: "#ffffff",
-    // display: "inline-block",
-    // textAlign: "center",
-    // top: "3px",
-    // padding: "2px",
-    // zIndex: "0",
     cursor: "pointer",
   }
 
@@ -285,7 +274,6 @@ export default function MatrixInput(props) {
         {colNumControls}
         {checkWorkButton}
       </div>
-      {/* {checkWorkButton} */}
   </React.Fragment>
 
 }
