@@ -19,11 +19,12 @@ function getCourseItemFunction($conn,$type,$doenetId){
       "type"=>"page",
       "doenetId"=>$row['doenetId'],
       "containingDoenetId"=>$row['containingDoenetId'],
-      "cid"=>$row['cid'],
-      "draftCid"=>$row['draftCid'],
       "label"=>$row['label']
     );
-    $item['isSelected'] = false; //Note: no isOpen
+    //Note: no isOpen as pages don't open
+    //also no parentDoenetId as we transverse activities on the browser side
+    $item['isSelected'] = false; 
+
   }else{
 
     $sql = "
