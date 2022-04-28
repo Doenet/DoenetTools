@@ -15,8 +15,8 @@ export default class CallAction extends InlineComponent {
   }
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     // attributes.width = {default: 300};
     // attributes.height = {default: 50};
     attributes.label = {
@@ -234,7 +234,7 @@ export default class CallAction extends InlineComponent {
   }
 
 
-  async callAction() {
+  async callAction({ actionId }) {
 
     let targetName = await this.stateValues.targetName;
     let actionName = await this.stateValues.actionName;
@@ -251,6 +251,9 @@ export default class CallAction extends InlineComponent {
         args.numbers = await this.attributes.numbers.component.stateValues.numbers;
       }
 
+      if (actionId) {
+        args.actionId = actionId;
+      }
 
       await this.coreFunctions.performAction({
         componentName: targetName,
@@ -270,17 +273,21 @@ export default class CallAction extends InlineComponent {
       });
 
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
   }
 
-  async callActionIfTriggerNewlyTrue({ stateValues, previousValues }) {
+  async callActionIfTriggerNewlyTrue({ stateValues, previousValues, actionId }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
     if (stateValues.triggerWhen && previousValues.triggerWhen === false &&
       !await this.stateValues.insideTriggerSet
     ) {
-      return await this.callAction();
+      return await this.callAction({ actionId });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

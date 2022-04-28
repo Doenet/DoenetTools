@@ -12,10 +12,8 @@ export default class Template extends CompositeComponent {
   static renderedDefault = false;
 
   static assignNamesToReplacements = true;
-  static originalNamesAreConsistent = true;
 
   static createsVariants = true;
-  static alwaysSetUpVariant = true;
 
 
   static keepChildrenSerialized({ serializedComponent }) {
@@ -26,8 +24,8 @@ export default class Template extends CompositeComponent {
     }
   }
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.rendered = {
       createComponentOfType: "boolean",
       createStateVariable: "rendered",
@@ -104,7 +102,7 @@ export default class Template extends CompositeComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
           variableNames: [
             "isVariantComponent",
             "generatedVariantInfo",
@@ -113,7 +111,7 @@ export default class Template extends CompositeComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMatchedComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         },
       }),
       definition({ dependencyValues, componentName }) {
@@ -159,7 +157,7 @@ export default class Template extends CompositeComponent {
 
       let replacements = deepClone(await component.state.serializedChildren.value);
 
-      let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+      let newNamespace = component.attributes.newNamespace?.primitive;
 
       if ("isResponse" in component.attributes) {
         // pass isResponse to replacements
@@ -205,10 +203,7 @@ export default class Template extends CompositeComponent {
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects,
-        originalNamesAreConsistent: newNamespace
-          || (!component.doenetAttributes.assignNames
-            //  && !component.replacementOf
-          ),
+        originalNamesAreConsistent: true
       });
 
       return { replacements: processResult.serializedComponents };

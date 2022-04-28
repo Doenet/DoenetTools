@@ -4,8 +4,8 @@ export default class Figure extends BlockComponent {
   static componentType = "figure";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.suppressFigureNameInCaption = {
       createComponentOfType: "boolean",

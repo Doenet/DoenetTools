@@ -19,6 +19,7 @@ import {
   faChalkboard
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import styled, {keyframes} from "../../_snowpack/pkg/styled-components.js";
 import {Link} from "../../_snowpack/pkg/react-router-dom.js";
 import {
   atom,
@@ -259,10 +260,53 @@ export const dragStateAtom = atom({
     copyMode: false
   }
 });
+const movingGradient = keyframes`
+  0% { background-position: -250px 0; }
+  100% { background-position: 250px 0; }
+`;
+const Table = styled.table`
+  width: 850px;
+  border-radius: 5px;
+`;
+const Tr = styled.tr`
+  border-bottom: 2px solid black;
+`;
+const Td = styled.td`
+  height: 40px;
+  vertical-align: middle;
+  padding: 8px;
+
+  &.Td2 {
+    width: 50px;
+  }
+
+  &.Td3 {
+    width: 400px;
+  }
+
+`;
+const TBody = styled.tbody``;
+const Td2Span = styled.span`
+  background-color: rgba(0,0,0,.15);
+  width: 70px;
+  height: 16px;
+  border-radius: 5px;
+`;
+const Td3Span = styled.span`
+  height: 14px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+  background-size: 500px 100px;
+  animation-name: ${movingGradient};
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+`;
 export default function Drive(props) {
   const isNav = false;
   const [driveId, parentFolderId, itemId, type] = props.path.split(":");
-  const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
+  const drivesAvailable = useRecoilValueLoadable(fetchCoursesQuery);
   const {driveIdsAndLabels} = drivesAvailable.getValue();
   const [numColumns, setNumColumns] = useState(1);
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(driveId));
@@ -305,7 +349,11 @@ export default function Drive(props) {
       });
     }
     return /* @__PURE__ */ React.createElement(Suspense, {
-      fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
+      fallback: /* @__PURE__ */ React.createElement(Table, null, /* @__PURE__ */ React.createElement(TBody, null, /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
+        className: "Td2"
+      }, /* @__PURE__ */ React.createElement(Td2Span, null)), /* @__PURE__ */ React.createElement(Td, {
+        className: "Td3"
+      }, /* @__PURE__ */ React.createElement(Td3Span, null)))))
     }, heading, /* @__PURE__ */ React.createElement(Folder, {
       driveId,
       folderId: rootFolderId,
@@ -404,17 +452,17 @@ export const folderDictionaryFilterSelector = selectorFamily({
     fDreturn.contentIds = {...fD.contentIds};
     if (filter === "Released Only") {
       let newDefaultOrder = [];
-      for (let contentId of fD.contentIds.defaultOrder) {
-        if (fD.contentsDictionary[contentId].isReleased === "1" || fD.contentsDictionary[contentId].itemType === "Folder") {
-          newDefaultOrder.push(contentId);
+      for (let cid of fD.contentIds.defaultOrder) {
+        if (fD.contentsDictionary[cid].isReleased === "1" || fD.contentsDictionary[cid].itemType === "Folder") {
+          newDefaultOrder.push(cid);
         }
       }
       fDreturn.contentIds.defaultOrder = newDefaultOrder;
     } else if (filter === "Assigned Only") {
       let newDefaultOrder = [];
-      for (let contentId of fD.contentIds.defaultOrder) {
-        if (fD.contentsDictionary[contentId].isAssigned === "1" || fD.contentsDictionary[contentId].itemType === "Folder") {
-          newDefaultOrder.push(contentId);
+      for (let cid of fD.contentIds.defaultOrder) {
+        if (fD.contentsDictionary[cid].isAssigned === "1" || fD.contentsDictionary[cid].itemType === "Folder") {
+          newDefaultOrder.push(cid);
         }
       }
       fDreturn.contentIds.defaultOrder = newDefaultOrder;
@@ -580,23 +628,23 @@ export function DriveHeader({
     style: {textAlign: "center"}
   }, columnTypes[3]) : null)));
 }
-export const fetchDrivesQuery = atom({
-  key: "fetchDrivesQuery",
+export const fetchCoursesQuery = atom({
+  key: "fetchCoursesQuery",
   default: selector({
-    key: "fetchDrivesQuery/Default",
+    key: "fetchCoursesQuery/Default",
     get: async () => {
-      const {data} = await axios.get(`/api/loadAvailableDrives.php`);
-      return data;
+      const {data: oldData} = await axios.get(`/api/loadAvailableDrives.php`);
+      return oldData;
     }
   })
 });
 export const fetchDrivesSelector = selector({
   key: "fetchDrivesSelector",
   get: ({get}) => {
-    return get(fetchDrivesQuery);
+    return get(fetchCoursesQuery);
   },
   set: ({get, set}, labelTypeDriveIdColorImage) => {
-    let driveData = get(fetchDrivesQuery);
+    let driveData = get(fetchCoursesQuery);
     let newDriveData = {...driveData};
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
     let params = {
@@ -615,7 +663,7 @@ export const fetchDrivesSelector = selector({
         type: "content"
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/addDrive.php", payload).then((resp) => console.log(">>>resp", resp.data));
     } else if (labelTypeDriveIdColorImage.type === "new course drive") {
@@ -629,7 +677,7 @@ export const fetchDrivesSelector = selector({
         subType: "Administrator"
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/addDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "update drive label") {
@@ -641,7 +689,7 @@ export const fetchDrivesSelector = selector({
           break;
         }
       }
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/updateDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "update drive color") {
@@ -654,7 +702,7 @@ export const fetchDrivesSelector = selector({
           break;
         }
       }
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/updateDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "update drive image") {
@@ -667,7 +715,7 @@ export const fetchDrivesSelector = selector({
           break;
         }
       }
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/updateDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "delete drive") {
@@ -680,7 +728,7 @@ export const fetchDrivesSelector = selector({
           }
         }
       }
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/updateDrive.php", payload);
     }
@@ -1301,6 +1349,8 @@ export const clearDriveAndItemSelections = selector({
     if (globalDrivesSelected.length > 0) {
       set(drivecardSelectedNodesAtom, []);
     }
+  },
+  get: () => {
   }
 });
 export const driveInstanceParentFolderIdAtom = atomFamily({
@@ -1574,8 +1624,8 @@ export const DoenetML = React.memo(function DoenetML2(props) {
     }
   };
   let doenetMLJSX = /* @__PURE__ */ React.createElement("div", {
-    role: "button",
     "data-doenet-driveinstanceid": props.driveInstanceId,
+    role: "button",
     "data-cy": "driveItem",
     tabIndex: 0,
     className: "noselect nooutline",

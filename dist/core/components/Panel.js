@@ -5,8 +5,8 @@ export default class panel extends InlineComponent {
   static rendererType = "container";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.columns = {
       createComponentOfType: "text",
       createStateVariable: "columns",

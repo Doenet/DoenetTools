@@ -6,7 +6,7 @@ import {
   useRecoilCallback,
 } from 'recoil';
 
-import DoenetViewer from '../../../Viewer/DoenetViewer';
+import DoenetViewer from '../../../Tools/_framework/ToolPanels/AssignmentViewer';
 import { 
   itemHistoryAtom, 
  } from '../ToolHandlers/CourseToolHandler';
@@ -19,31 +19,31 @@ const contentIdAtom = atom({
 export default function Content(props){
   // console.log(">>>===Content")
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
-  const paramContentId = useRecoilValue(searchParamAtomFamily('contentId')) 
+  const paramContentId = useRecoilValue(searchParamAtomFamily('cid')) 
   const paramVariantIndex = useRecoilValue(searchParamAtomFamily('variantIndex')) 
   const paramVariantName = useRecoilValue(searchParamAtomFamily('variantName')) 
   const recoilContentId = useRecoilValue(contentIdAtom);
 
   const loadRecoilContentId = useRecoilCallback(({set,snapshot})=> async ({doenetId,assignment=false})=>{
     const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
-    let contentId = null;
+    let cid = null;
     if (assignment){
       for (let named of versionHistory.named){
         if (named.isAssigned === '1'){
-          contentId = named.contentId;
+          cid = named.cid;
           break;
         }
       }
     }else{
       for (let named of versionHistory.named){
         if (named.isReleased === '1'){
-          contentId = named.contentId;
+          cid = named.cid;
           break;
         }
       }
     }
     
-    set(contentIdAtom,contentId)
+    set(contentIdAtom,cid)
   })
 
   // console.log(">>>paramDoenetId",paramDoenetId)
@@ -52,9 +52,9 @@ export default function Content(props){
   // console.log(">>>paramVariantIndex",paramVariantIndex)
   // console.log(">>>paramVariantName",paramVariantName)
 
-  let contentId = null;
+  let cid = null;
   if (paramContentId){
-    contentId = paramContentId;
+    cid = paramContentId;
   }
 
   let doenetId = null;
@@ -62,16 +62,16 @@ export default function Content(props){
     doenetId = paramDoenetId;
   }
 
-  if (paramDoenetId && !contentId && !recoilContentId){
+  if (paramDoenetId && !cid && !recoilContentId){
     loadRecoilContentId({doenetId});
     return <div style={props.style}></div>
   }
 
-  if (recoilContentId && !contentId){
-    contentId = recoilContentId;
+  if (recoilContentId && !cid){
+    cid = recoilContentId;
   }
 
-// console.log(">>>contentId",contentId);
+// console.log(">>>cid",cid);
 
   let requestedVariant = {index: 1}
   if (paramVariantIndex){
@@ -87,16 +87,16 @@ export default function Content(props){
     <DoenetViewer
         key={'doenetviewer'}
         // doenetML={doenetML} ???parameter
-        contentId={contentId}
+        cid={cid}
         flags={{
           showCorrectness: true,
           readOnly: false,
           solutionDisplayMode: solutionDisplayMode,
           showFeedback: true,
           showHints: true,
-          allowLoadPageState: true,
-          allowSavePageState: true,
-          allowLocalPageState: true,
+          allowLoadState: true,
+          allowSaveState: true,
+          allowLocalState: true,
           allowSaveSubmissions: true,
           allowSaveEvents: true
         }}

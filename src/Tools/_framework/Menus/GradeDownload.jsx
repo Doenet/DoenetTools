@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useRecoilCallback } from 'recoil';
-import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { fetchCoursesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { assignmentData, overViewData, studentData } from '../ToolPanels/Gradebook';
 import axios from 'axios';
@@ -13,7 +13,7 @@ export default function GradeDownload(){
 
       const driveId = await snapshot.getPromise(searchParamAtomFamily('driveId'))
 
-    let driveInfo = await snapshot.getPromise(fetchDrivesQuery);
+    let driveInfo = await snapshot.getPromise(fetchCoursesQuery);
     let driveLabel;
     for (let info of driveInfo.driveIdsAndLabels){
       if (info.driveId === driveId){

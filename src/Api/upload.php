@@ -93,10 +93,10 @@ if ($success){
 
   //Test if user already has this file in this activity
   $sql = "
-  SELECT contentId
+  SELECT cid
   FROM support_files 
   WHERE userId = '$userId'
-  AND contentId = '$cid'
+  AND cid = '$cid'
   AND doenetId = '$doenetId'
   ";
   $result = $conn->query($sql);
@@ -112,10 +112,10 @@ if ($success){
 if ($success){
         //Test if user has file in another activity
         $sql = "
-        SELECT contentId
+        SELECT cid
         FROM support_files 
         WHERE userId = '$userId'
-        AND contentId = '$cid'
+        AND cid = '$cid'
         AND doenetId != '$doenetId'
         ";
         $result = $conn->query($sql);
@@ -130,7 +130,7 @@ if ($success && !$already_have_file){
   //track upload for IPFS upload nanny to upload later
   $sql = "
   INSERT INTO ipfs_to_upload 
-  (contentId,fileType,sizeInBytes,timestamp)
+  (cid,fileType,sizeInBytes,timestamp)
   VALUES
   ('$cid','$type','$size',NOW())
   ";
@@ -140,7 +140,7 @@ if ($success && !$already_have_file){
 if ($success){
         $sql = "
         INSERT INTO support_files 
-        (userId,contentId,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp)
+        (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp)
         VALUES
         ('$userId','$cid','$doenetId','$type','$description','$original_file_name','$size','$width','$height',NOW())
         ";
@@ -155,7 +155,7 @@ if ($success){
 http_response_code(200);
 
 $response_arr = array("success" => $success,
-                       "contentId" => $cid,
+                       "cid" => $cid,
                         "fileName" => $newFileName,
                         "description" => $description,
                         "asFileName" => $original_file_name,

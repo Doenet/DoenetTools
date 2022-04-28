@@ -11,8 +11,8 @@ export default class NumberList extends InlineComponent {
 
   static stateVariableForAttributeValue = "numbers";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.unordered = {
       createComponentOfType: "boolean",
@@ -413,7 +413,8 @@ export default class NumberList extends InlineComponent {
         return {
           setValue: { nComponentsToDisplayByChild, nChildrenToRender },
         }
-      }
+      },
+      markStale: () => ({ updateRenderedChildren: true }),
     }
 
     return stateVariableDefinitions;

@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react'
-import { useDrag, useGesture } from 'react-use-gesture'
+import { useDrag, useGesture } from '@use-gesture/react'
 import { useSprings, a, useSpring } from '@react-spring/web'
 import debounce from 'lodash.debounce'
 

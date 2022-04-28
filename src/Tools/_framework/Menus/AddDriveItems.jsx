@@ -2,53 +2,39 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import useSockets, { itemType } from '../../../_reactComponents/Sockets';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import { useCourse } from '../../../_reactComponents/Course/CourseActions';
+// import { useToast, toastType } from '@Toast';
 
 export default function AddDriveItems() {
-  const [driveId, parentFolderId] = useRecoilValue(
-    searchParamAtomFamily('path'),
-  ).split(':');
-  const { addItem } = useSockets('drive');
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const { create } = useCourse(courseId);
+  // const addToast = useToast();
+
   return (
+ <>
     <ButtonGroup vertical>
       <Button
         width="menu"
-        onClick={() =>
-          addItem({
-            driveIdFolderId: { driveId, folderId: parentFolderId },
-            type: itemType.DOENETML,
-          })
-        }
-        value="Add DoenetML"
+        onClick={() => create({ itemType: 'activity' })}
+        value="Add Activity"
       >
-        Add DoenetML
+        Add Activity
       </Button>
       <Button
         width="menu"
-        onClick={() =>
-          addItem({
-            driveIdFolderId: { driveId, folderId: parentFolderId },
-            type: itemType.COLLECTION,
-          })
-        }
+        onClick={() => create({ itemType: 'bank' })}
         value="Add Collection"
       />
       <Button
         width="menu"
-        onClick={() =>
-          addItem({
-            driveIdFolderId: { driveId, folderId: parentFolderId },
-            type: itemType.FOLDER,
-          })
-        }
-        value="Add Folder"
+        onClick={() => create({ itemType: 'section' })}
+        value="Add Section"
       >
-        Add Folder
+        Add Section
       </Button>
-      
     </ButtonGroup>
-    
+ </>
   );
 }

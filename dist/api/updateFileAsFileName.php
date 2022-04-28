@@ -11,7 +11,7 @@ $userId = $jwtArray['userId'];
 
 
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
-$contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
+$cid = mysqli_real_escape_string($conn,$_REQUEST["cid"]);
 $asFileName = mysqli_real_escape_string($conn,$_REQUEST["asFileName"]);
 
 $success = true;
@@ -41,7 +41,7 @@ if ($success){
   SET asFileName = '$asFileName'
   WHERE userId = '$userId'
   AND doenetId = '$doenetId'
-  AND contentId = '$contentId'
+  AND cid = '$cid'
   ";
   $result = $conn->query($sql);
 }

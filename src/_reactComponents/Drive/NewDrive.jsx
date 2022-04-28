@@ -72,17 +72,25 @@ const loadAssignmentAtomFamily = atomFamily({
       });
       let assignment = { ...data.assignment };
 
-      if (assignment.assignedDate){
-        assignment.assignedDate = UTCDateStringToDate(assignment.assignedDate).toLocaleString();
+      if (assignment.assignedDate) {
+        assignment.assignedDate = UTCDateStringToDate(
+          assignment.assignedDate,
+        ).toLocaleString();
       }
-      if (assignment.dueDate){
-        assignment.dueDate = UTCDateStringToDate(assignment.dueDate).toLocaleString();
+      if (assignment.dueDate) {
+        assignment.dueDate = UTCDateStringToDate(
+          assignment.dueDate,
+        ).toLocaleString();
       }
-      if (assignment.pinnedAfterDate){
-        assignment.pinnedAfterDate = UTCDateStringToDate(assignment.pinnedAfterDate).toLocaleString();
+      if (assignment.pinnedAfterDate) {
+        assignment.pinnedAfterDate = UTCDateStringToDate(
+          assignment.pinnedAfterDate,
+        ).toLocaleString();
       }
-      if (assignment.pinnedUntilDate){
-        assignment.pinnedUntilDate = UTCDateStringToDate(assignment.pinnedUntilDate).toLocaleString();
+      if (assignment.pinnedUntilDate) {
+        assignment.pinnedUntilDate = UTCDateStringToDate(
+          assignment.pinnedUntilDate,
+        ).toLocaleString();
       }
 
       return assignment;
@@ -370,7 +378,7 @@ export default function Drive(props) {
 
   const isNav = false;
   const [driveId, parentFolderId, itemId, type] = props.path.split(':');
-  const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
+  const drivesAvailable = useRecoilValueLoadable(fetchCoursesQuery);
   const { driveIdsAndLabels } = drivesAvailable.getValue();
   const [numColumns, setNumColumns] = useState(1);
   const setDriveInstanceId = useSetRecoilState(
@@ -598,23 +606,23 @@ export const folderDictionaryFilterSelector = selectorFamily({
       // filter = 'All' handled already without any prop(filter)
       if (filter === 'Released Only') {
         let newDefaultOrder = [];
-        for (let contentId of fD.contentIds.defaultOrder) {
+        for (let cid of fD.contentIds.defaultOrder) {
           if (
-            fD.contentsDictionary[contentId].isReleased === '1' ||
-            fD.contentsDictionary[contentId].itemType === 'Folder'
+            fD.contentsDictionary[cid].isReleased === '1' ||
+            fD.contentsDictionary[cid].itemType === 'Folder'
           ) {
-            newDefaultOrder.push(contentId);
+            newDefaultOrder.push(cid);
           }
         }
         fDreturn.contentIds.defaultOrder = newDefaultOrder;
       } else if (filter === 'Assigned Only') {
         let newDefaultOrder = [];
-        for (let contentId of fD.contentIds.defaultOrder) {
+        for (let cid of fD.contentIds.defaultOrder) {
           if (
-            fD.contentsDictionary[contentId].isAssigned === '1' ||
-            fD.contentsDictionary[contentId].itemType === 'Folder'
+            fD.contentsDictionary[cid].isAssigned === '1' ||
+            fD.contentsDictionary[cid].itemType === 'Folder'
           ) {
-            newDefaultOrder.push(contentId);
+            newDefaultOrder.push(cid);
           }
         }
         fDreturn.contentIds.defaultOrder = newDefaultOrder;
@@ -842,13 +850,14 @@ export function DriveHeader({
   );
 }
 
-export const fetchDrivesQuery = atom({
-  key: 'fetchDrivesQuery',
+export const fetchCoursesQuery = atom({
+  key: 'fetchCoursesQuery',
   default: selector({
-    key: 'fetchDrivesQuery/Default',
+    key: 'fetchCoursesQuery/Default',
     get: async () => {
-      const { data } = await axios.get(`/api/loadAvailableDrives.php`);
-      return data;
+      const { data: oldData } = await axios.get(`/api/loadAvailableDrives.php`);
+      // console.log("oldData",oldData);
+      return oldData;
     },
   }),
 });
@@ -856,11 +865,11 @@ export const fetchDrivesQuery = atom({
 export const fetchDrivesSelector = selector({
   key: 'fetchDrivesSelector',
   get: ({ get }) => {
-    return get(fetchDrivesQuery);
+    return get(fetchCoursesQuery);
   },
   set: ({ get, set }, labelTypeDriveIdColorImage) => {
     // console.log(labelTypeDriveIdColorImage);
-    let driveData = get(fetchDrivesQuery);
+    let driveData = get(fetchCoursesQuery);
     // let selectedDrives = get(selectedDriveInformation);
     let newDriveData = { ...driveData };
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
@@ -942,11 +951,12 @@ export const fetchDrivesSelector = selector({
         type: 'content',
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
 
       const payload = { params };
-      axios.get('/api/addDrive.php', payload)
-      .then((resp)=>console.log(">>>resp",resp.data))
+      axios
+        .get('/api/addDrive.php', payload)
+        .then((resp) => console.log('>>>resp', resp.data));
     } else if (labelTypeDriveIdColorImage.type === 'new course drive') {
       newDrive = {
         driveId: labelTypeDriveIdColorImage.newDriveId,
@@ -958,7 +968,7 @@ export const fetchDrivesSelector = selector({
         subType: 'Administrator',
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
 
       const payload = { params };
       axios.get('/api/addDrive.php', payload);
@@ -974,7 +984,7 @@ export const fetchDrivesSelector = selector({
         }
       }
       //Set drive
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       //Save to db
       const payload = { params };
       axios.get('/api/updateDrive.php', payload);
@@ -991,7 +1001,7 @@ export const fetchDrivesSelector = selector({
         }
       }
       //Set drive
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       //Save to db
       const payload = { params };
       axios.get('/api/updateDrive.php', payload);
@@ -1008,7 +1018,7 @@ export const fetchDrivesSelector = selector({
         }
       }
       //Set drive
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       //Save to db
       const payload = { params };
       axios.get('/api/updateDrive.php', payload);
@@ -1029,7 +1039,7 @@ export const fetchDrivesSelector = selector({
       }
 
       //Set drive
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       //Save to db
       const payload = { params };
       axios.get('/api/updateDrive.php', payload);
@@ -1855,6 +1865,7 @@ export const clearDriveAndItemSelections = selector({
       set(drivecardSelectedNodesAtom, []);
     }
   },
+  get: () => {},
 });
 
 //key: driveInstanceId
@@ -2213,8 +2224,8 @@ export const DoenetML = React.memo(function DoenetML(props) {
 
   let doenetMLJSX = (
     <div
+    data-doenet-driveinstanceid={props.driveInstanceId}
       role="button"
-      data-doenet-driveinstanceid={props.driveInstanceId}
       data-cy="driveItem"
       tabIndex={0}
       className="noselect nooutline"

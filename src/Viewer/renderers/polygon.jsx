@@ -83,10 +83,17 @@ export default function Polygon(props) {
       jsxPolygonAttributes.fillColor = SVs.selectedStyle.fillColor;
     }
 
-    let pts = [];
-    SVs.numericalVertices.forEach(z => { pts.push([z[0], z[1]]) });
 
     board.suspendUpdate();
+
+    let pts = [];
+
+    for(let p of SVs.numericalVertices) {
+      pts.push(
+        board.create('point', [...p], jsxPointAttributes.current)
+      )
+    }
+
 
     let newPolygonJXG = board.create('polygon', pts, jsxPolygonAttributes);
 

@@ -1,6 +1,5 @@
 import React from "../../_snowpack/pkg/react.js";
 import ReactDOM from "../../_snowpack/pkg/react-dom.js";
-import DoenetRenderer from "./DoenetRenderer.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {
@@ -15,6 +14,11 @@ import mathquill from "../../_snowpack/pkg/react-mathquill.js";
 import {getFromLatex, normalizeLatexString} from "../../core/utils/math.js";
 mathquill.addStyles();
 let EditableMathField = mathquill.EditableMathField;
+class DoenetRenderer {
+  render() {
+    return null;
+  }
+}
 export default class MathInput extends DoenetRenderer {
   constructor(props) {
     console.log("old one");

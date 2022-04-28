@@ -1,13 +1,10 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import React, { useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
 
 import useDoenetRender from './useDoenetRenderer';
-
-//TODO: this.doenetSvData.createSubmitAllButton
 
 export default function Section(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
@@ -17,23 +14,45 @@ export default function Section(props) {
     return null;
   }
 
+  let validationState = useRef(null);
+
+  const updateValidationState = () => {
+    validationState.current = 'unvalidated';
+    if (SVs.justSubmitted) {
+      if (SVs.creditAchieved === 1) {
+        validationState.current = 'correct';
+      } else if (SVs.creditAchieved === 0) {
+        validationState.current = 'incorrect';
+      } else {
+        validationState.current = 'partialcorrect';
+      }
+    }
+  };
+
+  let submitAllAnswers = () => callAction({
+    action: actions.submitAllAnswers
+  })
+
+  let title;
   // BADBADBAD: need to redo how getting the title child
   // getting it using the internal guts of componentInstructions
   // is just asking for trouble
   if (SVs.titleChildName) {
-    let titleChildInd;
     for (let [ind, child] of children.entries()) {
       //child might be a string
       if (child.props?.componentInstructions.componentName === SVs.titleChildName) {
-        titleChildInd = ind;
-        children.splice(titleChildInd, 1); // remove title
+        title = children[ind];
+        children.splice(ind, 1); // remove title
         break;
       }
     }
     
   }
 
-  let title = SVs.title;
+  if(!title) {
+    title = SVs.title;
+  }
+  
   let heading = null;
   let headingId = name + "_title";
 

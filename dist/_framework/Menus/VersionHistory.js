@@ -8,12 +8,13 @@ import {
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {itemHistoryAtom} from "../ToolHandlers/CourseToolHandler.js";
 import {
-  editorDoenetIdInitAtom,
+  editorPageIdInitAtom,
   updateTextEditorDoenetMLAtom,
   textEditorDoenetMLAtom,
   viewerDoenetMLAtom
 } from "../ToolPanels/EditorViewer.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
+import RelatedItems from "../../_reactComponents/PanelHeaderComponents/RelatedItems.js";
 import {
   buildTimestamp,
   ClipboardLinkButtons,
@@ -26,7 +27,6 @@ import {useToast, toastType} from "../Toast.js";
 import {folderDictionary} from "../../_reactComponents/Drive/NewDrive.js";
 import {editorSaveTimestamp} from "../ToolPanels/DoenetMLEditor.js";
 import {DateToUTCDateString} from "../../_utils/dateUtilityFunction.js";
-import {CIDFromDoenetML} from "../../core/utils/cid.js";
 export const currentDraftSelectedAtom = atom({
   key: "currentDraftSelectedAtom",
   default: true
@@ -40,7 +40,7 @@ export default function VersionHistory(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const path = decodeURIComponent(useRecoilValue(searchParamAtomFamily("path")));
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(doenetId));
-  const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
+  const initializedDoenetId = useRecoilValue(editorPageIdInitAtom);
   const selectedVersionId = useRecoilValue(selectedVersionIdAtom);
   const addToast = useToast();
   const currentDraftSelected = useRecoilValue(currentDraftSelectedAtom);
@@ -118,7 +118,7 @@ export default function VersionHistory(props) {
       ...newDraft,
       isSetAsCurrent: "1",
       newDraftVersionId,
-      newDraftContentId: newDraft.contentId,
+      newDraftContentId: newDraft.cid,
       doenetId: doenetId2,
       newTitle: title
     };
@@ -127,7 +127,7 @@ export default function VersionHistory(props) {
   const saveVersion = useRecoilCallback(({snapshot, set}) => async (doenetId2) => {
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const timestamp = buildTimestamp();
-    const contentId = await CIDFromDoenetML(doenetML);
+    const cid = await cidFromText(doenetML);
     const versionId = nanoid();
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId2));
     let newVersions = {...oldVersions};
@@ -139,7 +139,7 @@ export default function VersionHistory(props) {
       isReleased: "0",
       isDraft: "0",
       isNamed: "1",
-      contentId
+      cid
     };
     let newDBVersion = {
       ...newVersion,
@@ -148,7 +148,7 @@ export default function VersionHistory(props) {
     };
     newVersions.named = [newVersion, ...oldVersions.named];
     set(itemHistoryAtom(doenetId2), newVersions);
-    set(fileByContentId(contentId), doenetML);
+    set(fileByContentId(cid), doenetML);
     axios.post("/api/saveNewVersion.php", newDBVersion).then((resp) => {
       if (resp?.data?.success) {
         addToast("New Version Saved!", toastType.SUCCESS);
@@ -163,7 +163,7 @@ export default function VersionHistory(props) {
   const saveAndReleaseCurrent = useRecoilCallback(({snapshot, set}) => async ({doenetId: doenetId2, driveId: driveId2, folderId: folderId2, itemId: itemId2}) => {
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const timestamp = DateToUTCDateString(new Date());
-    const contentId = await CIDFromDoenetML(doenetML);
+    const cid = await cidFromText(doenetML);
     const versionId = nanoid();
     const {data} = await axios.post("/api/releaseDraft.php", {
       doenetId: doenetId2,
@@ -177,7 +177,7 @@ export default function VersionHistory(props) {
     } else {
       addToast(message, toastType.ERROR);
     }
-    set(fileByContentId(contentId), doenetML);
+    set(fileByContentId(cid), doenetML);
     set(itemHistoryAtom(doenetId2), (was) => {
       let newObj = {...was};
       let newNamed = [...was.named];
@@ -193,7 +193,7 @@ export default function VersionHistory(props) {
         isReleased: "1",
         isDraft: "0",
         isNamed: "1",
-        contentId
+        cid
       };
       newNamed.unshift(newVersion);
       newObj.named = newNamed;
@@ -221,15 +221,15 @@ export default function VersionHistory(props) {
     set(currentDraftSelectedAtom, isCurrentDraft);
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId2));
     let newVersions = {...oldVersions};
-    let oldDraftContentId = oldVersions.draft.contentId;
+    let oldDraftContentId = oldVersions.draft.cid;
     if (!isCurrentDraft) {
       const wasDraftSelected = await snapshot.getPromise(currentDraftSelectedAtom);
       if (wasDraftSelected) {
         const newDraftDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-        const newDraftContentId = await CIDFromDoenetML(newDraftDoenetML);
+        const newDraftContentId = await cidFromText(newDraftDoenetML);
         if (newDraftContentId !== oldDraftContentId) {
           let newDraft = {...oldVersions.draft};
-          newDraft.contentId = newDraftContentId;
+          newDraft.cid = newDraftContentId;
           newDraft.timestamp = buildTimestamp();
           newVersions.draft = newDraft;
           set(itemHistoryAtom(doenetId2), newVersions);
@@ -252,10 +252,10 @@ export default function VersionHistory(props) {
         }
       }
     }
-    let displayContentId = newVersions.draft.contentId;
+    let displayContentId = newVersions.draft.cid;
     for (let version2 of newVersions.named) {
       if (version2.versionId === versionId) {
-        displayContentId = version2.contentId;
+        displayContentId = version2.cid;
         break;
       }
     }
@@ -297,16 +297,17 @@ export default function VersionHistory(props) {
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: {padding: "6px 0px 6px 0px"}
-  }, /* @__PURE__ */ React.createElement("select", {
+  }, /* @__PURE__ */ React.createElement(RelatedItems, {
     size: "2",
-    style: {width: "230px"},
+    width: "menu",
     onChange: (e) => {
       setSelectedVersionId({doenetId, versionId: e.target.value, isCurrentDraft: true});
-    }
-  }, /* @__PURE__ */ React.createElement("option", {
-    value: versionHistory.contents.draft.versionId,
-    selected: currentDraftSelected
-  }, "Current Draft"))), /* @__PURE__ */ React.createElement("div", {
+    },
+    options: /* @__PURE__ */ React.createElement("option", {
+      value: versionHistory.contents.draft.versionId,
+      selected: currentDraftSelected
+    }, "Current Draft")
+  })), /* @__PURE__ */ React.createElement("div", {
     style: {margin: "0px 0px 6px 0px"}
   }, /* @__PURE__ */ React.createElement(Button, {
     disabled: !currentDraftSelected,
@@ -322,15 +323,16 @@ export default function VersionHistory(props) {
     onClick: () => {
       saveAndReleaseCurrent({doenetId, driveId, folderId, itemId});
     }
-  })), /* @__PURE__ */ React.createElement("div", null, "History"), /* @__PURE__ */ React.createElement("select", {
+  })), /* @__PURE__ */ React.createElement("div", null, "History"), /* @__PURE__ */ React.createElement(RelatedItems, {
     size: "8",
-    style: {width: "230px"},
+    width: "menu",
     onChange: (e) => {
       setSelectedVersionId({doenetId, versionId: e.target.value, isCurrentDraft: false});
-    }
-  }, options), /* @__PURE__ */ React.createElement("div", null, "Name: ", version?.title), /* @__PURE__ */ React.createElement(ClipboardLinkButtons, {
+    },
+    options
+  }), /* @__PURE__ */ React.createElement("div", null, "Name: ", version?.title), /* @__PURE__ */ React.createElement(ClipboardLinkButtons, {
     disabled: currentDraftSelected,
-    contentId: version?.contentId,
+    cid: version?.cid,
     doenetId
   }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(RenameVersionControl, {
     key: version?.versionId,

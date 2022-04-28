@@ -6,7 +6,7 @@ import {
   useRecoilValueLoadable
 } from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom, searchParamAtomFamily, suppressMenusAtom} from "../NewToolRoot.js";
-import DoenetViewer from "../../viewer/DoenetViewer.js";
+import DoenetViewer from "./AssignmentViewer.js";
 import {serializedComponentsReviver} from "../../core/utils/serializedStateProcessing.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {currentAttemptNumber} from "./AssignmentViewer.js";
@@ -73,19 +73,19 @@ export default function GradebookStudentAssignmentView() {
     for (let attempt of data.attemptInfo) {
       let attemptNumber2 = attempt.attemptNumber;
       let gvariant = JSON.parse(attempt.variant, serializedComponentsReviver);
-      let doenetML = contentIdToDoenetML[attempt.contentId];
+      let doenetML = contentIdToDoenetML[attempt.cid];
       if (doenetML) {
         dataAttemptInfo[attemptNumber2] = {
-          contentId: attempt.contentId,
+          cid: attempt.cid,
           variant: {name: gvariant?.name},
           doenetML,
           solutionDisplayMode
         };
       } else {
-        const {data: data2} = await axios.get(`/media/${attempt.contentId}.doenet`);
-        contentIdToDoenetML[attempt.contentId] = data2;
+        const {data: data2} = await axios.get(`/media/${attempt.cid}.doenet`);
+        contentIdToDoenetML[attempt.cid] = data2;
         dataAttemptInfo[attemptNumber2] = {
-          contentId: attempt.contentId,
+          cid: attempt.cid,
           variant: {name: gvariant?.name},
           doenetML: data2,
           solutionDisplayMode
@@ -153,7 +153,7 @@ export default function GradebookStudentAssignmentView() {
   }
   let dViewer = null;
   let attemptNumberJSX = null;
-  if (attemptNumber > 0 && attemptsInfo[attemptNumber] && attemptsInfo[attemptNumber].contentId !== "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855") {
+  if (attemptNumber > 0 && attemptsInfo[attemptNumber] && attemptsInfo[attemptNumber].cid !== "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855") {
     let variant = attemptsInfo[attemptNumber].variant;
     let doenetML = attemptsInfo[attemptNumber].doenetML;
     let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
@@ -169,9 +169,9 @@ export default function GradebookStudentAssignmentView() {
         showFeedback: true,
         showHints: true,
         isAssignment: true,
-        allowLoadPageState: true,
-        allowSavePageState: false,
-        allowLocalPageState: false,
+        allowLoadState: true,
+        allowSaveState: false,
+        allowLocalState: false,
         allowSaveSubmissions: false,
         allowSaveEvents: false,
         pageStateSource: "submissions"

@@ -1,29 +1,34 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
-import styled, {ThemeProvider, css} from "../../_snowpack/pkg/styled-components.js";
+import React from "../../_snowpack/pkg/react.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 const Button = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;
-  border-style: solid;
-  border-color: black;
-  border-width: 2px;
-  color: black;
-  background-color: #FFF;
+  border: ${(props) => props.theme.border};
+  color: white;
+  background-color: ${(props) => props.alert ? "var(--mainRed)" : "var(--mainBlue)"};
   border-radius: ${(props) => props.theme.borderRadius};
   padding: ${(props) => props.theme.padding};
   cursor: pointer;
   font-size: 12px;
+
+  &:hover { // Button color lightens on hover
+    color: black;
+    background-color: ${(props) => props.alert ? "var(--lightRed)" : "var(--lightBlue)"};
+  };
 `;
 Button.defaultProps = {
   theme: {
     margin: "0px 4px 0px 4px",
-    borderRadius: "5px",
-    padding: "0px 10px 0px 10px"
+    borderRadius: "var(--mainBorderRadius)",
+    padding: "0px 10px 0px 10px",
+    border: "none"
   }
 };
 const Label = styled.p`
-  font-size: 12px;
+  font-size: 14px;
   display: ${(props) => props.labelVisible};
   margin-right: 5px;
+  margin-left: 4px;
   margin-bottom: ${(props) => props.align == "flex" ? "none" : "2px"};
 `;
 const Container = styled.div`
@@ -32,6 +37,7 @@ const Container = styled.div`
   align-items: center;
 `;
 export default function ActionButton(props) {
+  const alert = props.alert ? props.alert : null;
   var container = {};
   var align = "flex";
   var actionButton = {
@@ -39,22 +45,26 @@ export default function ActionButton(props) {
   };
   if (props.width) {
     if (props.width === "menu") {
-      actionButton.width = "235px";
+      actionButton.width = "216px";
       if (props.label) {
         container.width = "235px";
         actionButton.width = "100%";
       }
+      ;
     }
+    ;
   }
-  const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
+  ;
+  const labelVisible = props.label ? "static" : "none";
   var label = "";
   if (props.label) {
     label = props.label;
     if (props.vertical) {
       align = "static";
-      console.log("vertical");
     }
+    ;
   }
+  ;
   var icon = "";
   if (props.value || props.icon) {
     if (props.value && props.icon) {
@@ -67,29 +77,34 @@ export default function ActionButton(props) {
       actionButton.value = "";
     }
   }
+  ;
   if (props.num === "first") {
     actionButton.borderRadius = "5px 0px 0px 5px";
   }
+  ;
   if (props.num === "last") {
     actionButton.borderRadius = "0px 5px 5px 0px";
   }
+  ;
   if (props.num === "first_vert") {
     actionButton.borderRadius = "5px 5px 0px 0px";
   }
+  ;
   if (props.num === "last_vert") {
     actionButton.borderRadius = "0px 0px 5px 5px";
   }
-  if (props.alert) {
-    actionButton.border = "2px solid #C1292E";
-  }
+  ;
   if (props.disabled) {
-    actionButton.border = "2px solid #e2e2e2";
+    actionButton.backgroundColor = "var(--mainGray)";
+    actionButton.color = "black";
     actionButton.cursor = "not-allowed";
   }
+  ;
   function handleClick(e) {
     if (props.onClick)
       props.onClick(e);
   }
+  ;
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Container, {
     style: container,
     align
@@ -99,8 +114,10 @@ export default function ActionButton(props) {
   }, label), /* @__PURE__ */ React.createElement(Button, {
     id: "actionButton",
     style: actionButton,
+    alert,
     onClick: (e) => {
       handleClick(e);
     }
   }, icon, " ", actionButton.value)));
 }
+;

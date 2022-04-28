@@ -9,17 +9,23 @@ import {
   useEditorCrumb
 } from "../../_utils/breadcrumbUtil.js";
 export default function EditorBreadCrumb() {
-  const chooserCrumb = useCourseChooserCrumb();
-  const path = useRecoilValue(searchParamAtomFamily("path"));
-  const [driveId, folderId, itemId] = path.split(":");
-  const dashboardCrumb = useDashboardCrumb(driveId);
-  const navigationCrumbs = useNavigationCrumbs(driveId, folderId);
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const sectionId = useRecoilValue(searchParamAtomFamily("sectionId"));
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  const editorCrumb = useEditorCrumb({doenetId, driveId, folderId, itemId});
+  const pageId = useRecoilValue(searchParamAtomFamily("pageId"));
+  const chooserCrumb = useCourseChooserCrumb();
+  const dashboardCrumb = useDashboardCrumb(courseId);
+  const navigationCrumbs = useNavigationCrumbs(courseId, sectionId);
+  const editorCrumb = useEditorCrumb({courseId, sectionId, doenetId, pageId});
   return /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("div", null, "Loading Breadcrumb...")
   }, /* @__PURE__ */ React.createElement(BreadCrumb, {
-    crumbs: [chooserCrumb, dashboardCrumb, ...navigationCrumbs, editorCrumb],
+    crumbs: [
+      chooserCrumb,
+      dashboardCrumb,
+      ...navigationCrumbs,
+      ...editorCrumb
+    ],
     offset: 68
   }));
 }

@@ -4,8 +4,8 @@ export default class Table extends BlockComponent {
   static componentType = "table";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.suppressTableNameInTitle = {
       createComponentOfType: "boolean",

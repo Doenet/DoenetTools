@@ -154,6 +154,19 @@ export default class PointListComponent extends BaseComponent {
         }
 
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "points") {
+          return "point" + propIndex;
+        }
+        if (varName.slice(0, 5) === "point") {
+          // could be point or pointX
+          let pointNum = Number(varName.slice(5));
+          if (Number.isInteger(pointNum) && pointNum > 0) {
+            return `pointX${pointNum}_${propIndex}`
+          }
+        }
+        return null;
+      },
       returnArraySizeDependencies: () => ({
         nPoints: {
           dependencyType: "stateVariable",

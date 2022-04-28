@@ -1,7 +1,5 @@
 import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue, useSetRecoilState, useRecoilValueLoadable} from "../../_snowpack/pkg/recoil.js";
-import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import Card from "../../_reactComponents/PanelHeaderComponents/Card.js";
 import {pageToolViewAtom, searchParamAtomFamily, profileAtom} from "../NewToolRoot.js";
 import Next7Days from "../Widgets/Next7Days.js";
@@ -11,8 +9,7 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import {faCode, faUser, faChartPie, faTasks} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const path = useRecoilValue(searchParamAtomFamily("path"));
-  const driveId = path.split(":")[0];
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const loadProfile = useRecoilValueLoadable(profileAtom);
@@ -51,19 +48,19 @@ export default function Dashboard(props) {
       page: "course",
       tool: "enrollment",
       view: "",
-      params: {driveId}
+      params: {courseId}
     })
   }), /* @__PURE__ */ React.createElement(Card, {
-    name: "Surveys",
+    name: "Data",
     icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faChartPie
     }),
-    value: "Surveys",
+    value: "Data",
     onClick: () => setPageToolView({
       page: "course",
       tool: "surveyList",
       view: "",
-      params: {driveId}
+      params: {courseId}
     })
   })) : null, effectiveRole === "instructor" ? /* @__PURE__ */ React.createElement(Card, {
     name: "Gradebook",
@@ -76,7 +73,7 @@ export default function Dashboard(props) {
         page: "course",
         tool: "gradebook",
         view: was.view,
-        params: {driveId}
+        params: {courseId}
       };
     })
   }) : /* @__PURE__ */ React.createElement(Card, {
@@ -91,12 +88,12 @@ export default function Dashboard(props) {
         page: "course",
         tool: "gradebookStudent",
         view: was.view,
-        params: {driveId, userId: profile.userId}
+        params: {courseId, userId: profile.userId}
       };
     })
   }))), /* @__PURE__ */ React.createElement("div", {
     style: {marginTop: "10px", margin: "10px"}
   }, /* @__PURE__ */ React.createElement(Next7Days, {
-    driveId
+    driveId: courseId
   })));
 }
