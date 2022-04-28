@@ -155,6 +155,19 @@ export default class VectorListComponent extends BaseComponent {
         }
 
       },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "vectors") {
+          return "vector" + propIndex;
+        }
+        if (varName.slice(0, 6) === "vector") {
+          // could be vector or vectorX
+          let vectorNum = Number(varName.slice(6));
+          if (Number.isInteger(vectorNum) && vectorNum > 0) {
+            return `vectorX${vectorNum}_${propIndex}`
+          }
+        }
+        return null;
+      },
       returnArraySizeDependencies: () => ({
         nVectors: {
           dependencyType: "stateVariable",

@@ -3,8 +3,8 @@ import ConstraintComponent from './abstract/ConstraintComponent.js';
 export default class AttractToAngles extends ConstraintComponent {
   static componentType = "attractToAngles";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.threshold = {
       createComponentOfType: "number",
       createStateVariable: "threshold",

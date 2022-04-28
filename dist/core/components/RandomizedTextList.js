@@ -7,8 +7,8 @@ export default class TextList extends InlineComponent {
   // use the texts state variable to populate that attribute
   static stateVariableForAttributeValue = "texts";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.unordered = { default: false };
     attributes.maximumNumber = { default: null };
     return attributes;

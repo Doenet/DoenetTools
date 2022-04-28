@@ -5,8 +5,8 @@ import { applyConstraintFromComponentConstraints } from '../utils/constraints.js
 export default class AttractToConstraint extends ConstraintComponent {
   static componentType = "attractToConstraint";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.threshold = {
       createComponentOfType: "number",
       createStateVariable: "threshold",

@@ -14,7 +14,7 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 
 
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
-$contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
+$cid =  mysqli_real_escape_string($conn,$_POST["cid"]);
 $versionId =  mysqli_real_escape_string($conn,$_POST["versionId"]);
 $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $label =  mysqli_real_escape_string($conn,$_POST["label"]);
@@ -22,9 +22,9 @@ $label =  mysqli_real_escape_string($conn,$_POST["label"]);
 $success = TRUE;
 $message = "";
 
-if ($contentId == ""){
+if ($cid == ""){
   $success = FALSE;
-  $message = "Internal Error: missing contentId";
+  $message = "Internal Error: missing cid";
 }else if($versionId == ""){
   $success = FALSE;
   $message = "Internal Error: missing versionId";
@@ -41,7 +41,7 @@ $result = $conn->query($sql);
 
 $sql = "UPDATE content SET
 isAssigned = '0'
-WHERE contentId = '$contentId' AND versionId = '$versionId'
+WHERE cid = '$cid' AND versionId = '$versionId'
 ";
 
 $result = $conn->query($sql);

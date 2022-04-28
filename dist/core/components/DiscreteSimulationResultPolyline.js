@@ -10,8 +10,8 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
     finalizePolylinePosition: this.finalizePolylinePosition.bind(this)
   };
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",
@@ -157,6 +157,19 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           }
         }
 
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "vertices") {
+          return "vertex" + propIndex;
+        }
+        if (varName.slice(0, 6) === "vertex") {
+          // could be vertex or vertexX
+          let vertexNum = Number(varName.slice(6));
+          if (Number.isInteger(vertexNum) && vertexNum > 0) {
+            return `vertexX${vertexNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       getAllArrayKeys(arraySize, flatten = true, desiredSize) {
         function getAllArrayKeysSub(subArraySize) {
@@ -415,7 +428,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
   }
 
 
-  async movePolyline({ pointCoords, transient, sourceInformation }) {
+  async movePolyline({ pointCoords, transient, sourceInformation, actionId, }) {
 
     let vertexComponents = {};
     for (let ind in pointCoords) {
@@ -433,6 +446,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           sourceInformation
         }],
         transient: true,
+        actionId,
       });
     } else {
 
@@ -444,6 +458,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           value: vertexComponents,
           sourceInformation
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {

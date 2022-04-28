@@ -37,6 +37,7 @@ const ToggleButtonGroup = (props) => {
     } else if (index === elem.length - 1) {
       props2["num"] = last_prop;
     }
+    ;
     return React.cloneElement(element, props2);
   });
   return /* @__PURE__ */ React.createElement(Container, {

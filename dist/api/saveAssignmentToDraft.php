@@ -21,7 +21,6 @@ $attemptAggregation = mysqli_real_escape_string($conn,$_POST["attemptAggregation
 $totalPointsOrPercent = mysqli_real_escape_string($conn,$_POST["totalPointsOrPercent"]);
 $gradeCategory = mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
 $individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
-$multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
 $showSolutionInGradebook = mysqli_real_escape_string($conn,$_POST["showSolutionInGradebook"]);
 $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
@@ -40,7 +39,6 @@ if ($dueDate == ''){$dueDate = 'NULL';} else {$dueDate = "'$dueDate'"; }
 if ($assignedDate == ''){$assignedDate = 'NULL';} else {$assignedDate = "'$assignedDate'"; }
 if ($numberOfAttemptsAllowed == ''){$numberOfAttemptsAllowed = 'NULL';} else {$numberOfAttemptsAllowed = "'$numberOfAttemptsAllowed'"; }
 if ($individualize){ $individualize = '1'; } else { $individualize = '0'; }
-if ($multipleAttempts){ $multipleAttempts = '1'; } else { $multipleAttempts = '0'; }
 if ($showSolution){ $showSolution = '1'; } else { $showSolution = '0'; }
 if ($showSolutionInGradebook){ $showSolutionInGradebook = '1'; } else { $showSolutionInGradebook = '0'; }
 if ($showFeedback){ $showFeedback = '1'; } else { $showFeedback = '0'; }
@@ -76,7 +74,6 @@ attemptAggregation = '$attemptAggregation',
 totalPointsOrPercent = '$totalPointsOrPercent',
 gradeCategory = '$gradeCategory',
 individualize = '$individualize',
-multipleAttempts = '$multipleAttempts',
 showSolution = '$showSolution',
 showSolutionInGradebook = '$showSolutionInGradebook',
 showFeedback = '$showFeedback',

@@ -1,41 +1,43 @@
 import React from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
+import {coursePermissionsAndSettingsByCourseId} from "../../_reactComponents/Course/CourseActions.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {RoleDropdown} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 export default function DriveInfoCap() {
-  let path = useRecoilValue(searchParamAtomFamily("path"));
-  let driveId = useRecoilValue(searchParamAtomFamily("driveId"));
-  if (!driveId) {
-    driveId = path.split(":")[0];
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const tool = useRecoilValue(searchParamAtomFamily("tool"));
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  if (!course || Object.keys(course).length == 0) {
+    return null;
   }
-  const driveInfo = useRecoilValue(fetchDrivesQuery);
-  let roles;
-  let image;
-  let color;
-  let label = "";
-  for (let info of driveInfo.driveIdsAndLabels) {
-    if (info.driveId === driveId) {
-      roles = [...info.role];
-      color = info.color;
-      image = info.image;
-      label = info.label;
-      break;
-    }
-  }
+  let roles = [...course.roleLabels];
+  let color = course.color;
+  let image = course.image;
+  let label = course.label;
   if (image != "none") {
-    image = "url(/media/drive_pictures/" + image + ")";
-    console.log("there is an image??");
+    image = "/media/drive_pictures/" + image;
   }
   if (color != "none") {
     color = "#" + color;
   }
+  let toolText = "";
+  if (tool == "navigation") {
+    toolText = "Course Navigation";
+  } else if (tool == "dashboard") {
+    toolText = "Dashboard";
+  } else if (tool == "surveyList") {
+    toolText = "Data";
+  }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
-    style: {position: "relative", paddingBottom: "135px"}
+    style: {position: "relative", width: "100%", height: "135px", overflow: "hidden"}
   }, /* @__PURE__ */ React.createElement("img", {
-    style: {position: "absolute", height: "135px", objectFit: "cover", backgroundColor: color, backgroundImage: image},
-    width: "240px"
-  })), /* @__PURE__ */ React.createElement("div", {
-    style: {padding: "8px"}
-  }, /* @__PURE__ */ React.createElement("div", null, label), /* @__PURE__ */ React.createElement("div", null, roles), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(RoleDropdown, null))));
+    src: image,
+    style: {position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)"}
+  })), /* @__PURE__ */ React.createElement("b", null, toolText), /* @__PURE__ */ React.createElement("div", {
+    style: {padding: "16px 12px"}
+  }, /* @__PURE__ */ React.createElement("span", {
+    style: {marginBottom: "15px"}
+  }, label), " ", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("span", {
+    style: {marginBottom: "15px"}
+  }, roles), " ", /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(RoleDropdown, null)));
 }

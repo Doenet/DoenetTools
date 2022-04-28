@@ -18,11 +18,15 @@ import {
   handleRef
 } from "../../_framework/Footers/MathInputSelector.js";
 import {useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {rendererState} from "./useDoenetRenderer.js";
 export default function MathInput(props) {
-  let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction} = useDoenetRender(props);
+  let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   MathInput.baseStateVariable = "rawRendererValue";
   const [mathField, setMathField] = useState(null);
-  let rendererValue = useRef(null);
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
+  let rendererValue = useRef(SVs.rawRendererValue);
+  let includeCheckWork = useRef(SVs.includeCheckWork);
+  includeCheckWork.current = SVs.includeCheckWork;
   if (!ignoreUpdate) {
     rendererValue.current = SVs.rawRendererValue;
   }
@@ -72,7 +76,7 @@ export default function MathInput(props) {
       action: actions.updateValue,
       baseVariableValue: rendererValue.current
     });
-    if (SVs.includeCheckWork && validationState.current === "unvalidated") {
+    if (includeCheckWork.current && validationState.current === "unvalidated") {
       callAction({
         action: actions.submitAnswer
       });
@@ -103,8 +107,13 @@ export default function MathInput(props) {
     }
   };
   const onChangeHandler = (text) => {
-    if (text !== rendererValue.current) {
+    if (text.replace(/\s/g, "").replace(/\^{(\w)}/g, "^$1") !== rendererValue.current?.replace(/\s/g, "").replace(/\^{(\w)}/g, "^$1")) {
       rendererValue.current = text;
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      });
       callAction({
         action: actions.updateRawValue,
         args: {

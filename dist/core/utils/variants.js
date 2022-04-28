@@ -1,16 +1,13 @@
 import { enumerateCombinations } from './enumeration.js';
 
 
-export function getVariantsForDescendants({
+export function getVariantsForDescendantsForUniqueVariants({
   variantIndex,
   serializedComponent,
-  allComponentClasses
+  componentInfoObjects
 }) {
 
-  if (serializedComponent.variants === undefined) {
-    return { success: false };
-  }
-  let descendantVariantComponents = serializedComponent.variants.descendantVariantComponents;
+  let descendantVariantComponents = serializedComponent.variants?.descendantVariantComponents;
 
   if (descendantVariantComponents === undefined) {
     return { success: false }
@@ -22,16 +19,16 @@ export function getVariantsForDescendants({
 
   let indices = enumerateCombinations({
     numberOfOptionsByIndex: numberOfVariantsByDescendant,
-    maxNumber: variantIndex + 1,
-  })[variantIndex];
+    maxNumber: variantIndex,
+  })[variantIndex - 1];
 
   let desiredVariants = [];
   for (let [ind, comp] of descendantVariantComponents.entries()) {
-    let compClass = allComponentClasses[comp.componentType];
+    let compClass = componentInfoObjects.allComponentClasses[comp.componentType];
     let r = compClass.getUniqueVariant({
       serializedComponent: comp,
-      variantIndex: indices[ind],
-      allComponentClasses: allComponentClasses,
+      variantIndex: indices[ind] + 1,
+      componentInfoObjects,
     });
     if (r.success) {
       desiredVariants.push(r.desiredVariant);
@@ -40,8 +37,6 @@ export function getVariantsForDescendants({
     }
   }
 
-  // console.log("desiredVariants");
-  // console.log(desiredVariants);
   return {
     success: true,
     desiredVariants

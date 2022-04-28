@@ -17,7 +17,7 @@ $device = $jwtArray['deviceName'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
-$contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
+$cid =  mysqli_real_escape_string($conn,$_POST["cid"]);
 $attemptNumber =  mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $verb =  mysqli_real_escape_string($conn,$_POST["verb"]);
 $object =  mysqli_real_escape_string($conn,$_POST["object"]);
@@ -33,9 +33,9 @@ $message = "";
 if ($doenetId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing doenetId';
-}elseif ($contentId == ""){
+}elseif ($cid == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing contentId';
+  $message = 'Internal Error: missing cid';
 }elseif ($attemptNumber == ""){
   $success = FALSE;
   $message = 'Internal Error: missing attemptNumber';
@@ -79,8 +79,8 @@ if ($doenetId == ""){
 
 
 if ($success){
-  $sql = "INSERT INTO event (userId,deviceName,doenetId,contentId,attemptNumber,variant,verb,object,result,context,version,timestamp,timestored)
-  VALUES ('$userId','$device','$doenetId','$contentId','$attemptNumber','$variant','$verb','$object','$result','$context','$version','$timestamp',NOW())";
+  $sql = "INSERT INTO event (userId,deviceName,doenetId,cid,attemptNumber,variant,verb,object,result,context,version,timestamp,timestored)
+  VALUES ('$userId','$device','$doenetId','$cid','$attemptNumber','$variant','$verb','$object','$result','$context','$version','$timestamp',NOW())";
 
   $result = $conn->query($sql);
 }

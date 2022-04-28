@@ -1,5 +1,5 @@
 import React, {useRef, useCallback, useState, useEffect} from "../../_snowpack/pkg/react.js";
-import {useDrag, useGesture} from "../../_snowpack/pkg/react-use-gesture.js";
+import {useDrag, useGesture} from "../../_snowpack/pkg/@use-gesture/react.js";
 import {useSprings, a, useSpring} from "../../_snowpack/pkg/@react-spring/web.js";
 import debounce from "../../_snowpack/pkg/lodash.debounce.js";
 const styles = {

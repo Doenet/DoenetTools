@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState, useRef} from "../../_snowpack/pk
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 export default function Point(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Point.ignoreActionsWithoutCore = true;
@@ -16,13 +17,6 @@ export default function Point(props) {
   let calculatedY = useRef(null);
   let lastPositionFromCore = useRef(null);
   lastPositionFromCore.current = SVs.numericalXs;
-  useEffect(() => {
-    if (!board && window.MathJax) {
-      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  });
   useEffect(() => {
     return () => {
       if (pointJXG.current !== null) {
@@ -89,8 +83,8 @@ export default function Point(props) {
       };
     }
     if (SVs.draggable && !SVs.fixed) {
-      jsxPointAttributes.highlightFillColor = "#EEEEEE";
-      jsxPointAttributes.highlightStrokeColor = "#C3D9FF";
+      jsxPointAttributes.highlightFillColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+      jsxPointAttributes.highlightStrokeColor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue");
       jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
     } else {
       jsxPointAttributes.highlightFillColor = fillColor;
@@ -185,8 +179,8 @@ export default function Point(props) {
         pointJXG.current.visProp.size = SVs.selectedStyle.markerSize;
       }
       if (SVs.draggable && !SVs.fixed) {
-        pointJXG.current.visProp.highlightfillcolor = "#EEEEEE";
-        pointJXG.current.visProp.highlightstrokecolor = "#C3D9FF";
+        pointJXG.current.visProp.highlightfillcolor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        pointJXG.current.visProp.highlightstrokecolor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue");
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
         pointJXG.current.visProp.fixed = false;
       } else {
@@ -266,7 +260,11 @@ export default function Point(props) {
     name
   }), /* @__PURE__ */ React.createElement("span", {
     id: name
-  }, mathJaxify));
+  }, /* @__PURE__ */ React.createElement(MathJax, {
+    hideUntilTypeset: "first",
+    inline: true,
+    dynamic: true
+  }, mathJaxify)));
 }
 function normalizeStyle(style) {
   if (style === "triangle") {
