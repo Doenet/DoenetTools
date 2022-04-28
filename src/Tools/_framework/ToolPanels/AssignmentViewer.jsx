@@ -24,6 +24,7 @@ import axios from 'axios';
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { prng_alea } from 'esm-seedrandom';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
+import { authorItemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
 
 export const currentAttemptNumber = atom({
   key: 'currentAttemptNumber',
@@ -97,6 +98,7 @@ function generateNewVariant({ previousVariants, allPossibleVariants, individuali
 export default function AssignmentViewer() {
   console.log(">>>===AssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState('Initializing');
   let [message, setMessage] = useState('');
@@ -119,7 +121,14 @@ export default function AssignmentViewer() {
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
   let individualize = useRef(null);
+  useInitCourseItems(courseId);
+  let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
 
+  useEffect(()=>{
+    initializeValues(recoilDoenetId);
+  },[itemObj,recoilDoenetId])
+
+  console.log("itemObj",itemObj)
   // console.log(`allPossibleVariants -${allPossibleVariants}-`)
 
 
@@ -137,6 +146,18 @@ export default function AssignmentViewer() {
         }
         startedInitOfDoenetId.current = doenetId;
 
+        // const {
+        //   timeLimit,
+        //   assignedDate,
+        //   dueDate,
+        //   showCorrectness,
+        //   showCreditAchievedMenu,
+        //   showFeedback,
+        //   showHints,
+        //   showSolution,
+        //   proctorMakesAvailable,
+        // } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
+
         const {
           timeLimit,
           assignedDate,
@@ -147,7 +168,18 @@ export default function AssignmentViewer() {
           showHints,
           showSolution,
           proctorMakesAvailable,
-        } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
+        } = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+console.log("assignmentviewer",{
+  timeLimit,
+  assignedDate,
+  dueDate,
+  showCorrectness,
+  showCreditAchievedMenu,
+  showFeedback,
+  showHints,
+  showSolution,
+  proctorMakesAvailable,
+})
         let suppress = [];
         if (timeLimit === null) {
           suppress.push('TimerMenu');
@@ -329,7 +361,7 @@ export default function AssignmentViewer() {
         setStage('Ready');
 
       },
-    [],
+      [setSuppressMenus],
   );
 
   async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId) {

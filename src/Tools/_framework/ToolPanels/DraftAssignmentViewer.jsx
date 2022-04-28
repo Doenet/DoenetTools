@@ -22,11 +22,13 @@ import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive
 import axios from 'axios';
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
+import { useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
 
 
 export default function DraftAssignmentViewer() {
   // console.log(">>>===DraftAssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const recoilRequestedVariant = useRecoilValue(searchParamAtomFamily('requestedVariant'));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(activityVariantInfoAtom);
@@ -48,6 +50,7 @@ export default function DraftAssignmentViewer() {
   let startedInitOfDoenetId = useRef(null);
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
+  useInitCourseItems(courseId);
 
   // console.log(`allPossibleVariants -${allPossibleVariants}-`)
 
