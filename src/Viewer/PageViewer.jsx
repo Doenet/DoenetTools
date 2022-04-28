@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { nanoid } from 'nanoid';
-import { useToast, toastType } from './src/Tools/_framework/Tool';
+import { useToast, toastType } from '../Tools/_framework/Toast';
 import { serializedComponentsReplacer, serializedComponentsReviver } from '../Core/utils/serializedStateProcessing';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
