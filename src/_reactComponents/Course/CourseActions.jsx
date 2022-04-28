@@ -1270,7 +1270,7 @@ export const useCourse = (courseId) => {
     ({ set,snapshot }) =>
       async ({doenetId, successCallback, failureCallback = defaultFailure}) => {
         let itemToDeleteObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-        console.log("deleteItem itemToDeleteObj",itemToDeleteObj)
+        // console.log("deleteItem itemToDeleteObj",itemToDeleteObj)
         let pagesDoenetIds = [];
         let courseContentDoenetIds = [];
         let activitiesJson = [];
