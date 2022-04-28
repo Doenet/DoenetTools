@@ -709,10 +709,12 @@ export const useCourse = (courseId) => {
               set(authorItemByDoenetId(pageThatWasCreated.doenetId),pageThatWasCreated)
               newItemDoenetId = pageThatWasCreated.doenetId;
             }else if (itemType == 'order'){
-              orderObj['isOpen'] = false;
-              orderObj['isSelected'] = false;
-              orderObj['containingDoenetId'] = selectedItemObj.doenetId;
-              orderObj['parentDoenetId'] = selectedItemObj.order.doenetId;
+              orderObj = {...orderObj,
+                isOpen:false,
+                isSelected:false,
+                containingDoenetId: selectedItemObj.doenetId,
+                parentDoenetId:selectedItemObj.order.doenetId
+              }
               set(authorItemByDoenetId(orderObj.doenetId),orderObj)
             }
             set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
