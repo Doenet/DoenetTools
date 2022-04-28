@@ -105,8 +105,6 @@ $containingDoenetIds = [];
 							"type"=>"page",
 							"doenetId"=>$row['doenetId'],
 							"containingDoenetId"=>$row['containingDoenetId'],
-							"cid"=>$row['cid'],
-							"draftCid"=>$row['draftCid'],
 							"label"=>$row['label']
 						);
 						$item['isSelected'] = false; //Note: no isOpen

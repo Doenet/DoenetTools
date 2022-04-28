@@ -105,6 +105,9 @@ export function useInitCourseItems(courseId) {
               let ordersAndPages = findOrderAndPageDoenetIds(item.order,item.doenetId,item.doenetId);
               items = [...items,...ordersAndPages];
             }else if (item.type === 'bank'){
+              item.pages.map((childDoenetId)=>{
+                pageDoenetIdToParentDoenetId[childDoenetId] = item.doenetId;
+              })
               items = [...items,...item.pages];
             }else if (item.type === 'page'){
               item['parentDoenetId'] = pageDoenetIdToParentDoenetId[item.doenetId];
