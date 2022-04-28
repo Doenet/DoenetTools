@@ -748,7 +748,9 @@ export const useCourse = (courseId) => {
             });
           }else if (selectedItemObj.type == 'order'){
             let orderDoenetId = selectedItemObj.doenetId;
-            pageThatWasCreated.parentDoenetId = orderDoenetId;
+            if (pageThatWasCreated){
+              pageThatWasCreated.parentDoenetId = orderDoenetId;
+            }
             const containingItemObj = await snapshot.getPromise(authorItemByDoenetId(selectedItemObj.containingDoenetId));
 
             let { newOrderObj, insertedAfterDoenetId } = insertPageOrOrderToOrder({
@@ -786,7 +788,9 @@ export const useCourse = (courseId) => {
                 return next;
               });
           }else if (selectedItemObj.type == 'page'){
-            pageThatWasCreated.parentDoenetId = selectedItemObj.parentDoenetId;
+            if (pageThatWasCreated){
+              pageThatWasCreated.parentDoenetId = selectedItemObj.parentDoenetId;
+            }
             const containingItemObj = await snapshot.getPromise(authorItemByDoenetId(selectedItemObj.containingDoenetId));
             if (containingItemObj.type == 'bank'){
               // let insertedAfterDoenetId = selectedItemObj.doenetId;
@@ -863,7 +867,7 @@ export const useCourse = (courseId) => {
               orderObj['isOpen'] = false;
               orderObj['isSelected'] = false;
               orderObj['containingDoenetId'] = selectedItemObj?.containingDoenetId;
-              orderObj['parentDoenetId'] = selectedItemObj?.doenetId;
+              orderObj['parentDoenetId'] = selectedItemObj?.parentDoenetId;
    
               set(authorItemByDoenetId(newActivityObj.doenetId),newActivityObj)
               let newItemDoenetId = orderDoenetIdThatWasCreated;
