@@ -21,18 +21,18 @@ let processEnv = {
 esbuild
   .build({
     entryPoints: ['src/Core/Core.js'],
-    format: 'iife',
+    format: 'cjs',
+    // loader: { '.jsx': 'jsx', '.js': 'jsx' },
     bundle: true,
     minify: false,
     target: ['firefox99', 'chrome99', 'safari15'],
-    loader: { '.js': '.jsx' },
-    external: [
-      'math-expressions',
-      'axios',
-      'idb-keyval',
-      'hi-base32',
-      '@lezer',
-    ],
+    // external: [
+    //   'math-expressions',
+    //   'axios',
+    //   'idb-keyval',
+    //   'hi-base32',
+    //   '@lezer',
+    // ],
     plugins: [processEnv],
     outfile: 'src/Viewer/core.js',
   })
