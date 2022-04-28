@@ -2,6 +2,7 @@ import React, {useEffect, useContext, useRef} from "../../_snowpack/pkg/react.js
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 export default function Angle(props) {
   let {name, SVs} = useDoenetRender(props);
   const board = useContext(BoardContext);
@@ -10,13 +11,6 @@ export default function Angle(props) {
   let point3JXG = useRef(null);
   let angleJXG = useRef(null);
   let previousWithLabel = useRef(null);
-  useEffect(() => {
-    if (!board && window.MathJax) {
-      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  });
   useEffect(() => {
     return () => {
       deleteGraphicalObject();
@@ -38,7 +32,7 @@ export default function Angle(props) {
     if (SVs.numericalPoints.length !== 3 || SVs.numericalPoints.some((x) => x.length !== 2) || !(Number.isFinite(SVs.numericalRadius) && SVs.numericalRadius > 0)) {
       return null;
     }
-    let angleColor = "#FF7F00";
+    let angleColor = getComputedStyle(document.documentElement).getPropertyValue("--solidLightBlue");
     var jsxAngleAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
@@ -129,5 +123,9 @@ export default function Angle(props) {
     name
   }), /* @__PURE__ */ React.createElement("span", {
     id: name
-  }, mathJaxify));
+  }, /* @__PURE__ */ React.createElement(MathJax, {
+    hideUntilTypeset: "first",
+    inline: true,
+    dynamic: true
+  }, mathJaxify)));
 }

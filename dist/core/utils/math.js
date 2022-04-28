@@ -103,11 +103,12 @@ export function findFiniteNumericalValue(value) {
 
 
 export function convertValueToMathExpression(value) {
-  if (value === undefined || value === null) {
-    return me.fromAst('\uFF3F');  // long underscore
-  } else if (value instanceof me.class) {
+  if (value instanceof me.class) {
     return value;
   } else if (typeof value === "number" || typeof value === "string") {
+    // let value be math-expression based on value
+    return me.fromAst(value);
+  } else if (Array.isArray(value)) {
     // let value be math-expression based on value
     return me.fromAst(value);
   } else {
@@ -564,13 +565,14 @@ function wrapWordIncludingNumberWithVarSub(string) {
 
   let newString = "";
 
-  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+  let regex = /([^a-zA-Z0-9\s]?\s*)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length - match[3].length;
-    if (match[1] === "\\") {
-      // start with backslash, so skip
+    if (match[1] === "\\" || match[1][0] === "^") {
+      // start with backslash or with a ^ and optional space
+      // so skip
       newString += string.substring(0, endMatch);
       string = string.substring(endMatch);
     } else {
@@ -592,3 +594,26 @@ function wrapWordIncludingNumberWithVarSub(string) {
 export function stripLatex(latex) {
   return latex.replaceAll(`\\,`, '').replaceAll(/\\var{([^{}]*)}/g, '$1');
 }
+
+export const mathjaxConfig = {
+  showProcessingMessages: false,
+  "fast-preview": {
+    disabled: true
+  },
+  jax: ["input/TeX", "output/CommonHTML"],
+  extensions: ["tex2jax.js", "MathMenu.js", "MathZoom.js", "AssistiveMML.js", "a11y/accessibility-menu.js"],
+  TeX: {
+    extensions: ["AMSmath.js", "AMSsymbols.js", "noErrors.js", "noUndefined.js"],
+    equationNumbers: {
+      autoNumber: "AMS"
+    },
+    Macros: {
+      lt: '<', gt: '>', amp: '&', var: ['\\mathrm{#1}', 1],
+      csch: '\\operatorname{csch}',
+      sech: '\\operatorname{sech}'
+    }
+  },
+  tex2jax: {
+    displayMath: [['\\[', '\\]']]
+  }
+};

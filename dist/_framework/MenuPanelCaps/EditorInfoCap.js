@@ -1,43 +1,47 @@
 import React from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {folderDictionary, fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
+import {authorItemByDoenetId, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 export default function EditorInfoCap() {
-  let path = useRecoilValue(searchParamAtomFamily("path"));
-  let [driveId, folderId, doenetId] = path.split(":");
-  let folderInfo = useRecoilValue(folderDictionary({driveId, folderId}));
-  const driveInfo = useRecoilValue(fetchDrivesQuery);
-  const docInfo = folderInfo.contentsDictionary[doenetId];
-  if (!docInfo) {
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  const pageId = useRecoilValue(searchParamAtomFamily("pageId"));
+  let {color, image, label: course_label} = useCourse(courseId);
+  const pageInfo = useRecoilValue(authorItemByDoenetId(pageId));
+  const activityInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  if (!pageInfo) {
     return null;
   }
-  let status = "Not Released";
-  if (docInfo?.isReleased === "1") {
-    status = "Released";
-  }
-  let image;
-  let color;
-  let course_label = "";
-  for (let info of driveInfo.driveIdsAndLabels) {
-    if (info.driveId === driveId) {
-      color = info.color;
-      image = info.image;
-      course_label = info.label;
-      break;
-    }
-  }
   if (image != "none") {
-    image = "url(/media/drive_pictures/" + image + ")";
+    image = "/media/drive_pictures/" + image;
   }
   if (color != "none") {
     color = "#" + color;
   }
+  let activityPageJSX = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+    style: {marginBottom: "1px", marginTop: "5px"}
+  }, "Activity"), /* @__PURE__ */ React.createElement("div", {
+    style: {marginBottom: "5px", padding: "1px 5px"}
+  }, activityInfo.label), /* @__PURE__ */ React.createElement("div", {
+    style: {marginBottom: "1px", marginTop: "5px"}
+  }, "Page"), /* @__PURE__ */ React.createElement("div", {
+    style: {marginBottom: "5px", padding: "1px 5px"}
+  }, pageInfo.label));
+  if (activityInfo.isSinglePage) {
+    activityPageJSX = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+      style: {marginBottom: "1px", marginTop: "5px"}
+    }, "Activity"), /* @__PURE__ */ React.createElement("div", {
+      style: {marginBottom: "5px", padding: "1px 5px"}
+    }, activityInfo.label));
+  }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
-    style: {position: "relative", paddingBottom: "135px"}
+    style: {position: "relative", width: "100%", height: "135px", overflow: "hidden"}
   }, /* @__PURE__ */ React.createElement("img", {
-    style: {position: "absolute", height: "135px", objectFit: "cover", backgroundImage: image, backgroundColor: color},
-    width: "240px"
-  })), /* @__PURE__ */ React.createElement("div", {
-    style: {padding: "8px"}
-  }, /* @__PURE__ */ React.createElement("div", null, course_label), /* @__PURE__ */ React.createElement("div", null, docInfo.label), /* @__PURE__ */ React.createElement("div", null, status, " ")));
+    src: image,
+    style: {position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)"}
+  })), /* @__PURE__ */ React.createElement("b", null, "Editor"), /* @__PURE__ */ React.createElement("div", {
+    style: {marginBottom: "1px", marginTop: "5px"}
+  }, "Course"), /* @__PURE__ */ React.createElement("div", {
+    style: {marginBottom: "5px", padding: "1px 5px"}
+  }, course_label), activityPageJSX);
 }

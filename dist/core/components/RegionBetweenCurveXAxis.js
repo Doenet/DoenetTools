@@ -3,8 +3,8 @@ import GraphicalComponent from './abstract/GraphicalComponent.js';
 export default class RegionBetweenCurveXAxis extends GraphicalComponent {
   static componentType = "regionBetweenCurveXAxis";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.boundaryValues = {
       createComponentOfType: "numberList",

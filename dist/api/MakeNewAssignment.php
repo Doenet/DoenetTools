@@ -13,7 +13,7 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
-$contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
+$cid = mysqli_real_escape_string($conn,$_POST["cid"]);
 
 //make assignment 
 $dueDate = mysqli_real_escape_string($conn,$_POST["dueDate"]);
@@ -33,9 +33,6 @@ if ($gradeCategory == ''){ $gradeCategory = 'e';}
 $individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
 if ($individualize == ''){ $individualize = '0';}
 else if ($individualize){ $individualize = '1';}
-$multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
-if ($multipleAttempts == ''){ $multipleAttempts = '0';}
-else if ($multipleAttempts){ $multipleAttempts = '1';}
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
 if ($showSolution == ''){ $showSolution = '0';}
 else if($showSolution){ $showSolution = '1';}
@@ -82,7 +79,6 @@ if ($success){
       totalPointsOrPercent=$totalPointsOrPercent,
       gradeCategory=$gradeCategory,
       individualize=$individualize,
-      multipleAttempts=$multipleAttempts,
       showSolution=$showSolution,
       showSolutionInGradebook=$showSolutionInGradebook,
       showFeedback=$showFeedback,
@@ -98,7 +94,7 @@ if ($success){
       INSERT INTO assignment
       (
       doenetId,
-      contentId,
+      cid,
       driveId,
       assignedDate,
       dueDate,
@@ -108,7 +104,6 @@ if ($success){
       totalPointsOrPercent,
       gradeCategory,
       individualize,
-      multipleAttempts,
       showSolution,
       showSolutionInGradebook,
       showFeedback,
@@ -118,7 +113,7 @@ if ($success){
       VALUES
       (
         '$doenetId',
-        '$contentId',
+        '$cid',
       '$driveId',
       '$assignedDate',
       '$dueDate',
@@ -128,7 +123,6 @@ if ($success){
       '$totalPointsOrPercent',
       '$gradeCategory',
       '$individualize',
-      '$multipleAttempts',
       '$showSolution',
       '$showSolutionInGradebook',
       '$showFeedback',

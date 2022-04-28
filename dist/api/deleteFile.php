@@ -13,7 +13,7 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
-$contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
+$cid = mysqli_real_escape_string($conn,$_REQUEST["cid"]);
 
 $success = TRUE;
 $message = "";
@@ -22,9 +22,9 @@ $uploads_dir = '../media/';
 if ($doenetId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing doenetId';
-}elseif ($contentId == ""){
+}elseif ($cid == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing contentId';
+  $message = 'Internal Error: missing cid';
 }
 
 //Test if user has permission to delete files
@@ -47,12 +47,12 @@ if ($row['canUpload'] == '0'){
 
 if ($success){
 
-  //Is anyone using this contentId file?
+  //Is anyone using this cid file?
   //AKA can we delete the file?
   $sql = "
-  SELECT contentId
+  SELECT cid
   FROM support_files
-  WHERE contentId = '$contentId'
+  WHERE cid = '$cid'
   AND doenetId != '$doenetId'
   ";
   $result = $conn->query($sql);
@@ -60,22 +60,22 @@ if ($success){
   if ($result->num_rows == 0){
     //Delete from media folder
     $sql = "
-    SELECT contentId,fileType
+    SELECT cid,fileType
     FROM support_files
-    WHERE contentId = '$contentId'
+    WHERE cid = '$cid'
     AND doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
-    $fileLocation = $uploads_dir . getFileName($row['contentId'],$row['fileType']);
+    $fileLocation = $uploads_dir . getFileName($row['cid'],$row['fileType']);
     unlink($fileLocation);
   }
 
-  //Delete row of doenetId and contentId for this user
+  //Delete row of doenetId and cid for this user
   $sql = "
   DELETE FROM support_files
   WHERE userId = '$userId'
-  AND contentId = '$contentId'
+  AND cid = '$cid'
   AND doenetId = '$doenetId'
   ";
   $result = $conn->query($sql);

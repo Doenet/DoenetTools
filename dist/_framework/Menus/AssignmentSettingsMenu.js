@@ -1,6 +1,6 @@
 import React from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {AssignmentSettings} from "./SelectedDoenetML.js";
+import {AssignmentSettings} from "./SelectedActivity.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 export default function AssignmentSettingsMenu() {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));

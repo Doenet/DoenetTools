@@ -1,44 +1,79 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
-import {doenetComponentForegroundInactive, doenetComponentForegroundActive} from "./theme.js";
+import React, {useState, useRef, useEffect, useLayoutEffect} from "../../_snowpack/pkg/react.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faSearch, faTimes} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+const SearchBar = styled.input`
+    margin: 0px -${(props) => props.inputWidth}px 0px 0px;
+    height: 24px;
+    border: ${(props) => props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)"};
+    border-radius: var(--mainBorderRadius);
+    position: relative;
+    padding: 0px 70px 0px 30px;
+    color: #000;
+    overflow: hidden;
+    width: ${(props) => props.width === "menu" ? "130px" : "220px"};
+    font-size: 14px;
+    cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
+`;
+const CancelButton = styled.button`
+    float: right;
+    margin: 6px 0px 0px ${(props) => props.marginLeft}px;
+    // margin: '6px 0px 0px 172px',
+    position: absolute;
+    z-index: 2;
+    border: 0px;
+    background-color: white;
+    visibility: ${(props) => props.cancelShown};
+    color: #000;
+    overflow: hidden;
+    outline: none;
+`;
+const SubmitButton = styled.button`
+    position: absolute;
+    display: inline;
+    margin: 0px 0px 0px -60px;
+    z-index: 2;
+    height: 28px;
+    border: ${(props) => props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)"};
+    background-color: ${(props) => props.disabled ? "var(--mainGray)" : "var(--mainBlue)"};
+    color: ${(props) => props.disabled ? "black" : "white"};
+    border-radius: 0px 5px 5px 0px;
+    cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
+    font-size: 12px;
+    overflow: hidden;
+
+    &:hover {
+        color: black;
+        background-color: ${(props) => props.disabled ? "var(--mainGray)" : "var(--lightBlue)"};
+    }
+`;
+const Label = styled.p`
+    font-size: 14px;
+    display: ${(props) => props.labelVisible}; 
+    margin: 0px 5px 2px 0px;
+`;
+const Container = styled.div`
+    display: ${(props) => props.align};
+    width: 235px;
+    align-items: center;
+`;
 export default function Searchbar(props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [cancelShown, setCancelShown] = useState("hidden");
-  const [searchShown, setSearchShown] = useState("visible");
-  const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
-  const [align, setAlign] = useState(props.vertical ? "static" : "flex");
-  const marginLeft = props.noSearchButton ? 80 : 26;
-  var searchBar = {
-    margin: "0px",
-    height: "24px",
-    border: `2px solid black`,
-    borderRadius: "5px",
-    position: "relative",
-    padding: "0px 70px 0px 30px",
-    color: "#000",
-    overflow: "hidden",
-    width: "220px",
-    fontSize: "14px"
-  };
-  if (props.width) {
-    if (props.width === "menu") {
-      searchBar.width = "130px";
+  const labelVisible = props.label ? "static" : "none";
+  const align = props.vertical ? "static" : "flex";
+  const [marginLeft, setMarginLeft] = useState(props.noSearchButton ? 80 : 26);
+  const alert = props.alert ? props.alert : null;
+  const searchBarRef = useRef(0);
+  useEffect(() => {
+    if (searchBarRef) {
+      let searchBar = document.querySelector("#searchbar");
+      let inputWidth = searchBar.clientWidth;
+      setTimeout(function() {
+        setMarginLeft(inputWidth - (props.noSearchButton ? 23 : 77) - (props.width ? 90 : 0));
+      }, 1e3);
     }
-  }
-  let cancelLeftMargin = Number(searchBar.width.split("px")[0]) + marginLeft + "px";
-  var cancelButton = {
-    float: "right",
-    margin: `6px 0px 0px ${cancelLeftMargin}`,
-    position: "absolute",
-    zIndex: "2",
-    border: "0px",
-    backgroundColor: "#FFF",
-    visibility: `${cancelShown}`,
-    color: "#000",
-    overflow: "hidden",
-    outline: "none"
-  };
+  }, [searchBarRef, props]);
   var searchIcon = {
     margin: "6px 0px 0px 6px",
     position: "absolute",
@@ -46,59 +81,45 @@ export default function Searchbar(props) {
     color: "#000",
     overflow: "hidden"
   };
-  var submitButton = {
-    position: "absolute",
-    display: "inline",
-    margin: "0px 0px 0px -60px",
-    zIndex: "2",
-    height: "28px",
-    border: `2px solid black`,
-    backgroundColor: `${doenetComponentForegroundActive}`,
-    color: "#FFFFFF",
-    borderRadius: "0px 5px 5px 0px",
-    cursor: "pointer",
-    fontSize: "12px",
-    overflow: "hidden"
-  };
   var disable = "";
   if (props.disabled) {
-    submitButton.backgroundColor = "#e2e2e2";
-    submitButton.color = "black";
-    submitButton.cursor = "not-allowed";
-    searchBar.cursor = "not-allowed";
     disable = "disabled";
   }
-  var label = {
-    value: "Label:",
-    fontSize: "14px",
-    display: `${labelVisible}`,
-    margin: "0px 5px 2px 0px"
-  };
-  var container = {
-    display: `${align}`,
-    width: "235px",
-    alignItems: "center"
-  };
-  var searchButton = /* @__PURE__ */ React.createElement("button", {
-    style: submitButton,
+  ;
+  var searchButton = /* @__PURE__ */ React.createElement(SubmitButton, {
+    disabled: disable,
+    alert,
     onClick: searchSubmitAction
   }, "Search");
+  var width = "";
+  if (props.width) {
+    width = props.width;
+  }
+  ;
   if (props.noSearchButton) {
     searchButton = "";
-    console.log(cancelLeftMargin);
   }
+  ;
+  var placeholder = "Search...";
   if (props.placeholder) {
-    searchBar.placeholder = props.placeholder;
+    placeholder = props.placeholder;
   }
+  ;
+  var label = "";
   if (props.label) {
-    label.value = props.label;
+    label = props.label;
   }
+  ;
+  var ariaLabel = "";
   if (props.ariaLabel) {
-    searchBar.ariaLabel = props.ariaLabel;
+    ariaLabel = props.ariaLabel;
   }
-  if (props.alert) {
-    searchBar.border = "2px solid #C1292E";
+  ;
+  let autoFocus = false;
+  if (props.autoFocus) {
+    autoFocus = true;
   }
+  ;
   function clearInput() {
     setSearchTerm("");
     setCancelShown("hidden");
@@ -106,6 +127,7 @@ export default function Searchbar(props) {
       props.onChange("");
     }
   }
+  ;
   function onChange(e) {
     let val = e.target.value;
     setSearchTerm(val);
@@ -118,44 +140,47 @@ export default function Searchbar(props) {
       props.onChange(val);
     }
   }
+  ;
   function handleBlur(e) {
     if (props.onBlur)
       props.onBlur(e);
   }
+  ;
   function handleKeyDown(e) {
     if (props.onKeyDown)
       props.onKeyDown(e);
   }
+  ;
   function searchSubmitAction() {
     if (props.onSubmit) {
       props.onSubmit(searchTerm);
     }
   }
-  let autoFocus = false;
-  if (props.autoFocus) {
-    autoFocus = true;
-  }
-  return /* @__PURE__ */ React.createElement("div", {
-    style: container
-  }, /* @__PURE__ */ React.createElement("p", {
-    style: label
-  }, label?.value), /* @__PURE__ */ React.createElement("div", {
+  ;
+  return /* @__PURE__ */ React.createElement(Container, {
+    align
+  }, /* @__PURE__ */ React.createElement(Label, {
+    labelVisible,
+    align
+  }, label), /* @__PURE__ */ React.createElement("div", {
     style: {display: "table-cell"}
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faSearch,
     style: searchIcon
-  }), /* @__PURE__ */ React.createElement("button", {
-    style: cancelButton,
+  }), /* @__PURE__ */ React.createElement(CancelButton, {
+    ref: searchBarRef,
+    cancelShown,
+    marginLeft,
     onClick: () => {
       clearInput();
     }
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faTimes
-  })), /* @__PURE__ */ React.createElement("input", {
-    id: "search",
+  })), /* @__PURE__ */ React.createElement(SearchBar, {
+    id: "searchbar",
     type: "text",
-    placeholder: props.placeholder ? searchBar.placeholder : "Search...",
-    style: searchBar,
+    width,
+    placeholder,
     onChange,
     onBlur: (e) => {
       handleBlur(e);
@@ -164,6 +189,7 @@ export default function Searchbar(props) {
       handleKeyDown(e);
     },
     disabled: disable,
+    alert,
     value: searchTerm,
     onKeyDown: (e) => {
       if (e.key === "Enter") {
@@ -171,8 +197,9 @@ export default function Searchbar(props) {
       }
     },
     autoFocus,
-    "aria-label": searchBar.ariaLabel
+    ariaLabel
   }), /* @__PURE__ */ React.createElement("div", {
     style: {padding: "3px", display: "inline"}
   }), searchButton));
 }
+;

@@ -3,8 +3,8 @@ import BlockComponent from './abstract/BlockComponent.js';
 export default class Image extends BlockComponent {
   static componentType = "image";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",

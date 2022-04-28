@@ -4,8 +4,8 @@ import me from '../../_snowpack/pkg/math-expressions.js';
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.draggable = {
       createComponentOfType: "boolean",
       createStateVariable: "draggable",

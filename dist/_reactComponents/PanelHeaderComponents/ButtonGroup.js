@@ -1,10 +1,8 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
-import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import React from "../../_snowpack/pkg/react.js";
 import styled, {ThemeProvider} from "../../_snowpack/pkg/styled-components.js";
 const Container = styled.div`
   display: ${(props) => props.vertical ? "static" : "flex"};
   // margin: 2px 0px 2px 0px
- ;
 `;
 export default function ButtonGroup(props) {
   const buttonGroup = {
@@ -24,3 +22,4 @@ export default function ButtonGroup(props) {
     theme: props.vertical ? verticalButtonGroup : buttonGroup
   }, elem));
 }
+;

@@ -6,8 +6,8 @@ export default class DiscreteSimulationResultList extends BlockComponent {
   static componentType = "DiscreteSimulationResultList";
   static rendererType = "spreadsheet";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
@@ -287,7 +287,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
   }
 
 
-  async onChange({ changes, source }) {
+  async onChange({ changes, source, actionId, }) {
 
     if (source !== "loadData") {
       let cellChanges = {};
@@ -303,6 +303,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           stateVariable: "cells",
           value: cellChanges,
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -312,6 +313,8 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           result: cellChanges
         }
       })
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
 
