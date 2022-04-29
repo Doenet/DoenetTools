@@ -1,6 +1,4 @@
-import {
-  faFileCode
-} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {faFileCode} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import React, {useState, useEffect, useLayoutEffect, useRef} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
@@ -14,7 +12,12 @@ import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/Acti
 import {pageToolViewAtom} from "../NewToolRoot.js";
 import {useToast, toastType} from "../Toast.js";
 import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
-import {authorItemByDoenetId, findFirstPageOfActivity, selectedCourseItems, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {
+  authorItemByDoenetId,
+  findFirstPageOfActivity,
+  selectedCourseItems,
+  useCourse
+} from "../../_reactComponents/Course/CourseActions.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
@@ -25,7 +28,12 @@ export default function SelectedActivity() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
-  const {renameItem, create, compileActivity, deleteItem, copyItems, cutItems} = useCourse(courseId);
+  const {
+    renameItem,
+    create,
+    compileActivity,
+    deleteItem
+  } = useCourse(courseId);
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(itemObj.label);
   const addToast = useToast();
   useEffect(() => {
@@ -94,7 +102,12 @@ export default function SelectedActivity() {
             page: "course",
             tool: "editor",
             view: prev.view,
-            params: {doenetId, pageId: firstPageDoenetId, sectionId: itemObj.parentDoenetId, courseId: prev.params.courseId}
+            params: {
+              doenetId,
+              pageId: firstPageDoenetId,
+              sectionId: itemObj.parentDoenetId,
+              courseId: prev.params.courseId
+            }
           };
         });
       }
@@ -147,32 +160,16 @@ export default function SelectedActivity() {
         handelLabelModfication();
     },
     onBlur: handelLabelModfication
-  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ActionButtonGroup, {
-    width: "menu"
-  }, /* @__PURE__ */ React.createElement(ActionButton, {
-    value: "Copy",
-    onClick: () => {
-      copyItems({successCallback: () => {
-        addToast("Activity copied!", toastType.INFO);
-      }});
-    }
-  }), /* @__PURE__ */ React.createElement(ActionButton, {
-    value: "Cut",
-    onClick: () => {
-      cutItems({successCallback: () => {
-        addToast("Activity cut!", toastType.INFO);
-      }});
-    }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ButtonGroup, {
+  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ButtonGroup, {
     vertical: true
   }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    onClick: () => create({itemType: "order"}),
-    value: "Add Order"
-  }), /* @__PURE__ */ React.createElement(Button, {
-    width: "menu",
     onClick: () => create({itemType: "page"}),
     value: "Add Page"
+  }), /* @__PURE__ */ React.createElement(Button, {
+    width: "menu",
+    onClick: () => create({itemType: "order"}),
+    value: "Add Order"
   })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: assignActivityText,

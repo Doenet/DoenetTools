@@ -10,7 +10,6 @@ import {
 } from 'recoil';
 import {
   searchParamAtomFamily,
-  suppressMenusAtom,
   profileAtom,
 } from '../NewToolRoot';
 import {
@@ -18,19 +17,17 @@ import {
   activityVariantPanelAtom,
 } from '../ToolHandlers/CourseToolHandler';
 
-import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
-import { useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
+import { authorItemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
 
 
 export default function DraftAssignmentViewer() {
   // console.log(">>>===DraftAssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const recoilRequestedVariant = useRecoilValue(searchParamAtomFamily('requestedVariant'));
-  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+
   const [variantInfo, setVariantInfo] = useRecoilState(activityVariantInfoAtom);
   const setVariantPanel = useSetRecoilState(activityVariantPanelAtom);
   let [stage, setStage] = useState('Initializing');
@@ -47,10 +44,16 @@ export default function DraftAssignmentViewer() {
     },
     setLoad,
   ] = useState({});
-  let startedInitOfDoenetId = useRef(null);
+
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
   useInitCourseItems(courseId);
+
+  let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
+
+  useEffect(()=>{
+    initializeValues(recoilDoenetId, itemObj);
+  },[itemObj,recoilDoenetId])
 
   // console.log(`allPossibleVariants -${allPossibleVariants}-`)
 
@@ -72,20 +75,22 @@ export default function DraftAssignmentViewer() {
 
   const initializeValues = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (doenetId) => {
-        //Prevent duplicate inits
-        if (startedInitOfDoenetId.current === doenetId) {
+      async (doenetId,{
+        type,
+        timeLimit,
+        assignedDate,
+        dueDate,
+        showCorrectness,
+        showCreditAchievedMenu,
+        showFeedback,
+        showHints,
+        showSolution,
+        proctorMakesAvailable,
+      }) => {
+        // if itemObj has not yet been loaded, don't process yet
+        if(type === undefined) {
           return;
         }
-        startedInitOfDoenetId.current = doenetId;
-
-        const {
-          showCorrectness,
-          showFeedback,
-          showHints,
-          showSolution,
-          proctorMakesAvailable,
-        } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
 
         let solutionDisplayMode = 'button';
         if (!showSolution) {
@@ -149,7 +154,7 @@ export default function DraftAssignmentViewer() {
   // console.log(`>>>>attemptNumber -${attemptNumber}-`)
 
   if (stage === 'Initializing') {
-    initializeValues(recoilDoenetId);
+    // initializeValues(recoilDoenetId);
     return null;
   } else if (stage === 'Problem') {
     return <h1>{message}</h1>;

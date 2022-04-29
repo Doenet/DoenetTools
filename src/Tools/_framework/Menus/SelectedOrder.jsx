@@ -115,17 +115,17 @@ if (behavior == 'select'){
       <Button
         width="menu"
         onClick={() =>
-          create({itemType:"order"})
-        }
-        value="Add Order"
-      />
-      <Button
-        width="menu"
-        onClick={() =>
           create({itemType:"page"})
         }
         value="Add Page"
       />
+        <Button
+          width="menu"
+          onClick={() =>
+            create({itemType:"order"})
+          }
+          value="Add Order"
+        />
     </ButtonGroup>
     <br />
     <Button

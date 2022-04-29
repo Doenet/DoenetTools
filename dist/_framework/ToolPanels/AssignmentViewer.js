@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from "../../_snowpack/pkg/react.js";
 import ActivityViewer from "../../viewer/ActivityViewer.js";
-import {serializedComponentsReviver} from "../../core/utils/serializedStateProcessing.js";
 import {
   useRecoilValue,
   atom,
@@ -16,12 +15,11 @@ import {
   suppressMenusAtom,
   profileAtom
 } from "../NewToolRoot.js";
-import {returnAllPossibleVariants} from "../../core/utils/returnAllPossibleVariants.js";
-import {loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {retrieveTextFileForCid} from "../../core/utils/retrieveTextFile.js";
 import {prng_alea} from "../../_snowpack/pkg/esm-seedrandom.js";
 import {determineNumberOfActivityVariants, parseActivityDefinition} from "../../_utils/activityUtils.js";
+import {authorItemByDoenetId, useInitCourseItems} from "../../_reactComponents/Course/CourseActions.js";
 export const currentAttemptNumber = atom({
   key: "currentAttemptNumber",
   default: null
@@ -74,6 +72,7 @@ function generateNewVariant({previousVariants, allPossibleVariants, individualiz
 export default function AssignmentViewer() {
   console.log(">>>===AssignmentViewer");
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState("Initializing");
   let [message, setMessage] = useState("");
@@ -96,24 +95,28 @@ export default function AssignmentViewer() {
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
   let individualize = useRef(null);
+  useInitCourseItems(courseId);
+  let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
+  useEffect(() => {
+    initializeValues(recoilDoenetId, itemObj);
+  }, [itemObj, recoilDoenetId]);
   const loadProfile = useRecoilValueLoadable(profileAtom);
   userId.current = loadProfile.contents.userId;
-  const initializeValues = useRecoilCallback(({snapshot, set}) => async (doenetId2) => {
-    if (startedInitOfDoenetId.current === doenetId2) {
+  const initializeValues = useRecoilCallback(({snapshot, set}) => async (doenetId2, {
+    type,
+    timeLimit,
+    assignedDate,
+    dueDate,
+    showCorrectness: showCorrectness2,
+    showCreditAchievedMenu,
+    showFeedback: showFeedback2,
+    showHints: showHints2,
+    showSolution,
+    proctorMakesAvailable
+  }) => {
+    if (type === void 0) {
       return;
     }
-    startedInitOfDoenetId.current = doenetId2;
-    const {
-      timeLimit,
-      assignedDate,
-      dueDate,
-      showCorrectness: showCorrectness2,
-      showCreditAchievedMenu,
-      showFeedback: showFeedback2,
-      showHints: showHints2,
-      showSolution,
-      proctorMakesAvailable
-    } = await snapshot.getPromise(loadAssignmentSelector(doenetId2));
     let suppress = [];
     if (timeLimit === null) {
       suppress.push("TimerMenu");
@@ -225,7 +228,7 @@ export default function AssignmentViewer() {
       cidChanged: cidChanged2
     });
     setStage("Ready");
-  }, []);
+  }, [setSuppressMenus]);
   async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId2) {
     let cid2 = null;
     let resp = await axios.get(`/api/getCidForAssignment.php`, {params: {doenetId: doenetId2, latestAttemptOverrides: false}});
@@ -307,7 +310,6 @@ export default function AssignmentViewer() {
     return null;
   }
   if (stage === "Initializing") {
-    initializeValues(recoilDoenetId);
     return null;
   } else if (stage === "Problem") {
     return /* @__PURE__ */ React.createElement("h1", null, message);
@@ -346,6 +348,6 @@ async function returnNumberOfActivityVariants(cid) {
   if (!result.success) {
     return result;
   }
-  let numberOfVariants = await determineNumberOfActivityVariants(result.activityJSON);
-  return {success: true, numberOfVariants};
+  result = await determineNumberOfActivityVariants(result.activityJSON);
+  return {success: true, numberOfVariants: result.numberOfVariants};
 }
