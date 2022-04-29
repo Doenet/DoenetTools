@@ -46,6 +46,7 @@
     "@lezer/xml": "^0.15.1",
     "@prettier/plugin-php": "^0.18.2",
     "@react-spring/web": "^9.2.4",
+    "@rollup/plugin-alias": "^3.1.9",
     "@use-gesture/react": "^10.2.10",
     "axios": "^0.26.1",
     "better-react-mathjax": "^1.0.3",
@@ -53,7 +54,7 @@
     "compromise": "^13.11.4",
     "compromise-numbers": "^1.4.0",
     "cookie": "^0.4.1",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^3.3.0",
     "cssesc": "^3.0.0",
     "csv-parse": "^4.16.3",
     "esm-seedrandom": "^3.0.5",
@@ -123,10 +124,7 @@
     "rollup-plugin-polyfill-node": "^0.9.0",
     "rollup-plugin-terser": "^7.0.2",
     "snowpack": "3.7.0",
-    "snowpack-plugin-raw-file-loader": "^1.0.9",
-    "vite": "^2.9.6",
-    "vite-plugin-mkcert": "^1.6.0",
-    "vite-tsconfig-paths": "^3.4.1"
+    "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
   "eslintConfig": {
     "extends": [
