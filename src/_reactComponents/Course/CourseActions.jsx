@@ -1112,9 +1112,9 @@ export const useCourse = (courseId) => {
         }
 
         let activityDoenetML = `<document${attributeString}>\n${childrenString}</document>`
-
         try {
           let resp = await axios.post('/api/saveCompiledActivity.php', { courseId, doenetId: activityDoenetId, isAssigned, activityDoenetML });
+         
           if (resp.status < 300) {
             let { success, message, cid, assignmentSettings } = resp.data;
 
@@ -1127,8 +1127,10 @@ export const useCourse = (courseId) => {
             set(authorItemByDoenetId(activityDoenetId), (prev) => {
               let next = { ...prev }
               next[key] = cid;
-
-              Object.assign(next, localizeDates(assignmentSettings, dateKeys));
+              
+              if (isAssigned) {
+                Object.assign(next, localizeDates(assignmentSettings, dateKeys));
+              }
 
               return next;
             })

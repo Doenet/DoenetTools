@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ActivityViewer from '../../../Viewer/ActivityViewer';
-import { serializedComponentsReviver } from '../../../Core/utils/serializedStateProcessing';
 import {
   useRecoilValue,
   atom,
@@ -18,8 +17,6 @@ import {
   suppressMenusAtom,
   profileAtom,
 } from '../NewToolRoot';
-import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants.js';
-import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { prng_alea } from 'esm-seedrandom';
@@ -128,7 +125,7 @@ export default function AssignmentViewer() {
     initializeValues(recoilDoenetId, itemObj);
   },[itemObj,recoilDoenetId])
 
-  console.log("itemObj",itemObj)
+  // console.log("itemObj",itemObj)
   // console.log(`allPossibleVariants -${allPossibleVariants}-`)
 
 
