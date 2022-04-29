@@ -125,7 +125,7 @@ export default function AssignmentViewer() {
   let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
 
   useEffect(()=>{
-    initializeValues(recoilDoenetId);
+    initializeValues(recoilDoenetId, itemObj);
   },[itemObj,recoilDoenetId])
 
   console.log("itemObj",itemObj)
@@ -139,47 +139,24 @@ export default function AssignmentViewer() {
 
   const initializeValues = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (doenetId) => {
-        //Prevent duplicate inits
-        if (startedInitOfDoenetId.current === doenetId) {
+      async (doenetId, {
+        type,
+        timeLimit,
+        assignedDate,
+        dueDate,
+        showCorrectness,
+        showCreditAchievedMenu,
+        showFeedback,
+        showHints,
+        showSolution,
+        proctorMakesAvailable,
+      }) => {
+
+        // if itemObj has not yet been loaded, don't process yet
+        if(type === undefined) {
           return;
         }
-        startedInitOfDoenetId.current = doenetId;
 
-        // const {
-        //   timeLimit,
-        //   assignedDate,
-        //   dueDate,
-        //   showCorrectness,
-        //   showCreditAchievedMenu,
-        //   showFeedback,
-        //   showHints,
-        //   showSolution,
-        //   proctorMakesAvailable,
-        // } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
-
-        const {
-          timeLimit,
-          assignedDate,
-          dueDate,
-          showCorrectness,
-          showCreditAchievedMenu,
-          showFeedback,
-          showHints,
-          showSolution,
-          proctorMakesAvailable,
-        } = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-console.log("assignmentviewer",{
-  timeLimit,
-  assignedDate,
-  dueDate,
-  showCorrectness,
-  showCreditAchievedMenu,
-  showFeedback,
-  showHints,
-  showSolution,
-  proctorMakesAvailable,
-})
         let suppress = [];
         if (timeLimit === null) {
           suppress.push('TimerMenu');
@@ -488,7 +465,7 @@ console.log("assignmentviewer",{
   // console.log(`>>>>attemptNumber -${attemptNumber}-`)
 
   if (stage === 'Initializing') {
-    initializeValues(recoilDoenetId);
+    // initializeValues(recoilDoenetId, itemObj);
     return null;
   } else if (stage === 'Problem') {
     return <h1>{message}</h1>;
@@ -541,7 +518,7 @@ async function returnNumberOfActivityVariants(cid) {
     return result;
   }
 
-  let numberOfVariants = await determineNumberOfActivityVariants(result.activityJSON);
+  result = await determineNumberOfActivityVariants(result.activityJSON);
 
-  return { success: true, numberOfVariants };
+  return { success: true, numberOfVariants: result.numberOfVariants };
 }

@@ -197,7 +197,7 @@ async function returnNumberOfActivityVariants(cid) {
     return result;
   }
 
-  let numberOfVariants = await determineNumberOfActivityVariants(result.activityJSON);
+  result = await determineNumberOfActivityVariants(result.activityJSON);
 
-  return { success: true, numberOfVariants };
+  return { success: true, numberOfVariants: result.numberOfVariants };
 }
