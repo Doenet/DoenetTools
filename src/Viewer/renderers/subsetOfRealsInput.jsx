@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styled from "styled-components";
 import useDoenetRender from './useDoenetRenderer';
 import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
@@ -32,6 +32,7 @@ const ModeButton = styled.button`
 export default function subsetOfReals(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props,false);
   let [mode,setMode] = useState("add remove points");
+    console.log(mode);
   let bounds = useRef(null);
   let pointGrabbed = useRef(null);
 
@@ -39,6 +40,19 @@ export default function subsetOfReals(props) {
     return null;
   }
 
+  function handleTogglePoints(val) {
+    // setTogglePoints(val);
+    if (val === 0) {
+      console.log(val);
+      setMode("add remove points");
+    } else if (val === 1) {
+      console.log(val);
+      setMode("toggle");
+    } else if (val === 2) {
+      console.log(val);
+      setMode("move points");
+    }
+  }
   //Build control buttons
   // const activeButtonColor = "var(--lightBlue)";
   // const inactiveButtonColor = "var(--mainGray)";
@@ -64,22 +78,25 @@ export default function subsetOfReals(props) {
   if(!SVs.fixed) {
     controlButtons =
     <>
-      <ToggleButtonGroup>
+      <ToggleButtonGroup onClick={handleTogglePoints} style={{marginBottom: "12px"}}>
         <ToggleButton
           // style={addRemovePointsStyle}
-          onClick={() => setMode("add remove points")}
+          // onClick={() => setMode("add remove points")}
+          // onClick={handleTogglePoints}
           value="Add/Remove points"
         >
         </ToggleButton>
         <ToggleButton
           // style={toggleStyle}
-          onClick={() => setMode("toggle")}
+          // onClick={() => setMode("toggle")}
+          // onClick={handleTogglePoints}
           value="Toggle points and intervals"
         >
         </ToggleButton>
         <ToggleButton
           // style={movePointsStyle}
-          onClick={() => setMode("move points")}
+          // onClick={() => setMode("move points")}
+          // onClick={handleTogglePoints}
           value="Move Points"
         >
         </ToggleButton>
@@ -144,7 +161,7 @@ export default function subsetOfReals(props) {
 
     let xPosition = xValueToXPosition(pt.value);
 
-    let currentFillColor = "var(--lightPurple)";
+    let currentFillColor = "#644CD6";
     if (!closed) {
       currentFillColor = "white";
     }
@@ -175,7 +192,7 @@ export default function subsetOfReals(props) {
     const higherPointKey = `higherIntervalPoint${higherXPosition}`;
     const lineKey = `line${lowerXPosition}-${higherXPosition}`;
 
-    let currentFillColor = "var(--lightPurple)";
+    let currentFillColor = "#644CD6";
 
     let lowerLine = lowerXPosition;
     let higherLine = higherXPosition;
