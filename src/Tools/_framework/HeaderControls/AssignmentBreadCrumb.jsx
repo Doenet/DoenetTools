@@ -17,7 +17,8 @@ export default function AssignmentBreadCrumb() {
 
   const chooserCrumb = useCourseChooserCrumb();
   const dashboardCrumb = useDashboardCrumb(courseId);
-  const navigationCrumbs = useNavigationCrumbs(courseId, sectionId);
+  const navigationCrumbs = useNavigationCrumbs(courseId,doenetId)
+  const assignmentCrumb = useAssignmentCrumb({doenetId,courseId,sectionId: parentDoenetId});
 
   // const [courseId, setCourseId] = useState("");
   // const [parentDoenetId, setParentDoenetId] = useState("");
