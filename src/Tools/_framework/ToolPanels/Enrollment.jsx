@@ -4,7 +4,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { atom, useSetRecoilState, useRecoilValue } from 'recoil';
-import { useToast, toastType } from '../Toast';
+import { useToast, toastType } from '@Toast';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 
 export const enrollmentTableDataAtom = atom({

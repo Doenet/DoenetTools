@@ -53,7 +53,7 @@ import { pageToolViewAtom } from '../NewToolRoot';
 //   itemHistoryAtom,
 //   fileByContentId,
 // } from '../ToolHandlers/CourseToolHandler';
-import { useToast, toastType } from '../Toast';
+import { useToast, toastType } from '@Toast';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { authorItemByDoenetId, findFirstPageOfActivity, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';

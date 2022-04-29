@@ -1,5 +1,5 @@
 import React from 'react';
-import { useToast, toastType } from '../Toast';
+import { useToast, toastType } from '@Toast';
 
 
 export default function ToastTest(props){

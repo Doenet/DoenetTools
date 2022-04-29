@@ -1,6 +1,6 @@
 import React from 'react';
 import { editorPageIdInitAtom } from '../ToolPanels/EditorViewer'
-import { useToast, toastType } from '../Toast';
+import { useToast, toastType } from '@Toast';
 import { 
   useRecoilValue, 
 } from 'recoil';
