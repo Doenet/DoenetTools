@@ -17,7 +17,7 @@ import { cidFromText } from './utils/cid';
 import { removeFunctionsMathExpressionClass } from './CoreWorker';
 import createComponentInfoObjects from './utils/componentInfoObjects';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
-import { toastType } from '@Toast';
+import { toastType } from '../Tools/_framework/ToastTypes';
 import axios from 'axios';
 
 // string to componentClass: this.componentInfoObjects.allComponentClasses["string"]
