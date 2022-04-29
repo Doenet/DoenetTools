@@ -1,55 +1,33 @@
 import { faFileCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
-// import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
-// import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
-// import {
-//   DateToUTCDateString,
-//   DateToDateString,
-// } from '../../../_utils/dateUtilityFunction';
-// import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
+import React, { useState, useEffect } from 'react';
+import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
+import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
+import {
+  DateToUTCDateString,
+  DateToDateString,
+} from '../../../_utils/dateUtilityFunction';
 import styled from 'styled-components';
 
 import {
   // atom,
-  selector,
   useRecoilValue,
   // useRecoilValueLoadable,
   // useRecoilState,
   useSetRecoilState,
   // useRecoilCallback,
 } from 'recoil';
-// import {
-//   // folderDictionaryFilterSelector,
-//   loadAssignmentSelector,
-//   folderDictionary,
-//   globalSelectedNodesAtom,
-// } from '../../../_reactComponents/Drive/NewDrive';
-// import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-// import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
-// import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-// import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
-// import useSockets from '../../../_reactComponents/Sockets';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import { pageToolViewAtom } from '../NewToolRoot';
-// import {
-//   itemHistoryAtom,
-//   assignmentDictionarySelector,
-//   useAssignment,
-// } from '../ToolHandlers/CourseToolHandler';
-// import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
-// import { useToast } from '../Toast';
-// import Switch from '../Switch';
-// import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-// import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-// import axios from 'axios';
-// import { nanoid } from 'nanoid';
+import Switch from '../Switch';
+import axios from 'axios';
+import { nanoid } from 'nanoid';
 
-// import {
-//   itemHistoryAtom,
-//   fileByContentId,
-// } from '../ToolHandlers/CourseToolHandler';
 import { useToast, toastType } from '@Toast';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import {
@@ -59,39 +37,40 @@ import {
   useCourse,
 } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-// import CalendarToggle from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
-// import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
+import CalendarToggle from '../../../_reactComponents/PanelHeaderComponents/CalendarToggle';
+import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 
 // const InputWrapper = styled.div`
 //   margin: 0 5px 10px 5px;
 //   display: ${props => props.flex ? "flex" : "block"};
 //   align-items: ${props => props.flex && "center"}
-
 // `
 
-// const LabelText = styled.span`
-//   margin-bottom: 5px;
-// `
+const LabelText = styled.span`
+  margin-bottom: 5px;
+`;
 
 // const CheckboxLabelText = styled.span`
 //   font-size: 15px;
 //   line-height: 1.1
 // `
 
-// const InputControl = styled.div`
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-// `
+const InputControl = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 
 export default function SelectedActivity() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
-  const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  const {
+    label: recoilLabel,
+    order,
+    assignedCid,
+    parentDoenetId,
+  } = useRecoilValue(authorItemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const {
     renameItem,
@@ -99,25 +78,23 @@ export default function SelectedActivity() {
     compileActivity,
     deleteItem,
   } = useCourse(courseId);
-  const [itemTextFieldLabel, setItemTextFieldLabel] = useState(itemObj.label);
+  const [itemTextFieldLabel, setItemTextFieldLabel] = useState(recoilLabel);
   const addToast = useToast();
 
   useEffect(() => {
-    if (itemTextFieldLabel !== itemObj.label) {
-      setItemTextFieldLabel(itemObj.label);
-    }
-  }, [doenetId]);
+      setItemTextFieldLabel(recoilLabel);
+  }, [recoilLabel]);
 
   if (doenetId == undefined) {
     return null;
   }
-  let firstPageDoenetId = findFirstPageOfActivity(itemObj.order);
+  let firstPageDoenetId = findFirstPageOfActivity(order);
 
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
     if (itemTextFieldLabel === '') {
-      effectiveItemLabel = itemObj.label;
-      if (itemObj.label === '') {
+      effectiveItemLabel = recoilLabel;
+      if (recoilLabel === '') {
         effectiveItemLabel = 'Untitled';
       }
 
@@ -125,14 +102,14 @@ export default function SelectedActivity() {
       addToast('Every item must have a label.');
     }
     //Only update the server when it changes
-    if (itemObj.label !== effectiveItemLabel) {
+    if (recoilLabel !== effectiveItemLabel) {
       renameItem(doenetId, effectiveItemLabel);
     }
   };
 
   let heading = (
     <h2 data-cy="infoPanelItemLabel" style={{ margin: '16px 5px' }}>
-      <FontAwesomeIcon icon={faFileCode} /> {itemObj.label}
+      <FontAwesomeIcon icon={faFileCode} /> {recoilLabel}
     </h2>
   );
 
@@ -160,7 +137,7 @@ export default function SelectedActivity() {
   }
 
   let assignActivityText = 'Assign Activity';
-  if (itemObj.assignedCid != null) {
+  if (assignedCid != null) {
     assignActivityText = 'Update Assigned Activity';
   }
 
@@ -206,7 +183,7 @@ export default function SelectedActivity() {
                   params: {
                     courseId,
                     doenetId,
-                    sectionId: itemObj.parentDoenetId,
+                    sectionId: parentDoenetId,
                     requestedVariant: 1,
                   },
                 });
@@ -224,7 +201,7 @@ export default function SelectedActivity() {
               view: '',
               params: {
                 courseId,
-                sectionId: itemObj.parentDoenetId,
+                sectionId: parentDoenetId,
                 doenetId,
               },
             });
