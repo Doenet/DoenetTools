@@ -11,6 +11,7 @@ import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { fileByDoenetId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
+import { UTCDateStringToDate } from '../../_utils/dateUtilityFunction';
 
 
 function buildDoenetIdToParentDoenetIdObj(orderObj){
@@ -99,6 +100,20 @@ function findOrderAndPageDoenetIdsAndSetOrderObjs(set,orderObj,assignmentDoenetI
   return orderAndPagesDoenetIds;
 }
 
+function localizeDates(obj, keys) {
+  for(let key of keys) {
+    if (obj[key]) {
+      obj[key] = UTCDateStringToDate(
+        obj[key],
+      ).toLocaleString();
+    }
+  }
+  return obj;
+}
+
+let dateKeys = ["assignedDate", "dueDate", "pinnedAfterDate", "pinnedUntilDate"];
+
+
 export function useInitCourseItems(courseId) {
   const getDataAndSetRecoil = useRecoilCallback(
      ({ snapshot,set }) =>
@@ -134,7 +149,7 @@ export function useInitCourseItems(courseId) {
             }
             
             //Store activity, bank and page information
-            set(authorItemByDoenetId(item.doenetId), item);
+            set(authorItemByDoenetId(item.doenetId), localizeDates(item, dateKeys));
 
             return items
           },[])
@@ -1101,7 +1116,7 @@ export const useCourse = (courseId) => {
         try {
           let resp = await axios.post('/api/saveCompiledActivity.php', { courseId, doenetId: activityDoenetId, isAssigned, activityDoenetML });
           if (resp.status < 300) {
-            let { success, message, cid } = resp.data;
+            let { success, message, cid, assignmentSettings } = resp.data;
 
             let key = 'draftCid';
             if (isAssigned) {
@@ -1112,6 +1127,9 @@ export const useCourse = (courseId) => {
             set(authorItemByDoenetId(activityDoenetId), (prev) => {
               let next = { ...prev }
               next[key] = cid;
+
+              Object.assign(next, localizeDates(assignmentSettings, dateKeys));
+
               return next;
             })
             successCallback?.();
