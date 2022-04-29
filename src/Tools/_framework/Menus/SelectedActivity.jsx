@@ -98,8 +98,6 @@ export default function SelectedActivity() {
     create,
     compileActivity,
     deleteItem,
-    copyItems,
-    cutItems,
   } = useCourse(courseId);
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(itemObj.label);
   const addToast = useToast();
@@ -245,39 +243,17 @@ export default function SelectedActivity() {
         onBlur={handelLabelModfication}
       />
       <br />
-      <ActionButtonGroup width="menu">
-        <ActionButton
-          value="Copy"
-          onClick={() => {
-            copyItems({
-              successCallback: () => {
-                addToast('Activity copied!', toastType.INFO);
-              },
-            });
-          }}
-        />
-        <ActionButton
-          value="Cut"
-          onClick={() => {
-            cutItems({
-              successCallback: () => {
-                addToast('Activity cut!', toastType.INFO);
-              },
-            });
-          }}
-        />
-      </ActionButtonGroup>
-      <br />
+     
       <ButtonGroup vertical>
-        <Button
-          width="menu"
-          onClick={() => create({ itemType: 'order' })}
-          value="Add Order"
-        />
         <Button
           width="menu"
           onClick={() => create({ itemType: 'page' })}
           value="Add Page"
+        />
+        <Button
+          width="menu"
+          onClick={() => create({ itemType: 'order' })}
+          value="Add Order"
         />
       </ButtonGroup>
       <br />
