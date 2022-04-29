@@ -75,33 +75,17 @@ export default function SelectedPage() {
         handelLabelModfication();
     },
     onBlur: handelLabelModfication
-  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ActionButtonGroup, {
-    width: "menu"
-  }, /* @__PURE__ */ React.createElement(ActionButton, {
-    value: "Copy",
-    onClick: () => {
-      copyItems({successCallback: () => {
-        addToast("Page copied!", toastType.INFO);
-      }});
-    }
-  }), /* @__PURE__ */ React.createElement(ActionButton, {
-    value: "Cut",
-    onClick: () => {
-      cutItems({successCallback: () => {
-        addToast("Page cut!", toastType.INFO);
-      }});
-    }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ButtonGroup, {
+  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ButtonGroup, {
     vertical: true
-  }, containingObj.type == "activity" ? /* @__PURE__ */ React.createElement(Button, {
-    width: "menu",
-    onClick: () => create({itemType: "order"}),
-    value: "Add Order"
-  }) : null, /* @__PURE__ */ React.createElement(Button, {
+  }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     onClick: () => create({itemType: "page"}),
     value: "Add Page"
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+  }), containingObj.type == "activity" ? /* @__PURE__ */ React.createElement(Button, {
+    width: "menu",
+    onClick: () => create({itemType: "order"}),
+    value: "Add Order"
+  }) : null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Delete Page",
     alert: true,

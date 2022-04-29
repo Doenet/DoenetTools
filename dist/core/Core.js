@@ -17,7 +17,7 @@ import { cidFromText } from './utils/cid.js';
 import { removeFunctionsMathExpressionClass } from './CoreWorker.js';
 import createComponentInfoObjects from './utils/componentInfoObjects.js';
 import { get as idb_get, set as idb_set } from '../_snowpack/pkg/idb-keyval.js';
-import { toastType } from '../_framework/Toast.js';
+import { toastType } from '../_framework/ToastTypes.js';
 import axios from '../_snowpack/pkg/axios.js';
 
 // string to componentClass: this.componentInfoObjects.allComponentClasses["string"]

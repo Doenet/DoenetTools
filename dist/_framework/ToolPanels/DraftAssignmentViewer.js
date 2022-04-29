@@ -10,21 +10,19 @@ import {
 } from "../../_snowpack/pkg/recoil.js";
 import {
   searchParamAtomFamily,
-  suppressMenusAtom,
   profileAtom
 } from "../NewToolRoot.js";
 import {
   activityVariantInfoAtom,
   activityVariantPanelAtom
 } from "../ToolHandlers/CourseToolHandler.js";
-import {loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {retrieveTextFileForCid} from "../../core/utils/retrieveTextFile.js";
 import {determineNumberOfActivityVariants, parseActivityDefinition} from "../../_utils/activityUtils.js";
+import {authorItemByDoenetId, useInitCourseItems} from "../../_reactComponents/Course/CourseActions.js";
 export default function DraftAssignmentViewer() {
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  const recoilRequestedVariant = useRecoilValue(searchParamAtomFamily("requestedVariant"));
-  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const [variantInfo, setVariantInfo] = useRecoilState(activityVariantInfoAtom);
   const setVariantPanel = useSetRecoilState(activityVariantPanelAtom);
   let [stage, setStage] = useState("Initializing");
@@ -41,9 +39,13 @@ export default function DraftAssignmentViewer() {
     },
     setLoad
   ] = useState({});
-  let startedInitOfDoenetId = useRef(null);
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
+  useInitCourseItems(courseId);
+  let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
+  useEffect(() => {
+    initializeValues(recoilDoenetId, itemObj);
+  }, [itemObj, recoilDoenetId]);
   const loadProfile = useRecoilValueLoadable(profileAtom);
   userId.current = loadProfile.contents.userId;
   function variantCallback(variantIndex, numberOfVariants) {
@@ -55,18 +57,21 @@ export default function DraftAssignmentViewer() {
       index: variantIndex
     });
   }
-  const initializeValues = useRecoilCallback(({snapshot, set}) => async (doenetId2) => {
-    if (startedInitOfDoenetId.current === doenetId2) {
+  const initializeValues = useRecoilCallback(({snapshot, set}) => async (doenetId2, {
+    type,
+    timeLimit,
+    assignedDate,
+    dueDate,
+    showCorrectness: showCorrectness2,
+    showCreditAchievedMenu,
+    showFeedback: showFeedback2,
+    showHints: showHints2,
+    showSolution,
+    proctorMakesAvailable
+  }) => {
+    if (type === void 0) {
       return;
     }
-    startedInitOfDoenetId.current = doenetId2;
-    const {
-      showCorrectness: showCorrectness2,
-      showFeedback: showFeedback2,
-      showHints: showHints2,
-      showSolution,
-      proctorMakesAvailable
-    } = await snapshot.getPromise(loadAssignmentSelector(doenetId2));
     let solutionDisplayMode2 = "button";
     if (!showSolution) {
       solutionDisplayMode2 = "none";
@@ -102,7 +107,6 @@ export default function DraftAssignmentViewer() {
     return null;
   }
   if (stage === "Initializing") {
-    initializeValues(recoilDoenetId);
     return null;
   } else if (stage === "Problem") {
     return /* @__PURE__ */ React.createElement("h1", null, message);
@@ -135,6 +139,6 @@ async function returnNumberOfActivityVariants(cid) {
   if (!result.success) {
     return result;
   }
-  let numberOfVariants = await determineNumberOfActivityVariants(result.activityJSON);
-  return {success: true, numberOfVariants};
+  result = await determineNumberOfActivityVariants(result.activityJSON);
+  return {success: true, numberOfVariants: result.numberOfVariants};
 }
