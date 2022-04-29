@@ -20,7 +20,7 @@ let image = course.image;
 // let label = course.label;
  
  if (image != 'none'){
-  image = '/media/drive_pictures/' + image;
+  image = 'url(/media/drive_pictures/' + image + ')';
  }
  if (color != 'none'){
   color = '#' + color;
@@ -67,7 +67,7 @@ let image = course.image;
   return (
   <div>
     <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
-      <img src={image} style={{ position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)" }}  />
+      <img style={{ position: "absolute", width: "100%", height: "100%", backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: image, backgroundColor: color }}  />
     </div>
     <b>Assignment</b>
     {/* <div style={{ padding:'16px 12px' }}>
