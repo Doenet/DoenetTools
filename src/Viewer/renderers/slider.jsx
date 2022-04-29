@@ -570,10 +570,10 @@ export default function Slider(props) {
     null
   }
 
-  // let valueDisplay = null;
-  // if (SVs.showValue) {
-  //   valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, position: "relative", userSelect: "none" }}>{SVs.valueForDisplay} </span>
-  // }
+  let valueDisplay = null;
+  if (SVs.showValue) {
+    valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, position: "relative", userSelect: "none" }}>{SVs.valueForDisplay} </span>
+  }
 
   return (
     <SliderContainer ref={containerRef} labeled={(SVs.showControls || SVs.label)} noTicked={SVs.showTicks === false} onKeyDown={handleKeyDown} tabIndex='0'>
