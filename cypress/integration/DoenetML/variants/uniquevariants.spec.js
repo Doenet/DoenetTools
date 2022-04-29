@@ -48,6 +48,7 @@ describe('Specifying unique variant tests', function () {
 
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/x'].stateValues.value).eq(values[(ind - 1) % 6])
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
       })
     }
 
@@ -83,6 +84,7 @@ describe('Specifying unique variant tests', function () {
 
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/x'].stateValues.value).eq((ind - 1) % 5 + 1)
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e"])
       })
     }
 
@@ -817,6 +819,7 @@ describe('Specifying unique variant tests', function () {
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
 
         if (ind === 3) {
           cy.log("all individual groups selected in first variants")
@@ -932,6 +935,7 @@ describe('Specifying unique variant tests', function () {
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
 
         if (ind === 3) {
           cy.log("all individual groups selected in first variants")
@@ -1047,6 +1051,7 @@ describe('Specifying unique variant tests', function () {
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
 
         if (ind === 3) {
           cy.log("all individual groups selected in first variants")
@@ -1573,6 +1578,8 @@ describe('Specifying unique variant tests', function () {
         expect(valuesFound.includes(combinedValue)).eq(false);
         valuesFound.push(combinedValue);
 
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
+
 
         categoriesFound.push(category);
 
@@ -1780,6 +1787,7 @@ describe('Specifying unique variant tests', function () {
         expect(stateVariables[stateVariables["/p1"].activeChildren[1].componentName].stateValues.value).eq('a')
         expect(stateVariables[stateVariables["/p2"].activeChildren[1].componentName].stateValues.value).eq('b')
         expect(stateVariables[stateVariables["/p3"].activeChildren[1].componentName].stateValues.value).eq('c')
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c"])
       })
 
 
@@ -1878,6 +1886,7 @@ describe('Specifying unique variant tests', function () {
         let selectedOrder = choiceOrder.join(",")
         expect(ordersFound.includes(selectedOrder)).eq(false);
         ordersFound.push(selectedOrder);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
 
         for (let i = 0; i < 3; i++) {
           cy.get(`#\\/ci_choice${i + 1}_input`).click();
@@ -2003,6 +2012,7 @@ describe('Specifying unique variant tests', function () {
         let selectedOption = [...choiceOrder, ...choices].join(",")
         expect(selectionsFound.includes(selectedOption)).eq(false);
         selectionsFound.push(selectedOption);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h"])
 
         for (let i = 0; i < 2; i++) {
           cy.get(`#\\/ci_choice${i + 1}_input`).click();
@@ -2051,7 +2061,7 @@ describe('Specifying unique variant tests', function () {
 
 
 
-    cy.log("7th variant repeats first order")
+    cy.log("9th variant repeats first order")
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_newAttempt').click()
     cy.wait(100)
@@ -2152,6 +2162,8 @@ describe('Specifying unique variant tests', function () {
 
         expect(stateVariables["/m"].stateValues.value).eq(m);
         expect(stateVariables["/n"].stateValues.value).eq(n);
+
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
 
         cy.get(mathinputAnchor).type(`${m}{enter}`, { force: true });
         cy.get(mathinput2Anchor).type(`${n}{enter}`, { force: true });

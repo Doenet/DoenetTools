@@ -87,7 +87,7 @@ export function parseActivityDefinition(activityDefDoenetML) {
       .filter(x => typeof x !== "string" || /\S/.test(x))
 
     for (let child of documentChildren) {
-      if (child.componentType.toLowerCase() === "order") {
+      if (child.componentType?.toLowerCase() === "order") {
         if (foundOrder) {
           return { success: false, message: `Invalid activity definition: more than one base order defined` };
         }
