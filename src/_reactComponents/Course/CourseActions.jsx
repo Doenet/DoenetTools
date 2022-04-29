@@ -11,6 +11,23 @@ import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { fileByDoenetId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
+import { UTCDateStringToDate } from '../../_utils/dateUtilityFunction';
+
+
+function buildDoenetIdToParentDoenetIdObj(orderObj){
+  let returnObj = {}
+  orderObj.content.map((item)=>{
+    if (item?.type == "order"){
+      returnObj[item.doenetId] = orderObj.doenetId;
+      let childObj = buildDoenetIdToParentDoenetIdObj(item);
+      returnObj = {...childObj,...returnObj}
+    }else{
+      returnObj[item] = orderObj.doenetId;
+    }
+    returnObj
+  })
+  return returnObj;
+}
 
 export function findFirstPageOfActivity(orderObj){
   if (!orderObj?.content){
@@ -44,65 +61,83 @@ export function findFirstPageOfActivity(orderObj){
 
 }
 
+//Recursive Function for order which adds orders to the authorItemByDoenetId
+function findOrderAndPageDoenetIdsAndSetOrderObjs(set,orderObj,assignmentDoenetId,parentDoenetId){
+  let orderAndPagesDoenetIds = [];
+  //Guard for when there is no order
+  if (orderObj){
+    //Store order objects for UI
+    let numberToSelect = orderObj.numberToSelect;
+    if (numberToSelect == undefined){
+      numberToSelect = 1;
+    }
+    let withReplacement = orderObj.withReplacement;
+    if (withReplacement == undefined){
+      withReplacement = false;
+    }
+    set(authorItemByDoenetId(orderObj.doenetId), {
+      type: "order",
+      doenetId: orderObj.doenetId, 
+      behavior:orderObj.behavior,
+      numberToSelect,
+      withReplacement,
+      containingDoenetId:assignmentDoenetId,
+      isOpen:false,
+      isSelected:false,
+      parentDoenetId
+    });
+    orderAndPagesDoenetIds.push(orderObj.doenetId);
+    for (let orderItem of orderObj.content){
+      if (orderItem?.type == 'order'){
+        let moreOrderDoenetIds = findOrderAndPageDoenetIdsAndSetOrderObjs(set,orderItem,assignmentDoenetId,orderObj.doenetId);
+        orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
+      }else{
+        //Page 
+        orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,orderItem];
+      }
+    }
+  }
+  return orderAndPagesDoenetIds;
+}
+
+function localizeDates(obj, keys) {
+  for(let key of keys) {
+    if (obj[key]) {
+      obj[key] = UTCDateStringToDate(
+        obj[key],
+      ).toLocaleString();
+    }
+  }
+  return obj;
+}
+
+let dateKeys = ["assignedDate", "dueDate", "pinnedAfterDate", "pinnedUntilDate"];
+
+
 export function useInitCourseItems(courseId) {
   const getDataAndSetRecoil = useRecoilCallback(
      ({ snapshot,set }) =>
      async (courseId) => {
-       let pageDoenetIdToParentDoenetId = {};
-       //Recursive Function for order
-       function findOrderAndPageDoenetIds(orderObj,assignmentDoenetId,parentDoenetId){
-          let orderAndPagesDoenetIds = [];
-          //Guard for when there is no order
-          if (orderObj){
-            //Store order objects for UI
-            let numberToSelect = orderObj.numberToSelect;
-            if (numberToSelect == undefined){
-              numberToSelect = 1;
-            }
-            let withReplacement = orderObj.withReplacement;
-            if (withReplacement == undefined){
-              withReplacement = false;
-            }
-            set(authorItemByDoenetId(orderObj.doenetId), {
-              type: "order",
-              doenetId: orderObj.doenetId, 
-              behavior:orderObj.behavior,
-              numberToSelect,
-              withReplacement,
-              containingDoenetId:assignmentDoenetId,
-              isOpen:false,
-              isSelected:false,
-              parentDoenetId
-            });
-            orderAndPagesDoenetIds.push(orderObj.doenetId);
-            for (let orderItem of orderObj.content){
-              if (orderItem?.type == 'order'){
-                let moreOrderDoenetIds = findOrderAndPageDoenetIds(orderItem,assignmentDoenetId,orderObj.doenetId);
-                orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
-              }else{
-                //Page 
-                pageDoenetIdToParentDoenetId[orderItem] = orderObj.doenetId;
-                orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,orderItem];
-              }
-            }
-          }
-          return orderAndPagesDoenetIds;
-        }
-
-        //Only ask the server for course if we haven't already
-        const courseArrayTest = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
-        if (courseArrayTest.length == 0){
-          const { data } = await axios.get('/api/getCourseItems.php', {
-            params: { courseId },
+       
+       
+       //Only ask the server for course if we haven't already
+       const courseArrayTest = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
+       if (courseArrayTest.length == 0){
+         const { data } = await axios.get('/api/getCourseItems.php', {
+           params: { courseId },
           });
           //DoenetIds depth first search and going into json structures
           //TODO: organize by section
+          
+          let pageDoenetIdToParentDoenetId = {};
           let doenetIds = data.items.reduce((items,item)=>{
             if (item.type !== 'page'){
               items.push(item.doenetId)
             }
             if (item.type === 'activity'){
-              let ordersAndPages = findOrderAndPageDoenetIds(item.order,item.doenetId,item.doenetId);
+              pageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.order);
+
+              let ordersAndPages = findOrderAndPageDoenetIdsAndSetOrderObjs(set,item.order,item.doenetId,item.doenetId);
               items = [...items,...ordersAndPages];
             }else if (item.type === 'bank'){
               item.pages.map((childDoenetId)=>{
@@ -114,7 +149,7 @@ export function useInitCourseItems(courseId) {
             }
             
             //Store activity, bank and page information
-            set(authorItemByDoenetId(item.doenetId), item);
+            set(authorItemByDoenetId(item.doenetId), localizeDates(item, dateKeys));
 
             return items
           },[])
@@ -1081,7 +1116,7 @@ export const useCourse = (courseId) => {
         try {
           let resp = await axios.post('/api/saveCompiledActivity.php', { courseId, doenetId: activityDoenetId, isAssigned, activityDoenetML });
           if (resp.status < 300) {
-            let { success, message, cid } = resp.data;
+            let { success, message, cid, assignmentSettings } = resp.data;
 
             let key = 'draftCid';
             if (isAssigned) {
@@ -1092,6 +1127,9 @@ export const useCourse = (courseId) => {
             set(authorItemByDoenetId(activityDoenetId), (prev) => {
               let next = { ...prev }
               next[key] = cid;
+
+              Object.assign(next, localizeDates(assignmentSettings, dateKeys));
+
               return next;
             })
             successCallback?.();
@@ -1774,9 +1812,16 @@ export const useCourse = (courseId) => {
               });
               // console.log("copied data",resp.data)
               let createdDoenetIds = [resp.data.doenetId]
+              console.log("resp.data.itemEntered",resp.data.itemEntered)
               set(authorItemByDoenetId(resp.data.doenetId),resp.data.itemEntered);
+              let doenetIdToParentDoenetIdObj = buildDoenetIdToParentDoenetIdObj(resp.data.itemEntered.order);
+              findOrderAndPageDoenetIdsAndSetOrderObjs(set,resp.data.itemEntered.order,resp.data.doenetId,resp.data.doenetId)
+              // findOrderAndPageDoenetIds(set,resp.data.itemEntered.order,resp.data.doenetId,resp.data.doenetId)
+
               for (let pageObj of resp.data.pagesEntered){
+                //Add parentDoenetId to pageObj
                 createdDoenetIds.push(pageObj.doenetId);
+                pageObj["parentDoenetId"] = doenetIdToParentDoenetIdObj[pageObj.doenetId]
                 set(authorItemByDoenetId(pageObj.doenetId),pageObj);
               }
               set(authorCourseItemOrderByCourseId(courseId),(prev)=>{

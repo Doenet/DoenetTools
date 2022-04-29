@@ -788,6 +788,7 @@ export default class Document extends BaseComponent {
     numberOfVariants = Math.min(result.numberOfVariants, numberOfVariants);
 
     serializedComponent.variants.numberOfVariants = numberOfVariants;
+    serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariants;
 
     // console.log("Actual number of variants for document is " + numberOfVariants)
 
