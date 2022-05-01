@@ -11,7 +11,7 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
-$driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
+$courseId = mysqli_real_escape_string($conn,$_POST["courseId"]);
 $mergeHeads = array_map(function($doenetId) use($conn) {
 return mysqli_real_escape_string($conn, $doenetId);
 }, $_POST['mergeHeads']);
@@ -36,11 +36,11 @@ $message = "";
 
 //TODO: Need a permission related to see grades (not du.canEditContent)
 $sql = "
-SELECT du.canEditContent 
-FROM drive_user AS du
+SELECT du.canManageUsers 
+FROM course_user AS du
 WHERE du.userId = '$userId'
-AND du.driveId = '$driveId'
-AND du.canEditContent = '1'
+AND du.courseId = '$courseId'
+AND du.canManageUsers = '1'
 ";
  
 $result = $conn->query($sql);
@@ -54,7 +54,7 @@ if ($success){
 $sql = "
 SELECT email
 FROM enrollment
-WHERE driveId = '$driveId'
+WHERE courseId = '$courseId'
 ";
 $result = $conn->query($sql);
 $db_emails = array();
@@ -90,7 +90,8 @@ for($i = 0; $i < count($mergeEmail); $i++){
 	$row = $result->fetch_assoc();
 	$new_userId = $row['userId'];
 	$isEmailInUserTable = TRUE;
-}
+	}
+
 
 
 	if (in_array($email,$db_emails,FALSE)){
@@ -106,7 +107,7 @@ for($i = 0; $i < count($mergeEmail); $i++){
 		SET
 		$update_columns
 		WHERE
-		driveId = '$driveId'
+		courseId = '$courseId'
 		AND email = '$email'";
 		
 		$result = $conn->query($sql);
@@ -115,43 +116,36 @@ for($i = 0; $i < count($mergeEmail); $i++){
 		//No previous record so INSERT
 		$sql = "
 		INSERT INTO enrollment
-		(driveId,userId,firstName,lastName,email,empId,dateEnrolled,section)
+		(courseId,userId,firstName,lastName,email,empId,dateEnrolled,section)
 		VALUES
-		('$driveId','$new_userId','$firstName','$lastName','$email','$id',NOW(),'$section')
+		('$courseId','$new_userId','$firstName','$lastName','$email','$id',NOW(),'$section')
 		";
 		$result = $conn->query($sql);
 
-		//Check if their email address is already in the drive_user table (from another role)
+		//Check if their email address is already in the course_user table (from another role)
 		$sql = "
 		SELECT email
 		FROM user AS u
-		JOIN drive_user AS du
-		ON du.userId = u.userId
+		JOIN course_user AS cu
+		ON cu.userId = u.userId
 		WHERE u.email = '$email'
-		AND du.driveId = '$driveId'
+		AND cu.courseId = '$courseId'
 		";
 		$result = $conn->query($sql);
 
 		if ($result->num_rows < 1) {
+			$json = json_encode(['Student']);
 			$sql = "
-			INSERT INTO drive_user
-			(userId,
-			driveId,
-			canViewDrive, 
-			canDeleteDrive, 
-			canShareDrive,
-			canAddItemsAndFolders,
-			canDeleteItemsAndFolders,
-			canMoveItemsAndFolders,
-			canRenameItemsAndFolders,
-			canPublishItemsAndFolders,
-			canViewUnreleasedItemsAndFolders,
-			canViewUnassignedItemsAndFolders,
-			canChangeAllDriveSettings,
-			role)
+			INSERT INTO course_user
+			(userId,courseId,canViewCourse,canViewContentSource,canEditContent,
+			canPublishContent,canViewUnassignedContent,canProctor,canViewAndModifyGrades,
+			canViewActivitySettings,canModifyCourseSettings,canViewUsers,canManageUsers,
+			canModifyRoles,isOwner,roleLabels)
 			VALUES
-			('$new_userId','$driveId','1','0','0','0','0','0','0','0','0','0','0','Student')
+			('$new_userId','$courseId','1','0','0','0','0','0','0','0','0','0','0','0','0','$json')
 			";
+		
+			
 			$result = $conn->query($sql);
 		}
 	}
@@ -199,7 +193,7 @@ dateEnrolled,
 section,
 withdrew
 FROM enrollment
-WHERE driveId = '$driveId'
+WHERE courseId = '$courseId'
 ORDER BY firstName
 ";
 $result = $conn->query($sql);
