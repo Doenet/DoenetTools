@@ -263,11 +263,11 @@ export default function Enrollment() {
                 mergeEmail,
                 mergeSection,
               };
-              console.log('>>>>payload', payload);
+              // console.log('>>>>payload', payload);
               axios
                 .post('/api/mergeEnrollmentData.php', payload)
                 .then((resp) => {
-                  console.log('>>>>resp.data', resp.data);
+                  // console.log('>>>>merge resp.data', resp.data);
                   const enrollmentArray = resp.data.enrollmentArray;
                   if (enrollmentArray) {
                     setEnrollmentTableDataAtom(enrollmentArray);
