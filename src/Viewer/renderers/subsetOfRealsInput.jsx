@@ -80,23 +80,14 @@ export default function subsetOfReals(props) {
     <>
       <ToggleButtonGroup onClick={handleTogglePoints} style={{marginBottom: "12px"}}>
         <ToggleButton
-          // style={addRemovePointsStyle}
-          // onClick={() => setMode("add remove points")}
-          // onClick={handleTogglePoints}
           value="Add/Remove points"
         >
         </ToggleButton>
         <ToggleButton
-          // style={toggleStyle}
-          // onClick={() => setMode("toggle")}
-          // onClick={handleTogglePoints}
           value="Toggle points and intervals"
         >
         </ToggleButton>
         <ToggleButton
-          // style={movePointsStyle}
-          // onClick={() => setMode("move points")}
-          // onClick={handleTogglePoints}
           value="Move Points"
         >
         </ToggleButton>
@@ -161,7 +152,7 @@ export default function subsetOfReals(props) {
 
     let xPosition = xValueToXPosition(pt.value);
 
-    let currentFillColor = "#644CD6";
+    let currentFillColor = "var(--mainPurple)";
     if (!closed) {
       currentFillColor = "white";
     }
@@ -192,7 +183,7 @@ export default function subsetOfReals(props) {
     const higherPointKey = `higherIntervalPoint${higherXPosition}`;
     const lineKey = `line${lowerXPosition}-${higherXPosition}`;
 
-    let currentFillColor = "#644CD6";
+    let currentFillColor = "var(--mainPurple)";
 
     let lowerLine = lowerXPosition;
     let higherLine = higherXPosition;
