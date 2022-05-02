@@ -101,6 +101,7 @@ export default function BooleanInput(props) {
   //Assume we don't have a check work button
   let checkWorkButton = null;
   let icon = props.icon;
+  console.log(SVs.includeCheckWork);
   if (SVs.includeCheckWork) {
 
     if (validationState === "unvalidated") {
@@ -192,6 +193,7 @@ export default function BooleanInput(props) {
       </>
     }
   }
+  console.log(checkWorkButton);
 
   return <React.Fragment>
     <span id={name}>
