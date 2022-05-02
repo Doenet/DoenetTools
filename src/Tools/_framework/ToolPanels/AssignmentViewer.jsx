@@ -484,7 +484,6 @@ export default function AssignmentViewer() {
           solutionDisplayMode,
           showFeedback,
           showHints,
-          isAssignment: true,
           allowLoadState: true,
           allowSaveState: true,
           allowLocalState: true,

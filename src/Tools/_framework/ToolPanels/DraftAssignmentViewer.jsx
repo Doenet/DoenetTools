@@ -18,8 +18,7 @@ import {
 } from '../ToolHandlers/CourseToolHandler';
 
 import axios from 'axios';
-import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
-import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
+import { returnNumberOfActivityVariantsForCid } from '../../../_utils/activityUtils';
 import { authorItemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
 
 
@@ -34,7 +33,6 @@ export default function DraftAssignmentViewer() {
   let [message, setMessage] = useState('');
   const [
     {
-      attemptNumber,
       showCorrectness,
       showFeedback,
       showHints,
@@ -46,7 +44,7 @@ export default function DraftAssignmentViewer() {
   ] = useState({});
 
   let allPossibleVariants = useRef([]);
-  let userId = useRef(null);
+  // let userId = useRef(null);
   useInitCourseItems(courseId);
 
   let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
@@ -58,8 +56,8 @@ export default function DraftAssignmentViewer() {
   // console.log(`allPossibleVariants -${allPossibleVariants}-`)
 
 
-  const loadProfile = useRecoilValueLoadable(profileAtom);
-  userId.current = loadProfile.contents.userId;
+  // const loadProfile = useRecoilValueLoadable(profileAtom);
+  // userId.current = loadProfile.contents.userId;
 
 
   function variantCallback(variantIndex, numberOfVariants) {
@@ -107,7 +105,6 @@ export default function DraftAssignmentViewer() {
           { params: { doenetId, latestAttemptOverrides: false, getDraft: true } },
         );
 
-
         if (!resp.data.success || !resp.data.cid) {
           setStage('Problem');
           setMessage(`Error loading assignment: ${resp.data.message}`);
@@ -116,7 +113,7 @@ export default function DraftAssignmentViewer() {
           cid = resp.data.cid;
         }
 
-        let result = await returnNumberOfActivityVariants(cid);
+        let result = await returnNumberOfActivityVariantsForCid(cid);
 
         if (!result.success) {
           setStage('Problem');
@@ -127,7 +124,6 @@ export default function DraftAssignmentViewer() {
         allPossibleVariants.current = [...Array(result.numberOfVariants).keys()].map(x => (x + 1));
 
         setLoad({
-          attemptNumber,
           showCorrectness,
           showFeedback,
           showHints,
@@ -151,7 +147,6 @@ export default function DraftAssignmentViewer() {
   }
 
   // console.log(`>>>>stage -${stage}-`)
-  // console.log(`>>>>attemptNumber -${attemptNumber}-`)
 
   if (stage === 'Initializing') {
     // initializeValues(recoilDoenetId);
@@ -172,17 +167,13 @@ export default function DraftAssignmentViewer() {
           solutionDisplayMode,
           showFeedback,
           showHints,
-          isAssignment: true,
           allowLoadState: false,
           allowSaveState: false,
           allowLocalState: false,
           allowSaveSubmissions: false,
           allowSaveEvents: false,
         }}
-        attemptNumber={attemptNumber}
         requestedVariantIndex={variantInfo.index}
-        // updateCreditAchievedCallback={updateCreditAchieved}
-        // updateAttemptNumber={setRecoilAttemptNumber}
         generatedVariantCallback={variantCallback}
       />
     </>
@@ -192,17 +183,3 @@ export default function DraftAssignmentViewer() {
 
 
 
-async function returnNumberOfActivityVariants(cid) {
-
-  let activityDefinitionDoenetML = await retrieveTextFileForCid(cid);
-
-  let result = parseActivityDefinition(activityDefinitionDoenetML);
-
-  if (!result.success) {
-    return result;
-  }
-
-  result = await determineNumberOfActivityVariants(result.activityJSON);
-
-  return { success: true, numberOfVariants: result.numberOfVariants };
-}
