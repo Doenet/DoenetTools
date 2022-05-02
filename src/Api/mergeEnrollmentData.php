@@ -57,6 +57,7 @@ ON cu.userId = e.userId
 LEFT JOIN user AS u
 ON e.userId = u.userId
 WHERE cu.courseId = '$courseId'
+AND e.courseId = '$courseId'
 ";
 $result = $conn->query($sql);
 $db_enrollment_table_emails = array();
@@ -87,6 +88,8 @@ for($i = 0; $i < count($mergeEmail); $i++){
 	if (in_array("firstName",$mergeHeads,false)){ $firstName = $mergeFirstName[$i]; }
 	if (in_array("lastName",$mergeHeads,false)){ $lastName = $mergeLastName[$i]; }
 	if (in_array("section",$mergeHeads,false)){ $section = $mergeSection[$i]; }
+
+	$email = trim($email);
 
 	$isEmailInUserTable = FALSE;
 	//Check if the email is already stored in user table

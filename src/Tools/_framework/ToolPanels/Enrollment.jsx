@@ -50,7 +50,7 @@ export default function Enrollment() {
       axios
         .get('/api/getEnrollment.php', { params: { courseId } })
         .then((resp) => {
-          // console.log(">>>>resp",resp.data)
+          // console.log(">>>>getEnrollment resp",resp.data)
           //TODO: Make sure we don't overwrite existing data
           let enrollmentArray = resp.data.enrollmentArray;
           setEnrollmentTableDataAtom(enrollmentArray);
@@ -312,6 +312,7 @@ export default function Enrollment() {
       axios
         .get('/api/getEnrollment.php', payload)
         .then((resp) => {
+          // console.log("getEnrollment",resp.data)
           let enrollmentArray = resp.data.enrollmentArray;
           setEnrollmentTableDataAtom(enrollmentArray);
           setProcess('Display Enrollment');
@@ -335,6 +336,7 @@ export default function Enrollment() {
       axios
         .get('/api/getEnrollment.php', payload)
         .then((resp) => {
+          // console.log("getEnrollment ",resp.data)
           let enrollmentArray = resp.data.enrollmentArray;
           setEnrollmentTableDataAtom(enrollmentArray);
           setProcess('Display Enrollment');
