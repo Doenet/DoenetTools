@@ -249,6 +249,24 @@ export function useEnrollmentCrumb(courseId) {
   };
 }
 
+export function useDataCrumb(courseId) {
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
+  return {
+    label: 'Data',
+    onClick: () => {
+      setPageToolView({
+        page: 'course',
+        tool: 'data',
+        view: '',
+        params: {
+          courseId,
+        },
+      });
+    },
+  };
+}
+
 export function useSurveyCrumb(driveId, doenetId) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 

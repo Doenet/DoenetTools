@@ -62,7 +62,7 @@ export default function Dashboard(props) {
             onClick={() =>
               setPageToolView({
                 page: 'course',
-                tool: 'surveyList',
+                tool: 'data',
                 view: '',
                 params: { courseId },
               })

@@ -120,7 +120,7 @@ export default function ToolRoot() {
     EditorViewer: lazy(() => import('./ToolPanels/EditorViewer')),
     AssignmentViewer: lazy(() => import('./ToolPanels/AssignmentViewer')),
     DraftAssignmentViewer: lazy(() => import('./ToolPanels/DraftAssignmentViewer')),
-    SurveyListViewer: lazy(() => import('./ToolPanels/SurveyListViewer')),
+    DataPanel: lazy(() => import('./ToolPanels/DataPanel')),
     SurveyDataViewer: lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor: lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment: lazy(() => import('./ToolPanels/Enrollment')),
@@ -143,7 +143,7 @@ export default function ToolRoot() {
     EnrollmentBreadCrumb: lazy(() =>
       import('./HeaderControls/EnrollmentBreadCrumb'),
     ),
-    SurveyBreadCrumb: lazy(() => import('./HeaderControls/SurveyBreadCrumb')),
+    DataBreadCrumb: lazy(() => import('./HeaderControls/DataBreadCrumb')),
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() =>
       import('./HeaderControls/GradebookBreadCrumb'),
@@ -624,18 +624,13 @@ let navigationObj = {
       headerControls: ['EnrollmentBreadCrumb'],
       // headerControls: ["BackButton"],
     },
-    surveyList: {
-      pageName: 'surveyList',
+    data: {
+      pageName: 'data',
       menuPanelCap: 'DriveInfoCap',
-      currentMainPanel: 'SurveyListViewer',
-      headerControls: ['SurveyBreadCrumb'],
+      currentMainPanel: 'DataPanel', 
+      headerControls: ['DataBreadCrumb'],
     },
-    surveyData: {
-      pageName: 'surveyData',
-      menuPanelCap: 'DriveInfoCap',
-      currentMainPanel: 'SurveyDataViewer',
-      headerControls: ['SurveyBreadCrumb'],
-    },
+  
   },
   home: {
     default: {
