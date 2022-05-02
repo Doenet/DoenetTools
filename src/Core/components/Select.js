@@ -1,7 +1,7 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { enumerateSelectionCombinations, enumerateCombinations } from '../utils/enumeration';
 import { deepClone } from '../utils/deepFunctions';
-import { gatherVariantComponents, processAssignNames } from '../utils/serializedStateProcessing';
+import { gatherVariantComponents, markToCreateAllUniqueNames, processAssignNames } from '../utils/serializedStateProcessing';
 import me from 'math-expressions';
 import { textToAst } from '../utils/math';
 import { returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
@@ -9,7 +9,7 @@ import { returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lis
 export default class Select extends CompositeComponent {
   static componentType = "select";
 
-  // static assignNewNamespaceToAllChildrenExcept = Object.keys(this.createAttributesObject({})).map(x => x.toLowerCase());
+  // static assignNewNamespaceToAllChildrenExcept = Object.keys(this.createAttributesObject()).map(x => x.toLowerCase());
   static assignNamesToReplacements = true;
 
   static createsVariants = true;
@@ -17,8 +17,8 @@ export default class Select extends CompositeComponent {
   static includeBlankStringChildren = true;
   static removeBlankStringChildrenPostSugar = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
     }
@@ -37,9 +37,9 @@ export default class Select extends CompositeComponent {
     attributes.type = {
       createPrimitiveOfType: "string"
     }
-    attributes.skipOptionsInAssignNames = {
+    attributes.addLevelToAssignNames = {
       createPrimitiveOfType: "boolean",
-      createStateVariable: "skipOptionsInAssignNames",
+      createStateVariable: "addLevelToAssignNames",
       defaultValue: false
     }
 
@@ -91,7 +91,7 @@ export default class Select extends CompositeComponent {
         }))
 
         let newAttributes = {
-          skipOptionsInAssignNames: {
+          addLevelToAssignNames: {
             primitive: true
           }
         }
@@ -532,12 +532,18 @@ export default class Select extends CompositeComponent {
       }
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let assignNames = component.doenetAttributes.assignNames;
 
-    if (assignNames && await component.stateValues.skipOptionsInAssignNames) {
+    if (assignNames && await component.stateValues.addLevelToAssignNames) {
       assignNames = assignNames.map(x => [x])
+    }
+
+    for (let rep of replacements) {
+      if (!rep.attributes?.newNamespace?.primitive && rep.children) {
+        markToCreateAllUniqueNames(rep.children)
+      }
     }
 
     let processResult = processAssignNames({
@@ -618,7 +624,7 @@ export default class Select extends CompositeComponent {
     }
 
     for (let child of serializedComponent.children) {
-      if (child.attributes.selectWeight || child.attributes.selectForVariantNames) {
+      if (child.attributes?.selectWeight || child.attributes?.selectForVariantNames) {
         // uniqueVariants disabled if have a child with selectWeight or selectForVariantNames specified
         console.log(`Unique variants for select disabled if have an option with selectWeight or selectForVariantNames specified`)
         return { success: false }

@@ -1628,6 +1628,8 @@ describe('Line Tag Tests', function () {
     let x2 = 3, y2 = 2;
     let x3 = -1, y3 = 4;
 
+    cy.get("#\\/p11 .mjx-mrow").should('contain.text', `(${nInDOM(x2)},${nInDOM(y2)})`)
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_line1'].stateValues.points)[0]).eqls([x2, y2]);
@@ -6484,7 +6486,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + d * Math.cos(theta);
       y2 = y1 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope })
 
@@ -6867,7 +6869,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope2 textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -7366,7 +7368,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -7759,7 +7761,7 @@ describe('Line Tag Tests', function () {
       x2 = x1 + d * Math.cos(theta);
       y2 = y1 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       testLineCopiedTwiceBaseOnSlope({ x1, y1, x2, y2, slope })
 
@@ -8146,7 +8148,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope2 textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -8656,7 +8658,7 @@ describe('Line Tag Tests', function () {
       x21 = x11 + d * Math.cos(theta);
       y21 = y11 + d * Math.sin(theta);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
       await checkLines({ x11, y11, x12, y12, x21, y21, x22, y22, slope })
 
     })
@@ -9143,7 +9145,7 @@ describe('Line Tag Tests', function () {
       x22 = x1 + d * Math.cos(theta2);
       y22 = y1 + d * Math.sin(theta2);
 
-      cy.get('#\\/slope textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-3{enter}", { force: true })
+      cy.get('#\\/slope textarea').type("{ctrl+home}{shift+end}{backspace}-3{enter}", { force: true })
 
       await checkLines({ x1, y1, x21, y21, x22, y22, slope1, slope2 })
 
@@ -9422,17 +9424,10 @@ describe('Line Tag Tests', function () {
       expect(stateVariables['/B'].stateValues.xs).eqls([6, 7]);
     });
 
-
+    cy.wait(2000);  // wait for 1 second debounce
 
     cy.log('reload page')
-
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: "<text>b</text>"
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -9441,6 +9436,12 @@ describe('Line Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/A"];
+    }))
 
     cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(9,8)')
     cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
@@ -9470,15 +9471,10 @@ describe('Line Tag Tests', function () {
     });
 
 
+    cy.wait(2000);  // wait for 1 second debounce
+
     cy.log('reload page')
-
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: "<text>b</text>"
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -9488,6 +9484,11 @@ describe('Line Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/A"];
+    }))
 
     cy.get('#\\/Ac .mjx-mrow').should('contain.text', '(0.5,3.5)')
     cy.get('#\\/Bc .mjx-mrow').should('contain.text', '(6,7)')
@@ -9517,6 +9518,52 @@ describe('Line Tag Tests', function () {
     });
 
 
+
+  });
+
+
+  it('copy propIndex of points', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <line through="(2,-3) (3,4)" />
+    </graph>
+ 
+    <p><mathinput name="n" /></p>
+
+    <p><copy prop="points" target="_line1" propIndex="$n" assignNames="P1 P2" /></p>
+
+    <p><copy prop="point2" target="_line1" propIndex="$n" assignNames="x" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 2, t1y = -3;
+    let t2x = 3, t2y = 4;
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+  
+    cy.get('#\\/n textarea').type("1{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+  
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", {force: true});
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+  
 
   });
 

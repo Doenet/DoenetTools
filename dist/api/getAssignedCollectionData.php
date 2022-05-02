@@ -13,7 +13,7 @@ $userId = $jwtArray['userId'];
 if (array_key_exists('doenetId', $_REQUEST)) {
     $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 
-    $sql = "SELECT contentId, assignedVariant
+    $sql = "SELECT cid, assignedVariant
     FROM user_assignment_attempt
     WHERE userId ='$userId'
     AND doenetId = '$doenetId'
@@ -24,11 +24,11 @@ if (array_key_exists('doenetId', $_REQUEST)) {
         echo json_encode(['isAssigned' => false]);
     } else {
         $row = $result->fetch_assoc();
-        $contentId = $row['contentId'];
+        $cid = $row['cid'];
         $assignedVariant = $row['assignedVariant'];
         echo json_encode([
             'isAssigned' => true,
-            'contentId' => $contentId,
+            'cid' => $cid,
             'assignedVariant' => $assignedVariant,
         ]);
     }

@@ -1980,9 +1980,7 @@ describe('Problem Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariant: {
-          index: 2,
-        }
+        requestedVariantIndex: 2
       }, "*");
     });
 

@@ -4,8 +4,8 @@ export default class EquilibriumLine extends Line {
   static componentType = "equilibriumLine";
   static rendererType = "line";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.stable = {
       createComponentOfType: "boolean",

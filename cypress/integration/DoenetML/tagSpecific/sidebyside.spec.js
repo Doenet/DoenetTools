@@ -552,7 +552,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`shrink margins to make specified values add back to 100%`)
       cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}", { force: true });
+      cy.get("#\\/m2 textarea").type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true });
       cy.get("#\\/m2a").should('not.contain.text', '1');
 
       checkSingleColumnSbs({
@@ -706,7 +706,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change width first, unspecified margins adjusts`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}70{enter}", { force: true });
+      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}70{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 70,
@@ -714,7 +714,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change width larger than 100%, scaled back to 100%`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}170{enter}", { force: true });
+      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}170{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 170,
@@ -722,7 +722,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change width smaller again`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}60{enter}", { force: true });
+      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}60{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 60,
@@ -1208,7 +1208,7 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`shrink margins to make specified values add back to 100%`)
       cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}1.5{enter}", { force: true });
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1{enter}", { force: true });
+      cy.get("#\\/m2 textarea").type("{ctrl+home}{shift+end}{backspace}1{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 85],
@@ -1226,7 +1226,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`increase left margin to make specified total be 100%`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}2{enter}", { force: true });
+      cy.get("#\\/m1 textarea").type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [10, 85],
@@ -1236,9 +1236,9 @@ describe('SideBySide Tag Tests', function () {
 
       cy.log(`change totals to keep at 100%`)
       cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}50{enter}", { force: true });
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}4{enter}", { force: true });
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}6{enter}", { force: true });
+      cy.get("#\\/w2 textarea").type("{ctrl+home}{shift+end}{backspace}50{enter}", { force: true });
+      cy.get("#\\/m1 textarea").type("{ctrl+home}{shift+end}{backspace}4{enter}", { force: true });
+      cy.get("#\\/m2 textarea").type("{ctrl+home}{shift+end}{backspace}6{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 50],
@@ -1258,7 +1258,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`increasing left margin rescales`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}21.5{enter}", { force: true });
+      cy.get("#\\/m1 textarea").type("{ctrl+home}{shift+end}{backspace}21.5{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 50],
@@ -1268,8 +1268,8 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`shrink widths to get specified below 100%`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}5{enter}", { force: true });
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10{enter}", { force: true });
+      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}5{enter}", { force: true });
+      cy.get("#\\/w2 textarea").type("{ctrl+home}{shift+end}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [5, 10],
@@ -1377,7 +1377,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change second width, unspecified first width adjusts`)
-      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}{backspace}10{enter}", { force: true });
+      cy.get("#\\/w2 textarea").type("{ctrl+home}{shift+end}{backspace}10{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [null, 10],
@@ -1386,7 +1386,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change first width, unspecified margins adjust`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}30{enter}", { force: true });
+      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}30{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 10],
@@ -2330,7 +2330,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`change more widths, remainder added to gap`)
-      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
+      cy.get("#\\/w1 textarea").type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
       cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
       cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}13{enter}", { force: true });
 
@@ -2576,7 +2576,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`change width of sbsg, unspecified margin(s) adjust`)
-      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}{backspace}70{enter}", { force: true });
+      cy.get("#\\/w1g textarea").type("{ctrl+home}{shift+end}{backspace}70{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 70,
@@ -2855,7 +2855,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`shrink sbsg width to remove rescaling`)
-      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}40{enter}", { force: true });
+      cy.get("#\\/w1g textarea").type("{ctrl+home}{shift+end}{backspace}40{enter}", { force: true });
 
       checkSingleColumnSbs({
         specifiedWidth: 40,
@@ -3562,7 +3562,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`decrease second width of sbs1 to drop below 100%`)
-      cy.get("#\\/w21 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}55{enter}", { force: true });
+      cy.get("#\\/w21 textarea").type("{ctrl+home}{shift+end}{backspace}55{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [40, 65],
@@ -3608,7 +3608,7 @@ describe('SideBySide Tag Tests', function () {
 
 
       cy.log(`decrease first width of sbsg to drop below 100%`)
-      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}25{enter}", { force: true });
+      cy.get("#\\/w1g textarea").type("{ctrl+home}{shift+end}{backspace}25{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [25, 65],
@@ -6104,7 +6104,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`make second defining width be invalid, treated as null`)
-      cy.get("#\\/dw2 textarea").type("{end}{backspace}{backspace}{backspace}hello{enter}", { force: true });
+      cy.get("#\\/dw2 textarea").type("{ctrl+home}{shift+end}{backspace}hello{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, null],
@@ -6114,7 +6114,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`make first defining width be invalid, treated as null`)
-      cy.get("#\\/dw1 textarea").type("{end}{backspace}{backspace}{backspace}bye{enter}", { force: true });
+      cy.get("#\\/dw1 textarea").type("{ctrl+home}{shift+end}{backspace}bye{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [null, null],
@@ -6166,7 +6166,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`decrease left margin`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}7{enter}", { force: true });
+      cy.get("#\\/m1 textarea").type("{ctrl+home}{shift+end}{backspace}7{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6197,7 +6197,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`reset left margin`)
-      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}12{enter}", { force: true });
+      cy.get("#\\/m1 textarea").type("{ctrl+home}{shift+end}{backspace}12{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],
@@ -6207,7 +6207,7 @@ describe('SideBySide Tag Tests', function () {
       })
 
       cy.log(`reset right margin`)
-      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}8{enter}", { force: true });
+      cy.get("#\\/m2 textarea").type("{ctrl+home}{shift+end}{backspace}8{enter}", { force: true });
 
       checkTwoColumnSbs({
         specifiedWidths: [30, 5],

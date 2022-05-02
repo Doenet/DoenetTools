@@ -1332,7 +1332,7 @@ describe('SubsetOfReals Tag Tests', function () {
     cy.get('#\\/result .mjx-mrow').should('contain.text', "(−∞,1)∪(1,∞)")
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "(−∞,1)∪(1,∞)")
 
-    cy.get('#\\/input textarea').type('{end}{backspace}{backspace}{backspace}(y>1)\\and(y<3){enter}', { force: true })
+    cy.get('#\\/input textarea').type('{ctrl+home}{shift+end}{backspace}(y>1)\\and(y<3){enter}', { force: true })
     cy.get('#\\/result .mjx-mrow').should('contain.text', "(1,3)")
     cy.get('#\\/result .mjx-mrow').eq(0).should('have.text', "(1,3)")
 
@@ -1452,45 +1452,45 @@ describe('SubsetOfReals Tag Tests', function () {
 
     checkDisplay("(0,1)")
 
-    cy.get("#\\/input0 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x>=3{enter}", { force: true })
+    cy.get("#\\/input0 textarea").type("{ctrl+home}{shift+end}{backspace}x>=3{enter}", { force: true })
 
     checkDisplay("[3,∞)", "x≥3")
 
-    cy.get("#\\/input1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}q\\mid q=5}{enter}", { force: true })
+    cy.get("#\\/input1 textarea").type("{ctrl+home}{shift+end}{backspace}{{}q\\mid q=5}{enter}", { force: true })
 
     checkDisplay("{5}")
 
-    cy.get("#\\/input2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}[-\\infty, \\pi){enter}", { force: true })
+    cy.get("#\\/input2 textarea").type("{ctrl+home}{shift+end}{backspace}[-\\infty, \\pi){enter}", { force: true })
 
     checkDisplay("(−∞,3.141592654)")
 
 
-    cy.get("#\\/input3 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(-\\infty,\\infty){enter}", { force: true })
+    cy.get("#\\/input3 textarea").type("{ctrl+home}{shift+end}{backspace}(-\\infty,\\infty){enter}", { force: true })
 
     checkDisplay("R")
 
 
-    cy.get("#\\/input4 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x\\in \\emptyset {enter}", { force: true })
+    cy.get("#\\/input4 textarea").type("{ctrl+home}{shift+end}{backspace}x\\in \\emptyset {enter}", { force: true })
 
     checkDisplay("∅")
 
-    cy.get("#\\/input5 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x\\notin [9, \\infty){enter}", { force: true })
+    cy.get("#\\/input5 textarea").type("{ctrl+home}{shift+end}{backspace}x\\notin [9, \\infty){enter}", { force: true })
 
     checkDisplay("(−∞,9)")
 
-    cy.get("#\\/input6 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{7}\\ni x{enter}", { force: true })
+    cy.get("#\\/input6 textarea").type("{ctrl+home}{shift+end}{backspace}{7}\\ni x{enter}", { force: true })
 
     checkDisplay("{7}")
 
-    cy.get("#\\/input7 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(-\\infty, -2) \\notni x{enter}", { force: true })
+    cy.get("#\\/input7 textarea").type("{ctrl+home}{shift+end}{backspace}(-\\infty, -2) \\notni x{enter}", { force: true })
 
     checkDisplay("[−2,∞)")
 
-    cy.get("#\\/input8 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{{}1}^c{rightArrow} \\cap {{}v\\mid v>=1}{enter}", { force: true })
+    cy.get("#\\/input8 textarea").type("{ctrl+home}{shift+end}{backspace}{{}1}^c{rightArrow} \\cap {{}v\\mid v>=1}{enter}", { force: true })
 
     checkDisplay("(1,∞)")
 
-    cy.get("#\\/input9 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x\\ne -6{enter}", { force: true })
+    cy.get("#\\/input9 textarea").type("{ctrl+home}{shift+end}{backspace}x\\ne -6{enter}", { force: true })
 
     checkDisplay("(−∞,−6)∪(−6,∞)")
 

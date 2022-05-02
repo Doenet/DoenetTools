@@ -59,12 +59,15 @@ export default function CodeEditor(props) {
       }
     }
   }));
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+  return /* @__PURE__ */ React.createElement("div", {
+    style: {margin: "12px 0"}
+  }, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("div", {
     style: {
-      padding: "0px",
-      border: "1px solid black",
+      padding: "0",
+      border: "var(--mainBorder)",
+      borderRadius: "var(--mainBorderRadius)",
       height: sizeToCSS(componentHeight),
       width: sizeToCSS(componentWidth),
       display: "flex",

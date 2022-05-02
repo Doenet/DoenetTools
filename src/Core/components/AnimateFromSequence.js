@@ -13,8 +13,8 @@ export default class AnimateFromSequence extends BaseComponent {
 
   static acceptTarget = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     let sequenceAttributes = returnStandardSequenceAttributes();
     Object.assign(attributes, sequenceAttributes);
@@ -26,6 +26,13 @@ export default class AnimateFromSequence extends BaseComponent {
     attributes.componentIndex = {
       createComponentOfType: "number",
       createStateVariable: "componentIndex",
+      defaultValue: null,
+      public: true,
+    };
+
+    attributes.propIndex = {
+      createComponentOfType: "number",
+      createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
     };
@@ -345,7 +352,7 @@ export default class AnimateFromSequence extends BaseComponent {
 
     stateVariableDefinitions.targets = {
       stateVariablesDeterminingDependencies: [
-        "targetIdentities", "propName"
+        "targetIdentities", "propName", "propIndex"
       ],
       returnDependencies: function ({ stateValues }) {
 
@@ -568,7 +575,11 @@ export default class AnimateFromSequence extends BaseComponent {
 
     let target = targets[0];
 
-    let stateVariable = Object.keys(target.stateValues)[0];
+    let stateVariable;
+
+    if (target?.stateValues) {
+      stateVariable = Object.keys(target.stateValues)[0];
+    }
 
     if (!stateVariable) {
       return selectedIndex;

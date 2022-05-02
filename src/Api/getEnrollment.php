@@ -14,19 +14,19 @@ $allowed = false;
 
 
 // if (array_key_exists('driveId', get_defined_vars())) {
-	$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+	$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 
 	//check user has permission to edit drive
 	$sql = "
-		SELECT canChangeAllDriveSettings
-		FROM drive_user
+		SELECT canViewUsers
+		FROM course_user
 		WHERE userId = '$userId'
-		AND driveId = '$driveId'
+		AND courseId = '$courseId'
 	";
 	$result = $conn->query($sql);
 	if ($result->num_rows > 0) {
 		$row = $result->fetch_assoc();
-		$allowed = $row['canChangeAllDriveSettings'];
+		$allowed = $row['canViewUsers'];
 		if (!$allowed) {
 			http_response_code(403); //User if forbidden from operation
 		}
@@ -52,7 +52,7 @@ if($allowed){
 	section,
 	withdrew
 	FROM enrollment
-	WHERE driveId = '$driveId'
+	WHERE courseId = '$courseId'
 	ORDER BY firstName
 	";
 $result = $conn->query($sql);

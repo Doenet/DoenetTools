@@ -17,14 +17,14 @@ import { cidFromText } from './utils/cid';
 import { removeFunctionsMathExpressionClass } from './CoreWorker';
 import createComponentInfoObjects from './utils/componentInfoObjects';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
-import { toastType } from '@Toast';
+import { toastType } from '../Tools/_framework/ToastTypes';
 import axios from 'axios';
 
 // string to componentClass: this.componentInfoObjects.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
 
 export default class Core {
-  constructor({ doenetML, doenetId, pageId, attemptNumber, itemNumber,
+  constructor({ doenetML, doenetId, pageNumber, attemptNumber = 1, itemNumber = 1,
     serverSaveId,
     requestedVariant, requestedVariantIndex,
     flags = {},
@@ -35,7 +35,7 @@ export default class Core {
 
     this.coreId = coreId;
     this.doenetId = doenetId;
-    this.pageId = pageId;
+    this.pageNumber = pageNumber;
     this.attemptNumber = attemptNumber;
     this.itemNumber = itemNumber;
 
@@ -64,7 +64,6 @@ export default class Core {
       requestRecordEvent: this.requestRecordEvent.bind(this),
       requestAnimationFrame: this.requestAnimationFrame.bind(this),
       cancelAnimationFrame: this.cancelAnimationFrame.bind(this),
-      calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer.bind(this),
       recordSolutionView: this.recordSolutionView.bind(this),
     }
 
@@ -171,7 +170,7 @@ export default class Core {
       Object.defineProperty(this.rendererVariablesByComponentType, componentType, {
         get: function () {
           let varDescriptions = this.componentInfoObjects.allComponentClasses[componentType].returnStateVariableInfo({
-            onlyForRenderer: true, flags: this.flags
+            onlyForRenderer: true,
           }).stateVariableDescriptions;
           delete this.rendererVariablesByComponentType[componentType];
           return this.rendererVariablesByComponentType[componentType] = varDescriptions;
@@ -197,7 +196,7 @@ export default class Core {
     let numVariants = serializeFunctions.getNumberOfVariants({
       serializedComponent: serializedComponents[0],
       componentInfoObjects: this.componentInfoObjects
-    })
+    }).numberOfVariantsPreIgnore;
 
 
     if (!this.requestedVariant) {
@@ -277,6 +276,7 @@ export default class Core {
     this.coreInfo = {
       generatedVariantString: this.canonicalGeneratedVariantString,
       allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
+      variantIndicesToIgnore: deepClone(await this.document.sharedParameters.variantIndicesToIgnore),
       rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
       documentToRender: this.documentRendererInstructions,
     };
@@ -926,7 +926,7 @@ export default class Core {
     if (ancestors.length > 0) {
       let parentName = ancestors[0].componentName;
       let parent = this.components[parentName];
-      if (parent.attributes.newNamespace && parent.attributes.newNamespace.primitive) {
+      if (parent.attributes.newNamespace?.primitive) {
         namespaceForUnamed = parent.componentName + "/";
       } else {
         namespaceForUnamed = getNamespaceFromName(parent.componentName);
@@ -1134,8 +1134,15 @@ export default class Core {
               }
             }
 
+            if (serializedComponent.variants.numberOfVariants === undefined) {
+              serializeFunctions.getNumberOfVariants({
+                serializedComponent,
+                componentInfoObjects: this.componentInfoObjects
+              });
+            }
+
             if (serializedComponent.variants.uniqueVariants) {
-              sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+              sharedParameters.numberOfVariantsPreIgnore = serializedComponent.variants.numberOfVariantsPreIgnore;
             }
           }
 
@@ -1149,6 +1156,21 @@ export default class Core {
           });
 
           definingChildren[variantControlInd] = childrenResult.components[0];
+
+
+          if (serializedComponent.variants.uniqueVariants && !serializedComponent.variants.selectedUniqueVariant) {
+
+            let result = componentClass.getUniqueVariant({
+              serializedComponent,
+              variantIndex: await childrenResult.components[0].stateValues.selectedVariantIndex,
+              componentInfoObjects: this.componentInfoObjects
+            })
+
+            if (result.success) {
+              serializedComponent.variants.desiredVariant = result.desiredVariant;
+            }
+
+          }
 
         }
 
@@ -1798,7 +1820,7 @@ export default class Core {
     if (adapter === undefined || adapter.componentType !== newSerializedChild.componentType) {
       if (originalChild.componentName) {
         let namespaceForUnamed;
-        if (parent.attributes.newNamespace && parent.attributes.newNamespace.primitive) {
+        if (parent.attributes.newNamespace?.primitive) {
           namespaceForUnamed = parent.componentName + "/";
         } else {
           namespaceForUnamed = getNamespaceFromName(parent.componentName);
@@ -2006,7 +2028,7 @@ export default class Core {
       uniqueIdentifiersUsed
     });
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     // TODO: is isResponse the only attribute to convert?
     if (component.attributes.isResponse) {
@@ -2033,14 +2055,43 @@ export default class Core {
       }
     }
 
+    // console.log('--------------')
     // console.log(`name of composite mediating shadow: ${nameOfCompositeMediatingTheShadow}`)
-    if (component.constructor.assignNamesToReplacements) {
+    // console.log(`name of composite shadowing: ${component.componentName}`)
+    // console.log(`name of shadowed composite: ${shadowedComposite.componentName}`)
 
-      let originalNamesAreConsistent = component.constructor.originalNamesAreConsistent
-        && newNamespace;
+    if (component.constructor.assignNamesToReplacements) {
+      let compositeMediatingTheShadow = this.components[nameOfCompositeMediatingTheShadow];
+      let mediatingNewNamespace = compositeMediatingTheShadow.attributes.newNamespace?.primitive;
+      let mediatingAssignNames = compositeMediatingTheShadow.doenetAttributes.assignNames;
+
+
+      // Note: originalNamesAreConsistent means that processAssignNames should leave
+      // the original names in the serializedComponents as is
+      // (unless their names are assigned or have been marked to create unique)
+      // If originalNamesAreConsistent is false, then all components
+      // that don't have names assigned will be renamed to random names
+
+      // We set originalNamesAreConsistent to true if we can be sure
+      // that we won't create any duplicate names.
+      // If the component begin shadowed has a newNamespace,
+      // or we get a new namespace from the composite mediating the shadow, 
+      // that will, in most cases, be enough to prevent name collisions.
+      // The one edge case is when the composite mediating the shadow also assigns names,
+      // in which case the assigned names could collide with the original names,
+      // so we can't keep the original names.
+
+
+      let originalNamesAreConsistent = newNamespace
+        || (mediatingNewNamespace && !mediatingAssignNames);
+
+      let assignNames = component.doenetAttributes.assignNames;
+      if (assignNames && await component.stateValues.addLevelToAssignNames) {
+        assignNames = assignNames.map(x => [x])
+      }
 
       let processResult = serializeFunctions.processAssignNames({
-        assignNames: component.doenetAttributes.assignNames,
+        assignNames,
         serializedComponents: serializedReplacements,
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
@@ -2050,8 +2101,6 @@ export default class Core {
 
       serializedReplacements = processResult.serializedComponents;
     } else {
-      // console.log(`since ${component.componentName} doesn't assign names to replacements, just call create component names from children`)
-      // console.log(deepClone(serializedReplacements))
       // since original names came from the targetComponent
       // we can use them only if we created a new namespace
       let originalNamesAreConsistent = newNamespace;
@@ -2094,7 +2143,7 @@ export default class Core {
     this.parameterStack.push(component.sharedParameters, false);
 
     let namespaceForUnamed;
-    if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+    if (component.attributes.newNamespace?.primitive) {
       namespaceForUnamed = component.componentName + "/";
     } else {
       namespaceForUnamed = getNamespaceFromName(component.componentName);
@@ -2149,7 +2198,7 @@ export default class Core {
         // replace with placeholders
         // otherwise, leave composite as an activeChild
         if (!child.isExpanded) {
-          if (child.attributes.componentType && child.attributes.componentType.primitive) {
+          if (child.attributes.componentType?.primitive) {
             replaceWithPlaceholders = true;
           } else {
             continue;
@@ -4003,6 +4052,13 @@ export default class Core {
         };
       }
 
+
+      if (!stateVarObj.arrayVarNameFromPropIndex) {
+        stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
+          return entryPrefixes[0] + [Number(propIndex), ...Array(stateVarObj.nDimensions - 1).fill(1)].join('_')
+        };
+      }
+
       stateVarObj.adjustArrayToNewArraySize = async function () {
         function resizeSubArray(subArray, subArraySize) {
 
@@ -4068,6 +4124,11 @@ export default class Core {
         };
       }
 
+      if (!stateVarObj.arrayVarNameFromPropIndex) {
+        stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
+          return entryPrefixes[0] + propIndex;
+        };
+      }
 
       stateVarObj.adjustArrayToNewArraySize = async function () {
         // console.log(`adjust array ${stateVariable} of ${component.componentName} to new array size: ${stateVarObj.arraySize[0]}`);
@@ -4720,6 +4781,43 @@ export default class Core {
 
   }
 
+  async arrayEntryNamesFromPropIndex({ stateVariables, component, propIndex }) {
+
+    let newVarNames = [];
+    for (let varName of stateVariables) {
+      let stateVarObj = component.state[varName];
+      if (!stateVarObj) {
+        if (!this.checkIfArrayEntry({ stateVariable: varName, component })) {
+          // varName doesn't exist.  Ignore error here
+          newVarNames.push(varName);
+          continue;
+        }
+        await this.createFromArrayEntry({ stateVariable: varName, component });
+        stateVarObj = component.state[varName];
+      }
+
+      let newName;
+      if (stateVarObj.isArray) {
+        newName = stateVarObj.arrayVarNameFromPropIndex(propIndex, varName);
+      } else if (stateVarObj.isArrayEntry) {
+        let arrayStateVarObj = component.state[stateVarObj.arrayStateVariable];
+        newName = arrayStateVarObj.arrayVarNameFromPropIndex(propIndex, varName);
+      } else {
+        console.warn(`Cannot get propIndex from ${varName} of ${component.componentName} as it is not an array or array entry state variable`);
+        newName = varName;
+      }
+      if (newName) {
+        newVarNames.push(newName);
+      } else {
+        console.warn(`Cannot get propIndex from ${varName} of ${component.componentName}`)
+        newVarNames.push(varName);
+      }
+
+    }
+
+    return newVarNames;
+
+  }
 
   recursivelyReplaceCompositesWithReplacements({
     replacements,
@@ -6535,7 +6633,7 @@ export default class Core {
           componentName: shadowingParent.shadows.compositeName
         });
 
-        let shadowingNewNamespace = shadowingParent.attributes.newNamespace && shadowingParent.attributes.newNamespace.primitive;
+        let shadowingNewNamespace = shadowingParent.attributes.newNamespace?.primitive;
         // we can use original only if we created a new namespace
         let originalNamesAreConsistent = shadowingNewNamespace;
 
@@ -6983,7 +7081,7 @@ export default class Core {
           let serializedReplacements = change.serializedReplacements;
 
           let namespaceForUnamed;
-          if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+          if (component.attributes.newNamespace?.primitive) {
             namespaceForUnamed = component.componentName + "/";
           } else {
             namespaceForUnamed = getNamespaceFromName(component.componentName);
@@ -7459,12 +7557,21 @@ export default class Core {
         }
 
         if (shadowingComponent.constructor.assignNamesToReplacements) {
+          let nameOfCompositeMediatingTheShadow = shadowingComponent.shadows.compositeName;
+          let compositeMediatingTheShadow = this.components[nameOfCompositeMediatingTheShadow];
+          let mediatingNewNamespace = compositeMediatingTheShadow.attributes.newNamespace?.primitive;
+          let mediatingAssignNames = compositeMediatingTheShadow.doenetAttributes.assignNames;
 
-          let originalNamesAreConsistent = shadowingComponent.constructor.originalNamesAreConsistent
-            && shadowingNewNamespace;
+          let originalNamesAreConsistent = shadowingNewNamespace
+            || (mediatingNewNamespace && !mediatingAssignNames);
+
+          let assignNames = shadowingComponent.doenetAttributes.assignNames;
+          if (assignNames && await shadowingComponent.stateValues.addLevelToAssignNames) {
+            assignNames = assignNames.map(x => [x])
+          }
 
           let processResult = serializeFunctions.processAssignNames({
-            assignNames: shadowingComponent.doenetAttributes.assignNames,
+            assignNames,
             indOffset: assignNamesOffset,
             serializedComponents: newSerializedReplacements,
             parentName: shadowingComponent.componentName,
@@ -8200,7 +8307,7 @@ export default class Core {
 
     const payload = {
       doenetId: this.doenetId,
-      pageId: this.pageId,
+      pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
       verb: event.verb,
       object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
@@ -9221,7 +9328,7 @@ export default class Core {
 
     if (this.flags.allowLocalState) {
       idb_set(
-        `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.cid}`,
+        `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}`,
         {
           coreState: this.cumulativeStateVariableChanges,
           rendererState: this.rendererState,
@@ -9230,6 +9337,10 @@ export default class Core {
         }
       )
     }
+
+    postMessage({
+      messageType: "savedState"
+    })
 
     if (!this.flags.allowSaveState) {
       return;
@@ -9241,7 +9352,7 @@ export default class Core {
       coreInfo: this.coreInfoString,
       coreState: JSON.stringify(this.cumulativeStateVariableChanges, serializeFunctions.serializedComponentsReplacer),
       rendererState: JSON.stringify(this.rendererState, serializeFunctions.serializedComponentsReplacer),
-      pageId: this.pageId,
+      pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
       doenetId: this.doenetId,
       saveId,
@@ -9256,9 +9367,6 @@ export default class Core {
     // if not currently in throttle, save changes to database
     this.saveChangesToDatabase();
 
-    postMessage({
-      messageType: "savedState"
-    })
 
   }
 
@@ -9336,7 +9444,7 @@ export default class Core {
 
     if (this.flags.allowLocalState) {
       idb_set(
-        `${this.doenetId}|${this.pageId}|${this.attemptNumber}|${this.cid}|ServerSaveId`,
+        `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}|ServerSaveId`,
         data.saveId
       )
     }
@@ -9349,7 +9457,7 @@ export default class Core {
 
         if (this.flags.allowLocalState) {
           idb_set(
-            `${this.doenetId}|${this.pageId}|${data.attemptNumber}|${data.cid}`,
+            `${this.doenetId}|${this.pageNumber}|${data.attemptNumber}|${data.cid}`,
             {
               coreState: JSON.parse(data.coreState, serializeFunctions.serializedComponentsReviver),
               rendererState: JSON.parse(data.rendererState, serializeFunctions.serializedComponentsReviver),
@@ -9602,47 +9710,15 @@ export default class Core {
 
   // }
 
-  async calculateScoredItemNumberOfContainer(componentName) {
-
-    let component = this._components[componentName];
-    let ancestorNames = [
-      ...component.ancestors.slice(0, -1).reverse().map(x => x.componentName),
-      componentName
-    ];
-    let scoredComponent;
-    let scoredItemNumber;
-    for (let [index, scored] of (await this.document.stateValues.scoredDescendants).entries()) {
-      for (let ancestorName of ancestorNames) {
-        if (scored.componentName === ancestorName) {
-          scoredComponent = ancestorName;
-          scoredItemNumber = index + 1;
-          break;
-        }
-      }
-      if (scoredComponent !== undefined) {
-        break;
-      }
-    }
-
-    // if component wasn't inside a scoredComponent and isn't a scoredComponent itself
-    // then let the scoredComponent be the document itself
-    if (scoredComponent === undefined) {
-      scoredComponent = this.document.componentName;
-      scoredItemNumber = (await this.document.stateValues.scoredDescendants).length;
-    }
-
-    return { scoredItemNumber, scoredComponent };
-  }
-
-  async recordSolutionView({ itemNumber, scoredComponent }) {
+  async recordSolutionView() {
 
     // TODO: check if student was actually allowed to view solution.
 
     try {
       const resp = await axios.post('/api/reportSolutionViewed.php', {
         doenetId: this.doenetId,
-        itemNumber,
-        pageId: this.pageId,
+        itemNumber: this.itemNumber,
+        pageNumber: this.pageNumber,
         attemptNumber: this.attemptNumber,
       });
 
@@ -9656,15 +9732,15 @@ export default class Core {
             toastType: toastType.ERROR
           }
         })
-        return { allowView: false, message, scoredComponent };
+        return { allowView: false, message, scoredComponent: this.documentName };
       } else {
         let data = resp.data;
         if (data.success) {
-          return { allowView: true, message: "", scoredComponent };
+          return { allowView: true, message: "", scoredComponent: this.documentName };
         } else {
 
           let message = `Cannot show solution due to error: ${data.message}`;
-          return { allowView: false, message, scoredComponent };
+          return { allowView: false, message, scoredComponent: this.documentName };
         }
       }
     } catch (e) {
@@ -9678,7 +9754,7 @@ export default class Core {
         }
       });
 
-      return { allowView: false, message, scoredComponent };
+      return { allowView: false, message, scoredComponent: this.documentName };
 
     }
 

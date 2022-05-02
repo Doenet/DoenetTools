@@ -30,17 +30,8 @@ export function RoleDropdown() {
   const { tool } = useRecoilValue(pageToolViewAtom);
   const [effectiveRole, setEffectiveRole] = useRecoilState(effectiveRoleAtom);
   const [permittedRole, setPermittedRole] = useRecoilState(permittedRoleAtom);
-  const path = useRecoilValue(searchParamAtomFamily('path'));
-  const searchDriveId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId')) ?? '';
   const recoilDriveId = useRecoilValue(permsForDriveIdAtom);
-
-  let driveId = '';
-  if (path) {
-    [driveId] = path.split(':');
-  }
-  if (searchDriveId !== '') {
-    driveId = searchDriveId;
-  }
 
   const initilizeEffectiveRole = useRecoilCallback(
     ({ set, snapshot }) =>
@@ -48,7 +39,6 @@ export function RoleDropdown() {
         let role = 'instructor';
 
         //If driveId then test if intructor is available
-        // const path = await snapshot.getPromise(searchParamAtomFamily('path'));
         if (driveId !== '') {
           let permissionsAndSettings = await snapshot.getPromise(coursePermissionsAndSettingsByCourseId(driveId));
           if (permissionsAndSettings?.roleLabels?.[0] == 'Student'){
@@ -60,12 +50,12 @@ export function RoleDropdown() {
         set(permsForDriveIdAtom, driveId);
         setPermittedRole(role);
       },
-    [driveId],
+    [setPermittedRole],
   );
 
-  if (effectiveRole === '' || (recoilDriveId !== driveId && driveId !== '')) {
+  if (effectiveRole === '' || (recoilDriveId !== courseId && courseId !== '')) {
     //first time through so initialize
-    initilizeEffectiveRole(driveId);
+    initilizeEffectiveRole(courseId);
     return null;
   }
 

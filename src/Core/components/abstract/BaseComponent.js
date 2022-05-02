@@ -183,7 +183,7 @@ export default class BaseComponent {
         // created from a public state variable
 
         let stateVariableDescriptions = compClass.returnStateVariableInfo(
-          { onlyPublic: true, flags: this.flags }
+          { onlyPublic: true }
         ).stateVariableDescriptions;
 
 
@@ -250,7 +250,7 @@ export default class BaseComponent {
   }
 
 
-  static createAttributesObject({ flags = {} } = {}) {
+  static createAttributesObject() {
 
     return {
       hide: {
@@ -262,7 +262,7 @@ export default class BaseComponent {
       disabled: {
         createComponentOfType: "boolean",
         createStateVariable: "disabledPreliminary",
-        defaultValue: null,//flags.readOnly ? true : false,
+        defaultValue: null,
         // public: true,
       },
       disabledIgnoresParentReadOnly: {
@@ -687,8 +687,8 @@ export default class BaseComponent {
 
   }
 
-  static returnStateVariableInfo({ onlyPublic = false, flags, onlyForRenderer = false }) {
-    let attributeObject = this.createAttributesObject({ flags });
+  static returnStateVariableInfo({ onlyPublic = false, onlyForRenderer = false } = {}) {
+    let attributeObject = this.createAttributesObject();
 
     let stateVariableDescriptions = {};
     let arrayEntryPrefixes = {};
@@ -724,13 +724,17 @@ export default class BaseComponent {
           stateVariableDescriptions[varName].isArray = true;
           stateVariableDescriptions[varName].nDimensions = theStateDef.nDimensions === undefined ? 1 : theStateDef.nDimensions;
           stateVariableDescriptions[varName].wrappingComponents = theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents() : [];
+          let entryPrefixes;
           if (theStateDef.entryPrefixes) {
-            for (let prefix of theStateDef.entryPrefixes) {
-              arrayEntryPrefixes[prefix] = {
-                arrayVariableName: varName,
-                nDimensions: theStateDef.returnEntryDimensions ? theStateDef.returnEntryDimensions(prefix) : 1,
-                wrappingComponents: theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents(prefix) : []
-              }
+            entryPrefixes = theStateDef.entryPrefixes;
+          } else {
+            entryPrefixes = [varName];
+          }
+          for (let prefix of entryPrefixes) {
+            arrayEntryPrefixes[prefix] = {
+              arrayVariableName: varName,
+              nDimensions: theStateDef.returnEntryDimensions ? theStateDef.returnEntryDimensions(prefix) : 1,
+              wrappingComponents: theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents(prefix) : []
             }
           }
           if (theStateDef.getArrayKeysFromVarName) {
@@ -830,7 +834,7 @@ export default class BaseComponent {
 
     }
 
-    let attributesObject = this.constructor.createAttributesObject({ flags: this.flags });
+    let attributesObject = this.constructor.createAttributesObject();
 
     serializedComponent.attributes = {};
 
@@ -858,8 +862,8 @@ export default class BaseComponent {
       serializedComponent.state = deepClone(this.essentialState);
     }
 
-    if(parameters.copyVariants) {
-      if(this.state.generatedVariantInfo) {
+    if (parameters.copyVariants) {
+      if (this.state.generatedVariantInfo) {
         serializedComponent.variants = {
           desiredVariant: await this.stateValues.generatedVariantInfo
         }

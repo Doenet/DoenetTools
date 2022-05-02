@@ -5,7 +5,7 @@ import {
   atom,
   useRecoilCallback
 } from "../../_snowpack/pkg/recoil.js";
-import DoenetViewer from "../../viewer/DoenetViewer.js";
+import DoenetViewer from "./AssignmentViewer.js";
 import {
   itemHistoryAtom
 } from "../ToolHandlers/CourseToolHandler.js";
@@ -15,46 +15,46 @@ const contentIdAtom = atom({
 });
 export default function Content(props) {
   const paramDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  const paramContentId = useRecoilValue(searchParamAtomFamily("contentId"));
+  const paramContentId = useRecoilValue(searchParamAtomFamily("cid"));
   const paramVariantIndex = useRecoilValue(searchParamAtomFamily("variantIndex"));
   const paramVariantName = useRecoilValue(searchParamAtomFamily("variantName"));
   const recoilContentId = useRecoilValue(contentIdAtom);
   const loadRecoilContentId = useRecoilCallback(({set, snapshot}) => async ({doenetId: doenetId2, assignment = false}) => {
     const versionHistory = await snapshot.getPromise(itemHistoryAtom(doenetId2));
-    let contentId2 = null;
+    let cid2 = null;
     if (assignment) {
       for (let named of versionHistory.named) {
         if (named.isAssigned === "1") {
-          contentId2 = named.contentId;
+          cid2 = named.cid;
           break;
         }
       }
     } else {
       for (let named of versionHistory.named) {
         if (named.isReleased === "1") {
-          contentId2 = named.contentId;
+          cid2 = named.cid;
           break;
         }
       }
     }
-    set(contentIdAtom, contentId2);
+    set(contentIdAtom, cid2);
   });
-  let contentId = null;
+  let cid = null;
   if (paramContentId) {
-    contentId = paramContentId;
+    cid = paramContentId;
   }
   let doenetId = null;
   if (paramDoenetId) {
     doenetId = paramDoenetId;
   }
-  if (paramDoenetId && !contentId && !recoilContentId) {
+  if (paramDoenetId && !cid && !recoilContentId) {
     loadRecoilContentId({doenetId});
     return /* @__PURE__ */ React.createElement("div", {
       style: props.style
     });
   }
-  if (recoilContentId && !contentId) {
-    contentId = recoilContentId;
+  if (recoilContentId && !cid) {
+    cid = recoilContentId;
   }
   let requestedVariant = {index: 1};
   if (paramVariantIndex) {
@@ -68,16 +68,16 @@ export default function Content(props) {
     style: props.style
   }, /* @__PURE__ */ React.createElement(DoenetViewer, {
     key: "doenetviewer",
-    contentId,
+    cid,
     flags: {
       showCorrectness: true,
       readOnly: false,
       solutionDisplayMode,
       showFeedback: true,
       showHints: true,
-      allowLoadPageState: true,
-      allowSavePageState: true,
-      allowLocalPageState: false,
+      allowLoadState: true,
+      allowSaveState: true,
+      allowLocalState: true,
       allowSaveSubmissions: true,
       allowSaveEvents: true
     },

@@ -1,5 +1,4 @@
 import React, {useEffect, useState, useRef, createContext} from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export const BoardContext = createContext();
@@ -148,6 +147,7 @@ export default function Graph(props) {
     divStyle.display = "none";
   }
   divStyle.border = "2px solid black";
+  divStyle.margin = "12px";
   if (!board) {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
       name

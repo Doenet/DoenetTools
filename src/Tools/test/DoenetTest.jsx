@@ -61,11 +61,10 @@ function Test() {
   const [_, setRefresh] = useState(0);
   const solutionDisplayMode = "button";
 
-  // let requestedVariant = useRef({ index: 0 });
-  // requestedVariant is undefined by default so that viewer
-  // will use attemptNumber for variant
-  // unless get a message (from cypress) to select a particular variant
-  let requestedVariant = useRef(undefined);
+  // TODO: currently, requestedVariantIndex cannot be changed from undefined
+  // so variant is always determiend by attemptNumber
+  // Do we add the ability to specify requestedVariantIndex directly in test mode?
+  let requestedVariantIndex = useRef(undefined);
 
 
 
@@ -228,7 +227,6 @@ function Test() {
 
   let viewer;
 
-  console.log(`useTestCode: ${useTestCode}`)
   if (useTestCode) {
     viewer = <PageViewer
       key={"pageviewer" + updateNumber}
@@ -248,7 +246,7 @@ function Test() {
         allowSaveEvents,
       }}
       attemptNumber={attemptNumber}
-      requestedVariant={requestedVariant.current}
+      requestedVariantIndex={requestedVariantIndex.current}
       unbundledCore={!bundledCore}
       doenetId="doenetIdFromTest"
       pageIsActive={true}
@@ -273,7 +271,7 @@ function Test() {
         allowSaveEvents,
       }}
       attemptNumber={attemptNumber}
-      requestedVariant={requestedVariant.current}
+      requestedVariantIndex={requestedVariantIndex.current}
       unbundledCore={!bundledCore}
       doenetId="doenetIdFromTest"
     />

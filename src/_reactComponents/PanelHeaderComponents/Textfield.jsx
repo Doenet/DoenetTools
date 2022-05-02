@@ -8,7 +8,6 @@ export default function Textfield(props) {
   const inputRef = useRef(null);
   //Assume small
 
-
   var textfield = {
     margin: '0px 4px 0px 0px',
     height: '24px',
@@ -97,7 +96,7 @@ export default function Textfield(props) {
     <>
       <div style={container}>
             <p style={label}>{label.value}</p>
-            <input type="text" ref={inputRef} value={props.value} placeholder={textfield.placeholder} defaultValue={textfield.value} aria-label={textfield.ariaLabel} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
+            <input type="text" ref={inputRef} value={props.value} placeholder={textfield.placeholder} aria-label={textfield.ariaLabel} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
       </div>
     </>
   )

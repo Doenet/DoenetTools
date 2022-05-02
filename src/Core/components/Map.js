@@ -1,6 +1,6 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
-import { gatherVariantComponents, processAssignNames } from '../utils/serializedStateProcessing';
+import { gatherVariantComponents, markToCreateAllUniqueNames, processAssignNames } from '../utils/serializedStateProcessing';
 import { convertAttributesForComponentType } from '../utils/copy';
 import { setUpVariantSeedAndRng } from '../utils/variants';
 
@@ -13,8 +13,8 @@ export default class Map extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
@@ -318,6 +318,10 @@ export default class Map extends CompositeComponent {
       Object.assign(replacements[0].attributes, attributesFromComposite)
     }
 
+    if (!replacements[0].attributes?.newNamespace?.primitive && replacements[0].children) {
+      markToCreateAllUniqueNames(replacements[0].children)
+    }
+
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
@@ -341,13 +345,13 @@ export default class Map extends CompositeComponent {
   }) {
     let replacements = [];
     let newChildnumberArray = [...childnumberArray, 0];
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let nIterates = await component.stateValues.nIterates;
     let nSources = await component.stateValues.nSources;
     let template = await component.stateValues.template;
 
-    let compositeAttributesObj = this.createAttributesObject({ flags });
+    let compositeAttributesObj = this.createAttributesObject();
 
     for (let iter = 0; iter < nIterates[sourcesNumber]; iter++) {
       newChildnumberArray[sourcesNumber] = iter;
@@ -376,6 +380,9 @@ export default class Map extends CompositeComponent {
 
         Object.assign(serializedComponents[0].attributes, attributesFromComposite)
 
+        if (!serializedComponents[0].attributes.newNamespace?.primitive && serializedComponents[0].children) {
+          markToCreateAllUniqueNames(serializedComponents[0].children)
+        }
 
         let processResult = processAssignNames({
           assignNames: component.doenetAttributes.assignNames,

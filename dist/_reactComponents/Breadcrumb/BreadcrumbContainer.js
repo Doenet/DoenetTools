@@ -1,7 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import {faTh} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {drivePathSyncFamily, folderDictionary, fetchDrivesQuery} from "../Drive/NewDrive.js";
+import {drivePathSyncFamily, folderDictionary, fetchCoursesQuery} from "../Drive/NewDrive.js";
 import {useRecoilValue, useRecoilState, atomFamily, selectorFamily} from "../../_snowpack/pkg/recoil.js";
 const breadcrumbItemAtomFamily = atomFamily({
   key: "breadcrumbItemAtomFamily",
@@ -26,7 +26,7 @@ const breadcrumbItemAtomFamily = atomFamily({
         });
         folderId = folderInfo.folderInfo.parentFolderId;
       }
-      const drivesInfo = get(fetchDrivesQuery);
+      const drivesInfo = get(fetchCoursesQuery);
       let driveObj = {type: "Drive", folderId: driveId};
       for (let drive of drivesInfo.driveIdsAndLabels) {
         if (drive.driveId === driveId) {

@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-04-10 12:23:37 +0000
+# Generation Time: 2022-05-01 01:34:26 +0000
 # ************************************************************
 
 
@@ -52,19 +52,17 @@ DROP TABLE IF EXISTS `assignment`;
 CREATE TABLE `assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `pinnedAfterDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means shows immediately',
   `pinnedUntilDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never stops being pinned',
   `dueDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never closes',
   `timeLimit` int(11) DEFAULT NULL COMMENT 'NULL means it''s not timed',
   `numberOfAttemptsAllowed` int(11) DEFAULT NULL COMMENT 'NULL means infinite, Assignment Level Number Of Attempts',
-  `sortOrder` int(11) DEFAULT NULL,
-  `attemptAggregation` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `totalPointsOrPercent` float DEFAULT NULL COMMENT 'Assignment level',
+  `attemptAggregation` char(1) COLLATE utf8_unicode_ci DEFAULT 'm',
+  `totalPointsOrPercent` float DEFAULT '10' COMMENT 'Assignment level',
   `gradeCategory` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `individualize` tinyint(1) NOT NULL DEFAULT '0',
-  `multipleAttempts` tinyint(1) NOT NULL DEFAULT '0',
   `showSolution` tinyint(1) NOT NULL DEFAULT '1',
   `showSolutionInGradebook` tinyint(1) NOT NULL DEFAULT '1',
   `showFeedback` tinyint(1) NOT NULL DEFAULT '1',
@@ -72,20 +70,10 @@ CREATE TABLE `assignment` (
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
   `showCreditAchievedMenu` tinyint(1) NOT NULL DEFAULT '1',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
-  `examCoverHTML` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-LOCK TABLES `assignment` WRITE;
-/*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
-
-INSERT INTO `assignment` (`id`, `doenetId`, `driveId`, `assignedDate`, `pinnedAfterDate`, `pinnedUntilDate`, `dueDate`, `timeLimit`, `numberOfAttemptsAllowed`, `sortOrder`, `attemptAggregation`, `totalPointsOrPercent`, `gradeCategory`, `individualize`, `multipleAttempts`, `showSolution`, `showSolutionInGradebook`, `showFeedback`, `showHints`, `showCorrectness`, `showCreditAchievedMenu`, `proctorMakesAvailable`, `examCoverHTML`)
-VALUES
-	(488,'doenetId','driveId','2021-06-04 08:20:07',NULL,NULL,'2021-06-09 08:20:07',101000,2,NULL,'m',0,'l',0,0,1,1,1,1,1,1,0,NULL);
-
-/*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table class_times
@@ -102,6 +90,40 @@ CREATE TABLE `class_times` (
   `sortOrder` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+# Dump of table collection
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `collection`;
+
+CREATE TABLE `collection` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `doenetId` char(21) DEFAULT '',
+  `entryId` char(21) NOT NULL,
+  `entryDoenetId` char(21) NOT NULL DEFAULT '',
+  `entryContentId` char(64) NOT NULL DEFAULT '',
+  `entryVariant` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table collection_groups
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `collection_groups`;
+
+CREATE TABLE `collection_groups` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `doenetId` char(21) NOT NULL DEFAULT '',
+  `minStudents` int(11) NOT NULL DEFAULT '1',
+  `maxStudents` int(11) NOT NULL DEFAULT '1',
+  `preferredStudents` int(11) NOT NULL DEFAULT '1',
+  `preAssigned` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
 
@@ -342,7 +364,7 @@ DROP TABLE IF EXISTS `enrollment`;
 
 CREATE TABLE `enrollment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `firstName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lastName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -359,13 +381,13 @@ CREATE TABLE `enrollment` (
   `overrideCourseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timeLimitMultiplier` float NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  KEY `driveId_userId` (`driveId`,`userId`)
+  KEY `driveId_userId` (`courseId`,`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 LOCK TABLES `enrollment` WRITE;
 /*!40000 ALTER TABLE `enrollment` DISABLE KEYS */;
 
-INSERT INTO `enrollment` (`id`, `driveId`, `userId`, `firstName`, `lastName`, `username`, `email`, `empId`, `dateEnrolled`, `section`, `withdrew`, `dateWithdrew`, `forTesting`, `courseCredit`, `courseGrade`, `overrideCourseGrade`, `timeLimitMultiplier`)
+INSERT INTO `enrollment` (`id`, `courseId`, `userId`, `firstName`, `lastName`, `username`, `email`, `empId`, `dateEnrolled`, `section`, `withdrew`, `dateWithdrew`, `forTesting`, `courseCredit`, `courseGrade`, `overrideCourseGrade`, `timeLimitMultiplier`)
 VALUES
 	(1,'aI8sK4vmEhC5sdeSP3vNW','devuserid','generic','user','devuser',NULL,'1234567','2019-09-03 20:29:41','15',b'0',NULL,b'0',NULL,'A',NULL,1),
 	(2,'fsa4214fasgag1512525f',NULL,'SHOULD NOT','BE LOADED','invalid',NULL,'5254243','2019-09-03 20:29:41','2',b'0',NULL,b'0',NULL,NULL,NULL,1),
@@ -482,7 +504,7 @@ CREATE TABLE `page_state` (
   `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
-  `pageId` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `pageNumber` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `attemptNumber` int(11) DEFAULT NULL,
   `saveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `coreInfo` mediumtext COLLATE utf8_unicode_ci,
@@ -490,7 +512,7 @@ CREATE TABLE `page_state` (
   `rendererState` mediumtext COLLATE utf8_unicode_ci,
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `userId-doenetId-pageId-attemptNumber` (`userId`,`doenetId`,`pageId`,`attemptNumber`),
+  UNIQUE KEY `userId-doenetId-pageNumber-attemptNumber` (`userId`,`doenetId`,`pageNumber`,`attemptNumber`),
   KEY `saveId` (`saveId`),
   KEY `cid` (`cid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -591,7 +613,7 @@ CREATE TABLE `user_assignment` (
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'NULL means no group',
   `doenetIdOverride` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no override',
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
-  `numberOfAttemptsAllowedOverride` int(11) DEFAULT NULL,
+  `numberOfAttemptsAllowedAdjustment` int(11) DEFAULT NULL,
   `groupId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `groupName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `completed` bit(1) DEFAULT NULL COMMENT 'For ToDo list',

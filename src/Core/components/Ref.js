@@ -6,8 +6,8 @@ export default class Ref extends InlineComponent {
 
   static acceptTarget = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.textType = {
       createComponentOfType: "text",
       createStateVariable: "textType",
@@ -119,6 +119,18 @@ export default class Ref extends InlineComponent {
       additionalStateVariablesDefined: [{
         variableName: "doenetId",
         forRenderer: true,
+      }, {
+        variableName: "pageNumber",
+        forRenderer: true,
+      }, {
+        variableName: "variantIndex",
+        forRenderer: true,
+      }, {
+        variableName: "edit",
+        forRenderer: true,
+      }, {
+        variableName: "draft",
+        forRenderer: true,
       }],
       returnDependencies: () => ({
         uri: {
@@ -131,11 +143,12 @@ export default class Ref extends InlineComponent {
           dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            setValue: { cid: null, doenetId: null }
+            setValue: { cid: null, doenetId: null, pageNumber: null, variantIndex: null, edit: null, draft: null }
           }
         }
 
-        let cid = null, doenetId = null;
+        let cid = null, doenetId = null, pageNumber = null, variantIndex = null;
+        let draft = null, edit = null;
 
         let result = dependencyValues.uri.match(/[:&]cid=([^&]+)/i);
         if (result) {
@@ -145,8 +158,40 @@ export default class Ref extends InlineComponent {
         if (result) {
           doenetId = result[1];
         }
+        result = dependencyValues.uri.match(/[:&]page=([^&]+)/i);
+        if (result) {
+          pageNumber = Number(result[1]);
+          if (!Number.isInteger(pageNumber) && pageNumber >= 1) {
+            pageNumber = 1;
+          }
+        }
+        result = dependencyValues.uri.match(/[:&]variant=([^&]+)/i);
+        if (result) {
+          variantIndex = Number(result[1]);
+          if (!Number.isInteger(variantIndex) && variantIndex >= 1) {
+            variantIndex = 1;
+          }
+        }
+        result = dependencyValues.uri.match(/[:&]edit=([^&]+)/i);
+        if (result) {
+          if (result[1].toLowerCase() === "true") {
+            edit = true;
+          } else {
+            edit = false;
+          }
+        }
+        result = dependencyValues.uri.match(/[:&]draft=([^&]+)/i);
+        if (result) {
+          if (result[1].toLowerCase() === "true") {
+            draft = true;
+          } else {
+            draft = false;
+          }
+        }
 
-        return { setValue: { cid, doenetId } };
+        // console.log('url parameter results', { cid, doenetId, pageNumber, variantIndex, edit, draft })
+
+        return { setValue: { cid, doenetId, pageNumber, variantIndex, edit, draft } };
       },
     };
 
@@ -205,7 +250,7 @@ export default class Ref extends InlineComponent {
           }
         } else {
           for (let child of dependencyValues.allChildren) {
-            if(typeof child !== "object") {
+            if (typeof child !== "object") {
               linkText += child.toString();
             } else if (typeof child.stateValues.text === "string") {
               linkText += child.stateValues.text;

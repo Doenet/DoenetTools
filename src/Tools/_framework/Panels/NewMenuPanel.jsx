@@ -215,6 +215,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     DriveInfoCap:lazy(() => import('../MenuPanelCaps/DriveInfoCap')),
     EditorInfoCap:lazy(() => import('../MenuPanelCaps/EditorInfoCap')),
     AssignmentInfoCap:lazy(() => import('../MenuPanelCaps/AssignmentInfoCap')),
+    DraftActivityCap:lazy(() => import('../MenuPanelCaps/DraftActivityCap')),
   }).current;
 
   const LazyMenuObj = useRef({
@@ -228,10 +229,12 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     CreateCourse:lazy(() => import('../Menus/CreateCourse')),
     CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
     AddDriveItems:lazy(() => import('../Menus/AddDriveItems')),
+    CutCopyPasteMenu:lazy(() => import('../Menus/CutCopyPasteMenu')),
     EnrollStudents:lazy(() => import('../Menus/EnrollStudents')),
     DoenetMLSettings:lazy(() => import('../Menus/DoenetMLSettings')),
     VersionHistory:lazy(() => import('../Menus/VersionHistory')),
-    Variant:lazy(() => import('../Menus/Variant')),
+    PageVariant:lazy(() => import('../Menus/PageVariant')),
+    ActivityVariant:lazy(() => import('../Menus/ActivityVariant')),
     AutoSaves:lazy(() => import('../Menus/AutoSaves')),
     LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
     GradeUpload:lazy(() => import('../Menus/GradeUpload')),

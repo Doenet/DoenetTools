@@ -29,7 +29,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     });
     // to wait for page to load
@@ -68,7 +68,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     });
     // to wait for page to load
@@ -101,7 +101,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     });
 
@@ -135,7 +135,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     });
     // to wait for page to load
@@ -206,7 +206,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 2 },
+        requestedVariantIndex: 2,
       }, "*");
     });
     // to wait for page to load
@@ -244,7 +244,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 2 },
+        requestedVariantIndex: 2,
       }, "*");
     });
     // to wait for page to load
@@ -277,7 +277,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 2 },
+        requestedVariantIndex: 2,
       }, "*");
     });
     // to wait for page to load
@@ -311,7 +311,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 102 },
+        requestedVariantIndex: 102,
       }, "*");
     });
     // to wait for page to load
@@ -344,7 +344,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 102 },
+        requestedVariantIndex: 102,
       }, "*");
     });
     // to wait for page to load
@@ -378,7 +378,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: -298 },
+        requestedVariantIndex: -298,
       }, "*");
     });
     // to wait for page to load
@@ -413,7 +413,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: -298 },
+        requestedVariantIndex: -298,
       }, "*");
     });
     // to wait for page to load
@@ -447,7 +447,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 83057201 },
+        requestedVariantIndex: 83057201,
       }, "*");
     });
     // to wait for page to load
@@ -480,7 +480,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 83057201 },
+        requestedVariantIndex: 83057201,
       }, "*");
     });
     // to wait for page to load
@@ -648,7 +648,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '301' },
+        requestedVariantIndex: '301',
       }, "*");
     });
     // to wait for page to load
@@ -682,7 +682,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '95' },
+        requestedVariantIndex: '95',
       }, "*");
     });
     // to wait for page to load
@@ -756,7 +756,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: "bad" },
+        requestedVariantIndex: "bad",
       }, "*");
     });
     // to wait for page to load
@@ -828,7 +828,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 95.48 },
+        requestedVariantIndex: 95.48,
       }, "*");
     });
     // to wait for page to load
@@ -876,7 +876,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     })
     // to wait for page to load
@@ -930,7 +930,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
-        requestedVariant: { index: 3 },
+        requestedVariantIndex: 3,
       }, "*");
     })
     // to wait for page to load
@@ -1147,7 +1147,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
-        requestedVariant: { index: 20582310 },
+        requestedVariantIndex: 20582310,
       }, "*");
     })
     // to wait for page to load
@@ -1201,7 +1201,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
-        requestedVariant: { index: '-20582308' },
+        requestedVariantIndex: '-20582308',
       }, "*");
     })
     // to wait for page to load
@@ -1255,7 +1255,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
-        requestedVariant: { index: 'wrong' },
+        requestedVariantIndex: 'wrong',
       }, "*");
     })
     // to wait for page to load
@@ -1363,7 +1363,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" target="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" target="_select1" /></p>
     `,
-        requestedVariant: { index: 4.5 },
+        requestedVariantIndex: 4.5,
       }, "*");
     })
     // to wait for page to load
@@ -1413,7 +1413,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     })
     // to wait for page to load
@@ -1451,7 +1451,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     })
     // to wait for page to load
@@ -1487,7 +1487,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 124082 },
+        requestedVariantIndex: 124082,
       }, "*");
     })
     // to wait for page to load
@@ -1525,7 +1525,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 124082 },
+        requestedVariantIndex: 124082,
       }, "*");
     })
     // to wait for page to load
@@ -1560,7 +1560,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '3' },
+        requestedVariantIndex: '3',
       }, "*");
     })
     // to wait for page to load
@@ -1634,7 +1634,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '820572309' },
+        requestedVariantIndex: '820572309',
       }, "*");
     })
     // to wait for page to load
@@ -1674,7 +1674,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '820572309' },
+        requestedVariantIndex: '820572309',
       }, "*");
     })
     // to wait for page to load
@@ -1710,7 +1710,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '-820572305' },
+        requestedVariantIndex: '-820572305',
       }, "*");
     })
     // to wait for page to load
@@ -1752,7 +1752,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>1
     `,
-        requestedVariant: { index: '-820572305' },
+        requestedVariantIndex: '-820572305',
       }, "*");
     })
     // to wait for page to load
@@ -1827,7 +1827,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     })
     // to wait for page to load
@@ -1864,7 +1864,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     })
     // to wait for page to load
@@ -1899,7 +1899,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 124082 },
+        requestedVariantIndex: 124082,
       }, "*");
     })
     // to wait for page to load
@@ -1972,7 +1972,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '820572309' },
+        requestedVariantIndex: '820572309',
       }, "*");
     })
     // to wait for page to load
@@ -2008,7 +2008,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '-820572305' },
+        requestedVariantIndex: '-820572305',
       }, "*");
     })
     // to wait for page to load
@@ -2048,7 +2048,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     })
     // to wait for page to load
@@ -2087,7 +2087,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 124082 },
+        requestedVariantIndex: 124082,
       }, "*");
     })
     // to wait for page to load
@@ -2126,7 +2126,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '3' },
+        requestedVariantIndex: '3',
       }, "*");
     })
     // to wait for page to load
@@ -2166,7 +2166,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '820572308' },
+        requestedVariantIndex: '820572308',
       }, "*");
     })
     // to wait for page to load
@@ -2211,7 +2211,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     })
     // to wait for page to load
@@ -2250,7 +2250,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 5 },
+        requestedVariantIndex: 5,
       }, "*");
     })
     // to wait for page to load
@@ -2289,7 +2289,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '3' },
+        requestedVariantIndex: '3',
       }, "*");
     })
     // to wait for page to load
@@ -2334,7 +2334,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     })
     // to wait for page to load
@@ -2373,7 +2373,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 2 },
+        requestedVariantIndex: 2,
       }, "*");
     })
     // to wait for page to load
@@ -2414,7 +2414,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 7 },
+        requestedVariantIndex: 7,
       }, "*");
     })
     // to wait for page to load
@@ -2458,7 +2458,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 19 },
+        requestedVariantIndex: 19,
       }, "*");
     })
     // to wait for page to load
@@ -2497,7 +2497,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 5 },
+        requestedVariantIndex: 5,
       }, "*");
     })
     // to wait for page to load
@@ -2538,7 +2538,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1000 },
+        requestedVariantIndex: 1000,
       }, "*");
     })
     // to wait for page to load
@@ -2763,7 +2763,7 @@ describe('Specifying single variant document tests', function () {
           </problem></option>
         </select>
         `,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
         // to wait for page to load
@@ -3078,7 +3078,7 @@ describe('Specifying single variant document tests', function () {
           </problem></option>
         </select>
         `,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
         // to wait for page to load
@@ -3426,7 +3426,7 @@ describe('Specifying single variant document tests', function () {
           </problem></option>
         </select>
         `,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
         // to wait for page to load
@@ -3712,7 +3712,7 @@ describe('Specifying single variant document tests', function () {
         <p><selectRandomNumbers name="s3" type="gaussian" numberToSelect="3" assignNames="x1 x2 x3" /></p>
         <p><sampleRandomNumbers name="s4" type="gaussian" numberOfSamples="3" assignNames="y1 y2 y3" variantDeterminesSeed /></p>
         `,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
         // to wait for page to load
@@ -3875,7 +3875,7 @@ describe('Specifying single variant document tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -3999,7 +3999,7 @@ describe('Specifying single variant document tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
 
@@ -4110,7 +4110,7 @@ describe('Specifying single variant document tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
 
@@ -4238,7 +4238,7 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
       <text>1</text>${doenetML}`,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 1,
       }, "*");
     })
 
@@ -4351,7 +4351,7 @@ describe('Specifying single variant document tests', function () {
         win.postMessage({
           doenetML: `
       <text>1</text>${doenetML}`,
-          requestedVariant: { index: 1 },
+          requestedVariantIndex: 1,
         }, "*");
       })
 
@@ -4438,5 +4438,134 @@ describe('Specifying single variant document tests', function () {
     })
 
   })
+
+  it('document inherits variants from single problem', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.log("get both options and then they repeat")
+    for (let ind = 1; ind <= 3; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
+        cy.reload();
+      }
+
+      let doenetML = `
+      <problem>
+        <variantControl nVariants="2" variantNames="apple orange" />
+        <text>${ind}</text>
+        <setup>
+          <select assignNames="(fruit)">
+            <option selectForVariantNames="apple"><text>apple</text></option>
+            <option selectForVariantNames="orange"><text>orange</text></option>
+          </select>
+        </setup>
+        <p>Enter $fruit:
+          <answer type="text">$fruit</answer>
+        </p>
+      </problem>
+      `
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      let fruit = ["apple", "orange"][(ind - 1) % 2];
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+
+        let textinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let textinputAnchor = '#' + textinputName + '_input';
+        let textinputSubmitAnchor = '#' + textinputName + '_submit';
+        let textinputCorrectAnchor = '#' + textinputName + '_correct';
+        let textinputIncorrectAnchor = '#' + textinputName + '_incorrect';
+
+
+        expect(stateVariables["/fruit"].stateValues.value).eq(fruit);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["apple", "orange"])
+        expect(stateVariables["/_document1"].sharedParameters.variantName).eq(fruit)
+
+        cy.get(textinputAnchor).type(`${fruit}{enter}`);
+
+        cy.get(textinputCorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([fruit]);
+
+        });
+
+        cy.wait(2000);  // wait for 1 second debounce
+        cy.reload();
+
+        cy.window().then(async (win) => {
+          win.postMessage({
+            doenetML,
+            requestedVariantIndex: ind,
+          }, "*");
+        })
+
+        // to wait for page to load
+        cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+        // wait until core is loaded
+        cy.waitUntil(() => cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          return stateVariables["/_answer1"];
+        }))
+
+
+        cy.get(textinputAnchor).should('have.value', `${fruit}`)
+        cy.get(textinputCorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([fruit]);
+        });
+
+        cy.get(textinputAnchor).type(`{end}s`);
+        cy.get(textinputSubmitAnchor).click();
+        cy.get(textinputIncorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([fruit + "s"]);
+        });
+
+        cy.get(textinputAnchor).type(`{end}{backspace}`);
+        cy.get(textinputSubmitAnchor).click();
+        cy.get(textinputCorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([fruit]);
+        });
+
+      })
+
+    }
+
+
+  });
+
+
 
 });

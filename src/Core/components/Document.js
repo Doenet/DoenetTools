@@ -11,8 +11,8 @@ export default class Document extends BaseComponent {
 
   static createsVariants = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     delete attributes.hide;
     delete attributes.disabled;
@@ -623,13 +623,55 @@ export default class Document extends BaseComponent {
       // with variant names a, b, c, ...
       // and seeds 1,2,3,...
 
-      let nVariants = 100;
+      let nVariants;
+      let variantNames;
 
-      // if (serializedComponent.variants.uniqueVariants) {
-      //   nVariants = serializedComponent.variants.numberOfVariants;
-      // }
+      if (serializedComponent.variants.variantsFromChild) {
+        nVariants = serializedComponent.variants.numberOfVariantsPreIgnore;
 
-      sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
+        if (serializedComponent.variants.variantNames) {
+
+          variantNames = [...serializedComponent.variants.variantNames];
+
+          if (variantNames.length >= nVariants) {
+            variantNames = variantNames.slice(0, nVariants);
+          } else {
+            let originalVariantNames = [...variantNames];
+            let variantNumber = variantNames.length;
+            let variantValue = variantNumber;
+            let variantString;
+            while (variantNumber < nVariants) {
+              variantNumber++;
+              variantValue++;
+              variantString = indexToLowercaseLetters(variantValue);
+              while (originalVariantNames.includes(variantString)) {
+                variantValue++;
+                variantString = indexToLowercaseLetters(variantValue);
+              }
+              variantNames.push(variantString);
+            }
+
+          }
+
+
+          sharedParameters.allPossibleVariants = variantNames;
+
+        } else {
+
+          sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
+
+        }
+
+        sharedParameters.variantIndicesToIgnore = serializedComponent.variants.indicesToIgnore;
+
+      } else {
+
+        nVariants = 100;
+
+        sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
+        sharedParameters.variantIndicesToIgnore = [];
+
+      }
 
       let variantIndex;
       // check if desiredVariant was specified
@@ -651,18 +693,6 @@ export default class Document extends BaseComponent {
             }
             variantIndex = indexFrom0 + 1;
           }
-        } else if (desiredVariant.name !== undefined) {
-          if (typeof desiredVariant.name === "string") {
-            // want case insensitive test, so convert to lower case
-            let desiredNumber = sharedParameters.allPossibleVariants.indexOf(desiredVariant.name.toLowerCase());
-            if (desiredNumber !== -1) {
-              variantIndex = desiredNumber + 1;
-            }
-          }
-          if (variantIndex === undefined) {
-            console.warn("Variant name " + desiredVariant.name + " is not valid");
-            variantIndex = 1;
-          }
         }
       }
 
@@ -673,7 +703,11 @@ export default class Document extends BaseComponent {
 
       sharedParameters.variantSeed = variantIndex.toString();
       sharedParameters.variantIndex = variantIndex;
-      sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
+      if (variantNames) {
+        sharedParameters.variantName = variantNames[variantIndex - 1];
+      } else {
+        sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
+      }
       sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
 
 
@@ -684,6 +718,7 @@ export default class Document extends BaseComponent {
       sharedParameters.variantIndex = await variantControlChild.state.selectedVariantIndex.value;
       sharedParameters.variantRng = await variantControlChild.state.variantRng.value;
       sharedParameters.allPossibleVariants = await variantControlChild.state.variantNames.value;
+      sharedParameters.variantIndicesToIgnore = await variantControlChild.state.variantIndicesToIgnore.value;
     }
 
     // console.log("Document variant name: " + sharedParameters.variantName);
@@ -694,18 +729,6 @@ export default class Document extends BaseComponent {
       desiredVariant = {};
     }
 
-    // // if subvariants aren't defined but we have uniqueVariants specified
-    // // then calculate variant information for the descendant variant component
-    // if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
-    //   let variantInfo = this.getUniqueVariant({
-    //     serializedComponent: serializedComponent,
-    //     variantIndex: sharedParameters.variantIndex,
-    //     allComponentClasses: allComponentClasses,
-    //   })
-    //   if (variantInfo.success) {
-    //     Object.assign(desiredVariant, variantInfo.desiredVariant);
-    //   }
-    // }
 
     if (desiredVariant.subvariants && descendantVariantComponents) {
       for (let ind in desiredVariant.subvariants) {
@@ -716,6 +739,11 @@ export default class Document extends BaseComponent {
         }
         variantComponent.variants.desiredVariant = subvariant;
       }
+    } else if (serializedComponent.variants.variantsFromChild && descendantVariantComponents?.length === 1) {
+      // copy desired variant to child
+      descendantVariantComponents[0].variants.desiredVariant = desiredVariant;
+      descendantVariantComponents[0].variants.desiredVariantFromDocument = true;
+
     }
 
     // console.log("Desired variant for document");
@@ -725,7 +753,7 @@ export default class Document extends BaseComponent {
 
   static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
     if (serializedComponent.children === undefined) {
-      return { success: true, numberOfVariants: 1 };
+      return { success: true, numberOfVariants: 1, numberOfVariantsPreIgnore: 1 };
     }
 
     let variantControlChild;
@@ -737,7 +765,7 @@ export default class Document extends BaseComponent {
     }
 
     if (!variantControlChild) {
-      return { success: true, numberOfVariants: 100 }
+      return { success: true, numberOfVariants: 100, numberOfVariantsPreIgnore: 100 }
     }
 
     let numberOfVariants = variantControlChild.attributes.nVariants?.primitive;
@@ -747,7 +775,7 @@ export default class Document extends BaseComponent {
     }
 
     if (!variantControlChild.attributes.uniqueVariants?.primitive) {
-      return { success: true, numberOfVariants }
+      return { success: true, numberOfVariants, numberOfVariantsPreIgnore: numberOfVariants }
     }
 
 
@@ -760,12 +788,14 @@ export default class Document extends BaseComponent {
     numberOfVariants = Math.min(result.numberOfVariants, numberOfVariants);
 
     serializedComponent.variants.numberOfVariants = numberOfVariants;
+    serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariants;
 
-    console.log("Actual number of variants for document is " + numberOfVariants)
+    // console.log("Actual number of variants for document is " + numberOfVariants)
 
     return {
       success: true,
-      numberOfVariants
+      numberOfVariants,
+      numberOfVariantsPreIgnore: numberOfVariants
     };
 
 

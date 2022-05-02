@@ -224,7 +224,7 @@ describe('Substitute Tag Tests', function () {
     })
 
     cy.log('change original')
-    cy.get('#\\/original textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}q/x{enter}`, { force: true });
+    cy.get('#\\/original textarea').type(`{ctrl+home}{shift+end}{backspace}q/x{enter}`, { force: true });
 
     cy.get('#\\/one .mjx-mrow').should('contain.text', 'qb')
     cy.get('#\\/one .mjx-mrow').eq(0).invoke('text').then((text) => {

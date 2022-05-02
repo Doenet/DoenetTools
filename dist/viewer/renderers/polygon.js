@@ -29,7 +29,7 @@ export default function Polygon(props) {
       fillColor: "none",
       strokeColor: "none",
       highlightStrokeColor: "none",
-      highlightFillColor: "lightgray",
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       visible: SVs.draggable && !SVs.fixed,
       withLabel: false,
       layer: 10 * SVs.layer + 9
@@ -58,11 +58,11 @@ export default function Polygon(props) {
     if (SVs.selectedStyle.fillColor !== "none") {
       jsxPolygonAttributes.fillColor = SVs.selectedStyle.fillColor;
     }
-    let pts = [];
-    SVs.numericalVertices.forEach((z) => {
-      pts.push([z[0], z[1]]);
-    });
     board.suspendUpdate();
+    let pts = [];
+    for (let p of SVs.numericalVertices) {
+      pts.push(board.create("point", [...p], jsxPointAttributes.current));
+    }
     let newPolygonJXG = board.create("polygon", pts, jsxPolygonAttributes);
     initializePoints(newPolygonJXG);
     newPolygonJXG.on("drag", (e) => dragHandler(-1, e));

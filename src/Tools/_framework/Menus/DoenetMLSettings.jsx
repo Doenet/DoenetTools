@@ -1,5 +1,5 @@
 import React from 'react';
-import { editorDoenetIdInitAtom } from '../ToolPanels/EditorViewer'
+import { editorPageIdInitAtom } from '../ToolPanels/EditorViewer'
 import { useToast, toastType } from '@Toast';
 import { 
   useRecoilValue, 
@@ -16,12 +16,12 @@ import {
  import { searchParamAtomFamily } from '../NewToolRoot';
 
 export default function DoenetMLSettings(props){
-  const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
-  const link = `http://${window.location.host}/content/#/?doenetId=${initilizedDoenetId}`
+  const initializedDoenetId = useRecoilValue(editorPageIdInitAtom);
+  const link = `http://${window.location.host}/content/#/?doenetId=${initializedDoenetId}`
   const addToast = useToast();
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
 
-  if (paramDoenetId !== initilizedDoenetId){
+  if (paramDoenetId !== initializedDoenetId){
     //DoenetML is changing to another DoenetID
     return <div style={props.style}></div>
   }

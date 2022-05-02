@@ -92,8 +92,7 @@ export default function useSockets(nsp) {
         individualize: true,
         isAssigned: "0",
         isPublished: "0",
-        contentId: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        multipleAttempts: true,
+        cid: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         numberOfAttemptsAllowed: "1",
         proctorMakesAvailable: false,
         showCorrectness: true,
@@ -116,8 +115,7 @@ export default function useSockets(nsp) {
         individualize: true,
         isAssigned: "0",
         isPublished: "0",
-        contentId: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        multipleAttempts: false,
+        cid: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         numberOfAttemptsAllowed: "1",
         proctorMakesAvailable: false,
         showCorrectness: true,
@@ -132,6 +130,7 @@ export default function useSockets(nsp) {
     }
     try {
       const resp = await axios.post("/api/addItem.php", payload);
+      console.log("resp from add item", resp);
       if (resp.data.success) {
         acceptAddItem(payload);
       } else {
@@ -474,11 +473,11 @@ export default function useSockets(nsp) {
     if (itemInfo.itemType === "Folder") {
       const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
       globalContentIds[newItemId] = [];
-      for (let contentId of contentIds[sortOptions.DEFAULT]) {
+      for (let cid of contentIds[sortOptions.DEFAULT]) {
         let subItem = {
           ...item,
           parentFolderId: item.itemId,
-          itemId: contentId
+          itemId: cid
         };
         let result = await cloneItem({
           snapshot,
@@ -502,7 +501,7 @@ export default function useSockets(nsp) {
     let newVersion = {
       title: item.label,
       doenetId: item.doenetId,
-      contentId: item.contentId,
+      cid: item.cid,
       versionId: item.versionId,
       timestamp,
       isDraft: "0",

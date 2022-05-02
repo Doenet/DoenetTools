@@ -6,8 +6,8 @@ export default class Sources extends BaseComponent {
   static renderChildren = true;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.alias = {
       createPrimitiveOfType: "string",
       validationFunction: function (value) {

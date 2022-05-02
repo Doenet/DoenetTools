@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
-import MathJax from "../../_snowpack/pkg/react-mathjax.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.js";
 import ToggleButtonGroup from "../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup.js";
@@ -171,7 +171,7 @@ export default function VirtualKeyboard() {
   };
   if (toggleLetters) {
     if (toggleCase) {
-      return /* @__PURE__ */ React.createElement(MathJax.Provider, null, /* @__PURE__ */ React.createElement(Panel, {
+      return /* @__PURE__ */ React.createElement(Panel, {
         tabIndex: "0",
         ref: containerRef
       }, /* @__PURE__ */ React.createElement(LettersSection, null, /* @__PURE__ */ React.createElement(LetterButton, {
@@ -214,10 +214,9 @@ export default function VirtualKeyboard() {
         onClick: () => callback("write L")
       }, "L"), /* @__PURE__ */ React.createElement(LetterButton, {
         onClick: () => callback("write \\tau")
-      }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-        inline: true,
-        formula: "\\tau"
-      })), /* @__PURE__ */ React.createElement(White15Button, {
+      }, /* @__PURE__ */ React.createElement(MathJax, {
+        dynamic: true
+      }, "\\(\\tau\\)")), /* @__PURE__ */ React.createElement(White15Button, {
         onClick: handleToggleCase
       }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
         icon: faArrowUp
@@ -243,10 +242,9 @@ export default function VirtualKeyboard() {
         onClick: handleToggleLetters
       }, "123"), /* @__PURE__ */ React.createElement(LetterButton, {
         onClick: () => callback("cmd ^")
-      }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-        inline: true,
-        formula: "a^b"
-      })), /* @__PURE__ */ React.createElement(LetterButton, {
+      }, /* @__PURE__ */ React.createElement(MathJax, {
+        dynamic: true
+      }, "\\(a^b\\)")), /* @__PURE__ */ React.createElement(LetterButton, {
         onClick: () => callback("write %")
       }, "%"), /* @__PURE__ */ React.createElement(LetterButton, {
         onClick: () => callback("cmd ]")
@@ -258,9 +256,9 @@ export default function VirtualKeyboard() {
         onClick: () => callback("write '")
       }, "'"), /* @__PURE__ */ React.createElement(White20Button, {
         onClick: () => returncallback()
-      }, "Enter"))));
+      }, "Enter")));
     } else {
-      return /* @__PURE__ */ React.createElement(MathJax.Provider, null, /* @__PURE__ */ React.createElement(Panel, {
+      return /* @__PURE__ */ React.createElement(Panel, {
         tabIndex: "0",
         ref: containerRef
       }, /* @__PURE__ */ React.createElement(LettersSection, null, /* @__PURE__ */ React.createElement(LetterButton, {
@@ -303,10 +301,9 @@ export default function VirtualKeyboard() {
         onClick: () => callback("write l")
       }, "l"), /* @__PURE__ */ React.createElement(LetterButton, {
         onClick: () => callback("write \\theta")
-      }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-        inline: true,
-        formula: "\\theta"
-      })), /* @__PURE__ */ React.createElement(White15Button, {
+      }, /* @__PURE__ */ React.createElement(MathJax, {
+        dynamic: true
+      }, "\\(\\theta\\)")), /* @__PURE__ */ React.createElement(White15Button, {
         onClick: handleToggleCase
       }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
         icon: faArrowUp
@@ -332,10 +329,9 @@ export default function VirtualKeyboard() {
         onClick: handleToggleLetters
       }, "123"), /* @__PURE__ */ React.createElement(LetterButton, {
         onClick: () => callback("cmd _")
-      }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-        inline: true,
-        formula: "a_b"
-      })), /* @__PURE__ */ React.createElement(LetterButton, {
+      }, /* @__PURE__ */ React.createElement(MathJax, {
+        dynamic: true
+      }, "\\(a_b\\)")), /* @__PURE__ */ React.createElement(LetterButton, {
         onClick: () => callback("write !")
       }, "!"), /* @__PURE__ */ React.createElement(LetterButton, {
         onClick: () => callback("cmd [")
@@ -347,522 +343,423 @@ export default function VirtualKeyboard() {
         onClick: () => callback("write ,")
       }, ","), /* @__PURE__ */ React.createElement(White20Button, {
         onClick: () => returncallback()
-      }, "Enter"))));
+      }, "Enter")));
     }
   } else {
     let sectionSet = /* @__PURE__ */ React.createElement(Section, null, /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\cup")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\cup"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\cup\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\cap")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\cap"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\cap\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\subset")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\subset"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\subset\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\supset")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\supset"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\supset\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\subseteq")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\subseteq"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\subseteq\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\supseteq")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\supseteq"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\supseteq\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\nsubseteq")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\nsubseteq"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\nsubseteq\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\nsupseteq")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\nsupseteq"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\nsupseteq\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\emptyset")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\emptyset"
-    })));
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\emptyset\\)")));
     let sectionTrig1 = /* @__PURE__ */ React.createElement(Section, null, /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\sin")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\sin"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\sin\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\cos")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\cos"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\cos\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\tan")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\tan"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\tan\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\sin^{-1}")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\sin^{-1}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, `\\(\\sin^{-1}\\)`)), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\cos^{-1}")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\cos^{-1}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, `\\(\\cos^{-1}\\)`)), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\tan^{-1}")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\tan^{-1}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, `\\(\\tan^{-1}\\)`)), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\sinh")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\sinh"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\sinh\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\tanh")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\tanh"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\tanh\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\cosh")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\cosh"
-    })));
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\cosh\\)")));
     let sectionTrig2 = /* @__PURE__ */ React.createElement(Section, null, /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\csc")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\csc"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\csc\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\sec")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\sec"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\sec\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\cot")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\cot"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\cot\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\csc^{-1}")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\csc^{-1}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, `\\(\\csc^{-1}\\)`)), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\sec^{-1}")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\sec^{-1}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, `\\(\\sec^{-1}\\)`)), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\cot^{-1}")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\cot^{-1}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, `\\(\\cot^{-1}\\)`)), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\csch")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "csch"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\csch\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\coth")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\coth"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\coth\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\sech")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "sech"
-    })));
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\sech\\)")));
     let sectionFn = /* @__PURE__ */ React.createElement(Section, null, /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\frac{\\partial}{\\partial{x}}")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\frac{\\partial}{\\partial x}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, `\\(\\frac{\\partial}{\\partial x}\\)`)), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\int")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\int"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\int\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\frac{d}{dx}")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\frac{d}{dx}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, `\\(\\frac{d}{dx}\\)`)), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("write \\log_{}")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\log_ab"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\log_ab\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => callback("cmd \\ln")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\ln"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\ln\\)")), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => {
         callback("write e^{}");
         callback("keystroke Left");
       }
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "e^{x}"
-    })), /* @__PURE__ */ React.createElement(Button33, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, `\\(e^{x}\\)`)), /* @__PURE__ */ React.createElement(Button33, {
       onClick: () => {
         callback("write 10^{}");
         callback("keystroke Left");
       }
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "10^{x}"
-    })));
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, `\\(10^{x}\\)`)));
     let sectionGreekNone = null;
     let sectionGreek1 = /* @__PURE__ */ React.createElement(Section, null, /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\alpha")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\alpha"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\alpha\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\epsilon")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\epsilon"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\epsilon\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\kappa")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\kappa"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\kappa\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\xi")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\xi"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\xi\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\beta")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\beta"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\beta\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\zeta")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\zeta"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\zeta\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\lambda")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\lambda"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\lambda\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\pi")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\pi"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\pi\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\gamma")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\gamma"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\gamma\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\eta")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\eta"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\eta\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\mu")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\mu"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\mu\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\rho")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\rho"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\rho\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\delta")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\delta"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\delta\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\theta")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\theta"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\theta\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\nu")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\nu"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\nu\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\sigma")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\sigma"
-    })));
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\sigma\\)")));
     let sectionGreek2 = /* @__PURE__ */ React.createElement(Section, null, /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\tau")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\tau"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\tau\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Lambda")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\Lambda"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Lambda\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Upsilon")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\Upsilon"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Upsilon\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Gamma")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\Gamma"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Gamma\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\phi")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\phi"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\phi\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Xi")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\Xi"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Xi\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Phi")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\Phi"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Phi\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Delta")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\Delta"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Delta\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\psi")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\psi"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\psi\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Pi")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\Pi"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Pi\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Psi")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\Psi"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Psi\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Theta")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\Theta"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Theta\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\omega")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\omega"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\omega\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Sigma")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\Sigma"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Sigma\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Omega")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\Omega"
-    })));
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Omega\\)")));
     let sectionXYZ = /* @__PURE__ */ React.createElement(Section, null, /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write x")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "x"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(x\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write y")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "y"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(y\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("type ^2")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "a^2"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(a^2\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("cmd ^")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "a^b"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(a^b\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("cmd (")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "("
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\((\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("keystroke Right")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: ")"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\()\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write <")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "<"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(<\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write >")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: ">"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(>\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("cmd |")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "|a|"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(|a|\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write ,")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: ","
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(,\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("type <=")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\leq"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\leq\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("type >=")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\geq"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\geq\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("cmd /")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\div"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\div\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("type sqrt")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\sqrt{}"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, `\\(\\sqrt{}\\)`)), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("type theta")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\theta"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\theta\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("type pi")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\pi"
-    })));
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\pi\\)")));
     let section123 = /* @__PURE__ */ React.createElement(Section, null, /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write 7")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "7"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(7\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write 8")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "8"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(8\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write 9")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "9"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(9\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("cmd /")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\div"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\div\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write 4")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "4"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(4\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write 5")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "5"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(5\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write 6")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "6"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(6\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("type *")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\times"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\times\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write 1")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "1"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(1\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write 2")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "2"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(2\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write 3")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "3"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(3\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("cmd -")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "-"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(-\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write 0")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "0"
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(0\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write .")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "."
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(.\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write =")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "="
-    })), /* @__PURE__ */ React.createElement(Button, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(=\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write +")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "+"
-    })));
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(+\\)")));
     let sectionControl = /* @__PURE__ */ React.createElement(Section, {
       style: {marginTop: "57px"}
     }, /* @__PURE__ */ React.createElement(CursorButton, {
       onClick: () => callback("keystroke Left")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\leftarrow"
-    })), /* @__PURE__ */ React.createElement(CursorButton, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\leftarrow\\)")), /* @__PURE__ */ React.createElement(CursorButton, {
       onClick: () => callback("keystroke Right")
-    }, /* @__PURE__ */ React.createElement(MathJax.Node, {
-      inline: true,
-      formula: "\\rightarrow"
-    })), /* @__PURE__ */ React.createElement(DeleteButton, {
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\rightarrow\\)")), /* @__PURE__ */ React.createElement(DeleteButton, {
       onClick: () => callback("keystroke Backspace")
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faBackspace
@@ -871,7 +768,7 @@ export default function VirtualKeyboard() {
     }, "Enter"), /* @__PURE__ */ React.createElement(EnterButton, {
       onClick: handleToggleLetters
     }, "ABC"));
-    return /* @__PURE__ */ React.createElement(MathJax.Provider, null, /* @__PURE__ */ React.createElement(Panel, {
+    return /* @__PURE__ */ React.createElement(Panel, {
       tabIndex: "0",
       ref: containerRef
     }, /* @__PURE__ */ React.createElement(ContainerSection, null, /* @__PURE__ */ React.createElement(ToggleButtonSection, null, /* @__PURE__ */ React.createElement(ToggleButtonGroup, {
@@ -905,6 +802,6 @@ export default function VirtualKeyboard() {
     }))), toggleNumpad === 0 ? section123 : toggleNumpad === 1 ? sectionXYZ : null), /* @__PURE__ */ React.createElement(VerticalDivider, {
       height: "230px",
       marginTop: "10px"
-    }), /* @__PURE__ */ React.createElement(ControlSection, null, sectionControl)));
+    }), /* @__PURE__ */ React.createElement(ControlSection, null, sectionControl));
   }
 }

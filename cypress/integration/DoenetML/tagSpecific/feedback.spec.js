@@ -555,7 +555,7 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Type cos(pi x)")
-      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pi x)`, { force: true });
+      cy.get(mathinputAnchor).type(`{ctrl+home}{shift+end}{backspace}cos(pi x)`, { force: true });
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
@@ -582,7 +582,7 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Enter x")
-      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x`, { force: true });
+      cy.get(mathinputAnchor).type(`{ctrl+home}{shift+end}{backspace}x`, { force: true });
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
@@ -843,7 +843,7 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Type cos(pi x)")
-      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pi x)`, { force: true });
+      cy.get(mathinputAnchor).type(`{ctrl+home}{shift+end}{backspace}cos(pi x)`, { force: true });
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
@@ -870,7 +870,7 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Enter x")
-      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x`, { force: true });
+      cy.get(mathinputAnchor).type(`{ctrl+home}{shift+end}{backspace}x`, { force: true });
       cy.get(mathinputSubmitAnchor).should('be.visible')
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
@@ -984,7 +984,7 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Type cos(pi x)")
-      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pi x)`, { force: true });
+      cy.get(mathinputAnchor).type(`{ctrl+home}{shift+end}{backspace}cos(pi x)`, { force: true });
       cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('have.text', ' FeedbackGood job!')
       cy.get('#\\/feedback2').should('have.text', '')
@@ -1011,7 +1011,7 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Enter x")
-      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x`, { force: true });
+      cy.get(mathinputAnchor).type(`{ctrl+home}{shift+end}{backspace}x`, { force: true });
       cy.get(mathinputSubmitAnchor).should('be.visible')
       cy.get(mathinputAnchor).type(`{enter}`, { force: true });
       cy.get(mathinputIncorrectAnchor).should('be.visible');

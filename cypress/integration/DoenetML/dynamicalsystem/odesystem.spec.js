@@ -572,7 +572,7 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("invalid dependent variable");
-    cy.get('#\\/dvar textarea').type('{end}{backspace}{backspace}{backspace}ab{enter}', { force: true });
+    cy.get('#\\/dvar textarea').type('{ctrl+home}{shift+end}{backspace}ab{enter}', { force: true });
 
     cy.get('#\\/dvar2 .mjx-mrow').should('contain.text', 'ab')
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {

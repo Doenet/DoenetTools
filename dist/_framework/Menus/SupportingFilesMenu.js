@@ -91,13 +91,13 @@ export default function SupportingFilesMenu(props) {
   let typesAllowed = ["image/jpeg", "image/png"];
   let [uploadProgress, setUploadProgress] = useState([]);
   let numberOfFilesUploading = useRef(0);
-  const updateDescription = useRecoilCallback(({set}) => async (description, contentId) => {
-    let {data} = await axios.get("/api/updateFileDescription.php", {params: {doenetId, contentId, description}});
+  const updateDescription = useRecoilCallback(({set}) => async (description, cid) => {
+    let {data} = await axios.get("/api/updateFileDescription.php", {params: {doenetId, cid, description}});
     set(supportingFilesAndPermissionByDoenetIdSelector(doenetId), (was) => {
       let newObj = {...was};
       let newSupportingFiles = [...was.supportingFiles];
       newSupportingFiles.map((file, index) => {
-        if (file.contentId === contentId) {
+        if (file.cid === cid) {
           newSupportingFiles[index] = {...newSupportingFiles[index]};
           newSupportingFiles[index].description = description;
         }
@@ -106,13 +106,13 @@ export default function SupportingFilesMenu(props) {
       return newObj;
     });
   }, [doenetId]);
-  const updateAsFileName = useRecoilCallback(({set}) => async (asFileName, contentId) => {
-    let {data} = await axios.get("/api/updateFileAsFileName.php", {params: {doenetId, contentId, asFileName}});
+  const updateAsFileName = useRecoilCallback(({set}) => async (asFileName, cid) => {
+    let {data} = await axios.get("/api/updateFileAsFileName.php", {params: {doenetId, cid, asFileName}});
     set(supportingFilesAndPermissionByDoenetIdSelector(doenetId), (was) => {
       let newObj = {...was};
       let newSupportingFiles = [...was.supportingFiles];
       newSupportingFiles.map((file, index) => {
-        if (file.contentId === contentId) {
+        if (file.cid === cid) {
           newSupportingFiles[index] = {...newSupportingFiles[index]};
           newSupportingFiles[index].asFileName = asFileName;
         }
@@ -121,12 +121,12 @@ export default function SupportingFilesMenu(props) {
       return newObj;
     });
   }, [doenetId]);
-  const deleteFile = useRecoilCallback(({set}) => async (contentId) => {
-    let {data} = await axios.get("/api/deleteFile.php", {params: {doenetId, contentId}});
+  const deleteFile = useRecoilCallback(({set}) => async (cid) => {
+    let {data} = await axios.get("/api/deleteFile.php", {params: {doenetId, cid}});
     let {userQuotaBytesAvailable: userQuotaBytesAvailable2} = data;
     set(supportingFilesAndPermissionByDoenetIdSelector(doenetId), (was) => {
       let newObj = {...was};
-      newObj.supportingFiles = was.supportingFiles.filter((file) => file.contentId !== contentId);
+      newObj.supportingFiles = was.supportingFiles.filter((file) => file.cid !== cid);
       newObj.userQuotaBytesAvailable = userQuotaBytesAvailable2;
       return newObj;
     });
@@ -191,7 +191,7 @@ export default function SupportingFilesMenu(props) {
           if (numberOfFilesUploading.current < 1) {
             setUploadProgress([]);
           }
-          let {success: success2, fileName, contentId, asFileName, width, height, msg, userQuotaBytesAvailable: userQuotaBytesAvailable2} = data;
+          let {success: success2, fileName, cid, asFileName, width, height, msg, userQuotaBytesAvailable: userQuotaBytesAvailable2} = data;
           if (msg) {
             if (success2) {
               addToast(msg, toastType.INFO);
@@ -204,7 +204,7 @@ export default function SupportingFilesMenu(props) {
               let newObj = {...was};
               let newSupportingFiles = [...was.supportingFiles];
               newSupportingFiles.push({
-                contentId,
+                cid,
                 fileName,
                 fileType: file.type,
                 width,
@@ -244,7 +244,7 @@ export default function SupportingFilesMenu(props) {
   }
   let supportFilesJSX = [];
   supportingFiles.map(({
-    contentId,
+    cid,
     fileName,
     fileType,
     width,
@@ -253,7 +253,7 @@ export default function SupportingFilesMenu(props) {
     asFileName
   }) => {
     let doenetMLCode = "Error";
-    let source = `doenet:cid=${contentId}`;
+    let source = `doenet:cid=${cid}`;
     if (fileType === "image/jpeg" || fileType === "image/png") {
       doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}' width='${width}' height='${height}' mimeType='${fileType}' />`;
     } else if (fileType === "text/csv") {
@@ -265,7 +265,7 @@ export default function SupportingFilesMenu(props) {
     }, "asFileName:"), /* @__PURE__ */ React.createElement(EditableText, {
       text: asFileName,
       submit: (text) => {
-        updateAsFileName(text, contentId);
+        updateAsFileName(text, cid);
       }
     })), /* @__PURE__ */ React.createElement("div", {
       style: description_required_css
@@ -274,11 +274,11 @@ export default function SupportingFilesMenu(props) {
     }, "description:"), /* @__PURE__ */ React.createElement(EditableText, {
       text: description,
       submit: (text) => {
-        updateDescription(text, contentId);
+        updateDescription(text, cid);
       }
     })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("button", {
       onClick: () => {
-        deleteFile(contentId);
+        deleteFile(cid);
       }
     }, "delete"), /* @__PURE__ */ React.createElement(CopyToClipboard, {
       onCopy: () => addToast("Code copied to clipboard!", toastType.SUCCESS),

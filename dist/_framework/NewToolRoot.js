@@ -8,7 +8,7 @@ import {
   useRecoilState,
   useSetRecoilState
 } from "../_snowpack/pkg/recoil.js";
-import styled from "../_snowpack/pkg/styled-components.js";
+import styled, {keyframes} from "../_snowpack/pkg/styled-components.js";
 import Toast from "./Toast.js";
 import ContentPanel from "./Panels/NewContentPanel.js";
 import axios from "../_snowpack/pkg/axios.js";
@@ -69,6 +69,7 @@ export default function ToolRoot() {
     supportPanelTitles: [],
     supportPanelIndex: 0,
     hasNoMenuPanel: false,
+    hasNoHeaderPanel: false,
     headerControls: [],
     displaySettings: true,
     footer: null
@@ -96,11 +97,11 @@ export default function ToolRoot() {
     GradebookAttempt: lazy(() => import("./ToolPanels/GradebookAttempt.js")),
     EditorViewer: lazy(() => import("./ToolPanels/EditorViewer.js")),
     AssignmentViewer: lazy(() => import("./ToolPanels/AssignmentViewer.js")),
+    DraftAssignmentViewer: lazy(() => import("./ToolPanels/DraftAssignmentViewer.js")),
     SurveyListViewer: lazy(() => import("./ToolPanels/SurveyListViewer.js")),
     SurveyDataViewer: lazy(() => import("./ToolPanels/SurveyDataViewer.js")),
     DoenetMLEditor: lazy(() => import("./ToolPanels/DoenetMLEditor.js")),
     Enrollment: lazy(() => import("./ToolPanels/Enrollment.js")),
-    CollectionEditor: lazy(() => import("./ToolPanels/CollectionEditor.js")),
     ChooseLearnerPanel: lazy(() => import("./ToolPanels/ChooseLearnerPanel.js")),
     EndExamPanel: lazy(() => import("./ToolPanels/EndExamPanel.js"))
   }).current;
@@ -108,7 +109,6 @@ export default function ToolRoot() {
     BackButton: lazy(() => import("./HeaderControls/BackButton.js")),
     ViewerUpdateButton: lazy(() => import("./HeaderControls/ViewerUpdateButton.js")),
     NavigationBreadCrumb: lazy(() => import("./HeaderControls/NavigationBreadCrumb.js")),
-    CollectionBreadCrumb: lazy(() => import("./HeaderControls/CollectionBreadCrumb.js")),
     ChooserBreadCrumb: lazy(() => import("./HeaderControls/ChooserBreadCrumb.js")),
     DashboardBreadCrumb: lazy(() => import("./HeaderControls/DashboardBreadCrumb.js")),
     EnrollmentBreadCrumb: lazy(() => import("./HeaderControls/EnrollmentBreadCrumb.js")),
@@ -124,7 +124,43 @@ export default function ToolRoot() {
   let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
   mainPanel = /* @__PURE__ */ React.createElement(Suspense, {
     key: MainPanelKey,
-    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
+    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, /* @__PURE__ */ React.createElement(Svg, null, /* @__PURE__ */ React.createElement(DonutG1, null, /* @__PURE__ */ React.createElement(Circle, {
+      id: "donut",
+      fill: "rgb(238,161,119)",
+      r: "60"
+    }), /* @__PURE__ */ React.createElement(Circle, {
+      id: "donut-topping",
+      fill: "rgb(109,68,69)",
+      r: "48"
+    }), /* @__PURE__ */ React.createElement(Circle, {
+      id: "donut-hole",
+      fill: "hsl(0, 0%, 99%)",
+      r: "19"
+    }))), /* @__PURE__ */ React.createElement(Svg, null, /* @__PURE__ */ React.createElement(DonutG2, null, /* @__PURE__ */ React.createElement(Circle, {
+      id: "donut",
+      fill: "rgb(238,161,119)",
+      r: "60"
+    }), /* @__PURE__ */ React.createElement(Circle, {
+      id: "donut-topping",
+      fill: "rgb(109,68,69)",
+      r: "48"
+    }), /* @__PURE__ */ React.createElement(Circle, {
+      id: "donut-hole",
+      fill: "hsl(0, 0%, 99%)",
+      r: "19"
+    }))), /* @__PURE__ */ React.createElement(Svg, null, /* @__PURE__ */ React.createElement(DonutG3, null, /* @__PURE__ */ React.createElement(Circle, {
+      id: "donut",
+      fill: "rgb(238,161,119)",
+      r: "60"
+    }), /* @__PURE__ */ React.createElement(Circle, {
+      id: "donut-topping",
+      fill: "rgb(109,68,69)",
+      r: "48"
+    }), /* @__PURE__ */ React.createElement(Circle, {
+      id: "donut-hole",
+      fill: "hsl(0, 0%, 99%)",
+      r: "19"
+    }))))
   }, React.createElement(LazyPanelObj[toolRootMenusAndPanels.currentMainPanel], {MainPanelKey}));
   if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.supportPanelOptions.length > 0) {
     const spType = toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex];
@@ -135,7 +171,29 @@ export default function ToolRoot() {
       panelIndex: toolRootMenusAndPanels.supportPanelIndex
     }, /* @__PURE__ */ React.createElement(Suspense, {
       key: SupportPanelKey,
-      fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
+      fallback: /* @__PURE__ */ React.createElement(LoadingFallback, {
+        display: "static"
+      }, /* @__PURE__ */ React.createElement(Table, null, /* @__PURE__ */ React.createElement(TBody, null, /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
+        className: "Td2"
+      }), /* @__PURE__ */ React.createElement(Td, {
+        className: "Td3"
+      }, /* @__PURE__ */ React.createElement(Td3Span, null))), /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
+        className: "Td2"
+      }), /* @__PURE__ */ React.createElement(Td, {
+        className: "Td3"
+      }, /* @__PURE__ */ React.createElement(Td3Span, null))), /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
+        className: "Td2"
+      }), /* @__PURE__ */ React.createElement(Td, {
+        className: "Td3"
+      }, /* @__PURE__ */ React.createElement(Td3Span, null))), /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
+        className: "Td2"
+      }), /* @__PURE__ */ React.createElement(Td, {
+        className: "Td3"
+      }, /* @__PURE__ */ React.createElement(Td3Span, null))), /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
+        className: "Td2"
+      }), /* @__PURE__ */ React.createElement(Td, {
+        className: "Td3"
+      }, /* @__PURE__ */ React.createElement(Td3Span, null))))))
     }, React.createElement(LazyPanelObj[spType], {SupportPanelKey})));
   }
   let headerControls = null;
@@ -147,7 +205,7 @@ export default function ToolRoot() {
         const key = `headerControls${MainPanelKey}`;
         headerControls.push(/* @__PURE__ */ React.createElement(Suspense, {
           key,
-          fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
+          fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, /* @__PURE__ */ React.createElement(BreadcrumbContainer, null, /* @__PURE__ */ React.createElement(BreadcrumbOutline, null)))
         }, React.createElement(controlObj, {key: {key}})));
       }
     }
@@ -192,8 +250,10 @@ export default function ToolRoot() {
       headerControls,
       setMenusOpen,
       openMenuButton,
-      displaySettings: toolRootMenusAndPanels.displaySettings
+      displaySettings: toolRootMenusAndPanels.displaySettings,
+      hasNoHeaderPanel: toolRootMenusAndPanels.hasNoHeaderPanel
     }, mainPanel),
+    hasNoHeaderPanel: toolRootMenusAndPanels.hasNoHeaderPanel,
     support: supportPanel
   }), footer), /* @__PURE__ */ React.createElement(Toast, null), /* @__PURE__ */ React.createElement(MemoizedRootController, {
     key: "root_controller",
@@ -279,6 +339,16 @@ let navigationObj = {
       onLeave: "DashboardLeave",
       waitForMenuSuppression: true
     },
+    draftactivity: {
+      pageName: "DraftActivity",
+      menuPanelCap: "DraftActivityCap",
+      currentMainPanel: "DraftAssignmentViewer",
+      currentMenus: ["ActivityVariant"],
+      menusTitles: ["Activity Variant"],
+      menusInitOpen: [],
+      headerControls: ["AssignmentBreadCrumb"],
+      footer: {height: 250, open: false, component: "MathInputKeyboard"}
+    },
     gradebook: {
       pageName: "Gradebook",
       currentMainPanel: "Gradebook",
@@ -323,9 +393,9 @@ let navigationObj = {
       pageName: "Course",
       currentMainPanel: "NavigationPanel",
       menuPanelCap: "DriveInfoCap",
-      currentMenus: ["AddDriveItems"],
-      menusTitles: ["Add Items"],
-      menusInitOpen: [true],
+      currentMenus: ["CutCopyPasteMenu", "AddDriveItems"],
+      menusTitles: ["Cut, Copy and Paste", "Add Items"],
+      menusInitOpen: [true, true],
       headerControls: ["NavigationBreadCrumb"],
       onLeave: "NavigationLeave",
       waitForMenuSuppression: true
@@ -334,22 +404,22 @@ let navigationObj = {
       pageName: "Course",
       menuPanelCap: "EditorInfoCap",
       currentMainPanel: "EditorViewer",
-      currentMenus: ["VersionHistory", "Variant", "AssignmentSettingsMenu", "SupportingFilesMenu"],
-      menusTitles: ["Version History", "Variant", "Assignment Settings", "Supporting Files"],
-      menusInitOpen: [false, false, false],
+      currentMenus: [
+        "PageVariant",
+        "AssignmentSettingsMenu",
+        "SupportingFilesMenu"
+      ],
+      menusTitles: [
+        "Page Variant",
+        "Assignment Settings",
+        "Supporting Files"
+      ],
+      menusInitOpen: [false, false],
       supportPanelOptions: ["DoenetMLEditor"],
       supportPanelTitles: ["DoenetML Editor"],
       supportPanelIndex: 0,
       headerControls: ["EditorBreadCrumb", "ViewerUpdateButton"],
-      onLeave: "EditorLeave",
       footer: {height: 250, open: false, component: "MathInputKeyboard"}
-    },
-    collection: {
-      currentMainPanel: "CollectionEditor",
-      headerControls: ["CollectionBreadCrumb"],
-      currentMenus: ["AssignmentSettingsMenu", "GroupSettings"],
-      menusTitles: ["Assignment Settings", "Group Settings"],
-      menusInitOpen: [false, false]
     },
     enrollment: {
       pageName: "Enrollment",
@@ -387,6 +457,7 @@ let navigationObj = {
       supportPanelTitles: [],
       supportPanelIndex: 0,
       hasNoMenuPanel: true,
+      hasNoHeaderPanel: true,
       displaySettings: false
     }
   },
@@ -464,7 +535,6 @@ function OnLeave() {
   let leaveComponent = null;
   const LazyEnterLeaveObj = useRef({
     NavigationLeave: lazy(() => import("./EnterLeave/NavigationLeave.js")),
-    EditorLeave: lazy(() => import("./EnterLeave/EditorLeave.js")),
     CourseChooserLeave: lazy(() => import("./EnterLeave/CourseChooserLeave.js")),
     DashboardLeave: lazy(() => import("./EnterLeave/DashboardLeave.js")),
     GradebookAssignmentLeave: lazy(() => import("./EnterLeave/GradebookAssignmentLeave.js"))
@@ -685,10 +755,117 @@ function RootController(props) {
 const LoadingFallback = styled.div`
   background-color: hsl(0, 0%, 99%);
   border-radius: 4px;
-  display: flex;
+  display: ${(props) => props.display ? props.display : "flex"};
   justify-content: center;
   align-items: center;
   font-size: 2em;
   width: 100%;
   height: 100%;
+`;
+const bouncingDonut = keyframes`
+  from { transform: translate3d(0, 0px, 0);}
+  to { transform: translate3d(0, 20px, 0);}
+`;
+const Svg = styled.svg`
+  width: 130px;
+  height: 140px;
+  align-items: center;
+  margin: 25px;
+`;
+const DonutG1 = styled.g`
+  position: relative;
+  animation: ${bouncingDonut} 0.5s ease 0s infinite;
+  animation-direction: alternate;
+  transform: translate(279, 394.5);
+  &:after {
+    position: absolute;
+  }
+`;
+const DonutG2 = styled.g`
+  position: relative;
+  animation: ${bouncingDonut} 0.5s ease 0.15s infinite;
+  animation-direction: alternate;
+  transform: translate(279, 394.5);
+  &:after {
+    position: absolute;
+  }
+`;
+const DonutG3 = styled.g`
+  position: relative;
+  animation: ${bouncingDonut} 0.5s ease 0.25s infinite;
+  animation-direction: alternate;
+  transform: translate(279, 394.5);
+  &:after {
+    position: absolute;
+  }
+`;
+const Circle = styled.circle`
+  cx: 65;
+  cy: 60;
+`;
+const BreadcrumbContainer = styled.ul`
+  list-style: none;
+  overflow: hidden;
+  height: 21px;
+  display: flex;
+  margin-left: -35px;
+  background-color: white;
+`;
+const shimmerAnimation = keyframes`
+  from {
+    background-position: -468px 0
+  }
+  to {
+    background-position: 468px 0
+  }
+`;
+const BreadcrumbOutline = styled.li`
+  float: left;
+  border-radius: 15px;
+  padding: 0px 30px 0px 30px;
+  /* background: var(--mainGray); */
+  /* background-color: #F5F5F5; */
+  color: black;
+
+  animation-duration: 3s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: ${shimmerAnimation};
+  animation-timing-function: linear;
+  background: #f6f7f8;
+  background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  background-size: 1000px 640px;
+  position: relative;
+`;
+const movingGradient = keyframes`
+  0% { background-position: -250px 0; }
+  100% { background-position: 250px 0; }
+`;
+const Table = styled.table`
+  border-radius: 5px;
+  margin: 8px;
+`;
+const Tr = styled.tr`
+  /* border-bottom: 2px solid black; */
+`;
+const Td = styled.td`
+  height: 40px;
+
+  &.Td3 {
+    width: 100%;
+  }
+
+`;
+const TBody = styled.tbody``;
+const Td3Span = styled.span`
+  display: block;
+  height: 14px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+  background-size: 500px 100px;
+  animation-name: ${movingGradient};
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
 `;

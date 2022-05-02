@@ -16,8 +16,8 @@ export default class Point extends GraphicalComponent {
   static primaryStateVariableForDefinition = "coordsShadow";
   static stateVariableForAttributeValue = "coords";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.draggable = {
       createComponentOfType: "boolean",
       createStateVariable: "draggable",

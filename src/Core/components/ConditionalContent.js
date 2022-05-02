@@ -10,7 +10,6 @@ export default class ConditionalContent extends CompositeComponent {
   static includeBlankStringChildren = true;
 
   static assignNamesToReplacements = true;
-  static originalNamesAreConsistent = true;
 
   static createsVariants = true;
 
@@ -35,8 +34,8 @@ export default class ConditionalContent extends CompositeComponent {
   }
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
@@ -334,7 +333,7 @@ export default class ConditionalContent extends CompositeComponent {
       }
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
@@ -342,8 +341,7 @@ export default class ConditionalContent extends CompositeComponent {
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
-      originalNamesAreConsistent: newNamespace
-        || !component.doenetAttributes.assignNames,
+      originalNamesAreConsistent: true,
     });
 
 

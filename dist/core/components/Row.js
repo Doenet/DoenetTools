@@ -6,8 +6,8 @@ export default class Row extends BaseComponent {
   static rendererType = "row";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.rowNum = {
       createComponentOfType: "text",
       createStateVariable: "rowNum",

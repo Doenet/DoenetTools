@@ -64,23 +64,31 @@ export default function Section(props) {
     }
   }
 
-
-  if (SVs.level === 0) {
-    heading = <h1 id={headingId} style={{fontSize:'2em'}}>{title}</h1>;
-  } else if (SVs.level === 1) {
-    heading = <h2 id={headingId} style={{fontSize:'1.5em'}}>{title}</h2>;
-  } else if (SVs.level === 2) {
-    heading = <h3 id={headingId} style={{fontSize:'1.17em'}}>{title}</h3>;
-  } else if (SVs.level === 3) {
-    heading = <h4 id={headingId} style={{fontSize:'1em'}}>{title}</h4>;
-  } else if (SVs.level === 4) {
-    heading = <h5 id={headingId} style={{fontSize:'.83em'}}>{title}</h5>;
-  } else if (SVs.level === 5) {
-    heading = <h6 id={headingId} style={{fontSize:'.67em'}}>{title}</h6>;
+  switch (SVs.level){
+    case 0: heading = <span id={headingId} style={{fontSize:'2em'}}>{title}</span>; break;
+    case 1: heading = <span id={headingId} style={{fontSize:'1.5em'}}>{title}</span>; break;
+    case 2: heading = <span id={headingId} style={{fontSize:'1.17em'}}>{title}</span>; break;
+    case 3: heading = <span id={headingId} style={{fontSize:'1em'}}>{title}</span>; break;
+    case 4: heading = <span id={headingId} style={{fontSize:'.83em'}}>{title}</span>; break;
+    case 5: heading = <span id={headingId} style={{fontSize:'.67em'}}>{title}</span>; break;
   }
+  // if (SVs.level === 0) {
+  //   heading = <span id={headingId} style={{fontSize:'2em'}}>{title}</span>;
+  // } else if (SVs.level === 1) {
+  //   heading = <span id={headingId} style={{fontSize:'1.5em'}}>{title}</span>;
+  // } else if (SVs.level === 2) {
+  //   heading = <span id={headingId} style={{fontSize:'1.17em'}}>{title}</span>;
+  // } else if (SVs.level === 3) {
+  //   heading = <span id={headingId} style={{fontSize:'1em'}}>{title}</span>;
+  // } else if (SVs.level === 4) {
+  //   heading = <span id={headingId} style={{fontSize:'.83em'}}>{title}</span>;
+  // } else if (SVs.level === 5) {
+  //   heading = <span id={headingId} style={{fontSize:'.67em'}}>{title}</span>;
+  // }
 
   let checkworkComponent = null;
 
+  
   if (SVs.createSubmitAllButton) {
   
     updateValidationState();
@@ -167,140 +175,102 @@ export default function Section(props) {
     checkworkComponent = <div>{checkworkComponent}</div>
   }
 
-
-  let content = <>
-        <a name={name} />
-        {heading}
-        {children}
-        {checkworkComponent}
-      </>;
+  //TODO checkwork
+  let content = 
+  <>
+    <a name={name} />
+    {heading} <br/>
+    {children}
+    {checkworkComponent}
+  </>;
 
   if (SVs.collapsible) {
-    if (SVs.open) {
-      if (SVs.boxed){
-
-        content = <>
+    // if (SVs.open) {
+      // if (SVs.boxed){
+    content = 
+    <div style={{ border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)" }} >
+      <div 
+        style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: "var(--mainBorder)", borderTopLeftRadius:"var(--mainBorderRadius)", borderTopRightRadius:"var(--mainBorderRadius)" }} 
+        onClick={() => callAction({action: SVs.open ? actions.closeSection : actions.revealSection})}
+      >
         <a name={name} />
-       
-        <span style={{
-          display: "block",
-          // margin: "4px 4px 0px 4px",
-          // padding: "6px",
-          // border: "1px solid #C9C9C9",
-          backgroundColor: "#ebebeb",
-          cursor: "pointer"
-        }}
-          onClick={() => callAction({action: actions.closeSection})}>
-          <a name={name} />
-          {heading}
-        </span>
-        <span style={{
-          display: "block",
-          // margin: "0px 4px 4px 4px",
-          padding: "6px",
-          // paddingTop: "10px",
-          border: "1px solid #C9C9C9",
-          backgroundColor: "white",
-        }}>
-         
-          {children}
-          {checkworkComponent}
-        </span>
-  
-      </>
-      }else{
-        content = <>
-        <a name={name} />
-        <span style={{
-          display: "block",
-          // margin: "4px 4px 0px 4px",
-          // padding: "6px",
-          // border: "1px solid #C9C9C9",
-          backgroundColor: "#ebebeb",
-          cursor: "pointer"
-        }}
-          onClick={() => callAction({action: actions.closeSection})}>
-          <a name={name} />
-          {heading}
-        </span>
-        <span style={{
-          display: "block",
-          // margin: "0px 4px 4px 4px",
-          // padding: "6px",
-          // border: "1px solid #C9C9C9",
-          backgroundColor: "white",
-          // backgroundColor: "#c41e1e",
-        }}>
-          {children}
-          {checkworkComponent}
-        </span>
-      </>
-      }
-     
-    } else {
-      content = <>
-        <a name={name} />
-        <span style={{
-          display: "block",
-          // margin: "4px 4px 0px 4px",
-          // padding: "6px",
-          // border: "1px solid #C9C9C9",
-          backgroundColor: "#ebebeb",
-          cursor: "pointer"
-        }}
-          onClick={() => callAction({action: actions.revealSection})}>
-          {heading}
-        </span>
-      </>
-
-    }
-  } else if (SVs.boxed) {
-    content = <>
-    <span style={{
-      display: "block",
-      margin: "4px 4px 0px 4px",
-      padding: "6px",
-      border: "1px solid #C9C9C9",
-      backgroundColor: "#ebebeb",
-    }}
-     >
-      <a name={name} />
-      {heading}
-    </span>
-    <span style={{
-      display: "block",
-      margin: "0px 4px 4px 4px",
-      padding: "6px",
-      border: "1px solid #C9C9C9",
-      backgroundColor: "white",
-    }}>
-      {children}
-      {checkworkComponent}
-    </span>
-    </>
-  } 
-
-
-  if (SVs.containerTag === "aside") {
-    return <aside id={name} >
-      {content}
-    </aside>
-  } else if (SVs.containerTag === "div") {
-    return <div id={name} >
-      {content}
+        {heading}
+      </div>
+      <div style={{ display: SVs.open ? "block" : "none", padding: SVs.boxed && "6px" }}>
+        {children}
+        {checkworkComponent}
+      </div>
     </div>
-  } else if (SVs.containerTag === "none") {
-    return <>
-      {content}
-    </>
-  } else {
-    // return <section id={name} style={{pageBreakAfter: "always"}} >
-    return <section id={name} >
-      {content}
-    </section>
-  }
+      // }else{
+      //   content = <>
+      //   <a name={name} />
+      //   <span style={{
+      //     display: "block", backgroundColor: "#ebebeb", cursor: "pointer"}}
+      //     onClick={() => callAction({action: actions.closeSection})}
+      //   >
+      //     <a name={name} />
+      //     {heading}
+      //   </span>
+      //   <span style={{ display: "block", backgroundColor: "white" }} >
+      //     {children}
+      //     {checkworkComponent}
+      //   </span>
+      // </>
+      // }
+     
+    // } else {
+    //   content = <>
+    //     <a name={name} />
+    //     <span 
+    //       style={{ display: "block", backgroundColor: "#ebebeb", cursor: "pointer"}}
+    //       onClick={() => callAction({action: actions.revealSection})}
+    //     >
+    //       {heading}
+    //     </span>
+    //   </>
 
+    // }
+  } else if (SVs.boxed) {
+    content = 
+    <div style={{ border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)" }}>
+      <div style={{ padding: "6px", borderBottom: "var(--mainBorder)", backgroundColor: "var(--mainGray)", borderTopLeftRadius:"var(--mainBorderRadius)", borderTopRightRadius:"var(--mainBorderRadius)" }}>
+        <a name={name} />
+        {heading}<br/>
+      </div>
+      <div style={{ display: "block", padding: "6px" }}>
+        {children}
+        {checkworkComponent}
+      </div>
+    </div>
+  } 
+ 
+  switch (SVs.containerTag) {
+    case "aside": return <aside id={name} style={{ margin: "12px 0" }}> {content} </aside>; 
+    case "div": return <div id={name} style={{ margin: "12px 0" }}> {content} </div>; 
+    case "none": return <>{content}</> ;
+    default: return <section id={name} style={{ margin: "12px 0" }}> {content} </section>; 
+  }
 }
+
+  // if (SVs.containerTag === "aside") {
+  //   return <aside id={name} >
+  //     {content}
+  //   </aside>
+  // } else if (SVs.containerTag === "div") {
+  //   return <div id={name} >
+  //     {content}
+  //   </div>
+  // } else if (SVs.containerTag === "none") {
+  //   return <>
+  //     {content}
+  //   </>
+  // } else {
+  //   // return <section id={name} style={{pageBreakAfter: "always"}} >
+  //   return <section id={name} >
+  //     {content}
+  //   </section>
+  // }
+
 
 // // export default class Section extends DoenetRenderer {
 //   export  class Section_old extends DoenetRenderer {

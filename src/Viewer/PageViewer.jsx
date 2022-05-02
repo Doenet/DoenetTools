@@ -101,7 +101,7 @@ export default function PageViewer(props) {
   const [doenetML, setDoenetML] = useState(null);
 
 
-  const [pageId, setPageId] = useState(null);
+  const [pageNumber, setPageNumber] = useState(null);
   const [attemptNumber, setAttemptNumber] = useState(null);
   const [requestedVariantIndex, setRequestedVariantIndex] = useState(null);
 
@@ -122,9 +122,7 @@ export default function PageViewer(props) {
   const resolveAllStateVariables = useRef(null);
   const actionsBeforeCoreCreated = useRef([]);
 
-  const coreWorker = useRef(
-    new Worker(props.unbundledCore ? 'core/CoreWorker.js' : 'viewer/core.js', { type: 'module' })
-  );
+  const coreWorker = useRef(null);
 
   const [saveStatesWorker, setSaveStatesWorker] = useState(null);
 
@@ -135,57 +133,67 @@ export default function PageViewer(props) {
 
   useEffect(() => {
 
-    coreWorker.current.onmessage = function (e) {
-      // console.log('message from core', e.data)
-      if (e.data.messageType === "updateRenderers") {
-        if (e.data.init && coreInfo.current) {
-          // we don't initialize renderer state values if already have a coreInfo
-          // as we must have already gotten the renderer information before core was created
-        } else {
-          updateRenderers(e.data.args)
+    if (coreWorker.current) {
+      coreWorker.current.onmessage = function (e) {
+        // console.log('message from core', e.data)
+        if (e.data.messageType === "updateRenderers") {
+          if (e.data.init && coreInfo.current) {
+            // we don't initialize renderer state values if already have a coreInfo
+            // as we must have already gotten the renderer information before core was created
+          } else {
+            updateRenderers(e.data.args)
+          }
+        } else if (e.data.messageType === "requestAnimationFrame") {
+          requestAnimationFrame(e.data.args);
+        } else if (e.data.messageType === "cancelAnimationFrame") {
+          cancelAnimationFrame(e.data.args);
+        } else if (e.data.messageType === "coreCreated") {
+          coreCreated.current = true;
+          setStage('coreCreated');
+        } else if (e.data.messageType === "initializeRenderers") {
+          if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
+            // we already initialized renderers before core was created
+            // so don't initialize them again when core is createad and this is called a second time
+          } else {
+            initializeRenderers(e.data.args)
+          }
+        } else if (e.data.messageType === "updateCreditAchieved") {
+          props.updateCreditAchievedCallback?.(e.data.args);
+        } else if (e.data.messageType === "savedState") {
+          props.saveStateCallback?.();
+        } else if (e.data.messageType === "sendToast") {
+          console.log(`Sending toast message: ${e.data.args.message}`);
+          toast(e.data.args.message, e.data.args.toastType)
+        } else if (e.data.messageType === "resolveAction") {
+          resolveAction(e.data.args)
+        } else if (e.data.messageType === "returnAllStateVariables") {
+          console.log(e.data.args)
+          resolveAllStateVariables.current(e.data.args);
+        } else if (e.data.messageType === "inErrorState") {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true)
+          }
+          setErrMsg(e.data.args.errMsg);
+        } else if (e.data.messageType === "resetPage") {
+          resetPage(e.data.args);
         }
-      } else if (e.data.messageType === "requestAnimationFrame") {
-        requestAnimationFrame(e.data.args);
-      } else if (e.data.messageType === "cancelAnimationFrame") {
-        cancelAnimationFrame(e.data.args);
-      } else if (e.data.messageType === "coreCreated") {
-        coreCreated.current = true;
-        setStage('coreCreated');
-      } else if (e.data.messageType === "initializeRenderers") {
-        if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
-          // we already initialized renderers before core was created
-          // so don't initialize them again when core is createad and this is called a second time
-        } else {
-          initializeRenderers(e.data.args)
-        }
-      } else if (e.data.messageType === "updateCreditAchieved") {
-        props.updateCreditAchievedCallback?.(e.data.args);
-      } else if (e.data.messageType === "savedState") {
-        props.saveStateCallback?.();
-      } else if (e.data.messageType === "sendToast") {
-        console.log(`Sending toast message: ${e.data.args.message}`);
-        toast(e.data.args.message, e.data.args.toastType)
-      } else if (e.data.messageType === "resolveAction") {
-        resolveAction(e.data.args)
-      } else if (e.data.messageType === "returnAllStateVariables") {
-        console.log(e.data.args)
-        resolveAllStateVariables.current(e.data.args);
-      } else if (e.data.messageType === "inErrorState") {
-        if (props.setIsInErrorState) {
-          props.setIsInErrorState(true)
-        }
-        setErrMsg(e.data.args.errMsg);
-      } else if (e.data.messageType === "resetPage") {
-        resetPage(e.data.args);
       }
     }
   }, [coreWorker.current]);
 
 
   useEffect(() => {
+    return () => {
+      if (coreWorker.current) {
+        coreWorker.current.terminate();
+      }
+    }
+  }, [])
 
-    if (pageId !== null) {
-      window["returnAllStateVariables" + pageId] = function () {
+  useEffect(() => {
+
+    if (pageNumber !== null) {
+      window["returnAllStateVariables" + pageNumber] = function () {
         coreWorker.current.postMessage({
           messageType: "returnAllStateVariables"
         })
@@ -196,7 +204,7 @@ export default function PageViewer(props) {
 
       }
 
-      window["callAction" + pageId] = async function ({ actionName, componentName, args }) {
+      window["callAction" + pageNumber] = async function ({ actionName, componentName, args }) {
         await callAction({
           action: { actionName, componentName },
           args
@@ -206,7 +214,7 @@ export default function PageViewer(props) {
     }
 
 
-  }, [pageId])
+  }, [pageNumber])
 
 
   useEffect(() => {
@@ -278,7 +286,8 @@ export default function PageViewer(props) {
     if (props.generatedVariantCallback) {
       props.generatedVariantCallback(
         JSON.parse(coreInfo.current.generatedVariantString, serializedComponentsReviver),
-        coreInfo.current.allPossibleVariants
+        coreInfo.current.allPossibleVariants,
+        coreInfo.current.variantIndicesToIgnore
       );
     }
 
@@ -433,7 +442,7 @@ export default function PageViewer(props) {
       let localInfo;
 
       try {
-        localInfo = await idb_get(`${props.doenetId}|${pageId}|${attemptNumber}|${cid}`);
+        localInfo = await idb_get(`${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}`);
       } catch (e) {
         // ignore error
       }
@@ -499,7 +508,7 @@ export default function PageViewer(props) {
       const payload = {
         params: {
           cid,
-          pageId,
+          pageNumber,
           attemptNumber,
           doenetId: props.doenetId,
           userId: props.userId,
@@ -566,14 +575,14 @@ export default function PageViewer(props) {
 
   async function saveLoadedLocalStateToDatabase(localInfo) {
 
-    let serverSaveId = await idb_get(`${props.doenetId}|${pageId}|${attemptNumber}|${cid}|ServerSaveId`);
+    let serverSaveId = await idb_get(`${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}|ServerSaveId`);
 
     let pageStateToBeSavedToDatabase = {
       cid,
       coreInfo: JSON.stringify(localInfo.coreInfo, serializedComponentsReplacer),
       coreState: JSON.stringify(localInfo.coreState, serializedComponentsReplacer),
       rendererState: JSON.stringify(localInfo.rendererState, serializedComponentsReplacer),
-      pageId,
+      pageNumber,
       attemptNumber,
       doenetId: props.doenetId,
       saveId: localInfo.saveId,
@@ -600,7 +609,7 @@ export default function PageViewer(props) {
     }
 
     idb_set(
-      `${props.doenetId}|${pageId}|${attemptNumber}|${cid}|ServerSaveId`,
+      `${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}|ServerSaveId`,
       data.saveId
     )
 
@@ -615,7 +624,7 @@ export default function PageViewer(props) {
       }
 
       idb_set(
-        `${props.doenetId}|${pageId}|${data.attemptNumber}|${data.cid}`,
+        `${props.doenetId}|${pageNumber}|${data.attemptNumber}|${data.cid}`,
         newLocalInfo
       );
 
@@ -633,7 +642,9 @@ export default function PageViewer(props) {
 
   function startCore() {
 
-    console.log(`send message to create core ${pageId}`)
+    // console.log(`send message to create core ${pageNumber}`)
+
+    coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : 'viewer/core.js', { type: 'module' });
 
     coreWorker.current.postMessage({
       messageType: "createCore",
@@ -645,7 +656,7 @@ export default function PageViewer(props) {
         doenetId: props.doenetId,
         flags: props.flags,
         requestedVariantIndex,
-        pageId,
+        pageNumber,
         attemptNumber,
         itemNumber: props.itemNumber,
         updateDataOnContentChange: props.updateDataOnContentChange,
@@ -779,14 +790,14 @@ export default function PageViewer(props) {
     changedState = true;
   }
 
-  //If no pageId prop then set to '1'
-  let propPageId = props.pageId;
-  if (propPageId === undefined) {
-    propPageId = '1';
+  //If no pageNumber prop then set to '1'
+  let propPageNumber = props.pageNumber;
+  if (propPageNumber === undefined) {
+    propPageNumber = '1';
   }
 
-  if (propPageId !== pageId) {
-    setPageId(propPageId);
+  if (propPageNumber !== pageNumber) {
+    setPageNumber(propPageNumber);
     changedState = true;
   }
 
@@ -802,7 +813,7 @@ export default function PageViewer(props) {
   }
 
   // attemptNumber is used for requestedVariantIndex if not specified
-  let adjustedRequestedVariantIndex = props.requestedVariant?.index;
+  let adjustedRequestedVariantIndex = props.requestedVariantIndex;
   if (adjustedRequestedVariantIndex === undefined) {
     adjustedRequestedVariantIndex = propAttemptNumber;
   }
@@ -852,14 +863,10 @@ export default function PageViewer(props) {
 
   } else if (stage === 'waitingOnCore' && !props.pageIsActive) {
     // we've moved off this page, but core is still being initialized
-    // kill the core worker and create a new one
-
-    console.log('terminating worker!!')
+    // kill the core worker
 
     coreWorker.current.terminate();
-
-    coreWorker.current =
-      new Worker(props.unbundledCore ? 'core/CoreWorker.js' : 'viewer/core.js', { type: 'module' });
+    coreWorker.current = null;
 
     setStage('readyToCreateCore');
 

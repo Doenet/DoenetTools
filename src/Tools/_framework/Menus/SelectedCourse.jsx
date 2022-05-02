@@ -25,7 +25,7 @@ export default function SelectedCourse() {
 
   if (selection.length === 1 && selection[0]?.roleLabels[0] === 'Owner') {
     return (
-      <DriveInfoPanel
+      <CourseInfoPanel
         key={`DriveInfoPanel${selection[0].courseId}`}
         courseId={selection[0].courseId}
       />
@@ -86,7 +86,7 @@ export default function SelectedCourse() {
     selection[0]?.roleLabels[0] === 'Administrator'
   ) {
     return (
-      <DriveInfoPanel
+      <CourseInfoPanel
         key={`DriveInfoPanel${selection[0].courseId}`}
         courseId={selection[0].courseId}
       />
@@ -109,7 +109,7 @@ const CoursePassword = ({ driveId }) => {
   return <div>Set course password (soon)</div>;
 };
 
-const DriveInfoPanel = function ({ courseId }) {
+const CourseInfoPanel = function ({ courseId }) {
   const { deleteCourse, modifyCourse, label, color, image } =
     useCourse(courseId);
   const [driveLabel, setDriveLabel] = useState(label);

@@ -1194,7 +1194,7 @@ describe('Collect Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <text>a</text>
+  <text>a</text><math>a</math>
 
   <p>How many blanks? 
     <mathinput name="n" prefill="1" />
@@ -1242,6 +1242,7 @@ describe('Collect Tag Tests', function () {
 
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', 'a');
 
     cy.get('#\\/p_3e span:nth-of-type(1) textarea').type('x{enter}', { force: true });
 
@@ -2213,6 +2214,554 @@ describe('Collect Tag Tests', function () {
     });
 
 
+
+  })
+
+  it('collect componentIndex', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>n: <mathinput name="n" /></p>
+
+    <graph name="g1">
+      <point name="A">(1,2)</point>
+      <point name="B">(3,4)</point>
+    </graph>
+    
+    <graph name="g2">
+      <collect componentTypes="point" target="g1" assignNames="A2 B2" componentIndex="$n" />
+    </graph>
+    
+    <copy target="g2" name="g3" newNamespace />
+
+    <aslist name="al"><collect componentTypes="point" prop="x" target="g1" componentIndex="$n" assignNames="Ax Bx" /></aslist>
+
+    <copy target="al" name="al2" newNamespace />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
+
+    cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get('#\\/Bx .mjx-mrow').should('contain.text', nInDOM(x2));
+    cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get('#\\/al2\\/Bx .mjx-mrow').should('contain.text', nInDOM(x2));
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/A2'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/B2'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables["/g3/B2"].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/Ax'].stateValues.value).eq(x1);
+      expect(stateVariables["/al2/Ax"].stateValues.value).eq(x1);
+      expect(stateVariables['/Bx'].stateValues.value).eq(x2);
+      expect(stateVariables["/al2/Bx"].stateValues.value).eq(x2);
+    });
+
+    cy.log('restrict collection to first component');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+
+    cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
+    cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/A2'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/B2']).eq(undefined);
+      expect(stateVariables["/g3/B2"]).eq(undefined);
+      expect(stateVariables['/Ax'].stateValues.value).eq(x1);
+      expect(stateVariables["/al2/Ax"].stateValues.value).eq(x1);
+      expect(stateVariables['/Bx']).eq(undefined);
+      expect(stateVariables["/al2/Bx"]).eq(undefined);
+    });
+
+    cy.log('move copied point')
+    cy.window().then(async (win) => {
+      x1 = 9, y1 = -5;
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A2",
+        args: { x: x1, y: y1 }
+      })
+
+      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/A2'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B2']).eq(undefined);
+        expect(stateVariables["/g3/B2"]).eq(undefined);
+        expect(stateVariables['/Ax'].stateValues.value).eq(x1);
+        expect(stateVariables["/al2/Ax"].stateValues.value).eq(x1);
+        expect(stateVariables['/Bx']).eq(undefined);
+        expect(stateVariables["/al2/Bx"]).eq(undefined);
+      });
+
+    })
+
+    cy.log('restrict collection to second component');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/A2'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B2']).eq(undefined);
+        expect(stateVariables["/g3/B2"]).eq(undefined);
+        expect(stateVariables['/Ax'].stateValues.value).eq(x2);
+        expect(stateVariables["/al2/Ax"].stateValues.value).eq(x2);
+        expect(stateVariables['/Bx']).eq(undefined);
+        expect(stateVariables["/al2/Bx"]).eq(undefined);
+      });
+
+    })
+
+
+    cy.log('move double copied point')
+    cy.window().then(async (win) => {
+      x2 = 0, y2 = 8;
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g3/A2",
+        args: { x: x2, y: y2 }
+      })
+
+      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/A2'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B2']).eq(undefined);
+        expect(stateVariables["/g3/B2"]).eq(undefined);
+        expect(stateVariables['/Ax'].stateValues.value).eq(x2);
+        expect(stateVariables["/al2/Ax"].stateValues.value).eq(x2);
+        expect(stateVariables['/Bx']).eq(undefined);
+        expect(stateVariables["/al2/Bx"]).eq(undefined);
+      });
+
+    })
+
+  })
+
+  it('collect propIndex and componentIndex', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>m: <mathinput name="m" /></p>
+    <p>n: <mathinput name="n" /></p>
+
+    <graph name="g1">
+      <point name="A">(1,2)</point>
+      <point name="B">(3,4)</point>
+    </graph>
+    
+    <p><aslist name="al"><collect componentTypes="point" prop="xs" target="g1" componentIndex="$m" propIndex="$n" assignNames="n1 n2 n3 n4" /></aslist></p>
+
+    <p><copy target="al" name="al2" newNamespace /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
+
+    cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(y1));
+    cy.get('#\\/n3 .mjx-mrow').should('contain.text', nInDOM(x2));
+    cy.get('#\\/n4 .mjx-mrow').should('contain.text', nInDOM(y2));
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(y1));
+    cy.get('#\\/al2\\/n3 .mjx-mrow').should('contain.text', nInDOM(x2));
+    cy.get('#\\/al2\\/n4 .mjx-mrow').should('contain.text', nInDOM(y2));
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/n1'].stateValues.value).eq(x1);
+      expect(stateVariables['/n2'].stateValues.value).eq(y1);
+      expect(stateVariables['/n3'].stateValues.value).eq(x2);
+      expect(stateVariables['/n4'].stateValues.value).eq(y2);
+      expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
+      expect(stateVariables['/al2/n2'].stateValues.value).eq(y1);
+      expect(stateVariables['/al2/n3'].stateValues.value).eq(x2);
+      expect(stateVariables['/al2/n4'].stateValues.value).eq(y2);
+    });
+
+    cy.log('set propIndex to 1');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+
+    cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/n1'].stateValues.value).eq(x1);
+      expect(stateVariables['/n2'].stateValues.value).eq(x2);
+      expect(stateVariables['/n3']).eq(undefined);
+      expect(stateVariables['/n4']).eq(undefined);
+      expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
+      expect(stateVariables['/al2/n2'].stateValues.value).eq(x2);
+      expect(stateVariables['/al2/n3']).eq(undefined);
+      expect(stateVariables['/al2/n4']).eq(undefined);
+    });
+
+    cy.log('move point 1')
+    cy.window().then(async (win) => {
+      x1 = 9, y1 = -5;
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: x1, y: y1 }
+      })
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x1);
+        expect(stateVariables['/n2'].stateValues.value).eq(x2);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
+        expect(stateVariables['/al2/n2'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+    cy.log('set componentIndex to 2');
+
+    cy.get('#\\/m textarea').type("2{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+
+    })
+
+
+    cy.log('move point2')
+    cy.window().then(async (win) => {
+      x2 = 0, y2 = 8;
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: x2, y: y2 }
+      })
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+
+    cy.log('set propIndex to 2')
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(y2);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(y2);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+
+    cy.log('set componentIndex to 1')
+    cy.get('#\\/m textarea').type("{end}{backspace}1{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(y1);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(y1);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+
+
+    cy.log('set propIndex to 3')
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1']).eq(undefined);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1']).eq(undefined);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+
+    cy.log('set propIndex to 1')
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x1);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+
+
+    cy.log('set componentIndex to 3')
+    cy.get('#\\/m textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1']).eq(undefined);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1']).eq(undefined);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+
+    cy.log('set componentIndex to 2')
+    cy.get('#\\/m textarea').type("{end}{backspace}2{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+    cy.log('clear propIndex')
+    cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+  
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/n2'].stateValues.value).eq(y2);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n2'].stateValues.value).eq(y2);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
 
   })
 

@@ -4,14 +4,14 @@ import PageViewer from './PageViewer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { prng_alea } from 'esm-seedrandom';
-import Button from '../_reactComponents/PanelHeaderComponents/Button';
 import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
 import axios from 'axios';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
 import { cidFromText } from '../Core/utils/cid';
 import { useToast, toastType } from '@Toast';
 import { nanoid } from 'nanoid';
-import { parseAndCompile } from '../Parser/parser';
+import { enumerateCombinations } from '../Core/utils/enumeration';
+import { determineNumberOfActivityVariants, parseActivityDefinition } from '../_utils/activityUtils';
 
 let rngClass = prng_alea;
 
@@ -25,7 +25,6 @@ export default function ActivityViewer(props) {
   const [cid, setCid] = useState(null);
 
   const activityDefinitionDoenetML = useRef(null);
-  const xmlns = useRef(null);
 
   const [activityDefinition, setActivityDefinition] = useState(null);
 
@@ -45,7 +44,7 @@ export default function ActivityViewer(props) {
   const [currentPage, setCurrentPage] = useState(1);
   const [nPages, setNPages] = useState(1);
 
-  const [variantsByItem, setVariantsByItem] = useState(null);
+  const [variantsByPage, setVariantsByPage] = useState(null);
   const [itemWeights, setItemWeights] = useState(null);
 
   const [cidChanged, setCidChanged] = useState(props.cidChanged);
@@ -73,6 +72,26 @@ export default function ActivityViewer(props) {
     setFlags(newFlags);
 
   }, [props.userId, props.flags]);
+
+  useEffect(() => {
+    window.returnActivityData = function () {
+      return {
+        activityDefinition,
+        requestedVariantIndex,
+        variantIndex,
+        cid,
+        order,
+        currentPage,
+        nPages,
+        variantsByPage,
+        itemWeights,
+      }
+    }
+  })
+
+  useEffect(() => {
+    props.pageChangedCallback?.(currentPage);
+  }, [currentPage])
 
   function resetActivity({ changedOnDevice, newCid, newAttemptNumber }) {
     console.log('resetActivity', changedOnDevice, newCid, newAttemptNumber);
@@ -131,7 +150,18 @@ export default function ActivityViewer(props) {
           .then(calcCid => {
             if (calcCid === cidFromProps) {
               setCid(cidFromProps);
-              parseActivityDefinition(activityDefinitionFromProps);
+              activityDefinitionDoenetML.current = activityDefinitionFromProps;
+              let result = parseActivityDefinition(activityDefinitionFromProps);
+              if (result.success) {
+                setActivityDefinition(result.activityJSON);
+                setStage("continue");
+              } else {
+                if (props.setIsInErrorState) {
+                  props.setIsInErrorState(true)
+                }
+                setErrMsg(result.message);
+              }
+
             } else {
               if (props.setIsInErrorState) {
                 props.setIsInErrorState(true)
@@ -144,7 +174,18 @@ export default function ActivityViewer(props) {
         cidFromText(JSON.stringify(activityDefinitionFromProps))
           .then(cid => {
             setCid(cid);
-            parseActivityDefinition(activityDefinitionFromProps);
+            activityDefinitionDoenetML.current = activityDefinitionFromProps;
+            let result = parseActivityDefinition(activityDefinitionFromProps);
+            if (result.success) {
+              setActivityDefinition(result.activityJSON);
+              setStage("continue");
+            } else {
+              if (props.setIsInErrorState) {
+                props.setIsInErrorState(true)
+              }
+              setErrMsg(result.message);
+            }
+
           })
       }
     } else {
@@ -153,7 +194,18 @@ export default function ActivityViewer(props) {
       retrieveTextFileForCid(cidFromProps, "doenet")
         .then(retrievedActivityDefinition => {
           setCid(cidFromProps);
-          parseActivityDefinition(retrievedActivityDefinition);
+          activityDefinitionDoenetML.current = retrievedActivityDefinition;
+          let result = parseActivityDefinition(retrievedActivityDefinition);
+          if (result.success) {
+            setActivityDefinition(result.activityJSON);
+            setStage("continue");
+          } else {
+            if (props.setIsInErrorState) {
+              props.setIsInErrorState(true)
+            }
+            setErrMsg(result.message);
+          }
+
         })
         .catch(e => {
           if (props.setIsInErrorState) {
@@ -165,401 +217,13 @@ export default function ActivityViewer(props) {
 
   }
 
-  function parseActivityDefinition(activityDef) {
-
-    activityDefinitionDoenetML.current = activityDef;
-
-    let serializedDefinition = parseAndCompile(activityDef)
-      .filter(x => typeof x !== "string" || /\S/.test(x))
-
-    if (serializedDefinition.length !== 1 || serializedDefinition[0].componentType !== "document") {
-      if (props.setIsInErrorState) {
-        props.setIsInErrorState(true)
-      }
-      setErrMsg(`Invalid activity definition`);
-      return;
-    }
-
-    serializedDefinition = serializedDefinition[0];
-
-    // make document props lowercase
-    let documentProps = {};
-    for (let prop in serializedDefinition.props) {
-      let lowerProp = prop.toLowerCase();
-      if (lowerProp in documentProps) {
-        if (props.setIsInErrorState) {
-          props.setIsInErrorState(true)
-        }
-        setErrMsg(`Invalid activity definition: duplicate attribute ${lowerProp}`);
-        return;
-      }
-      documentProps[prop.toLowerCase()] = serializedDefinition.props[prop];
-    }
-
-    if (documentProps.type.toLowerCase() === "activity") {
-      let jsonDefinition = {
-        type: "activity",
-      };
-      delete documentProps.type;
-
-      if (documentProps.itemweights) {
-        if (typeof documentProps.itemweights !== "string") {
-          if (props.setIsInErrorState) {
-            props.setIsInErrorState(true)
-          }
-          setErrMsg(`Invalid activity definition: invalid itemWeights`);
-          return;
-        }
-        jsonDefinition.itemWeights = documentProps.itemweights
-          .split(/\s+/)
-          .filter(s => s)
-          .map(Number);
-
-        delete documentProps.itemweights;
-      }
-
-      jsonDefinition.shuffleItemWeights =
-        documentProps.shuffleitemweights !== undefined &&
-        (documentProps.shuffleitemweights === true ||
-          documentProps.shuffleitemweights.toLowerCase() === "true"
-        );
-
-      delete documentProps.shuffleitemweights;
-
-      if (documentProps.xmlns) {
-        if (documentProps.xmlns.slice(0, 34) === "https://doenet.org/spec/doenetml/v") {
-          jsonDefinition.version = documentProps.xmlns.slice(34);
-          xmlns.current = documentProps.xmlns;
-          delete documentProps.xmlns;
-        } else {
-          if (props.setIsInErrorState) {
-            props.setIsInErrorState(true)
-          }
-          setErrMsg(`Invalid activity definition: unrecognized xmlns`);
-          return;
-        }
-      } else {
-        console.warn('no xmls of activity!');
-      }
-
-      if (Object.keys(documentProps).length > 0) {
-        if (props.setIsInErrorState) {
-          props.setIsInErrorState(true)
-        }
-        setErrMsg(`Invalid activity definition: invalid document attributes: ${Object.keys(documentProps).join(", ")}`);
-        return;
-      }
-
-      let foundOrder = false;
-      let foundVariantControl = false;
-
-      // remove blank string children
-      let documentChildren = serializedDefinition.children
-        .filter(x => typeof x !== "string" || /\S/.test(x))
-
-      for (let child of documentChildren) {
-        if (child.componentType.toLowerCase() === "order") {
-          if (foundOrder) {
-            if (props.setIsInErrorState) {
-              props.setIsInErrorState(true)
-            }
-            setErrMsg(`Invalid activity definition: more than one base order defined`);
-            return;
-          }
-
-          foundOrder = true;
-
-          let result = validateOrder(child);
-
-          if (!result.success) {
-            if (props.setIsInErrorState) {
-              props.setIsInErrorState(true)
-            }
-            setErrMsg(`Invalid activity definition: ${result.message}`);
-            return;
-          }
-
-          jsonDefinition.order = result.order;
-
-        } else if (child.componentType.toLowerCase() === "variantcontrol") {
-
-          if (foundVariantControl) {
-            if (props.setIsInErrorState) {
-              props.setIsInErrorState(true)
-            }
-            setErrMsg(`Invalid activity definition: more than one variantControl defined`);
-            return;
-          }
-
-          foundVariantControl = true;
-
-          let result = validateVariantControl(child);
-
-          if (!result.success) {
-            if (props.setIsInErrorState) {
-              props.setIsInErrorState(true)
-            }
-            setErrMsg(`Invalid activity definition: ${result.message}`);
-            return;
-          }
-
-          jsonDefinition.variantControl = result.variantControl;
-
-        } else {
-          if (props.setIsInErrorState) {
-            props.setIsInErrorState(true)
-          }
-          setErrMsg(`Invalid activity definition: invalid child of type ${child.componentType}`);
-          return;
-        }
-
-      }
-
-      console.log('jsonDefinition', jsonDefinition);
-      setActivityDefinition(jsonDefinition);
-      setStage("continue");
-
-
-    } else if (documentProps.type.toLowerCase() === "page") {
-
-
-      let page = { type: "page" };
-
-      if(cidFromProps) {
-        page.cid = cidFromProps
-      }
-      if(activityDefinitionFromProps) {
-        page.doenetML = activityDefinitionFromProps;
-      }
-
-
-      let jsonDefinition = {
-        type: "activity",
-        order: {
-          type: "order",
-          behavior: "sequence",
-          content: [page]
-        }
-      }
-
-
-      if (documentProps.xmlns) {
-        if (documentProps.xmlns.slice(0, 34) === "https://doenet.org/spec/doenetml/v") {
-          jsonDefinition.version = documentProps.xmlns.slice(34);
-          delete documentProps.xmlns;
-        } else {
-          if (props.setIsInErrorState) {
-            props.setIsInErrorState(true)
-          }
-          setErrMsg(`Invalid activity definition: unrecognized xmlns`);
-          return;
-        }
-      } else {
-        console.warn('no xmls of activity!');
-      }
-
-
-      // TODO: what to do about variant control?
-      // It'd be great to have a way to map activity variants
-      // directly to page variants
-      // That way, we could preserve the exact variants specified in the page definition
-
-      console.log("jsonDefinition", jsonDefinition)
-      setActivityDefinition(jsonDefinition);
-      setStage("continue");
-
-
-    } else {
-      if (props.setIsInErrorState) {
-        props.setIsInErrorState(true)
-      }
-      setErrMsg(`Invalid activity definition`);
-      return;
-    }
-
-
-  }
-
-  function validateOrder(order) {
-    let newOrder = { type: "order" };
-
-    let orderProps = {};
-    for (let prop in order.props) {
-      let lowerProp = prop.toLowerCase();
-      if (lowerProp in orderProps) {
-        return {
-          success: false,
-          message: `duplicate attribute of order ${lowerProp}`
-        }
-      }
-      orderProps[prop.toLowerCase()] = order.props[prop];
-    }
-
-    for (let prop in orderProps) {
-      if (prop === "behavior") {
-        newOrder.behavior = orderProps.behavior;
-      } else if (prop == "numbertoselect") {
-        newOrder.numberToSelect = Number(orderProps.numbertoselect);
-      } else if (prop == "withreplacement") {
-        newOrder.withReplacement =
-          orderProps.withreplacement !== undefined &&
-          (orderProps.withreplacement === true ||
-            orderProps.withreplacement.toLowerCase() === "true"
-          );
-      } else {
-        return {
-          success: false,
-          message: `invalid order attribute: ${prop}`
-        }
-      }
-    }
-
-
-    // remove blank string children
-    let orderChildren = order.children
-      .filter(x => typeof x !== "string" || /\S/.test(x));
-
-    let content = [];
-    for (let child of orderChildren) {
-      if (child.componentType.toLowerCase() === "order") {
-        let result = validateOrder(child);
-        if (result.success) {
-          content.push(result.order);
-        } else {
-          return result;
-        }
-      } else if (child.componentType.toLowerCase() == "page") {
-        let result = validatePage(child);
-        if (result.success) {
-          content.push(result.page)
-        } else {
-          return result;
-        }
-      } else {
-        return {
-          success: false,
-          message: `invalid child of order, found type: ${child.componentType}`
-        }
-      }
-    }
-
-    newOrder.content = content;
-
-    return {
-      success: true,
-      order: newOrder
-    }
-
-  }
-
-
-  function validatePage(page) {
-    let newPage = { type: "page" };
-
-    let pageProps = {};
-    for (let prop in page.props) {
-      let lowerProp = prop.toLowerCase();
-      if (lowerProp in pageProps) {
-        return {
-          success: false,
-          message: `duplicate attribute of page ${lowerProp}`
-        }
-      }
-      pageProps[prop.toLowerCase()] = page.props[prop];
-    }
-
-
-    for (let prop in pageProps) {
-      if (prop === "cid") {
-        newPage.cid = pageProps.cid;
-        delete pageProps.cid;
-      } else {
-        return {
-          success: false,
-          message: `invalid page attribute: ${prop}`
-        }
-      }
-    }
-
-    if (page.children.length > 0) {
-      let pageDoenetML = activityDefinitionDoenetML.current.slice(page.range.openEnd+1, page.range.closeBegin);
-
-      if(page.children[0].componentType.toLowerCase() !== "document")  {
-        // add <docoument> around page
-        let xmlnsprop = '';
-        if(xmlns.current) {
-          xmlnsprop = ` xmlns="${xmlns.current}"`
-        }
-        pageDoenetML = `<document type="page" ${xmlnsprop}>${pageDoenetML}</document>`;
-      }
-
-      newPage.doenetML = pageDoenetML;
-    }
-
-    return {
-      success: true,
-      page: newPage
-    }
-  }
-
-
-  function validateVariantControl(variantControl) {
-    let newVariantControl = {};
-
-    let variantControlProps = {};
-    for (let prop in variantControl.props) {
-      let lowerProp = prop.toLowerCase();
-      if (lowerProp in variantControlProps) {
-        return {
-          success: false,
-          message: `duplicate attribute of variantControl ${lowerProp}`
-        }
-      }
-      variantControlProps[prop.toLowerCase()] = variantControl.props[prop];
-    }
-
-
-    for (let prop in variantControlProps) {
-      if (prop === "nvariants") {
-        newVariantControl.nVariants = Number(variantControlProps.nvariants);
-      } else if (prop === "seeds") {
-        if (typeof variantControlProps.seeds !== "string") {
-          return {
-            success: false,
-            message: "invalid seeds of variantControl"
-          }
-        }
-        newVariantControl.seeds = variantControlProps.seeds
-          .split(/\s+/)
-          .filter(s => s);
-
-      } else {
-        return {
-          success: false,
-          message: `invalid variantControl attribute: ${prop}`
-        }
-      }
-    }
-
-
-    if (variantControl.children.length > 0) {
-      return {
-        success: false,
-        message: "invalid variantControl: variantControl cannot have children"
-      }
-    }
-
-    return {
-      success: true,
-      variantControl: newVariantControl
-    }
-  }
 
   async function loadState() {
 
     let loadedState = false;
     let newItemWeights;
     let newCurrentPage;
+    let newVariantIndex;
 
     if (props.flags.allowLocalState) {
 
@@ -610,12 +274,13 @@ export default function ActivityViewer(props) {
         newCurrentPage = localInfo.activityState.currentPage
         setCurrentPage(newCurrentPage);
 
-        // activityInfo is orderWithCids and variantsByItem
+        // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
         let newActivityInfo = localInfo.activityInfo;
-        setVariantIndex(localInfo.variantIndex);
+        newVariantIndex = localInfo.variantIndex;
+        setVariantIndex(newVariantIndex);
         setNPages(newActivityInfo.orderWithCids.length);
         setOrder(newActivityInfo.orderWithCids);
-        setVariantsByItem(newActivityInfo.variantsByItem);
+        setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
 
@@ -646,8 +311,10 @@ export default function ActivityViewer(props) {
         }
       }
 
+      let resp;
+
       try {
-        let resp = await axios.get('/api/loadActivityState.php', payload);
+        resp = await axios.get('/api/loadActivityState.php', payload);
 
         if (!resp.data.success) {
           if (props.flags.allowLoadState) {
@@ -662,57 +329,6 @@ export default function ActivityViewer(props) {
           }
 
         }
-
-        if (resp.data.loadedState) {
-
-          let newActivityInfo = JSON.parse(resp.data.activityInfo);
-          let activityState = JSON.parse(resp.data.activityState);
-
-          // activityState is just currentPage
-          newCurrentPage = activityState.currentPage;
-          setCurrentPage(newCurrentPage);
-
-          // activityInfo is orderWithCids and variantsByItem
-          setVariantIndex(resp.data.variantIndex);
-          setNPages(newActivityInfo.orderWithCids.length);
-          setOrder(newActivityInfo.orderWithCids);
-          setVariantsByItem(newActivityInfo.variantsByItem);
-          setItemWeights(newActivityInfo.itemWeights);
-          newItemWeights = newActivityInfo.itemWeights;
-
-
-          activityInfo.current = newActivityInfo;
-          activityInfoString.current = JSON.stringify(activityInfo.current);
-
-        } else {
-
-          // get initial state and info
-
-          // state at page 1
-          newCurrentPage = 1;
-          setCurrentPage(1);
-
-          let results = await calculateOrderAndVariants();
-          if (!results.success) {
-            if (props.setIsInErrorState) {
-              props.setIsInErrorState(true)
-            }
-            setErrMsg(`Error loading activity state: ${results.message}`);
-            return;
-          }
-          setVariantIndex(results.variantIndex);
-          setNPages(results.order.length);
-          setOrder(results.order);
-          setVariantsByItem(results.variantsByItem);
-          setItemWeights(results.itemWeights);
-          newItemWeights = results.itemWeights;
-
-          activityInfo.current = results.activityInfo;
-          activityInfoString.current = JSON.stringify(activityInfo.current);
-
-        }
-
-
       } catch (e) {
 
         if (props.flags.allowLoadState) {
@@ -729,10 +345,64 @@ export default function ActivityViewer(props) {
 
       }
 
+      if (resp.data.loadedState) {
+
+        let newActivityInfo = JSON.parse(resp.data.activityInfo);
+        let activityState = JSON.parse(resp.data.activityState);
+
+        // activityState is just currentPage
+        newCurrentPage = activityState.currentPage;
+        setCurrentPage(newCurrentPage);
+
+        // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
+        newVariantIndex = resp.data.variantIndex;
+        setVariantIndex(variantIndex);
+        setNPages(newActivityInfo.orderWithCids.length);
+        setOrder(newActivityInfo.orderWithCids);
+        setVariantsByPage(newActivityInfo.variantsByPage);
+        setItemWeights(newActivityInfo.itemWeights);
+        newItemWeights = newActivityInfo.itemWeights;
+
+
+        activityInfo.current = newActivityInfo;
+        activityInfoString.current = JSON.stringify(activityInfo.current);
+
+      } else {
+
+        // get initial state and info
+
+        // state at page 1
+        newCurrentPage = 1;
+        setCurrentPage(1);
+
+        let results;
+        results = await calculateOrderAndVariants();
+        if (!results.success) {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true)
+          }
+          setErrMsg(`Error initializing activity state: ${results.message}`);
+          return;
+        }
+
+        newVariantIndex = results.variantIndex;
+        setVariantIndex(newVariantIndex);
+        setNPages(results.order.length);
+        setOrder(results.order);
+        setVariantsByPage(results.variantsByPage);
+        setItemWeights(results.itemWeights);
+        newItemWeights = results.itemWeights;
+
+        activityInfo.current = results.activityInfo;
+        activityInfoString.current = JSON.stringify(activityInfo.current);
+
+      }
+
+
     }
 
 
-    return { newItemWeights };
+    return { newItemWeights, newVariantIndex };
 
   }
 
@@ -761,7 +431,7 @@ export default function ActivityViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    console.log('result from saving activity to db', resp.data)
+    setCidChanged(resp.data.cidChanged === true);
 
     let data = resp.data;
 
@@ -804,9 +474,14 @@ export default function ActivityViewer(props) {
 
   async function calculateOrderAndVariants() {
 
-    let variantSeed = determineVariantSeed(activityDefinition, requestedVariantIndex);
+    let activityVariantResult = await determineNumberOfActivityVariants(activityDefinition);
 
-    let rng = new rngClass(variantSeed.seed);
+    let variantIndex = (requestedVariantIndex - 1) % activityVariantResult.numberOfVariants + 1;
+    if (variantIndex < 1) {
+      variantIndex += activityVariantResult.numberOfVariants;
+    }
+
+    let rng = new rngClass(variantIndex.toString());
 
     let orderResult = determineOrder(activityDefinition.order, rng);
 
@@ -838,35 +513,80 @@ export default function ActivityViewer(props) {
       itemWeights = itemWeights.map(x => x / totalWeight);
     }
 
-    console.time('getContent');
 
-    let promises = [];
+    let pageVariantsResult;
 
-    for (let page of originalOrder) {
-      promises.push(returnAllPossibleVariants({
-        cid: page.cid, doenetML: page.doenetML, flags
-      }));
+    if (activityVariantResult.pageVariants) {
+      pageVariantsResult = [activityVariantResult.pageVariants]
+    } else {
+
+      let promises = [];
+      for (let page of originalOrder) {
+        promises.push(returnAllPossibleVariants({
+          cid: page.cid, doenetML: page.doenetML
+        }));
+      }
+
+      try {
+        pageVariantsResult = await Promise.all(promises);
+      } catch (e) {
+        return { success: false, message: `Error retrieving content for activity. ${e.message}` };
+      }
     }
 
-    let variantsResult;
 
-    try {
-      variantsResult = await Promise.all(promises);
-    } catch (e) {
-      return { success: false, message: `Error retrieving content for activity. ${e.message}` };
+    let variantForEachPage;
+
+    // filter out the ignored variants for each page
+    let allPossibleNonIgnoredPerPage = [], indicesToIgnorePerPage = [];
+    let numberOfVariantsPerPage = [];
+
+    for (let pageResult of pageVariantsResult) {
+      let allPossibleVariants = [...pageResult.allPossibleVariants];
+      let indicesToIgnore = [...pageResult.variantIndicesToIgnore]
+      for (let ind of indicesToIgnore) {
+        delete allPossibleVariants[ind];
+      }
+      let numberOfVariants = allPossibleVariants.filter(x => x !== undefined).length;
+
+      allPossibleNonIgnoredPerPage.push(allPossibleVariants);
+      indicesToIgnorePerPage.push(indicesToIgnore);
+      numberOfVariantsPerPage.push(numberOfVariants);
     }
 
-    console.timeEnd('getContent');
+    let numberOfPageVariantCombinations = numberOfVariantsPerPage.reduce((a, c) => a * c, 1)
 
-    let chosenVariants = [];
+    if (numberOfPageVariantCombinations <= activityVariantResult.numberOfVariants) {
+
+      let pageVariantCombinationIndex = (variantIndex - 1) % numberOfPageVariantCombinations + 1;
+
+      variantForEachPage = enumerateCombinations({
+        numberOfOptionsByIndex: numberOfVariantsPerPage,
+        maxNumber: pageVariantCombinationIndex,
+      })[pageVariantCombinationIndex - 1].map(x => x + 1);
+
+    } else {
+      variantForEachPage = [...Array(nPages).keys()].map(i => Math.floor(rng() * numberOfVariantsPerPage[i]) + 1)
+    }
+
+    let variantsByPage = [];
 
     let newOrder = [];
-    for (let [ind, possibleVariants] of variantsResult.entries()) {
-      let nVariants = possibleVariants.allPossibleVariants.length;
+    for (let [ind, possibleVariants] of pageVariantsResult.entries()) {
 
-      let variantIndex = Math.floor(rng() * nVariants) + 1;
+      let pageVariantIndex = variantForEachPage[ind];
 
-      chosenVariants.push(variantIndex);
+      let indicesToIgnore = indicesToIgnorePerPage[ind];
+
+      for (let i of indicesToIgnore) {
+        if (pageVariantIndex >= i) {
+          pageVariantIndex++;
+        } else {
+          break;
+        }
+      }
+
+      variantsByPage.push(pageVariantIndex);
 
       // if looked up doenetML to determine possible variants
       // record that doenetML in the order so don't have to load it again
@@ -888,16 +608,17 @@ export default function ActivityViewer(props) {
 
     let activityInfo = {
       orderWithCids,
-      variantsByItem: chosenVariants,
-      itemWeights
+      variantsByPage,
+      itemWeights,
+      numberOfVariants: activityVariantResult.numberOfVariants,
     };
 
     return {
       success: true,
       order: newOrder,
       itemWeights,
-      variantsByItem: chosenVariants,
-      variantIndex: variantSeed.variantIndex,
+      variantsByPage,
+      variantIndex,
       activityInfo
     };
 
@@ -910,7 +631,7 @@ export default function ActivityViewer(props) {
     }
 
 
-    if (stage != "saving" || currentPage === pageAtPreviousSave.current) {
+    if (stage !== "saving" || currentPage === pageAtPreviousSave.current) {
       // haven't got a save event from page or no change to be saved
       return;
     }
@@ -1202,6 +923,7 @@ export default function ActivityViewer(props) {
     loadState().then(results => {
       if (results) {
         initializeUserAssignmentTables(results.newItemWeights);
+        props.generatedVariantCallback?.(results.newVariantIndex, activityInfo.current.numberOfVariants);
       }
     })
 
@@ -1234,12 +956,12 @@ export default function ActivityViewer(props) {
           doenetId={props.doenetId}
           cid={page.cid}
           doenetML={page.doenetML}
-          pageId={(ind + 1).toString()}
+          pageNumber={(ind + 1).toString()}
           pageIsActive={ind + 1 === currentPage}
           itemNumber={itemNumber}
           attemptNumber={attemptNumber}
           flags={flags}
-          requestedVariant={{ index: variantsByItem[ind] }}
+          requestedVariantIndex={variantsByPage[ind]}
           unbundledCore={props.unbundledCore}
           updateCreditAchievedCallback={props.updateCreditAchievedCallback}
           setIsInErrorState={props.setIsInErrorState}
@@ -1255,55 +977,27 @@ export default function ActivityViewer(props) {
   let cidChangedAlert = null;
   if (cidChanged) {
     cidChangedAlert = <div>
-      <Button onClick={() => alert("Hey, content changed")} value={"content changed"} />
+      <button onClick={() => alert("Hey, content changed")}>content changed</button>
     </div>
+  }
+
+  let pageControls = null;
+  if (nPages > 1) {
+    pageControls = <>
+      <button data-cy={"previous"} disabled={currentPage === 1} onClick={() => setCurrentPage((was) => Math.max(1, was - 1))}>Previous page</button>
+      <button data-cy={"next"} disabled={currentPage === nPages} onClick={() => setCurrentPage((was) => Math.min(nPages, was + 1))}>Next page</button>
+      <p>Page {currentPage} of {nPages}</p>
+    </>
   }
 
   return <div style={{ marginBottom: "200px" }}>
     {cidChangedAlert}
-    <Button id={"prev_button"} onClick={() => setCurrentPage((was) => Math.max(1, was - 1))} value={"Previous page"} />
-    <Button id={"next_button"} onClick={() => setCurrentPage((was) => Math.min(nPages, was + 1))} value={"Next page"} />
-    <p>Current page: {currentPage}</p>
+    {pageControls}
     {title}
     {pages}
   </div>
 }
 
-function determineVariantSeed(activityDefinition, requestedVariantIndex) {
-  let nVariants = 100;
-  let seeds = [];
-
-  if (activityDefinition.variantControl) {
-    nVariants = activityDefinition.variantControl.nVariants;
-    if (!(Number.isInteger(nVariants) && nVariants >= 1)) {
-      nVariants = 100;
-    }
-
-    if (Array.isArray(activityDefinition.variantControl.seeds)) {
-      seeds = activityDefinition.variantControl.seeds.map(x => x.toString());
-    }
-  }
-
-  let variantIndex = (requestedVariantIndex - 1) % nVariants + 1;
-
-  if (seeds.length >= nVariants) {
-    seeds = seeds.slice(0, nVariants)
-  } else {
-    for (let ind = seeds.length; ind < nVariants; ind++) {
-      let s = ind + 1;
-      while (seeds.includes(s.toString())) {
-        s++;
-      }
-      seeds.push(s.toString());
-    }
-  }
-
-  let selectedSeed = seeds[variantIndex - 1];
-
-
-  return { selectedSeed, variantIndex };
-
-}
 
 function determineOrder(order, rng) {
 
@@ -1311,7 +1005,11 @@ function determineOrder(order, rng) {
     return { success: false, message: "invalid order" }
   }
 
-  let behavior = order.behavior.toLowerCase();
+  let behavior = order.behavior?.toLowerCase();
+
+  if (behavior === undefined) {
+    behavior = 'sequence';
+  }
 
   switch (behavior) {
     case 'sequence':

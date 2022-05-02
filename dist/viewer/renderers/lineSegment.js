@@ -47,7 +47,7 @@ export default function LineSegment(props) {
       fillColor: "none",
       strokeColor: "none",
       highlightStrokeColor: "none",
-      highlightFillColor: "lightgray",
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: 10 * SVs.layer + 8,
       showInfoBox: SVs.showCoordsWhenDragging
     });

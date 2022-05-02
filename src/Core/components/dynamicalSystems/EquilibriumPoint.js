@@ -4,8 +4,8 @@ export default class EquilibriumPoint extends Point {
   static componentType = "equilibriumPoint";
   static rendererType = "point";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.stable = {
       createComponentOfType: "boolean",

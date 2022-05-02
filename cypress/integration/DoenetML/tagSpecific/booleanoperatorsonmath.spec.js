@@ -160,7 +160,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('42/3');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}42/3{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}42/3{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "true");
     cy.get('#\\/int2').should('have.text', "true");
     cy.get('#\\/int3').should('have.text', "true");
@@ -190,7 +190,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('-39.6/3.3');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}-39.6/3.3{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}-39.6/3.3{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "true");
     cy.get('#\\/int2').should('have.text', "true");
     cy.get('#\\/int3').should('have.text', "true");
@@ -220,7 +220,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('x');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}x{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "false");
     cy.get('#\\/int2').should('have.text', "false");
     cy.get('#\\/int3').should('have.text', "false");
@@ -280,7 +280,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('2sin(pi/4)^2');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}2sin(pi/4){rightarrow}{rightarrow}^2{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}2sin(pi/4){rightarrow}{rightarrow}^2{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "true");
     cy.get('#\\/int2').should('have.text', "true");
     cy.get('#\\/int3').should('have.text', "true");
@@ -310,7 +310,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('1E-300');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1E-300{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}1E-300{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "false");
     cy.get('#\\/int2').should('have.text', "false");
     cy.get('#\\/int3').should('have.text', "false");
@@ -340,7 +340,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
     });
 
     cy.log('-0');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}-0{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}-0{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "true");
     cy.get('#\\/int2').should('have.text', "true");
     cy.get('#\\/int3').should('have.text', "true");
@@ -371,7 +371,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
 
 
     cy.log('0/0');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}0/0{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}0/0{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "false");
     cy.get('#\\/int2').should('have.text', "false");
     cy.get('#\\/int3').should('have.text', "false");
@@ -402,7 +402,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
 
 
     cy.log('10/0');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}10/0{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}10/0{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "false");
     cy.get('#\\/int2').should('have.text', "false");
     cy.get('#\\/int3').should('have.text', "false");
@@ -433,7 +433,7 @@ describe('Boolean Operator on Math Tag Tests', function () {
 
 
     cy.log('10/-0');
-    cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}10/-0{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}10/-0{enter}", { force: true });
     cy.get('#\\/int1').should('have.text', "false");
     cy.get('#\\/int2').should('have.text', "false");
     cy.get('#\\/int3').should('have.text', "false");

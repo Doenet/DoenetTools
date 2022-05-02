@@ -8,6 +8,7 @@ import React, {
   // Suspense,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 // import axios from 'axios';
@@ -49,7 +50,9 @@ import {
   authorItemByDoenetId,
   coursePermissionsAndSettingsByCourseId, 
   useInitCourseItems,
-  selectedCourseItems
+  selectedCourseItems,
+  authorCourseItemOrderByCourseIdBySection,
+  findFirstPageOfActivity
 } from '../../_reactComponents/Course/CourseActions';
 
 /**
@@ -63,7 +66,11 @@ import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPane
 
 export default function CourseNavigator() {
   console.log("=== CourseNavigator")
-  const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
+  // console.log("courseId",courseId)
+  // console.log("sectionId",sectionId)
+  // console.log("-----\n")
   let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
@@ -88,7 +95,7 @@ export default function CourseNavigator() {
       newObj.push(clearSelections)
       return newObj;
     })
-  },[])
+  },[clearSelections, setMainPanelClick])
 
 
   if (!coursePermissionsAndSettings){
@@ -96,9 +103,9 @@ export default function CourseNavigator() {
   }
   //TODO: use effective role
   if (coursePermissionsAndSettings.canEditContent == '1'){
-    return <AuthorCourseNavigation courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
+    return <AuthorCourseNavigation courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }else{
-    return <StudentCourseNavigation courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
+    return <StudentCourseNavigation courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
 
 
@@ -118,14 +125,20 @@ function StudentCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVis
   </>
 }
 
-function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisibleColumns}){
-  // let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdAndSection(courseId)); //TODO make selector
-  let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseId(courseId));
-  
-  let items = [];
-  authorItemOrder.map((doenetId)=>
-    items.push(<Item key={`itemcomponent${doenetId}`} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={0} />)
-  )
+function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns}){
+  let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
+  console.log("authorItemOrder",authorItemOrder)
+
+  let previousSections = useRef([]);
+  let definedForSectionId = useRef("");
+  //If sectionId changes clear out previousSections
+  if (definedForSectionId.current != sectionId){
+    previousSections.current = []
+    definedForSectionId.current = sectionId;
+  }
+
+  let items = authorItemOrder.map((doenetId)=>
+    <Item key={`itemcomponent${doenetId}`} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={0} />)
     
   return <>
   <CourseNavigationHeader columnLabels={["Assigned","Public"]} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
@@ -133,12 +146,18 @@ function AuthorCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisi
   </>
 }
 
-function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel}){
+function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel,previousSections}){
   //TODO: Investigate if type should be a selector and these three would subscribe to item info
   let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
 
+  if (itemInfo.type == 'section' && previousSections?.current){
+    previousSections.current.push(itemInfo.doenetId);
+  }
+  if (previousSections?.current.includes(itemInfo.parentDoenetId)){
+    return null;
+  }
   if (itemInfo.type == 'section'){
-    return <Section key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
+  return <Section key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }else if (itemInfo.type == 'bank'){
     return <Bank key={`Item${doenetId}`} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }else if (itemInfo.type == 'activity'){
@@ -149,7 +168,21 @@ function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel}){
 }
 
 function Section({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
-  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+  let authorSectionItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:itemInfo.doenetId}));
+  let previousSections = useRef([]);
+  
+  if (itemInfo.isOpen){
+    let sectionItems = authorSectionItemOrder.map((doenetId)=>
+    <Item key={`itemcomponent${doenetId}`} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel+1} />)
+    
+    return <>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+    {sectionItems}
+    </>
+
+  }else{
+    return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+  }
 }
 
 function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
@@ -169,41 +202,64 @@ function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
 
 function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel}){
   // console.log("Activity itemInfo",itemInfo)
+  if (itemInfo.isSinglePage){
+    return <>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} isBeingCut={itemInfo.isBeingCut}/>
+     </>
+  }
   if (itemInfo.isOpen){
     return <>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}/>
-    <Order key={`Order${doenetId}`} orderInfo={itemInfo.order} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}  isBeingCut={itemInfo.isBeingCut}/>
+    <Order key={`Order${doenetId}`} orderInfo={itemInfo.order} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
      </>
   }else{
     return <>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen}  isSelected={itemInfo.isSelected} indentLevel={indentLevel}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen}  isSelected={itemInfo.isSelected} indentLevel={indentLevel}  isBeingCut={itemInfo.isBeingCut}/>
      </>
   }
 }
 
 function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,orderInfo}){
-  let {behavior,doenetId,content} = orderInfo;
+  let {behavior,doenetId,content, numberToSelect, withReplacement} = orderInfo;
   let recoilOrderInfo = useRecoilValue(authorItemByDoenetId(doenetId));
 
    let contentJSX = [];
    if (behavior == 'sequence'){
       contentJSX = content.map((pageOrOrder,i)=>{
         if (pageOrOrder?.type == 'order'){
-          return <Order key={`Order${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+          return <Order key={`Order${i}${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
         }else{
           return <Page key={`NavPage${i}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1}/>
         }
       })
+    }else{
+      //All other behaviors
+      contentJSX = content.map((pageOrOrder,i)=>{
+        if (pageOrOrder?.type == 'order'){
+          return <Order key={`Order${i}${doenetId}`} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+        }else{
+          return <Page key={`NavPage${i}`} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={activityDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+        }
+      })
     }
-    //TODO: handle other behaviors
+
+    let label = behavior;
+    if (behavior == "select"){
+      if (withReplacement){
+        label = `${behavior} ${numberToSelect} with replacement`
+      }else{
+        label = `${behavior} ${numberToSelect} without replacement`
+
+      }
+    }
 
   if (recoilOrderInfo.isOpen){
     return <>
-    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={behavior} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
+    <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
     {contentJSX}
     </>
   }else{
-    return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={behavior} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
+    return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
   }
 }
 
@@ -211,14 +267,14 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
   let recoilPageInfo = useRecoilValue(authorItemByDoenetId(doenetId));
   // console.log("Page recoilPageInfo",recoilPageInfo,"doenetId",doenetId)
   //TODO: numbered
-  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} />
+  return <Row courseId={courseId} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
 }
 
 
 
 
 //singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
-function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen}){
+function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen,isBeingCut=false}){
   const addToast = useToast();
   const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
 
@@ -236,11 +292,17 @@ function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=fal
 
 if (hasToggle){
    openCloseIndicator = isOpen ? (
-      <span data-cy="folderToggleCloseIcon" >
+      <span data-cy="folderToggleCloseIcon" onClick={ ()=>{
+        if (hasToggle){
+        toggleOpenClosed();
+      }}} >
         <FontAwesomeIcon icon={faChevronDown} />
       </span>
     ) : (
-      <span data-cy="folderToggleOpenIcon">
+      <span data-cy="folderToggleOpenIcon" onClick={ ()=>{
+        if (hasToggle){
+        toggleOpenClosed();
+      }}} >
         <FontAwesomeIcon icon={faChevronRight} />
       </span>
     );
@@ -253,7 +315,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   e.stopPropagation();
   let selectedItems = await snapshot.getPromise(selectedCourseItems);
   let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-
+  console.log("clickedItem",clickedItem.type,clickedItem.doenetId,clickedItem)
   
   let newSelectedItems = [];
 
@@ -284,7 +346,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     if (e.shiftKey){
       //Shift Click
       //Select all items from the last one selected to this one
-      //TODO: use path to filter to correct section
+      //TODO: use sectionId to filter to correct section
       const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
       //build allRenderedRows on the fly
       let allRenderedRows = [];
@@ -398,77 +460,56 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     setSelectionMenu(null);
   }
 
-},[doenetId,courseId])
+},[doenetId, courseId, setSelectionMenu])
 
   let bgcolor = '#ffffff';
   if (isSelected){
-    // bgcolor = '#e2e2e2'; //grey
     bgcolor = 'hsl(209,54%,82%)';
-
-  } 
+  }else if (isBeingCut){
+    bgcolor = '#e2e2e2'; //grey
+  }
 
   //Used to open editor or assignment
-  let handleDoubleClick = useRecoilCallback(({snapshot,set})=> async (e)=>{
+  let handleDoubleClick = useRecoilCallback(({snapshot})=> async (e)=>{
     let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-    console.log("Double CLICK!",doenetId,clickedItem)
+    // console.log("Double CLICK!",doenetId,clickedItem)
     e.preventDefault();
     e.stopPropagation();
 
-    function findFirstPage(orderObj){
-      //No pages or orders in order so return null
-      if (orderObj.content.length == 0){
-        return null;
-      }
-      let response = null;
-
-      for (let item of orderObj.content){
-        console.log("item",item)
-
-        if (typeof item === 'string' || item instanceof String){
-          //First content is a string so return the doenetId
-          response = item;
-          break;
-        }else{
-          //First item of content is another order
-          let nextOrderResponse = findFirstPage(item);
-        
-          if (typeof nextOrderResponse === 'string' || nextOrderResponse instanceof String){
-            response = nextOrderResponse;
-            break;
-          }
-        }
-      }
-
-      return response; //if didn't find any pages
-
-    }
     //TODO: use item type and role to determine what to update
     if (clickedItem.type == 'page'){
-      setPageToolView((was)=>{return {
+      setPageToolView((prev)=>{return {
         page: 'course',
         tool: 'editor',
-        view: was.view,
-        params: { doenetId, path:was.params.path },
+        view: prev.view,
+        params: { pageId: doenetId, doenetId: clickedItem.containingDoenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId },
         }})
     }else if (clickedItem.type == 'activity'){
       
       //Find first page
-      let pageDoenetId = findFirstPage(clickedItem.order);
+      let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
       if (pageDoenetId == null){
         addToast(`ERROR: No page found in activity`, toastType.INFO);
       }else{
-        setPageToolView((was)=>{return {
+        setPageToolView((prev)=>{return {
           page: 'course',
           tool: 'editor',
-          view: was.view,
-          params: { doenetId:pageDoenetId, path:was.params.path },
+          view: prev.view,
+          params: { pageId:pageDoenetId, doenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId },
           }})
       }
+    }else if (clickedItem.type == 'section'){
+      setPageToolView((prev)=>{return {
+        page: 'course',
+        tool: 'navigation',
+        view: prev.view,
+        params: { sectionId: clickedItem.doenetId, courseId},
+        }})
     }
 
 
 
-  },[doenetId])
+  },[addToast, doenetId, setPageToolView])
 
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
   const indentPx = 25;
@@ -507,11 +548,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
         // marginBottom: '8px',
       }}
     >
-      <p style={{ display: 'inline', margin: '0px' }} 
-      onClick={ ()=>{
-        if (hasToggle){
-        toggleOpenClosed();
-      }}} >
+      <p style={{ display: 'inline', margin: '0px' }} >
        { numbered ?  <svg style={{verticalAlign:'middle'}} width="22" height="22" viewBox="0 0 22 22">
       <circle cx="11"
               cy="11"

@@ -36,7 +36,7 @@ describe('Specifying unique variant tests', function () {
         <variantControl uniquevariants />
         <select assignnames="x">u v w x y z</select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -48,6 +48,7 @@ describe('Specifying unique variant tests', function () {
 
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/x'].stateValues.value).eq(values[(ind - 1) % 6])
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
       })
     }
 
@@ -71,7 +72,7 @@ describe('Specifying unique variant tests', function () {
         <variantControl uniquevariants />
         <selectfromsequence assignnames="x" length="5" />
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -83,6 +84,7 @@ describe('Specifying unique variant tests', function () {
 
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/x'].stateValues.value).eq((ind - 1) % 5 + 1)
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e"])
       })
     }
 
@@ -109,7 +111,7 @@ describe('Specifying unique variant tests', function () {
         <variantControl uniquevariants />
         <selectfromsequence assignnames="x" type="letters" from="c" to="m" step="2" exclude="g k" />
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -171,7 +173,7 @@ describe('Specifying unique variant tests', function () {
         <select assignnames="z">3 7</select>
       </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -222,7 +224,7 @@ describe('Specifying unique variant tests', function () {
         <select assignnames="z">3 7</select>
       </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -286,7 +288,7 @@ describe('Specifying unique variant tests', function () {
           <select assignnames="x y z" numbertoselect="3">w x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -332,7 +334,7 @@ describe('Specifying unique variant tests', function () {
           <select assignnames="x y z" numbertoselect="3">w x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -387,7 +389,7 @@ describe('Specifying unique variant tests', function () {
           <select assignnames="x y z" numbertoselect="3" withreplacement>x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -433,7 +435,7 @@ describe('Specifying unique variant tests', function () {
           <select assignnames="x y z" numbertoselect="3" withreplacement>x y z</select>
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -493,7 +495,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" from="w" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -538,7 +540,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" from="w" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -593,7 +595,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" withreplacement from="x" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -638,7 +640,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="x y z" numbertoselect="3" withreplacement from="x" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -695,7 +697,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="w x y z" numbertoselect="4" withreplacement from="u" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -750,7 +752,7 @@ describe('Specifying unique variant tests', function () {
           <selectfromsequence type="letters" assignnames="w x y z" numbertoselect="4" withreplacement from="u" to="z" />
         </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -804,7 +806,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -817,6 +819,7 @@ describe('Specifying unique variant tests', function () {
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
 
         if (ind === 3) {
           cy.log("all individual groups selected in first variants")
@@ -870,7 +873,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -919,7 +922,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -932,6 +935,7 @@ describe('Specifying unique variant tests', function () {
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
 
         if (ind === 3) {
           cy.log("all individual groups selected in first variants")
@@ -985,7 +989,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1034,7 +1038,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1047,6 +1051,7 @@ describe('Specifying unique variant tests', function () {
         expect(values.includes(newValue)).eq(true);
         expect(valuesFound.includes(newValue)).eq(false);
         valuesFound.push(newValue);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h", "i"])
 
         if (ind === 3) {
           cy.log("all individual groups selected in first variants")
@@ -1100,7 +1105,7 @@ describe('Specifying unique variant tests', function () {
         </option>
       </select>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1159,7 +1164,7 @@ describe('Specifying unique variant tests', function () {
         </select>
       </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1202,7 +1207,7 @@ describe('Specifying unique variant tests', function () {
         </select>
       </aslist>
       `,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1249,7 +1254,7 @@ describe('Specifying unique variant tests', function () {
           </select>
         </aslist>
         `,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
         // to wait for page to load
@@ -1346,7 +1351,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1432,7 +1437,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1533,7 +1538,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1572,6 +1577,8 @@ describe('Specifying unique variant tests', function () {
 
         expect(valuesFound.includes(combinedValue)).eq(false);
         valuesFound.push(combinedValue);
+
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
 
 
         categoriesFound.push(category);
@@ -1623,7 +1630,7 @@ describe('Specifying unique variant tests', function () {
         cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `<text>${ind}</text>${doenetML}`,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
         // to wait for page to load
@@ -1699,7 +1706,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
 
@@ -1756,7 +1763,7 @@ describe('Specifying unique variant tests', function () {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1780,6 +1787,7 @@ describe('Specifying unique variant tests', function () {
         expect(stateVariables[stateVariables["/p1"].activeChildren[1].componentName].stateValues.value).eq('a')
         expect(stateVariables[stateVariables["/p2"].activeChildren[1].componentName].stateValues.value).eq('b')
         expect(stateVariables[stateVariables["/p3"].activeChildren[1].componentName].stateValues.value).eq('c')
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c"])
       })
 
 
@@ -1791,7 +1799,7 @@ describe('Specifying unique variant tests', function () {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
 
@@ -1836,7 +1844,7 @@ describe('Specifying unique variant tests', function () {
     cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
-  
+
     let doenetML = `
     <variantControl uniquevariants />
     <choiceinput name="ci" randomizeOrder>
@@ -1865,7 +1873,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -1878,13 +1886,14 @@ describe('Specifying unique variant tests', function () {
         let selectedOrder = choiceOrder.join(",")
         expect(ordersFound.includes(selectedOrder)).eq(false);
         ordersFound.push(selectedOrder);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
 
         for (let i = 0; i < 3; i++) {
           cy.get(`#\\/ci_choice${i + 1}_input`).click();
-          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[i]-1])
+          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[i] - 1])
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
-            expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[i]-1]])
+            expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[i] - 1]])
           });
         }
 
@@ -1894,32 +1903,32 @@ describe('Specifying unique variant tests', function () {
         cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `<text>${ind}</text>${doenetML}`,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
-  
+
         // to wait for page to load
         cy.get('#\\/_text1').should('have.text', `${ind}`)
-  
+
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           return stateVariables["/ci"];
         }))
-  
-        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[2]-1])
+
+        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[2] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
-          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[2]-1]])
+          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[2] - 1]])
         });
 
-          cy.get(`#\\/ci_choice1_input`).click();
-          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[0]-1])
+        cy.get(`#\\/ci_choice1_input`).click();
+        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[0] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
-          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[0]-1]])
+          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[0] - 1]])
         });
       })
     }
@@ -1938,7 +1947,7 @@ describe('Specifying unique variant tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `<text>${ind}</text>${doenetML}`,
-        requestedVariant: { index: ind },
+        requestedVariantIndex: ind,
       }, "*");
     })
     // to wait for page to load
@@ -1961,7 +1970,7 @@ describe('Specifying unique variant tests', function () {
     cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
-  
+
     let doenetML = `
     <variantControl uniquevariants />
     <choiceinput name="ci" randomizeOrder>
@@ -1987,7 +1996,7 @@ describe('Specifying unique variant tests', function () {
       cy.window().then(async (win) => {
         win.postMessage({
           doenetML: `<text>${ind}</text>${doenetML}`,
-          requestedVariant: { index: ind },
+          requestedVariantIndex: ind,
         }, "*");
       })
       // to wait for page to load
@@ -2003,13 +2012,14 @@ describe('Specifying unique variant tests', function () {
         let selectedOption = [...choiceOrder, ...choices].join(",")
         expect(selectionsFound.includes(selectedOption)).eq(false);
         selectionsFound.push(selectedOption);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h"])
 
         for (let i = 0; i < 2; i++) {
           cy.get(`#\\/ci_choice${i + 1}_input`).click();
-          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[i]-1])
+          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[i] - 1])
           cy.window().then(async (win) => {
             let stateVariables = await win.returnAllStateVariables1();
-            expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[i]-1]])
+            expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[i] - 1]])
           });
         }
 
@@ -2019,39 +2029,39 @@ describe('Specifying unique variant tests', function () {
         cy.window().then(async (win) => {
           win.postMessage({
             doenetML: `<text>${ind}</text>${doenetML}`,
-            requestedVariant: { index: ind },
+            requestedVariantIndex: ind,
           }, "*");
         })
-  
+
         // to wait for page to load
         cy.get('#\\/_text1').should('have.text', `${ind}`)
-  
+
         // wait until core is loaded
         cy.waitUntil(() => cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
           return stateVariables["/ci"];
         }))
-  
-        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[1]-1])
+
+        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[1] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
-          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[1]-1]])
+          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[1] - 1]])
         });
 
-          cy.get(`#\\/ci_choice1_input`).click();
-          cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[0]-1])
+        cy.get(`#\\/ci_choice1_input`).click();
+        cy.get('#\\/selectedValue').should('have.text', choices[choiceOrder[0] - 1])
 
         cy.window().then(async (win) => {
           let stateVariables = await win.returnAllStateVariables1();
-          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[0]-1]])
+          expect(stateVariables["/ci"].stateValues.selectedValues).eqls([choices[choiceOrder[0] - 1]])
         });
       })
     }
 
 
 
-    cy.log("7th variant repeats first order")
+    cy.log("9th variant repeats first order")
     cy.get('#testRunner_toggleControls').click();
     cy.get('#testRunner_newAttempt').click()
     cy.wait(100)
@@ -2063,7 +2073,7 @@ describe('Specifying unique variant tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `<text>${ind}</text>${doenetML}`,
-        requestedVariant: { index: ind },
+        requestedVariantIndex: ind,
       }, "*");
     })
     // to wait for page to load
@@ -2082,6 +2092,445 @@ describe('Specifying unique variant tests', function () {
 
   });
 
+  it('document and problems with unique variants', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    let doenetML = `
+    <variantControl uniquevariants />
+    <problem>
+      <variantControl uniqueVariants />
+      <p>Enter <selectFromSequence from="1" to="2" assignNames="m" />:
+        <answer>$m</answer>
+      </p>
+    </problem>
+    <problem>
+      <variantControl uniqueVariants />
+      <p>Enter <selectFromSequence from="3" to="5" assignNames="n" />:
+        <answer>$n</answer>
+      </p>
+    </problem>
+    `
+
+
+    cy.log("get all 6 options and then they repeat")
+    for (let ind = 1; ind <= 8; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `<text>${ind}</text>${doenetML}`,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+
+      let m = (ind - 1) % 2 + 1;
+      let n = (ind - 1) % 3 + 3;
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+
+        let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let mathinputAnchor = '#' + mathinputName + ' textarea';
+        let mathinputEditiableFieldAnchor = '#' + mathinputName + " .mq-editable-field";
+        let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+        let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
+        let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+
+
+        let mathinput2Name = cesc(stateVariables['/_answer2'].stateValues.inputChildren[0].componentName)
+        let mathinput2Anchor = '#' + mathinput2Name + ' textarea';
+        let mathinput2EditiableFieldAnchor = '#' + mathinput2Name + " .mq-editable-field";
+        let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
+        let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
+        let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
+
+
+        expect(stateVariables["/m"].stateValues.value).eq(m);
+        expect(stateVariables["/n"].stateValues.value).eq(n);
+
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f"])
+
+        cy.get(mathinputAnchor).type(`${m}{enter}`, { force: true });
+        cy.get(mathinput2Anchor).type(`${n}{enter}`, { force: true });
+
+        cy.get(mathinputCorrectAnchor).should('be.visible');
+        cy.get(mathinput2CorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m]);
+          expect(stateVariables["/_answer2"].stateValues.submittedResponses).eqls([n]);
+
+        });
+
+        cy.wait(2000);  // wait for 1 second debounce
+        cy.reload();
+
+        cy.window().then(async (win) => {
+          win.postMessage({
+            doenetML: `<text>${ind}</text>${doenetML}`,
+            requestedVariantIndex: ind,
+          }, "*");
+        })
+
+        // to wait for page to load
+        cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+        // wait until core is loaded
+        cy.waitUntil(() => cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          return stateVariables["/_answer1"];
+        }))
+
+
+        cy.get(mathinputEditiableFieldAnchor).should('contain.text', `${m}`)
+        cy.get(mathinput2EditiableFieldAnchor).should('contain.text', `${n}`)
+        cy.get(mathinputCorrectAnchor).should('be.visible');
+        cy.get(mathinput2CorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m]);
+          expect(stateVariables["/_answer2"].stateValues.submittedResponses).eqls([n]);
+        });
+
+        cy.get(mathinputAnchor).type(`{end}1`, { force: true });
+        cy.get(mathinput2Anchor).type(`{end}1`, { force: true });
+        cy.get(mathinputSubmitAnchor).click();
+        cy.get(mathinput2SubmitAnchor).click();
+        cy.get(mathinputIncorrectAnchor).should('be.visible');
+        cy.get(mathinput2IncorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+          expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(0);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m * 10 + 1]);
+          expect(stateVariables["/_answer2"].stateValues.submittedResponses).eqls([n * 10 + 1]);
+        });
+
+        cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
+        cy.get(mathinput2Anchor).type(`{end}{backspace}`, { force: true });
+        cy.get(mathinputSubmitAnchor).click();
+        cy.get(mathinput2SubmitAnchor).click();
+        cy.get(mathinputCorrectAnchor).should('be.visible');
+        cy.get(mathinput2CorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m]);
+          expect(stateVariables["/_answer2"].stateValues.submittedResponses).eqls([n]);
+        });
+
+      })
+    }
+
+
+  });
+
+  it('problems with unique variants, but not document', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    let doenetML = `
+    <problem>
+      <variantControl uniqueVariants />
+      <p>Enter <selectFromSequence from="1" to="2" assignNames="m" />:
+        <answer>$m</answer>
+      </p>
+    </problem>
+    <problem>
+      <variantControl uniqueVariants />
+      <p>Enter <selectFromSequence from="3" to="5" assignNames="n" />:
+        <answer>$n</answer>
+      </p>
+    </problem>
+    `
+
+
+    cy.log("get randomly chosen options for each problem")
+    for (let ind = 1; ind <= 3; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
+        cy.reload();
+      }
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `<text>${ind}</text>${doenetML}`,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+
+        let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let mathinputAnchor = '#' + mathinputName + ' textarea';
+        let mathinputEditiableFieldAnchor = '#' + mathinputName + " .mq-editable-field";
+        let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+        let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
+        let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+
+
+        let mathinput2Name = cesc(stateVariables['/_answer2'].stateValues.inputChildren[0].componentName)
+        let mathinput2Anchor = '#' + mathinput2Name + ' textarea';
+        let mathinput2EditiableFieldAnchor = '#' + mathinput2Name + " .mq-editable-field";
+        let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
+        let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
+        let mathinput2IncorrectAnchor = '#' + mathinput2Name + '_incorrect';
+
+        let m = stateVariables["/_problem1"].stateValues.generatedVariantInfo.index;
+        let n = stateVariables["/_problem2"].stateValues.generatedVariantInfo.index + 2;
+
+        expect(m).gte(1);
+        expect(m).lte(2);
+        expect(n).gte(3);
+        expect(n).lte(5);
+
+        expect(stateVariables["/m"].stateValues.value).eq(m);
+        expect(stateVariables["/n"].stateValues.value).eq(n);
+
+        cy.get(mathinputAnchor).type(`${m}{enter}`, { force: true });
+        cy.get(mathinput2Anchor).type(`${n}{enter}`, { force: true });
+
+        cy.get(mathinputCorrectAnchor).should('be.visible');
+        cy.get(mathinput2CorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m]);
+          expect(stateVariables["/_answer2"].stateValues.submittedResponses).eqls([n]);
+
+        });
+
+        cy.wait(2000);  // wait for 1 second debounce
+        cy.reload();
+
+        cy.window().then(async (win) => {
+          win.postMessage({
+            doenetML: `<text>${ind}</text>${doenetML}`,
+            requestedVariantIndex: ind,
+          }, "*");
+        })
+
+        // to wait for page to load
+        cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+        // wait until core is loaded
+        cy.waitUntil(() => cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          return stateVariables["/_answer1"];
+        }))
+
+
+        cy.get(mathinputEditiableFieldAnchor).should('contain.text', `${m}`)
+        cy.get(mathinput2EditiableFieldAnchor).should('contain.text', `${n}`)
+        cy.get(mathinputCorrectAnchor).should('be.visible');
+        cy.get(mathinput2CorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m]);
+          expect(stateVariables["/_answer2"].stateValues.submittedResponses).eqls([n]);
+        });
+
+        cy.get(mathinputAnchor).type(`{end}1`, { force: true });
+        cy.get(mathinput2Anchor).type(`{end}1`, { force: true });
+        cy.get(mathinputSubmitAnchor).click();
+        cy.get(mathinput2SubmitAnchor).click();
+        cy.get(mathinputIncorrectAnchor).should('be.visible');
+        cy.get(mathinput2IncorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+          expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(0);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m * 10 + 1]);
+          expect(stateVariables["/_answer2"].stateValues.submittedResponses).eqls([n * 10 + 1]);
+        });
+
+        cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
+        cy.get(mathinput2Anchor).type(`{end}{backspace}`, { force: true });
+        cy.get(mathinputSubmitAnchor).click();
+        cy.get(mathinput2SubmitAnchor).click();
+        cy.get(mathinputCorrectAnchor).should('be.visible');
+        cy.get(mathinput2CorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer2"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m]);
+          expect(stateVariables["/_answer2"].stateValues.submittedResponses).eqls([n]);
+        });
+
+      })
+
+    }
+
+
+  });
+
+  it('document inherits variants from single problem with unique variants', () => {
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.log("get all 3 options and then they repeat")
+    for (let ind = 1; ind <= 4; ind++) {
+
+      if (ind > 1) {
+        cy.get('#testRunner_toggleControls').click();
+        cy.get('#testRunner_newAttempt').click()
+        cy.wait(100)
+        cy.get('#testRunner_toggleControls').click();
+        cy.reload();
+      }
+
+      let doenetML = `
+      <problem>
+        <variantControl uniqueVariants variantNames="five six seven" />
+        <p>Enter <selectFromSequence from="5" to="7" assignNames="m" />:
+          <answer>$m</answer>
+        </p>
+        <text>${ind}</text>
+      </problem>
+      `
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      let m = (ind - 1) % 3 + 5;
+
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+
+        let mathinputName = cesc(stateVariables['/_answer1'].stateValues.inputChildren[0].componentName)
+        let mathinputAnchor = '#' + mathinputName + ' textarea';
+        let mathinputEditiableFieldAnchor = '#' + mathinputName + " .mq-editable-field";
+        let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+        let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
+        let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+
+
+        expect(stateVariables["/m"].stateValues.value).eq(m);
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["five", "six", "seven"])
+        expect(stateVariables["/_document1"].sharedParameters.variantName).eq(["five", "six", "seven"][(ind - 1) % 3])
+
+        cy.get(mathinputAnchor).type(`${m}{enter}`, { force: true });
+
+        cy.get(mathinputCorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m]);
+
+        });
+
+        cy.wait(2000);  // wait for 1 second debounce
+        cy.reload();
+
+        cy.window().then(async (win) => {
+          win.postMessage({
+            doenetML,
+            requestedVariantIndex: ind,
+          }, "*");
+        })
+
+        // to wait for page to load
+        cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+        // wait until core is loaded
+        cy.waitUntil(() => cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          return stateVariables["/_answer1"];
+        }))
+
+
+        cy.get(mathinputEditiableFieldAnchor).should('contain.text', `${m}`)
+        cy.get(mathinputCorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m]);
+        });
+
+        cy.get(mathinputAnchor).type(`{end}1`, { force: true });
+        cy.get(mathinputSubmitAnchor).click();
+        cy.get(mathinputIncorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(0);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m * 10 + 1]);
+        });
+
+        cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
+        cy.get(mathinputSubmitAnchor).click();
+        cy.get(mathinputCorrectAnchor).should('be.visible');
+
+        cy.window().then(async (win) => {
+          let stateVariables = await win.returnAllStateVariables1();
+          expect(stateVariables["/_answer1"].stateValues.creditAchieved).eq(1);
+          expect(stateVariables["/_answer1"].stateValues.submittedResponses).eqls([m]);
+        });
+
+      })
+
+    }
+
+
+  });
 
 
 });

@@ -6,8 +6,8 @@ export default class Parabola extends Curve {
   static componentType = "parabola";
   static rendererType = "curve";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.through = {
       createComponentOfType: "_pointListComponent",
     };
@@ -169,6 +169,19 @@ export default class Parabola extends Curve {
             return [];
           }
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "throughPoints") {
+          return "throughPoint" + propIndex;
+        }
+        if (varName.slice(0, 12) === "throughPoint") {
+          // could be throughPoint or throughPointX
+          let throughPointNum = Number(varName.slice(12));
+          if (Number.isInteger(throughPointNum) && throughPointNum > 0) {
+            return `throughPointX${throughPointNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nThroughPoints: {

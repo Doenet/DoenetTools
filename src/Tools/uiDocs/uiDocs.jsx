@@ -1188,7 +1188,7 @@ export default function attempt() {
     {
       name: 'ToggleButton',
       id: 'togglebutton',
-      use: 'This is button toggles back and forth',
+      use: 'This is button toggles back and forth. It is a controlled component, so you must always pass the button the status of its state using isSelected.',
       code: ToggleButton,
       codePreview: '<ToggleButton/>',
       req_props: null,
@@ -1206,10 +1206,10 @@ export default function attempt() {
           propCode: { value: 'Select me' },
           description: 'Changes the value',
         },
-        // {name: 'isSelected',
-        // propPreview: '<ToggleButton isSelected/>',
-        // propCode: {'isSelected'},
-        // description: 'If added, starts the button in selected state.'},
+        {name: 'isSelected',
+        propPreview: '<ToggleButton isSelected=true/>',
+        propCode: {isSelected: true},
+        description: 'Sets state of toggle button'},
         {
           name: 'Switch Value',
           propPreview: '<ToggleButton switch_value="frog"/>',

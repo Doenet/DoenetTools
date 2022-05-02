@@ -389,7 +389,7 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(45, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}1{enter}', { force: true });
+    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}1{enter}', { force: true });
     cy.get("#\\/alpha .mjx-mrow").should("have.text", "1")
     cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(1, 1E-6)
@@ -425,7 +425,7 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(60, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}2pi/3{enter}', { force: true });
+    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}2pi/3{enter}', { force: true });
     cy.get("#\\/alpha .mjx-mrow").should("contain.text", "2.0")
     cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(2 * Math.PI / 3, 1E-6)
@@ -443,7 +443,7 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(120, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}pi{enter}', { force: true });
+    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}pi{enter}', { force: true });
     cy.get("#\\/alpha .mjx-mrow").should("contain.text", "3.1")
     cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(Math.PI, 1E-6)
@@ -497,7 +497,7 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(270, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}11pi/6{enter}', { force: true });
+    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}11pi/6{enter}', { force: true });
     cy.get("#\\/alpha .mjx-mrow").should("contain.text", "5.7")
     cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(11 * Math.PI / 6, 1E-6)
@@ -515,7 +515,7 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(330, 1E-12);
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2pi{enter}', { force: true });
+    cy.get('#\\/_mathinput1 textarea').type('{ctrl+home}{shift+end}{backspace}{backspace}2pi{enter}', { force: true });
     cy.get("#\\/alpha .mjx-mrow").should("contain.text", "6.2")
     cy.get("#\\/alpha").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text)).closeTo(2 * Math.PI, 1E-6)

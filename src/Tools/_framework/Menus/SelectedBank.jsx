@@ -8,15 +8,18 @@ import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponen
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import { useToast } from '../Toast';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 export default function SelectedBank() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
-  const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const { renameItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
+  let { create, deleteItem } = useCourse(courseId);
 
   useEffect(()=>{
     if (itemTextFieldLabel !== itemObj.label){
@@ -81,6 +84,28 @@ export default function SelectedBank() {
         if (e.keyCode === 13) handelLabelModfication();
       }}
       onBlur={handelLabelModfication}
+    />
+    <br />
+    <ButtonGroup vertical>
+      <Button
+        width="menu"
+        onClick={() =>
+          create({itemType:"page"})
+        }
+        value="Add Page"
+      />
+    </ButtonGroup>
+    <br />
+    <Button
+      width="menu"
+      value="Delete Collection"
+      alert
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      
+        deleteItem({doenetId});
+      }}
     />
   </>
 }

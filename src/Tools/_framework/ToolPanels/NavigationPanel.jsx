@@ -2,17 +2,12 @@
  * External dependencies
  */
 import React, { useState, Suspense, useEffect, useLayoutEffect } from 'react';
-import {
-  useRecoilCallback,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil';
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 /**
  * Internal dependencies
  */
 import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
-import Drive, {
+import {
   selectedDriveAtom,
   selectedDriveItems,
   itemType,
@@ -27,12 +22,61 @@ import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { suppressMenusAtom } from '../NewToolRoot';
+import styled, { keyframes } from 'styled-components';
+
+const movingGradient = keyframes `
+  0% { background-position: -250px 0; }
+  100% { background-position: 250px 0; }
+`;
+
+const Table = styled.table `
+  width: 850px;
+  border-radius: 5px;
+  margin-top: 50px;
+  margin-left: 20px;
+`;
+const Tr = styled.tr ``;
+const Td = styled.td `
+  height: 40px;
+  vertical-align: middle;
+  padding: 8px;
+  /* border-bottom: 2px solid black; */
+
+  &.Td2 {
+    width: 50px;
+  }
+
+  &.Td3 {
+    width: 400px;
+  }
+
+`;
+const TBody = styled.tbody ``;
+const Td2Span = styled.span `
+  display: block; 
+  background-color: rgba(0,0,0,.15);
+  width: 70px;
+  height: 16px;
+  border-radius: 5px;
+`;
+const Td3Span = styled.span `
+  display: block;
+  height: 14px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+  background-size: 500px 100px;
+  animation-name: ${movingGradient};
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+`;
 
 export default function NavigationPanel() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
-  const path = useRecoilValue(searchParamAtomFamily('path'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const [columnTypes, setColumnTypes] = useState([]);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
 
@@ -55,15 +99,15 @@ export default function NavigationPanel() {
     switch (effectiveRole) {
       case 'instructor':
         setColumnTypes(['Released', 'Assigned', 'Public']);
-        setSuppressMenus([])
+        setSuppressMenus([]);
         break;
       case 'student':
         setColumnTypes(['Due Date']);
-        setSuppressMenus(["AddDriveItems"])
+        setSuppressMenus(['AddDriveItems']);
         break;
       default:
     }
-  }, [effectiveRole,setSuppressMenus]);
+  }, [effectiveRole, setSuppressMenus]);
 
   const clickCallback = useRecoilCallback(
     ({ set }) =>
@@ -188,7 +232,6 @@ export default function NavigationPanel() {
               }
               return false;
             } else {
-              console.log('whats up', item.itemType, 'i', item);
               return item.isReleased === '1';
             }
           case 'instructor':
@@ -203,10 +246,39 @@ export default function NavigationPanel() {
   return (
     <BreadcrumbProvider>
       <DropTargetsProvider>
-        <Suspense fallback={<div>loading Drive...</div>}>
+        <Suspense fallback={
+          <Table>
+            <TBody>
+              <Tr>
+                <Td className="Td2">
+                  <Td2Span></Td2Span>
+                </Td>
+                <Td className="Td3">
+                  <Td3Span></Td3Span>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td className="Td2">
+                  <Td2Span></Td2Span>
+                </Td>
+                <Td className="Td3">
+                  <Td3Span></Td3Span>
+                </Td>
+              </Tr>
+              <Tr>
+                <Td className="Td2">
+                  <Td2Span></Td2Span>
+                </Td>
+                <Td className="Td3">
+                  <Td3Span></Td3Span>
+                </Td>
+              </Tr>
+            </TBody>
+          </Table>
+        }>
           <Container>
             <CourseNavigator
-              path={path}
+              courseId={courseId}
               filterCallback={filterCallback}
               columnTypes={columnTypes}
               urlClickBehavior="select"

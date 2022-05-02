@@ -9,7 +9,7 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-include "randomId.php";
+// include "randomId.php";
 include "userQuotaBytesAvailable.php";
 include "getFilename.php";
 include "cidFromSHA.php";

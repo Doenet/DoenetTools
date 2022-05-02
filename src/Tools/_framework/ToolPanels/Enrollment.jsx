@@ -29,7 +29,7 @@ export const enrolllearnerAtom = atom({
   default: '',
 });
 
-export default function Enrollment(props) {
+export default function Enrollment() {
   console.log('>>>===Enrollment');
 
   const toast = useToast();
@@ -41,16 +41,16 @@ export default function Enrollment(props) {
   const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
   const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
 
-  const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   let [showWithdrawn, setShowWithdrawn] = useState(false);
 
   //Load Enrollment Data When CourseId changes
   useEffect(() => {
-    if (driveId !== '') {
+    if (courseId !== '') {
       axios
-        .get('/api/getEnrollment.php', { params: { driveId } })
+        .get('/api/getEnrollment.php', { params: { courseId } })
         .then((resp) => {
-          // console.log(">>>>resp",resp.data)
+          // console.log(">>>>getEnrollment resp",resp.data)
           //TODO: Make sure we don't overwrite existing data
           let enrollmentArray = resp.data.enrollmentArray;
           setEnrollmentTableDataAtom(enrollmentArray);
@@ -60,9 +60,9 @@ export default function Enrollment(props) {
           console.warn(error);
         });
     }
-  }, [driveId]);
+  }, [courseId, setEnrollmentTableDataAtom, setProcess]);
 
-  if (!driveId) {
+  if (!courseId) {
     return null;
   }
 
@@ -255,7 +255,7 @@ export default function Enrollment(props) {
             key="merge"
             onClick={() => {
               const payload = {
-                driveId,
+                courseId,
                 mergeHeads,
                 mergeId,
                 mergeFirstName,
@@ -263,11 +263,11 @@ export default function Enrollment(props) {
                 mergeEmail,
                 mergeSection,
               };
-              console.log('>>>>payload', payload);
+              // console.log('>>>>payload', payload);
               axios
                 .post('/api/mergeEnrollmentData.php', payload)
                 .then((resp) => {
-                  console.log('>>>>resp.data', resp.data);
+                  // console.log('>>>>merge resp.data', resp.data);
                   const enrollmentArray = resp.data.enrollmentArray;
                   if (enrollmentArray) {
                     setEnrollmentTableDataAtom(enrollmentArray);
@@ -304,13 +304,15 @@ export default function Enrollment(props) {
 
     let payload = {
       email: enrollLearner,
-      driveId: driveId,
+      courseId,
     };
     axios.post('/api/unWithDrawStudents.php', payload).then((resp) => {
-      const payload = { params: { driveId } };
+      // console.log("resp",resp.data)
+      const payload = { params: { courseId } };
       axios
         .get('/api/getEnrollment.php', payload)
         .then((resp) => {
+          // console.log("getEnrollment",resp.data)
           let enrollmentArray = resp.data.enrollmentArray;
           setEnrollmentTableDataAtom(enrollmentArray);
           setProcess('Display Enrollment');
@@ -326,13 +328,15 @@ export default function Enrollment(props) {
 
     let payload = {
       email: withdrewLearner,
-      driveId: driveId,
+      courseId,
     };
     axios.post('/api/withDrawStudents.php', payload).then((resp) => {
-      const payload = { params: { driveId } };
+      // console.log("resp",resp.data)
+      const payload = { params: { courseId } };
       axios
         .get('/api/getEnrollment.php', payload)
         .then((resp) => {
+          // console.log("getEnrollment ",resp.data)
           let enrollmentArray = resp.data.enrollmentArray;
           setEnrollmentTableDataAtom(enrollmentArray);
           setProcess('Display Enrollment');
@@ -364,7 +368,7 @@ export default function Enrollment(props) {
         <div>
           Show Withdrawn{' '}
           <Checkbox
-            onClick={(e) => {
+            onClick={() => {
               setShowWithdrawn(!showWithdrawn);
             }}
             checked={showWithdrawn}

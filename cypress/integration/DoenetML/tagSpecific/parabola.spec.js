@@ -9,6 +9,14 @@ function cesc(s) {
   return s;
 }
 
+function nInDOM(n) {
+  if (n < 0) {
+    return `−${Math.abs(n)}`
+  } else {
+    return String(n);
+  }
+}
+
 describe('Parabola Tag Tests', function () {
 
   beforeEach(() => {
@@ -100,7 +108,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
+      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 0, c = 0;
@@ -148,7 +156,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
+      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 0;
@@ -197,7 +205,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
+      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 9;
@@ -245,7 +253,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
+      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = 3, c = 9;
@@ -294,7 +302,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
+      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = 9;
@@ -342,7 +350,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
+      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = -4.5;
@@ -634,7 +642,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
+      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 0, c = 0;
@@ -685,7 +693,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
+      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 0;
@@ -733,7 +741,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
+      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 9;
@@ -782,7 +790,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
+      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = 3, c = 9;
@@ -831,7 +839,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
+      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = 9;
@@ -880,7 +888,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
+      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = -4.5;
@@ -1167,7 +1175,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
+      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = -2, c = 3;
@@ -1215,7 +1223,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
+      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 3;
@@ -1262,7 +1270,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
+      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 9;
@@ -1309,7 +1317,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
+      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = 3, c = 9;
@@ -1356,7 +1364,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
+      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = 9;
@@ -1403,7 +1411,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
+      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = -4.5;
@@ -1706,7 +1714,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
+      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
       cy.window().then(async (win) => {
 
@@ -1769,7 +1777,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
+      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
 
@@ -1831,7 +1839,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
+      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 9;
@@ -1885,7 +1893,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
+      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = 3, c = 9;
@@ -1939,7 +1947,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
+      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = 9;
@@ -1993,7 +2001,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
+      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = -4.5;
@@ -2514,7 +2522,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
+      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
       cy.window().then(async (win) => {
 
@@ -2594,7 +2602,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
+      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
 
@@ -2674,7 +2682,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
+      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = -2, b = 3, c = 9;
@@ -2731,7 +2739,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
+      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = 3, c = 9;
@@ -2788,7 +2796,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
+      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = 9;
@@ -2845,7 +2853,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
+      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let a = 0.2, b = -1.7, c = -4.5;
@@ -3592,7 +3600,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a");
-      cy.get('#\\/a textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-2{enter}", { force: true });
+      cy.get('#\\/a textarea').type("{ctrl+home}{shift+end}{backspace}-2{enter}", { force: true });
 
 
       cy.window().then(async (win) => {
@@ -3630,7 +3638,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
+      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
 
@@ -3714,7 +3722,7 @@ describe('Parabola Tag Tests', function () {
 
 
       cy.log("Add a second point");
-      cy.get('#\\/n textarea').type("{end}{backspace}{backspace}{backspace}{backspace}2{enter}", { force: true });
+      cy.get('#\\/n textarea').type("{ctrl+home}{shift+end}{backspace}2{enter}", { force: true });
 
 
       cy.window().then(async (win) => {
@@ -3835,7 +3843,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b");
-      cy.get('#\\/b textarea').type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
+      cy.get('#\\/b textarea').type("{ctrl+home}{shift+end}{backspace}3{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3914,7 +3922,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c");
-      cy.get('#\\/c textarea').type("{end}{backspace}{backspace}{backspace}{backspace}9{enter}", { force: true });
+      cy.get('#\\/c textarea').type("{ctrl+home}{shift+end}{backspace}9{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -3970,7 +3978,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change a2");
-      cy.get('#\\/a2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}0.2{enter}", { force: true });
+      cy.get('#\\/a2 textarea').type("{ctrl+home}{shift+end}{backspace}0.2{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4026,7 +4034,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change b2");
-      cy.get('#\\/b2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-1.7{enter}", { force: true });
+      cy.get('#\\/b2 textarea').type("{ctrl+home}{shift+end}{backspace}-1.7{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4082,7 +4090,7 @@ describe('Parabola Tag Tests', function () {
       })
 
       cy.log("Change c2");
-      cy.get('#\\/c2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}-4.5{enter}", { force: true });
+      cy.get('#\\/c2 textarea').type("{ctrl+home}{shift+end}{backspace}-4.5{enter}", { force: true });
 
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
@@ -4932,7 +4940,7 @@ describe('Parabola Tag Tests', function () {
       expect(x22).eq(x2)
       expect(x23).eq(x2)
 
-      
+
       await win.callAction1({
         actionName: "movePoint",
         componentName: A3Name,
@@ -5278,5 +5286,61 @@ describe('Parabola Tag Tests', function () {
 
 
   })
+
+  it('copy propIndex of points', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <parabola through="(2,-3) (3,4) (-3,4)" />
+    </graph>
+ 
+    <p><mathinput name="n" /></p>
+
+    <p><copy prop="throughpoints" target="_parabola1" propIndex="$n" assignNames="P1 P2 P3" /></p>
+
+    <p><copy prop="throughpoint2" target="_parabola1" propIndex="$n" assignNames="x" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 2, t1y = -3;
+    let t2x = 3, t2y = 4;
+    let t3x = -3, t3y = 4;
+
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P3 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+
+
+  });
 
 });

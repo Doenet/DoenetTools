@@ -614,7 +614,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       let meanX = me.math.mean(samples);
       let varX = me.math.var(samples, 'uncorrected');
 
-      expect(meanX).closeTo(3, 0.2);
+      expect(meanX).closeTo(3, 0.3);
       expect(varX).closeTo((6 ** 2 - 1) / 12, 0.5)
 
       let firstSample = stateVariables[stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements[0].componentName]
@@ -667,7 +667,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       let meanX = me.math.mean(samples);
       let varX = me.math.var(samples, 'uncorrected');
 
-      expect(meanX).closeTo(9, 0.05);
+      expect(meanX).closeTo(9, 0.1);
       expect(varX).closeTo((2 ** 2 - 1) / 12, 0.05)
 
       let firstSample = stateVariables[stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements[0].componentName]
@@ -883,7 +883,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
     cy.log("Get new samples when change number of samples");
     cy.get('#\\/numberOfSamples textarea').type(`{end}{backspace}{backspace}70{enter}`, { force: true });
-    cy.get('#\\/numberOfSamples2 textarea').type(`{end}{backspace}{backspace}{backspace}160{enter}`, { force: true });
+    cy.get('#\\/numberOfSamples2 textarea').type(`{ctrl+home}{shift+end}{backspace}160{enter}`, { force: true });
     cy.get('#\\/numberOfSamples2a').should('contain.text', '160');
 
     cy.window().then(async (win) => {
@@ -1699,7 +1699,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 1,
-        allowedErrorInVariance: 2,
+        allowedErrorInVariance: 3,
         checkAllSamples: false,
         stateVariables
       })
@@ -1720,7 +1720,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
-        allowedErrorInMean: 0.6,
+        allowedErrorInMean: 0.8,
         allowedErrorInVariance: 0.5,
         checkAllSamples: false,
         stateVariables
@@ -1743,8 +1743,8 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedMean, specifiedVariance,
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
-        allowedErrorInMean: 0.6,
-        allowedErrorInVariance: 2,
+        allowedErrorInMean: 0.8,
+        allowedErrorInVariance: 3,
         checkAllSamples: false,
         stateVariables
       })
@@ -1786,7 +1786,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 1,
-        allowedErrorInVariance: 2,
+        allowedErrorInVariance: 3,
         checkAllSamples: true,
         stateVariables
       })
@@ -1880,7 +1880,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
-    
+
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
@@ -1944,9 +1944,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariant: {
-          index: 1,
-        }
+        requestedVariantIndex: 1
       }, "*");
     });
 
@@ -1974,9 +1972,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariant: {
-          index: 1,
-        }
+        requestedVariantIndex: 1
       }, "*");
     });
 
@@ -1998,9 +1994,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariant: {
-          index: 2,
-        }
+        requestedVariantIndex: 2
       }, "*");
     });
 

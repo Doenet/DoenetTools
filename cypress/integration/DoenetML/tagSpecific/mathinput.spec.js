@@ -517,7 +517,7 @@ describe('MathInput Tag Tests', function () {
     // type abc in mathinput 2
 
     cy.log("Typing abc in second mathinput");
-    cy.get(`#\\/mi1a textarea`).type(`{end}{backspace}{backspace}{backspace}abc`, { force: true });
+    cy.get(`#\\/mi1a textarea`).type(`{ctrl+home}{shift+end}{backspace}abc`, { force: true });
     cy.get(`#\\/iv1`).should('contain.text', 'abc')
 
     cy.log('Test values displayed in browser')
@@ -620,7 +620,7 @@ describe('MathInput Tag Tests', function () {
     // Enter abc in mathinput 1
 
     cy.log("Enter abc in first mathinput");
-    cy.get('#\\/mi1 textarea').type(`{end}{backspace}{backspace}{backspace}`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`{ctrl+home}{shift+end}{backspace}`, { force: true });
     // pause after deleting so can detect change (given going from abc back to abc)
     cy.get(`#\\/iv1`).should('contain.text', '＿')
     cy.get('#\\/mi1 textarea').type(`abc{enter}`, { force: true });
@@ -675,7 +675,7 @@ describe('MathInput Tag Tests', function () {
     // type u/v in mathinput 3
 
     cy.log("Typing u/v in third mathinput");
-    cy.get('#\\/mi2 textarea').type(`{end}{backspace}{backspace}{backspace}u/v`, { force: true });
+    cy.get('#\\/mi2 textarea').type(`{ctrl+home}{shift+end}{backspace}u/v`, { force: true });
     cy.get(`#\\/iv2`).should('contain.text', 'uv')
 
     cy.log('Test values displayed in browser')
@@ -824,7 +824,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log("Clearing second mathinput");
-    cy.get(`#\\/mi1a textarea`).type("{end}{backspace}{backspace}{backspace}{backspace}", { force: true });
+    cy.get(`#\\/mi1a textarea`).type("{ctrl+home}{shift+end}{backspace}", { force: true });
     cy.get(`#\\/iv1`).should('contain.text', '\uFF3F')
 
     cy.log('Test values displayed in browser')
@@ -1327,7 +1327,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}xy`, { force: true, delay: 50 });
+    cy.get('#\\/mi1 textarea').type(`{ctrl+home}{shift+end}{backspace}xy`, { force: true, delay: 50 });
 
     cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
     cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
@@ -1570,7 +1570,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}xy{enter}`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`{ctrl+home}{shift+end}{backspace}xy{enter}`, { force: true });
 
     cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'xy')
     cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'xy')
@@ -1814,7 +1814,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log('type new values in copy')
-    cy.get(`#\\/mi2 textarea`).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}qr`, { force: true });
+    cy.get(`#\\/mi2 textarea`).type(`{ctrl+home}{shift+end}{backspace}qr`, { force: true });
 
     cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
     cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
@@ -2569,7 +2569,7 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2,3)')
     })
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,3){enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}(2,3){enter}', { force: true });
     cy.get('#\\/b .mjx-mrow').should('contain.text', '(2,3)')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,3)')
@@ -2611,8 +2611,8 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/b2'].stateValues.value).eqls(['*', 'f', 'x']);
     });
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}g(f){enter}', { force: true });
-    cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}g(f){enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}g(f){enter}', { force: true });
+    cy.get('#\\/b textarea').type('{ctrl+home}{shift+end}{backspace}g(f){enter}', { force: true });
 
 
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'g(f)')
@@ -2632,8 +2632,8 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/b2'].stateValues.value).eqls(['*', 'g', 'f']);
     });
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}h(q){enter}', { force: true });
-    cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}h(q){enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}h(q){enter}', { force: true });
+    cy.get('#\\/b textarea').type('{ctrl+home}{shift+end}{backspace}h(q){enter}', { force: true });
 
 
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'hq')
@@ -2654,8 +2654,8 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}q(z){enter}', { force: true });
-    cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}q(z){enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}q(z){enter}', { force: true });
+    cy.get('#\\/b textarea').type('{ctrl+home}{shift+end}{backspace}q(z){enter}', { force: true });
 
 
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'qz')
@@ -3856,7 +3856,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`normal minus`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}a-b{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}a-b{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'a−b')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'a−b')
@@ -3880,7 +3880,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode ⋅ U+22C5 is multiplication`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u22C5z{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}y\u22C5z{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'y⋅z')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'yz')
@@ -3904,7 +3904,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`normal *`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}a*b{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}a*b{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'a\u00B7b')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'ab')
@@ -3928,7 +3928,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode · U+00B7 becomes multiplication`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u00B7z{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}y\u00B7z{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'y\u00B7z')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'yz')
@@ -3953,7 +3953,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode × U+00D7 becomes multiplication`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}u\u00D7v{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}u\u00D7v{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'u\u00D7v')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'uv')
@@ -3977,7 +3977,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode ∪ U+222A becomes union`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}A\u222AB{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}A\u222AB{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'A\u222AB')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'A\u222AB')
@@ -4002,7 +4002,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode ∩ U+2229 becomes intersect`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}A\u2229B{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}A\u2229B{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'A\u2229B')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'A\u2229B')
@@ -4027,7 +4027,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode ∞ U+221E becomes infinity`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u221E{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}\u221E{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '\u221E')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '\u221E')
@@ -4052,7 +4052,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode µ U+u00B5 becomes mu`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u00B5{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}\u00B5{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '\u00B5')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '\u03BC')
@@ -4077,7 +4077,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode μ U+u03BC becomes mu`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u03BC{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}\u03BC{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '\u03BC')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '\u03BC')
@@ -5034,12 +5034,12 @@ describe('MathInput Tag Tests', function () {
     })
 
 
-    cy.get('#\\/hFunction1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
-    cy.get('#\\/hFunction2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
-    cy.get('#\\/hFunction3 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
-    cy.get('#\\/hFunction4 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
-    cy.get('#\\/hFunction5 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
-    cy.get('#\\/hFunction6 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction1 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction2 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction3 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction4 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction5 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction6 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
 
     cy.get(`#\\/hFunction1 .mq-editable-field`).should('contain.text', 'h(y)');
     cy.get(`#\\/hFunction2 .mq-editable-field`).should('contain.text', 'h(y)');
@@ -5149,7 +5149,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.log('inequalities with and')
-    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x>3 and x <= 5{enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}x>3 and x <= 5{enter}", { force: true })
 
     // cy.get(`#\\/mi .mq-editable-field`).should('contain.text', 'x>3 and x≤5');
     cy.get('#\\/m .mjx-mrow').should('contain.text', '(x>3)∧(x≤5)')
@@ -5174,7 +5174,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log(`don't convert if not word`)
-    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}AandBorC{enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}AandBorC{enter}", { force: true })
 
 
     // cy.get(`#\\/mi .mq-editable-field`).should('contain.text', 'AandBorC');

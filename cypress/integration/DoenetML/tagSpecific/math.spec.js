@@ -1563,7 +1563,7 @@ describe('Math Tag Tests', function () {
     check_values(["s", "t", "u"], "vector")
 
     cy.log('change to 4D list')
-    cy.get('#\\/m textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}v,w,x,y{enter}", { force: true })
+    cy.get('#\\/m textarea').type("{ctrl+home}{shift+end}{backspace}v,w,x,y{enter}", { force: true })
     cy.get("#\\/x4").should('contain.text', 'y');
 
     check_values(["v", "w", "x", "y"], "list")
@@ -2108,19 +2108,19 @@ describe('Math Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect(stateVariables["/m1"].stateValues.value).eqls(-0)
-      expect(stateVariables["/m2"].stateValues.value).eqls(["+", 4, -0])
-      expect(stateVariables["/m3"].stateValues.value).eqls(["+", 0, -0])
-      expect(stateVariables["/m4"].stateValues.value).eqls(["+", -0, -0])
-      expect(stateVariables["/m5"].stateValues.value).eqls(["+", 0, -0])
-      expect(stateVariables["/m6"].stateValues.value).eqls(["+", 0, ["-", -0]])
-      expect(stateVariables["/m7"].stateValues.value).eqls(["-", ["/", 6, -0]])
+      expect(stateVariables["/m1"].stateValues.value).eqls(["-", 0])
+      expect(stateVariables["/m2"].stateValues.value).eqls(["+", 4, ["-", 0]])
+      expect(stateVariables["/m3"].stateValues.value).eqls(["+", 0, ["-", 0]])
+      expect(stateVariables["/m4"].stateValues.value).eqls(["+", ["-", 0], ["-", 0]])
+      expect(stateVariables["/m5"].stateValues.value).eqls(["+", 0, ["-", 0]])
+      expect(stateVariables["/m6"].stateValues.value).eqls(["+", 0, ["-", ["-", 0]]])
+      expect(stateVariables["/m7"].stateValues.value).eqls(["-", ["/", 6, ["-", 0]]])
 
-      expect(stateVariables["/m8"].stateValues.value).eqls(["+", 4, -0])
-      expect(stateVariables["/m9"].stateValues.value).eqls(["+", 4, ["-", -0]])
-      expect(stateVariables["/m10"].stateValues.value).eqls(["+", -0, -0])
-      expect(stateVariables["/m11"].stateValues.value).eqls(["+", -0, ["-", -0]])
-      expect(stateVariables["/m12"].stateValues.value).eqls(["/", -6, -0])
+      expect(stateVariables["/m8"].stateValues.value).eqls(["+", 4, ["-", 0]])
+      expect(stateVariables["/m9"].stateValues.value).eqls(["+", 4, ["-", ["-", 0]]])
+      expect(stateVariables["/m10"].stateValues.value).eqls(["+", ["-", 0], ["-", 0]])
+      expect(stateVariables["/m11"].stateValues.value).eqls(["+", ["-", 0], ["-", ["-", 0]]])
+      expect(stateVariables["/m12"].stateValues.value).eqls(["/", -6, ["-", 0]])
 
     })
   });

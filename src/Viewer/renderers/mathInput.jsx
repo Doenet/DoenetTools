@@ -31,7 +31,7 @@ export default function MathInput(props) {
 
   const setRendererState = useSetRecoilState(rendererState(rendererName));
 
-  let rendererValue = useRef(null);
+  let rendererValue = useRef(SVs.rawRendererValue);
 
   // Need to use ref for includeCheckWork
   // or handlePressEnter doesn't get the new value when the SV changes
@@ -135,7 +135,7 @@ export default function MathInput(props) {
   const onChangeHandler = (text) => {
     // whitespace differences and whether or not a single character exponent has braces
     // do not count as a difference for changing raw renderer value
-    if (text.replace(/\s/g, '').replace(/\^{(\w)}/g, '^$1') !== rendererValue.current.replace(/\s/g, '').replace(/\^{(\w)}/g, '^$1')) {
+    if (text.replace(/\s/g, '').replace(/\^{(\w)}/g, '^$1') !== rendererValue.current?.replace(/\s/g, '').replace(/\^{(\w)}/g, '^$1')) {
       rendererValue.current = text;
 
       setRendererState((was) => {

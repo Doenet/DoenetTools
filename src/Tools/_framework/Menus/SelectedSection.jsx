@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
@@ -16,8 +17,8 @@ export default function SelectedSection() {
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
-  const [courseId] = useRecoilValue(searchParamAtomFamily('path')).split(':');
-  const { renameItem } = useCourse(courseId);
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const { renameItem, deleteItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
 
   useEffect(()=>{
@@ -83,6 +84,18 @@ export default function SelectedSection() {
         if (e.keyCode === 13) handelLabelModfication();
       }}
       onBlur={handelLabelModfication}
+    />
+    <br />
+    <Button
+      width="menu"
+      value="Delete Section"
+      alert
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      
+        deleteItem({doenetId});
+      }}
     />
   </>
 }

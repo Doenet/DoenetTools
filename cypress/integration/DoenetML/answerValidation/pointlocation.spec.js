@@ -272,18 +272,14 @@ describe('Point location validation tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([5.9, 3.4])
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
+    cy.wait(2000);  // wait for 1 second debounce
+
     cy.log("Reload page")
-
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: '<text>b</text>',
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -292,6 +288,12 @@ describe('Point location validation tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/_answer1"];
+    }))
 
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
@@ -302,6 +304,7 @@ describe('Point location validation tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([5.9, 3.4])
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
     });
 
@@ -336,19 +339,15 @@ describe('Point location validation tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([-8.8, 1.3])
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
 
+    cy.wait(2000);  // wait for 1 second debounce
+
     cy.log("Reload page")
-
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: '<text>b</text>',
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -357,6 +356,12 @@ describe('Point location validation tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/_answer1"];
+    }))
 
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -367,6 +372,7 @@ describe('Point location validation tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([-8.8, 1.3])
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -405,19 +411,15 @@ describe('Point location validation tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([-9.5, -5.1])
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
 
+    cy.wait(2000);  // wait for 1 second debounce
+
     cy.log("Reload page")
-
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: '<text>b</text>',
-      }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+    cy.reload();
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -427,6 +429,12 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
+    // wait until core is loaded
+    cy.waitUntil(() => cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      return stateVariables["/_answer1"];
+    }))
+
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
@@ -434,6 +442,11 @@ describe('Point location validation tests', function () {
     });
     cy.get('#\\/_answer1_partial').should('not.exist');
 
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_point1"].stateValues.xs).eqls([-9.5, -5.1])
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+    });
 
   });
 
@@ -669,7 +682,7 @@ describe('Point location validation tests', function () {
 
 
     cy.log("change criterion")
-    cy.get("#\\/criterion textarea").type('{end}{backspace}{backspace}{backspace}1', { force: true }).blur();
+    cy.get("#\\/criterion textarea").type('{ctrl+home}{shift+end}{backspace}1', { force: true }).blur();
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -728,7 +741,7 @@ describe('Point location validation tests', function () {
     });
 
     cy.log("change partial criterion")
-    cy.get("#\\/partialcriterion textarea").type('{end}{backspace}{backspace}{backspace}2', { force: true }).blur();
+    cy.get("#\\/partialcriterion textarea").type('{ctrl+home}{shift+end}{backspace}2', { force: true }).blur();
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')
     })
@@ -1211,7 +1224,12 @@ describe('Point location validation tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');   // to wait for page to load
 
-    cy.get('#\\/goal1 .mjx-mrow').should('contain.text', '(−4.1,7.4)')
+    cy.get(`#\\/goal1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(-4.1,7.4)')
+    })
+    cy.get(`#\\/goal2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(6.8,9.1)')
+    })
 
     cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('check work')

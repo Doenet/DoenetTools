@@ -1,7 +1,7 @@
-// import React, { useState, useEffect, useRef } from 'react';
-// import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
-// import testCodeDoenetML from './testCode.doenet';
-// import core from '../../Core/Core';
+import React, { useState, useEffect, useRef } from 'react';
+import DoenetViewer from '../../Tools/_framework/ToolPanels/AssignmentViewer';
+import testCodeDoenetML from './testCode.doenet';
+import core from '../../Core/Core';
 
 // import MathInputPallet from '../_framework/temp/MathInputPallet'
 
@@ -225,41 +225,41 @@
 
 
 
-//   return (
-//     <>
-//       <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
-//         Test Viewer and Core
-//            </h3>
-//         {controls}
-//       </div>
-//       <DoenetViewer
-//         key={"doenetviewer"+updateNumber}
-//         doenetML={doenetML}
-//         // cid={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
-//         flags={{
-//           showCorrectness,
-//           readOnly,
-//           solutionDisplayMode,
-//           showFeedback,
-//           showHints,
-//           allowLoadState,
-//           allowSaveState,
-//           allowLocalState,
-//           allowSaveSubmissions,
-//           allowSaveEvents,
-//         }}
-//         attemptNumber={attemptNumber}
-//         requestedVariant={requestedVariant.current}
-//         core={coreProp}
-//         doenetId="doenetId"
-//       // collaborate={true}
-//       // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
-//       // functionsSuppliedByChild = {this.functionsSuppliedByChild}
-//       />
-//       <MathInputPallet />
-//     </>
-//   )
-// }
+  return (
+    <>
+      <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
+        Test Viewer and Core
+           </h3>
+        {controls}
+      </div>
+      <DoenetViewer
+        key={"doenetviewer"+updateNumber}
+        doenetML={doenetML}
+        // cid={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
+        flags={{
+          showCorrectness,
+          readOnly,
+          solutionDisplayMode,
+          showFeedback,
+          showHints,
+          allowLoadState,
+          allowSaveState,
+          allowLocalState,
+          allowSaveSubmissions,
+          allowSaveEvents,
+        }}
+        attemptNumber={attemptNumber}
+        requestedVariant={requestedVariant.current}
+        core={coreProp}
+        doenetId="doenetId"
+      // collaborate={true}
+      // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
+      // functionsSuppliedByChild = {this.functionsSuppliedByChild}
+      />
+      {/* <MathInputPallet /> */}
+    </>
+  )
+}
 
 // if (import.meta.hot) {
 //   import.meta.hot.accept();
