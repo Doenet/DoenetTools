@@ -379,6 +379,24 @@ export default function Slider(props) {
     } else {
       ticksAndLabels = labels;
     }
+
+    let myLabel = null;
+    if (SVs.label) {
+      if (SVs.showValue) {
+        myLabel = <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel>
+        console.log("both");
+      } else {
+        myLabel = <StyledValueLabel>{SVs.label}</StyledValueLabel>
+        console.log("just label");
+      }
+    } else if (!SVs.label && SVs.showValue) {
+      myLabel = <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel>
+      console.log("just value");
+    } else {
+      myLabel = null;
+      console.log("neither");
+    }
+
     return (
       <SliderContainer
         labeled={SVs.showControls || SVs.label}
@@ -386,7 +404,13 @@ export default function Slider(props) {
         ref={containerRef}
       >
         <div style={{ height: SVs.label ? '20px' : '0px' }}>
-          {SVs.label ? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
+          {/* {SVs.label ? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null} */}
+          {/* {
+            SVs.label ? <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel> : 
+            (SVs.showValue ? <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel> : 
+            null)
+          } */}
+          {myLabel}
         </div>
         <SubContainer2>
           <StyledSlider width={`${SVs.width.size}px`}>
@@ -572,13 +596,35 @@ export default function Slider(props) {
 
   let valueDisplay = null;
   if (SVs.showValue) {
-    valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, position: "relative", userSelect: "none" }}>{SVs.valueForDisplay} </span>
+    valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, userSelect: "none" }}>{SVs.valueForDisplay} </span>
+  }
+
+  let myLabel = null;
+  if (SVs.label) {
+    if (SVs.showValue) {
+      myLabel = <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel>
+      console.log("both");
+    } else {
+      myLabel = <StyledValueLabel>{SVs.label}</StyledValueLabel>
+      console.log("just label");
+    }
+  } else if (!SVs.label && SVs.showValue) {
+    myLabel = <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel>
+    console.log("just value");
+  } else {
+    myLabel = null;
+    console.log("neither");
   }
 
   return (
     <SliderContainer ref={containerRef} labeled={(SVs.showControls || SVs.label)} noTicked={SVs.showTicks === false} onKeyDown={handleKeyDown} tabIndex='0'>
       <div style={{ height: (SVs.label) ? "20px" : "0px" }}>
-        {SVs.label ? <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel> : null}
+        {/* {
+          SVs.label ? <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel> : 
+          (SVs.showValue ? <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel> : 
+          null)
+        } */}
+        {myLabel}
       </div>
       <SubContainer2 onMouseDown={handleDragEnter} onMouseUp={handleDragExit} onMouseMove={handleDragThrough} onMouseLeave={handleDragExit}>
         <StyledSlider width={(`${SVs.width.size}px`)} data-cy="slider1">
