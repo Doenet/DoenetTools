@@ -77,17 +77,16 @@ export default function DataPanel() {
   const doubleClickItem = useRecoilCallback(
     ({set,snapshot}) =>
       async ({ doenetId, courseId }) => {
-        // console.log("data doubleClickItem ",{ doenetId, courseId })
         let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
         if (clickedItem.type == 'page'){
-          console.log("Open data for Page",clickedItem,{courseId})
+          console.log("Open Link to data for Page",clickedItem,{courseId})
         }else if (clickedItem.type == 'activity'){
           //Find first page
           let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
           if (pageDoenetId == null){
             addToast(`ERROR: No page found in activity`, toastType.INFO);
           }else{
-          console.log("Open data for Activity",clickedItem,{courseId})
+          console.log("Open Link to data for Activity",clickedItem,{courseId})
           }
         }else if (clickedItem.type == 'section'){
           set(pageToolViewAtom,(prev)=>{return {

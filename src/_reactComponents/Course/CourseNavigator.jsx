@@ -270,15 +270,8 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
   return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
 }
 
-
-
-
-//singleClickHandler,doubleClickHandler,isContainer,columnsJSX=[]
 function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen,isBeingCut=false,courseNavigatorProps}){
-  const addToast = useToast();
   const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
-
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set})=>()=>{
