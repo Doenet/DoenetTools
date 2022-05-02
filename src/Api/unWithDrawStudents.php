@@ -9,35 +9,39 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
+include "permissionsAndSettingsForOneCourseFunction.php";
+
+$success = TRUE;
+$message = "";
 
 $_POST = json_decode(file_get_contents("php://input"),true);
-$driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
+$courseId = mysqli_real_escape_string($conn,$_POST["courseId"]);
 
 $email = mysqli_real_escape_string($conn,$_POST["email"]);
 
-//TODO: Need a permission related to see grades (not du.canChangeAllDriveSettings)
-$sql = "
-SELECT du.canChangeAllDriveSettings 
-FROM drive_user AS du
-WHERE du.userId = '$userId'
-AND du.driveId = '$driveId'
-AND du.canChangeAllDriveSettings = '1'
-";
+$permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
+  if ($permissions["canManageUsers"] != '1'){
+    $success = FALSE;
+    $message = "You need permission to manage users.";
+  }
  
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
+
+if ($success) {
 
 	$sql = "
-	UPDATE enrollment SET dateWithdrew = NULL , withDrew = 0 WHERE driveId = '$driveId' AND email='$email';
+	UPDATE enrollment SET dateWithdrew = NULL , withDrew = 0 WHERE courseId = '$courseId' AND email='$email';
 	";
   $result = $conn->query($sql);
-$response_arr = array(
-	"success" => 1
-);
+
          
 }  
 
  http_response_code(200);
+
+ $response_arr = array(
+  "success"=>$success,
+  "message"=>$message,
+  );
 
  // make it json format
  echo json_encode($response_arr);

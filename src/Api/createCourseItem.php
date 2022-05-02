@@ -69,6 +69,8 @@ if ($success){
 
 if ($success){
   $doenetId = include "randomId.php";
+  $doenetId = "_" . $doenetId;
+
   $label = 'Untitled';
 
   $jsonDefinition = null;
@@ -100,7 +102,11 @@ if ($itemType == 'section'){
   $jsonDefinition = '{"isIncludedInStudentNavigation":true}';
 }else if($itemType == 'activity'){
   $pageDoenetId = include "randomId.php";
+  $pageDoenetId = "_" . $pageDoenetId;
+
   $orderDoenetId = include "randomId.php";
+  $orderDoenetId = "_" . $orderDoenetId;
+
   $jsonDefinition = '{"type":"activity","version": "0.1.0","isSinglePage": true,"order":{"type":"order","doenetId":"'.$orderDoenetId.'","behavior":"sequence","content":["'.$pageDoenetId.'"]},"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
 
    //We need to clone an existing item
@@ -111,11 +117,15 @@ if ($itemType == 'section'){
    $clonePageDoenetIds = [];
    foreach ($pageDoenetIds as $pageDoenetId){
     $clonePageDoenetId = include "randomId.php";
+    $clonePageDoenetId = "_" . $clonePageDoenetId;
+
     array_push($clonePageDoenetIds,$clonePageDoenetId);
     $DangerousActivityObj = str_replace($pageDoenetId,$clonePageDoenetId,$DangerousActivityObj);
    }
    foreach ($orderDoenetIds as $sourceOrderDoenetId){
     $cloneOrderDoenetId = include "randomId.php";
+    $cloneOrderDoenetId = "_" . $cloneOrderDoenetId;
+
     $DangerousActivityObj = str_replace($sourceOrderDoenetId,$cloneOrderDoenetId,$DangerousActivityObj);
    }
 
