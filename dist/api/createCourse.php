@@ -29,6 +29,7 @@ $course_pic = $course_pics[$randomNumber];
 
 //Random courseId
 $courseId = include "randomId.php";
+$courseId = "_" . $courseId;
 
 $sql = "
 INSERT INTO course

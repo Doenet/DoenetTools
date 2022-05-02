@@ -15,7 +15,7 @@ export default function DriveInfoCap() {
   let image = course.image;
   let label = course.label;
   if (image != "none") {
-    image = "/media/drive_pictures/" + image;
+    image = "url(/media/drive_pictures/" + image + ")";
   }
   if (color != "none") {
     color = "#" + color;
@@ -31,8 +31,7 @@ export default function DriveInfoCap() {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: {position: "relative", width: "100%", height: "135px", overflow: "hidden"}
   }, /* @__PURE__ */ React.createElement("img", {
-    src: image,
-    style: {position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)"}
+    style: {position: "absolute", width: "100%", height: "100%", backgroundSize: "cover", backgroundPosition: "center", backgroundImage: image, backgroundColor: color}
   })), /* @__PURE__ */ React.createElement("b", null, toolText), /* @__PURE__ */ React.createElement("div", {
     style: {padding: "16px 12px"}
   }, /* @__PURE__ */ React.createElement("span", {

@@ -1,254 +1,167 @@
-import { c as createBrowserHistory, R as Router, b as createHashHistory, d as context, i as invariant, e as createLocation, f as createPath, m as matchPath } from './common/react-router-f5411bb1.js';
-export { u as useHistory, a as useLocation } from './common/react-router-f5411bb1.js';
-import { _ as _inheritsLoose } from './common/inheritsLoose-90c3012b.js';
 import { r as react } from './common/index-61623f21.js';
-import { _ as _objectWithoutPropertiesLoose, a as _extends } from './common/setPrototypeOf-ac807fbe.js';
-import './common/_polyfill-node:global-acbc543a.js';
-import './common/index-d3677bfe.js';
+import { c as createBrowserHistory, R as Router, b as useHref, d as createPath, u as useNavigate, a as useLocation, e as useResolvedPath } from './common/index-287f0b96.js';
+export { g as Route, f as Routes, a as useLocation, u as useNavigate } from './common/index-287f0b96.js';
 import './common/_commonjsHelpers-f5d70792.js';
-import './common/hoist-non-react-statics.cjs-fd576625.js';
+import './common/extends-7477639a.js';
 
 /**
- * The public API for a <Router> that uses HTML5 history.
+ * React Router DOM v6.3.0
+ *
+ * Copyright (c) Remix Software Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE.md file in the root directory of this source tree.
+ *
+ * @license MIT
  */
 
-var BrowserRouter = /*#__PURE__*/function (_React$Component) {
-  _inheritsLoose(BrowserRouter, _React$Component);
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
 
-  function BrowserRouter() {
-    var _this;
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
     }
 
-    _this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
-    _this.history = createBrowserHistory(_this.props);
-    return _this;
-  }
-
-  var _proto = BrowserRouter.prototype;
-
-  _proto.render = function render() {
-    return /*#__PURE__*/react.createElement(Router, {
-      history: this.history,
-      children: this.props.children
-    });
+    return target;
   };
 
-  return BrowserRouter;
-}(react.Component);
+  return _extends.apply(this, arguments);
+}
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+const _excluded = ["onClick", "reloadDocument", "replace", "state", "target", "to"];
+// COMPONENTS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
- * The public API for a <Router> that uses window.location.hash.
+ * A `<Router>` for use in web browsers. Provides the cleanest URLs.
  */
+function BrowserRouter(_ref) {
+  let {
+    basename,
+    children,
+    window
+  } = _ref;
+  let historyRef = react.useRef();
 
-var HashRouter = /*#__PURE__*/function (_React$Component) {
-  _inheritsLoose(HashRouter, _React$Component);
-
-  function HashRouter() {
-    var _this;
-
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    _this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
-    _this.history = createHashHistory(_this.props);
-    return _this;
+  if (historyRef.current == null) {
+    historyRef.current = createBrowserHistory({
+      window
+    });
   }
 
-  var _proto = HashRouter.prototype;
-
-  _proto.render = function render() {
-    return /*#__PURE__*/react.createElement(Router, {
-      history: this.history,
-      children: this.props.children
-    });
-  };
-
-  return HashRouter;
-}(react.Component);
-
-var resolveToLocation = function resolveToLocation(to, currentLocation) {
-  return typeof to === "function" ? to(currentLocation) : to;
-};
-var normalizeToLocation = function normalizeToLocation(to, currentLocation) {
-  return typeof to === "string" ? createLocation(to, null, null, currentLocation) : to;
-};
-
-var forwardRefShim = function forwardRefShim(C) {
-  return C;
-};
-
-var forwardRef = react.forwardRef;
-
-if (typeof forwardRef === "undefined") {
-  forwardRef = forwardRefShim;
+  let history = historyRef.current;
+  let [state, setState] = react.useState({
+    action: history.action,
+    location: history.location
+  });
+  react.useLayoutEffect(() => history.listen(setState), [history]);
+  return /*#__PURE__*/react.createElement(Router, {
+    basename: basename,
+    children: children,
+    location: state.location,
+    navigationType: state.action,
+    navigator: history
+  });
 }
 
 function isModifiedEvent(event) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
 }
 
-var LinkAnchor = forwardRef(function (_ref, forwardedRef) {
-  var innerRef = _ref.innerRef,
-      navigate = _ref.navigate,
-      _onClick = _ref.onClick,
-      rest = _objectWithoutPropertiesLoose(_ref, ["innerRef", "navigate", "onClick"]);
-
-  var target = rest.target;
-
-  var props = _extends({}, rest, {
-    onClick: function onClick(event) {
-      try {
-        if (_onClick) _onClick(event);
-      } catch (ex) {
-        event.preventDefault();
-        throw ex;
-      }
-
-      if (!event.defaultPrevented && // onClick prevented default
-      event.button === 0 && ( // ignore everything but left clicks
-      !target || target === "_self") && // let browser handle "target=_blank" etc.
-      !isModifiedEvent(event) // ignore clicks with modifier keys
-      ) {
-          event.preventDefault();
-          navigate();
-        }
-    }
-  }); // React 15 compat
-
-
-  if (forwardRefShim !== forwardRef) {
-    props.ref = forwardedRef || innerRef;
-  } else {
-    props.ref = innerRef;
-  }
-  /* eslint-disable-next-line jsx-a11y/anchor-has-content */
-
-
-  return /*#__PURE__*/react.createElement("a", props);
-});
 /**
  * The public API for rendering a history-aware <a>.
  */
+const Link = /*#__PURE__*/react.forwardRef(function LinkWithRef(_ref4, ref) {
+  let {
+    onClick,
+    reloadDocument,
+    replace = false,
+    state,
+    target,
+    to
+  } = _ref4,
+      rest = _objectWithoutPropertiesLoose(_ref4, _excluded);
 
-
-var Link = forwardRef(function (_ref2, forwardedRef) {
-  var _ref2$component = _ref2.component,
-      component = _ref2$component === void 0 ? LinkAnchor : _ref2$component,
-      replace = _ref2.replace,
-      to = _ref2.to,
-      innerRef = _ref2.innerRef,
-      rest = _objectWithoutPropertiesLoose(_ref2, ["component", "replace", "to", "innerRef"]);
-
-  return /*#__PURE__*/react.createElement(context.Consumer, null, function (context) {
-    !context ?  invariant(false) : void 0;
-    var history = context.history;
-    var location = normalizeToLocation(resolveToLocation(to, context.location), context.location);
-    var href = location ? history.createHref(location) : "";
-
-    var props = _extends({}, rest, {
-      href: href,
-      navigate: function navigate() {
-        var location = resolveToLocation(to, context.location);
-        var isDuplicateNavigation = createPath(context.location) === createPath(normalizeToLocation(location));
-        var method = replace || isDuplicateNavigation ? history.replace : history.push;
-        method(location);
-      }
-    }); // React 15 compat
-
-
-    if (forwardRefShim !== forwardRef) {
-      props.ref = forwardedRef || innerRef;
-    } else {
-      props.innerRef = innerRef;
-    }
-
-    return /*#__PURE__*/react.createElement(component, props);
+  let href = useHref(to);
+  let internalOnClick = useLinkClickHandler(to, {
+    replace,
+    state,
+    target
   });
-});
 
-var forwardRefShim$1 = function forwardRefShim(C) {
-  return C;
-};
+  function handleClick(event) {
+    if (onClick) onClick(event);
 
-var forwardRef$1 = react.forwardRef;
-
-if (typeof forwardRef$1 === "undefined") {
-  forwardRef$1 = forwardRefShim$1;
-}
-
-function joinClassnames() {
-  for (var _len = arguments.length, classnames = new Array(_len), _key = 0; _key < _len; _key++) {
-    classnames[_key] = arguments[_key];
+    if (!event.defaultPrevented && !reloadDocument) {
+      internalOnClick(event);
+    }
   }
 
-  return classnames.filter(function (i) {
-    return i;
-  }).join(" ");
-}
+  return (
+    /*#__PURE__*/
+    // eslint-disable-next-line jsx-a11y/anchor-has-content
+    react.createElement("a", _extends({}, rest, {
+      href: href,
+      onClick: handleClick,
+      ref: ref,
+      target: target
+    }))
+  );
+});
+// HOOKS
+////////////////////////////////////////////////////////////////////////////////
+
 /**
- * A <Link> wrapper that knows if it's "active" or not.
+ * Handles the click behavior for router `<Link>` components. This is useful if
+ * you need to create custom `<Link>` components with the same click behavior we
+ * use in our exported `<Link>`.
  */
 
 
-var NavLink = forwardRef$1(function (_ref, forwardedRef) {
-  var _ref$ariaCurrent = _ref["aria-current"],
-      ariaCurrent = _ref$ariaCurrent === void 0 ? "page" : _ref$ariaCurrent,
-      _ref$activeClassName = _ref.activeClassName,
-      activeClassName = _ref$activeClassName === void 0 ? "active" : _ref$activeClassName,
-      activeStyle = _ref.activeStyle,
-      classNameProp = _ref.className,
-      exact = _ref.exact,
-      isActiveProp = _ref.isActive,
-      locationProp = _ref.location,
-      sensitive = _ref.sensitive,
-      strict = _ref.strict,
-      styleProp = _ref.style,
-      to = _ref.to,
-      innerRef = _ref.innerRef,
-      rest = _objectWithoutPropertiesLoose(_ref, ["aria-current", "activeClassName", "activeStyle", "className", "exact", "isActive", "location", "sensitive", "strict", "style", "to", "innerRef"]);
+function useLinkClickHandler(to, _temp) {
+  let {
+    target,
+    replace: replaceProp,
+    state
+  } = _temp === void 0 ? {} : _temp;
+  let navigate = useNavigate();
+  let location = useLocation();
+  let path = useResolvedPath(to);
+  return react.useCallback(event => {
+    if (event.button === 0 && ( // Ignore everything but left clicks
+    !target || target === "_self") && // Let browser handle "target=_blank" etc.
+    !isModifiedEvent(event) // Ignore clicks with modifier keys
+    ) {
+      event.preventDefault(); // If the URL hasn't changed, a regular <a> will do a replace instead of
+      // a push, so do the same here.
 
-  return /*#__PURE__*/react.createElement(context.Consumer, null, function (context) {
-    !context ?  invariant(false) : void 0;
-    var currentLocation = locationProp || context.location;
-    var toLocation = normalizeToLocation(resolveToLocation(to, currentLocation), currentLocation);
-    var path = toLocation.pathname; // Regex taken from: https://github.com/pillarjs/path-to-regexp/blob/master/index.js#L202
-
-    var escapedPath = path && path.replace(/([.+*?=^!:${}()[\]|/\\])/g, "\\$1");
-    var match = escapedPath ? matchPath(currentLocation.pathname, {
-      path: escapedPath,
-      exact: exact,
-      sensitive: sensitive,
-      strict: strict
-    }) : null;
-    var isActive = !!(isActiveProp ? isActiveProp(match, currentLocation) : match);
-    var className = typeof classNameProp === "function" ? classNameProp(isActive) : classNameProp;
-    var style = typeof styleProp === "function" ? styleProp(isActive) : styleProp;
-
-    if (isActive) {
-      className = joinClassnames(className, activeClassName);
-      style = _extends({}, style, activeStyle);
+      let replace = !!replaceProp || createPath(location) === createPath(path);
+      navigate(to, {
+        replace,
+        state
+      });
     }
+  }, [location, navigate, path, replaceProp, state, target, to]);
+}
 
-    var props = _extends({
-      "aria-current": isActive && ariaCurrent || null,
-      className: className,
-      style: style,
-      to: toLocation
-    }, rest); // React 15 compat
-
-
-    if (forwardRefShim$1 !== forwardRef$1) {
-      props.ref = forwardedRef || innerRef;
-    } else {
-      props.innerRef = innerRef;
-    }
-
-    return /*#__PURE__*/react.createElement(Link, props);
-  });
-});
-
-export { HashRouter, Link };
+export { BrowserRouter, Link };

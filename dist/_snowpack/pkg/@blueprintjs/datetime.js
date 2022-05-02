@@ -6,8 +6,9 @@ import { _ as _defineProperty, a as _objectWithoutPropertiesLoose, b as _extends
 import { g as global$1 } from '../common/_polyfill-node:global-acbc543a.js';
 import { p as propTypes } from '../common/index-d3677bfe.js';
 import { r as reactDom } from '../common/index-eaf9e997.js';
-import { _ as _objectWithoutPropertiesLoose$1, a as _extends$2 } from '../common/setPrototypeOf-ac807fbe.js';
-import { _ as _inheritsLoose$1 } from '../common/inheritsLoose-90c3012b.js';
+import { _ as _extends$2 } from '../common/extends-7477639a.js';
+import { _ as _objectWithoutPropertiesLoose$1 } from '../common/setPrototypeOf-ac4e41f8.js';
+import { _ as _inheritsLoose$1 } from '../common/inheritsLoose-44198c63.js';
 
 /*
  * Copyright 2018 Palantir Technologies, Inc. All rights reserved.
@@ -1595,7 +1596,11 @@ if (gOPD$1) {
 }
 
 functionsHaveNames.functionsHaveConfigurableNames = function functionsHaveConfigurableNames() {
-	return functionsHaveNames() && gOPD$1 && !!gOPD$1(function () {}, 'name').configurable;
+	if (!functionsHaveNames() || !gOPD$1) {
+		return false;
+	}
+	var desc = gOPD$1(function () {}, 'name');
+	return !!desc && !!desc.configurable;
 };
 
 var $bind = Function.prototype.bind;

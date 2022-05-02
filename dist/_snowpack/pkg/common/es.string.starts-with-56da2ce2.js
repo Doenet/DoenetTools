@@ -252,10 +252,10 @@ var shared = createCommonjsModule(function (module) {
 (module.exports = function (key, value) {
   return sharedStore[key] || (sharedStore[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.22.0',
+  version: '3.22.2',
   mode:  'global',
   copyright: '© 2014-2022 Denis Pushkarev (zloirock.ru)',
-  license: 'https://github.com/zloirock/core-js/blob/v3.22.0/LICENSE',
+  license: 'https://github.com/zloirock/core-js/blob/v3.22.2/LICENSE',
   source: 'https://github.com/zloirock/core-js'
 });
 });
@@ -1657,6 +1657,7 @@ _export({ target: 'Array', proto: true, forced: !HAS_SPECIES_SUPPORT$2 }, {
 var regexpFlags = function () {
   var that = anObject(this);
   var result = '';
+  if (that.hasIndices) result += 'd';
   if (that.global) result += 'g';
   if (that.ignoreCase) result += 'i';
   if (that.multiline) result += 'm';
@@ -3363,6 +3364,14 @@ fixRegexpWellKnownSymbolLogic('split', function (SPLIT, nativeSplit, maybeCallNa
   ];
 }, !SPLIT_WORKS_WITH_OVERWRITTEN_EXEC, UNSUPPORTED_Y$2);
 
+var RegExpPrototype$1 = RegExp.prototype;
+
+var regexpGetFlags = function (R) {
+  var flags = R.flags;
+  return flags === undefined && !('flags' in RegExpPrototype$1) && !hasOwnProperty_1(R, 'flags') && objectIsPrototypeOf(RegExpPrototype$1, R)
+    ? functionCall(regexpFlags, R) : flags;
+};
+
 var defineProperty$7 = objectDefineProperty.f;
 
 var proxyAccessor = function (Target, Source, key) {
@@ -3405,10 +3414,9 @@ var enforceInternalState = internalState.enforce;
 
 var MATCH$2 = wellKnownSymbol('match');
 var NativeRegExp = global_1.RegExp;
-var RegExpPrototype$1 = NativeRegExp.prototype;
+var RegExpPrototype$2 = NativeRegExp.prototype;
 var SyntaxError = global_1.SyntaxError;
-var getFlags = functionUncurryThis(regexpFlags);
-var exec$3 = functionUncurryThis(RegExpPrototype$1.exec);
+var exec$3 = functionUncurryThis(RegExpPrototype$2.exec);
 var charAt$6 = functionUncurryThis(''.charAt);
 var replace$5 = functionUncurryThis(''.replace);
 var stringIndexOf$2 = functionUncurryThis(''.indexOf);
@@ -3503,7 +3511,7 @@ var handleNCG = function (string) {
 // https://tc39.es/ecma262/#sec-regexp-constructor
 if (isForced_1('RegExp', BASE_FORCED)) {
   var RegExpWrapper = function RegExp(pattern, flags) {
-    var thisIsRegExp = objectIsPrototypeOf(RegExpPrototype$1, this);
+    var thisIsRegExp = objectIsPrototypeOf(RegExpPrototype$2, this);
     var patternIsRegExp = isRegexp(pattern);
     var flagsAreUndefined = flags === undefined;
     var groups = [];
@@ -3514,9 +3522,9 @@ if (isForced_1('RegExp', BASE_FORCED)) {
       return pattern;
     }
 
-    if (patternIsRegExp || objectIsPrototypeOf(RegExpPrototype$1, pattern)) {
+    if (patternIsRegExp || objectIsPrototypeOf(RegExpPrototype$2, pattern)) {
       pattern = pattern.source;
-      if (flagsAreUndefined) flags = 'flags' in rawPattern ? rawPattern.flags : getFlags(rawPattern);
+      if (flagsAreUndefined) flags = regexpGetFlags(rawPattern);
     }
 
     pattern = pattern === undefined ? '' : toString_1(pattern);
@@ -3541,7 +3549,7 @@ if (isForced_1('RegExp', BASE_FORCED)) {
       groups = handled[1];
     }
 
-    result = inheritIfRequired(NativeRegExp(pattern, flags), thisIsRegExp ? this : RegExpPrototype$1, RegExpWrapper);
+    result = inheritIfRequired(NativeRegExp(pattern, flags), thisIsRegExp ? this : RegExpPrototype$2, RegExpWrapper);
 
     if (dotAll || sticky || groups.length) {
       state = enforceInternalState(result);
@@ -3565,8 +3573,8 @@ if (isForced_1('RegExp', BASE_FORCED)) {
     proxyAccessor(RegExpWrapper, NativeRegExp, keys$2[index++]);
   }
 
-  RegExpPrototype$1.constructor = RegExpWrapper;
-  RegExpWrapper.prototype = RegExpPrototype$1;
+  RegExpPrototype$2.constructor = RegExpWrapper;
+  RegExpWrapper.prototype = RegExpPrototype$2;
   redefine(global_1, 'RegExp', RegExpWrapper);
 }
 
@@ -3580,11 +3588,9 @@ var PROPER_FUNCTION_NAME$1 = functionName.PROPER;
 
 
 
-
 var TO_STRING = 'toString';
-var RegExpPrototype$2 = RegExp.prototype;
-var n$ToString = RegExpPrototype$2[TO_STRING];
-var getFlags$1 = functionUncurryThis(regexpFlags);
+var RegExpPrototype$3 = RegExp.prototype;
+var n$ToString = RegExpPrototype$3[TO_STRING];
 
 var NOT_GENERIC = fails(function () { return n$ToString.call({ source: 'a', flags: 'b' }) != '/a/b'; });
 // FF44- RegExp#toString has a wrong name
@@ -3595,10 +3601,9 @@ var INCORRECT_NAME = PROPER_FUNCTION_NAME$1 && n$ToString.name != TO_STRING;
 if (NOT_GENERIC || INCORRECT_NAME) {
   redefine(RegExp.prototype, TO_STRING, function toString() {
     var R = anObject(this);
-    var p = toString_1(R.source);
-    var rf = R.flags;
-    var f = toString_1(rf === undefined && objectIsPrototypeOf(RegExpPrototype$2, R) && !('flags' in RegExpPrototype$2) ? getFlags$1(R) : rf);
-    return '/' + p + '/' + f;
+    var pattern = toString_1(R.source);
+    var flags = toString_1(regexpGetFlags(R));
+    return '/' + pattern + '/' + flags;
   }, { unsafe: true });
 }
 

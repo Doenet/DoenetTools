@@ -9,6 +9,7 @@ import DoenetViewer from "./AssignmentViewer.js";
 import {
   itemHistoryAtom
 } from "../ToolHandlers/CourseToolHandler.js";
+import PageViewer from "../../viewer/PageViewer.js";
 const contentIdAtom = atom({
   key: "contentIdAtom",
   default: null
@@ -66,7 +67,7 @@ export default function Content(props) {
   const attemptNumber = 1;
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
-  }, /* @__PURE__ */ React.createElement(DoenetViewer, {
+  }, /* @__PURE__ */ React.createElement(PageViewer, {
     key: "doenetviewer",
     cid,
     flags: {

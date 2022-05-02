@@ -1999,28 +1999,28 @@ function useRecognizers(handlers, config = {}, gestureKey, nativeHandlers) {
   return undefined;
 }
 
-function useDrag(handler, config = {}) {
+function useDrag(handler, config) {
   registerAction(dragAction);
   return useRecognizers({
     drag: handler
-  }, config, 'drag');
+  }, config || {}, 'drag');
 }
 
 function createUseGesture(actions) {
   actions.forEach(registerAction);
-  return function useGesture(_handlers, _config = {}) {
+  return function useGesture(_handlers, _config) {
     const {
       handlers,
       nativeHandlers,
       config
-    } = parseMergedHandlers(_handlers, _config);
+    } = parseMergedHandlers(_handlers, _config || {});
     return useRecognizers(handlers, config, undefined, nativeHandlers);
   };
 }
 
-function useGesture(handlers, config = {}) {
+function useGesture(handlers, config) {
   const hook = createUseGesture([dragAction, pinchAction, scrollAction, wheelAction, moveAction, hoverAction]);
-  return hook(handlers, config);
+  return hook(handlers, config || {});
 }
 
 export { useDrag, useGesture };

@@ -39,7 +39,7 @@ export default function Enrollment() {
   let [showWithdrawn, setShowWithdrawn] = useState(false);
   useEffect(() => {
     if (courseId !== "") {
-      axios.get("/api/getEnrollment.php", {params: {driveId: courseId}}).then((resp) => {
+      axios.get("/api/getEnrollment.php", {params: {courseId}}).then((resp) => {
         let enrollmentArray = resp.data.enrollmentArray;
         setEnrollmentTableDataAtom(enrollmentArray);
         setProcess("Display Enrollment");
@@ -200,7 +200,7 @@ export default function Enrollment() {
         key: "merge",
         onClick: () => {
           const payload = {
-            driveId: courseId,
+            courseId,
             mergeHeads,
             mergeId,
             mergeFirstName,
@@ -208,9 +208,7 @@ export default function Enrollment() {
             mergeEmail,
             mergeSection
           };
-          console.log(">>>>payload", payload);
           axios.post("/api/mergeEnrollmentData.php", payload).then((resp) => {
-            console.log(">>>>resp.data", resp.data);
             const enrollmentArray = resp.data.enrollmentArray;
             if (enrollmentArray) {
               setEnrollmentTableDataAtom(enrollmentArray);
@@ -228,12 +226,12 @@ export default function Enrollment() {
     e.preventDefault();
     let payload = {
       email: enrollLearner,
-      driveId: courseId
+      courseId
     };
-    axios.post("/api/unWithDrawStudents.php", payload).then(() => {
-      const payload2 = {params: {driveId: courseId}};
-      axios.get("/api/getEnrollment.php", payload2).then((resp) => {
-        let enrollmentArray = resp.data.enrollmentArray;
+    axios.post("/api/unWithDrawStudents.php", payload).then((resp) => {
+      const payload2 = {params: {courseId}};
+      axios.get("/api/getEnrollment.php", payload2).then((resp2) => {
+        let enrollmentArray = resp2.data.enrollmentArray;
         setEnrollmentTableDataAtom(enrollmentArray);
         setProcess("Display Enrollment");
       }).catch((error) => {
@@ -245,12 +243,12 @@ export default function Enrollment() {
     e.preventDefault();
     let payload = {
       email: withdrewLearner,
-      driveId: courseId
+      courseId
     };
-    axios.post("/api/withDrawStudents.php", payload).then(() => {
-      const payload2 = {params: {driveId: courseId}};
-      axios.get("/api/getEnrollment.php", payload2).then((resp) => {
-        let enrollmentArray = resp.data.enrollmentArray;
+    axios.post("/api/withDrawStudents.php", payload).then((resp) => {
+      const payload2 = {params: {courseId}};
+      axios.get("/api/getEnrollment.php", payload2).then((resp2) => {
+        let enrollmentArray = resp2.data.enrollmentArray;
         setEnrollmentTableDataAtom(enrollmentArray);
         setProcess("Display Enrollment");
       }).catch((error) => {

@@ -13,7 +13,7 @@ export default function EditorInfoCap() {
     return null;
   }
   if (image != "none") {
-    image = "/media/drive_pictures/" + image;
+    image = "url(/media/drive_pictures/" + image + ")";
   }
   if (color != "none") {
     color = "#" + color;
@@ -37,8 +37,7 @@ export default function EditorInfoCap() {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: {position: "relative", width: "100%", height: "135px", overflow: "hidden"}
   }, /* @__PURE__ */ React.createElement("img", {
-    src: image,
-    style: {position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)"}
+    style: {position: "absolute", width: "100%", height: "100%", backgroundSize: "cover", backgroundPosition: "center", backgroundImage: image, backgroundColor: color}
   })), /* @__PURE__ */ React.createElement("b", null, "Editor"), /* @__PURE__ */ React.createElement("div", {
     style: {marginBottom: "1px", marginTop: "5px"}
   }, "Course"), /* @__PURE__ */ React.createElement("div", {

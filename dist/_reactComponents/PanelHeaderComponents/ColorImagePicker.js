@@ -10,6 +10,7 @@ const Display = styled.div`
     background-repeat: no-repeat;
     background-color: ${(props) => props.color || "#ffffff"};
     background-image: ${(props) => props.image || "none"};
+    cursor: pointer;
 `;
 const Menu = styled.div`
     border: var(--mainBorder);

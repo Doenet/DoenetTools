@@ -11,6 +11,7 @@ import {serializedComponentsReviver} from "../../core/utils/serializedStateProce
 import axios from "../../_snowpack/pkg/axios.js";
 import {currentAttemptNumber} from "./AssignmentViewer.js";
 import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import PageViewer from "../../viewer/PageViewer.js";
 const getUserId = (students, name) => {
   for (let userId in students) {
     if (students[userId].firstName + " " + students[userId].lastName == name) {
@@ -157,7 +158,7 @@ export default function GradebookStudentAssignmentView() {
     let variant = attemptsInfo[attemptNumber].variant;
     let doenetML = attemptsInfo[attemptNumber].doenetML;
     let solutionDisplayMode = attemptsInfo[attemptNumber].solutionDisplayMode;
-    dViewer = /* @__PURE__ */ React.createElement(DoenetViewer, {
+    dViewer = /* @__PURE__ */ React.createElement(PageViewer, {
       key: `doenetviewer${doenetId}`,
       doenetML,
       doenetId,
