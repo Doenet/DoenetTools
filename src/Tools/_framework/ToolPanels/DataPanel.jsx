@@ -7,22 +7,13 @@ import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
  * Internal dependencies
  */
 import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
-import {
-  selectedDriveAtom,
-  selectedDriveItems,
-  itemType,
-  clearDriveAndItemSelections,
-  folderDictionary,
-} from '../../../_reactComponents/Drive/NewDrive';
+
 
 import CourseNavigator from '../../../_reactComponents/Course/CourseNavigator';
-import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
-import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
-import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import { mainPanelClickAtom } from '../Panels/NewMainPanel';
-import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { suppressMenusAtom } from '../NewToolRoot';
+
 import styled, { keyframes } from 'styled-components';
+import { authorItemByDoenetId, findFirstPageOfActivity } from '../../../_reactComponents/Course/CourseActions';
+import { useToast, toastType } from '../Toast';
 
 const movingGradient = keyframes `
   0% { background-position: -250px 0; }
@@ -73,227 +64,79 @@ const Td3Span = styled.span `
 `;
 
 export default function DataPanel() {
-  return <p>test</p>
-}
-  function DataPanel2() {
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
-  const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const [columnTypes, setColumnTypes] = useState([]);
-  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+  const addToast = useToast();
 
-  useEffect(() => {
-    setMainPanelClear((was) => [
-      ...was,
-      { atom: clearDriveAndItemSelections, value: null },
-      { atom: selectedMenuPanelAtom, value: null },
-    ]);
-    return setMainPanelClear((was) =>
-      was.filter(
-        (obj) =>
-          obj.atom !== clearDriveAndItemSelections ||
-          obj.atom !== selectedMenuPanelAtom,
-      ),
-    );
-  }, [setMainPanelClear]);
 
-  useLayoutEffect(() => {
-    switch (effectiveRole) {
-      case 'instructor':
-        setColumnTypes(['Released', 'Assigned', 'Public']);
-        setSuppressMenus([]);
-        break;
-      case 'student':
-        setColumnTypes(['Due Date']);
-        setSuppressMenus(['AddDriveItems']);
-        break;
-      default:
-    }
-  }, [effectiveRole, setSuppressMenus]);
+  const updateSelectMenu = useRecoilCallback(
+    ({set,snapshot}) =>
+      async ({ selectedItems }) => {
+        console.log("data updateSelectMenu selectedItems",selectedItems)
 
-  const clickCallback = useRecoilCallback(
-    ({ set }) =>
-      (info) => {
-        switch (info.instructionType) {
-          case 'one item':
-            set(selectedMenuPanelAtom, `Selected${info.type}`);
-            break;
-          case 'range to item':
-          case 'add item':
-            set(selectedMenuPanelAtom, `SelectedMulti`);
-            break;
-          case 'clear all':
-            set(selectedMenuPanelAtom, null);
-            break;
-          default:
-            throw new Error('NavigationPanel found invalid select instruction');
+  });
+
+  const doubleClickItem = useRecoilCallback(
+    ({set,snapshot}) =>
+      async ({ doenetId, courseId }) => {
+        // console.log("data doubleClickItem ",{ doenetId, courseId })
+        let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+        if (clickedItem.type == 'page'){
+          console.log("Open data for Page",clickedItem,{courseId})
+        }else if (clickedItem.type == 'activity'){
+          //Find first page
+          let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
+          if (pageDoenetId == null){
+            addToast(`ERROR: No page found in activity`, toastType.INFO);
+          }else{
+          console.log("Open data for Activity",clickedItem,{courseId})
+          }
+        }else if (clickedItem.type == 'section'){
+          set(pageToolViewAtom,(prev)=>{return {
+            page: 'course',
+            tool: 'data',
+            view: prev.view,
+            params: { sectionId: clickedItem.doenetId, courseId},
+          }})
         }
-        set(
-          selectedDriveItems({
-            driveId: info.driveId,
-            driveInstanceId: info.driveInstanceId,
-            itemId: info.itemId,
-          }),
-          {
-            instructionType: info.instructionType,
-            parentFolderId: info.parentFolderId,
-          },
-        );
-        set(selectedDriveAtom, info.driveId);
-      },
-    [],
-  );
+  });
 
-  const doubleClickCallback = useRecoilCallback(
-    ({ set }) =>
-      (info) => {
-        switch (info.type) {
-          case itemType.FOLDER:
-            set(clearDriveAndItemSelections, null);
-            setPageToolView((was) => ({
-              ...was,
-              params: {
-                path: `${info.driveId}:${info.parentFolderId}:${info.parentFolderId}:Folder`,
-              },
-            }));
-            break;
-          case itemType.DOENETML:
-            if (effectiveRole === 'student') {
-              //TODO: VariantIndex params
-              setPageToolView({
-                page: 'course',
-                tool: 'assignment',
-                view: '',
-                params: {
-                  doenetId: info.item.doenetId,
-                },
-              });
-            } else if (effectiveRole === 'instructor') {
-              setPageToolView({
-                page: 'course',
-                tool: 'editor',
-                view: '',
-                params: {
-                  doenetId: info.item.doenetId,
-                  path: `${info.driveId}:${info.item.parentFolderId}:${info.item.itemId}:DoenetML`,
-                },
-              });
-            }
 
-            break;
-          case itemType.COLLECTION:
-            if (effectiveRole === 'student') {
-              setPageToolView({
-                page: 'course',
-                tool: 'assignment',
-                view: '',
-                params: {
-                  doenetId: info.item.doenetId,
-                  isCollection: true,
-                },
-              });
-            } else if (effectiveRole === 'instructor') {
-              setPageToolView({
-                page: 'course',
-                tool: 'collection',
-                view: '',
-                params: {
-                  doenetId: info.item.doenetId,
-                  path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
-                },
-              });
-            }
-            break;
-          default:
-            throw new Error(
-              'NavigationPanel doubleClick info type not defined',
-            );
-        }
-      },
-    [setPageToolView, effectiveRole],
-  );
-
-  const filterCallback = useRecoilCallback(
-    ({ snapshot }) =>
-      (item) => {
-        switch (effectiveRole) {
-          case 'student':
-            if (item.itemType === itemType.FOLDER) {
-              const folderContents = snapshot
-                .getLoadable(
-                  folderDictionary({
-                    driveId: item.driveId,
-                    folderId: item.itemId,
-                  }),
-                )
-                .getValue()['contentsDictionary'];
-              for (const key in folderContents) {
-                if (folderContents[key].isReleased === '1') {
-                  return true;
-                }
-              }
-              return false;
-            } else {
-              return item.isReleased === '1';
-            }
-          case 'instructor':
-            return true;
-          default:
-            console.warn('No view selected');
-        }
-      },
-    [effectiveRole],
-  );
-
-  return (
-    <BreadcrumbProvider>
-      <DropTargetsProvider>
-        <Suspense fallback={
-          <Table>
-            <TBody>
-              <Tr>
-                <Td className="Td2">
-                  <Td2Span></Td2Span>
-                </Td>
-                <Td className="Td3">
-                  <Td3Span></Td3Span>
-                </Td>
-              </Tr>
-              <Tr>
-                <Td className="Td2">
-                  <Td2Span></Td2Span>
-                </Td>
-                <Td className="Td3">
-                  <Td3Span></Td3Span>
-                </Td>
-              </Tr>
-              <Tr>
-                <Td className="Td2">
-                  <Td2Span></Td2Span>
-                </Td>
-                <Td className="Td3">
-                  <Td3Span></Td3Span>
-                </Td>
-              </Tr>
-            </TBody>
-          </Table>
-        }>
-          <Container>
-            <CourseNavigator
-              courseId={courseId}
-              filterCallback={filterCallback}
-              columnTypes={columnTypes}
-              urlClickBehavior="select"
-              clickCallback={clickCallback}
-              doubleClickCallback={doubleClickCallback}
-              isViewOnly={effectiveRole === 'student'} //TODO: Update for better compatabilty with roles/views
-            />
-          </Container>
-        </Suspense>
-      </DropTargetsProvider>
-    </BreadcrumbProvider>
-  );
+  return <Suspense fallback={
+    <Table>
+      <TBody>
+        <Tr>
+          <Td className="Td2">
+            <Td2Span></Td2Span>
+          </Td>
+          <Td className="Td3">
+            <Td3Span></Td3Span>
+          </Td>
+        </Tr>
+        <Tr>
+          <Td className="Td2">
+            <Td2Span></Td2Span>
+          </Td>
+          <Td className="Td3">
+            <Td3Span></Td3Span>
+          </Td>
+        </Tr>
+        <Tr>
+          <Td className="Td2">
+            <Td2Span></Td2Span>
+          </Td>
+          <Td className="Td3">
+            <Td3Span></Td3Span>
+          </Td>
+        </Tr>
+      </TBody>
+    </Table>
+  }>
+    <Container>
+      <CourseNavigator
+        updateSelectMenu={updateSelectMenu}
+        doubleClickItem={doubleClickItem}
+      />
+    </Container>
+  </Suspense>
 }
 
 function Container(props) {
