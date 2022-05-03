@@ -57,7 +57,6 @@ ON cu.userId = e.userId
 LEFT JOIN user AS u
 ON e.userId = u.userId
 WHERE cu.courseId = '$courseId'
-AND e.courseId = '$courseId'
 ";
 $result = $conn->query($sql);
 $db_enrollment_table_emails = array();
