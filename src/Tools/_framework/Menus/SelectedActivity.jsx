@@ -126,7 +126,7 @@ export default function SelectedActivity() {
             });
           }}
         />
-        <AssignmentSettings role={effectiveRole} doenetId={doenetId} />
+        <AssignmentSettings role={effectiveRole} doenetId={doenetId} courseId={courseId}/>
       </>
     );
   }
@@ -243,7 +243,7 @@ export default function SelectedActivity() {
           });
         }}
       />
-      <AssignmentSettings role={effectiveRole} doenetId={doenetId} />
+      <AssignmentSettings role={effectiveRole} doenetId={doenetId} courseId={courseId} />
       <Button
         width="menu"
         value="Delete Activity"
@@ -260,7 +260,7 @@ export default function SelectedActivity() {
 }
 
 //For item we just need label and doenetId
-export function AssignmentSettings({ role, doenetId }) {
+export function AssignmentSettings({ role, doenetId, courseId }) {
   //Use aInfo to check if values have changed
   let aInfoRef = useRef({});
   const aInfo = aInfoRef?.current;
@@ -300,13 +300,12 @@ export function AssignmentSettings({ role, doenetId }) {
         const oldAInfo = await snapshot.getPromise(
           authorItemByDoenetId(doenetId),
         );
-        let newAInfo = { ...oldAInfo, [keyToUpdate]: value };
+        let newAInfo = { ...oldAInfo, courseId, [keyToUpdate]: value };
 
         if (secondKeyToUpdate) {
           newAInfo[secondKeyToUpdate] = secondValue;
         }
 
-        set(authorItemByDoenetId(doenetId), newAInfo);
         let dbAInfo = { ...newAInfo };
 
         if (dbAInfo.assignedDate !== null) {
@@ -337,6 +336,7 @@ export function AssignmentSettings({ role, doenetId }) {
         );
 
         if (resp.data.success) {
+          set(authorItemByDoenetId(doenetId), newAInfo);
           if (valueDescription) {
             addToast(`Updated ${description} to ${valueDescription}`);
           } else {
@@ -358,7 +358,7 @@ export function AssignmentSettings({ role, doenetId }) {
         //   return {...was,[keyToUpdate]:value}
         // });
       },
-    [addToast],
+    [addToast, courseId],
   );
 
   const loadRecoilAssignmentValues = useRecoilCallback(
