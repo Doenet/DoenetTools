@@ -307,6 +307,10 @@ export function AssignmentSettings({ role, doenetId, courseId }) {
         }
 
         let dbAInfo = { ...newAInfo };
+        dbAInfo.assignedDate = dbAInfo?.assignedDate ?? null;
+        dbAInfo.dueDate = dbAInfo?.dueDate ?? null;
+        dbAInfo.pinnedUntilDate = dbAInfo?.pinnedUntilDate ?? null;
+        dbAInfo.pinnedAfterDate = dbAInfo?.pinnedAfterDate ?? null;
 
         if (dbAInfo.assignedDate !== null) {
           dbAInfo.assignedDate = DateToUTCDateString(
