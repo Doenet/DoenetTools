@@ -6,13 +6,39 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-//TODO: Make sure of instructor
+$success = TRUE;
+$message = "";
+
 $_POST = json_decode(file_get_contents("php://input"),true);
 
+//TODO: is this the right permission?
+$courseId = $_POST['courseId'];
+$doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
+if ($courseId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing courseId";
+  http_response_code(400);
+}
+if ($doenetId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing doenetId";
+  http_response_code(400);
+}
+$permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
+if ($permissions["canEditContent"] != '1'){
+  $success = FALSE;
+  $message = "You need permission to edit content.";
+  http_response_code(403);
+}
+
+$makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
+$submitted =  mysqli_real_escape_string($conn,$_POST["isSubmitted"]);
+$role =  mysqli_real_escape_string($conn,$_POST["role"]);
 $dueDate = mysqli_real_escape_string($conn,$_POST["dueDate"]);
 $assignedDate = mysqli_real_escape_string($conn,$_POST["assignedDate"]);
 $timeLimit = mysqli_real_escape_string($conn,$_POST["timeLimit"]);
@@ -46,45 +72,61 @@ if ($showHints){ $showHints = '1'; } else { $showHints = '0'; }
 if ($showCorrectness){ $showCorrectness = '1'; } else { $showCorrectness = '0'; }
 if ($showCreditAchievedMenu){ $showCreditAchievedMenu = '1'; } else { $showCreditAchievedMenu = '0'; }
 if ($proctorMakesAvailable){ $proctorMakesAvailable = '1'; } else { $proctorMakesAvailable = '0'; }
+if ($totalPointsOrPercent == '') { $totalPointsOrPercent = 'NULL';} else {$totalPointsOrPercent = "'$totalPointsOrPercent'";}
 
-$makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
-$itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
-$doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
-$submitted =  mysqli_real_escape_string($conn,$_POST["isSubmitted"]);
-$role =  mysqli_real_escape_string($conn,$_POST["role"]);
-
-$success = TRUE;
-$message = "";
-
-
-if ($doenetId == ""){
-  $success = FALSE;
-  $message = "Internal Error: missing doenetId";
-}
 if ($success){
-
-$sql = "UPDATE assignment SET
-assignedDate = $assignedDate,
-dueDate = $dueDate,
-pinnedUntilDate = $pinnedUntilDate,
-pinnedAfterDate = $pinnedAfterDate,
-timeLimit = $timeLimit,
-numberOfAttemptsAllowed = $numberOfAttemptsAllowed,
-attemptAggregation = '$attemptAggregation',
-totalPointsOrPercent = '$totalPointsOrPercent',
-gradeCategory = '$gradeCategory',
-individualize = '$individualize',
-showSolution = '$showSolution',
-showSolutionInGradebook = '$showSolutionInGradebook',
-showFeedback = '$showFeedback',
-showHints = '$showHints',
-showCorrectness = '$showCorrectness',
-showCreditAchievedMenu = '$showCreditAchievedMenu',
-proctorMakesAvailable = '$proctorMakesAvailable'
-WHERE doenetId = '$doenetId' 
+$sql = "INSERT INTO `assignment` SET
+    doenetId='$doenetId',
+    courseId = '$courseId',
+    assignedDate = $assignedDate,
+    dueDate = $dueDate,
+    pinnedUntilDate = $pinnedUntilDate,
+    pinnedAfterDate = $pinnedAfterDate,
+    timeLimit = $timeLimit,
+    numberOfAttemptsAllowed=$numberOfAttemptsAllowed,
+    attemptAggregation = '$attemptAggregation',
+    totalPointsOrPercent = $totalPointsOrPercent,
+    gradeCategory = '$gradeCategory',
+    individualize = '$individualize',
+    showSolution = '$showSolution',
+    showSolutionInGradebook = '$showSolutionInGradebook',
+    showFeedback = '$showFeedback',
+    showHints = '$showHints',
+    showCorrectness = '$showCorrectness',
+    showCreditAchievedMenu = '$showCreditAchievedMenu',
+    proctorMakesAvailable = '$proctorMakesAvailable'
+  ON DUPLICATE KEY UPDATE
+    assignedDate = $assignedDate,
+    dueDate = $dueDate,
+    pinnedUntilDate = $pinnedUntilDate,
+    pinnedAfterDate = $pinnedAfterDate,
+    timeLimit = $timeLimit,
+    numberOfAttemptsAllowed=$numberOfAttemptsAllowed,
+    attemptAggregation = '$attemptAggregation',
+    totalPointsOrPercent = '$totalPointsOrPercent',
+    gradeCategory = '$gradeCategory',
+    individualize = '$individualize',
+    showSolution = '$showSolution',
+    showSolutionInGradebook = '$showSolutionInGradebook',
+    showFeedback = '$showFeedback',
+    showHints = '$showHints',
+    showCorrectness = '$showCorrectness',
+    showCreditAchievedMenu = '$showCreditAchievedMenu',
+    proctorMakesAvailable = '$proctorMakesAvailable'
 ";
 
 $result = $conn->query($sql);
+
+
+if ($result == false) {
+  $success = FALSE;
+  $message = "Database error";
+  http_response_code(500);
+} else {
+  // set response code - 200 OK
+  http_response_code(202);
+}
+
 }
 // echo $sql;
 // set response code - 200 OK
@@ -93,10 +135,6 @@ $response_arr = array(
   "success"=>$success,
   "message"=>$message
   );
-
-
-// set response code - 200 OK
-http_response_code(200);
 
 // make it json format
 echo json_encode($response_arr);
