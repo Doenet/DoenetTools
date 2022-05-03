@@ -78,7 +78,7 @@ export default function subsetOfReals(props) {
   if(!SVs.fixed) {
     controlButtons =
     <>
-      <ToggleButtonGroup onClick={handleTogglePoints} style={{marginBottom: "12px"}}>
+      <ToggleButtonGroup onClick={handleTogglePoints}>
         <ToggleButton
           value="Add/Remove points"
         >
