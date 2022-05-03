@@ -162,7 +162,8 @@ export function useInitCourseItems(courseId) {
               items.push(item.doenetId)
             }
             if (item.type === 'activity'){
-              pageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.order);
+              let newPageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.order);
+              pageDoenetIdToParentDoenetId = {...pageDoenetIdToParentDoenetId,...newPageDoenetIdToParentDoenetId}
 
               let ordersAndPages = findOrderAndPageDoenetIdsAndSetOrderObjs(set,item.order,item.doenetId,item.doenetId);
               items = [...items,...ordersAndPages];
