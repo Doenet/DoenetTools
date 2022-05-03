@@ -223,6 +223,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     GradeSettings:lazy(() => import('../Menus/GradeSettings')),
     SelectedSection:lazy(() => import('../Menus/SelectedSection')),
     SelectedBank:lazy(() => import('../Menus/SelectedBank')),
+    SelectedDataSources:lazy(() => import('../Menus/SelectedDataSources')),
     SelectedActivity:lazy(() => import('../Menus/SelectedActivity')),
     SelectedOrder:lazy(() => import('../Menus/SelectedOrder')),
     SelectedPage:lazy(() => import('../Menus/SelectedPage')),

@@ -78,6 +78,7 @@ export default function CourseNavigator(props) {
 
   let clearSelections = useRecoilCallback(({snapshot,set})=> async ()=>{
     const selectedItems = await snapshot.getPromise(selectedCourseItems);
+    set(selectedMenuPanelAtom,null);
     set(selectedCourseItems,[]);
     for (let deselectId of selectedItems){
       set(authorItemByDoenetId(deselectId),(was)=>{

@@ -1,8 +1,8 @@
 /**
  * External dependencies
  */
-import React, { useState, Suspense, useEffect, useLayoutEffect } from 'react';
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
+import React, { Suspense } from 'react';
+import { useRecoilCallback, useRecoilValue } from 'recoil';
 /**
  * Internal dependencies
  */
@@ -12,8 +12,9 @@ import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import CourseNavigator from '../../../_reactComponents/Course/CourseNavigator';
 
 import styled, { keyframes } from 'styled-components';
-import { authorItemByDoenetId, findFirstPageOfActivity } from '../../../_reactComponents/Course/CourseActions';
+import { authorItemByDoenetId, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { useToast, toastType } from '../Toast';
+import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 
 const movingGradient = keyframes `
   0% { background-position: -250px 0; }
@@ -65,37 +66,59 @@ const Td3Span = styled.span `
 
 export default function DataPanel() {
   const addToast = useToast();
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const { findPagesFromDoenetIds } = useCourse(courseId);
 
 
   const updateSelectMenu = useRecoilCallback(
-    ({set,snapshot}) =>
+    ({set}) =>
       async ({ selectedItems }) => {
-        console.log("data updateSelectMenu selectedItems",selectedItems)
-
+        if (selectedItems.length > 0){
+          set(selectedMenuPanelAtom,"SelectedDataSources");
+        }else{
+          set(selectedMenuPanelAtom,null);
+        }
   });
 
   const doubleClickItem = useRecoilCallback(
     ({set,snapshot}) =>
       async ({ doenetId, courseId }) => {
         let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-        if (clickedItem.type == 'page'){
-          console.log("Open Link to data for Page",clickedItem,{courseId})
-        }else if (clickedItem.type == 'activity'){
-          //Find first page
-          let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
-          if (pageDoenetId == null){
-            addToast(`ERROR: No page found in activity`, toastType.INFO);
-          }else{
-          console.log("Open Link to data for Activity",clickedItem,{courseId})
-          }
-        }else if (clickedItem.type == 'section'){
+        if (clickedItem.type == 'section'){
           set(pageToolViewAtom,(prev)=>{return {
             page: 'course',
             tool: 'data',
             view: prev.view,
             params: { sectionId: clickedItem.doenetId, courseId},
           }})
+        }else{
+          let pageDoenetIds = await findPagesFromDoenetIds([clickedItem.doenetId]);
+          if (pageDoenetIds.length == 0){
+            addToast(`No pages found`, toastType.INFO);
+          }else{
+            console.log("Open Link to data for Pages",pageDoenetIds)
+          }
+
         }
+
+        // if (clickedItem.type == 'page'){
+        //   console.log("Open Link to data for Page",clickedItem,{courseId})
+        // }else if (clickedItem.type == 'activity'){
+        //   //Find first page
+        //   let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
+        //   if (pageDoenetId == null){
+        //     addToast(`ERROR: No page found in activity`, toastType.INFO);
+        //   }else{
+        //   console.log("Open Link to data for Activity",clickedItem,{courseId})
+        //   }
+        // }else if (clickedItem.type == 'section'){
+        //   set(pageToolViewAtom,(prev)=>{return {
+        //     page: 'course',
+        //     tool: 'data',
+        //     view: prev.view,
+        //     params: { sectionId: clickedItem.doenetId, courseId},
+        //   }})
+        // }
   });
 
 
