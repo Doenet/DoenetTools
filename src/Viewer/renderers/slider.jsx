@@ -403,7 +403,7 @@ export default function Slider(props) {
         noTicked={SVs.showTicks === false}
         ref={containerRef}
       >
-        <div style={{ height: SVs.label ? '20px' : '0px' }}>
+        <div style={{ height: SVs.label || SVs.showValue ? '20px' : '0px' }}>
           {/* {SVs.label ? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null} */}
           {/* {
             SVs.label ? <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel> : 
@@ -618,7 +618,7 @@ export default function Slider(props) {
 
   return (
     <SliderContainer ref={containerRef} labeled={(SVs.showControls || SVs.label)} noTicked={SVs.showTicks === false} onKeyDown={handleKeyDown} tabIndex='0'>
-      <div style={{ height: (SVs.label) ? "20px" : "0px" }}>
+      <div style={{ height: (SVs.label)  || (SVs.showValue) ? "20px" : "0px" }}>
         {/* {
           SVs.label ? <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel> : 
           (SVs.showValue ? <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel> : 
