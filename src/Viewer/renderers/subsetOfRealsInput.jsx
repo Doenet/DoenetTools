@@ -5,6 +5,7 @@ import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionBut
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
 import ToggleButtonGroup from '../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup';
+import MathJax from 'react-mathjax';
 
 const TextNoSelect = styled.text`
   -webkit-user-select: none;
@@ -104,7 +105,8 @@ export default function subsetOfReals(props) {
           onClick={()=> callAction({
             action: actions.setToR,
           })}
-          value="R"
+          // value={<MathJax.Node inline formula={'a_b'} />}
+          value='R'
         >
         </ActionButton>
       </ActionButtonGroup>
@@ -364,7 +366,7 @@ export default function subsetOfReals(props) {
  return  (
   <>
     <a name={name} />
-    <div ref={bounds}>
+    <div ref={bounds} style={{display: "flex", gap: "12px"}}>
       {controlButtons}
     </div>
     <svg
