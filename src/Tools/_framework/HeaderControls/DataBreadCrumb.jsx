@@ -6,12 +6,14 @@ import { useCourseChooserCrumb, useDashboardCrumb, useDataCrumb } from '../../..
 
 export default function DataBreadCrumb() {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  let sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
+  if (sectionId == ''){sectionId = courseId}
   const courseChooserCrumb = useCourseChooserCrumb();
   const dashboardCrumb = useDashboardCrumb(courseId);
-  const dataCrumb = useDataCrumb(courseId);
+  const dataCrumbs = useDataCrumb(courseId,sectionId);
   return (
     <Suspense fallback={<div>loading Breadcrumbs...</div>}>
-      <BreadCrumb crumbs={[courseChooserCrumb,dashboardCrumb,dataCrumb]}/>
+      <BreadCrumb crumbs={[courseChooserCrumb,dashboardCrumb,...dataCrumbs]}/>
     </Suspense>
   );
 }
