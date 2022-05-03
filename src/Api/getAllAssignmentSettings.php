@@ -52,6 +52,8 @@ $assignment = array();
   $result = $conn->query($sql);
   if ($result->num_rows > 0){
     $row = $result->fetch_assoc();
+    // set response code - 200 OK
+    http_response_code(200);
     $assignment = array(
           "assignment_title" => $row['assignment_title'],
           "assignedDate" => $row['assignedDate'],
@@ -73,15 +75,14 @@ $assignment = array();
           "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
           "doenetId" => $row['doenetId']
     );
+  } else {
+    http_response_code(404);
   }
 $response_arr = array(
   "success"=>$success,
   "assignment"=>$assignment,
   "message"=>$message
 );
-
-// set response code - 200 OK
-http_response_code(200);
 
 // make it json format
 echo json_encode($response_arr);
