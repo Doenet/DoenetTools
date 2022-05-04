@@ -23,8 +23,8 @@ export default function CutCopyPasteMenu() {
   let canCut = true;
   let canPaste = true;
 
-  console.log("selectedItems",selectedItems)
-  console.log("firstSelectedItemObj",firstSelectedItemObj)
+  // console.log("selectedItems",selectedItems)
+  // console.log("firstSelectedItemObj",firstSelectedItemObj)
 
   if (cutObjs.length == 0 && copiedObjs.length == 0){
     canPaste = false;

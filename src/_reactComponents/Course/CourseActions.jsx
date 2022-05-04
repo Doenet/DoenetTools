@@ -100,6 +100,33 @@ function findOrderAndPageDoenetIdsAndSetOrderObjs(set,orderObj,assignmentDoenetI
   return orderAndPagesDoenetIds;
 }
 
+export function findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle=false}){
+  let pageDoenetIds = [];
+
+    if (!foundNeedle && orderObj.doenetId == needleOrderDoenetId){
+      return findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle:true})
+    }
+    for (let item of orderObj.content){
+      // console.log("find item",item)
+      if (item?.type == 'order'){
+        let morePageDoenetIds;
+        if (foundNeedle || item.doenetId == needleOrderDoenetId){
+          morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle:true})
+        }else{
+          morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle})
+        }
+        pageDoenetIds = [...pageDoenetIds,...morePageDoenetIds];
+      }else{
+        //Page 
+        if (foundNeedle){
+          pageDoenetIds.push(item);
+        }
+      }
+    }
+
+  return pageDoenetIds;
+}
+
 function localizeDates(obj, keys) {
   for(let key of keys) {
     if (obj[key]) {
@@ -135,7 +162,8 @@ export function useInitCourseItems(courseId) {
               items.push(item.doenetId)
             }
             if (item.type === 'activity'){
-              pageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.order);
+              let newPageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.order);
+              pageDoenetIdToParentDoenetId = {...pageDoenetIdToParentDoenetId,...newPageDoenetIdToParentDoenetId}
 
               let ordersAndPages = findOrderAndPageDoenetIdsAndSetOrderObjs(set,item.order,item.doenetId,item.doenetId);
               items = [...items,...ordersAndPages];
@@ -1235,30 +1263,6 @@ export const useCourse = (courseId) => {
     //Didn't find needle
     return null;
   }
-
-  function findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle=false}){
-    let pageDoenetIds = [];
-
-      for (let item of orderObj.content){
-        // console.log("item",item)
-        if (item?.type == 'order'){
-          let morePageDoenetIds;
-          if (foundNeedle || item.doenetId == needleOrderDoenetId){
-            morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle:true})
-          }else{
-            morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle})
-          }
-          pageDoenetIds = [...pageDoenetIds,...morePageDoenetIds];
-        }else{
-          //Page 
-          if (foundNeedle){
-            pageDoenetIds.push(item);
-          }
-        }
-      }
-
-    return pageDoenetIds;
-  }
   
   function findOrderDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle=false}){
     let orderDoenetIds = [];
@@ -1946,6 +1950,38 @@ export const useCourse = (courseId) => {
         }
   });
 
+  const findPagesFromDoenetIds = useRecoilCallback(
+    ({ snapshot }) =>
+      async (selectedDoenetIds) => {
+        let pagesFound = []
+        for (let doenetId of selectedDoenetIds){
+          let itemObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+          if (itemObj.type == 'page'){
+            pagesFound.push(itemObj.doenetId)
+          } else if (itemObj.type == 'activity'){
+            let newPages = findPageDoenetIdsInAnOrder({orderObj:itemObj.order,needleOrderDoenetId:'',foundNeedle:true})
+            pagesFound = [...pagesFound,...newPages];
+          } else if (itemObj.type == 'order'){
+            let containingObj = await snapshot.getPromise(authorItemByDoenetId(itemObj.containingDoenetId));
+            let newPages = findPageDoenetIdsInAnOrder({orderObj:containingObj.order,needleOrderDoenetId:itemObj.doenetId,foundNeedle:false})
+            pagesFound = [...pagesFound,...newPages];
+          } else if (itemObj.type == 'bank'){
+            pagesFound = [...pagesFound,...itemObj.pages];
+          } else if (itemObj.type == 'section'){
+            //Get all doenetId's in the section
+            let doenetIdsInSection = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:itemObj.doenetId}));
+            let newPages = await findPagesFromDoenetIds(doenetIdsInSection);
+            pagesFound = [...pagesFound,...newPages];
+
+          }
+
+        }
+
+        //deduplicate doenetIds in pagesFound
+        pagesFound = [...new Set(pagesFound)];
+        return pagesFound;
+      })
+
 
   return { create, 
     deleteItem, 
@@ -1959,6 +1995,7 @@ export const useCourse = (courseId) => {
     updateOrderBehavior, 
     copyItems, 
     cutItems,
-    pasteItems
+    pasteItems,
+    findPagesFromDoenetIds,
    };
 };

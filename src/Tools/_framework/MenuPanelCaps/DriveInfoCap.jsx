@@ -29,7 +29,7 @@ let label = course.label;
    toolText = "Course Navigation"
  }else if (tool == "dashboard"){
    toolText = "Dashboard"
- }else if (tool == "surveyList"){
+ }else if (tool == "data"){
     toolText = "Data"
  }
  

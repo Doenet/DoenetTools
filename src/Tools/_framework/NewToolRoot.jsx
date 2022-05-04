@@ -104,7 +104,7 @@ export default function ToolRoot() {
     NotFound: lazy(() => import('./ToolPanels/NotFound')),
     AccountSettings: lazy(() => import('./ToolPanels/AccountSettings')),
     HomePanel: lazy(() => import('./ToolPanels/HomePanel')),
-    Content: lazy(() => import('./ToolPanels/Content')),
+    PublicActivityViewer: lazy(() => import('./ToolPanels/PublicActivityViewer')),
     DriveCards: lazy(() => import('./ToolPanels/DriveCards')),
     SignIn: lazy(() => import('./ToolPanels/SignIn')),
     SignOut: lazy(() => import('./ToolPanels/SignOut')),
@@ -120,12 +120,14 @@ export default function ToolRoot() {
     EditorViewer: lazy(() => import('./ToolPanels/EditorViewer')),
     AssignmentViewer: lazy(() => import('./ToolPanels/AssignmentViewer')),
     DraftAssignmentViewer: lazy(() => import('./ToolPanels/DraftAssignmentViewer')),
-    SurveyListViewer: lazy(() => import('./ToolPanels/SurveyListViewer')),
+    DataPanel: lazy(() => import('./ToolPanels/DataPanel')),
     SurveyDataViewer: lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor: lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment: lazy(() => import('./ToolPanels/Enrollment')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
+    GuestDoenetMLEditor:lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
+    GuestEditorViewer:lazy(() => import('./ToolPanels/GuestEditorViewer')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -143,7 +145,7 @@ export default function ToolRoot() {
     EnrollmentBreadCrumb: lazy(() =>
       import('./HeaderControls/EnrollmentBreadCrumb'),
     ),
-    SurveyBreadCrumb: lazy(() => import('./HeaderControls/SurveyBreadCrumb')),
+    DataBreadCrumb: lazy(() => import('./HeaderControls/DataBreadCrumb')),
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() =>
       import('./HeaderControls/GradebookBreadCrumb'),
@@ -430,19 +432,6 @@ export default function ToolRoot() {
 // footer: {height,open,component}
 
 let navigationObj = {
-  content: {
-    default: {
-      pageName: 'Content',
-      currentMenus: [],
-      menusTitles: [],
-      menusInitOpen: [],
-      currentMainPanel: 'Content',
-      supportPanelOptions: [],
-      supportPanelTitles: [],
-      supportPanelIndex: 0,
-      hasNoMenuPanel: true,
-    },
-  },
   exam: {
     default: {
       defaultTool: 'chooseLearner',
@@ -624,18 +613,13 @@ let navigationObj = {
       headerControls: ['EnrollmentBreadCrumb'],
       // headerControls: ["BackButton"],
     },
-    surveyList: {
-      pageName: 'surveyList',
+    data: {
+      pageName: 'data',
       menuPanelCap: 'DriveInfoCap',
-      currentMainPanel: 'SurveyListViewer',
-      headerControls: ['SurveyBreadCrumb'],
+      currentMainPanel: 'DataPanel', 
+      headerControls: ['DataBreadCrumb'],
     },
-    surveyData: {
-      pageName: 'surveyData',
-      menuPanelCap: 'DriveInfoCap',
-      currentMainPanel: 'SurveyDataViewer',
-      headerControls: ['SurveyBreadCrumb'],
-    },
+  
   },
   home: {
     default: {
@@ -660,6 +644,36 @@ let navigationObj = {
       currentMainPanel: 'NotFound',
       supportPanelOptions: [],
       hasNoMenuPanel: true,
+    },
+  },
+  public:{
+    default:{
+      pageName:"PublicActivityViewer",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      currentMainPanel:"PublicActivityViewer",
+      supportPanelOptions:[],
+      supportPanelTitles:[],
+      supportPanelIndex:0,
+      hasNoMenuPanel: true,
+    },
+    editor: {
+      //singleFile
+      pageName: 'GuestEditor',
+      currentMainPanel: 'GuestEditorViewer',
+      currentMenus: [
+        'PageVariant',
+      ],
+      menusTitles: [
+        'Page Variant',
+      ],
+      menusInitOpen: [false],
+      supportPanelOptions: ['GuestDoenetMLEditor'],
+      supportPanelTitles: ['DoenetML Editor'],
+      supportPanelIndex: 0,
+      headerControls: ['ViewerUpdateButton'],
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
   },
   settings: {
