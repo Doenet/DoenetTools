@@ -35,12 +35,6 @@ $message = "";
 if ($doenetId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing doenetId';
-}elseif ($pageCid == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing pageCid';
-}elseif ($pageNumber == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing pageNumber';
 }elseif ($attemptNumber == ""){
   $success = FALSE;
   $message = 'Internal Error: missing attemptNumber';
@@ -82,11 +76,25 @@ if ($doenetId == ""){
 //   $message = "You need to be signed in to create a $type";
 // }
 
+if ($pageCid == ""){
+  $pageCid = 'NULL';
+} else {
+  $pageCid = "'$pageCid'";
+}
+
+if ($activityCid == ""){
+  $activityCid = 'NULL';
+} else {
+  $activityCid = "'$activityCid'";
+}
+
+if ($pageNumber == ""){
+  $pageNumber = 'NULL';
+}
 
 if ($success){
   $sql = "INSERT INTO event (userId,deviceName,doenetId,activityCid,pageCid,pageNumber,attemptNumber,variantIndex,verb,object,result,context,version,timestamp,timestored)
-  VALUES ('$userId','$device','$doenetId','$activityCid','$pageCid','$pageNumber','$attemptNumber','$variantIndex','$verb','$object','$result','$context','$version','$timestamp',NOW())";
-
+  VALUES ('$userId','$device','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$variantIndex,'$verb','$object','$result','$context','$version','$timestamp',NOW())";
   $result = $conn->query($sql);
 }
 

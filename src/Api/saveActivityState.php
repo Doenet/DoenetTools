@@ -88,7 +88,7 @@ if ($success) {
         if ($newCid != $cid) {
             $cidChanged = true;
         }
-    } else {
+    } elseif ($updateDataOnContentChange != "1") {
         // something strange happened
         $success = false;
         $message = "Database error 1";

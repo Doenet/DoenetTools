@@ -547,7 +547,7 @@ CREATE TABLE `event` (
   `verb` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `activityCid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `pageCid` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `pageCid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `pageNumber` int(11) DEFAULT NULL,
   `attemptNumber` int(11) DEFAULT NULL,
   `variantIndex` int(11) NOT NULL,
@@ -955,4 +955,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-04 17:33:27
+-- Dump completed on 2022-05-04 18:00:31
