@@ -203,6 +203,21 @@ export default function SelectedActivity() {
           }}
         />
       </ActionButtonGroup>
+      <br />
+      <ActionButton
+        width="menu"
+        value={assignActivityText}
+        onClick={() => {
+          compileActivity({
+            activityDoenetId: doenetId,
+            isAssigned: true,
+            courseId,
+            successCallback: () => {
+              addToast('Activity Assigned.', toastType.INFO);
+            },
+          });
+        }}
+      />
       <Textfield
         label="Label"
         vertical
@@ -229,20 +244,7 @@ export default function SelectedActivity() {
         />
       </ButtonGroup>
       <br />
-      <ActionButton
-        width="menu"
-        value={assignActivityText}
-        onClick={() => {
-          compileActivity({
-            activityDoenetId: doenetId,
-            isAssigned: true,
-            courseId,
-            successCallback: () => {
-              addToast('Activity Assigned.', toastType.INFO);
-            },
-          });
-        }}
-      />
+      
       <AssignmentSettings role={effectiveRole} doenetId={doenetId} courseId={courseId} />
       <Button
         width="menu"
