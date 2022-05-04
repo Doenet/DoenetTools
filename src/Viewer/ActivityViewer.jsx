@@ -954,6 +954,7 @@ export default function ActivityViewer(props) {
       <div key={`page${ind}`}>
         <PageViewer
           doenetId={props.doenetId}
+          activityCid={cid}
           cid={page.cid}
           doenetML={page.doenetML}
           pageNumber={(ind + 1).toString()}
