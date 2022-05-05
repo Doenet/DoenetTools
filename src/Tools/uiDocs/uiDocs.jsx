@@ -823,8 +823,8 @@ export default function attempt() {
       props: [
         {
           name: 'Image',
-          propPreview: '<MiniCard image="/media/doenetML_pictures/code.png" />',
-          propCode: { image: "/media/doenetML_pictures/code.png" },
+          propPreview: '<MiniCard image="http://mathinsight.org/media/image/image/giant_anteater.jpg" />',
+          propCode: { image: "http://mathinsight.org/media/image/image/giant_anteater.jpg" },
           description: 'Adds an image to the top section of the component.',
         },
         {
