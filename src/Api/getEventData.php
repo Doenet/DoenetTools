@@ -40,6 +40,7 @@ if ($success){
 //   }
 // }
 
+
 if ($success){
 
 	$sql_doenetIds = implode("','", $doenetIds);
@@ -48,10 +49,12 @@ if ($success){
 	$sql = "
 	SELECT userId,
 	verb,
-	cid,
 	doenetId,
+	activityCid,
+	pageCid,
+	pageNumber,
 	attemptNumber,
-	variant,
+	variantIndex,
 	object,
 	context,
 	result,
@@ -69,10 +72,12 @@ if ($success){
 				array_push($events,array(
 					"userId"=>$row['userId'],
 					"verb"=>$row['verb'],
-					"cid"=>$row['cid'],
 					"doenetId"=>$row['doenetId'],
+					"activityCid"=>$row['activityCid'],
+					"pageCid"=>$row['pageCid'],
+					"pageNumber"=>$row['pageNumber'],
 					"attemptNumber"=>$row['attemptNumber'],
-					"variant"=>$row['variant'],
+					"variantIndex"=>$row['variantIndex'],
 					"object"=>$row['object'],
 					"context"=>$row['context'],
 					"result"=>$row['verb'],
