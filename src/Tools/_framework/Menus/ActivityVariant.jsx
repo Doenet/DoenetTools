@@ -1,20 +1,25 @@
 import React from 'react';
-import { useRecoilState } from 'recoil';
-import { activityVariantInfoAtom, activityVariantPanelAtom } from '../ToolHandlers/CourseToolHandler';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { pageToolViewAtom } from '../NewToolRoot';
+import { activityVariantPanelAtom } from '../ToolHandlers/CourseToolHandler';
 
 export default function ActivityVariant(props) {
 
-  const [variantInfo, setVariantInfo] = useRecoilState(activityVariantInfoAtom);
   const [variantPanel, setVariantPanel] = useRecoilState(activityVariantPanelAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   function updateVariantInfoAtom() {
-    //Prevent calling when it didn't change
-    if (variantPanel.index === variantInfo.index) {
-      return;
-    }
-    setVariantInfo((was) => {
+    setPageToolView((was) => {
       let newObj = { ...was };
-      newObj.index = Number.isFinite(Number(variantPanel.index)) ? Number(variantPanel.index) : 0;
+      if (newObj.params) {
+        newObj.params = { ...newObj.params };
+      } else {
+        newObj.params = {};
+      }
+
+      newObj.params.requestedVariant = variantPanel.index && Number.isFinite(Number(variantPanel.index))
+        ? Number(variantPanel.index) : 1;
+
       return newObj;
     })
   }

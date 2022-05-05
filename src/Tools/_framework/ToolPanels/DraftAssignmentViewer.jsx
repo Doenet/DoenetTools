@@ -13,7 +13,6 @@ import {
   profileAtom,
 } from '../NewToolRoot';
 import {
-  activityVariantInfoAtom,
   activityVariantPanelAtom,
 } from '../ToolHandlers/CourseToolHandler';
 
@@ -27,7 +26,10 @@ export default function DraftAssignmentViewer() {
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const courseId = useRecoilValue(courseIdAtom);
 
-  const [variantInfo, setVariantInfo] = useRecoilState(activityVariantInfoAtom);
+  const requestedVariantParam = useRecoilValue(searchParamAtomFamily('requestedVariant'));
+  const requestedVariantIndex = requestedVariantParam && Number.isFinite(Number(requestedVariantParam))
+    ? Number(requestedVariantParam) : 1;
+
   const setVariantPanel = useSetRecoilState(activityVariantPanelAtom);
   let [stage, setStage] = useState('Initializing');
   let [message, setMessage] = useState('');
@@ -66,9 +68,6 @@ export default function DraftAssignmentViewer() {
     setVariantPanel({
       index: variantIndex,
       numberOfVariants
-    });
-    setVariantInfo({
-      index: variantIndex,
     });
   }
 
@@ -174,7 +173,7 @@ export default function DraftAssignmentViewer() {
           allowSaveSubmissions: false,
           allowSaveEvents: false,
         }}
-        requestedVariantIndex={variantInfo.index}
+        requestedVariantIndex={requestedVariantIndex}
         generatedVariantCallback={variantCallback}
       />
     </>
