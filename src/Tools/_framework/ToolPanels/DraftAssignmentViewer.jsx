@@ -19,13 +19,13 @@ import {
 
 import axios from 'axios';
 import { returnNumberOfActivityVariantsForCid } from '../../../_utils/activityUtils';
-import { authorItemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
+import { authorItemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 
 
 export default function DraftAssignmentViewer() {
   // console.log(">>>===DraftAssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(courseIdAtom);
 
   const [variantInfo, setVariantInfo] = useRecoilState(activityVariantInfoAtom);
   const setVariantPanel = useSetRecoilState(activityVariantPanelAtom);
@@ -45,13 +45,14 @@ export default function DraftAssignmentViewer() {
 
   let allPossibleVariants = useRef([]);
   // let userId = useRef(null);
+  useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
 
   let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
 
-  useEffect(()=>{
+  useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);
-  },[itemObj,recoilDoenetId])
+  }, [itemObj, recoilDoenetId])
 
   // console.log(`allPossibleVariants -${allPossibleVariants}-`)
 
@@ -73,7 +74,7 @@ export default function DraftAssignmentViewer() {
 
   const initializeValues = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (doenetId,{
+      async (doenetId, {
         type,
         timeLimit,
         assignedDate,
@@ -86,7 +87,7 @@ export default function DraftAssignmentViewer() {
         proctorMakesAvailable,
       }) => {
         // if itemObj has not yet been loaded, don't process yet
-        if(type === undefined) {
+        if (type === undefined) {
           return;
         }
 

@@ -176,9 +176,7 @@ export default function SelectedActivity() {
                   tool: 'draftactivity',
                   view: '',
                   params: {
-                    courseId,
                     doenetId,
-                    sectionId: parentDoenetId,
                     requestedVariant: 1,
                   },
                 });
@@ -195,8 +193,6 @@ export default function SelectedActivity() {
               tool: 'assignment',
               view: '',
               params: {
-                courseId,
-                sectionId: parentDoenetId,
                 doenetId,
               },
             });
