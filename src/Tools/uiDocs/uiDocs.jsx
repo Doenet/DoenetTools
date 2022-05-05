@@ -25,6 +25,7 @@ import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
 import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems.jsx';
+import MiniCard from '../../_reactComponents/PanelHeaderComponents/MiniCard.jsx';
 
 
 // === HOW TO ADD TO UI DOCS ===
@@ -633,6 +634,73 @@ export default function attempt() {
       ],
     },
     {
+      name: 'Form',
+      id: 'form',
+      code: Form,
+      codePreview: '<Form/>',
+      req_props: null,
+      req_children: null,
+      use: 'This is where you can enter text.',
+      props: [
+        {name: 'Width - Menu Panel',
+        propPreview: '<Form width="menu" />',
+        propCode: {width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Submit Button Text',
+        propPreview: '<Form submitButton="add Text" />',
+        propCode: {submitButton:"add Text"},
+        description: 'Changes the button text'},
+        {name: 'Value',
+        propPreview: '<Form value="Sprinkles"/>',
+        propCode: {value: 'Sprinkles'},
+        description: 'Changes the text'},
+        {name: 'Placeholder',
+        propPreview: '<Form placeholder="Enter cat names"/>',
+        propCode: {placeholder: 'Enter cat names'},
+        description: 'Adds placeholder to component'},
+        {name: 'Label',
+            propPreview: '<Form label="What: "/>',
+            propCode: {label: 'What: '},
+            description: 'Adds label to component'},
+            {name: 'Vertical Label',
+            propPreview: '<Form label="What: " vertical/>',
+            propCode: {label: 'What: ', vertical},
+            description: 'Adds label to component on top'},
+            {name: 'Aria Label',
+            propPreview: '<Form ariaLabel="Text"/>',
+            propCode: {ariaLabel: 'Text'},
+            description: 'Adds aria label to component'},
+        {name: 'Alert',
+        propPreview: '<Form alert/>',
+        propCode: {alert},
+        description: 'Changes to alert mode (border is red)'},
+        {name: 'onChange',
+        propPreview: '<Form onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data)},
+        description: 'Function called when data changes'},
+        {name: 'onClick',
+        propPreview: '<Form onClick={() => console.log("clicked")} />',
+        propCode: {onClick: () => console.log("clicked")},
+        description: 'Function called when form button is clicked'},
+        {name: 'onBlur',
+        propPreview: '<Form onBlur={(e) => console.log(e.target.value)} />',
+        propCode: {onBlur: (e) => console.log(e.target.value)},
+        description: 'Function called when component blurs'},
+        {name: 'onKeyDown',
+        propPreview: '<Form onKeyDown={(e) => console.log(e.key)} />',
+        propCode: {onKeyDown: (e) => console.log(e.key)},
+        description: 'Function called when key hit with focus on component'},
+        {name: 'Disabled',
+        propPreview: '<Form disabled />',
+        propCode: {disabled},
+        description: 'Makes component not able to be used'},
+        {name: 'clearInput',
+        propPreview: '<Form clearInput={(e) => {console.log(e.target.value)} />',
+        propCode: {clearInput: (e) => console.log("clear")},
+        description: 'Makes clear button available'},
+      ]
+    },
+    {
       name: 'Increment',
       id: 'increment',
       code: Increment,
@@ -741,6 +809,30 @@ export default function attempt() {
           propCode: { disabled: true },
           description: 'Makes button not able to be used.',
         },
+      ],
+    },
+    {
+      name: 'MiniCard',
+      id: 'minicard',
+      code: MiniCard,
+      codePreview:
+        '<MiniCard />',
+      req_props: null,
+      req_children: null,
+      use: 'A static mini card with an image and label.',
+      props: [
+        {
+          name: 'Image',
+          propPreview: '<MiniCard image="/media/doenetML_pictures/code.png" />',
+          propCode: { image: "/media/doenetML_pictures/code.png" },
+          description: 'Adds an image to the top section of the component.',
+        },
+        {
+          name: 'Label',
+          propPreview: '<MiniCard label="Code" />',
+          propCode: { label: "Code" },
+          description: 'Adds a label to the bottom section of the component.',
+        }
       ],
     },
     {
@@ -1119,73 +1211,6 @@ export default function attempt() {
       ],
     },
     {
-      name: 'Form',
-      id: 'form',
-      code: Form,
-      codePreview: '<Form/>',
-      req_props: null,
-      req_children: null,
-      use: 'This is where you can enter text.',
-      props: [
-        {name: 'Width - Menu Panel',
-        propPreview: '<Form width="menu" />',
-        propCode: {width: 'menu'},
-        description: 'Sets width to fill menu panel width'},
-        {name: 'Submit Button Text',
-        propPreview: '<Form submitButton="add Text" />',
-        propCode: {submitButton:"add Text"},
-        description: 'Changes the button text'},
-        {name: 'Value',
-        propPreview: '<Form value="Sprinkles"/>',
-        propCode: {value: 'Sprinkles'},
-        description: 'Changes the text'},
-        {name: 'Placeholder',
-        propPreview: '<Form placeholder="Enter cat names"/>',
-        propCode: {placeholder: 'Enter cat names'},
-        description: 'Adds placeholder to component'},
-        {name: 'Label',
-            propPreview: '<Form label="What: "/>',
-            propCode: {label: 'What: '},
-            description: 'Adds label to component'},
-            {name: 'Vertical Label',
-            propPreview: '<Form label="What: " vertical/>',
-            propCode: {label: 'What: ', vertical},
-            description: 'Adds label to component on top'},
-            {name: 'Aria Label',
-            propPreview: '<Form ariaLabel="Text"/>',
-            propCode: {ariaLabel: 'Text'},
-            description: 'Adds aria label to component'},
-        {name: 'Alert',
-        propPreview: '<Form alert/>',
-        propCode: {alert},
-        description: 'Changes to alert mode (border is red)'},
-        {name: 'onChange',
-        propPreview: '<Form onChange={(data) => console.log(data)} />',
-        propCode: {onChange: (data) => console.log(data)},
-        description: 'Function called when data changes'},
-        {name: 'onClick',
-        propPreview: '<Form onClick={() => console.log("clicked")} />',
-        propCode: {onClick: () => console.log("clicked")},
-        description: 'Function called when form button is clicked'},
-        {name: 'onBlur',
-        propPreview: '<Form onBlur={(e) => console.log(e.target.value)} />',
-        propCode: {onBlur: (e) => console.log(e.target.value)},
-        description: 'Function called when component blurs'},
-        {name: 'onKeyDown',
-        propPreview: '<Form onKeyDown={(e) => console.log(e.key)} />',
-        propCode: {onKeyDown: (e) => console.log(e.key)},
-        description: 'Function called when key hit with focus on component'},
-        {name: 'Disabled',
-        propPreview: '<Form disabled />',
-        propCode: {disabled},
-        description: 'Makes component not able to be used'},
-        {name: 'clearInput',
-        propPreview: '<Form clearInput={(e) => {console.log(e.target.value)} />',
-        propCode: {clearInput: (e) => console.log("clear")},
-        description: 'Makes clear button available'},
-        ]
-      },
-    {
       name: 'ToggleButton',
       id: 'togglebutton',
       use: 'This is button toggles back and forth. It is a controlled component, so you must always pass the button the status of its state using isSelected.',
@@ -1386,15 +1411,17 @@ export default function attempt() {
       req_props: null,
       req_children: null,
       use: 'Creates visual separation.',
-      props: [{
-        name: 'Height',
-        propPreview: '<VerticalDivider height="200px" />',
-        propCode: {
-          height: '200px'
-        },
-        description: 'Changes height of divider',
-      },]
-    },
+      props: [
+        {
+          name: 'Height',
+          propPreview: '<VerticalDivider height="200px" />',
+          propCode: {
+            height: '200px'
+          },
+          description: 'Changes height of divider'
+        }
+      ]
+    }
   ];
   // === END OF DATA STRUCTURE SECTION ===
 
