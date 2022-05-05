@@ -582,13 +582,15 @@ let navigationObj = {
         'PageVariant',
         'AssignmentSettingsMenu',
         'SupportingFilesMenu',
+        'DoenetMLOptions'
       ],
       menusTitles: [
         'Page Variant',
         'Assignment Settings',
         'Supporting Files',
+        'DoenetML Options'
       ],
-      menusInitOpen: [false, false],
+      menusInitOpen: [false, false, false, false, true],
       supportPanelOptions: ['DoenetMLEditor'],
       supportPanelTitles: ['DoenetML Editor'],
       supportPanelIndex: 0,
