@@ -21,7 +21,7 @@ import axios from 'axios';
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { prng_alea } from 'esm-seedrandom';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
-import { authorItemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
+import { authorItemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 
 export const currentAttemptNumber = atom({
   key: 'currentAttemptNumber',
@@ -95,7 +95,7 @@ function generateNewVariant({ previousVariants, allPossibleVariants, individuali
 export default function AssignmentViewer() {
   console.log(">>>===AssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(courseIdAtom);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState('Initializing');
   let [message, setMessage] = useState('');
@@ -114,16 +114,19 @@ export default function AssignmentViewer() {
     },
     setLoad,
   ] = useState({});
-  let startedInitOfDoenetId = useRef(null);
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
   let individualize = useRef(null);
+
+  useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
+
   let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
 
-  useEffect(()=>{
+
+  useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);
-  },[itemObj,recoilDoenetId])
+  }, [itemObj, recoilDoenetId])
 
   // console.log("itemObj",itemObj)
   // console.log(`allPossibleVariants -${allPossibleVariants}-`)
@@ -150,7 +153,7 @@ export default function AssignmentViewer() {
       }) => {
 
         // if itemObj has not yet been loaded, don't process yet
-        if(type === undefined) {
+        if (type === undefined) {
           return;
         }
 
@@ -335,7 +338,7 @@ export default function AssignmentViewer() {
         setStage('Ready');
 
       },
-      [setSuppressMenus],
+    [setSuppressMenus],
   );
 
   async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId) {
@@ -510,7 +513,7 @@ async function returnNumberOfActivityVariants(cid) {
 
   let result = parseActivityDefinition(activityDefinitionDoenetML);
 
-  if(!result.success) {
+  if (!result.success) {
     return result;
   }
 

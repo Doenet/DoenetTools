@@ -545,10 +545,12 @@ CREATE TABLE `event` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `verb` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `activityCid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pageCid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pageNumber` int(11) DEFAULT NULL,
   `attemptNumber` int(11) DEFAULT NULL,
-  `variant` text COLLATE utf8_unicode_ci NOT NULL,
+  `variantIndex` int(11) NOT NULL,
   `object` mediumtext COLLATE utf8_unicode_ci,
   `context` mediumtext COLLATE utf8_unicode_ci,
   `result` mediumtext COLLATE utf8_unicode_ci,
@@ -953,4 +955,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-02 19:08:11
+-- Dump completed on 2022-05-04 18:00:31
