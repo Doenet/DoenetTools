@@ -6,6 +6,7 @@ import {
   selectorFamily,
   useRecoilCallback,
   useRecoilValue,
+  useSetRecoilState,
 } from 'recoil';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
@@ -145,12 +146,18 @@ export function useInitCourseItems(courseId) {
   const getDataAndSetRecoil = useRecoilCallback(
      ({ snapshot,set }) =>
      async (courseId) => {
-       
+
+      if(!courseId) {
+        return;
+      }
        
        //Only ask the server for course if we haven't already
        const courseArrayTest = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
        if (courseArrayTest.length == 0){
-         const { data } = await axios.get('/api/getCourseItems.php', {
+
+          set(courseIdAtom, courseId);
+
+          const { data } = await axios.get('/api/getCourseItems.php', {
            params: { courseId },
           });
           //DoenetIds depth first search and going into json structures
@@ -195,6 +202,34 @@ export function useInitCourseItems(courseId) {
     }
   }, [getDataAndSetRecoil, courseId]);
 }
+
+export function useSetCourseIdFromDoenetId(doenetId) {
+  const item = useRecoilValue(authorItemByDoenetId('doenetId'));
+  const setCourseId = useSetRecoilState(courseIdAtom);
+
+  useEffect(async () => {
+
+    // if item is found, then we already have the course with doenetId initialized
+    if(Object.keys(item).length > 0) {
+      return;
+    }
+  
+    const { data } = await axios.get('/api/getCourseIdFromDoenetId.php', {
+      params: { doenetId },
+    });
+  
+    // TODO: handle failure
+  
+    setCourseId(data.courseId);
+  
+  }, [doenetId])
+
+}
+
+export const courseIdAtom = atom({
+  key: 'courseIdAtom',
+  default: null
+})
 
 export const authorCourseItemOrderByCourseId = atomFamily({
   key: 'authorCourseItemOrderByCourseId',
