@@ -7,7 +7,7 @@ const CardContainer = styled.div`
   align-items: center;
   border: 2px solid #000;
   border-radius: 5px;
-  height: 100px;
+  height: 125px;
   width: 100px;
   background: #fff;
   padding: 10px 0;
@@ -27,6 +27,13 @@ const Image = styled.img`
   width: 80px;
   max-height: 80px;
 `
+const LabelContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 45px;
+  padding: 0 5px;
+` 
 
 const Label = styled.span`
   font-size: 12px;
@@ -41,7 +48,9 @@ const MiniCard = ({ image="/media/placeholder.png", label="label" }) => {
       <ImageContainer>
         <Image src={ image }/>
       </ImageContainer>
-      <Label>{ label }</Label>
+      <LabelContainer>
+        <Label>{ label }</Label>
+      </LabelContainer>
     </CardContainer>
   )
 }
