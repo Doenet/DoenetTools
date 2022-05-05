@@ -3,6 +3,7 @@ import styled from "../../_snowpack/pkg/styled-components.js";
 const Button = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;
+  width: 100%;
   border: ${(props) => props.theme.border};
   color: white;
   background-color: ${(props) => props.alert ? "var(--mainRed)" : "var(--mainBlue)"};
@@ -11,10 +12,11 @@ const Button = styled.button`
   cursor: pointer;
   font-size: 12px;
 
-  &:hover { // Button color lightens on hover
+  &:hover {
+    // Button color lightens on hover
     color: black;
     background-color: ${(props) => props.alert ? "var(--lightRed)" : "var(--lightBlue)"};
-  };
+  }
 `;
 Button.defaultProps = {
   theme: {
@@ -33,7 +35,8 @@ const Label = styled.p`
 `;
 const Container = styled.div`
   display: ${(props) => props.align};
-  width: auto;
+  width: 100%;
+  min-width: 0;
   align-items: center;
 `;
 export default function ActionButton(props) {
@@ -50,11 +53,8 @@ export default function ActionButton(props) {
         container.width = "235px";
         actionButton.width = "100%";
       }
-      ;
     }
-    ;
   }
-  ;
   const labelVisible = props.label ? "static" : "none";
   var label = "";
   if (props.label) {
@@ -62,9 +62,7 @@ export default function ActionButton(props) {
     if (props.vertical) {
       align = "static";
     }
-    ;
   }
-  ;
   var icon = "";
   if (props.value || props.icon) {
     if (props.value && props.icon) {
@@ -77,34 +75,32 @@ export default function ActionButton(props) {
       actionButton.value = "";
     }
   }
-  ;
   if (props.num === "first") {
     actionButton.borderRadius = "5px 0px 0px 5px";
   }
-  ;
   if (props.num === "last") {
     actionButton.borderRadius = "0px 5px 5px 0px";
   }
-  ;
   if (props.num === "first_vert") {
     actionButton.borderRadius = "5px 5px 0px 0px";
   }
-  ;
   if (props.num === "last_vert") {
     actionButton.borderRadius = "0px 0px 5px 5px";
   }
-  ;
   if (props.disabled) {
     actionButton.backgroundColor = "var(--mainGray)";
     actionButton.color = "black";
     actionButton.cursor = "not-allowed";
   }
-  ;
+  if (props.overflow === "no_overflow") {
+    actionButton.overflow = "hidden";
+    actionButton.textOverflow = "ellipsis";
+    actionButton.whitespace = "nowrap";
+  }
   function handleClick(e) {
     if (props.onClick)
       props.onClick(e);
   }
-  ;
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Container, {
     style: container,
     align
@@ -116,8 +112,9 @@ export default function ActionButton(props) {
     style: actionButton,
     alert,
     onClick: (e) => {
-      handleClick(e);
+      if (props.disabled !== true) {
+        handleClick(e);
+      }
     }
   }, icon, " ", actionButton.value)));
 }
-;

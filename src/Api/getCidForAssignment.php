@@ -26,11 +26,13 @@ $latestAttemptOverrides = mysqli_real_escape_string(
     $_REQUEST["latestAttemptOverrides"]
 );
 $getDraft = mysqli_real_escape_string($conn, $_REQUEST["getDraft"]);
+$publicOnly = mysqli_real_escape_string($conn, $_REQUEST["publicOnly"]);
+
 
 if ($doenetId == "") {
     $success = false;
     $message = "Internal Error: missing doenetId";
-} elseif ($userId == "") {
+} elseif ($userId == "" && $publicOnly != "true") {
     if ($examUserId == "") {
         $success = false;
         $message = "No access - Need to sign in";
@@ -44,43 +46,26 @@ if ($doenetId == "") {
 
 if ($success) {
     $cid = null;
-    $doenetIdForCid = $doenetId;
-    $isDoenetIdOverridden = false;
-
-    // first check if there is an doenetIdOverride in user_assignment
-
-    $sql = "SELECT doenetIdOverride
-        FROM user_assignment
-        WHERE userId = '$userId'
-        AND doenetId = '$doenetId'
-        ";
-
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $doenetIdOverride = $row["doenetIdOverride"];
-        if ($doenetIdOverride != null) {
-            $doenetIdForCid = $doenetIdOverride;
-            $isDoenetIdOverridden = true;
-        }
-    }
 
     // get cid from course_content
-    // if didn't override doenetId, then use it only as long as it is assigned and globally assigned
+    // unless draft, use it only as long as it is assigned and globally assigned
     $sql = "SELECT isAssigned, isGloballyAssigned,
         CAST(jsonDefinition as CHAR) AS json
         FROM course_content
-        WHERE doenetId = '$doenetIdForCid'
+        WHERE doenetId = '$doenetId'
         ";
+
+    if($publicOnly == "true") {
+        $sql = "$sql AND isPublic = 1";
+    }
 
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        if ($getDraft === "true") {
+        if ($getDraft == "true") {
             $json = json_decode($row["json"], true);
             $cid = $json["draftCid"];
         } elseif (
-            $isDoenetIdOverridden ||
             ($row["isAssigned"] && $row["isGloballyAssigned"])
         ) {
             $json = json_decode($row["json"], true);
@@ -88,7 +73,7 @@ if ($success) {
         }
     }
 
-    if ($latestAttemptOverrides == "true") {
+    if ($latestAttemptOverrides == "true" && $publicOnly != "true") {
         // the cid from the latest attempt overrides the instructor-provided cid
         // from the assignment/content tables
         $sql = "SELECT cid

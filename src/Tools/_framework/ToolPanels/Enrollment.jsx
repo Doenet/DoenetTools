@@ -48,9 +48,9 @@ export default function Enrollment() {
   useEffect(() => {
     if (courseId !== '') {
       axios
-        .get('/api/getEnrollment.php', { params: { driveId: courseId } })
+        .get('/api/getEnrollment.php', { params: { courseId } })
         .then((resp) => {
-          // console.log(">>>>resp",resp.data)
+          // console.log(">>>>getEnrollment resp",resp.data)
           //TODO: Make sure we don't overwrite existing data
           let enrollmentArray = resp.data.enrollmentArray;
           setEnrollmentTableDataAtom(enrollmentArray);
@@ -255,7 +255,7 @@ export default function Enrollment() {
             key="merge"
             onClick={() => {
               const payload = {
-                driveId: courseId,
+                courseId,
                 mergeHeads,
                 mergeId,
                 mergeFirstName,
@@ -263,11 +263,11 @@ export default function Enrollment() {
                 mergeEmail,
                 mergeSection,
               };
-              console.log('>>>>payload', payload);
+              // console.log('>>>>payload', payload);
               axios
                 .post('/api/mergeEnrollmentData.php', payload)
                 .then((resp) => {
-                  console.log('>>>>resp.data', resp.data);
+                  // console.log('>>>>merge resp.data', resp.data);
                   const enrollmentArray = resp.data.enrollmentArray;
                   if (enrollmentArray) {
                     setEnrollmentTableDataAtom(enrollmentArray);
@@ -304,13 +304,15 @@ export default function Enrollment() {
 
     let payload = {
       email: enrollLearner,
-      driveId: courseId,
+      courseId,
     };
-    axios.post('/api/unWithDrawStudents.php', payload).then(() => {
-      const payload = { params: { driveId: courseId } };
+    axios.post('/api/unWithDrawStudents.php', payload).then((resp) => {
+      // console.log("resp",resp.data)
+      const payload = { params: { courseId } };
       axios
         .get('/api/getEnrollment.php', payload)
         .then((resp) => {
+          // console.log("getEnrollment",resp.data)
           let enrollmentArray = resp.data.enrollmentArray;
           setEnrollmentTableDataAtom(enrollmentArray);
           setProcess('Display Enrollment');
@@ -326,13 +328,15 @@ export default function Enrollment() {
 
     let payload = {
       email: withdrewLearner,
-      driveId: courseId,
+      courseId,
     };
-    axios.post('/api/withDrawStudents.php', payload).then(() => {
-      const payload = { params: { driveId: courseId } };
+    axios.post('/api/withDrawStudents.php', payload).then((resp) => {
+      // console.log("resp",resp.data)
+      const payload = { params: { courseId } };
       axios
         .get('/api/getEnrollment.php', payload)
         .then((resp) => {
+          // console.log("getEnrollment ",resp.data)
           let enrollmentArray = resp.data.enrollmentArray;
           setEnrollmentTableDataAtom(enrollmentArray);
           setProcess('Display Enrollment');

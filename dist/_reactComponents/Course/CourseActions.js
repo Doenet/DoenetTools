@@ -11,6 +11,21 @@ import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
 import {selectedMenuPanelAtom} from "../../_framework/Panels/NewMenuPanel.js";
 import {useToast, toastType} from "../../_framework/Toast.js";
 import {fileByDoenetId, fileByCid} from "../../_framework/ToolHandlers/CourseToolHandler.js";
+import {UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
+function buildDoenetIdToParentDoenetIdObj(orderObj) {
+  let returnObj = {};
+  orderObj.content.map((item) => {
+    if (item?.type == "order") {
+      returnObj[item.doenetId] = orderObj.doenetId;
+      let childObj = buildDoenetIdToParentDoenetIdObj(item);
+      returnObj = {...childObj, ...returnObj};
+    } else {
+      returnObj[item] = orderObj.doenetId;
+    }
+    returnObj;
+  });
+  return returnObj;
+}
 export function findFirstPageOfActivity(orderObj) {
   if (!orderObj?.content) {
     return null;
@@ -33,55 +48,64 @@ export function findFirstPageOfActivity(orderObj) {
   }
   return response;
 }
+function findOrderAndPageDoenetIdsAndSetOrderObjs(set2, orderObj, assignmentDoenetId, parentDoenetId) {
+  let orderAndPagesDoenetIds = [];
+  if (orderObj) {
+    let numberToSelect = orderObj.numberToSelect;
+    if (numberToSelect == void 0) {
+      numberToSelect = 1;
+    }
+    let withReplacement = orderObj.withReplacement;
+    if (withReplacement == void 0) {
+      withReplacement = false;
+    }
+    set2(authorItemByDoenetId(orderObj.doenetId), {
+      type: "order",
+      doenetId: orderObj.doenetId,
+      behavior: orderObj.behavior,
+      numberToSelect,
+      withReplacement,
+      containingDoenetId: assignmentDoenetId,
+      isOpen: false,
+      isSelected: false,
+      parentDoenetId
+    });
+    orderAndPagesDoenetIds.push(orderObj.doenetId);
+    for (let orderItem of orderObj.content) {
+      if (orderItem?.type == "order") {
+        let moreOrderDoenetIds = findOrderAndPageDoenetIdsAndSetOrderObjs(set2, orderItem, assignmentDoenetId, orderObj.doenetId);
+        orderAndPagesDoenetIds = [...orderAndPagesDoenetIds, ...moreOrderDoenetIds];
+      } else {
+        orderAndPagesDoenetIds = [...orderAndPagesDoenetIds, orderItem];
+      }
+    }
+  }
+  return orderAndPagesDoenetIds;
+}
+function localizeDates(obj, keys) {
+  for (let key of keys) {
+    if (obj[key]) {
+      obj[key] = UTCDateStringToDate(obj[key]).toLocaleString();
+    }
+  }
+  return obj;
+}
+let dateKeys = ["assignedDate", "dueDate", "pinnedAfterDate", "pinnedUntilDate"];
 export function useInitCourseItems(courseId) {
   const getDataAndSetRecoil = useRecoilCallback(({snapshot, set: set2}) => async (courseId2) => {
-    let pageDoenetIdToParentDoenetId2 = {};
-    function findOrderAndPageDoenetIds(orderObj, assignmentDoenetId, parentDoenetId) {
-      let orderAndPagesDoenetIds = [];
-      if (orderObj) {
-        let numberToSelect = orderObj.numberToSelect;
-        if (numberToSelect == void 0) {
-          numberToSelect = 1;
-        }
-        let withReplacement = orderObj.withReplacement;
-        if (withReplacement == void 0) {
-          withReplacement = false;
-        }
-        set2(authorItemByDoenetId(orderObj.doenetId), {
-          type: "order",
-          doenetId: orderObj.doenetId,
-          behavior: orderObj.behavior,
-          numberToSelect,
-          withReplacement,
-          containingDoenetId: assignmentDoenetId,
-          isOpen: false,
-          isSelected: false,
-          parentDoenetId
-        });
-        orderAndPagesDoenetIds.push(orderObj.doenetId);
-        for (let orderItem of orderObj.content) {
-          if (orderItem?.type == "order") {
-            let moreOrderDoenetIds = findOrderAndPageDoenetIds(orderItem, assignmentDoenetId, orderObj.doenetId);
-            orderAndPagesDoenetIds = [...orderAndPagesDoenetIds, ...moreOrderDoenetIds];
-          } else {
-            pageDoenetIdToParentDoenetId2[orderItem] = orderObj.doenetId;
-            orderAndPagesDoenetIds = [...orderAndPagesDoenetIds, orderItem];
-          }
-        }
-      }
-      return orderAndPagesDoenetIds;
-    }
     const courseArrayTest = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId2));
     if (courseArrayTest.length == 0) {
       const {data} = await axios.get("/api/getCourseItems.php", {
         params: {courseId: courseId2}
       });
+      let pageDoenetIdToParentDoenetId2 = {};
       let doenetIds = data.items.reduce((items, item) => {
         if (item.type !== "page") {
           items.push(item.doenetId);
         }
         if (item.type === "activity") {
-          let ordersAndPages = findOrderAndPageDoenetIds(item.order, item.doenetId, item.doenetId);
+          pageDoenetIdToParentDoenetId2 = buildDoenetIdToParentDoenetIdObj(item.order);
+          let ordersAndPages = findOrderAndPageDoenetIdsAndSetOrderObjs(set2, item.order, item.doenetId, item.doenetId);
           items = [...items, ...ordersAndPages];
         } else if (item.type === "bank") {
           item.pages.map((childDoenetId) => {
@@ -91,7 +115,7 @@ export function useInitCourseItems(courseId) {
         } else if (item.type === "page") {
           item["parentDoenetId"] = pageDoenetIdToParentDoenetId2[item.doenetId];
         }
-        set2(authorItemByDoenetId(item.doenetId), item);
+        set2(authorItemByDoenetId(item.doenetId), localizeDates(item, dateKeys));
         return items;
       }, []);
       set2(authorCourseItemOrderByCourseId(courseId2), doenetIds);
@@ -789,7 +813,7 @@ ${childrenString}</document>`;
     try {
       let resp = await axios.post("/api/saveCompiledActivity.php", {courseId: courseId2, doenetId: activityDoenetId, isAssigned, activityDoenetML});
       if (resp.status < 300) {
-        let {success, message, cid} = resp.data;
+        let {success, message, cid, assignmentSettings} = resp.data;
         let key = "draftCid";
         if (isAssigned) {
           key = "assignedCid";
@@ -797,6 +821,9 @@ ${childrenString}</document>`;
         set2(authorItemByDoenetId(activityDoenetId), (prev) => {
           let next = {...prev};
           next[key] = cid;
+          if (isAssigned) {
+            Object.assign(next, localizeDates(assignmentSettings, dateKeys));
+          }
           return next;
         });
         successCallback?.();
@@ -1345,9 +1372,13 @@ ${childrenString}</document>`;
             activityObj
           });
           let createdDoenetIds = [resp.data.doenetId];
+          console.log("resp.data.itemEntered", resp.data.itemEntered);
           set2(authorItemByDoenetId(resp.data.doenetId), resp.data.itemEntered);
+          let doenetIdToParentDoenetIdObj = buildDoenetIdToParentDoenetIdObj(resp.data.itemEntered.order);
+          findOrderAndPageDoenetIdsAndSetOrderObjs(set2, resp.data.itemEntered.order, resp.data.doenetId, resp.data.doenetId);
           for (let pageObj of resp.data.pagesEntered) {
             createdDoenetIds.push(pageObj.doenetId);
+            pageObj["parentDoenetId"] = doenetIdToParentDoenetIdObj[pageObj.doenetId];
             set2(authorItemByDoenetId(pageObj.doenetId), pageObj);
           }
           set2(authorCourseItemOrderByCourseId(courseId), (prev) => {

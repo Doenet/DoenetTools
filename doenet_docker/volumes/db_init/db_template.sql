@@ -237,7 +237,7 @@ CREATE TABLE `content_interactions` (
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `should_be_unique` (`userId`,`doenetId`,`attemptNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -299,6 +299,7 @@ CREATE TABLE `course_content` (
   `isAssigned` int(1) NOT NULL DEFAULT '0' COMMENT 'The content or folder shows to the student',
   `isGloballyAssigned` int(1) NOT NULL DEFAULT '1' COMMENT 'The content from cid shows to all students without a cidOverride',
   `isPublic` int(1) NOT NULL DEFAULT '0' COMMENT 'The course is available to search for and this content is available',
+  `userCanViewSource` int(1) NOT NULL DEFAULT '0',
   `sortOrder` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `jsonDefinition` json DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -503,7 +504,7 @@ DROP TABLE IF EXISTS `enrollment`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `enrollment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `firstName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lastName` varchar(127) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -520,8 +521,8 @@ CREATE TABLE `enrollment` (
   `overrideCourseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `timeLimitMultiplier` float NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  KEY `driveId_userId` (`driveId`,`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  KEY `driveId_userId` (`courseId`,`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -530,7 +531,6 @@ CREATE TABLE `enrollment` (
 
 LOCK TABLES `enrollment` WRITE;
 /*!40000 ALTER TABLE `enrollment` DISABLE KEYS */;
-INSERT INTO `enrollment` VALUES (1,'aI8sK4vmEhC5sdeSP3vNW','devuserid','generic','user','devuser',NULL,'1234567','2019-09-03 20:29:41','15',_binary '\0',NULL,_binary '\0',NULL,'A',NULL,1),(2,'fsa4214fasgag1512525f',NULL,'SHOULD NOT','BE LOADED','invalid',NULL,'5254243','2019-09-03 20:29:41','2',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(4,'aI8sK4vmEhC5sdeSP3vNW','temp1','Anatole','Wickrath','awickrath0',NULL,'60',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,'B',NULL,1),(5,'aI8sK4vmEhC5sdeSP3vNW','temp2','Antony','Aylett','aaylett1',NULL,'7',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,'B-',NULL,1),(6,'aI8sK4vmEhC5sdeSP3vNW','temp3','Lindi','Rash','lrash2',NULL,'5',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(7,'aI8sK4vmEhC5sdeSP3vNW','temp4','Nicholas','Peteri','npeteri3',NULL,'119',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,'B+',NULL,1),(8,'aI8sK4vmEhC5sdeSP3vNW','temp5','Savina','Michin','smichin4',NULL,'852',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(9,'aI8sK4vmEhC5sdeSP3vNW','temp6','Gerry','Sallan','gsallan5',NULL,'89',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(10,'aI8sK4vmEhC5sdeSP3vNW','temp7','Wakefield','Bengle','wbengle6',NULL,'4786',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(11,'aI8sK4vmEhC5sdeSP3vNW','temp8','Patrice','Bavin','pbavin8',NULL,'75024',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(12,'aI8sK4vmEhC5sdeSP3vNW','temp9','Merrile','McGee','mmcgee9',NULL,'9240',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(13,'aI8sK4vmEhC5sdeSP3vNW','temp10','Ardath','Celler','acellera',NULL,'4522',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(14,'aI8sK4vmEhC5sdeSP3vNW','temp11','Ashleigh','Lothean','alotheanb',NULL,'259',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(15,'aI8sK4vmEhC5sdeSP3vNW','temp12','Salomon','Scorah','sscorahd',NULL,'2',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(16,'aI8sK4vmEhC5sdeSP3vNW','temp13','Xaviera','Kupec','xkupece',NULL,'4',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(17,'aI8sK4vmEhC5sdeSP3vNW','temp14','Pennie','Badder','pbadderg',NULL,'3931',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(18,'aI8sK4vmEhC5sdeSP3vNW','temp15','Travis','Sarrell','tsarrellh',NULL,'7947',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(19,'aI8sK4vmEhC5sdeSP3vNW','temp16','Eldin','Crosser','ecrosserj',NULL,'96895',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(20,'aI8sK4vmEhC5sdeSP3vNW','temp17','Ginger','Nijs','gnijsl',NULL,'60',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(21,'aI8sK4vmEhC5sdeSP3vNW','temp18','Petronille','Pidcock','ppidcockm',NULL,'381',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(22,'aI8sK4vmEhC5sdeSP3vNW','temp19','Arlee','Duggleby','adugglebyn',NULL,'5',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1),(23,'aI8sK4vmEhC5sdeSP3vNW','temp20','Ambur','Viant','avianto',NULL,'34',NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `enrollment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -545,10 +545,12 @@ CREATE TABLE `event` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `verb` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `activityCid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pageCid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pageNumber` int(11) DEFAULT NULL,
   `attemptNumber` int(11) DEFAULT NULL,
-  `variant` text COLLATE utf8_unicode_ci NOT NULL,
+  `variantIndex` int(11) NOT NULL,
   `object` mediumtext COLLATE utf8_unicode_ci,
   `context` mediumtext COLLATE utf8_unicode_ci,
   `result` mediumtext COLLATE utf8_unicode_ci,
@@ -698,8 +700,6 @@ CREATE TABLE `pages` (
   `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `containingDoenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `draftCid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
-  `cid` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku',
   `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled',
   `isDeleted` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`containingDoenetId`,`doenetId`),
@@ -777,7 +777,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId` (`userId`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -955,4 +955,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-27  3:30:55
+-- Dump completed on 2022-05-04 18:00:31

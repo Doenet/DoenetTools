@@ -72,6 +72,7 @@ if ($success){
 if ($success) {
     if ($isCopy){
         $pageInsertedDoenetId = include "randomId.php";
+        $pageInsertedDoenetId = "_" . $pageInsertedDoenetId;
         
 
         //Create a copy of original file for page

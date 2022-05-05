@@ -86,26 +86,14 @@ export default function SelectedPage() {
       onBlur={handelLabelModfication}
     />
     <br />
-    <ActionButtonGroup width="menu">
-      <ActionButton
-          value="Copy"
-          onClick={() => {
-            copyItems({successCallback:()=>{
-              addToast("Page copied!", toastType.INFO);
-            }})
-          }}
-      />
-      <ActionButton
-          value="Cut"
-          onClick={() => {
-            cutItems({successCallback:()=>{
-              addToast("Page cut!", toastType.INFO);
-            }})
-          }}
-      />
-    </ActionButtonGroup>
-    <br />
     <ButtonGroup vertical>
+      <Button
+        width="menu"
+        onClick={() =>
+          create({itemType:"page"})
+        }
+        value="Add Page"
+      />
     {containingObj.type == 'activity' ? 
      <Button
      width="menu"
@@ -116,13 +104,6 @@ export default function SelectedPage() {
    /> : null
     }
      
-      <Button
-        width="menu"
-        onClick={() =>
-          create({itemType:"page"})
-        }
-        value="Add Page"
-      />
     </ButtonGroup>
     <br />
     <Button

@@ -94,12 +94,12 @@ export default function SelectedOrder() {
     vertical: true
   }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    onClick: () => create({itemType: "order"}),
-    value: "Add Order"
-  }), /* @__PURE__ */ React.createElement(Button, {
-    width: "menu",
     onClick: () => create({itemType: "page"}),
     value: "Add Page"
+  }), /* @__PURE__ */ React.createElement(Button, {
+    width: "menu",
+    onClick: () => create({itemType: "order"}),
+    value: "Add Order"
   })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Delete Order",

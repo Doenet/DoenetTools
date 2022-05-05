@@ -183,7 +183,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     CreateCourse: lazy(() => import("../Menus/CreateCourse.js")),
     CourseEnroll: lazy(() => import("../Menus/CourseEnroll.js")),
     AddDriveItems: lazy(() => import("../Menus/AddDriveItems.js")),
-    PasteOptionsMenu: lazy(() => import("../Menus/PasteOptionsMenu.js")),
+    CutCopyPasteMenu: lazy(() => import("../Menus/CutCopyPasteMenu.js")),
     EnrollStudents: lazy(() => import("../Menus/EnrollStudents.js")),
     DoenetMLSettings: lazy(() => import("../Menus/DoenetMLSettings.js")),
     VersionHistory: lazy(() => import("../Menus/VersionHistory.js")),

@@ -35,6 +35,8 @@ if ($success){
 
 if ($success){
   $doenetId = include "randomId.php";
+  $doenetId = "_" . $doenetId;
+  
   if ($itemType == 'page'){
     $sql = "
     INSERT INTO pages (courseId,containingDoenetId,doenetId) 

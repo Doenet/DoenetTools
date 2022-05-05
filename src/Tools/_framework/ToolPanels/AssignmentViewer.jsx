@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ActivityViewer from '../../../Viewer/ActivityViewer';
-import { serializedComponentsReviver } from '../../../Core/utils/serializedStateProcessing';
 import {
   useRecoilValue,
   atom,
@@ -18,12 +17,11 @@ import {
   suppressMenusAtom,
   profileAtom,
 } from '../NewToolRoot';
-import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants.js';
-import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import axios from 'axios';
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { prng_alea } from 'esm-seedrandom';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
+import { authorItemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 
 export const currentAttemptNumber = atom({
   key: 'currentAttemptNumber',
@@ -97,6 +95,7 @@ function generateNewVariant({ previousVariants, allPossibleVariants, individuali
 export default function AssignmentViewer() {
   console.log(">>>===AssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const courseId = useRecoilValue(courseIdAtom);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   let [stage, setStage] = useState('Initializing');
   let [message, setMessage] = useState('');
@@ -115,11 +114,21 @@ export default function AssignmentViewer() {
     },
     setLoad,
   ] = useState({});
-  let startedInitOfDoenetId = useRef(null);
   let allPossibleVariants = useRef([]);
   let userId = useRef(null);
   let individualize = useRef(null);
 
+  useSetCourseIdFromDoenetId(recoilDoenetId);
+  useInitCourseItems(courseId);
+
+  let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
+
+
+  useEffect(() => {
+    initializeValues(recoilDoenetId, itemObj);
+  }, [itemObj, recoilDoenetId])
+
+  // console.log("itemObj",itemObj)
   // console.log(`allPossibleVariants -${allPossibleVariants}-`)
 
 
@@ -130,24 +139,24 @@ export default function AssignmentViewer() {
 
   const initializeValues = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (doenetId) => {
-        //Prevent duplicate inits
-        if (startedInitOfDoenetId.current === doenetId) {
+      async (doenetId, {
+        type,
+        timeLimit,
+        assignedDate,
+        dueDate,
+        showCorrectness,
+        showCreditAchievedMenu,
+        showFeedback,
+        showHints,
+        showSolution,
+        proctorMakesAvailable,
+      }) => {
+
+        // if itemObj has not yet been loaded, don't process yet
+        if (type === undefined) {
           return;
         }
-        startedInitOfDoenetId.current = doenetId;
 
-        const {
-          timeLimit,
-          assignedDate,
-          dueDate,
-          showCorrectness,
-          showCreditAchievedMenu,
-          showFeedback,
-          showHints,
-          showSolution,
-          proctorMakesAvailable,
-        } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
         let suppress = [];
         if (timeLimit === null) {
           suppress.push('TimerMenu');
@@ -329,7 +338,7 @@ export default function AssignmentViewer() {
         setStage('Ready');
 
       },
-    [],
+    [setSuppressMenus],
   );
 
   async function updateAttemptNumberAndRequestedVariant(newAttemptNumber, doenetId) {
@@ -456,7 +465,7 @@ export default function AssignmentViewer() {
   // console.log(`>>>>attemptNumber -${attemptNumber}-`)
 
   if (stage === 'Initializing') {
-    initializeValues(recoilDoenetId);
+    // initializeValues(recoilDoenetId, itemObj);
     return null;
   } else if (stage === 'Problem') {
     return <h1>{message}</h1>;
@@ -478,7 +487,6 @@ export default function AssignmentViewer() {
           solutionDisplayMode,
           showFeedback,
           showHints,
-          isAssignment: true,
           allowLoadState: true,
           allowSaveState: true,
           allowLocalState: true,
@@ -505,11 +513,11 @@ async function returnNumberOfActivityVariants(cid) {
 
   let result = parseActivityDefinition(activityDefinitionDoenetML);
 
-  if(!result.success) {
+  if (!result.success) {
     return result;
   }
 
-  let numberOfVariants = await determineNumberOfActivityVariants(result.activityJSON);
+  result = await determineNumberOfActivityVariants(result.activityJSON);
 
-  return { success: true, numberOfVariants };
+  return { success: true, numberOfVariants: result.numberOfVariants };
 }

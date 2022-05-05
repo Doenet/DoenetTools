@@ -15,7 +15,7 @@ export default function EditorInfoCap(){
 
   if (!pageInfo){ return null;}
  if (image != 'none'){
-  image = '/media/drive_pictures/' + image;
+  image = 'url(/media/drive_pictures/' + image + ')';
  }
  if (color != 'none'){
   color = '#' + color;
@@ -38,7 +38,7 @@ if (activityInfo.isSinglePage){
 
   return <>
     <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
-      <img src={image} style={{ position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)" }}  />
+      <img style={{ position: "absolute", width: "100%", height: "100%", backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: image, backgroundColor: color }}  />
     </div>
     <b>Editor</b>
       <div style={{ marginBottom: "1px", marginTop:"5px" }}>Course</div> 

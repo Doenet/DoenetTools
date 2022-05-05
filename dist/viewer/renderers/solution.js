@@ -17,7 +17,13 @@ export default function Solution(props) {
       icon: puzzle
     });
     childrenToRender = children;
-    infoBlockStyle = {display: "block", margin: "0px 4px 4px 4px", padding: "6px", border: "1px solid #ebebeb", backgroundColor: "#fcfcfc"};
+    infoBlockStyle = {
+      display: "block",
+      margin: "0px 4px 4px 4px",
+      padding: "6px",
+      border: "1px solid #ebebeb",
+      backgroundColor: "#fcfcfc"
+    };
     if (SVs.canBeClosed) {
       cursorStyle = "pointer";
       onClickFunction = () => {

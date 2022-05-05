@@ -1,3 +1,4 @@
+import { retrieveTextFileForCid } from "../Core/utils/retrieveTextFile";
 import { returnAllPossibleVariants } from "../Core/utils/returnAllPossibleVariants";
 import { parseAndCompile } from "../Parser/parser";
 
@@ -87,7 +88,7 @@ export function parseActivityDefinition(activityDefDoenetML) {
       .filter(x => typeof x !== "string" || /\S/.test(x))
 
     for (let child of documentChildren) {
-      if (child.componentType.toLowerCase() === "order") {
+      if (child.componentType?.toLowerCase() === "order") {
         if (foundOrder) {
           return { success: false, message: `Invalid activity definition: more than one base order defined` };
         }
@@ -150,7 +151,7 @@ export function parseActivityDefinition(activityDefDoenetML) {
 
   function validateOrder(order) {
     let newOrder = { type: "order" };
-  
+
     let orderProps = {};
     for (let prop in order.props) {
       let lowerProp = prop.toLowerCase();
@@ -162,7 +163,7 @@ export function parseActivityDefinition(activityDefDoenetML) {
       }
       orderProps[prop.toLowerCase()] = order.props[prop];
     }
-  
+
     for (let prop in orderProps) {
       if (prop === "behavior") {
         newOrder.behavior = orderProps.behavior;
@@ -181,12 +182,12 @@ export function parseActivityDefinition(activityDefDoenetML) {
         }
       }
     }
-  
-  
+
+
     // remove blank string children
     let orderChildren = order.children
       .filter(x => typeof x !== "string" || /\S/.test(x));
-  
+
     let content = [];
     for (let child of orderChildren) {
       if (child.componentType.toLowerCase() === "order") {
@@ -210,20 +211,20 @@ export function parseActivityDefinition(activityDefDoenetML) {
         }
       }
     }
-  
+
     newOrder.content = content;
-  
+
     return {
       success: true,
       order: newOrder
     }
-  
+
   }
-  
-  
+
+
   function validatePage(page) {
     let newPage = { type: "page" };
-  
+
     let pageProps = {};
     for (let prop in page.props) {
       let lowerProp = prop.toLowerCase();
@@ -235,8 +236,8 @@ export function parseActivityDefinition(activityDefDoenetML) {
       }
       pageProps[prop.toLowerCase()] = page.props[prop];
     }
-  
-  
+
+
     for (let prop in pageProps) {
       if (prop === "cid") {
         newPage.cid = pageProps.cid;
@@ -248,10 +249,10 @@ export function parseActivityDefinition(activityDefDoenetML) {
         }
       }
     }
-  
+
     if (page.children.length > 0) {
       let pageDoenetML = activityDefDoenetML.slice(page.range.openEnd + 1, page.range.closeBegin);
-  
+
       if (page.children[0].componentType?.toLowerCase() !== "document") {
         // add <docoument> around page
         let xmlnsprop = '';
@@ -260,16 +261,16 @@ export function parseActivityDefinition(activityDefDoenetML) {
         }
         pageDoenetML = `<document type="page" ${xmlnsprop}>${pageDoenetML}</document>`;
       }
-  
+
       newPage.doenetML = pageDoenetML;
     }
-  
+
     return {
       success: true,
       page: newPage
     }
   }
-  
+
 
 }
 
@@ -277,7 +278,7 @@ export function parseActivityDefinition(activityDefDoenetML) {
 
 export async function determineNumberOfActivityVariants(activityDefinition) {
   let numberOfVariants = 1000;
-  let pageVariants = null;
+  let pageVariantsResult = null;
 
   if (activityDefinition.numberOfVariants !== undefined) {
     numberOfVariants = activityDefinition.numberOfVariants;
@@ -285,19 +286,43 @@ export async function determineNumberOfActivityVariants(activityDefinition) {
       numberOfVariants = 1000;
     }
 
-  } else if (activityDefinition.isSinglePage) {
+  } else if (activityDefinition.order.behavior === "sequence" &&
+    activityDefinition.order.content.every(x => x.type === "page")
+  ) {
 
-    // determine number of variants from the single page
+    // determine number of variants from the pages
 
-    let page = activityDefinition.order.content[0];
-    pageVariants = await returnAllPossibleVariants({
-      cid: page.cid, doenetML: page.doenetML
-    })
+    let promises = [];
+    for (let page of activityDefinition.order.content) {
+      promises.push(returnAllPossibleVariants({
+        cid: page.cid, doenetML: page.doenetML
+      }));
+    }
 
-    numberOfVariants = pageVariants.allPossibleVariants.length;
+    pageVariantsResult = await Promise.all(promises);
+
+    numberOfVariants = pageVariantsResult.reduce((a, c) => a * c.allPossibleVariants.length, 1)
+
+    numberOfVariants = Math.min(1000, numberOfVariants);
+
   }
 
 
-  return { numberOfVariants, pageVariants };
+  return { numberOfVariants, pageVariantsResult };
 
+}
+
+export async function returnNumberOfActivityVariantsForCid(cid) {
+
+  let activityDefinitionDoenetML = await retrieveTextFileForCid(cid);
+
+  let result = parseActivityDefinition(activityDefinitionDoenetML);
+
+  if (!result.success) {
+    return result;
+  }
+
+  result = await determineNumberOfActivityVariants(result.activityJSON);
+
+  return { success: true, numberOfVariants: result.numberOfVariants };
 }
