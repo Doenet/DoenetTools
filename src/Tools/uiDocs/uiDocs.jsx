@@ -793,7 +793,7 @@ export default function attempt() {
         },
         {
           name: 'onKeyDown',
-          propPreview: '<Increment onKewDown={(e) => console.log(e.key)} />',
+          propPreview: '<Increment onKeyDown={(e) => console.log(e.key)} />',
           propCode: { onKeyDown: (e) => console.log(e.key) },
           description: 'Function called when a key is pressed',
         },
