@@ -1,5 +1,5 @@
-import { update } from "@react-spring/web";
-import React, { useEffect, useState } from "react";
+// import { update } from "@react-spring/web";
+import React from "react";
 import styled from "styled-components";
 
 const Container = styled.div `
@@ -86,6 +86,7 @@ export default function RelatedItems(props) {
                 aria-label={ariaLabel}
                 alert={alert}
                 disabled={disabled}
+                multiple={props.multiple}
             >
                 {options}
             </Select>
