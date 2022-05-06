@@ -801,7 +801,6 @@ CREATE TABLE `user_assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
-  `doenetIdOverride` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no override',
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
   `numberOfAttemptsAllowedAdjustment` int(11) DEFAULT NULL,
   `groupId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
@@ -810,6 +809,7 @@ CREATE TABLE `user_assignment` (
   `completedDate` datetime DEFAULT NULL,
   `credit` double NOT NULL DEFAULT '0' COMMENT 'Overwritten by metric used to calculate it from other tables. Always 0-1 scale.',
   `creditOverride` double DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
+  `isUnassigned` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId-userId` (`doenetId`,`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
