@@ -59,22 +59,32 @@ module.exports = {
     },
     {
       match: 'routes',
-      src: '/temp',
+      src: '/temp.*',
       dest: '/temp/index.html',
     },
     {
       match: 'routes',
-      src: '/test',
+      src: '/test.*',
       dest: '/test/index.html',
     },
     {
       match: 'routes',
-      src: '/uiDocs',
+      src: '/uiDocs.*',
       dest: '/uiDocs/index.html',
     },
     {
       match: 'routes',
-      src: '/.*',
+      src: '/cypressTest.*',
+      dest: '/cypressTest/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/chat.*',
+      dest: '/chat/index.html',
+    },
+    {
+      match: 'routes',
+      src: '.*',
       dest: '/index.html',
     },
   ],
