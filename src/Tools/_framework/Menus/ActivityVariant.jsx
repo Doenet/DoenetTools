@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
+import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { activityVariantPanelAtom } from '../ToolHandlers/CourseToolHandler';
 
@@ -27,16 +28,20 @@ export default function ActivityVariant(props) {
 
 
   return <div style={props.style}>
-    <div><label>Variant Index <input type="text" value={variantPanel.index} onKeyDown={(e) => {
+    <Increment 
+    min={1} 
+    value={variantPanel.index}
+    onBlur={()=>updateVariantInfoAtom()} 
+    onKeyDown={(e) => {
       if (e.key === 'Enter') { updateVariantInfoAtom() }
-    }} onBlur={() => updateVariantInfoAtom()} onChange={(e) => {
+    }}
+    onChange={(value)=>{
       setVariantPanel(
         (was) => {
           let newObj = { ...was }
-          newObj.index = e.target.value;
+          newObj.index = value;
           return newObj;
         })
-    }} /></label></div>
-
+    }}/>
   </div>
 }
