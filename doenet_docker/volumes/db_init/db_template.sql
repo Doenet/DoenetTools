@@ -77,7 +77,7 @@ CREATE TABLE `assignment` (
   `timeLimit` int(11) DEFAULT NULL COMMENT 'NULL means it''s not timed',
   `numberOfAttemptsAllowed` int(11) DEFAULT NULL COMMENT 'NULL means infinite, Assignment Level Number Of Attempts',
   `attemptAggregation` char(1) COLLATE utf8_unicode_ci DEFAULT 'm',
-  `totalPointsOrPercent` float DEFAULT '10' COMMENT 'Assignment level',
+  `totalPointsOrPercent` float DEFAULT '10',
   `gradeCategory` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `individualize` tinyint(1) NOT NULL DEFAULT '0',
   `showSolution` tinyint(1) NOT NULL DEFAULT '1',
@@ -761,7 +761,7 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `screenName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
   `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -800,8 +800,7 @@ DROP TABLE IF EXISTS `user_assignment`;
 CREATE TABLE `user_assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT 'NULL means no group',
-  `doenetIdOverride` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no override',
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
   `numberOfAttemptsAllowedAdjustment` int(11) DEFAULT NULL,
   `groupId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
@@ -810,6 +809,7 @@ CREATE TABLE `user_assignment` (
   `completedDate` datetime DEFAULT NULL,
   `credit` double NOT NULL DEFAULT '0' COMMENT 'Overwritten by metric used to calculate it from other tables. Always 0-1 scale.',
   `creditOverride` double DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
+  `isUnassigned` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId-userId` (`doenetId`,`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -895,8 +895,8 @@ DROP TABLE IF EXISTS `user_assignment_attempt_item_submission`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_assignment_attempt_item_submission` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `attemptNumber` int(11) NOT NULL,
   `itemNumber` int(11) NOT NULL,
   `submissionNumber` int(11) NOT NULL,
