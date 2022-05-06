@@ -292,9 +292,15 @@ function AssignTo({updateAssignment}){
 
   const {value:enrolledStudents} = useRecoilValue(enrollmentByCourseId(courseId))
 
-  let enrolledJSX = enrolledStudents.map((row)=>{
-    return <option key={`enrolledOpt${row.email}`} value={row.email}>{row.firstName} {row.lastName}</option>
-  })
+  //Only those enrolled who didn't withdraw
+  let enrolledJSX = enrolledStudents.reduce((allrows,row)=>{
+    if (row.withdrew == '0'){
+      return [...allrows,<option key={`enrolledOpt${row.email}`} value={row.email}>{row.firstName} {row.lastName}</option>]
+    }else{
+      return allrows
+    }
+  },[])
+
   return <>
    <br />
       <InputWrapper>
