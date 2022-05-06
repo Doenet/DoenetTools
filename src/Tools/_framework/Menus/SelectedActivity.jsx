@@ -222,18 +222,6 @@ export default function SelectedActivity() {
           }}
         />
       </ActionButtonGroup>
-      
-      <Textfield
-        label="Label"
-        vertical
-        width="menu"
-        value={itemTextFieldLabel}
-        onChange={(e) => setItemTextFieldLabel(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.keyCode === 13) handelLabelModfication();
-        }}
-        onBlur={handelLabelModfication}
-      />
       <br />
 
       <ActionButton
@@ -251,8 +239,19 @@ export default function SelectedActivity() {
         }}
       />
      
+  
+      <Textfield
+        label="Label"
+        vertical
+        width="menu"
+        value={itemTextFieldLabel}
+        onChange={(e) => setItemTextFieldLabel(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.keyCode === 13) handelLabelModfication();
+        }}
+        onBlur={handelLabelModfication}
+      />
       <br />
-     
       <ButtonGroup vertical>
         <Button
           width="menu"
