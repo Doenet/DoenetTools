@@ -27,6 +27,12 @@ export default class Ref extends InlineComponent {
       defaultValue: false,
       forRenderer: true,
     };
+    attributes.edit = {
+      createComponentOfType: "boolean",
+      createStateVariable: "edit",
+      defaultValue: null,
+      forRenderer: true,
+    };
     return attributes;
   }
 

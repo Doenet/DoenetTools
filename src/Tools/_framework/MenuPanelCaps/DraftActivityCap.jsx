@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 // import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
-import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
-import axios from 'axios';
-import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
-import { authorItemByDoenetId, coursePermissionsAndSettingsByCourseId, useCourse } from '../../../_reactComponents/Course/CourseActions';
+// import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
+// import axios from 'axios';
+// import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
+import { authorItemByDoenetId, courseIdAtom, coursePermissionsAndSettingsByCourseId, useCourse } from '../../../_reactComponents/Course/CourseActions';
 
 
 export default function DraftActivityCap(){
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(courseIdAtom);
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
 if (!course || Object.keys(course).length == 0){

@@ -6,12 +6,112 @@ import {
   selectorFamily,
   useRecoilCallback,
   useRecoilValue,
+  useSetRecoilState,
 } from 'recoil';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { fileByDoenetId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 import { UTCDateStringToDate } from '../../_utils/dateUtilityFunction';
+
+const enrollmentAtomByCourseId = atomFamily({
+  key:"enrollmentAtomByCourseId",
+  default:[],
+  effects:courseId => [ ({setSelf, trigger})=>{
+    if (trigger == 'get'){
+      axios.get('/api/getEnrollment.php', { params: { courseId } })
+      .then(resp=>{
+        setSelf(resp.data.enrollmentArray)
+      })
+    } 
+  },
+  ]
+})
+
+export const enrollmentByCourseId = selectorFamily({
+  key:"enrollmentByCourseId",
+  get:(courseId)=>({get,getCallback})=>{
+    const recoilWithdraw = getCallback(({set})=> async (email)=>{
+        let payload = {
+         email,
+         courseId,
+        };
+  
+        try {
+          let resp = await axios.post('/api/withDrawStudents.php', payload);
+          // console.log("resp",resp.data)
+          if (resp.status < 300) {
+            set(enrollmentAtomByCourseId(courseId),
+          ( prev ) => {
+              let next = [...prev];
+              const indexOfStudent = next.findIndex((value)=>value.email == email)
+              next[indexOfStudent] = {...prev[indexOfStudent],withdrew:'1'}
+              return next;
+            },
+          );
+            //TODO (Emilio): toast
+          } else {
+            throw new Error(`response code: ${resp.status}`);
+          }
+        } catch (err) {
+          //TODO (Emilio): toast
+        }
+      
+    })
+
+    const recoilUnWithdraw = getCallback(({set})=> async (email)=>{
+      let payload = {
+       email,
+       courseId,
+      };
+
+      try {
+        let resp = await axios.post('/api/unWithDrawStudents.php', payload);
+        // console.log("resp",resp.data)
+        if (resp.status < 300) {
+          set(enrollmentAtomByCourseId(courseId),
+        ( prev ) => {
+            let next = [...prev];
+            const indexOfStudent = next.findIndex((value)=>value.email == email)
+            next[indexOfStudent] = {...prev[indexOfStudent],withdrew:'0'}
+            return next;
+          },
+        );
+          //TODO (Emilio): toast
+        } else {
+          throw new Error(`response code: ${resp.status}`);
+        }
+      } catch (err) {
+        //TODO (Emilio): toast
+      }
+    
+    })
+
+    const recoilMergeData = getCallback(({set})=> async (payload)=>{
+      try {
+        let resp = await axios.post('/api/mergeEnrollmentData.php', payload);
+        // console.log("resp",resp.data)
+        if (resp.status < 300) {
+          set(enrollmentAtomByCourseId(courseId),resp.data.enrollmentArray);
+          //TODO (Emilio): toast
+        } else {
+          throw new Error(`response code: ${resp.status}`);
+        }
+      } catch (err) {
+        //TODO (Emilio): toast
+      }
+    
+    })
+
+    return {
+      value:get(enrollmentAtomByCourseId(courseId)),
+      recoilWithdraw,
+      recoilUnWithdraw,
+      recoilMergeData
+    };
+  },
+
+})
 
 
 function buildDoenetIdToParentDoenetIdObj(orderObj){
@@ -145,12 +245,18 @@ export function useInitCourseItems(courseId) {
   const getDataAndSetRecoil = useRecoilCallback(
      ({ snapshot,set }) =>
      async (courseId) => {
-       
+
+      if(!courseId) {
+        return;
+      }
        
        //Only ask the server for course if we haven't already
        const courseArrayTest = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
        if (courseArrayTest.length == 0){
-         const { data } = await axios.get('/api/getCourseItems.php', {
+
+          set(courseIdAtom, courseId);
+
+          const { data } = await axios.get('/api/getCourseItems.php', {
            params: { courseId },
           });
           //DoenetIds depth first search and going into json structures
@@ -195,6 +301,34 @@ export function useInitCourseItems(courseId) {
     }
   }, [getDataAndSetRecoil, courseId]);
 }
+
+export function useSetCourseIdFromDoenetId(doenetId) {
+  const item = useRecoilValue(authorItemByDoenetId('doenetId'));
+  const setCourseId = useSetRecoilState(courseIdAtom);
+
+  useEffect(async () => {
+
+    // if item is found, then we already have the course with doenetId initialized
+    if(Object.keys(item).length > 0) {
+      return;
+    }
+  
+    const { data } = await axios.get('/api/getCourseIdFromDoenetId.php', {
+      params: { doenetId },
+    });
+  
+    // TODO: handle failure
+  
+    setCourseId(data.courseId);
+  
+  }, [doenetId])
+
+}
+
+export const courseIdAtom = atom({
+  key: 'courseIdAtom',
+  default: null
+})
 
 export const authorCourseItemOrderByCourseId = atomFamily({
   key: 'authorCourseItemOrderByCourseId',

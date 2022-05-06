@@ -13,21 +13,23 @@ import {
   profileAtom,
 } from '../NewToolRoot';
 import {
-  activityVariantInfoAtom,
   activityVariantPanelAtom,
 } from '../ToolHandlers/CourseToolHandler';
 
 import axios from 'axios';
 import { returnNumberOfActivityVariantsForCid } from '../../../_utils/activityUtils';
-import { authorItemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
+import { authorItemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 
 
 export default function DraftAssignmentViewer() {
   // console.log(">>>===DraftAssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(courseIdAtom);
 
-  const [variantInfo, setVariantInfo] = useRecoilState(activityVariantInfoAtom);
+  const requestedVariantParam = useRecoilValue(searchParamAtomFamily('requestedVariant'));
+  const requestedVariantIndex = requestedVariantParam && Number.isFinite(Number(requestedVariantParam))
+    ? Number(requestedVariantParam) : 1;
+
   const setVariantPanel = useSetRecoilState(activityVariantPanelAtom);
   let [stage, setStage] = useState('Initializing');
   let [message, setMessage] = useState('');
@@ -45,13 +47,14 @@ export default function DraftAssignmentViewer() {
 
   let allPossibleVariants = useRef([]);
   // let userId = useRef(null);
+  useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
 
   let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
 
-  useEffect(()=>{
+  useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);
-  },[itemObj,recoilDoenetId])
+  }, [itemObj, recoilDoenetId])
 
   // console.log(`allPossibleVariants -${allPossibleVariants}-`)
 
@@ -66,14 +69,11 @@ export default function DraftAssignmentViewer() {
       index: variantIndex,
       numberOfVariants
     });
-    setVariantInfo({
-      index: variantIndex,
-    });
   }
 
   const initializeValues = useRecoilCallback(
     ({ snapshot, set }) =>
-      async (doenetId,{
+      async (doenetId, {
         type,
         timeLimit,
         assignedDate,
@@ -86,7 +86,7 @@ export default function DraftAssignmentViewer() {
         proctorMakesAvailable,
       }) => {
         // if itemObj has not yet been loaded, don't process yet
-        if(type === undefined) {
+        if (type === undefined) {
           return;
         }
 
@@ -173,7 +173,7 @@ export default function DraftAssignmentViewer() {
           allowSaveSubmissions: false,
           allowSaveEvents: false,
         }}
-        requestedVariantIndex={variantInfo.index}
+        requestedVariantIndex={requestedVariantIndex}
         generatedVariantCallback={variantCallback}
       />
     </>

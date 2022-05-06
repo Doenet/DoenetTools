@@ -1,6 +1,7 @@
 import {
   faCalendarPlus,
   faCalendarTimes,
+  faCheck,
   faFileCode,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,6 +12,7 @@ import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import {
   authorItemByDoenetId,
+  enrollmentByCourseId,
   findFirstPageOfActivity,
   selectedCourseItems,
   useCourse,
@@ -23,6 +25,7 @@ import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
+import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import {
@@ -53,6 +56,21 @@ const InputControl = styled.div`
   align-items: center;
 `;
 
+function getSelectValues(select) {
+  var result = [];
+  var options = select && select.options;
+  var opt;
+
+  for (var i=0, iLen=options.length; i<iLen; i++) {
+    opt = options[i];
+
+    if (opt.selected) {
+      result.push(opt.value || opt.text);
+    }
+  }
+  return result;
+}
+
 export default function SelectedActivity() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
@@ -61,7 +79,7 @@ export default function SelectedActivity() {
     label: recoilLabel,
     order,
     assignedCid,
-    parentDoenetId,
+    parentDoenetId
   } = useRecoilValue(authorItemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const {
@@ -70,8 +88,11 @@ export default function SelectedActivity() {
     compileActivity,
     deleteItem,
   } = useCourse(courseId);
+
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(recoilLabel);
   const addToast = useToast();
+
+
 
   useEffect(() => {
     setItemTextFieldLabel(recoilLabel);
@@ -136,6 +157,8 @@ export default function SelectedActivity() {
     assignActivityText = 'Update Assigned Activity';
   }
 
+  
+ 
   return (
     <>
       {heading}
@@ -176,9 +199,7 @@ export default function SelectedActivity() {
                   tool: 'draftactivity',
                   view: '',
                   params: {
-                    courseId,
                     doenetId,
-                    sectionId: parentDoenetId,
                     requestedVariant: 1,
                   },
                 });
@@ -195,40 +216,14 @@ export default function SelectedActivity() {
               tool: 'assignment',
               view: '',
               params: {
-                courseId,
-                sectionId: parentDoenetId,
                 doenetId,
               },
             });
           }}
         />
       </ActionButtonGroup>
-      <Textfield
-        label="Label"
-        vertical
-        width="menu"
-        value={itemTextFieldLabel}
-        onChange={(e) => setItemTextFieldLabel(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.keyCode === 13) handelLabelModfication();
-        }}
-        onBlur={handelLabelModfication}
-      />
       <br />
-     
-      <ButtonGroup vertical>
-        <Button
-          width="menu"
-          onClick={() => create({ itemType: 'page' })}
-          value="Add Page"
-        />
-        <Button
-          width="menu"
-          onClick={() => create({ itemType: 'order' })}
-          value="Add Order"
-        />
-      </ButtonGroup>
-      <br />
+
       <ActionButton
         width="menu"
         value={assignActivityText}
@@ -243,6 +238,34 @@ export default function SelectedActivity() {
           });
         }}
       />
+     
+  
+      <Textfield
+        label="Label"
+        vertical
+        width="menu"
+        value={itemTextFieldLabel}
+        onChange={(e) => setItemTextFieldLabel(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.keyCode === 13) handelLabelModfication();
+        }}
+        onBlur={handelLabelModfication}
+      />
+      <br />
+      <ButtonGroup vertical>
+        <Button
+          width="menu"
+          onClick={() => create({ itemType: 'page' })}
+          value="Add Page"
+        />
+        <Button
+          width="menu"
+          onClick={() => create({ itemType: 'order' })}
+          value="Add Order"
+        />
+      </ButtonGroup>
+      <br />
+      
       <AssignmentSettings role={effectiveRole} doenetId={doenetId} courseId={courseId} />
       <Button
         width="menu"
@@ -257,6 +280,59 @@ export default function SelectedActivity() {
       />
     </>
   );
+}
+
+function AssignTo({updateAssignment}){
+  const doenetId = useRecoilValue(selectedCourseItems)[0];
+  const {
+    isGloballyAssigned
+  } = useRecoilValue(authorItemByDoenetId(doenetId));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+
+  const {value:enrolledStudents} = useRecoilValue(enrollmentByCourseId(courseId))
+
+  //Only those enrolled who didn't withdraw
+  let enrolledJSX = enrolledStudents.reduce((allrows,row)=>{
+    if (row.withdrew == '0'){
+      return [...allrows,<option key={`enrolledOpt${row.email}`} value={row.email}>{row.firstName} {row.lastName}</option>]
+    }else{
+      return allrows
+    }
+  },[])
+
+  return <>
+   <br />
+      <InputWrapper>
+  
+          <Checkbox
+            style={{ marginRight: '5px' }}
+            checked={!isGloballyAssigned}
+            onClick={() => {
+              updateAssignment({
+                doenetId,
+                keyToUpdate: 'isGloballyAssigned',
+                value:!isGloballyAssigned,
+                description: 'Restrict Assignment ',
+                valueDescription:isGloballyAssigned ? "true": "false",
+              });
+    
+            }}
+          />
+        <LabelText>Restrict Assignment To</LabelText>
+
+         </InputWrapper> 
+         <RelatedItems
+            width="menu"
+            options={enrolledJSX}
+            disabled={isGloballyAssigned}
+            onChange={(e)=>{
+              //TODO: Clara please build this in
+              let values = Array.from(e.target.selectedOptions, option => option.value);
+              console.log("values",values)
+            }}
+            multiple
+          />
+  </>
 }
 
 //For item we just need label and doenetId
@@ -434,6 +510,8 @@ export function AssignmentSettings({ role, doenetId, courseId }) {
   //Instructor JSX
   return (
     <>
+    <AssignTo updateAssignment={updateAssignment} />
+    <br />
       <InputWrapper>
         <LabelText>Assigned Date</LabelText>
         <InputControl onClick={(e) => e.preventDefault()}>
@@ -465,7 +543,7 @@ export function AssignmentSettings({ role, doenetId, courseId }) {
           <DateTime
             disabled={assignedDate === null || assignedDate === undefined}
             value={assignedDate ? new Date(assignedDate) : null}
-            disabledText="No Assigned Day"
+            disabledText="No Assigned Date"
             disabledOnClick={() => {
               let valueDescription = 'Now';
               let value = DateToDateString(new Date());

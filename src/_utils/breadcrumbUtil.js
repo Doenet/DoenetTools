@@ -210,7 +210,7 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
   return crumbs;
 }
 
-export function useAssignmentCrumb({ doenetId, courseId, sectionId }) {
+export function useAssignmentCrumb({ doenetId}) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const { label } = useRecoilValue(authorItemByDoenetId(doenetId));
 
@@ -222,8 +222,6 @@ export function useAssignmentCrumb({ doenetId, courseId, sectionId }) {
         tool: 'assignment',
         view: '',
         params: {
-          courseId,
-          sectionId,
           doenetId,
         },
       });

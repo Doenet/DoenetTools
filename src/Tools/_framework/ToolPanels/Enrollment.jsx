@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, {  useState } from 'react';
+// import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { atom, useSetRecoilState, useRecoilValue } from 'recoil';
 import { useToast, toastType } from '@Toast';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
+import { enrollmentByCourseId } from '../../../_reactComponents/Course/CourseActions';
 
 export const enrollmentTableDataAtom = atom({
   key: 'enrollmentTableDataAtom',
@@ -30,7 +31,7 @@ export const enrolllearnerAtom = atom({
 });
 
 export default function Enrollment() {
-  console.log('>>>===Enrollment');
+  // console.log('>>>===Enrollment');
 
   const toast = useToast();
 
@@ -38,29 +39,14 @@ export default function Enrollment() {
   const setProcess = useSetRecoilState(processAtom);
   const headers = useRecoilValue(headersAtom);
   const entries = useRecoilValue(entriesAtom);
-  const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
-  const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
+  // const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
+  // const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
 
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  let [showWithdrawn, setShowWithdrawn] = useState(false);
+  // const enrollmentTableData = useRecoilValue(enrollmentAtomFamily(courseId))
+  const {recoilUnWithdraw,recoilWithdraw,recoilMergeData,value:enrollmentTableData} = useRecoilValue(enrollmentByCourseId(courseId));
 
-  //Load Enrollment Data When CourseId changes
-  useEffect(() => {
-    if (courseId !== '') {
-      axios
-        .get('/api/getEnrollment.php', { params: { courseId } })
-        .then((resp) => {
-          // console.log(">>>>getEnrollment resp",resp.data)
-          //TODO: Make sure we don't overwrite existing data
-          let enrollmentArray = resp.data.enrollmentArray;
-          setEnrollmentTableDataAtom(enrollmentArray);
-          setProcess('Display Enrollment');
-        })
-        .catch((error) => {
-          console.warn(error);
-        });
-    }
-  }, [courseId, setEnrollmentTableDataAtom, setProcess]);
+  let [showWithdrawn, setShowWithdrawn] = useState(false);
 
   if (!courseId) {
     return null;
@@ -263,17 +249,10 @@ export default function Enrollment() {
                 mergeEmail,
                 mergeSection,
               };
-              // console.log('>>>>payload', payload);
-              axios
-                .post('/api/mergeEnrollmentData.php', payload)
-                .then((resp) => {
-                  // console.log('>>>>merge resp.data', resp.data);
-                  const enrollmentArray = resp.data.enrollmentArray;
-                  if (enrollmentArray) {
-                    setEnrollmentTableDataAtom(enrollmentArray);
-                  }
-                  setProcess('Display Enrollment');
-                });
+
+              recoilMergeData(payload)
+              setProcess('Display Enrollment');
+     
             }}
           ></Button>
         </>
@@ -301,50 +280,12 @@ export default function Enrollment() {
 
   const enrollLearners = (e, enrollLearner) => {
     e.preventDefault();
-
-    let payload = {
-      email: enrollLearner,
-      courseId,
-    };
-    axios.post('/api/unWithDrawStudents.php', payload).then((resp) => {
-      // console.log("resp",resp.data)
-      const payload = { params: { courseId } };
-      axios
-        .get('/api/getEnrollment.php', payload)
-        .then((resp) => {
-          // console.log("getEnrollment",resp.data)
-          let enrollmentArray = resp.data.enrollmentArray;
-          setEnrollmentTableDataAtom(enrollmentArray);
-          setProcess('Display Enrollment');
-        })
-        .catch((error) => {
-          console.warn(error);
-        });
-    });
+    recoilUnWithdraw(enrollLearner);
   };
 
   const withDrawLearners = (e, withdrewLearner) => {
     e.preventDefault();
-
-    let payload = {
-      email: withdrewLearner,
-      courseId,
-    };
-    axios.post('/api/withDrawStudents.php', payload).then((resp) => {
-      // console.log("resp",resp.data)
-      const payload = { params: { courseId } };
-      axios
-        .get('/api/getEnrollment.php', payload)
-        .then((resp) => {
-          // console.log("getEnrollment ",resp.data)
-          let enrollmentArray = resp.data.enrollmentArray;
-          setEnrollmentTableDataAtom(enrollmentArray);
-          setProcess('Display Enrollment');
-        })
-        .catch((error) => {
-          console.warn(error);
-        });
-    });
+    recoilWithdraw(withdrewLearner);
   };
 
   // let manualEnroll = (
