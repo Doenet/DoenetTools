@@ -74,14 +74,15 @@ $assignment = array();
           "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
           "doenetId" => $row['doenetId']
     );
-  } else {
-    http_response_code(404);
   }
 $response_arr = array(
   "success"=>$success,
   "assignment"=>$assignment,
   "message"=>$message
 );
+
+// set response code - 200 OK
+http_response_code(200);
 
 // make it json format
 echo json_encode($response_arr);
