@@ -301,21 +301,19 @@ function AssignTo({updateAssignment}){
   
           <Checkbox
             style={{ marginRight: '5px' }}
-            checkedIcon={<FontAwesomeIcon icon={faCheck} />}
-            uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
-            checked={isGloballyAssigned}
+            checked={!isGloballyAssigned}
             onClick={() => {
               updateAssignment({
                 doenetId,
                 keyToUpdate: 'isGloballyAssigned',
                 value:!isGloballyAssigned,
-                description: 'Assign To All',
-                valueDescription:!isGloballyAssigned ? "true": "false",
+                description: 'Restrict Assignment ',
+                valueDescription:isGloballyAssigned ? "true": "false",
               });
     
             }}
           />
-        <LabelText>Assign To All</LabelText>
+        <LabelText>Restrict Assignment To</LabelText>
 
          </InputWrapper> 
          <RelatedItems
@@ -540,7 +538,7 @@ export function AssignmentSettings({ role, doenetId, courseId }) {
           <DateTime
             disabled={assignedDate === null || assignedDate === undefined}
             value={assignedDate ? new Date(assignedDate) : null}
-            disabledText="No Assigned Day"
+            disabledText="No Assigned Date"
             disabledOnClick={() => {
               let valueDescription = 'Now';
               let value = DateToDateString(new Date());
