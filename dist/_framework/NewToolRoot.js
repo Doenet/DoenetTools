@@ -84,7 +84,7 @@ export default function ToolRoot() {
     NotFound: lazy(() => import("./ToolPanels/NotFound.js")),
     AccountSettings: lazy(() => import("./ToolPanels/AccountSettings.js")),
     HomePanel: lazy(() => import("./ToolPanels/HomePanel.js")),
-    Content: lazy(() => import("./ToolPanels/Content.js")),
+    PublicActivityViewer: lazy(() => import("./ToolPanels/PublicActivityViewer.js")),
     DriveCards: lazy(() => import("./ToolPanels/DriveCards.js")),
     SignIn: lazy(() => import("./ToolPanels/SignIn.js")),
     SignOut: lazy(() => import("./ToolPanels/SignOut.js")),
@@ -98,12 +98,14 @@ export default function ToolRoot() {
     EditorViewer: lazy(() => import("./ToolPanels/EditorViewer.js")),
     AssignmentViewer: lazy(() => import("./ToolPanels/AssignmentViewer.js")),
     DraftAssignmentViewer: lazy(() => import("./ToolPanels/DraftAssignmentViewer.js")),
-    SurveyListViewer: lazy(() => import("./ToolPanels/SurveyListViewer.js")),
+    DataPanel: lazy(() => import("./ToolPanels/DataPanel.js")),
     SurveyDataViewer: lazy(() => import("./ToolPanels/SurveyDataViewer.js")),
     DoenetMLEditor: lazy(() => import("./ToolPanels/DoenetMLEditor.js")),
     Enrollment: lazy(() => import("./ToolPanels/Enrollment.js")),
     ChooseLearnerPanel: lazy(() => import("./ToolPanels/ChooseLearnerPanel.js")),
-    EndExamPanel: lazy(() => import("./ToolPanels/EndExamPanel.js"))
+    EndExamPanel: lazy(() => import("./ToolPanels/EndExamPanel.js")),
+    GuestDoenetMLEditor: lazy(() => import("./ToolPanels/GuestDoenetMLEditor.js")),
+    GuestEditorViewer: lazy(() => import("./ToolPanels/GuestEditorViewer.js"))
   }).current;
   const LazyControlObj = useRef({
     BackButton: lazy(() => import("./HeaderControls/BackButton.js")),
@@ -112,7 +114,7 @@ export default function ToolRoot() {
     ChooserBreadCrumb: lazy(() => import("./HeaderControls/ChooserBreadCrumb.js")),
     DashboardBreadCrumb: lazy(() => import("./HeaderControls/DashboardBreadCrumb.js")),
     EnrollmentBreadCrumb: lazy(() => import("./HeaderControls/EnrollmentBreadCrumb.js")),
-    SurveyBreadCrumb: lazy(() => import("./HeaderControls/SurveyBreadCrumb.js")),
+    DataBreadCrumb: lazy(() => import("./HeaderControls/DataBreadCrumb.js")),
     EditorBreadCrumb: lazy(() => import("./HeaderControls/EditorBreadCrumb.js")),
     GradebookBreadCrumb: lazy(() => import("./HeaderControls/GradebookBreadCrumb.js")),
     AssignmentBreadCrumb: lazy(() => import("./HeaderControls/AssignmentBreadCrumb.js")),
@@ -263,19 +265,6 @@ export default function ToolRoot() {
   }));
 }
 let navigationObj = {
-  content: {
-    default: {
-      pageName: "Content",
-      currentMenus: [],
-      menusTitles: [],
-      menusInitOpen: [],
-      currentMainPanel: "Content",
-      supportPanelOptions: [],
-      supportPanelTitles: [],
-      supportPanelIndex: 0,
-      hasNoMenuPanel: true
-    }
-  },
   exam: {
     default: {
       defaultTool: "chooseLearner"
@@ -433,17 +422,11 @@ let navigationObj = {
       supportPanelIndex: 0,
       headerControls: ["EnrollmentBreadCrumb"]
     },
-    surveyList: {
-      pageName: "surveyList",
+    data: {
+      pageName: "data",
       menuPanelCap: "DriveInfoCap",
-      currentMainPanel: "SurveyListViewer",
-      headerControls: ["SurveyBreadCrumb"]
-    },
-    surveyData: {
-      pageName: "surveyData",
-      menuPanelCap: "DriveInfoCap",
-      currentMainPanel: "SurveyDataViewer",
-      headerControls: ["SurveyBreadCrumb"]
+      currentMainPanel: "DataPanel",
+      headerControls: ["DataBreadCrumb"]
     }
   },
   home: {
@@ -469,6 +452,35 @@ let navigationObj = {
       currentMainPanel: "NotFound",
       supportPanelOptions: [],
       hasNoMenuPanel: true
+    }
+  },
+  public: {
+    default: {
+      pageName: "PublicActivityViewer",
+      currentMenus: [],
+      menusTitles: [],
+      menusInitOpen: [],
+      currentMainPanel: "PublicActivityViewer",
+      supportPanelOptions: [],
+      supportPanelTitles: [],
+      supportPanelIndex: 0,
+      hasNoMenuPanel: true
+    },
+    editor: {
+      pageName: "GuestEditor",
+      currentMainPanel: "GuestEditorViewer",
+      currentMenus: [
+        "PageVariant"
+      ],
+      menusTitles: [
+        "Page Variant"
+      ],
+      menusInitOpen: [false],
+      supportPanelOptions: ["GuestDoenetMLEditor"],
+      supportPanelTitles: ["DoenetML Editor"],
+      supportPanelIndex: 0,
+      headerControls: ["ViewerUpdateButton"],
+      footer: {height: 250, open: false, component: "MathInputKeyboard"}
     }
   },
   settings: {

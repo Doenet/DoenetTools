@@ -25,7 +25,7 @@ export default function DriveInfoCap() {
     toolText = "Course Navigation";
   } else if (tool == "dashboard") {
     toolText = "Dashboard";
-  } else if (tool == "surveyList") {
+  } else if (tool == "data") {
     toolText = "Data";
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {

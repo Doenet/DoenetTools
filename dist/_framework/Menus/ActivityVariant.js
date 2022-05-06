@@ -1,36 +1,40 @@
 import React from "../../_snowpack/pkg/react.js";
-import {useRecoilState} from "../../_snowpack/pkg/recoil.js";
-import {activityVariantInfoAtom, activityVariantPanelAtom} from "../ToolHandlers/CourseToolHandler.js";
+import {useRecoilState, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import Increment from "../../_reactComponents/PanelHeaderComponents/IncrementMenu.js";
+import {pageToolViewAtom} from "../NewToolRoot.js";
+import {activityVariantPanelAtom} from "../ToolHandlers/CourseToolHandler.js";
 export default function ActivityVariant(props) {
-  const [variantInfo, setVariantInfo] = useRecoilState(activityVariantInfoAtom);
   const [variantPanel, setVariantPanel] = useRecoilState(activityVariantPanelAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   function updateVariantInfoAtom() {
-    if (variantPanel.index === variantInfo.index) {
-      return;
-    }
-    setVariantInfo((was) => {
+    setPageToolView((was) => {
       let newObj = {...was};
-      newObj.index = Number.isFinite(Number(variantPanel.index)) ? Number(variantPanel.index) : 0;
+      if (newObj.params) {
+        newObj.params = {...newObj.params};
+      } else {
+        newObj.params = {};
+      }
+      newObj.params.requestedVariant = variantPanel.index && Number.isFinite(Number(variantPanel.index)) ? Number(variantPanel.index) : 1;
       return newObj;
     });
   }
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
-  }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Variant Index ", /* @__PURE__ */ React.createElement("input", {
-    type: "text",
+  }, /* @__PURE__ */ React.createElement(Increment, {
+    min: 1,
     value: variantPanel.index,
+    onBlur: () => updateVariantInfoAtom(),
     onKeyDown: (e) => {
       if (e.key === "Enter") {
         updateVariantInfoAtom();
       }
     },
-    onBlur: () => updateVariantInfoAtom(),
-    onChange: (e) => {
+    onChange: (value) => {
       setVariantPanel((was) => {
         let newObj = {...was};
-        newObj.index = e.target.value;
+        newObj.index = value;
         return newObj;
       });
     }
-  }))));
+  }));
 }

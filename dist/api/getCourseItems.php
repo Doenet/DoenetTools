@@ -127,8 +127,6 @@ $containingDoenetIds = [];
 				SELECT 
 				doenetId,
 				containingDoenetId,
-				cid,
-				draftCid,
 				label
 				FROM pages
 				WHERE containingDoenetId = '$containingDoenetId'

@@ -8,6 +8,7 @@ $remoteuser = 'devuser';
 if (
     $_SERVER['HTTP_HOST'] == 'localhost' ||
     $_SERVER['HTTP_HOST'] == 'localhost:3000' ||
+    $_SERVER['HTTP_HOST'] == 'localhost:8080' ||
     $_SERVER['HTTP_HOST'] == 'apache' ||
     $_SERVER['HTTP_HOST'] == 'localhost:81'
 ) {
@@ -24,6 +25,7 @@ $database = $ini_array['database'];
 
 if (
     $_SERVER['HTTP_HOST'] == 'localhost' ||
+    $_SERVER['HTTP_HOST'] == 'localhost:8080' ||
     $_SERVER['HTTP_HOST'] == 'apache' ||
     $_SERVER['HTTP_HOST'] == 'localhost:81'
 ) {

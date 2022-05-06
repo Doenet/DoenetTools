@@ -1,13 +1,11 @@
-import React, {useState, Suspense, useEffect, useLayoutEffect} from "../../_snowpack/pkg/react.js";
-import {useRecoilCallback, useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import React, {Suspense} from "../../_snowpack/pkg/react.js";
+import {useRecoilCallback, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
 import CourseNavigator from "../../_reactComponents/Course/CourseNavigator.js";
-import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
-import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
-import {suppressMenusAtom} from "../NewToolRoot.js";
 import styled, {keyframes} from "../../_snowpack/pkg/styled-components.js";
-import {authorItemByDoenetId, findFirstPageOfActivity, selectedCourseItems} from "../../_reactComponents/Course/CourseActions.js";
+import {authorItemByDoenetId, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 import {useToast, toastType} from "../Toast.js";
+import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 const movingGradient = keyframes`
   0% { background-position: -250px 0; }
   100% { background-position: 250px 0; }
@@ -54,76 +52,35 @@ const Td3Span = styled.span`
   animation-timing-function: linear;
   animation-fill-mode: forwards;
 `;
-export default function NavigationPanel() {
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
-  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+export default function DataPanel() {
   const addToast = useToast();
-  useLayoutEffect(() => {
-    switch (effectiveRole) {
-      case "instructor":
-        setSuppressMenus([]);
-        break;
-      case "student":
-        setSuppressMenus(["AddDriveItems"]);
-        break;
-      default:
-    }
-  }, [effectiveRole, setSuppressMenus]);
-  const updateSelectMenu = useRecoilCallback(({set, snapshot}) => async ({selectedItems}) => {
-    if (selectedItems.length == 1) {
-      let selectedDoenetId = selectedItems[0];
-      let selectedItem = await snapshot.getPromise(authorItemByDoenetId(selectedDoenetId));
-      if (selectedItem.type == "activity") {
-        set(selectedMenuPanelAtom, "SelectedActivity");
-      } else if (selectedItem.type == "order") {
-        set(selectedMenuPanelAtom, "SelectedOrder");
-      } else if (selectedItem.type == "page") {
-        set(selectedMenuPanelAtom, "SelectedPage");
-      } else if (selectedItem.type == "section") {
-        set(selectedMenuPanelAtom, "SelectedSection");
-      } else if (selectedItem.type == "bank") {
-        set(selectedMenuPanelAtom, "SelectedBank");
-      } else {
-        set(selectedMenuPanelAtom, null);
-      }
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const {findPagesFromDoenetIds} = useCourse(courseId);
+  const updateSelectMenu = useRecoilCallback(({set}) => async ({selectedItems}) => {
+    if (selectedItems.length > 0) {
+      set(selectedMenuPanelAtom, "SelectedDataSources");
     } else {
       set(selectedMenuPanelAtom, null);
     }
   });
-  const doubleClickItem = useRecoilCallback(({set, snapshot}) => async ({doenetId, courseId}) => {
+  const doubleClickItem = useRecoilCallback(({set, snapshot}) => async ({doenetId, courseId: courseId2}) => {
     let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
-    if (clickedItem.type == "page") {
+    if (clickedItem.type == "section") {
       set(pageToolViewAtom, (prev) => {
         return {
           page: "course",
-          tool: "editor",
+          tool: "data",
           view: prev.view,
-          params: {pageId: doenetId, doenetId: clickedItem.containingDoenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId}
+          params: {sectionId: clickedItem.doenetId, courseId: courseId2}
         };
       });
-    } else if (clickedItem.type == "activity") {
-      let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
-      if (pageDoenetId == null) {
-        addToast(`ERROR: No page found in activity`, toastType.INFO);
+    } else {
+      let pageDoenetIds = await findPagesFromDoenetIds([clickedItem.doenetId]);
+      if (pageDoenetIds.length == 0) {
+        addToast(`No pages found`, toastType.INFO);
       } else {
-        set(pageToolViewAtom, (prev) => {
-          return {
-            page: "course",
-            tool: "editor",
-            view: prev.view,
-            params: {pageId: pageDoenetId, doenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId}
-          };
-        });
+        console.log("Open Link to data for Pages", pageDoenetIds);
       }
-    } else if (clickedItem.type == "section") {
-      set(pageToolViewAtom, (prev) => {
-        return {
-          page: "course",
-          tool: "navigation",
-          view: prev.view,
-          params: {sectionId: clickedItem.doenetId, courseId}
-        };
-      });
     }
   });
   return /* @__PURE__ */ React.createElement(Suspense, {

@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
-import axios from "../../_snowpack/pkg/axios.js";
+import React, {useState} from "../../_snowpack/pkg/react.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {atom, useSetRecoilState, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {useToast, toastType} from "../Toast.js";
 import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.js";
+import {enrollmentByCourseId} from "../../_reactComponents/Course/CourseActions.js";
 export const enrollmentTableDataAtom = atom({
   key: "enrollmentTableDataAtom",
   default: []
@@ -27,27 +27,14 @@ export const enrolllearnerAtom = atom({
   default: ""
 });
 export default function Enrollment() {
-  console.log(">>>===Enrollment");
   const toast = useToast();
   const process = useRecoilValue(processAtom);
   const setProcess = useSetRecoilState(processAtom);
   const headers = useRecoilValue(headersAtom);
   const entries = useRecoilValue(entriesAtom);
-  const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
-  const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const {recoilUnWithdraw, recoilWithdraw, recoilMergeData, value: enrollmentTableData} = useRecoilValue(enrollmentByCourseId(courseId));
   let [showWithdrawn, setShowWithdrawn] = useState(false);
-  useEffect(() => {
-    if (courseId !== "") {
-      axios.get("/api/getEnrollment.php", {params: {courseId}}).then((resp) => {
-        let enrollmentArray = resp.data.enrollmentArray;
-        setEnrollmentTableDataAtom(enrollmentArray);
-        setProcess("Display Enrollment");
-      }).catch((error) => {
-        console.warn(error);
-      });
-    }
-  }, [courseId, setEnrollmentTableDataAtom, setProcess]);
   if (!courseId) {
     return null;
   }
@@ -208,13 +195,8 @@ export default function Enrollment() {
             mergeEmail,
             mergeSection
           };
-          axios.post("/api/mergeEnrollmentData.php", payload).then((resp) => {
-            const enrollmentArray = resp.data.enrollmentArray;
-            if (enrollmentArray) {
-              setEnrollmentTableDataAtom(enrollmentArray);
-            }
-            setProcess("Display Enrollment");
-          });
+          recoilMergeData(payload);
+          setProcess("Display Enrollment");
         }
       }));
       return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
@@ -224,37 +206,11 @@ export default function Enrollment() {
   }
   const enrollLearners = (e, enrollLearner) => {
     e.preventDefault();
-    let payload = {
-      email: enrollLearner,
-      courseId
-    };
-    axios.post("/api/unWithDrawStudents.php", payload).then((resp) => {
-      const payload2 = {params: {courseId}};
-      axios.get("/api/getEnrollment.php", payload2).then((resp2) => {
-        let enrollmentArray = resp2.data.enrollmentArray;
-        setEnrollmentTableDataAtom(enrollmentArray);
-        setProcess("Display Enrollment");
-      }).catch((error) => {
-        console.warn(error);
-      });
-    });
+    recoilUnWithdraw(enrollLearner);
   };
   const withDrawLearners = (e, withdrewLearner) => {
     e.preventDefault();
-    let payload = {
-      email: withdrewLearner,
-      courseId
-    };
-    axios.post("/api/withDrawStudents.php", payload).then((resp) => {
-      const payload2 = {params: {courseId}};
-      axios.get("/api/getEnrollment.php", payload2).then((resp2) => {
-        let enrollmentArray = resp2.data.enrollmentArray;
-        setEnrollmentTableDataAtom(enrollmentArray);
-        setProcess("Display Enrollment");
-      }).catch((error) => {
-        console.warn(error);
-      });
-    });
+    recoilWithdraw(withdrewLearner);
   };
   return /* @__PURE__ */ React.createElement("div", {
     style: {padding: "8px"}
