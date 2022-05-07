@@ -13,7 +13,7 @@ import {
   pageVariantInfoAtom,
   pageVariantPanelAtom,
 } from '../ToolHandlers/CourseToolHandler';
-import { authorItemByDoenetId, useInitCourseItems } from '../../../_reactComponents/Course/CourseActions';
+import { authorItemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 
 export const viewerDoenetMLAtom = atom({
   key: "viewerDoenetMLAtom",
@@ -53,7 +53,7 @@ export default function EditorViewer() {
   // refreshCount.current++;
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
+  const courseId = useRecoilValue(courseIdAtom)
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'))
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -63,6 +63,7 @@ export default function EditorViewer() {
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
   const pageObj = useRecoilValue(authorItemByDoenetId(paramPageId))
 
+  useSetCourseIdFromDoenetId(doenetId);
   useInitCourseItems(courseId);
 
   let pageInitiated = false;

@@ -65,10 +65,8 @@ export default function SelectedPage() {
               tool: 'editor',
               view: '',
               params: {
-                courseId,
                 pageId,
                 doenetId,
-                sectionId
               },
             });
           }}
