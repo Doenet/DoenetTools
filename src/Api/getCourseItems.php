@@ -43,7 +43,6 @@ $containingDoenetIds = [];
 		$sql = "
 		SELECT cc.type,
 		cc.doenetId,
-		cc.cid,
 		cc.parentDoenetId,
 		cc.label,
 		cc.creationDate,

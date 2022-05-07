@@ -23,10 +23,10 @@ if ($doenetId == "") {
 
 if ($success) {
     $firstPageId = null;
-    $sql = "SELECT isAssigned, isGloballyAssigned,
-        CAST(jsonDefinition as CHAR) AS json
+    $sql = "SELECT CAST(jsonDefinition as CHAR) AS json
         FROM course_content
         WHERE doenetId = '$doenetId'
+        AND isAssigned = 1
         AND isPublic = 1
         AND userCanViewSource = 1
         ";

@@ -120,7 +120,7 @@ export default function NavigationPanel() {
         page: 'course',
         tool: 'editor',
         view: prev.view,
-        params: { pageId: doenetId, doenetId: clickedItem.containingDoenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId },
+        params: { pageId: doenetId, doenetId: clickedItem.containingDoenetId },
         }})
     }else if (clickedItem.type == 'activity'){
       //Find first page
@@ -132,7 +132,7 @@ export default function NavigationPanel() {
             page: 'course',
             tool: 'editor',
             view: prev.view,
-            params: { pageId:pageDoenetId, doenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId },
+            params: { pageId:pageDoenetId, doenetId },
         }})
       }
     }else if (clickedItem.type == 'section'){

@@ -7,7 +7,6 @@ import {
   refreshNumberAtom,
   viewerDoenetMLAtom
 } from '../ToolPanels/EditorViewer'
-
 import { 
   useRecoilValue, 
   useRecoilState,
@@ -18,6 +17,7 @@ import CodeMirror from '../CodeMirror';
 import axios from "axios";
 import { fileByDoenetId } from '../ToolHandlers/CourseToolHandler';
 import { DropTarget } from 'react-drag-drop-container';
+import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
 
 
 
@@ -26,9 +26,11 @@ export default function DoenetMLEditor(props) {
 
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
   const [updateInternalValue,setUpdateInternalValue] = useRecoilState(updateTextEditorDoenetMLAtom);
+  const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom)
 
   const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
-  const paramCourseId = useRecoilValue(searchParamAtomFamily('courseId'))
+  const courseId = useRecoilValue(courseIdAtom)
+  
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   let editorRef = useRef(null);
   let timeout = useRef(null);
@@ -67,22 +69,32 @@ export default function DoenetMLEditor(props) {
 
   }, []);
 
-
+  // save draft when leave page
   useEffect(() => {
-
     return () => {
-
       if (initializedPageId !== "") {
         // save and stop timers
-        saveDraft(initializedPageId, paramCourseId) //Always save on leave
+        saveDraft(initializedPageId, courseId)
         if (timeout.current !== null) {
           clearTimeout(timeout.current)
         }
         timeout.current = null;
-
       }
     }
-  }, [initializedPageId, saveDraft])
+  }, [initializedPageId, saveDraft, courseId])
+
+  // save draft when click the update button
+  useEffect(() => {
+    if (initializedPageId !== "") {
+      // save and stop timers
+      saveDraft(initializedPageId, courseId)
+      if (timeout.current !== null) {
+        clearTimeout(timeout.current)
+      }
+      timeout.current = null;
+    }
+  }, [viewerDoenetML])
+
 
   if (paramPageId !== initializedPageId) {
     //DoenetML is changing to another PageId
@@ -104,7 +116,7 @@ export default function DoenetMLEditor(props) {
           clearTimeout(timeout.current);
 
           timeout.current = setTimeout(function () {
-            saveDraft(initializedPageId, paramCourseId);
+            saveDraft(initializedPageId, courseId);
             timeout.current = null;
           }, 3000)//3 seconds
         }}
