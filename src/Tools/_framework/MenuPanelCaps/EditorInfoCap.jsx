@@ -1,11 +1,11 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { authorItemByDoenetId, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { authorItemByDoenetId, courseIdAtom, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
 // import { ClipboardLinkButtons } from '../ToolHandlers/CourseToolHandler';
 
 export default function EditorInfoCap(){
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(courseIdAtom);
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const pageId = useRecoilValue(searchParamAtomFamily('pageId'));
   let {color, image, label:course_label} = useCourse(courseId);

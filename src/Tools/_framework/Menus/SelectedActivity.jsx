@@ -178,8 +178,6 @@ export default function SelectedActivity() {
                   params: {
                     doenetId,
                     pageId: firstPageDoenetId,
-                    sectionId: parentDoenetId,
-                    courseId: prev.params.courseId,
                   },
                 };
               });
