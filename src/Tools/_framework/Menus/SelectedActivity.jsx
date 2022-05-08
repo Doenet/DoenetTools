@@ -298,20 +298,27 @@ function AssignTo({updateAssignment}){
   const {value:enrolledStudents} = useRecoilValue(enrollmentByCourseId(courseId))
 
   //email addresses of only those who assignment is restricted to
-  // const [restrictedTo,setRestrictedTo] = useState([]);
-  let restrictedTo = ["kevinmcharles@gmail.com"]
+  const [restrictedTo,setRestrictedTo] = useState([]);
+
+  async function getAndSetRestrictedTo({courseId,doenetId}){
+    let resp = await axios.get('/api/getRestrictedTo.php',{params:{courseId,doenetId}})
+    // console.log("resp",resp.data)
+    setRestrictedTo(resp.data.restrictedTo)
+  }
+
+  async function updateRestrictedTo({courseId,doenetId,emailAddresses}){
+
+    let resp = await axios.post('/api/updateRestrictedTo.php',{courseId,doenetId,emailAddresses})
+    // console.log("resp",resp.data)
+    setRestrictedTo(emailAddresses)
+  }
+
   useEffect(()=>{
     if (!isGloballyAssigned){
-      let resp = axios.get('/api/getRestrictedTo',{params:{courseId,doenetId}})
-      console.log("resp",resp.data)
-      // setRestrictedTo(resp.data.restrictedTo)
+      getAndSetRestrictedTo({courseId,doenetId})
     }
   },[doenetId,isGloballyAssigned])
 
-
-  const updateAssignmentRestrictedTo = useRecoilCallback(({set})=> async ({courseId,doenetId,emailAddresses})=>{
-    console.log("updateAssignmentRestrictedTo",{courseId,doenetId,emailAddresses})
-  });
 
   //Only those enrolled who didn't withdraw
   let enrolledJSX = enrolledStudents.reduce((allrows,row)=>{
@@ -355,8 +362,7 @@ function AssignTo({updateAssignment}){
               //TODO: Clara please build this in to RelatedItems
               let emailAddresses = Array.from(e.target.selectedOptions, option => option.value);
 
-
-              updateAssignmentRestrictedTo({courseId,doenetId,emailAddresses})
+              updateRestrictedTo({courseId,doenetId,emailAddresses})
               
             }}
             multiple
