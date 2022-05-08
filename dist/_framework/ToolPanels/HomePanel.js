@@ -1,5 +1,5 @@
 import React from "../../_snowpack/pkg/react.js";
-import {useHistory} from "../../_snowpack/pkg/react-router-dom.js";
+import {useNavigate} from "../../_snowpack/pkg/react-router-dom.js";
 import Cookies from "../../_snowpack/pkg/js-cookie.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import "./homepage.css.proxy.js";
@@ -69,7 +69,7 @@ const Footer = styled.div`
   text-align: center;
 `;
 export default function HomePage(props) {
-  let history = useHistory();
+  let navigate = useNavigate();
   const jwt = Cookies.get();
   let isSignedIn = false;
   if (Object.keys(jwt).includes("JWT_JS")) {
@@ -85,12 +85,12 @@ export default function HomePage(props) {
     style: {display: "flex", justifyContent: "center"}
   }, /* @__PURE__ */ React.createElement(Button, {
     size: "medium",
-    onClick: () => history.push("/course"),
+    onClick: () => navigate("/course"),
     value: "Go to Course"
   })) : /* @__PURE__ */ React.createElement("div", {
     style: {display: "flex", justifyContent: "center"}
   }, /* @__PURE__ */ React.createElement(Button, {
-    onClick: () => history.push("/SignIn"),
+    onClick: () => navigate("/SignIn"),
     size: "medium",
     value: "Sign In"
   })), /* @__PURE__ */ React.createElement(ParagraphTags, null, "The Distributed Open Education Network (Doenet) is, at its core, a mechanism for measuring and sharing student interactions with web pages and storing anonymized data in an open distributed data warehouse. The Doenet platform will include tools for authoring interactive educational content, conducting educational research using the content, and discovering the most effective content based on the research results.", " "), /* @__PURE__ */ React.createElement(ParagraphTags, null, "The Doenet platform is just getting started. We are excited to introduce early versions of two projects: DoenetML, a markup language for authoring interactive online activities, and DoenetAPI, a library for connecting web pages to the Doenet data layer, enabling tracking of student data across web pages and multiuser interactives."), /* @__PURE__ */ React.createElement(ParagraphTags, null, "For more background and information on the Doenet project, see", " ", /* @__PURE__ */ React.createElement("a", {

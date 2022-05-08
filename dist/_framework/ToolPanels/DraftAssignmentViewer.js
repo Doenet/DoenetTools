@@ -13,23 +13,21 @@ import {
   profileAtom
 } from "../NewToolRoot.js";
 import {
-  activityVariantInfoAtom,
   activityVariantPanelAtom
 } from "../ToolHandlers/CourseToolHandler.js";
 import axios from "../../_snowpack/pkg/axios.js";
-import {retrieveTextFileForCid} from "../../core/utils/retrieveTextFile.js";
-import {determineNumberOfActivityVariants, parseActivityDefinition} from "../../_utils/activityUtils.js";
-import {authorItemByDoenetId, useInitCourseItems} from "../../_reactComponents/Course/CourseActions.js";
+import {returnNumberOfActivityVariantsForCid} from "../../_utils/activityUtils.js";
+import {authorItemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId} from "../../_reactComponents/Course/CourseActions.js";
 export default function DraftAssignmentViewer() {
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
-  const [variantInfo, setVariantInfo] = useRecoilState(activityVariantInfoAtom);
+  const courseId = useRecoilValue(courseIdAtom);
+  const requestedVariantParam = useRecoilValue(searchParamAtomFamily("requestedVariant"));
+  const requestedVariantIndex = requestedVariantParam && Number.isFinite(Number(requestedVariantParam)) ? Number(requestedVariantParam) : 1;
   const setVariantPanel = useSetRecoilState(activityVariantPanelAtom);
   let [stage, setStage] = useState("Initializing");
   let [message, setMessage] = useState("");
   const [
     {
-      attemptNumber,
       showCorrectness,
       showFeedback,
       showHints,
@@ -40,21 +38,16 @@ export default function DraftAssignmentViewer() {
     setLoad
   ] = useState({});
   let allPossibleVariants = useRef([]);
-  let userId = useRef(null);
+  useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
   let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
   useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);
   }, [itemObj, recoilDoenetId]);
-  const loadProfile = useRecoilValueLoadable(profileAtom);
-  userId.current = loadProfile.contents.userId;
   function variantCallback(variantIndex, numberOfVariants) {
     setVariantPanel({
       index: variantIndex,
       numberOfVariants
-    });
-    setVariantInfo({
-      index: variantIndex
     });
   }
   const initializeValues = useRecoilCallback(({snapshot, set}) => async (doenetId2, {
@@ -85,7 +78,7 @@ export default function DraftAssignmentViewer() {
     } else {
       cid2 = resp.data.cid;
     }
-    let result = await returnNumberOfActivityVariants(cid2);
+    let result = await returnNumberOfActivityVariantsForCid(cid2);
     if (!result.success) {
       setStage("Problem");
       setMessage(result.message);
@@ -93,7 +86,6 @@ export default function DraftAssignmentViewer() {
     }
     allPossibleVariants.current = [...Array(result.numberOfVariants).keys()].map((x) => x + 1);
     setLoad({
-      attemptNumber,
       showCorrectness: showCorrectness2,
       showFeedback: showFeedback2,
       showHints: showHints2,
@@ -121,24 +113,13 @@ export default function DraftAssignmentViewer() {
       solutionDisplayMode,
       showFeedback,
       showHints,
-      isAssignment: true,
       allowLoadState: false,
       allowSaveState: false,
       allowLocalState: false,
       allowSaveSubmissions: false,
       allowSaveEvents: false
     },
-    attemptNumber,
-    requestedVariantIndex: variantInfo.index,
+    requestedVariantIndex,
     generatedVariantCallback: variantCallback
   }));
-}
-async function returnNumberOfActivityVariants(cid) {
-  let activityDefinitionDoenetML = await retrieveTextFileForCid(cid);
-  let result = parseActivityDefinition(activityDefinitionDoenetML);
-  if (!result.success) {
-    return result;
-  }
-  result = await determineNumberOfActivityVariants(result.activityJSON);
-  return {success: true, numberOfVariants: result.numberOfVariants};
 }

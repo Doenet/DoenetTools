@@ -27,7 +27,7 @@ export async function saveInitialRendererStates({ doenetML, cid, doenetId, nVari
 
 
   for (let variantIndex = 1; variantIndex <= nVariants; variantIndex++) {
-    let { coreInfo, rendererState } = await calculateInitialRendererState({ doenetML, cid, doenetId, requestedVariantIndex: variantIndex, flags });
+    let { coreInfo, rendererState } = await calculateInitialRendererState({ doenetML, doenetId, requestedVariantIndex: variantIndex, flags });
     console.log(`generated initial renderer state for variant ${variantIndex} of ${nVariants}`);
 
     let payload = {
@@ -60,7 +60,7 @@ export async function saveInitialRendererStates({ doenetML, cid, doenetId, nVari
 
 }
 
-function calculateInitialRendererState({ doenetML, cid, doenetId, requestedVariantIndex, flags = {} }) {
+function calculateInitialRendererState({ doenetML, doenetId, requestedVariantIndex, flags = {} }) {
 
   let coreWorker = new Worker('../../viewer/core.js', { type: 'module' });
 
@@ -68,7 +68,6 @@ function calculateInitialRendererState({ doenetML, cid, doenetId, requestedVaria
     messageType: "createCore",
     args: {
       doenetML,
-      cid,
       doenetId,
       requestedVariantIndex,
       flags

@@ -1,5 +1,4 @@
-import {update} from "../../_snowpack/pkg/@react-spring/web.js";
-import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
+import React from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 const Container = styled.div`
     display: ${(props) => props.align};
@@ -92,6 +91,7 @@ export default function RelatedItems(props) {
     },
     "aria-label": ariaLabel,
     alert,
-    disabled
+    disabled,
+    multiple: props.multiple
   }, options));
 }

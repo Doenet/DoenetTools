@@ -1,4 +1,4 @@
-import { g as global_1, f as functionUncurryThis, K as stringRepeat, k as fails, _ as _export, L as thisNumberValue, D as toIntegerOrInfinity, M as correctIsRegexpLogic, H as objectGetOwnPropertyDescriptor, w as toString_1, t as requireObjectCoercible, N as notARegexp, A as toLength } from './es.string.starts-with-aa41bca0.js';
+import { g as global_1, f as functionUncurryThis, K as stringRepeat, k as fails, _ as _export, L as thisNumberValue, D as toIntegerOrInfinity, M as correctIsRegexpLogic, H as objectGetOwnPropertyDescriptor, w as toString_1, t as requireObjectCoercible, N as notARegexp, A as toLength } from './es.string.starts-with-56da2ce2.js';
 
 var RangeError = global_1.RangeError;
 var String$1 = global_1.String;

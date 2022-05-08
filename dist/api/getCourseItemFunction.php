@@ -7,8 +7,6 @@ function getCourseItemFunction($conn,$type,$doenetId){
 				SELECT 
 				doenetId,
 				containingDoenetId,
-				cid,
-				draftCid,
 				label
 				FROM pages
 				WHERE doenetId = '$doenetId'

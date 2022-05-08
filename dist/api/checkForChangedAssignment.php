@@ -43,40 +43,30 @@ if ($doenetId == "") {
 
 if ($success) {
     $cid = null;
-    $doenetIdOverride = null;
 
-    // first check if there is an doenetIdOverride in user_assignment
-
-    $sql = "SELECT doenetIdOverride
-        FROM user_assignment
-        WHERE userId = '$userId'
-        AND doenetId = '$doenetId'
-        ";
-
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $doenetIdOverride = $row["doenetIdOverride"];
-        if ($doenetIdOverride != null) {
-            $doenetId = $doenetIdOverride;
-        }
-    }
-
-    // get cid from course_content
-    // if didn't override doenetId, then use it only as long as it is assigned and globally assigned
+    // get assigned cid from course_content
+    // use it only as long as it is assigned (either globally assigned or assigned via user_assignment)
     $sql = "SELECT isAssigned, isGloballyAssigned, JSONdefinition->>'$.assignedCid' as assignedCid
         FROM course_content
-        WHERE doenetId = '$doenetId'
+        WHERE doenetId = '$doenetId' AND isAssigned='1'
         ";
 
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        if (
-            $doenetIdOverride != null ||
-            ($row["isAssigned"] && $row["isGloballyAssigned"])
-        ) {
-            $cid = $row["assignedCid"];
+        $assignedCid = $row["assignedCid"];
+        if ($row["isGloballyAssigned"]) {
+            $cid = $assignedCid;
+        } else {
+            // not globally assigned.  See if assigned to user.
+            $sql = "SELECT doenetId
+                FROM user_assignment
+                WHERE doenetId = '$doenetId' AND userId='$userId' AND isUnassigned='0'
+                ";
+            $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
+                $cid = $assignedCid;
+            }
         }
     }
 

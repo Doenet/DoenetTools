@@ -177,6 +177,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     GradeSettings: lazy(() => import("../Menus/GradeSettings.js")),
     SelectedSection: lazy(() => import("../Menus/SelectedSection.js")),
     SelectedBank: lazy(() => import("../Menus/SelectedBank.js")),
+    SelectedDataSources: lazy(() => import("../Menus/SelectedDataSources.js")),
     SelectedActivity: lazy(() => import("../Menus/SelectedActivity.js")),
     SelectedOrder: lazy(() => import("../Menus/SelectedOrder.js")),
     SelectedPage: lazy(() => import("../Menus/SelectedPage.js")),

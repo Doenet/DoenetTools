@@ -19,7 +19,7 @@ import MenuPanel from './Panels/NewMenuPanel';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
 
-import { useHistory, useLocation } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -53,7 +53,7 @@ export const profileAtom = atom({
         // localStorage.setItem('Profile', JSON.stringify(data.profile));
         return data.profile;
       } catch (error) {
-        console.log('Error loading user profile', error.message);
+        console.error('Error loading user profile', error.message);
         return {};
       }
     },
@@ -310,7 +310,7 @@ export default function ToolRoot() {
   let headerControls = null;
   if (toolRootMenusAndPanels.headerControls) {
     headerControls = [];
-    for (const [i, controlName] of Object.entries(
+    for (const [, controlName] of Object.entries(
       toolRootMenusAndPanels.headerControls,
     )) {
       const controlObj = LazyControlObj[controlName];
@@ -801,7 +801,7 @@ function RootController(props) {
   let currentParams = useRef({});
   let lastLocationStr = useRef('');
   let location = useLocation();
-  let history = useHistory();
+  let navigate = useNavigate();
   let lastSearchObj = useRef({});
 
   const setSearchParamAtom = useRecoilCallback(({ set }) => (paramObj) => {
@@ -876,9 +876,10 @@ function RootController(props) {
     nextPageToolView.page = location.pathname.replaceAll('/', '').toLowerCase();
     if (nextPageToolView.page === '') {
       nextPageToolView.page = 'home';
-      const url = window.location.origin + window.location.pathname + '#home';
+      const url = window.location.origin + window.location.pathname + 'home';
       //update url without pushing on to history
       window.history.replaceState('', '', url);
+      // navigate('/home', { replace: true });
     }
     let searchParamObj = Object.fromEntries(
       new URLSearchParams(location.search),
@@ -931,14 +932,12 @@ function RootController(props) {
       nextMenusAndPanels = navigationObj[nextPageToolView.page].default;
       if (Object.keys(nextMenusAndPanels).includes('defaultTool')) {
         const url =
-          window.location.origin +
           window.location.pathname +
-          '#' +
           location.pathname +
           '?' +
           encodeParams({ tool: nextMenusAndPanels.defaultTool });
         //update url without pushing on to history
-        window.history.replaceState('', '', url);
+        // navigate(url, {replace: true});
         nextMenusAndPanels =
           navigationObj[nextPageToolView.page][nextMenusAndPanels.defaultTool];
       }
@@ -1052,7 +1051,8 @@ function RootController(props) {
 
     //Don't add to the url history if it's the same location the browser is at
     if (location.pathname !== pathname || location.search !== search) {
-      history.push(urlPush);
+      console.log('urlpush:', urlPush);
+      navigate(urlPush);
     }
   }
 

@@ -1,4 +1,4 @@
-import { b as _setPrototypeOf } from './setPrototypeOf-ac807fbe.js';
+import { a as _setPrototypeOf } from './setPrototypeOf-ac4e41f8.js';
 
 function _inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);

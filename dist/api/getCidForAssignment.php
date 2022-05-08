@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
 include "db_connection.php";
+include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray["userId"];
@@ -26,11 +27,13 @@ $latestAttemptOverrides = mysqli_real_escape_string(
     $_REQUEST["latestAttemptOverrides"]
 );
 $getDraft = mysqli_real_escape_string($conn, $_REQUEST["getDraft"]);
+$publicOnly = mysqli_real_escape_string($conn, $_REQUEST["publicOnly"]);
+
 
 if ($doenetId == "") {
     $success = false;
     $message = "Internal Error: missing doenetId";
-} elseif ($userId == "") {
+} elseif ($userId == "" && $publicOnly != "true") {
     if ($examUserId == "") {
         $success = false;
         $message = "No access - Need to sign in";
@@ -44,51 +47,59 @@ if ($doenetId == "") {
 
 if ($success) {
     $cid = null;
-    $doenetIdForCid = $doenetId;
-    $isDoenetIdOverridden = false;
-
-    // first check if there is an doenetIdOverride in user_assignment
-
-    $sql = "SELECT doenetIdOverride
-        FROM user_assignment
-        WHERE userId = '$userId'
-        AND doenetId = '$doenetId'
-        ";
-
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $doenetIdOverride = $row["doenetIdOverride"];
-        if ($doenetIdOverride != null) {
-            $doenetIdForCid = $doenetIdOverride;
-            $isDoenetIdOverridden = true;
-        }
-    }
 
     // get cid from course_content
-    // if didn't override doenetId, then use it only as long as it is assigned and globally assigned
-    $sql = "SELECT isAssigned, isGloballyAssigned,
+    // unless draft, use it only as long as it is assigned
+    // and either 
+    // - activity is globally assigned 
+    // - activity is assigned to user via user_assignment
+    // - we are getting publicOnly information, or
+    // - user has edit access to course
+    $sql = "SELECT isGloballyAssigned, courseId,
         CAST(jsonDefinition as CHAR) AS json
         FROM course_content
-        WHERE doenetId = '$doenetIdForCid'
+        WHERE doenetId = '$doenetId'
         ";
+
+    if ($getDraft != "true") {
+        $sql = "$sql AND isAssigned = 1";
+    }
+    if ($publicOnly == "true") {
+        $sql = "$sql AND isPublic = 1";
+    }
 
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        if ($getDraft === "true") {
-            $json = json_decode($row["json"], true);
+        $json = json_decode($row["json"], true);
+        if ($getDraft == "true") {
             $cid = $json["draftCid"];
-        } elseif (
-            $isDoenetIdOverridden ||
-            ($row["isAssigned"] && $row["isGloballyAssigned"])
-        ) {
-            $json = json_decode($row["json"], true);
+        } elseif ($row["isGloballyAssigned"] || $publicOnly == "true") {
             $cid = $json["assignedCid"];
+        } else {
+            // not globally assigned and not publicOnly.  See if assigned to user.
+            $sql = "SELECT doenetId
+                    FROM user_assignment
+                    WHERE doenetId = '$doenetId' AND userId='$userId' AND isUnassigned='0'
+                    ";
+            $result2 = $conn->query($sql);
+            if ($result2->num_rows > 0) {
+                $cid = $json["assignedCid"];
+            } else {
+                $courseId = $row["courseId"];  // Note: row is still from previous query
+                $permissions = permissionsAndSettingsForOneCourseFunction(
+                    $conn,
+                    $userId,
+                    $courseId
+                );
+                if ($permissions["canEditContent"] == "1") {
+                    $cid = $json["assignedCid"];
+                }
+            }
         }
     }
 
-    if ($latestAttemptOverrides == "true") {
+    if ($cid && $latestAttemptOverrides == "true" && $publicOnly != "true") {
         // the cid from the latest attempt overrides the instructor-provided cid
         // from the assignment/content tables
         $sql = "SELECT cid
@@ -105,7 +116,7 @@ if ($success) {
             $newCid = $cid;
             $cid = $row["cid"];
 
-            if ($newCid && $newCid != $cid) {
+            if ($newCid != $cid) {
                 // the instructor must have changed the cid since this attempt was started
                 $cidChanged = true;
             }

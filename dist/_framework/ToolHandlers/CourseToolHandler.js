@@ -136,10 +136,6 @@ export const pageVariantPanelAtom = atom({
   key: "pageVariantPanelAtom",
   default: {index: 1, allPossibleVariants: [], variantIndicesToIgnore: []}
 });
-export const activityVariantInfoAtom = atom({
-  key: "activityVariantInfoAtom",
-  default: {index: 1}
-});
 export const activityVariantPanelAtom = atom({
   key: "activityVariantPanelAtom",
   default: {index: 1, numberOfVariants: 0}

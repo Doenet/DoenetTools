@@ -3796,7 +3796,6 @@ globals.assign({
   createStringInterpolator,
   to: (source, args) => new Interpolation(source, args)
 });
-const update$1 = frameLoop.advance;
 
 function _objectWithoutPropertiesLoose$1(source, excluded) {
   if (source == null) return {};
@@ -4031,4 +4030,4 @@ const host = createHost(primitives, {
 });
 const animated = host.animated;
 
-export { animated as a, animated, update$1 as update, useChain, useSpring, useSprings, useTransition };
+export { animated as a, animated, useChain, useSpring, useSprings, useTransition };

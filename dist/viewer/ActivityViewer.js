@@ -541,6 +541,47 @@ export default function ActivityViewer(props) {
     } catch (e) {
     }
   }
+  function clickNext() {
+    setCurrentPage((was) => Math.min(nPages, was + 1));
+    let event = {
+      verb: "interacted",
+      object: {objectType: "button", objectname: "next page button"},
+      result: {newPage: Math.min(nPages, currentPage + 1)},
+      context: {oldPage: currentPage}
+    };
+    recordEvent(event);
+  }
+  function clickPrevious() {
+    setCurrentPage((was) => Math.max(1, was - 1));
+    let event = {
+      verb: "interacted",
+      object: {objectType: "button", objectname: "previous page button"},
+      result: {newPage: Math.max(1, currentPage - 1)},
+      context: {oldPage: currentPage}
+    };
+    recordEvent(event);
+  }
+  function recordEvent(event) {
+    if (!flags.allowSaveEvents) {
+      return;
+    }
+    const payload = {
+      doenetId: props.doenetId,
+      activityCid: cid,
+      attemptNumber,
+      variantIndex,
+      timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
+      version: "0.1.0",
+      verb: event.verb,
+      object: JSON.stringify(event.object),
+      result: JSON.stringify(event.result),
+      context: JSON.stringify(event.context)
+    };
+    axios.post("/api/recordEvent.php", payload).then((resp) => {
+    }).catch((e) => {
+      console.error(`Error saving event: ${e.message}`);
+    });
+  }
   if (errMsg !== null) {
     let errorIcon = /* @__PURE__ */ React.createElement("span", {
       style: {fontSize: "1em", color: "#C1292E"}
@@ -623,6 +664,7 @@ export default function ActivityViewer(props) {
       key: `page${ind}`
     }, /* @__PURE__ */ React.createElement(PageViewer, {
       doenetId: props.doenetId,
+      activityCid: cid,
       cid: page.cid,
       doenetML: page.doenetML,
       pageNumber: (ind + 1).toString(),
@@ -650,11 +692,11 @@ export default function ActivityViewer(props) {
     pageControls = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", {
       "data-cy": "previous",
       disabled: currentPage === 1,
-      onClick: () => setCurrentPage((was) => Math.max(1, was - 1))
+      onClick: clickPrevious
     }, "Previous page"), /* @__PURE__ */ React.createElement("button", {
       "data-cy": "next",
       disabled: currentPage === nPages,
-      onClick: () => setCurrentPage((was) => Math.min(nPages, was + 1))
+      onClick: clickNext
     }, "Next page"), /* @__PURE__ */ React.createElement("p", null, "Page ", currentPage, " of ", nPages));
   }
   return /* @__PURE__ */ React.createElement("div", {

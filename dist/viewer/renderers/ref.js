@@ -27,11 +27,11 @@ export default function Ref(props) {
     if (SVs.variantIndex) {
       url += `&variant=${SVs.variantIndex}`;
     }
-    if (pageToolView.page === "content") {
-      if (SVs.edit === true || SVs.edit === null && pageToolView.tool === "edit") {
-        url = `tool=edit&${url}`;
+    if (pageToolView.page === "public") {
+      if (SVs.edit === true || SVs.edit === null && pageToolView.tool === "editor") {
+        url = `tool=editor&${url}`;
       }
-      url = `content?${url}`;
+      url = `public?${url}`;
     } else {
       url = `course?tool=assignment&${url}`;
     }

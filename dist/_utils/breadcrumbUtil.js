@@ -210,7 +210,7 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
   return crumbs;
 }
 
-export function useAssignmentCrumb({ doenetId, courseId, sectionId }) {
+export function useAssignmentCrumb({ doenetId}) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const { label } = useRecoilValue(authorItemByDoenetId(doenetId));
 
@@ -222,8 +222,6 @@ export function useAssignmentCrumb({ doenetId, courseId, sectionId }) {
         tool: 'assignment',
         view: '',
         params: {
-          courseId,
-          sectionId,
           doenetId,
         },
       });
@@ -247,6 +245,54 @@ export function useEnrollmentCrumb(courseId) {
       });
     },
   };
+}
+
+export function useDataCrumb(courseId,parentDoenetId) {
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const folderInfoArray = useRecoilValue(
+    navigationSelectorFamily({ courseId, parentDoenetId }),
+  );
+  const crumbs = [
+    {
+      label: 'Data',
+      onClick: () => {
+        setPageToolView({
+          page: 'course',
+          tool: 'data',
+          view: '',
+          params: {
+            courseId,
+          },
+        });
+      },
+    }
+  ];
+
+  for (let { label, parentDoenetId, type } of folderInfoArray) {
+    switch (type) {
+      case 'section':
+        crumbs.push({
+          label,
+          onClick: () => {
+            setPageToolView({
+              page: 'course',
+              tool: 'data',
+              view: '',
+              params: {
+                courseId,
+                sectionId: parentDoenetId,
+              },
+            });
+          },
+        });
+        break;
+
+      default:
+        console.warn(`Unsupported navigration crumb type: ${type}`);
+    }
+  }
+
+  return crumbs;
 }
 
 export function useSurveyCrumb(driveId, doenetId) {

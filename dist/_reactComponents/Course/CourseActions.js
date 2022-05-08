@@ -5,13 +5,89 @@ import {
   atomFamily,
   selectorFamily,
   useRecoilCallback,
-  useRecoilValue
+  useRecoilValue,
+  useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
 import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
 import {selectedMenuPanelAtom} from "../../_framework/Panels/NewMenuPanel.js";
 import {useToast, toastType} from "../../_framework/Toast.js";
 import {fileByDoenetId, fileByCid} from "../../_framework/ToolHandlers/CourseToolHandler.js";
 import {UTCDateStringToDate} from "../../_utils/dateUtilityFunction.js";
+const enrollmentAtomByCourseId = atomFamily({
+  key: "enrollmentAtomByCourseId",
+  default: [],
+  effects: (courseId) => [
+    ({setSelf, trigger}) => {
+      if (trigger == "get") {
+        axios.get("/api/getEnrollment.php", {params: {courseId}}).then((resp) => {
+          setSelf(resp.data.enrollmentArray);
+        });
+      }
+    }
+  ]
+});
+export const enrollmentByCourseId = selectorFamily({
+  key: "enrollmentByCourseId",
+  get: (courseId) => ({get, getCallback}) => {
+    const recoilWithdraw = getCallback(({set: set2}) => async (email) => {
+      let payload = {
+        email,
+        courseId
+      };
+      try {
+        let resp = await axios.post("/api/withDrawStudents.php", payload);
+        if (resp.status < 300) {
+          set2(enrollmentAtomByCourseId(courseId), (prev) => {
+            let next = [...prev];
+            const indexOfStudent = next.findIndex((value) => value.email == email);
+            next[indexOfStudent] = {...prev[indexOfStudent], withdrew: "1"};
+            return next;
+          });
+        } else {
+          throw new Error(`response code: ${resp.status}`);
+        }
+      } catch (err) {
+      }
+    });
+    const recoilUnWithdraw = getCallback(({set: set2}) => async (email) => {
+      let payload = {
+        email,
+        courseId
+      };
+      try {
+        let resp = await axios.post("/api/unWithDrawStudents.php", payload);
+        if (resp.status < 300) {
+          set2(enrollmentAtomByCourseId(courseId), (prev) => {
+            let next = [...prev];
+            const indexOfStudent = next.findIndex((value) => value.email == email);
+            next[indexOfStudent] = {...prev[indexOfStudent], withdrew: "0"};
+            return next;
+          });
+        } else {
+          throw new Error(`response code: ${resp.status}`);
+        }
+      } catch (err) {
+      }
+    });
+    const recoilMergeData = getCallback(({set: set2}) => async (payload) => {
+      try {
+        let resp = await axios.post("/api/mergeEnrollmentData.php", payload);
+        if (resp.status < 300) {
+          set2(enrollmentAtomByCourseId(courseId), resp.data.enrollmentArray);
+        } else {
+          throw new Error(`response code: ${resp.status}`);
+        }
+      } catch (err) {
+      }
+    });
+    return {
+      value: get(enrollmentAtomByCourseId(courseId)),
+      recoilWithdraw,
+      recoilUnWithdraw,
+      recoilMergeData
+    };
+  }
+});
 function buildDoenetIdToParentDoenetIdObj(orderObj) {
   let returnObj = {};
   orderObj.content.map((item) => {
@@ -82,6 +158,28 @@ function findOrderAndPageDoenetIdsAndSetOrderObjs(set2, orderObj, assignmentDoen
   }
   return orderAndPagesDoenetIds;
 }
+export function findPageDoenetIdsInAnOrder({orderObj, needleOrderDoenetId, foundNeedle = false}) {
+  let pageDoenetIds = [];
+  if (!foundNeedle && orderObj.doenetId == needleOrderDoenetId) {
+    return findPageDoenetIdsInAnOrder({orderObj, needleOrderDoenetId, foundNeedle: true});
+  }
+  for (let item of orderObj.content) {
+    if (item?.type == "order") {
+      let morePageDoenetIds;
+      if (foundNeedle || item.doenetId == needleOrderDoenetId) {
+        morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj: item, needleOrderDoenetId, foundNeedle: true});
+      } else {
+        morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj: item, needleOrderDoenetId, foundNeedle});
+      }
+      pageDoenetIds = [...pageDoenetIds, ...morePageDoenetIds];
+    } else {
+      if (foundNeedle) {
+        pageDoenetIds.push(item);
+      }
+    }
+  }
+  return pageDoenetIds;
+}
 function localizeDates(obj, keys) {
   for (let key of keys) {
     if (obj[key]) {
@@ -93,8 +191,12 @@ function localizeDates(obj, keys) {
 let dateKeys = ["assignedDate", "dueDate", "pinnedAfterDate", "pinnedUntilDate"];
 export function useInitCourseItems(courseId) {
   const getDataAndSetRecoil = useRecoilCallback(({snapshot, set: set2}) => async (courseId2) => {
+    if (!courseId2) {
+      return;
+    }
     const courseArrayTest = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId2));
     if (courseArrayTest.length == 0) {
+      set2(courseIdAtom, courseId2);
       const {data} = await axios.get("/api/getCourseItems.php", {
         params: {courseId: courseId2}
       });
@@ -104,7 +206,8 @@ export function useInitCourseItems(courseId) {
           items.push(item.doenetId);
         }
         if (item.type === "activity") {
-          pageDoenetIdToParentDoenetId2 = buildDoenetIdToParentDoenetIdObj(item.order);
+          let newPageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.order);
+          pageDoenetIdToParentDoenetId2 = {...pageDoenetIdToParentDoenetId2, ...newPageDoenetIdToParentDoenetId};
           let ordersAndPages = findOrderAndPageDoenetIdsAndSetOrderObjs(set2, item.order, item.doenetId, item.doenetId);
           items = [...items, ...ordersAndPages];
         } else if (item.type === "bank") {
@@ -127,6 +230,23 @@ export function useInitCourseItems(courseId) {
     }
   }, [getDataAndSetRecoil, courseId]);
 }
+export function useSetCourseIdFromDoenetId(doenetId) {
+  const item = useRecoilValue(authorItemByDoenetId("doenetId"));
+  const setCourseId = useSetRecoilState(courseIdAtom);
+  useEffect(async () => {
+    if (Object.keys(item).length > 0) {
+      return;
+    }
+    const {data} = await axios.get("/api/getCourseIdFromDoenetId.php", {
+      params: {doenetId}
+    });
+    setCourseId(data.courseId);
+  }, [doenetId]);
+}
+export const courseIdAtom = atom({
+  key: "courseIdAtom",
+  default: null
+});
 export const authorCourseItemOrderByCourseId = atomFamily({
   key: "authorCourseItemOrderByCourseId",
   default: []
@@ -908,25 +1028,6 @@ ${childrenString}</document>`;
     }
     return null;
   }
-  function findPageDoenetIdsInAnOrder({orderObj, needleOrderDoenetId, foundNeedle = false}) {
-    let pageDoenetIds = [];
-    for (let item of orderObj.content) {
-      if (item?.type == "order") {
-        let morePageDoenetIds;
-        if (foundNeedle || item.doenetId == needleOrderDoenetId) {
-          morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj: item, needleOrderDoenetId, foundNeedle: true});
-        } else {
-          morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj: item, needleOrderDoenetId, foundNeedle});
-        }
-        pageDoenetIds = [...pageDoenetIds, ...morePageDoenetIds];
-      } else {
-        if (foundNeedle) {
-          pageDoenetIds.push(item);
-        }
-      }
-    }
-    return pageDoenetIds;
-  }
   function findOrderDoenetIdsInAnOrder({orderObj, needleOrderDoenetId, foundNeedle = false}) {
     let orderDoenetIds = [];
     for (let item of orderObj.content) {
@@ -1477,6 +1578,30 @@ ${childrenString}</document>`;
       }
     }
   });
+  const findPagesFromDoenetIds = useRecoilCallback(({snapshot}) => async (selectedDoenetIds) => {
+    let pagesFound = [];
+    for (let doenetId of selectedDoenetIds) {
+      let itemObj = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+      if (itemObj.type == "page") {
+        pagesFound.push(itemObj.doenetId);
+      } else if (itemObj.type == "activity") {
+        let newPages = findPageDoenetIdsInAnOrder({orderObj: itemObj.order, needleOrderDoenetId: "", foundNeedle: true});
+        pagesFound = [...pagesFound, ...newPages];
+      } else if (itemObj.type == "order") {
+        let containingObj = await snapshot.getPromise(authorItemByDoenetId(itemObj.containingDoenetId));
+        let newPages = findPageDoenetIdsInAnOrder({orderObj: containingObj.order, needleOrderDoenetId: itemObj.doenetId, foundNeedle: false});
+        pagesFound = [...pagesFound, ...newPages];
+      } else if (itemObj.type == "bank") {
+        pagesFound = [...pagesFound, ...itemObj.pages];
+      } else if (itemObj.type == "section") {
+        let doenetIdsInSection = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId, sectionId: itemObj.doenetId}));
+        let newPages = await findPagesFromDoenetIds(doenetIdsInSection);
+        pagesFound = [...pagesFound, ...newPages];
+      }
+    }
+    pagesFound = [...new Set(pagesFound)];
+    return pagesFound;
+  });
   return {
     create,
     deleteItem,
@@ -1490,6 +1615,7 @@ ${childrenString}</document>`;
     updateOrderBehavior,
     copyItems,
     cutItems,
-    pasteItems
+    pasteItems,
+    findPagesFromDoenetIds
   };
 };

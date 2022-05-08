@@ -1,3 +1,4 @@
+import { retrieveTextFileForCid } from "../core/utils/retrieveTextFile.js";
 import { returnAllPossibleVariants } from "../core/utils/returnAllPossibleVariants.js";
 import { parseAndCompile } from "../parser/parser.js";
 
@@ -309,4 +310,19 @@ export async function determineNumberOfActivityVariants(activityDefinition) {
 
   return { numberOfVariants, pageVariantsResult };
 
+}
+
+export async function returnNumberOfActivityVariantsForCid(cid) {
+
+  let activityDefinitionDoenetML = await retrieveTextFileForCid(cid);
+
+  let result = parseActivityDefinition(activityDefinitionDoenetML);
+
+  if (!result.success) {
+    return result;
+  }
+
+  result = await determineNumberOfActivityVariants(result.activityJSON);
+
+  return { success: true, numberOfVariants: result.numberOfVariants };
 }
