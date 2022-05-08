@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toastType, useToast } from '@Toast';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilCallback, useRecoilValue, useSetRecoilState, atom } from 'recoil';
 import styled from 'styled-components';
 import {
   authorItemByDoenetId,
@@ -280,6 +280,12 @@ export default function SelectedActivity() {
   );
 }
 
+//TODO: Emilio
+const temporaryRestrictToAtom = atom({
+  key:"temporaryRestrictToAtom",
+  default:[]
+})
+
 function AssignTo({updateAssignment}){
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const {
@@ -289,10 +295,37 @@ function AssignTo({updateAssignment}){
 
   const {value:enrolledStudents} = useRecoilValue(enrollmentByCourseId(courseId))
 
+  //email addresses of only those who assignment is restricted to
+  const [restrictedTo,setRestrictedTo] = useState([]);
+
+  async function getAndSetRestrictedTo({courseId,doenetId}){
+    let resp = await axios.get('/api/getRestrictedTo.php',{params:{courseId,doenetId}})
+    // console.log("resp",resp.data)
+    setRestrictedTo(resp.data.restrictedTo)
+  }
+
+  async function updateRestrictedTo({courseId,doenetId,emailAddresses}){
+
+    let resp = await axios.post('/api/updateRestrictedTo.php',{courseId,doenetId,emailAddresses})
+    // console.log("resp",resp.data)
+    setRestrictedTo(emailAddresses)
+  }
+
+  useEffect(()=>{
+    if (!isGloballyAssigned){
+      getAndSetRestrictedTo({courseId,doenetId})
+    }
+  },[doenetId,isGloballyAssigned])
+
+
   //Only those enrolled who didn't withdraw
   let enrolledJSX = enrolledStudents.reduce((allrows,row)=>{
     if (row.withdrew == '0'){
-      return [...allrows,<option key={`enrolledOpt${row.email}`} value={row.email}>{row.firstName} {row.lastName}</option>]
+      if (!isGloballyAssigned && restrictedTo.includes(row.email)){
+        return [...allrows,<option selected key={`enrolledOpt${row.email}`} value={row.email}>{row.firstName} {row.lastName}</option>]
+      }else{
+        return [...allrows,<option key={`enrolledOpt${row.email}`} value={row.email}>{row.firstName} {row.lastName}</option>]
+      }
     }else{
       return allrows
     }
@@ -324,9 +357,11 @@ function AssignTo({updateAssignment}){
             options={enrolledJSX}
             disabled={isGloballyAssigned}
             onChange={(e)=>{
-              //TODO: Clara please build this in
-              let values = Array.from(e.target.selectedOptions, option => option.value);
-              console.log("values",values)
+              //TODO: Clara please build this in to RelatedItems
+              let emailAddresses = Array.from(e.target.selectedOptions, option => option.value);
+
+              updateRestrictedTo({courseId,doenetId,emailAddresses})
+              
             }}
             multiple
           />
