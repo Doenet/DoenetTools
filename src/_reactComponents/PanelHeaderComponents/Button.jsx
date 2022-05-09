@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from "styled-components";
 
 const StyledButton = styled.button`
-  margin: 0;
+  margin: ${props => props.theme.margin};
   height: 24px;
   border-style: hidden;
   color: ${props => props.disabled ? 'black' : 'white'};
   background-color: ${props => props.alert ? 'var(--mainRed)' : props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
-  border-radius: 'var(--mainBorderRadius)';
-  padding: '0 10px';
+  border-radius: ${props => props.theme.borderRadius};
+  padding: ${props => props.theme.padding};
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   font-size: 12px;
   border-radius: 20px;
@@ -29,13 +29,13 @@ const Container = styled.div`
   align-items: ${props => props.label && !props.vertical && 'center'};
 `;
 
-// ButtonStyling.defaultProps = {
-//   theme: {
-//     margin: 0,
-//     borderRadius: 'var(--mainBorderRadius)',
-//     padding: '0 10px'
-//   }
-// };
+StyledButton.defaultProps = {
+  theme: {
+    margin: 0,
+    borderRadius: 'var(--mainBorderRadius)',
+    padding: '0 10px'
+  }
+};
 
 export default function Button(props) {
   //Assume small
