@@ -151,9 +151,117 @@ $containingDoenetIds = [];
 		}
 
 	}else{
-		//No then no Recipies, no banks and no unused files
 		//TODO: check that user can view content
-		//TODO: student data
+		$sql = "
+		SELECT cc.type,
+		cc.doenetId,
+		cc.parentDoenetId,
+		cc.label,
+		cc.creationDate,
+		cc.isAssigned,
+		cc.isGloballyAssigned,
+		cc.isPublic,
+		CAST(cc.jsonDefinition as CHAR) AS json,
+		a.assignedDate AS assignedDate,
+		a.dueDate AS dueDate,
+		a.pinnedAfterDate As pinnedAfterDate,
+		a.pinnedUntilDate As pinnedUntilDate,
+		a.timeLimit AS timeLimit,
+		a.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
+		a.attemptAggregation AS attemptAggregation,
+		a.totalPointsOrPercent AS totalPointsOrPercent,
+		a.gradeCategory AS gradeCategory,
+		a.individualize AS individualize,
+		a.showSolution AS showSolution,
+		a.showSolutionInGradebook AS showSolutionInGradebook,
+		a.showFeedback AS showFeedback,
+		a.showHints AS showHints,
+		a.showCorrectness AS showCorrectness,
+		a.showCreditAchievedMenu AS showCreditAchievedMenu,
+		a.proctorMakesAvailable AS proctorMakesAvailable
+		FROM course_content AS cc
+		LEFT JOIN assignment AS a
+		ON a.doenetId = cc.doenetId
+		WHERE cc.courseId='$courseId'
+		AND cc.isDeleted = '0'
+		AND cc.isAssigned=1
+		AND (cc.type = 'activity' OR cc.type = 'section')
+		ORDER BY cc.sortOrder
+		";
+
+		$result = $conn->query($sql);
+		$items = [];
+		if ($result->num_rows > 0) {
+			while($row = $result->fetch_assoc()){
+				$item = array(
+					"doenetId"=>$row['doenetId'],
+					"type"=>$row['type'],
+					"parentDoenetId"=>$row['parentDoenetId'],
+					"label"=>$row['label'],
+					"creationDate"=>$row['creationDate'],
+					"isAssigned"=>$row['isAssigned'] == '1' ? true : false,
+					"isGloballyAssigned"=>$row['isGloballyAssigned'] == '1' ? true : false,
+					"isPublic"=>$row['isPublic'] == '1' ? true : false,
+					"assignedDate" => $row['assignedDate'],
+          "pinnedAfterDate" => $row['pinnedAfterDate'],
+          "pinnedUntilDate" => $row['pinnedUntilDate'],
+          "dueDate" => $row['dueDate'],
+          "timeLimit" => $row['timeLimit'],
+          "numberOfAttemptsAllowed" => $row['numberOfAttemptsAllowed'],
+          "attemptAggregation" => $row['attemptAggregation'],
+          "totalPointsOrPercent" => $row['totalPointsOrPercent'],
+          "gradeCategory" => $row['gradeCategory'],
+          "individualize" => $row['individualize'] == '1' ? true : false,
+          "showSolution" => $row['showSolution'] == '1' ? true : false,
+          "showSolutionInGradebook" => $row['showSolutionInGradebook'] == '1' ? true : false,
+          "showFeedback" => $row['showFeedback'] == '1' ? true : false,
+          "showHints" => $row['showHints'] == '1' ? true : false,
+          "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
+          "showCreditAchievedMenu" => $row['showCreditAchievedMenu'] == '1' ? true : false,
+          "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
+				);
+
+				if ($row['type'] == 'activity' || $row['type'] == 'bank'){
+					array_push($containingDoenetIds,$row['doenetId']);
+				}
+				
+				$json = json_decode($row['json'],true);
+				// var_dump($json);
+				$item = array_merge($json,$item);
+				
+
+				$item['isOpen'] = false; 
+				$item['isSelected'] = false;
+
+				array_push($items,$item);
+			}
+			// foreach($containingDoenetIds as $containingDoenetId){
+			// 	$sql = "
+			// 	SELECT 
+			// 	doenetId,
+			// 	containingDoenetId,
+			// 	label
+			// 	FROM pages
+			// 	WHERE containingDoenetId = '$containingDoenetId'
+			// 	AND isDeleted = '0'
+			// 	";
+			// 	$result = $conn->query($sql);
+			// 	if ($result->num_rows > 0) {
+			// 		while($row = $result->fetch_assoc()){
+			// 			$item = array(
+			// 				"type"=>"page",
+			// 				"doenetId"=>$row['doenetId'],
+			// 				"containingDoenetId"=>$row['containingDoenetId'],
+			// 				"label"=>$row['label']
+			// 			);
+			// 			$item['isSelected'] = false; //Note: no isOpen
+			// 			array_push($items,$item);
+
+			// 		}
+			// 	}
+
+			// }
+		}
 	}
 }
 
