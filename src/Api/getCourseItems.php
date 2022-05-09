@@ -37,9 +37,10 @@ if ($result->num_rows > 0) {
 }
 $containingDoenetIds = [];
 	//Can the user edit content?
-	//Yes then all items and json
-	//No then no Recipies, no banks and no unused files
+	
+	
 	if ($canEditContent == '1'){
+		//Yes then all items and json
 		$sql = "
 		SELECT cc.type,
 		cc.doenetId,
@@ -150,7 +151,9 @@ $containingDoenetIds = [];
 		}
 
 	}else{
-		//TODO: student can't edit version
+		//No then no Recipies, no banks and no unused files
+		//TODO: check that user can view content
+		//TODO: student data
 	}
 }
 
