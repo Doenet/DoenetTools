@@ -52,7 +52,8 @@ import {
   useInitCourseItems,
   selectedCourseItems,
   authorCourseItemOrderByCourseIdBySection,
-  findFirstPageOfActivity
+  // findFirstPageOfActivity,
+  studentCourseItemOrderByCourseId
 } from '../../_reactComponents/Course/CourseActions';
 
 /**
@@ -118,11 +119,12 @@ export default function CourseNavigator(props) {
 }
 
 function StudentCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
-  let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseId(courseId));
+  // let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseId(courseId));
+  let studentItemOrder = useRecoilValue(studentCourseItemOrderByCourseId(courseId));
   //TODO: use student information here?
-  
+  console.log("studentItemOrder",studentItemOrder)
   let items = [];
-  authorItemOrder.map((doenetId)=>
+  studentItemOrder.map((doenetId)=>
     items.push(<StudentItem key={`itemcomponent${doenetId}`} doenetId={doenetId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} />)
   )
     
