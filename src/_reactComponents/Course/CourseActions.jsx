@@ -260,8 +260,8 @@ export function useInitCourseItems(courseId) {
            params: { courseId },
           });
           //DoenetIds depth first search and going into json structures
-          //TODO: organize by section
           // console.log("data",data)
+          //TODO: make more efficent for student only view
           let pageDoenetIdToParentDoenetId = {};
           let doenetIds = data.items.reduce((items,item)=>{
             if (item.type !== 'page'){
@@ -281,7 +281,6 @@ export function useInitCourseItems(courseId) {
             }else if (item.type === 'page'){
               item['parentDoenetId'] = pageDoenetIdToParentDoenetId[item.doenetId];
             }
-            
             //Store activity, bank and page information
             set(authorItemByDoenetId(item.doenetId), localizeDates(item, dateKeys));
 
@@ -366,6 +365,20 @@ export const authorCourseItemOrderByCourseIdBySection = selectorFamily({
       }
     }
     return sectionDoenetIds;
+  }
+})
+
+export const studentCourseItemOrderByCourseId = selectorFamily({
+  key: 'studentCourseItemOrderByCourseId',
+  get:(courseId)=> ({get})=>{
+    let allDoenetIdsInOrder = get(authorCourseItemOrderByCourseId(courseId));
+    let studentDoenetIds = allDoenetIdsInOrder.filter((doenetId)=>{
+      let itemObj = get(authorItemByDoenetId(doenetId));
+      //If of type for the student then add to the list
+      return itemObj.type == 'activity' || itemObj.type == 'section'
+    })
+
+    return studentDoenetIds;
   }
 })
 

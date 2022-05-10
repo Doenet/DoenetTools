@@ -115,6 +115,7 @@ export default function NavigationPanel() {
     ({set,snapshot}) =>
       async ({ doenetId, courseId }) => {
         let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+        let effectiveRole = await snapshot.getPromise(effectiveRoleAtom);
     if (clickedItem.type == 'page'){
       set(pageToolViewAtom,(prev)=>{return {
         page: 'course',
@@ -123,17 +124,29 @@ export default function NavigationPanel() {
         params: { pageId: doenetId, doenetId: clickedItem.containingDoenetId },
         }})
     }else if (clickedItem.type == 'activity'){
-      //Find first page
-      let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
-      if (pageDoenetId == null){
-        addToast(`ERROR: No page found in activity`, toastType.INFO);
+      if (effectiveRole == 'student'){
+        set(pageToolViewAtom,{
+          page: 'course',
+          tool: 'assignment',
+          view: '',
+          params: {
+            doenetId,
+          },
+        })
+        
       }else{
-        set(pageToolViewAtom,(prev)=>{return {
-            page: 'course',
-            tool: 'editor',
-            view: prev.view,
-            params: { pageId:pageDoenetId, doenetId },
-        }})
+        //Find first page
+        let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
+        if (pageDoenetId == null){
+          addToast(`ERROR: No page found in activity`, toastType.INFO);
+        }else{
+          set(pageToolViewAtom,(prev)=>{return {
+              page: 'course',
+              tool: 'editor',
+              view: prev.view,
+              params: { pageId:pageDoenetId, doenetId },
+          }})
+        }
       }
     }else if (clickedItem.type == 'section'){
       set(pageToolViewAtom,(prev)=>{return {
