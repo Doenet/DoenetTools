@@ -179,7 +179,7 @@ $containingDoenetIds = [];
 		AND cc.isDeleted = '0'
 		AND cc.isAssigned=1
 		AND (cc.type = 'activity' OR cc.type = 'section')
-		AND ua.isUnassigned = 0
+		AND (ua.isUnassigned = 0 OR cc.isGloballyAssigned = 1)
 		ORDER BY cc.sortOrder
 		";
 
