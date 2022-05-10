@@ -12,6 +12,7 @@ function cesc(s) {
 describe('Point Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
@@ -36,7 +37,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,6)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_point1'].stateValues.xs).eqls([5, 6])
       expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', 5, 6])
       expect(stateVariables['/_point2'].stateValues.xs).eqls([1, 6])
@@ -45,7 +46,7 @@ describe('Point Tag Tests', function () {
 
     cy.log('move point P to (-1,-7)')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -1, y: -7 }
@@ -56,7 +57,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,−7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_point1'].stateValues.xs).eqls([-1, -7])
       expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', -1, -7])
       expect(stateVariables['/_point2'].stateValues.xs).eqls([1, -7])
@@ -86,7 +87,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,6)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_point1'].stateValues.xs).eqls([5, 6])
       expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', 5, 6])
       expect(stateVariables['/_point2'].stateValues.xs).eqls([1, 6])
@@ -95,7 +96,7 @@ describe('Point Tag Tests', function () {
 
     cy.log('move point P to (-1,-7)')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -1, y: -7 }
@@ -106,7 +107,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,−7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_point1'].stateValues.xs).eqls([-1, -7])
       expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', -1, -7])
       expect(stateVariables['/_point2'].stateValues.xs).eqls([1, -7])
@@ -136,7 +137,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`Labels are P and P'`)
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_point1'].stateValues.label).eq('P')
       expect(stateVariables['/_point2'].stateValues.label).eq(`P'`)
 
@@ -169,11 +170,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
     })
 
     cy.log('create 2D point')
@@ -183,17 +184,17 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(−1,−7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls(["vector", -1, -7])
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", -1, -7])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
     })
 
     cy.log('move point P to (3,5)')
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/P",
         args: { x: 3, y: 5 }
@@ -204,17 +205,17 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(3,5)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls([3, 5])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls(["vector", 3, 5])
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls([3, 5])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls(["vector", 3, 5])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([3, 5])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 3, 5])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([3, 5])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 3, 5])
     })
 
     cy.log('move point Q to (9,1)')
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/Q",
         args: { x: 9, y: 1 }
@@ -225,11 +226,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(9,1)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls([9, 1])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls(["vector", 9, 1])
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls([9, 1])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls(["vector", 9, 1])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([9, 1])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 9, 1])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([9, 1])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 9, 1])
     })
 
     cy.log('make point undefined again')
@@ -239,11 +240,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
     })
 
     cy.log('create 1D point')
@@ -253,11 +254,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '−3');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls([-3])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls(-3)
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls([-3])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls(-3)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([-3])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(-3)
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([-3])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(-3)
     })
 
 
@@ -268,11 +269,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(6,5,4)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/P'].stateValues.xs)).eqls([6, 5, 4])
-      expect((await stateVariables['/P'].stateValues.coords)).eqls(["vector", 6, 5, 4])
-      expect((await stateVariables['/Q'].stateValues.xs)).eqls([6, 5, 4])
-      expect((await stateVariables['/Q'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([6, 5, 4])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([6, 5, 4])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 6, 5, 4])
     })
 
   });
@@ -294,9 +295,11 @@ describe('Point Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3,1)');
+
     cy.log(`we can move point`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 7, y: -5 }
@@ -306,7 +309,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(7,−5)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(7, 1E-12)
       expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-5, 1E-12)
       expect(me.fromAst(stateVariables['/_math1'].stateValues.value).evaluate_to_constant()).closeTo(7 / 1.5, 1E-12)
@@ -341,17 +344,17 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(2,3)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
     })
 
     cy.log('move point 1')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -4, y: -7 }
@@ -361,12 +364,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−4,−7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
     })
   })
 
@@ -395,18 +398,18 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(2,3)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
     })
 
     cy.log('move point 1')
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -4, y: -7 }
@@ -416,12 +419,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−4,−7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
     })
   })
 
@@ -447,18 +450,18 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(2,3)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
     })
 
     cy.log('move point 1')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -4, y: -7 }
@@ -468,12 +471,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−4,−7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
     })
   })
 
@@ -502,18 +505,18 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(2,3)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(2, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(2, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(3, 1E-12)
     })
 
 
     cy.log('move point 1')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -4, y: -7 }
@@ -523,12 +526,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−4,−7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[0]).eq("a")
-      expect((await stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
-      expect((await stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-4, 1E-12)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-7, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[0]).eq("a")
+      expect((stateVariables['/source'].stateValues.xs)[1]).closeTo(-4, 1E-12)
+      expect((stateVariables['/source'].stateValues.xs)[2]).closeTo(-7, 1E-12)
     })
   })
 
@@ -554,7 +557,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(1,2)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g1/_point1'].stateValues.xs).eqls([1, 2])
       expect(stateVariables['/g2/_point1'].stateValues.xs).eqls([1, 2])
       expect(stateVariables['/p3'].stateValues.xs).eqls([1, 2])
@@ -562,7 +565,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point1 to (4,6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g1/_point1",
         args: { x: 4, y: 6 }
@@ -572,7 +575,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(4,6)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g1/_point1'].stateValues.xs).eqls([4, 6])
       expect(stateVariables['/g2/_point1'].stateValues.xs).eqls([4, 6])
       expect(stateVariables['/p3'].stateValues.xs).eqls([4, 6])
@@ -580,7 +583,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point2 to (-3,-7)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/g2/_point1",
         args: { x: -3, y: -7 }
@@ -590,7 +593,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−3,−7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g1/_point1'].stateValues.xs).eqls([-3, -7])
       expect(stateVariables['/g2/_point1'].stateValues.xs).eqls([-3, -7])
       expect(stateVariables['/p3'].stateValues.xs).eqls([-3, -7])
@@ -598,7 +601,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point3 to (9,-2)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/p3",
         args: { x: 9, y: -2 }
@@ -608,7 +611,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(9,−2)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/g1/_point1'].stateValues.xs).eqls([9, -2])
       expect(stateVariables['/g2/_point1'].stateValues.xs).eqls([9, -2])
       expect(stateVariables['/p3'].stateValues.xs).eqls([9, -2])
@@ -635,15 +638,15 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(110,1)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 1, 10]);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(1)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 1, 10]);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(1)
 
     })
 
     cy.log(`move point1 to (-9,6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9, y: 6 }
@@ -653,14 +656,14 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(185,6)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 18, 5])
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(6)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 18, 5])
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(6)
     })
 
     cy.log(`move point1 to (9,-3)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 9, y: -3 }
@@ -670,9 +673,9 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(910,−3)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 9, 10])
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-3)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eqls(['/', 9, 10])
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-3)
     })
 
 
@@ -697,15 +700,15 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(1,sin(1))');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', 1]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', 1]);
 
     })
 
     cy.log(`move point1 to (-9,6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9, y: 6 }
@@ -715,14 +718,14 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−9,sin(−9))');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-9)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', -9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-9)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', -9]);
     })
 
     cy.log(`move point1 to (9,-3)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 9, y: -3 }
@@ -732,9 +735,9 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(9,sin(9))');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(9)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', 9])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(9)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eqls(['apply', 'sin', 9])
     })
 
 
@@ -761,17 +764,17 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(2,1)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(1);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(2);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(1);
 
     })
 
     cy.log(`move point1 to (-9,6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9, y: 6 }
@@ -781,16 +784,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(6,−9)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-9)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(6);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(6)
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(-9);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-9)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(6);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(6)
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(-9);
     })
 
     cy.log(`move point2 to (0,-3)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: 0, y: -3 }
@@ -800,11 +803,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(0,−3)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-3)
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0)
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(0)
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(-3)
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-3)
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0)
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(0)
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(-3)
     })
 
   });
@@ -825,26 +828,24 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
     })
 
     cy.log(`move point1 to (-9,6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9, y: 6 }
       })
     })
 
-    cy.wait(100)
-
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
     })
 
   });
@@ -870,14 +871,14 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(5,−2)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-2);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-2);
     })
 
     cy.log(`move point1 to (8,8)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 8, y: 8 }
@@ -887,9 +888,9 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(8,−5)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(8);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-5);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(8);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-5);
     })
 
   });
@@ -918,16 +919,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/a .mjx-mrow').should('contain.text', '5+1');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(6);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(6);
     })
 
     cy.log(`move point1 to (-4,-8)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: -4, y: -8 }
@@ -937,16 +938,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/a .mjx-mrow').should('contain.text', '−4+1');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(-4);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(-8);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-8);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(-4);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(-8);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-8);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-3);
     })
 
     cy.log(`move point2 to (-9,10)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9, y: 10 }
@@ -956,11 +957,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/a .mjx-mrow').should('contain.text', '9+1');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(9);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(-9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(9);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(-9);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-9);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(10);
     })
 
   });
@@ -994,7 +995,7 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let d = 5;
       let point2x = d;
       let point2y = 3 - d;
@@ -1004,20 +1005,20 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
-      expect((await stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
-      expect((await stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
-      expect((await stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
+      expect((stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
+      expect((stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
+      expect((stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
 
     })
 
     cy.log(`move point2 along constained line`)
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let d = -6;
       let point2x = d;
@@ -1028,20 +1029,24 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      await stateVariables['/_point2'].movePoint({ x: point2x, y: point2y });
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
-      expect((await stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
-      expect((await stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
-      expect((await stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: point2x, y: point2y }
+      });
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
+      expect((stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
+      expect((stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
+      expect((stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
     })
 
     cy.log(`move point1 along constained curve`)
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       let d = 7;
       let point2x = d;
@@ -1052,22 +1057,30 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      await stateVariables['/_point1'].movePoint({ x: point1x, y: point1y });
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
-      expect((await stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
-      expect((await stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
-      expect((await stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: point1x, y: point1y }
+      });
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
+      expect((stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
+      expect((stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
+      expect((stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
     })
 
     cy.log(`move point2 to upper right`)
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/_point2'].movePoint({ x: 9, y: 9 });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point2",
+        args: { x: 9, y: 9 }
+      });
 
       let d = 9;
       let point2x = d;
@@ -1078,21 +1091,25 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
-      expect((await stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
-      expect((await stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
-      expect((await stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
+      expect((stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
+      expect((stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
+      expect((stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
     })
 
     cy.log(`move point1 to upper left`)
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
-      await stateVariables['/_point1'].movePoint({ x: -6, y: 4 });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -6, y: 4 }
+      });
 
       let d = 4;
       let point2x = d;
@@ -1103,14 +1120,14 @@ describe('Point Tag Tests', function () {
       let point1x = a;
       let point1y = point2x;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
-      expect((await stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
-      expect((await stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
-      expect((await stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(point1x, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(point1y, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(point2x, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(point2y, 1E-12);
+      expect((stateVariables['/d'].stateValues.value)).closeTo(d, 1E-12);
+      expect((stateVariables['/c'].stateValues.value)).closeTo(c, 1E-12);
+      expect((stateVariables['/b'].stateValues.value)).closeTo(b, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(a, 1E-12);
     })
 
   });
@@ -1139,7 +1156,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`point 2 is moveable, based on x component`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: -3, y: -7 }
@@ -1150,18 +1167,18 @@ describe('Point Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(-3, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-3, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(-3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(-3, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(-3, 1E-12);
 
     })
     // test zero as had a bug affect case when zero
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: 0, y: 5 }
@@ -1171,19 +1188,19 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/a").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
 
     cy.log(`point1 is free to move`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 9, y: -6 }
@@ -1193,19 +1210,19 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/a").should('have.text', '9')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(9, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-6, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(9, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(9, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(9, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(9, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-6, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(9, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(9, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(9, 1E-12);
 
     })
 
     // move to zero to make sure are testing the bug that occured at zero
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 0, y: 0 }
@@ -1215,12 +1232,12 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/a").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
 
@@ -1250,7 +1267,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`point 2 is moveable, based on x component`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: -3, y: -7 }
@@ -1260,17 +1277,17 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/a").should('have.text', '-3')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(-3, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(-3, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(-3, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(-3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(-3, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(-3, 1E-12);
 
     })
     // test zero as had a bug affect case when zero
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: 0, y: 5 }
@@ -1280,18 +1297,18 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/a").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(3, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
 
     cy.log(`point1 is free to move`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 9, y: -6 }
@@ -1301,18 +1318,18 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/a").should('have.text', '9')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(9, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-6, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(9, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(9, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(9, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(9, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(-6, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(9, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(9, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(9, 1E-12);
 
     })
 
     // move to zero to make sure are testing the bug that occured at zero
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 0, y: 0 }
@@ -1322,12 +1339,12 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/a").should('have.text', '0')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
-      expect((await stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).closeTo(0, 1E-12);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).closeTo(0, 1E-12);
+      expect((stateVariables['/a'].stateValues.value)).closeTo(0, 1E-12);
 
     })
 
@@ -1355,9 +1372,11 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+
     cy.log(`move point to (1.2,3.6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.2, y: 3.6 }
@@ -1367,10 +1386,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1380,7 +1399,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (-9.8,-7.4)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9.8, y: -7.4 }
@@ -1389,10 +1408,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−10,−7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1404,7 +1423,7 @@ describe('Point Tag Tests', function () {
     // test bug with number in scientific notation 
     cy.log(`move point to (-1.3E-14,2.5E-12)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -1.3E-14, y: 2.5E-12 }
@@ -1413,10 +1432,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(0,0)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1449,9 +1468,11 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+
     cy.log(`move point to (1.2,3.6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.2, y: 3.6 }
@@ -1461,10 +1482,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1474,7 +1495,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (-9.8,-7.4)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9.8, y: -7.4 }
@@ -1483,10 +1504,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−10,−7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1518,9 +1539,11 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+
     cy.log(`move point to (1.2,3.6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.2, y: 3.6 }
@@ -1530,10 +1553,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1543,7 +1566,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (-9.8,-7.4)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9.8, y: -7.4 }
@@ -1552,10 +1575,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−10,−7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1584,9 +1607,11 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2,3)');
+
     cy.log(`move point to (1.2,3.6,5.4)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.2, y: 3.6, z: 5.4 }
@@ -1596,11 +1621,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4,5)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4, 5]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1610,7 +1635,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (-9.8,-7.4,-4.6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9.8, y: -7.4, z: -4.6 }
@@ -1619,11 +1644,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−10,−7,−5)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(-5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7, -5]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-10);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(-5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -10, -7, -5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1635,7 +1660,7 @@ describe('Point Tag Tests', function () {
     // test bug with number in scientific notation 
     cy.log(`move point to (-1.3E-14,2.5E-12,7.1E-21)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -1.3E-14, y: 2.5E-12, z: 7.1E-121 }
@@ -1644,11 +1669,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(0,0,0)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0, 0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1685,10 +1710,10 @@ describe('Point Tag Tests', function () {
 
     cy.log("second constraint wins, but first constraint affects result")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1703,7 +1728,7 @@ describe('Point Tag Tests', function () {
     // If one can find a way to avoid this strange behavior, we can change this test
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 3, y: 2.9 }
@@ -1713,10 +1738,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(7,5)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 7, 5]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 7, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1749,9 +1774,9 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1762,7 +1787,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 8.5, y: -6.2 }
@@ -1772,9 +1797,9 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9,0)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1820,9 +1845,11 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+
     cy.log(`move point A to (105,3)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 105, y: 3 }
@@ -1832,12 +1859,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9.8,3)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(9.8);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(9.8);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(3);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/B'].stateValues.xs)[0]).eq(9.8);
-      expect((await stateVariables['/B'].stateValues.xs)[1]).eq(3);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(9.8);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(3);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1851,7 +1878,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point A to (-30,11)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -30, y: 11 }
@@ -1861,12 +1888,12 @@ describe('Point Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(-9.8);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(9.8);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(-9.8);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(9.8);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/B'].stateValues.xs)[0]).eq(-9.8);
-      expect((await stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(-9.8);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1880,7 +1907,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point A to (-3,1)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3, y: 1 }
@@ -1889,12 +1916,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−3,1)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(-3);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(1);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(1);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/B'].stateValues.xs)[0]).eq(-3);
-      expect((await stateVariables['/B'].stateValues.xs)[1]).eq(1);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(1);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1908,7 +1935,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point B to (-7,18)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: -7, y: 18 }
@@ -1917,12 +1944,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−7,9.8)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(9.8);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(9.8);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/B'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(9.8);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1937,7 +1964,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point B to (56,-91)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: 56, y: -91 }
@@ -1946,12 +1973,12 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(9.8,−9.8)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(9.8);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(-9.8);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(9.8);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(-9.8);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/B'].stateValues.xs)[0]).eq(9.8);
-      expect((await stateVariables['/B'].stateValues.xs)[1]).eq(-9.8);
+      expect((stateVariables['/B'].stateValues.xs)[0]).eq(9.8);
+      expect((stateVariables['/B'].stateValues.xs)[1]).eq(-9.8);
       expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1965,7 +1992,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point C to (56,-91)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/C",
         args: { x: 56, y: -91 }
@@ -1975,13 +2002,13 @@ describe('Point Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/C'].stateValues.xs)[0]).eq(9.5);
-      expect((await stateVariables['/C'].stateValues.xs)[1]).eq(-9.5);
-      expect(await stateVariables['/C'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/D'].stateValues.xs)[0]).eq(9.5);
-      expect((await stateVariables['/D'].stateValues.xs)[1]).eq(-9.5);
-      expect(await stateVariables['/D'].stateValues.constraintUsed).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/C'].stateValues.xs)[0]).eq(9.5);
+      expect((stateVariables['/C'].stateValues.xs)[1]).eq(-9.5);
+      expect(stateVariables['/C'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/D'].stateValues.xs)[0]).eq(9.5);
+      expect((stateVariables['/D'].stateValues.xs)[1]).eq(-9.5);
+      expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
     })
 
     cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1996,7 +2023,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point D to (5,15)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/D",
         args: { x: 5, y: 15 }
@@ -2005,13 +2032,13 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(5,9.5)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/C'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/C'].stateValues.xs)[1]).eq(9.5);
-      expect(await stateVariables['/C'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/D'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/D'].stateValues.xs)[1]).eq(9.5);
-      expect(await stateVariables['/D'].stateValues.constraintUsed).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/C'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/C'].stateValues.xs)[1]).eq(9.5);
+      expect(stateVariables['/C'].stateValues.constraintUsed).eq(true);
+      expect((stateVariables['/D'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/D'].stateValues.xs)[1]).eq(9.5);
+      expect(stateVariables['/D'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(5,9.5)')
@@ -2055,9 +2082,11 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a')
 
+    cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,2)');
+
     cy.log(`move point1 to (1.2,3.6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/original",
         args: { x: 1.2, y: 3.6 }
@@ -2066,18 +2095,18 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.2,3.6)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
       expect(stateVariables['/original'].stateValues.constraintUsed).eq(false);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(2);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2, 5]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(2);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2, 5]);
       expect(stateVariables['/constrained'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(6);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3, 6]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(6);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3, 6]);
       expect(stateVariables['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2096,7 +2125,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point2 to (-3.4,6.7)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/constrained",
         args: { x: -3.4, y: 6.7 }
@@ -2105,18 +2134,18 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−4,6)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(-4);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(6);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", -4, 6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(-4);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(6);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", -4, 6]);
       expect(stateVariables['/original'].stateValues.constraintUsed).eq(false);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(-3);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(7);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", -3, 7]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(7);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", -3, 7]);
       expect(stateVariables['/constrained'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(-2);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(8);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", -2, 8]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(-2);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(8);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", -2, 8]);
       expect(stateVariables['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2134,7 +2163,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point3 to (5.3, -2.2)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/follower",
         args: { x: 5.3, y: -2.2 }
@@ -2143,18 +2172,18 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(3,−4)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(-4);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 3, -4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(-4);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 3, -4]);
       expect(stateVariables['/original'].stateValues.constraintUsed).eq(false);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(4);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(-3);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 4, -3]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(4);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(-3);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 4, -3]);
       expect(stateVariables['/constrained'].stateValues.constraintUsed).eq(true);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(-2);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", 5, -2]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(-2);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 5, -2]);
       expect(stateVariables['/follower'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2213,16 +2242,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(3.2,5.6)')
     }); cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(2.2);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(4.6);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2.2, 4.6]);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(3.2);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(5.6);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3.2, 5.6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(2.2);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(4.6);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2.2, 4.6]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(3.2);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(5.6);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3.2, 5.6]);
     })
 
 
@@ -2237,16 +2266,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(3,6)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(2);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2, 5]);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(6);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3, 6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(1.2);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(3.6);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 1.2, 3.6]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(2);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 2, 5]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(6);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 3, 6]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1.2,3.6)')
@@ -2260,7 +2289,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point2 to (5.3, -2.2)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/constrained",
         args: { x: 5.3, y: -2.2 }
@@ -2272,16 +2301,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(6,−1)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(4);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(-3);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 4, -3]);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(-2);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 5, -2]);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(6);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(-1);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", 6, -1]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(4);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(-3);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 4, -3]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(-2);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 5, -2]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(6);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(-1);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", 6, -1]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,−3)')
@@ -2304,17 +2333,17 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math2 .mjx-mrow').should('contain.text', '(4,−1.9)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(4);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(-3);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", 4, -3]);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(4);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(-1.9);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 4, -1.9]);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(5);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).to.be.approximately(-0.9, 1E-10);
-      expect((await stateVariables['/follower'].stateValues.coords).slice(0, 2)).eqls(["vector", 5]);
-      expect((await stateVariables['/follower'].stateValues.coords)[2]).to.be.approximately(-0.9, 1E-10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(4);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(-3);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", 4, -3]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(4);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(-1.9);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", 4, -1.9]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(5);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).to.be.approximately(-0.9, 1E-10);
+      expect((stateVariables['/follower'].stateValues.coords).slice(0, 2)).eqls(["vector", 5]);
+      expect((stateVariables['/follower'].stateValues.coords)[2]).to.be.approximately(-0.9, 1E-10);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(4,−3)')
@@ -2329,7 +2358,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (-2.2, -8.6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/constrained",
         args: { x: -0.6, y: -8.6 }
@@ -2341,16 +2370,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math3 .mjx-mrow').should('contain.text', '(−1,−7.4)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/original'].stateValues.xs)[0]).eq(-3);
-      expect((await stateVariables['/original'].stateValues.xs)[1]).eq(-9.4);
-      expect((await stateVariables['/original'].stateValues.coords)).eqls(["vector", -3, -9.4]);
-      expect((await stateVariables['/constrained'].stateValues.xs)[0]).eq(-2);
-      expect((await stateVariables['/constrained'].stateValues.xs)[1]).eq(-8.4);
-      expect((await stateVariables['/constrained'].stateValues.coords)).eqls(["vector", -2, -8.4]);
-      expect((await stateVariables['/follower'].stateValues.xs)[0]).eq(-1);
-      expect((await stateVariables['/follower'].stateValues.xs)[1]).eq(-7.4);
-      expect((await stateVariables['/follower'].stateValues.coords)).eqls(["vector", -1, -7.4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/original'].stateValues.xs)[0]).eq(-3);
+      expect((stateVariables['/original'].stateValues.xs)[1]).eq(-9.4);
+      expect((stateVariables['/original'].stateValues.coords)).eqls(["vector", -3, -9.4]);
+      expect((stateVariables['/constrained'].stateValues.xs)[0]).eq(-2);
+      expect((stateVariables['/constrained'].stateValues.xs)[1]).eq(-8.4);
+      expect((stateVariables['/constrained'].stateValues.coords)).eqls(["vector", -2, -8.4]);
+      expect((stateVariables['/follower'].stateValues.xs)[0]).eq(-1);
+      expect((stateVariables['/follower'].stateValues.xs)[1]).eq(-7.4);
+      expect((stateVariables['/follower'].stateValues.coords)).eqls(["vector", -1, -7.4]);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(−3,−9.4)')
@@ -2389,10 +2418,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−7,9)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2403,7 +2432,7 @@ describe('Point Tag Tests', function () {
     cy.log(`move point to (1.1,3.6)`)
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.1, y: 3.6 }
@@ -2412,10 +2441,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.1,3.6)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(3.6);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(3.6);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.6]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2425,7 +2454,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (1.1,3.9)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.1, y: 3.9 }
@@ -2434,10 +2463,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2449,7 +2478,7 @@ describe('Point Tag Tests', function () {
     // test bug with number in scientific notation 
     cy.log(`move point to (-1.3E-14,2.5E-12)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -1.3E-14, y: 2.5E-12 }
@@ -2458,10 +2487,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(0,0)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2497,10 +2526,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2510,7 +2539,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (1.1,3.6)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.1, y: 3.6 }
@@ -2519,10 +2548,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.1,3.6)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(3.6);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(3.6);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.6]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2532,7 +2561,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (1.1,3.9)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.1, y: 3.9 }
@@ -2541,10 +2570,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2574,11 +2603,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9, 2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(2);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9, 2]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2588,7 +2617,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (1.1,3.9,5.4)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.1, y: 3.9, z: 5.4 }
@@ -2597,11 +2626,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.1,3.9,5.4)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(3.9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(5.4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.9, 5.4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1.1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(3.9);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(5.4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.1, 3.9, 5.4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2611,7 +2640,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (1.1,3.9,5.9)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.1, y: 3.9, z: 5.9 }
@@ -2620,11 +2649,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4,6)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(6);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4, 6]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(6);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4, 6]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2636,7 +2665,7 @@ describe('Point Tag Tests', function () {
     // test bug with number in scientific notation 
     cy.log(`move point to (-1.3E-14,2.5E-12,-2.3E-19)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -1.3E-14, y: 2.5E-12, z: -2.3E-19 }
@@ -2645,11 +2674,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(0,0,0)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(0);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0, 0]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(0);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 0, 0, 0]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2690,17 +2719,17 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true");
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-3.4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, -3.4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-3.4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, -3.4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
 
 
     cy.log(`move point to (1.3,3.9)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.3, y: 3.9 }
@@ -2709,10 +2738,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.3,4)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1.3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.3, 4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1.3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.3, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2722,7 +2751,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (1.1,3.9)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.1, y: 3.9 }
@@ -2731,10 +2760,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1,4)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1, 4]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2744,7 +2773,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point to (1.3,3.7)`)
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 1.3, y: 3.7 }
@@ -2753,10 +2782,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(1.3,3.7)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1.3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(3.7);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.3, 3.7]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1.3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(3.7);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 1.3, 3.7]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2799,10 +2828,10 @@ describe('Point Tag Tests', function () {
     cy.log(`no constraints with blanks`)
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7.1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(8.9);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7.1, 8.9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7.1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(8.9);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7.1, 8.9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2821,10 +2850,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−7,9)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7, 9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2841,10 +2870,10 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−7.1,8.9)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-7.1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(8.9);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7.1, 8.9]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-7.1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(8.9);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -7.1, 8.9]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2852,16 +2881,16 @@ describe('Point Tag Tests', function () {
     });
     cy.get('#\\/_boolean1').should('have.text', "false")
 
-    cy.get('#\\/xthreshold textarea').type('{end}{backspace}{backspace}{backspace}1.0', { force: true });
-    cy.get('#\\/ythreshold textarea').type('{end}{backspace}{backspace}{backspace}0.3{enter}', { force: true });
+    cy.get('#\\/xthreshold textarea').type('{ctrl+home}{shift+end}{backspace}1.0', { force: true });
+    cy.get('#\\/ythreshold textarea').type('{ctrl+home}{shift+end}{backspace}0.3{enter}', { force: true });
 
     cy.get('#\\/_math1 .mjx-mrow').should('contain.text', '(−8,9.1)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-8);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(9.1);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -8, 9.1]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-8);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(9.1);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -8, 9.1]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2897,12 +2926,13 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
 
       cy.log(`point is on line`);
+      cy.get('#\\/coords .mjx-mrow').should('contain.text', '(3,−1)');
+
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).eq(2);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -2910,7 +2940,7 @@ describe('Point Tag Tests', function () {
 
       cy.log(`move point`);
       cy.window().then(async (win) => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePoint",
           componentName: "/A",
           args: { x: 9, y: -3 }
@@ -2919,15 +2949,15 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords .mjx-mrow').should('contain.text', '(7,−5)');
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).eq(2);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get("#\\/constraintUsed").should('have.text', "true")
 
       cy.log(`change line`);
       cy.window().then(async (win) => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePoint",
           componentName: "/_point1",
           args: { x: 3, y: 1 }
@@ -2936,15 +2966,15 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords .mjx-mrow').should('contain.text', '(2,0)');
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).eq(2);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get("#\\/constraintUsed").should('have.text', "true")
 
       cy.log(`move point`);
       cy.window().then(async (win) => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePoint",
           componentName: "/A",
           args: { x: 9, y: -3 }
@@ -2953,8 +2983,8 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords .mjx-mrow').should('contain.text', '(4,2)');
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
-        expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).eq(2);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).eq(2);
         expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -2978,6 +3008,7 @@ describe('Point Tag Tests', function () {
   </point>
   </graph>
   <copy prop="constraintUsed" assignNames="constraintUsed" target="A" />
+  <copy prop="coords" target="A" assignNames="coords" />
   `}, "*");
     });
 
@@ -2985,18 +3016,19 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.log(`point is not on line`);
+    cy.get('#\\/coords .mjx-mrow').should('contain.text', '(−1,−5)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).eq(-1);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).eq(-5);
-      expect((await stateVariables['/A'].stateValues.coords)).eqls(["vector", -1, -5]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).eq(-1);
+      expect((stateVariables['/A'].stateValues.xs)[1]).eq(-5);
+      expect((stateVariables['/A'].stateValues.coords)).eqls(["vector", -1, -5]);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false)
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
 
     cy.log(`move point near line`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 9.1, y: -6.8 }
@@ -3005,14 +3037,14 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
 
     cy.log(`change line, point not on line`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 3, y: 1 }
@@ -3021,14 +3053,14 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "false")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false)
     })
 
     cy.log(`move point`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -5.1, y: -6.8 }
@@ -3037,8 +3069,8 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).closeTo(2, 1E-14);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
 
@@ -3080,12 +3112,15 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a')
 
     cy.log(`point is not on line`);
+
+    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−1,−5)');
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-1, -5])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-1, -5])
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(false);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(false);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-1, -5])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-1, -5])
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(false);
     })
 
     cy.get("#\\/constraintUsedA").should('have.text', "false")
@@ -3093,7 +3128,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move point near line`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.3, y: 0 }
@@ -3103,11 +3138,11 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsedB").should('have.text', "true")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect((await stateVariables['/B'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect((stateVariables['/B'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
 
 
@@ -3118,16 +3153,16 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsedA").should('have.text', "true")
     cy.get("#\\/constraintUsedB").should('have.text', "true")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect((await stateVariables['/B'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect((stateVariables['/B'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
 
     cy.log('point is no longer close')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.3, y: 0 }
@@ -3138,11 +3173,11 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsedB").should('have.text', "false")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([0.3, 0])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([0.3, 0])
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(false);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(false);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([0.3, 0])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([0.3, 0])
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(false);
     })
 
     cy.log('point is close again for larger x limits')
@@ -3154,22 +3189,22 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsedB").should('have.text', "true")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect((await stateVariables['/B'].stateValues.xs)[0] - 0.1 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect((stateVariables['/B'].stateValues.xs)[0] - 0.1 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
 
 
     cy.log('make line with shallow slope')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 10, y: -0.1 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: -10, y: 0.1 }
@@ -3183,17 +3218,17 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsedB").should('have.text', "true")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 100 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect((await stateVariables['/B'].stateValues.xs)[0] + 100 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + 100 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect((stateVariables['/B'].stateValues.xs)[0] + 100 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
 
 
     cy.log('move point away from line')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -6, y: 8 }
@@ -3204,11 +3239,11 @@ describe('Point Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-6, 8])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-6, 8])
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(false);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(false);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-6, 8])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-6, 8])
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(false);
     })
 
 
@@ -3222,11 +3257,11 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsedB").should('have.text', "true")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 100 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect((await stateVariables['/B'].stateValues.xs)[0] + 100 * (await stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(true);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + 100 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect((stateVariables['/B'].stateValues.xs)[0] + 100 * (stateVariables['/A'].stateValues.xs)[1]).closeTo(0, 1E-14);
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(true);
     })
 
 
@@ -3239,11 +3274,11 @@ describe('Point Tag Tests', function () {
     cy.get("#\\/constraintUsedB").should('have.text', "false")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-6, 8])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-6, 8])
-      expect(await stateVariables['/A'].stateValues.constraintUsed).eq(false);
-      expect(await stateVariables['/B'].stateValues.constraintUsed).eq(false);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-6, 8])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-6, 8])
+      expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
+      expect(stateVariables['/B'].stateValues.constraintUsed).eq(false);
     })
 
 
@@ -3285,16 +3320,19 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`point is on line`);
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(4,1)');
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[1] - (await stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move point to lower right`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 9, y: -5 }
@@ -3303,15 +3341,15 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3.5,0.5)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[1] - (await stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move point near points`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 3.5, y: 5.5 }
@@ -3320,17 +3358,17 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3,5)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move point to upper left`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9, y: 8 }
@@ -3339,8 +3377,8 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−4,3)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[1] - (await stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3371,6 +3409,7 @@ describe('Point Tag Tests', function () {
   </point>
   </graph>
   <copy prop="constraintUsed" assignNames="constraintUsed" target="_point1" />
+  <copy prop="coords" target="_point1" assignNames="coords1" />
   <text>a</text>
   `}, "*");
     });
@@ -3380,18 +3419,21 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`point is in original location`);
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(3,2)');
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 2]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 2]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
 
     cy.log(`point is on line`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 3.1, y: 0.5 }
@@ -3399,14 +3441,14 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[1] - (await stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(-3);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
 
     cy.log(`move point to lower right`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 9, y: -5 }
@@ -3414,16 +3456,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 9, -5]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 9, -5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
 
     cy.log(`move point near points`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 3.1, y: 5.1 }
@@ -3431,16 +3473,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(5);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", 3, 5]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true)
     })
 
     cy.log(`move point to upper left`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -9, y: 8 }
@@ -3448,16 +3490,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(-9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(8);
-      expect((await stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -9, 8]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(-9);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(8);
+      expect((stateVariables['/_point1'].stateValues.coords)).eqls(["vector", -9, 8]);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(false);
     })
 
     cy.log(`move point near upper line`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -8.8, y: -2.3 }
@@ -3465,8 +3507,8 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[1] - (await stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[1] - (stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
       expect(stateVariables['/_point1'].stateValues.constraintUsed).eq(true);
     })
   });
@@ -3501,17 +3543,18 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point on grid`);
+    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8,4)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(4, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(4, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near line x+y=0`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -7.1, y: 8.2 }
@@ -3519,15 +3562,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−7.65,7.65)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near line x=y`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 7.1, y: 8.2 }
@@ -3535,15 +3578,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(7.65,7.65)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near line x=2y+8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 3.5, y: -2.5 }
@@ -3551,15 +3594,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(3.4,−2.3)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near line x=-2y-8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.5, y: -2.5 }
@@ -3567,8 +3610,8 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3607,17 +3650,20 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point in original location`);
+
+    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(7,3)');
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(3, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
 
     cy.log(`move point near grid`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.2, y: -1.8 }
@@ -3625,15 +3671,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-2, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-2, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
 
     cy.log(`move not close enough to line x+y=0`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -7.1, y: 8.2 }
@@ -3641,15 +3687,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-7.1, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-7.1, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
 
     cy.log(`move close enough to line x+y=0`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -7.5, y: 7.8 }
@@ -3657,14 +3703,14 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
 
     cy.log(`move not close enough to line x=y`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 7.1, y: 8.2 }
@@ -3672,15 +3718,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7.1, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7.1, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
 
     cy.log(`move close enough to line x=y`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 7.5, y: 7.8 }
@@ -3688,14 +3734,14 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
 
     cy.log(`move near line x=2y+8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 3.5, y: -2.5 }
@@ -3703,8 +3749,8 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(3.4,−2.3)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3712,7 +3758,7 @@ describe('Point Tag Tests', function () {
 
     cy.log(`move near line x=-2y-8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.5, y: -2.5 }
@@ -3720,8 +3766,8 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -3766,17 +3812,20 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`point in original location`);
+
+    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(7,3)');
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(3, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
 
     cy.log(`move not close enough to line x+y=0`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -7.1, y: 8.2 }
@@ -3784,16 +3833,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−7.1,8.2)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-7.1, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-7.1, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
 
     cy.log(`move close enough to line x+y=0`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -7.5, y: 7.8 }
@@ -3801,14 +3850,14 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
 
     cy.log(`move not close enough to line x=y`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 7.1, y: 8.2 }
@@ -3816,15 +3865,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "false")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7.1, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(7.1, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8.2, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(false);
     })
 
     cy.log(`move close enough to line x=y`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 7.5, y: 7.8 }
@@ -3832,14 +3881,14 @@ describe('Point Tag Tests', function () {
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
 
     cy.log(`move near line x=2y+8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 3.5, y: -2.5 }
@@ -3847,15 +3896,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(3.4,−2.3)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near line x=-2y-8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -3.5, y: -2.5 }
@@ -3863,15 +3912,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−3.4,−2.3)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=y`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -0.2, y: 0.1 }
@@ -3879,16 +3928,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,0)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=2y+8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 2.6, y: -2.7 }
@@ -3896,16 +3945,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(2.67,−2.67)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8 / 3, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=-2y-8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 7.9, y: -8.2 }
@@ -3913,16 +3962,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8,−8)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x=y and x=2y+8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -8.1, y: -7.8 }
@@ -3930,16 +3979,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8,−8)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=-2y-8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -2.5, y: -2.7 }
@@ -3947,16 +3996,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−2.67,−2.67)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8 / 3, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x=2y+8 and x=-2y-8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.2, y: -3.9 }
@@ -3964,9 +4013,9 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,−4)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-4, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-4, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4010,16 +4059,19 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log(`on x=y`);
+
+    cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(5,5)');
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true)
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`attract to line x+y=0`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -7.1, y: 10 }
@@ -4027,15 +4079,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8.55,8.55)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near line x=2y+8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 10, y: -3 }
@@ -4043,15 +4095,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8.4,0.2)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] - 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] - 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near line x=-2y-8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -10, y: -3 }
@@ -4059,15 +4111,15 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8.4,0.2)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0] + 2 * (await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0] + 2 * (stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=y`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -0.2, y: 0.1 }
@@ -4075,16 +4127,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,0)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(0, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=2y+8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 2.6, y: -2.7 }
@@ -4092,16 +4144,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(2.67,−2.67)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8 / 3, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x+y=0 and x=-2y-8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 7.9, y: -8.2 }
@@ -4109,16 +4161,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(8,−8)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x=y and x=2y+8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -8.1, y: -7.8 }
@@ -4126,16 +4178,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−8,−8)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x=y and x=-2y-8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: -2.5, y: -2.7 }
@@ -4143,16 +4195,16 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(−2.67,−2.67)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8 / 3, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(-8 / 3, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-8 / 3, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
 
     cy.log(`move near intersection of x=2y+8 and x=-2y-8`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 0.2, y: -3.9 }
@@ -4160,9 +4212,9 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/coordsA .mjx-mrow').should('contain.text', '(0,−4)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
-      expect((await stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-4, 1E-12);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)[0]).to.be.closeTo(0, 1E-12);
+      expect((stateVariables['/A'].stateValues.xs)[1]).to.be.closeTo(-4, 1E-12);
       expect(stateVariables['/A'].stateValues.constraintUsed).eq(true);
     })
     cy.get("#\\/constraintUsed").should('have.text', "true")
@@ -4196,9 +4248,11 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(1,2)');
+
     cy.log(`intersection is a line`);
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/int1"].componentType).eq("line");
       expect(stateVariables["/int1"].stateValues.slope).eq(0);
       expect(stateVariables["/int1"].stateValues.yintercept).eq(2);
@@ -4206,12 +4260,12 @@ describe('Point Tag Tests', function () {
 
     cy.log(`make first line vertical`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 3, y: 5 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: 3, y: -5 }
@@ -4221,7 +4275,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(3,−5)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/int1"].componentType).eq("point");
       expect(stateVariables["/int1"].stateValues.xs[0]).eq(3);
       expect(stateVariables["/int1"].stateValues.xs[1]).eq(2);
@@ -4229,12 +4283,12 @@ describe('Point Tag Tests', function () {
 
     cy.log(`make second line vertical`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: -4, y: 5 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point4",
         args: { x: -4, y: -5 }
@@ -4244,28 +4298,28 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords4 .mjx-mrow').should('contain.text', '(−4,−5)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/int1"]).eq(undefined);
     })
 
     cy.log(`make lines intersect again`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -8, y: -7 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: 8, y: 9 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: 4, y: 6 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point4",
         args: { x: -4, y: -6 }
@@ -4277,7 +4331,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords4 .mjx-mrow').should('contain.text', '(−4,−6)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/int1"].componentType).eq("point");
       expect(stateVariables["/int1"].stateValues.xs[0]).eq(2);
       expect(stateVariables["/int1"].stateValues.xs[1]).eq(3);
@@ -4285,12 +4339,12 @@ describe('Point Tag Tests', function () {
 
     cy.log(`make lines equal again`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 6, y: 9 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: -6, y: -9 }
@@ -4299,7 +4353,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(6,9)');
     cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(−6,−9)');
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/int1"].componentType).eq("line");
       expect(stateVariables["/int1"].stateValues.slope).eqls(['/', 3, 2]);
       expect(stateVariables["/int1"].stateValues.xintercept).eq(0);
@@ -4360,12 +4414,12 @@ describe('Point Tag Tests', function () {
 
     cy.log(`make first line vertical`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 3, y: 5 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: 3, y: -5 }
@@ -4391,12 +4445,12 @@ describe('Point Tag Tests', function () {
 
     cy.log(`make second line vertical`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: -4, y: 5 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point4",
         args: { x: -4, y: -5 }
@@ -4419,22 +4473,22 @@ describe('Point Tag Tests', function () {
 
     cy.log(`make lines intersect again`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: -8, y: -7 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: 8, y: 9 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point3",
         args: { x: 4, y: 6 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point4",
         args: { x: -4, y: -6 }
@@ -4466,12 +4520,12 @@ describe('Point Tag Tests', function () {
 
     cy.log(`make lines equal again`);
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point1",
         args: { x: 6, y: 9 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: -6, y: -9 }
@@ -4520,7 +4574,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x1 = stateVariables['/_point1'].attributes.xs.component.activeChildren[0];
       let math1 = x1.definingChildren[0];
       let math1Name = math1.componentName;
@@ -4532,8 +4586,8 @@ describe('Point Tag Tests', function () {
           [math1Name, '/_sequence1', math2Name]);
         expect(x1.activeChildren.map(x => x.componentName)).eqls(
           [math1Name, math2Name]);
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(5)
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4)
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(5)
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4)
       })
 
       cy.get('#\\/n textarea').type("2{enter}", { force: true }).
@@ -4546,8 +4600,8 @@ describe('Point Tag Tests', function () {
           [math1Name, '/_sequence1', math2Name]);
         expect(x1.activeChildren.map(x => x.componentName)).eqls(
           [math1Name, math3Name, math2Name]);
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(10)
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(4)
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(10)
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(4)
 
       })
     })
@@ -4570,17 +4624,19 @@ describe('Point Tag Tests', function () {
     // use this to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(2,1)');
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(1);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(2);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(2);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(1);
     })
 
     cy.log("move point 2")
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: "/_point2",
         args: { x: -4, y: 9 }
@@ -4589,11 +4645,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(−4,9)');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(-4);
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(-4);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(9);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(-4);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(-4);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(9);
     })
 
   })
@@ -4632,13 +4688,16 @@ describe('Point Tag Tests', function () {
     let ys = [8, 3, -3, -2, -6, 5, -9, 0];
 
     cy.log("initial positions")
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,2)`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = 1;
       let y = 2;
       for (let point of points) {
-        expect((await stateVariables[point].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables[point].stateValues.xs)[1]).eq(y);
+        expect((stateVariables[point].stateValues.xs)[0]).eq(x);
+        expect((stateVariables[point].stateValues.xs)[1]).eq(y);
       }
     })
 
@@ -4648,7 +4707,7 @@ describe('Point Tag Tests', function () {
       let y = ys[i];
 
       cy.window().then(async (win) => {
-        win.callAction({
+        win.callAction1({
           actionName: "movePoint",
           componentName: points[i],
           args: { x, y }
@@ -4657,10 +4716,10 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(x)}`)
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         for (let point of points) {
-          expect((await stateVariables[point].stateValues.xs)[0]).eq(x);
-          expect((await stateVariables[point].stateValues.xs)[1]).eq(y);
+          expect((stateVariables[point].stateValues.xs)[0]).eq(x);
+          expect((stateVariables[point].stateValues.xs)[1]).eq(y);
         }
 
       })
@@ -4686,16 +4745,19 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log("initial positions")
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,2)`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = 1;
       let y = 2;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -4704,7 +4766,7 @@ describe('Point Tag Tests', function () {
       let x = -3;
       let y = 5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x, y }
@@ -4714,13 +4776,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -4730,7 +4792,7 @@ describe('Point Tag Tests', function () {
       let x = 9;
       let y = -1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point2',
         args: { x: y, y: x }
@@ -4741,13 +4803,13 @@ describe('Point Tag Tests', function () {
 
       cy.window().then(async (win) => {
 
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
   })
@@ -4771,16 +4833,19 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.log("initial positions")
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,2)`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = 1;
       let y = 2;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -4790,7 +4855,7 @@ describe('Point Tag Tests', function () {
       let x = -3;
       let y = 5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x, y }
@@ -4800,13 +4865,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -4816,7 +4881,7 @@ describe('Point Tag Tests', function () {
       let x = 9;
       let y = -1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point2',
         args: { x: y, y: x }
@@ -4827,13 +4892,13 @@ describe('Point Tag Tests', function () {
 
       cy.window().then(async (win) => {
 
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
   })
@@ -4852,7 +4917,8 @@ describe('Point Tag Tests', function () {
     <graph>
       <point name="p1" x="3" y="7" />
     </graph>
-  <copy prop="coords" target="p1" assignNames="coords1" />
+
+    <copy prop="coords" target="p1" assignNames="coords1" />
   `}, "*");
     });
 
@@ -4862,18 +4928,20 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(3,7)`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = 3;
       let y = 7;
 
-      expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/p1ay'].stateValues.value)).eq(y);
+      expect((stateVariables['/p1ay'].stateValues.value)).eq(y);
 
     });
 
@@ -4882,7 +4950,7 @@ describe('Point Tag Tests', function () {
       let x = -3;
       let y = 5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/p1',
         args: { x, y }
@@ -4893,14 +4961,14 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/p1ay'].stateValues.value)).eq(y);
+        expect((stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1ay'].stateValues.value)).eq(y);
       })
 
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -4914,7 +4982,7 @@ describe('Point Tag Tests', function () {
       let y = 9;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/p1ap',
         args: { x, y }
@@ -4925,14 +4993,14 @@ describe('Point Tag Tests', function () {
 
       cy.window().then(async (win) => {
 
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/p1ay'].stateValues.value)).eq(y);
+        expect((stateVariables['/p1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1ay'].stateValues.value)).eq(y);
       })
       cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal(y.toString())
@@ -4967,19 +5035,21 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(3,7)`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = 3;
       let y = 7;
 
-      expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
 
     });
 
@@ -4988,7 +5058,7 @@ describe('Point Tag Tests', function () {
       let x = -3;
       let y = 5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/p1',
         args: { x, y }
@@ -4998,16 +5068,16 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
 
       });
     })
@@ -5018,7 +5088,7 @@ describe('Point Tag Tests', function () {
       let y = 9;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/p1a',
         args: { x, y }
@@ -5028,16 +5098,16 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
       })
     });
 
@@ -5047,7 +5117,7 @@ describe('Point Tag Tests', function () {
       let x = -4;
       let y = 0;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/p1b',
         args: { x, y }
@@ -5057,16 +5127,16 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/p1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1a'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1a'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/p1b'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/p1b'].stateValues.xs)[1]).eq(y);
 
       });
 
@@ -5097,16 +5167,18 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(9,7)`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = 9;
       let y = 7;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -5115,7 +5187,7 @@ describe('Point Tag Tests', function () {
       let x = -3;
       let y = 5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x, y }
@@ -5125,13 +5197,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
       });
     })
@@ -5141,7 +5213,7 @@ describe('Point Tag Tests', function () {
       let x = 7;
       let y = 9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point2',
         args: { x: y, y: x }
@@ -5151,13 +5223,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
       });
     })
@@ -5185,16 +5257,18 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(9,7)`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = 9;
       let y = 7;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -5203,7 +5277,7 @@ describe('Point Tag Tests', function () {
       let x = -3;
       let y = 5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x, y }
@@ -5213,13 +5287,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5228,7 +5302,7 @@ describe('Point Tag Tests', function () {
       let x = 7;
       let y = 9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point2',
         args: { x: y, y: x }
@@ -5238,13 +5312,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
       });
     })
@@ -5276,22 +5350,24 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(9,7)`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = 9;
       let y = 7;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-      expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -5300,7 +5376,7 @@ describe('Point Tag Tests', function () {
       let x = -3;
       let y = 5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x, y }
@@ -5310,19 +5386,19 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5331,7 +5407,7 @@ describe('Point Tag Tests', function () {
       let x = 7;
       let y = 9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point2',
         args: { x: y, y: x }
@@ -5341,19 +5417,19 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5363,7 +5439,7 @@ describe('Point Tag Tests', function () {
       let x = 6;
       let y = -1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/P1ap',
         args: { x, y }
@@ -5373,19 +5449,19 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5395,7 +5471,7 @@ describe('Point Tag Tests', function () {
       let x = -3;
       let y = 2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/P2ap',
         args: { x: y, y: x }
@@ -5405,19 +5481,19 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5449,22 +5525,24 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(9,7)`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = 9;
       let y = 7;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-      expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -5473,7 +5551,7 @@ describe('Point Tag Tests', function () {
       let x = -3;
       let y = 5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x, y }
@@ -5483,19 +5561,19 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5504,7 +5582,7 @@ describe('Point Tag Tests', function () {
       let x = 7;
       let y = 9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point2',
         args: { x: y, y: x }
@@ -5514,19 +5592,19 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5536,7 +5614,7 @@ describe('Point Tag Tests', function () {
       let x = 6;
       let y = -1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/P1ap',
         args: { x, y }
@@ -5546,19 +5624,19 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5568,7 +5646,7 @@ describe('Point Tag Tests', function () {
       let x = -3;
       let y = 2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/P2ap',
         args: { x: y, y: x }
@@ -5578,19 +5656,19 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
-        expect((await stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/P1ap'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/P1ap'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/P2ap'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/P2ap'].stateValues.xs)[1]).eq(x);
 
       });
     })
@@ -5620,16 +5698,18 @@ describe('Point Tag Tests', function () {
 
     cy.log("initial values")
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(9,7)`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = 9;
       let y = 7;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
 
     });
 
@@ -5638,7 +5718,7 @@ describe('Point Tag Tests', function () {
       let x = -3;
       let y = 5;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x, y }
@@ -5648,13 +5728,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5663,7 +5743,7 @@ describe('Point Tag Tests', function () {
       let x = 7;
       let y = 9;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point2',
         args: { x: y, y: x }
@@ -5673,13 +5753,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(y);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(x);
       })
     });
 
@@ -5709,18 +5789,20 @@ describe('Point Tag Tests', function () {
     cy.log("initial values")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x1 = 3;
       let y1 = 2 * x1 + 1;
 
       let y2 = 3;
       let x2 = 2 * y2 + 1;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+
+      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(${x1},${y1})`)
 
     });
 
@@ -5735,12 +5817,12 @@ describe('Point Tag Tests', function () {
       let y1 = 2 * x1 + 1;
       let y2 = (x2 - 1) / 2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x: x1, y: y1try }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point2',
         args: { x: x2, y: y2try }
@@ -5753,13 +5835,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords2 .mjx-mrow').should('contain.text', `${Math.abs(y2)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
       })
     });
@@ -5792,17 +5874,19 @@ describe('Point Tag Tests', function () {
     cy.log("initial values")
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x1 = 3;
       let y1 = 10;
       let x2 = -10
       let y2 = 5;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+
+      cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(${x1},${y1})`)
 
     });
 
@@ -5814,12 +5898,12 @@ describe('Point Tag Tests', function () {
       let y2 = -3;
 
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x: x1, y: y1 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point2',
         args: { x: x2, y: y2 }
@@ -5832,13 +5916,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords2 .mjx-mrow').should('contain.text', `${Math.abs(y2)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(10);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(10);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(-10);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(-10);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
       })
     });
@@ -5876,7 +5960,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_p2').should('have.text', 'Label 2: 2, 4')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x1 = 1;
       let y1 = 2;
       let x2 = 3;
@@ -5885,11 +5969,11 @@ describe('Point Tag Tests', function () {
       let label1 = `${x1}, ${x2}`;
       let label2 = `${y1}, ${y2}`;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-      expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-      expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+      expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+      expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
       expect(stateVariables['/_point1'].stateValues.label).eq(label1);
       expect(stateVariables['/_point2'].stateValues.label).eq(label2);
@@ -5903,12 +5987,12 @@ describe('Point Tag Tests', function () {
       let x2 = 8
       let y2 = -3;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x: x1, y: y1 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point2',
         args: { x: x2, y: y2 }
@@ -5921,13 +6005,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/_p2').should('have.text', `Label 2: ${label2}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
         expect(stateVariables['/_point1'].stateValues.label).eq(label1);
         expect(stateVariables['/_point2'].stateValues.label).eq(label2);
@@ -5946,12 +6030,12 @@ describe('Point Tag Tests', function () {
       let x2 = 0.36193540738
       let y2 = 7.813395519475;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x: x1, y: y1 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point2',
         args: { x: x2, y: y2 }
@@ -5971,13 +6055,13 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/_p2').should('have.text', `Label 2: ${label2}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x1);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y1);
 
-        expect((await stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
-        expect((await stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
+        expect((stateVariables['/_point2'].stateValues.xs)[0]).eq(x2);
+        expect((stateVariables['/_point2'].stateValues.xs)[1]).eq(y2);
 
         expect(stateVariables['/_point1'].stateValues.label).eq(label1);
         expect(stateVariables['/_point2'].stateValues.label).eq(label2);
@@ -6010,17 +6094,19 @@ describe('Point Tag Tests', function () {
 
     cy.get("#\\/_text1").should('have.text', 'a'); // to wait for page to load
 
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(−4,1)`)
+
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let x = -4;
       let y = 1;
 
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-      expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-      expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-      expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-      expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+      expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+      expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+      expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+      expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
 
     });
 
@@ -6029,7 +6115,7 @@ describe('Point Tag Tests', function () {
       let x = 3;
       let y = -2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point1',
         args: { x, y }
@@ -6039,14 +6125,14 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
       })
     });
 
@@ -6055,7 +6141,7 @@ describe('Point Tag Tests', function () {
       let x = 9;
       let y = -2;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point3',
         args: { x, y: -3 }
@@ -6065,14 +6151,14 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
       })
     });
 
@@ -6081,7 +6167,7 @@ describe('Point Tag Tests', function () {
       let x = 9;
       let y = -7.1;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point4',
         args: { x: -10, y: y }
@@ -6091,14 +6177,14 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `${Math.abs(y)}`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
       })
     });
 
@@ -6107,7 +6193,7 @@ describe('Point Tag Tests', function () {
       let x = 1;
       let y = -7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point3',
         args: { x: 0.9, y: 6 }
@@ -6116,14 +6202,14 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,−7)`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
       })
     });
 
@@ -6132,7 +6218,7 @@ describe('Point Tag Tests', function () {
       let x = 1;
       let y = -7;
 
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/_point3',
         args: { x: 1.1, y: 6 }
@@ -6147,14 +6233,14 @@ describe('Point Tag Tests', function () {
       cy.get('#\\/coords1 .mjx-mrow').should('contain.text', `(1,−7)`)
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
 
-        expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
-        expect((await stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
-        expect((await stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
-        expect((await stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(y);
+        expect((stateVariables['/_point3'].stateValues.xs)[0]).eq(x);
+        expect((stateVariables['/_point3'].stateValues.xs)[1]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[0]).eq(0);
+        expect((stateVariables['/_point4'].stateValues.xs)[1]).eq(y);
       })
     });
   })
@@ -6337,23 +6423,23 @@ describe('Point Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('＿');
       expect(stateVariables['/_point1'].stateValues.x1).eq('＿');
       expect(stateVariables['/_point1'].stateValues.x2).eq(undefined);
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('＿');
       expect(stateVariables['/point2'].stateValues.x1).eq('＿');
       expect(stateVariables['/point2'].stateValues.x2).eq(undefined);
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('＿');
       expect(stateVariables['/point3'].stateValues.x1).eq('＿');
       expect(stateVariables['/point3'].stateValues.x2).eq(undefined);
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -6501,26 +6587,26 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/_point1'].stateValues.x1).eq('a');
       expect(stateVariables['/_point1'].stateValues.x2).eq('b');
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point2'].stateValues.x1).eq('a');
       expect(stateVariables['/point2'].stateValues.x2).eq('b');
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point3'].stateValues.x1).eq('a');
       expect(stateVariables['/point3'].stateValues.x2).eq('b');
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -6530,7 +6616,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('Back to 1D point')
-    cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}q{enter}', { force: true });
+    cy.get('#\\/originalCoords textarea').type('{ctrl+home}{shift+end}{backspace}q{enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', 'q')
 
@@ -6643,23 +6729,23 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
       expect(stateVariables['/_point1'].stateValues.x1).eq('q');
       expect(stateVariables['/_point1'].stateValues.x2).eq(undefined);
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('q');
       expect(stateVariables['/point2'].stateValues.x1).eq('q');
       expect(stateVariables['/point2'].stateValues.x2).eq(undefined);
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('q');
       expect(stateVariables['/point3'].stateValues.x1).eq('q');
       expect(stateVariables['/point3'].stateValues.x2).eq(undefined);
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -6840,29 +6926,29 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eqls(["^", "w", 2]);
       expect(stateVariables['/_point1'].stateValues.x1).eqls(["*", 2, "x"]);;
       expect(stateVariables['/_point1'].stateValues.x2).eqls(["/", "u", "v"]);
       expect(stateVariables['/_point1'].stateValues.x3).eqls(["^", "w", 2]);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eqls(["^", "w", 2]);
       expect(stateVariables['/point2'].stateValues.x1).eqls(["*", 2, "x"]);
       expect(stateVariables['/point2'].stateValues.x2).eqls(["/", "u", "v"]);
       expect(stateVariables['/point2'].stateValues.x3).eqls(["^", "w", 2]);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eqls(["^", "w", 2]);
       expect(stateVariables['/point3'].stateValues.x1).eqls(["*", 2, "x"]);
       expect(stateVariables['/point3'].stateValues.x2).eqls(["/", "u", "v"]);
       expect(stateVariables['/point3'].stateValues.x3).eqls(["^", "w", 2]);
@@ -6871,7 +6957,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('change the coordinates from point 1 coords')
-    cy.get("#\\/coords1b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(7,8,9){enter}', { force: true });
+    cy.get("#\\/coords1b textarea").type('{ctrl+home}{shift+end}{backspace}(7,8,9){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(7,8,9)')
 
@@ -7039,29 +7125,29 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq(8);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq(9);
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq(7);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq(8);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq(9);
       expect(stateVariables['/_point1'].stateValues.x1).eq(7);;
       expect(stateVariables['/_point1'].stateValues.x2).eq(8);
       expect(stateVariables['/_point1'].stateValues.x3).eq(9);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq(7);
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq(8);
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq(9);
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq(7);
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq(8);
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq(9);
       expect(stateVariables['/point2'].stateValues.x1).eq(7);
       expect(stateVariables['/point2'].stateValues.x2).eq(8);
       expect(stateVariables['/point2'].stateValues.x3).eq(9);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq(7);
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq(8);
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq(9);
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq(7);
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq(8);
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq(9);
       expect(stateVariables['/point3'].stateValues.x1).eq(7);
       expect(stateVariables['/point3'].stateValues.x2).eq(8);
       expect(stateVariables['/point3'].stateValues.x3).eq(9);
@@ -7070,7 +7156,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('change the coordinates from point 2 coords')
-    cy.get("#\\/coords2b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(i,j,k){enter}', { force: true });
+    cy.get("#\\/coords2b textarea").type('{ctrl+home}{shift+end}{backspace}(i,j,k){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(i,j,k)')
 
@@ -7238,29 +7324,29 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('i');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('j');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('k');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('i');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('j');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('k');
       expect(stateVariables['/_point1'].stateValues.x1).eq('i');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('j');
       expect(stateVariables['/_point1'].stateValues.x3).eq('k');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('i');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('j');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('k');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('i');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('j');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('k');
       expect(stateVariables['/point2'].stateValues.x1).eq('i');
       expect(stateVariables['/point2'].stateValues.x2).eq('j');
       expect(stateVariables['/point2'].stateValues.x3).eq('k');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('i');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('j');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('k');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('i');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('j');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('k');
       expect(stateVariables['/point3'].stateValues.x1).eq('i');
       expect(stateVariables['/point3'].stateValues.x2).eq('j');
       expect(stateVariables['/point3'].stateValues.x3).eq('k');
@@ -7270,7 +7356,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('change the coordinates from point 3 coords')
-    cy.get("#\\/coords3b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(l,m,n){enter}', { force: true });
+    cy.get("#\\/coords3b textarea").type('{ctrl+home}{shift+end}{backspace}(l,m,n){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(l,m,n)')
 
@@ -7438,29 +7524,29 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('l');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('m');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('n');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('l');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('m');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('n');
       expect(stateVariables['/_point1'].stateValues.x1).eq('l');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('m');
       expect(stateVariables['/_point1'].stateValues.x3).eq('n');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('l');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('m');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('n');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('l');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('m');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('n');
       expect(stateVariables['/point2'].stateValues.x1).eq('l');
       expect(stateVariables['/point2'].stateValues.x2).eq('m');
       expect(stateVariables['/point2'].stateValues.x3).eq('n');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('l');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('m');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('n');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('l');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('m');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('n');
       expect(stateVariables['/point3'].stateValues.x1).eq('l');
       expect(stateVariables['/point3'].stateValues.x2).eq('m');
       expect(stateVariables['/point3'].stateValues.x3).eq('n');
@@ -7640,29 +7726,29 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('r');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('s');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('t');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('r');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('s');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('t');
       expect(stateVariables['/_point1'].stateValues.x1).eq('r');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('s');
       expect(stateVariables['/_point1'].stateValues.x3).eq('t');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('r');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('s');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('t');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('r');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('s');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('t');
       expect(stateVariables['/point2'].stateValues.x1).eq('r');
       expect(stateVariables['/point2'].stateValues.x2).eq('s');
       expect(stateVariables['/point2'].stateValues.x3).eq('t');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('r');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('s');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('t');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('r');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('s');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('t');
       expect(stateVariables['/point3'].stateValues.x1).eq('r');
       expect(stateVariables['/point3'].stateValues.x2).eq('s');
       expect(stateVariables['/point3'].stateValues.x3).eq('t');
@@ -7845,29 +7931,29 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('f');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('g');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('h');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('f');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('g');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('h');
       expect(stateVariables['/_point1'].stateValues.x1).eq('f');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('g');
       expect(stateVariables['/_point1'].stateValues.x3).eq('h');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('f');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('g');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('h');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('f');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('g');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('h');
       expect(stateVariables['/point2'].stateValues.x1).eq('f');
       expect(stateVariables['/point2'].stateValues.x2).eq('g');
       expect(stateVariables['/point2'].stateValues.x3).eq('h');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('f');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('g');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('h');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('f');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('g');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('h');
       expect(stateVariables['/point3'].stateValues.x1).eq('f');
       expect(stateVariables['/point3'].stateValues.x2).eq('g');
       expect(stateVariables['/point3'].stateValues.x3).eq('h');
@@ -8047,29 +8133,29 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('x');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('y');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('x');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('y');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/_point1'].stateValues.x1).eq('x');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('y');
       expect(stateVariables['/_point1'].stateValues.x3).eq('z');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('x');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('y');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('x');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('y');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point2'].stateValues.x1).eq('x');
       expect(stateVariables['/point2'].stateValues.x2).eq('y');
       expect(stateVariables['/point2'].stateValues.x3).eq('z');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('x');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('y');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('x');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('y');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point3'].stateValues.x1).eq('x');
       expect(stateVariables['/point3'].stateValues.x2).eq('y');
       expect(stateVariables['/point3'].stateValues.x3).eq('z');
@@ -8079,7 +8165,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't decrease dimension from inverse direction 1`)
-    cy.get("#\\/coords1b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(u,v){enter}', { force: true });
+    cy.get("#\\/coords1b textarea").type('{ctrl+home}{shift+end}{backspace}(u,v){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(u,v,z)')
 
@@ -8248,29 +8334,29 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('u');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('v');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('u');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('v');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/_point1'].stateValues.x1).eq('u');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('v');
       expect(stateVariables['/_point1'].stateValues.x3).eq('z');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('u');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('v');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('u');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('v');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point2'].stateValues.x1).eq('u');
       expect(stateVariables['/point2'].stateValues.x2).eq('v');
       expect(stateVariables['/point2'].stateValues.x3).eq('z');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('u');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('v');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('u');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('v');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point3'].stateValues.x1).eq('u');
       expect(stateVariables['/point3'].stateValues.x2).eq('v');
       expect(stateVariables['/point3'].stateValues.x3).eq('z');
@@ -8280,7 +8366,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't decrease dimension from inverse direction 2`)
-    cy.get("#\\/coords2b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(s,t){enter}', { force: true });
+    cy.get("#\\/coords2b textarea").type('{ctrl+home}{shift+end}{backspace}(s,t){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(s,t,z)')
 
@@ -8449,29 +8535,29 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('s');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('t');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('s');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('t');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/_point1'].stateValues.x1).eq('s');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('t');
       expect(stateVariables['/_point1'].stateValues.x3).eq('z');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('s');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('t');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('s');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('t');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point2'].stateValues.x1).eq('s');
       expect(stateVariables['/point2'].stateValues.x2).eq('t');
       expect(stateVariables['/point2'].stateValues.x3).eq('z');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('s');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('t');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('s');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('t');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point3'].stateValues.x1).eq('s');
       expect(stateVariables['/point3'].stateValues.x2).eq('t');
       expect(stateVariables['/point3'].stateValues.x3).eq('z');
@@ -8480,7 +8566,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't decrease dimension from inverse direction 3`)
-    cy.get("#\\/coords3b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(q,r){enter}', { force: true });
+    cy.get("#\\/coords3b textarea").type('{ctrl+home}{shift+end}{backspace}(q,r){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(q,r,z)')
 
@@ -8648,29 +8734,29 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('r');
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('r');
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/_point1'].stateValues.x1).eq('q');;
       expect(stateVariables['/_point1'].stateValues.x2).eq('r');
       expect(stateVariables['/_point1'].stateValues.x3).eq('z');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('q');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('r');
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('r');
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point2'].stateValues.x1).eq('q');
       expect(stateVariables['/point2'].stateValues.x2).eq('r');
       expect(stateVariables['/point2'].stateValues.x3).eq('z');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('q');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('r');
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eq('z');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('r');
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eq('z');
       expect(stateVariables['/point3'].stateValues.x1).eq('q');
       expect(stateVariables['/point3'].stateValues.x2).eq('r');
       expect(stateVariables['/point3'].stateValues.x3).eq('z');
@@ -8683,7 +8769,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('Back to 2D point')
-    cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(p,q){enter}', { force: true });
+    cy.get('#\\/originalCoords textarea').type('{ctrl+home}{shift+end}{backspace}(p,q){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(p,q)')
 
@@ -8824,26 +8910,26 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('q');
       expect(stateVariables['/_point1'].stateValues.x1).eq('p');
       expect(stateVariables['/_point1'].stateValues.x2).eq('q');
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('q');
       expect(stateVariables['/point2'].stateValues.x1).eq('p');
       expect(stateVariables['/point2'].stateValues.x2).eq('q');
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('q');
       expect(stateVariables['/point3'].stateValues.x1).eq('p');
       expect(stateVariables['/point3'].stateValues.x2).eq('q');
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -8852,7 +8938,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't increase dimension from inverse direction 1`)
-    cy.get("#\\/coords1b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(a,b,c){enter}', { force: true });
+    cy.get("#\\/coords1b textarea").type('{ctrl+home}{shift+end}{backspace}(a,b,c){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(a,b)')
 
@@ -8993,26 +9079,26 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/_point1'].stateValues.x1).eq('a');
       expect(stateVariables['/_point1'].stateValues.x2).eq('b');
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point2'].stateValues.x1).eq('a');
       expect(stateVariables['/point2'].stateValues.x2).eq('b');
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point3'].stateValues.x1).eq('a');
       expect(stateVariables['/point3'].stateValues.x2).eq('b');
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -9022,7 +9108,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't increase dimension from inverse direction 2`)
-    cy.get("#\\/coords2b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(d,e,f){enter}', { force: true });
+    cy.get("#\\/coords2b textarea").type('{ctrl+home}{shift+end}{backspace}(d,e,f){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(d,e)')
 
@@ -9163,26 +9249,26 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('d');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('e');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('d');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('e');
       expect(stateVariables['/_point1'].stateValues.x1).eq('d');
       expect(stateVariables['/_point1'].stateValues.x2).eq('e');
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('d');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('e');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('d');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('e');
       expect(stateVariables['/point2'].stateValues.x1).eq('d');
       expect(stateVariables['/point2'].stateValues.x2).eq('e');
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('d');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('e');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('d');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('e');
       expect(stateVariables['/point3'].stateValues.x1).eq('d');
       expect(stateVariables['/point3'].stateValues.x2).eq('e');
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -9191,7 +9277,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log(`can't increase dimension from inverse direction 3`)
-    cy.get("#\\/coords3b textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(g,h,i){enter}', { force: true });
+    cy.get("#\\/coords3b textarea").type('{ctrl+home}{shift+end}{backspace}(g,h,i){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(g,h)')
 
@@ -9332,26 +9418,26 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('g');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('h');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('g');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('h');
       expect(stateVariables['/_point1'].stateValues.x1).eq('g');
       expect(stateVariables['/_point1'].stateValues.x2).eq('h');
       expect(stateVariables['/_point1'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('g');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('h');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('g');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('h');
       expect(stateVariables['/point2'].stateValues.x1).eq('g');
       expect(stateVariables['/point2'].stateValues.x2).eq('h');
       expect(stateVariables['/point2'].stateValues.x3).eq(undefined);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('g');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('h');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('g');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('h');
       expect(stateVariables['/point3'].stateValues.x1).eq('g');
       expect(stateVariables['/point3'].stateValues.x2).eq('h');
       expect(stateVariables['/point3'].stateValues.x3).eq(undefined);
@@ -9397,17 +9483,17 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('＿');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('＿');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('＿');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('＿');
 
     });
 
@@ -9427,27 +9513,27 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('b');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('a');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('b');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('a');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('b');
 
     });
 
 
 
     cy.log('Back to 1D point')
-    cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}q{enter}', { force: true });
+    cy.get('#\\/originalCoords textarea').type('{ctrl+home}{shift+end}{backspace}q{enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', 'q')
 
@@ -9462,17 +9548,17 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('q');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('q');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(1);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('q');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(1);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('q');
 
     });
 
@@ -9493,23 +9579,23 @@ describe('Point Tag Tests', function () {
       expect(text.trim()).equal('(2x,uv,w2)')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/_point1'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/_point1'].stateValues.xs)[2]).eqls(["^", "w", 2]);
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/point2'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/point2'].stateValues.xs)[2]).eqls(["^", "w", 2]);
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(3);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
-      expect((await stateVariables['/point3'].stateValues.xs)[2]).eqls(["^", "w", 2]);
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(3);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eqls(["*", 2, "x"]);
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eqls(["/", "u", "v"]);
+      expect((stateVariables['/point3'].stateValues.xs)[2]).eqls(["^", "w", 2]);
 
     });
 
@@ -9518,7 +9604,7 @@ describe('Point Tag Tests', function () {
 
 
     cy.log('Back to 2D point 2')
-    cy.get('#\\/originalCoords textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(p,q){enter}', { force: true });
+    cy.get('#\\/originalCoords textarea').type('{ctrl+home}{shift+end}{backspace}(p,q){enter}', { force: true });
 
     cy.get("#\\/point1p .mjx-mrow").should('contain.text', '(p,q)')
 
@@ -9533,20 +9619,20 @@ describe('Point Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
 
       expect(stateVariables['/_point1'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/_point1'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/_point1'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/_point1'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/_point1'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/_point1'].stateValues.xs)[1]).eq('q');
       expect(stateVariables['/point2'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point2'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/point2'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/point2'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point2'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/point2'].stateValues.xs)[1]).eq('q');
       expect(stateVariables['/point3'].stateValues.nDimensions).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs).length).eq(2);
-      expect((await stateVariables['/point3'].stateValues.xs)[0]).eq('p');
-      expect((await stateVariables['/point3'].stateValues.xs)[1]).eq('q');
+      expect((stateVariables['/point3'].stateValues.xs).length).eq(2);
+      expect((stateVariables['/point3'].stateValues.xs)[0]).eq('p');
+      expect((stateVariables['/point3'].stateValues.xs)[1]).eq('q');
 
     });
 
@@ -9626,40 +9712,40 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/C3 .mjx-mrow').should('contain.text', '(3,0,1)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([1, 2])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([3, 4])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([3, 1])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
-      expect(await stateVariables['/A'].stateValues.label).eq('A');
-      expect(await stateVariables['/A1'].stateValues.label).eq('A');
-      expect(await stateVariables['/B'].stateValues.label).eq('B');
-      expect(await stateVariables['/B1'].stateValues.label).eq('B');
-      expect(await stateVariables['/C'].stateValues.label).eq('C');
-      expect(await stateVariables['/C1'].stateValues.label).eq('C');
-      expect(await stateVariables['/C2/C'].stateValues.label).eq('C');
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([1, 2])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([3, 4])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([3, 1])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
+      expect(stateVariables['/A'].stateValues.label).eq('A');
+      expect(stateVariables['/A1'].stateValues.label).eq('A');
+      expect(stateVariables['/B'].stateValues.label).eq('B');
+      expect(stateVariables['/B1'].stateValues.label).eq('B');
+      expect(stateVariables['/C'].stateValues.label).eq('C');
+      expect(stateVariables['/C1'].stateValues.label).eq('C');
+      expect(stateVariables['/C2/C'].stateValues.label).eq('C');
 
     })
 
     cy.log('move original points')
 
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/A',
         args: { x: -2, y: -7 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/B',
         args: { x: 5.1, y: 8.9 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/C',
         args: { x: -3, y: -8 }
@@ -9670,33 +9756,33 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/C3 .mjx-mrow').should('contain.text', '(−3,−6,1)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([5, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([5, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
 
     })
 
 
     cy.log('move copied points')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/A1',
         args: { x: 8, y: -5 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/B1',
         args: { x: -5.6, y: 6.3 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/C1',
         args: { x: -7, y: 4 }
@@ -9707,16 +9793,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/C3 .mjx-mrow').should('contain.text', '(−5,−8,1)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
 
     })
 
@@ -9762,39 +9848,39 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/C3 .mjx-mrow').should('contain.text', '(3,0,1)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([1, 2])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([3, 4])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([3, 1])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
-      expect(await stateVariables['/A'].stateValues.label).eq('A');
-      expect(await stateVariables['/A1'].stateValues.label).eq('A');
-      expect(await stateVariables['/B'].stateValues.label).eq('B');
-      expect(await stateVariables['/B1'].stateValues.label).eq('B');
-      expect(await stateVariables['/C'].stateValues.label).eq('C');
-      expect(await stateVariables['/C1'].stateValues.label).eq('C');
-      expect(await stateVariables['/C2/C'].stateValues.label).eq('C');
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([1, 2])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([3, 4])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([3, 1])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
+      expect(stateVariables['/A'].stateValues.label).eq('A');
+      expect(stateVariables['/A1'].stateValues.label).eq('A');
+      expect(stateVariables['/B'].stateValues.label).eq('B');
+      expect(stateVariables['/B1'].stateValues.label).eq('B');
+      expect(stateVariables['/C'].stateValues.label).eq('C');
+      expect(stateVariables['/C1'].stateValues.label).eq('C');
+      expect(stateVariables['/C2/C'].stateValues.label).eq('C');
 
     })
 
     cy.log('move original points')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/A',
         args: { x: -2, y: -7 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/B',
         args: { x: 5.1, y: 8.9 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/C',
         args: { x: -3, y: -8 }
@@ -9805,33 +9891,33 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/C3 .mjx-mrow').should('contain.text', '(−3,−6,1)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([5, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([5, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
 
     })
 
 
     cy.log('move copied points')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/A1',
         args: { x: 8, y: -5 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/B1',
         args: { x: -5.6, y: 6.3 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/C1',
         args: { x: -7, y: 4 }
@@ -9842,16 +9928,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/C3 .mjx-mrow').should('contain.text', '(−5,−8,1)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
 
     })
 
@@ -9897,39 +9983,39 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/C3 .mjx-mrow').should('contain.text', '(3,0,1)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([1, 2])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([3, 4])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([3, 1])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
-      expect(await stateVariables['/A'].stateValues.label).eq('A');
-      expect(await stateVariables['/A1'].stateValues.label).eq('A');
-      expect(await stateVariables['/B'].stateValues.label).eq('B');
-      expect(await stateVariables['/B1'].stateValues.label).eq('B');
-      expect(await stateVariables['/C'].stateValues.label).eq('C');
-      expect(await stateVariables['/C1'].stateValues.label).eq('C');
-      expect(await stateVariables['/C2/C'].stateValues.label).eq('C');
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([1, 2])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([3, 4])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([3, 1])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, 2])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([3, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([1, 1])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([3, 0])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([1, 2, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([3, 0, 1])
+      expect(stateVariables['/A'].stateValues.label).eq('A');
+      expect(stateVariables['/A1'].stateValues.label).eq('A');
+      expect(stateVariables['/B'].stateValues.label).eq('B');
+      expect(stateVariables['/B1'].stateValues.label).eq('B');
+      expect(stateVariables['/C'].stateValues.label).eq('C');
+      expect(stateVariables['/C1'].stateValues.label).eq('C');
+      expect(stateVariables['/C2/C'].stateValues.label).eq('C');
 
     })
 
     cy.log('move original points')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/A',
         args: { x: -2, y: -7 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/B',
         args: { x: 5.1, y: 8.9 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/C',
         args: { x: -3, y: -8 }
@@ -9940,33 +10026,33 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/C3 .mjx-mrow').should('contain.text', '(−3,−6,1)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([5, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -7])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([5, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-3, -8])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([5, -2])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-3, -6])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -7, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-3, -6, 1])
 
     })
 
 
     cy.log('move copied points')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/A1',
         args: { x: 8, y: -5 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/B1',
         args: { x: -5.6, y: 6.3 }
       })
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/C1',
         args: { x: -7, y: 4 }
@@ -9977,16 +10063,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/C3 .mjx-mrow').should('contain.text', '(−5,−8,1)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
-      expect((await stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
-      expect((await stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
-      expect((await stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
-      expect((await stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
-      expect((await stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
-      expect((await stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
-      expect((await stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
-      expect((await stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/A'].stateValues.xs)).eqls([-2, -5])
+      expect((stateVariables['/B'].stateValues.xs)).eqls([-6, 9])
+      expect((stateVariables['/C'].stateValues.xs)).eqls([-5, 4])
+      expect((stateVariables['/A1'].stateValues.xs)).eqls([8, -5])
+      expect((stateVariables['/B1'].stateValues.xs)).eqls([-6, 6])
+      expect((stateVariables['/C1'].stateValues.xs)).eqls([-7, 4])
+      expect((stateVariables['/C2/C'].stateValues.xs)).eqls([-5, -8])
+      expect((stateVariables['/A2'].stateValues.xs)).eqls([-2, -5, 4])
+      expect((stateVariables['/C3'].stateValues.xs)).eqls([-5, -8, 1])
 
     })
 
@@ -10033,16 +10119,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(−1,−5)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/g1/P'].stateValues.xs)).eqls([3, 2])
-      expect((await stateVariables['/g2/P'].stateValues.xs)).eqls([-1, 2])
-      expect((await stateVariables['/g3/P'].stateValues.xs)).eqls([-1, 2])
-      expect((await stateVariables['/g4/P'].stateValues.xs)).eqls([-1, -5])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/g1/P'].stateValues.xs)).eqls([3, 2])
+      expect((stateVariables['/g2/P'].stateValues.xs)).eqls([-1, 2])
+      expect((stateVariables['/g3/P'].stateValues.xs)).eqls([-1, 2])
+      expect((stateVariables['/g4/P'].stateValues.xs)).eqls([-1, -5])
     })
 
     cy.log('move first point')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/g1/P',
         args: { x: -2, y: -7 }
@@ -10055,17 +10141,17 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(−1,−5)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/g1/P'].stateValues.xs)).eqls([-2, -7])
-      expect((await stateVariables['/g2/P'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/g3/P'].stateValues.xs)).eqls([-1, -7])
-      expect((await stateVariables['/g4/P'].stateValues.xs)).eqls([-1, -5])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/g1/P'].stateValues.xs)).eqls([-2, -7])
+      expect((stateVariables['/g2/P'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/g3/P'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/g4/P'].stateValues.xs)).eqls([-1, -5])
     })
 
 
     cy.log('move second point')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/g2/P',
         args: { x: 8, y: -6 }
@@ -10078,17 +10164,17 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(8,−5)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/g1/P'].stateValues.xs)).eqls([-2, -6])
-      expect((await stateVariables['/g2/P'].stateValues.xs)).eqls([8, -6])
-      expect((await stateVariables['/g3/P'].stateValues.xs)).eqls([8, -6])
-      expect((await stateVariables['/g4/P'].stateValues.xs)).eqls([8, -5])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/g1/P'].stateValues.xs)).eqls([-2, -6])
+      expect((stateVariables['/g2/P'].stateValues.xs)).eqls([8, -6])
+      expect((stateVariables['/g3/P'].stateValues.xs)).eqls([8, -6])
+      expect((stateVariables['/g4/P'].stateValues.xs)).eqls([8, -5])
     })
 
 
     cy.log('move third point')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/g3/P',
         args: { x: 1, y: 0 }
@@ -10101,16 +10187,16 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(1,−5)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/g1/P'].stateValues.xs)).eqls([-2, 0])
-      expect((await stateVariables['/g2/P'].stateValues.xs)).eqls([1, 0])
-      expect((await stateVariables['/g3/P'].stateValues.xs)).eqls([1, 0])
-      expect((await stateVariables['/g4/P'].stateValues.xs)).eqls([1, -5])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/g1/P'].stateValues.xs)).eqls([-2, 0])
+      expect((stateVariables['/g2/P'].stateValues.xs)).eqls([1, 0])
+      expect((stateVariables['/g3/P'].stateValues.xs)).eqls([1, 0])
+      expect((stateVariables['/g4/P'].stateValues.xs)).eqls([1, -5])
     })
 
     cy.log('move fourth point')
     cy.window().then(async (win) => {
-      win.callAction({
+      win.callAction1({
         actionName: "movePoint",
         componentName: '/g4/P',
         args: { x: 3, y: 4 }
@@ -10123,11 +10209,11 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(3,4)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect((await stateVariables['/g1/P'].stateValues.xs)).eqls([-2, 0])
-      expect((await stateVariables['/g2/P'].stateValues.xs)).eqls([3, 0])
-      expect((await stateVariables['/g3/P'].stateValues.xs)).eqls([3, 0])
-      expect((await stateVariables['/g4/P'].stateValues.xs)).eqls([3, 4])
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/g1/P'].stateValues.xs)).eqls([-2, 0])
+      expect((stateVariables['/g2/P'].stateValues.xs)).eqls([3, 0])
+      expect((stateVariables['/g3/P'].stateValues.xs)).eqls([3, 0])
+      expect((stateVariables['/g4/P'].stateValues.xs)).eqls([3, 4])
     })
 
   });

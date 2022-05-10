@@ -64,7 +64,7 @@ if($success) {
 
 	$sql = "
 		SELECT 
-		contentId,
+		cid,
 		generatedVariant,
 		attemptNumber
 		FROM user_assignment_attempt
@@ -83,7 +83,7 @@ if($success) {
 
 			array_push($attemptInfo,array(
 				"attemptNumber" => $row['attemptNumber'],
-				"contentId"=>$row['contentId'],
+				"cid"=>$row['cid'],
 				"variant"=>$row['generatedVariant']
 			));
 		}

@@ -8,7 +8,13 @@ export default function C(props) {
     return null;
   }
   
-  return <code id={name}><a name={name} />{children}</code>;
+  return (
+    <code id={name} style={{ margin:"12px 0" }}>
+      <a name={name} />
+      {children}
+    </code>
+
+  )
 }
 
 

@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { animated, useSpring } from '@react-spring/web';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+// import { toastType } from './ToastTypes';
 
 const ToastContainer = styled.div`
   position: fixed;
@@ -83,6 +84,36 @@ const Button = styled('button')`
   font-size: 1em;
 `;
 
+const toastStack = atom({
+  key: 'toastStack',
+  default: [],
+});
+
+let id = 0;
+
+export const useToast = () => {
+  const addToast = useRecoilCallback(
+    ({ set }) =>
+      (msg, type = toastType.INFO, action = null) => {
+        set(toastStack, (old) => [
+          ...old,
+          <ToastMessage
+            key={id}
+            type={type}
+            action={action}
+            duration={type.timeout}
+            tId={id}
+          >
+            {msg}
+          </ToastMessage>,
+        ]);
+        id++;
+      },
+    [],
+  );
+  return addToast;
+};
+
 export const toastType = Object.freeze({
   //Color contrast with accessibility -- no text on color
   ERROR: {
@@ -117,36 +148,6 @@ export const toastType = Object.freeze({
     background: 'var(--mainBlue)',
   },
 });
-
-const toastStack = atom({
-  key: 'toastStack',
-  default: [],
-});
-
-let id = 0;
-
-export const useToast = () => {
-  const addToast = useRecoilCallback(
-    ({ set }) =>
-      (msg, type = toastType.INFO, action = null) => {
-        set(toastStack, (old) => [
-          ...old,
-          <ToastMessage
-            key={id}
-            type={type}
-            action={action}
-            duration={type.timeout}
-            tId={id}
-          >
-            {msg}
-          </ToastMessage>,
-        ]);
-        id++;
-      },
-    [],
-  );
-  return addToast;
-};
 
 export default function Toast() {
   const toasts = useRecoilValue(toastStack);

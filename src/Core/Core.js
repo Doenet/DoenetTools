@@ -13,49 +13,39 @@ import { DependencyHandler } from './Dependencies';
 import { preprocessMathInverseDefinition } from './utils/math';
 import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables';
 import { nanoid } from 'nanoid';
-import { CIDFromDoenetML } from './utils/cid';
+import { cidFromText } from './utils/cid';
 import { removeFunctionsMathExpressionClass } from './CoreWorker';
 import createComponentInfoObjects from './utils/componentInfoObjects';
 import { get as idb_get, set as idb_set } from 'idb-keyval';
-import { toastType } from '@Toast';
+import { toastType } from '../Tools/_framework/ToastTypes';
 import axios from 'axios';
 
 // string to componentClass: this.componentInfoObjects.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
 
 export default class Core {
-  constructor({ doenetML, doenetId, attemptNumber,
+  constructor({ doenetML, doenetId, activityCid, pageNumber, attemptNumber = 1, itemNumber = 1,
     serverSaveId,
     requestedVariant, requestedVariantIndex,
     flags = {},
     stateVariableChanges = {},
-    coreId, noCIDSpecified }) {
+    coreId, updateDataOnContentChange }) {
     // console.time('core');
 
 
     this.coreId = coreId;
     this.doenetId = doenetId;
+    this.activityCid = activityCid;
+    this.pageNumber = pageNumber;
     this.attemptNumber = attemptNumber;
+    this.itemNumber = itemNumber;
 
     this.serverSaveId = serverSaveId;
-    this.noCIDSpecified = noCIDSpecified;
+    this.updateDataOnContentChange = updateDataOnContentChange;
 
     this.numerics = new Numerics();
     // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
     this.flags = flags;
-
-    this.executeProcesses = this.executeProcesses.bind(this);
-    this.requestUpdate = this.requestUpdate.bind(this);
-    this.performUpdate = this.performUpdate.bind(this);
-    this.requestAction = this.requestAction.bind(this);
-    this.performAction = this.performAction.bind(this);
-    this.recordSolutionView = this.recordSolutionView.bind(this);
-    this.triggerChainedActions = this.triggerChainedActions.bind(this);
-    this.requestRecordEvent = this.requestRecordEvent.bind(this);
-    this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
-    this._requestAnimationFrame = this._requestAnimationFrame.bind(this);
-    this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
-    this.calculateScoredItemNumberOfContainer = this.calculateScoredItemNumberOfContainer.bind(this);
 
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
@@ -66,16 +56,16 @@ export default class Core {
 
 
     this.coreFunctions = {
-      requestUpdate: this.requestUpdate,
-      performUpdate: this.performUpdate,
-      requestAction: this.requestAction,
-      performAction: this.performAction,
-      triggerChainedActions: this.triggerChainedActions,
-      requestRecordEvent: this.requestRecordEvent,
-      requestAnimationFrame: this.requestAnimationFrame,
-      cancelAnimationFrame: this.cancelAnimationFrame,
-      calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer,
-      recordSolutionView: this.recordSolutionView,
+      requestUpdate: this.requestUpdate.bind(this),
+      performUpdate: this.performUpdate.bind(this),
+      requestAction: this.requestAction.bind(this),
+      performAction: this.performAction.bind(this),
+      resolveAction: this.resolveAction.bind(this),
+      triggerChainedActions: this.triggerChainedActions.bind(this),
+      requestRecordEvent: this.requestRecordEvent.bind(this),
+      requestAnimationFrame: this.requestAnimationFrame.bind(this),
+      cancelAnimationFrame: this.cancelAnimationFrame.bind(this),
+      recordSolutionView: this.recordSolutionView.bind(this),
     }
 
     this.updateInfo = {
@@ -89,7 +79,6 @@ export default class Core {
       unresolvedByDependent: {},
       deletedStateVariables: {},
       deletedComponents: {},
-      recreatedComponents: {},
       // parentsToUpdateDescendants: new Set(),
       compositesBeingExpanded: [],
       // stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
@@ -99,13 +88,8 @@ export default class Core {
     this.cumulativeStateVariableChanges = JSON.parse(JSON.stringify(stateVariableChanges, serializeFunctions.serializedComponentsReplacer), serializeFunctions.serializedComponentsReviver);
 
 
-    this.animationIDs = {};
-    this.lastAnimationID = 0;
     this.requestedVariantIndex = requestedVariantIndex;
     this.requestedVariant = requestedVariant;
-    if (!this.requestedVariant) {
-      this.requestedVariant = { index: this.requestedVariantIndex };
-    }
 
     // console.time('serialize doenetML');
 
@@ -129,10 +113,10 @@ export default class Core {
       }
     }
 
-    CIDFromDoenetML(doenetML)
-      .then(CID =>
+    cidFromText(doenetML)
+      .then(cid =>
         serializeFunctions.expandDoenetMLsToFullSerializedComponents({
-          CIDs: [CID],
+          cids: [cid],
           doenetMLs: [doenetML],
           componentInfoObjects: this.componentInfoObjects,
           flags: this.flags,
@@ -142,11 +126,11 @@ export default class Core {
 
 
   async finishCoreConstruction({
-    CIDs,
+    cids,
     fullSerializedComponents,
   }) {
 
-    this.CID = CIDs[0];
+    this.cid = cids[0];
 
     let serializedComponents = fullSerializedComponents[0];
 
@@ -162,7 +146,7 @@ export default class Core {
 
 
     this.documentName = serializedComponents[0].componentName;
-    serializedComponents[0].doenetAttributes.CID = this.CID;
+    serializedComponents[0].doenetAttributes.cid = this.cid;
 
     this._components = {};
     this.componentsToRender = {};
@@ -187,7 +171,7 @@ export default class Core {
       Object.defineProperty(this.rendererVariablesByComponentType, componentType, {
         get: function () {
           let varDescriptions = this.componentInfoObjects.allComponentClasses[componentType].returnStateVariableInfo({
-            onlyForRenderer: true, flags: this.flags
+            onlyForRenderer: true,
           }).stateVariableDescriptions;
           delete this.rendererVariablesByComponentType[componentType];
           return this.rendererVariablesByComponentType[componentType] = varDescriptions;
@@ -210,10 +194,46 @@ export default class Core {
 
     // console.timeEnd('serialize doenetML');
 
-    this.parameterStack.parameters.variant = this.requestedVariant;
-    serializedComponents[0].variants = {
-      desiredVariant: this.parameterStack.parameters.variant
+    let numVariants = serializeFunctions.getNumberOfVariants({
+      serializedComponent: serializedComponents[0],
+      componentInfoObjects: this.componentInfoObjects
+    }).numberOfVariantsPreIgnore;
+
+
+    if (!this.requestedVariant) {
+
+      // don't have full variant, just requested variant index
+
+      this.requestedVariantIndex = ((this.requestedVariantIndex - 1) % numVariants + numVariants) % numVariants + 1;
+
+      if (serializedComponents[0].variants.uniqueVariants) {
+        let docClass = this.componentInfoObjects.allComponentClasses[serializedComponents[0].componentType];
+
+        let result = docClass.getUniqueVariant({
+          serializedComponent: serializedComponents[0],
+          variantIndex: this.requestedVariantIndex,
+          componentInfoObjects: this.componentInfoObjects
+        })
+
+        if (result.success) {
+          this.requestedVariant = result.desiredVariant;
+        }
+
+      }
+
+      // either didn't have unique variants
+      // or getting unique variant failed,
+      // so just set variant index
+      // and rest of variant will be generated from that index
+      if (!this.requestedVariant) {
+        this.requestedVariant = { index: this.requestedVariantIndex };
+      }
+
     }
+
+
+    this.parameterStack.parameters.variant = this.requestedVariant;
+    serializedComponents[0].variants.desiredVariant = this.parameterStack.parameters.variant;
 
     // //Make these variables available for cypress
     // window.state = {
@@ -252,9 +272,12 @@ export default class Core {
       .map(x => JSON.stringify(x, serializeFunctions.serializedComponentsReplacer));
 
     // Note: coreInfo is fixed even though this.rendererTypesInDocument could change
+    // Note 2: both canonical variant strings and original rendererTypesInDocument
+    // could differ depending on the initial state
     this.coreInfo = {
       generatedVariantString: this.canonicalGeneratedVariantString,
       allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
+      variantIndicesToIgnore: deepClone(await this.document.sharedParameters.variantIndicesToIgnore),
       rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
       documentToRender: this.documentRendererInstructions,
     };
@@ -262,8 +285,6 @@ export default class Core {
     this.coreInfoString = JSON.stringify(this.coreInfo, serializeFunctions.serializedComponentsReplacer);
 
     this.messageViewerReady()
-
-    this.initializeUserAssignmentTables();
 
     this.requestRecordEvent({
       verb: "experienced",
@@ -291,66 +312,6 @@ export default class Core {
     postMessage({
       messageType: "coreCreated"
     });
-
-  }
-
-  async initializeUserAssignmentTables() {
-
-    //Initialize user_assignment tables
-    if (this.flags.allowSaveSubmissions) {
-
-      // //TODO: Do we need this? or does the catch handle it?
-      // if (!navigator.onLine) {
-      //   toast("You're not connected to the internet. ", toastType.ERROR)
-      // }
-
-
-      try {
-        let resp = await axios.post('/api/initAssignmentAttempt.php', {
-          doenetId: this.doenetId,
-          weights: await this.scoredItemWeights,
-          attemptNumber: this.attemptNumber,
-          contentId: this.CID,
-          requestedVariantIndex: this.requestedVariantIndex,
-          generatedVariant: this.canonicalGeneratedVariantString,
-          itemVariantInfo: this.canonicalItemVariantStrings,
-        });
-
-
-        if (resp.status === null) {
-          postMessage({
-            messageType: "sendToast",
-            args: {
-              message: `Could not initialize assignment tables.  Are you connected to the internet?`,
-              toastType: toastType.ERROR
-            }
-          })
-        } else if (!resp.data.success) {
-          postMessage({
-            messageType: "sendToast",
-            args: {
-              message: `Could not initialize assignment tables: ${data.message}`,
-              toastType: toastType.ERROR
-            }
-          })
-
-        }
-
-      } catch (e) {
-
-        postMessage({
-          messageType: "sendToast",
-          args: {
-            message: `Could not initialize assignment tables: ${e.message}`,
-            toastType: toastType.ERROR
-          }
-        })
-
-
-      }
-
-    }
-
 
   }
 
@@ -442,6 +403,23 @@ export default class Core {
 
       let results = await this.initializeRenderedComponentInstruction(this.document);
 
+      // initializing renderer instructions could trigger more composite updates
+      // (presumably from deriving child results)
+      // if so, make replacement changes and update renderer instructions again
+      // TODO: should we check for child results earlier so we don't have to check them
+      // when updating renderer instructions?
+      if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+        await this.replacementChangesFromCompositesToUpdate();
+
+        let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+        this.updateInfo.componentsToUpdateRenderers = [];
+
+        await this.updateRendererInstructions({
+          componentNamesToUpdate,
+        });
+      }
+
+
       this.documentRendererInstructions = results.componentToRender;
 
       let updateInstructions = [{
@@ -449,7 +427,7 @@ export default class Core {
         rendererStatesToUpdate: results.rendererStatesToUpdate,
       }]
 
-      this.postUpdateRenderers(updateInstructions, true)
+      this.postUpdateRenderers({ updateInstructions }, true)
 
       await this.processStateVariableTriggers();
 
@@ -482,6 +460,23 @@ export default class Core {
       await this.updateRendererInstructions({
         componentNamesToUpdate: await this.componentAndRenderedDescendants(parent)
       });
+
+      // updating renderer instructions could trigger more composite updates
+      // (presumably from deriving child results)
+      // if so, make replacement changes and update renderer instructions again
+      // TODO: should we check for child results earlier so we don't have to check them
+      // when updating renderer instructions?
+      if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+        await this.replacementChangesFromCompositesToUpdate();
+
+        let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+        this.updateInfo.componentsToUpdateRenderers = [];
+
+        await this.updateRendererInstructions({
+          componentNamesToUpdate,
+        });
+      }
+
       await this.processStateVariableTriggers();
 
     }
@@ -490,7 +485,7 @@ export default class Core {
   }
 
 
-  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, recreatedComponents = {} }) {
+  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate = {}, actionId }) {
 
     let deletedRenderers = [];
 
@@ -522,7 +517,7 @@ export default class Core {
           for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
             if (indicesToRender.includes(ind)) {
               if (child.rendererType) {
-                currentChildIdentifiers.push(`componentName:${child.componentName}`)
+                currentChildIdentifiers.push(`nameType:${child.componentName};${child.componentType}`)
                 renderedInd++;
               } else if (typeof child === "string") {
                 currentChildIdentifiers.push(`string${renderedInd}:${child}`)
@@ -542,7 +537,7 @@ export default class Core {
         let previousChildIdentifiers = [];
         for (let [ind, child] of previousChildRenderers.entries()) {
           if (child.componentName) {
-            previousChildIdentifiers.push(`componentName:${child.componentName}`)
+            previousChildIdentifiers.push(`nameType:${child.componentName};${child.componentType}`)
           } else if (typeof child === "string") {
             previousChildIdentifiers.push(`string${ind}:${child}`)
           } else if (typeof child === "number") {
@@ -655,7 +650,7 @@ export default class Core {
       updateInstructions.splice(0, 0, instruction);
     }
 
-    this.postUpdateRenderers(updateInstructions)
+    this.postUpdateRenderers({ updateInstructions, actionId })
 
   }
 
@@ -738,6 +733,7 @@ export default class Core {
 
     let rendererInstructions = {
       componentName: componentName,
+      effectiveName: component.componentOrAdaptedName,
       componentType: component.componentType,
       rendererType: component.rendererType,
       actions: requestActions
@@ -931,7 +927,7 @@ export default class Core {
     if (ancestors.length > 0) {
       let parentName = ancestors[0].componentName;
       let parent = this.components[parentName];
-      if (parent.attributes.newNamespace && parent.attributes.newNamespace.primitive) {
+      if (parent.attributes.newNamespace?.primitive) {
         namespaceForUnamed = parent.componentName + "/";
       } else {
         namespaceForUnamed = getNamespaceFromName(parent.componentName);
@@ -1100,11 +1096,11 @@ export default class Core {
 
     if (serializedChildren !== undefined) {
 
-      let setUpVariant = false;
-      let variantControlInd;
-      let variantControlChild;
+      if (componentClass.setUpVariant) {
 
-      if (componentClass.alwaysSetUpVariant || componentClass.setUpVariantIfVariantControlChild) {
+        let variantControlInd;
+        let variantControlChild;
+
         // look for variantControl child
         for (let [ind, child] of serializedChildren.entries()) {
           if (child.componentType === "variantControl" || (
@@ -1115,22 +1111,6 @@ export default class Core {
             break;
           }
         }
-
-        if (variantControlInd !== undefined || componentClass.alwaysSetUpVariant) {
-          setUpVariant = true;
-        }
-      }
-
-      if (!setUpVariant && componentClass.setUpVariantUnlessAttributePrimitive) {
-        let attribute = componentClass.setUpVariantUnlessAttributePrimitive;
-
-        if (!(serializedComponent.attributes && serializedComponent.attributes[attribute]
-          && serializedComponent.attributes[attribute].primitive)) {
-          setUpVariant = true;
-        }
-      }
-
-      if (setUpVariant) {
 
         let descendantVariantComponents = serializeFunctions.gatherVariantComponents({
           serializedComponents: serializedChildren,
@@ -1155,8 +1135,15 @@ export default class Core {
               }
             }
 
+            if (serializedComponent.variants.numberOfVariants === undefined) {
+              serializeFunctions.getNumberOfVariants({
+                serializedComponent,
+                componentInfoObjects: this.componentInfoObjects
+              });
+            }
+
             if (serializedComponent.variants.uniqueVariants) {
-              sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+              sharedParameters.numberOfVariantsPreIgnore = serializedComponent.variants.numberOfVariantsPreIgnore;
             }
           }
 
@@ -1171,13 +1158,27 @@ export default class Core {
 
           definingChildren[variantControlInd] = childrenResult.components[0];
 
+
+          if (serializedComponent.variants.uniqueVariants && !serializedComponent.variants.selectedUniqueVariant) {
+
+            let result = componentClass.getUniqueVariant({
+              serializedComponent,
+              variantIndex: await childrenResult.components[0].stateValues.selectedVariantIndex,
+              componentInfoObjects: this.componentInfoObjects
+            })
+
+            if (result.success) {
+              serializedComponent.variants.desiredVariant = result.desiredVariant;
+            }
+
+          }
+
         }
 
         await componentClass.setUpVariant({
           serializedComponent,
           sharedParameters,
           definingChildrenSoFar: definingChildren,
-          allComponentClasses: this.componentInfoObjects.allComponentClasses,
           descendantVariantComponents
         });
 
@@ -1323,9 +1324,6 @@ export default class Core {
     });
 
     // in case component with same name was deleted before, delete from deleteComponents and deletedStateVariable
-    if (this.updateInfo.deletedComponents[componentName]) {
-      this.updateInfo.recreatedComponents[componentName] = true;
-    }
     delete this.updateInfo.deletedComponents[componentName];
     delete this.updateInfo.deletedStateVariables[componentName];
 
@@ -1755,9 +1753,18 @@ export default class Core {
     if ("nChildrenToRender" in component.state) {
       nChildrenToRender = await component.stateValues.nChildrenToRender;
     }
+    let childIndicesToRender = null;
+    if ("childIndicesToRender" in component.state) {
+      childIndicesToRender = await component.stateValues.childIndicesToRender;
+    }
+
     for (let [ind, child] of component.activeChildren.entries()) {
       if (ind >= nChildrenToRender) {
         break;
+      }
+
+      if (childIndicesToRender && !childIndicesToRender.includes(ind)) {
+        continue;
       }
 
       if (typeof child === "object") {
@@ -1814,7 +1821,7 @@ export default class Core {
     if (adapter === undefined || adapter.componentType !== newSerializedChild.componentType) {
       if (originalChild.componentName) {
         let namespaceForUnamed;
-        if (parent.attributes.newNamespace && parent.attributes.newNamespace.primitive) {
+        if (parent.attributes.newNamespace?.primitive) {
           namespaceForUnamed = parent.componentName + "/";
         } else {
           namespaceForUnamed = getNamespaceFromName(parent.componentName);
@@ -2022,7 +2029,7 @@ export default class Core {
       uniqueIdentifiersUsed
     });
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     // TODO: is isResponse the only attribute to convert?
     if (component.attributes.isResponse) {
@@ -2049,14 +2056,43 @@ export default class Core {
       }
     }
 
+    // console.log('--------------')
     // console.log(`name of composite mediating shadow: ${nameOfCompositeMediatingTheShadow}`)
-    if (component.constructor.assignNamesToReplacements) {
+    // console.log(`name of composite shadowing: ${component.componentName}`)
+    // console.log(`name of shadowed composite: ${shadowedComposite.componentName}`)
 
-      let originalNamesAreConsistent = component.constructor.originalNamesAreConsistent
-        && newNamespace;
+    if (component.constructor.assignNamesToReplacements) {
+      let compositeMediatingTheShadow = this.components[nameOfCompositeMediatingTheShadow];
+      let mediatingNewNamespace = compositeMediatingTheShadow.attributes.newNamespace?.primitive;
+      let mediatingAssignNames = compositeMediatingTheShadow.doenetAttributes.assignNames;
+
+
+      // Note: originalNamesAreConsistent means that processAssignNames should leave
+      // the original names in the serializedComponents as is
+      // (unless their names are assigned or have been marked to create unique)
+      // If originalNamesAreConsistent is false, then all components
+      // that don't have names assigned will be renamed to random names
+
+      // We set originalNamesAreConsistent to true if we can be sure
+      // that we won't create any duplicate names.
+      // If the component begin shadowed has a newNamespace,
+      // or we get a new namespace from the composite mediating the shadow, 
+      // that will, in most cases, be enough to prevent name collisions.
+      // The one edge case is when the composite mediating the shadow also assigns names,
+      // in which case the assigned names could collide with the original names,
+      // so we can't keep the original names.
+
+
+      let originalNamesAreConsistent = newNamespace
+        || (mediatingNewNamespace && !mediatingAssignNames);
+
+      let assignNames = component.doenetAttributes.assignNames;
+      if (assignNames && await component.stateValues.addLevelToAssignNames) {
+        assignNames = assignNames.map(x => [x])
+      }
 
       let processResult = serializeFunctions.processAssignNames({
-        assignNames: component.doenetAttributes.assignNames,
+        assignNames,
         serializedComponents: serializedReplacements,
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
@@ -2066,8 +2102,6 @@ export default class Core {
 
       serializedReplacements = processResult.serializedComponents;
     } else {
-      // console.log(`since ${component.componentName} doesn't assign names to replacements, just call create component names from children`)
-      // console.log(deepClone(serializedReplacements))
       // since original names came from the targetComponent
       // we can use them only if we created a new namespace
       let originalNamesAreConsistent = newNamespace;
@@ -2110,7 +2144,7 @@ export default class Core {
     this.parameterStack.push(component.sharedParameters, false);
 
     let namespaceForUnamed;
-    if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+    if (component.attributes.newNamespace?.primitive) {
       namespaceForUnamed = component.componentName + "/";
     } else {
       namespaceForUnamed = getNamespaceFromName(component.componentName);
@@ -2165,7 +2199,7 @@ export default class Core {
         // replace with placeholders
         // otherwise, leave composite as an activeChild
         if (!child.isExpanded) {
-          if (child.attributes.componentType && child.attributes.componentType.primitive) {
+          if (child.attributes.componentType?.primitive) {
             replaceWithPlaceholders = true;
           } else {
             continue;
@@ -2773,6 +2807,19 @@ export default class Core {
 
     if (redefineDependencies.propVariable) {
       let propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
+
+      // if we have an array entry state variable that hasn't been created yet
+      // create it now so that we can look up stateVariablesPrescribingAdditionalAttributes
+      if (!propStateVariableInTarget && this.checkIfArrayEntry({
+        stateVariable: redefineDependencies.propVariable,
+        component: targetComponent
+      })) {
+        await this.createFromArrayEntry({
+          stateVariable: redefineDependencies.propVariable,
+          component: targetComponent
+        })
+        propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
+      }
       if (propStateVariableInTarget && propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
         additionalAttributesFromStateVariables = propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes
       }
@@ -3352,7 +3399,8 @@ export default class Core {
           return result;
 
         };
-        stateDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
+        stateDef.excludeDependencyValuesInInverseDefinition = true;
+        stateDef.inverseDefinition = function ({ desiredStateVariableValues }) {
 
           return {
             success: true,
@@ -3515,6 +3563,7 @@ export default class Core {
                 componentName: component.componentName,
                 actionName: chainInfo.triggeredAction,
                 stateVariableDefiningChain: varName,
+                args: {},
               });
             } else {
               // target was already chained
@@ -3626,6 +3675,32 @@ export default class Core {
           stateVarObj.additionalStateVariablesDefined.push(arrayEntryVarName);
         } else {
           stateVarObj.additionalStateVariablesDefined.push(varName);
+        }
+      }
+    }
+
+
+    // if any of the state variables prescribing additional entries are arrays,
+    // transform to their array entry
+    if (arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+      stateVarObj.stateVariablesPrescribingAdditionalAttributes = {};
+
+      let entryPrefixInd = arrayStateVarObj.entryPrefixes.indexOf(arrayEntryPrefix);
+
+      for (let attrName in arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+        let varName = arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName];
+
+        let sObj = component.state[varName];
+
+        if (sObj.isArray) {
+
+          // find the same array entry prefix in the other array state variable
+          let newArrayEntryPrefix = sObj.entryPrefixes[entryPrefixInd];
+          let arrayEntryVarName = newArrayEntryPrefix + stateVarObj.varEnding;
+
+          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = arrayEntryVarName;
+        } else {
+          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = varName;
         }
       }
     }
@@ -3978,6 +4053,13 @@ export default class Core {
         };
       }
 
+
+      if (!stateVarObj.arrayVarNameFromPropIndex) {
+        stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
+          return entryPrefixes[0] + [Number(propIndex), ...Array(stateVarObj.nDimensions - 1).fill(1)].join('_')
+        };
+      }
+
       stateVarObj.adjustArrayToNewArraySize = async function () {
         function resizeSubArray(subArray, subArraySize) {
 
@@ -4043,6 +4125,11 @@ export default class Core {
         };
       }
 
+      if (!stateVarObj.arrayVarNameFromPropIndex) {
+        stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
+          return entryPrefixes[0] + propIndex;
+        };
+      }
 
       stateVarObj.adjustArrayToNewArraySize = async function () {
         // console.log(`adjust array ${stateVariable} of ${component.componentName} to new array size: ${stateVarObj.arraySize[0]}`);
@@ -4695,6 +4782,43 @@ export default class Core {
 
   }
 
+  async arrayEntryNamesFromPropIndex({ stateVariables, component, propIndex }) {
+
+    let newVarNames = [];
+    for (let varName of stateVariables) {
+      let stateVarObj = component.state[varName];
+      if (!stateVarObj) {
+        if (!this.checkIfArrayEntry({ stateVariable: varName, component })) {
+          // varName doesn't exist.  Ignore error here
+          newVarNames.push(varName);
+          continue;
+        }
+        await this.createFromArrayEntry({ stateVariable: varName, component });
+        stateVarObj = component.state[varName];
+      }
+
+      let newName;
+      if (stateVarObj.isArray) {
+        newName = stateVarObj.arrayVarNameFromPropIndex(propIndex, varName);
+      } else if (stateVarObj.isArrayEntry) {
+        let arrayStateVarObj = component.state[stateVarObj.arrayStateVariable];
+        newName = arrayStateVarObj.arrayVarNameFromPropIndex(propIndex, varName);
+      } else {
+        console.warn(`Cannot get propIndex from ${varName} of ${component.componentName} as it is not an array or array entry state variable`);
+        newName = varName;
+      }
+      if (newName) {
+        newVarNames.push(newName);
+      } else {
+        console.warn(`Cannot get propIndex from ${varName} of ${component.componentName}`)
+        newVarNames.push(varName);
+      }
+
+    }
+
+    return newVarNames;
+
+  }
 
   recursivelyReplaceCompositesWithReplacements({
     replacements,
@@ -5423,10 +5547,15 @@ export default class Core {
   }
 
 
-  async getStateVariableDefinitionArguments({ component, stateVariable }) {
+  async getStateVariableDefinitionArguments({ component, stateVariable, excludeDependencyValues }) {
     // console.log(`get state variable dependencies of ${component.componentName}, ${stateVariable}`)
 
-    let args = await this.dependencies.getStateVariableDependencyValues({ component, stateVariable });
+    let args;
+    if (excludeDependencyValues) {
+      args = {};
+    } else {
+      args = await this.dependencies.getStateVariableDependencyValues({ component, stateVariable });
+    }
 
     args.componentName = component.componentName;
 
@@ -5900,6 +6029,10 @@ export default class Core {
         }
       }
 
+      if (result.updateRenderedChildren) {
+        this.componentsWithChangedChildrenToRender.add(component.componentName);
+      }
+
       if (result.updateActionChaining) {
         let chainObj = this.updateInfo.componentsToUpdateActionChaining[component.componentName];
         if (!chainObj) {
@@ -6346,6 +6479,10 @@ export default class Core {
               }
             }
 
+            if (result.updateRenderedChildren) {
+              this.componentsWithChangedChildrenToRender.add(component.componentName);
+            }
+
             if (result.updateActionChaining) {
               let chainObj = this.updateInfo.componentsToUpdateActionChaining[upDep.componentName];
               if (!chainObj) {
@@ -6497,7 +6634,7 @@ export default class Core {
           componentName: shadowingParent.shadows.compositeName
         });
 
-        let shadowingNewNamespace = shadowingParent.attributes.newNamespace && shadowingParent.attributes.newNamespace.primitive;
+        let shadowingNewNamespace = shadowingParent.attributes.newNamespace?.primitive;
         // we can use original only if we created a new namespace
         let originalNamesAreConsistent = shadowingNewNamespace;
 
@@ -6945,7 +7082,7 @@ export default class Core {
           let serializedReplacements = change.serializedReplacements;
 
           let namespaceForUnamed;
-          if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+          if (component.attributes.newNamespace?.primitive) {
             namespaceForUnamed = component.componentName + "/";
           } else {
             namespaceForUnamed = getNamespaceFromName(component.componentName);
@@ -7421,12 +7558,21 @@ export default class Core {
         }
 
         if (shadowingComponent.constructor.assignNamesToReplacements) {
+          let nameOfCompositeMediatingTheShadow = shadowingComponent.shadows.compositeName;
+          let compositeMediatingTheShadow = this.components[nameOfCompositeMediatingTheShadow];
+          let mediatingNewNamespace = compositeMediatingTheShadow.attributes.newNamespace?.primitive;
+          let mediatingAssignNames = compositeMediatingTheShadow.doenetAttributes.assignNames;
 
-          let originalNamesAreConsistent = shadowingComponent.constructor.originalNamesAreConsistent
-            && shadowingNewNamespace;
+          let originalNamesAreConsistent = shadowingNewNamespace
+            || (mediatingNewNamespace && !mediatingAssignNames);
+
+          let assignNames = shadowingComponent.doenetAttributes.assignNames;
+          if (assignNames && await shadowingComponent.stateValues.addLevelToAssignNames) {
+            assignNames = assignNames.map(x => [x])
+          }
 
           let processResult = serializeFunctions.processAssignNames({
-            assignNames: shadowingComponent.doenetAttributes.assignNames,
+            assignNames,
             indOffset: assignNamesOffset,
             serializedComponents: newSerializedReplacements,
             parentName: shadowingComponent.componentName,
@@ -7754,12 +7900,24 @@ export default class Core {
         if (event) {
           this.requestRecordEvent(event);
         }
+        if (!args) {
+          args = {};
+        }
         return await action(args);
       }
     }
 
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
 
+  }
+
+  resolveAction({ actionId }) {
+    if (actionId) {
+      postMessage({
+        messageType: "resolveAction",
+        args: { actionId }
+      })
+    }
   }
 
   async triggerChainedActions({ componentName }) {
@@ -7851,7 +8009,33 @@ export default class Core {
 
   }
 
-  async performUpdate({ updateInstructions, transient = false, event }) {
+  async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false }) {
+
+    if (this.flags.readOnly && !overrideReadOnly) {
+
+      let sourceInformation = {};
+
+      for (let instruction of updateInstructions) {
+
+        let componentSourceInformation = sourceInformation[instruction.componentName];
+        if (!componentSourceInformation) {
+          componentSourceInformation = sourceInformation[instruction.componentName] = {};
+        }
+
+        if (instruction.sourceInformation) {
+          Object.assign(componentSourceInformation, instruction.sourceInformation);
+        }
+      }
+
+      await this.updateRendererInstructions({
+        componentNamesToUpdate: updateInstructions.map(x => x.componentName),
+        sourceOfUpdate: { sourceInformation },
+        actionId,
+      });
+
+      return;
+
+    }
 
     let newStateVariableValues = {};
     let newStateVariableValuesProcessed = [];
@@ -7923,6 +8107,10 @@ export default class Core {
 
     newStateVariableValuesProcessed.push(newStateVariableValues);
 
+    // always update the renderers from the update instructions themselves,
+    // as even if changes were prevented, the renderers need to be given that information
+    // so they can revert if the showed the changes before hearing back from core
+    this.updateInfo.componentsToUpdateRenderers.push(...updateInstructions.map(x => x.componentName))
 
     // use set to create deduplicated list of components to update renderers
     let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
@@ -7931,8 +8119,26 @@ export default class Core {
     await this.updateRendererInstructions({
       componentNamesToUpdate,
       sourceOfUpdate: { sourceInformation, local: true },
-      recreatedComponents: this.updateInfo.recreatedComponents
+      actionId,
     });
+
+    // updating renderer instructions could trigger more composite updates
+    // (presumably from deriving child results)
+    // if so, make replacement changes and update renderer instructions again
+    // TODO: should we check for child results earlier so we don't have to check them
+    // when updating renderer instructions?
+    if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+      await this.replacementChangesFromCompositesToUpdate();
+
+      let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+      this.updateInfo.componentsToUpdateRenderers = [];
+
+      await this.updateRendererInstructions({
+        componentNamesToUpdate,
+        sourceOfUpdate: { sourceInformation, local: true },
+        actionId,
+      });
+    }
 
     await this.processStateVariableTriggers();
 
@@ -7961,38 +8167,44 @@ export default class Core {
 
     if (recordItemSubmissions.length > 0) {
 
-      let itemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
-      let itemsWithCreditAchieved = {};
+      let subitemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
 
       if (event) {
         if (!event.context) {
           event.context = {};
         }
-        if (!event.context.itemCreditAchieved) {
-          event.context.itemCreditAchieved = {};
+        if (!event.context.subitemCreditAchieved) {
+          event.context.subitemCreditAchieved = {};
         }
-        event.context.documentCreditAchieved = await this.document.stateValues.creditAchieved;
-      }
-      let itemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
-      for (let itemNumber of itemsSubmitted) {
-        itemsWithCreditAchieved[itemNumber] = { itemCreditAchieved: itemCreditAchieved[itemNumber - 1] };
-        let componentsSubmitted = itemsWithCreditAchieved[itemNumber].componentsSubmitted = [];
-
-        for (let itemSubmission of recordItemSubmissions.filter(x => x.itemNumber === itemNumber)) {
-          componentsSubmitted.push({
-            componentName: itemSubmission.submittedComponent,
-            response: itemSubmission.response,
-            responseText: itemSubmission.responseText,
-            creditAchieved: itemSubmission.creditAchieved
-          });
-        }
-
-        if (event) {
-          event.context.itemCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1]
-        }
+        event.context.itemCreditAchieved = await this.document.stateValues.creditAchieved;
       }
 
-      this.saveSubmissions(itemsWithCreditAchieved)
+      let itemCreditAchieved = await this.document.stateValues.creditAchieved;
+      let subitemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
+
+      let componentsSubmitted = [];
+      for (let itemSubmission of recordItemSubmissions) {
+        componentsSubmitted.push({
+          componentName: itemSubmission.submittedComponent,
+          response: itemSubmission.response,
+          responseText: itemSubmission.responseText,
+          creditAchieved: itemSubmission.creditAchieved,
+          subitemNumber: itemSubmission.itemNumber
+        });
+      }
+
+      if (event) {
+        for (let subitemNumber of subitemsSubmitted) {
+          event.context.subitemCreditAchieved[subitemNumber] = subitemCreditAchieved[subitemNumber - 1]
+        }
+      }
+
+      // if itemNumber is zero, it means this document wasn't given any weight,
+      // so don't record the submission to the attempt tables
+      // (the event will still get recorded)
+      if (this.itemNumber > 0) {
+        this.saveSubmissions({ itemCreditAchieved, componentsSubmitted });
+      }
 
     }
 
@@ -8096,10 +8308,14 @@ export default class Core {
 
     const payload = {
       doenetId: this.doenetId,
+      activityCid: this.activityCid,
+      pageCid: this.cid,
+      pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
+      variantIndex: this.requestedVariant.index,
       verb: event.verb,
       object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
-      result: JSON.stringify(event.result, serializeFunctions.serializedComponentsReplacer),
+      result: JSON.stringify(removeFunctionsMathExpressionClass(event.result), serializeFunctions.serializedComponentsReplacer),
       context: JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer),
       timestamp: event.timestamp,
       version: "0.1.0",
@@ -8495,7 +8711,10 @@ export default class Core {
     }
 
 
-    let inverseDefinitionArgs = await this.getStateVariableDefinitionArguments({ component, stateVariable });
+    let inverseDefinitionArgs = await this.getStateVariableDefinitionArguments({
+      component, stateVariable,
+      excludeDependencyValues: stateVarObj.excludeDependencyValuesInInverseDefinition
+    });
     inverseDefinitionArgs.componentInfoObjects = this.componentInfoObjects;
     inverseDefinitionArgs.initialChange = initialChange;
     inverseDefinitionArgs.stateValues = component.stateValues;
@@ -9105,15 +9324,15 @@ export default class Core {
 
   async saveState() {
 
-    if (!this.flags.allowSavePageState && !this.flags.allowLocalPageState) {
+    if (!this.flags.allowSaveState && !this.flags.allowLocalState) {
       return;
     }
 
     let saveId = nanoid();
 
-    if (this.flags.allowLocalPageState) {
+    if (this.flags.allowLocalState) {
       idb_set(
-        `${this.CID}|${this.doenetId}|${this.attemptNumber}`,
+        `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}`,
         {
           coreState: this.cumulativeStateVariableChanges,
           rendererState: this.rendererState,
@@ -9123,21 +9342,26 @@ export default class Core {
       )
     }
 
-    if (!this.flags.allowSavePageState) {
+    postMessage({
+      messageType: "savedState"
+    })
+
+    if (!this.flags.allowSaveState) {
       return;
     }
 
 
     this.pageStateToBeSavedToDatabase = {
-      CID: this.CID,
+      cid: this.cid,
       coreInfo: this.coreInfoString,
       coreState: JSON.stringify(this.cumulativeStateVariableChanges, serializeFunctions.serializedComponentsReplacer),
       rendererState: JSON.stringify(this.rendererState, serializeFunctions.serializedComponentsReplacer),
+      pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
       doenetId: this.doenetId,
       saveId,
       serverSaveId: this.serverSaveId,
-      updateTableOnContentChange: this.noCIDSpecified,
+      updateDataOnContentChange: this.updateDataOnContentChange,
     }
 
     // mark presence of changes
@@ -9181,9 +9405,6 @@ export default class Core {
 
     let resp;
 
-    let coreStateToSave = this.pageStateToBeSavedToDatabase.coreState;
-    let rendererStateToSave = this.pageStateToBeSavedToDatabase.rendererState;
-
     try {
       resp = await axios.post('/api/savePageState.php', this.pageStateToBeSavedToDatabase);
     } catch (e) {
@@ -9225,24 +9446,22 @@ export default class Core {
 
     this.serverSaveId = data.saveId;
 
-    if (this.flags.allowLocalPageState) {
+    if (this.flags.allowLocalState) {
       idb_set(
-        `${this.CID}|${this.doenetId}|${this.attemptNumber}ServerSaveId`,
+        `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}|ServerSaveId`,
         data.saveId
       )
     }
 
     if (data.stateOverwritten) {
 
-      if (this.CID !== data.CID || this.attemptNumber !== Number(data.attemptNumber
-        || this.coreInfoString !== data.coreInfo
-        || coreStateToSave !== data.coreState
-        || rendererStateToSave !== data.rendererStateToSave
-      )) {
+      // if a new attempt number was generated or the cid didn't change,
+      // then we reset the page to the new state
+      if (this.attemptNumber !== Number(data.attemptNumber) || this.cid === data.cid) {
 
-        if (this.flags.allowLocalPageState) {
+        if (this.flags.allowLocalState) {
           idb_set(
-            `${data.CID}|${this.doenetId}|${data.attemptNumber}`,
+            `${this.doenetId}|${this.pageNumber}|${data.attemptNumber}|${data.cid}`,
             {
               coreState: JSON.parse(data.coreState, serializeFunctions.serializedComponentsReviver),
               rendererState: JSON.parse(data.rendererState, serializeFunctions.serializedComponentsReviver),
@@ -9253,13 +9472,23 @@ export default class Core {
         }
 
         postMessage({
-          messageType: "resetCore",
+          messageType: "resetPage",
           args: {
             changedOnDevice: data.device,
-            newCID: data.CID,
+            newCid: data.cid,
             newAttemptNumber: Number(data.attemptNumber),
           }
         })
+      } else {
+        // if the cid changed without the attemptNumber changing, something went wrong
+        postMessage({
+          messageType: "inErrorState",
+          args: {
+            errMsg: "Content changed unexpectedly!"
+          }
+        })
+
+
       }
 
 
@@ -9270,110 +9499,109 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions(itemsWithCreditAchieved) {
+  saveSubmissions({ itemCreditAchieved, componentsSubmitted }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
 
-    for (let itemNumber in itemsWithCreditAchieved) {
 
-      const payload = {
-        doenetId: this.doenetId,
-        contentId: this.CID,
-        attemptNumber: this.attemptNumber,
-        credit: itemsWithCreditAchieved[itemNumber].itemCreditAchieved,
-        itemNumber,
-        componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(itemsWithCreditAchieved[itemNumber].componentsSubmitted, serializeFunctions.serializedComponentsReplacer))
-      }
+    const payload = {
+      doenetId: this.doenetId,
+      attemptNumber: this.attemptNumber,
+      credit: itemCreditAchieved,
+      itemNumber: this.itemNumber,
+      componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted), serializeFunctions.serializedComponentsReplacer)
+    }
 
-      axios.post('/api/saveCreditForItem.php', payload)
-        .then(resp => {
-          // console.log('>>>>saveCreditForItem resp', resp.data);
+    console.log('payload for save credit for item', payload);
 
-          if (resp.status === null) {
-            postMessage({
-              messageType: "sendToast",
-              args: {
-                message: `Credit not saved due to error.  Are you connected to the internet?`,
-                toastType: toastType.ERROR
-              }
-            })
-          } else if (!resp.data.success) {
-            postMessage({
-              messageType: "sendToast",
-              args: {
-                message: `Credit not saved due to error: ${resp.data.message}`,
-                toastType: toastType.ERROR
-              }
-            })
-          } else {
+    axios.post('/api/saveCreditForItem.php', payload)
+      .then(resp => {
+        console.log('>>>>saveCreditForItem resp', resp.data);
 
-            let data = resp.data;
-
-            postMessage({
-              messageType: "updateCreditAchieved",
-              args: data
-            })
-
-            //TODO: need type warning (red but doesn't hang around)
-            if (data.viewedSolution) {
-              postMessage({
-                messageType: "sendToast",
-                args: {
-                  message: 'No credit awarded since solution was viewed.',
-                  toastType: toastType.INFO
-                }
-              })
-            }
-            if (data.timeExpired) {
-              postMessage({
-                messageType: "sendToast",
-                args: {
-                  message: 'No credit awarded since the time allowed has expired.',
-                  toastType: toastType.INFO
-                }
-              })
-            }
-            if (data.pastDueDate) {
-              postMessage({
-                messageType: "sendToast",
-                args: {
-                  message: 'No credit awarded since the due date has passed.',
-                  toastType: toastType.INFO
-                }
-              })
-            }
-            if (data.exceededAttemptsAllowed) {
-              postMessage({
-                messageType: "sendToast",
-                args: {
-                  message: 'No credit awarded since no more attempts are allowed.',
-                  toastType: toastType.INFO
-                }
-              })
-            }
-            if (data.databaseError) {
-              postMessage({
-                messageType: "sendToast",
-                args: {
-                  message: 'Credit not saved due to database error.',
-                  toastType: toastType.ERROR
-                }
-              })
-            }
-          }
-        })
-        .catch(e => {
+        if (resp.status === null) {
           postMessage({
             messageType: "sendToast",
             args: {
-              message: `Credit not saved due to error: ${e.message}`,
+              message: `Credit not saved due to error.  Are you connected to the internet?`,
               toastType: toastType.ERROR
             }
           })
-        })
+        } else if (!resp.data.success) {
+          postMessage({
+            messageType: "sendToast",
+            args: {
+              message: `Credit not saved due to error: ${resp.data.message}`,
+              toastType: toastType.ERROR
+            }
+          })
+        } else {
 
-    }
+          let data = resp.data;
+
+          postMessage({
+            messageType: "updateCreditAchieved",
+            args: data
+          })
+
+          //TODO: need type warning (red but doesn't hang around)
+          if (data.viewedSolution) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since solution was viewed.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.timeExpired) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since the time allowed has expired.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.pastDueDate) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since the due date has passed.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.exceededAttemptsAllowed) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since no more attempts are allowed.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.databaseError) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'Credit not saved due to database error.',
+                toastType: toastType.ERROR
+              }
+            })
+          }
+        }
+      })
+      .catch(e => {
+        postMessage({
+          messageType: "sendToast",
+          args: {
+            message: `Credit not saved due to error: ${e.message}`,
+            toastType: toastType.ERROR
+          }
+        })
+      })
+
 
 
   }
@@ -9486,51 +9714,20 @@ export default class Core {
 
   // }
 
-  async calculateScoredItemNumberOfContainer(componentName) {
-
-    let component = this._components[componentName];
-    let ancestorNames = [
-      ...component.ancestors.slice(0, -1).reverse().map(x => x.componentName),
-      componentName
-    ];
-    let scoredComponent;
-    let scoredItemNumber;
-    for (let [index, scored] of (await this.document.stateValues.scoredDescendants).entries()) {
-      for (let ancestorName of ancestorNames) {
-        if (scored.componentName === ancestorName) {
-          scoredComponent = ancestorName;
-          scoredItemNumber = index + 1;
-          break;
-        }
-      }
-      if (scoredComponent !== undefined) {
-        break;
-      }
-    }
-
-    // if component wasn't inside a scoredComponent and isn't a scoredComponent itself
-    // then let the scoredComponent be the document itself
-    if (scoredComponent === undefined) {
-      scoredComponent = this.document.componentName;
-      scoredItemNumber = (await this.document.stateValues.scoredDescendants).length;
-    }
-
-    return { scoredItemNumber, scoredComponent };
-  }
-
-  async recordSolutionView({ itemNumber, scoredComponent }) {
+  async recordSolutionView() {
 
     // TODO: check if student was actually allowed to view solution.
 
     try {
       const resp = await axios.post('/api/reportSolutionViewed.php', {
         doenetId: this.doenetId,
-        itemNumber,
+        itemNumber: this.itemNumber,
+        pageNumber: this.pageNumber,
         attemptNumber: this.attemptNumber,
       });
 
 
-      if (resp.status) {
+      if (resp.status === null) {
         let message = `Cannot show solution due to error.  Are you connected to the internet?`;
         postMessage({
           messageType: "sendToast",
@@ -9539,15 +9736,15 @@ export default class Core {
             toastType: toastType.ERROR
           }
         })
-        return { allowView: false, message, scoredComponent };
+        return { allowView: false, message, scoredComponent: this.documentName };
       } else {
         let data = resp.data;
         if (data.success) {
-          return { allowView: true, message: "", scoredComponent };
+          return { allowView: true, message: "", scoredComponent: this.documentName };
         } else {
 
           let message = `Cannot show solution due to error: ${data.message}`;
-          return { allowView: false, message, scoredComponent };
+          return { allowView: false, message, scoredComponent: this.documentName };
         }
       }
     } catch (e) {
@@ -9561,7 +9758,7 @@ export default class Core {
         }
       });
 
-      return { allowView: false, message, scoredComponent };
+      return { allowView: false, message, scoredComponent: this.documentName };
 
     }
 
@@ -9573,58 +9770,19 @@ export default class Core {
     ))();
   }
 
-  requestAnimationFrame(animationFunction, delay) {
-    if (!this.preventMoreAnimations) {
-
-      // // create new animationID
-      // let animationID = ++this.lastAnimationID;
-
-      // if (delay) {
-      //   // set a time out to call actual request animation frame after a delay
-      //   let timeoutID = window.setTimeout(
-      //     x => this._requestAnimationFrame(animationFunction, animationID),
-      //     delay);
-      //   this.animationIDs[animationID] = { timeoutID: timeoutID };
-      //   return animationID;
-      // } else {
-      //   // call actual request animation frame right away
-      //   this.animationIDs[animationID] = {};
-      //   return this._requestAnimationFrame(animationFunction, animationID);
-      // }
-    }
+  requestAnimationFrame(args) {
+    postMessage({
+      messageType: "requestAnimationFrame",
+      args
+    });
   }
 
-  _requestAnimationFrame(animationFunction, animationID) {
-    // let animationFrameID = window.requestAnimationFrame(animationFunction);
-    // let animationIDObj = this.animationIDs[animationID];
-    // delete animationIDObj.timeoutID;
-    // animationIDObj.animationFrameID = animationFrameID;
-    // return animationID;
+  cancelAnimationFrame(args) {
+    postMessage({
+      messageType: "cancelAnimationFrame",
+      args
+    });
   }
-
-
-  async cancelAnimationFrame(animationID) {
-    // let animationIDObj = this.animationIDs[animationID];
-    // let timeoutID = animationIDObj.timeoutID;
-    // if (timeoutID !== undefined) {
-    //   window.clearTimeout(timeoutID);
-    // }
-    // let animationFrameID = animationIDObj.animationFrameID;
-    // if (animationFrameID !== undefined) {
-    //   window.cancelAnimationFrame(animationFrameID);
-    // }
-    // delete this.animationIDs[animationID];
-
-  }
-
-  componentWillUnmount() {
-    this.preventMoreAnimations = true;
-    for (let id in this.animationIDs) {
-      this.coreFunctions.cancelAnimationFrame(id);
-    }
-    this.animationIDs = {};
-  }
-
 }
 
 

@@ -1,52 +1,50 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { folderDictionary, fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { authorItemByDoenetId, courseIdAtom, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
 // import { ClipboardLinkButtons } from '../ToolHandlers/CourseToolHandler';
 
 export default function EditorInfoCap(){
-  let path = useRecoilValue(searchParamAtomFamily('path'));
-  let [driveId,folderId,doenetId] = path.split(':');
-  let folderInfo = useRecoilValue(folderDictionary({driveId,folderId}))
-  const driveInfo = useRecoilValue(fetchDrivesQuery)
+  const courseId = useRecoilValue(courseIdAtom);
+  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const pageId = useRecoilValue(searchParamAtomFamily('pageId'));
+  let {color, image, label:course_label} = useCourse(courseId);
 
-  const docInfo = folderInfo.contentsDictionary[doenetId]
-  if (!docInfo){ return null;}
-  let status = "Not Released";
-  if (docInfo?.isReleased === "1"){ status = "Released"}
-  // if (docInfo.isAssigned === "1"){ status = "Assigned"}
-  // let listed = "";
-  // if (docInfo.isPublic === "1"){ listed = "Listed"}
-  let image;
-  let color;
-  let course_label = "";
- for (let info of driveInfo.driveIdsAndLabels){
-   if (info.driveId === driveId){
-     color = info.color;
-     image = info.image;
-     course_label = info.label;
-     break;
-   }
- }
+  const pageInfo = useRecoilValue(authorItemByDoenetId(pageId));
+  const activityInfo = useRecoilValue(authorItemByDoenetId(doenetId));
 
-//  let imageURL = `/media/drive_pictures/${image}`
+  if (!pageInfo){ return null;}
  if (image != 'none'){
-  image = '/media/drive_pictures/' + image;
+  image = 'url(/media/drive_pictures/' + image + ')';
  }
  if (color != 'none'){
   color = '#' + color;
  }
 
+ let activityPageJSX = <>
+ <div style={{ marginBottom: "1px", marginTop:"5px" }}>Activity</div> 
+ <div style={{ marginBottom: "5px",padding:'1px 5px' }}>{activityInfo.label}</div> 
+ <div style={{ marginBottom: "1px", marginTop:"5px" }}>Page</div> 
+ <div style={{ marginBottom: "5px",padding:'1px 5px' }}>{pageInfo.label}</div> 
+ </>
+
+if (activityInfo.isSinglePage){
+  activityPageJSX = <>
+  <div style={{ marginBottom: "1px", marginTop:"5px" }}>Activity</div> 
+  <div style={{ marginBottom: "5px",padding:'1px 5px' }}>{activityInfo.label}</div> 
+  </>
+}
+
+
   return <>
     <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
-      <img src={image} style={{ position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)" }}  />
+      <img style={{ position: "absolute", width: "100%", height: "100%", backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: image, backgroundColor: color }}  />
     </div>
-    <div style={{ padding:'16px 12px' }}>
-      <span style={{ marginBottom: "15px" }}>{course_label}</span> <br />
-      <span style={{ marginBottom: "15px" }}>{docInfo.label}</span> <br />
-      <span>{ status }</span>
+    <b>Editor</b>
+      <div style={{ marginBottom: "1px", marginTop:"5px" }}>Course</div> 
+      <div style={{ marginBottom: "5px",padding:'1px 5px' }}>{course_label}</div> 
+      {activityPageJSX}
     {/* <ClipboardLinkButtons doenetId={doenetId}/> */}
     {/* <div>Last saved (comming soon)</div> */}
-  </div>
   </>
 }

@@ -46,16 +46,42 @@ export const itemHistoryAtom = atomFamily({
     }
   })
 });
-export const fileByContentId = atomFamily({
-  key: "fileByContentId",
+export const fileByCid = atomFamily({
+  key: "fileByCid",
   default: selectorFamily({
-    key: "fileByContentId/Default",
-    get: (contentId) => async () => {
-      if (!contentId) {
+    key: "fileByCid/Default",
+    get: (cid) => async () => {
+      if (!cid) {
         return "";
       }
       try {
-        const server = await axios.get(`/media/${contentId}.doenet`);
+        const server = await axios.get(`/media/${cid}.doenet`);
+        return server.data;
+      } catch (error) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          console.log(error.request);
+        } else {
+          console.log("Error", error.message);
+        }
+        return "Error Loading";
+      }
+    }
+  })
+});
+export const fileByDoenetId = atomFamily({
+  key: "fileByDoenetId",
+  default: selectorFamily({
+    key: "fileByDoenetId/Default",
+    get: (doenetId) => async () => {
+      if (!doenetId) {
+        return "";
+      }
+      try {
+        const server = await axios.get(`/media/bydoenetid/${doenetId}.doenet`);
         return server.data;
       } catch (error) {
         if (error.response) {
@@ -102,13 +128,17 @@ export let assignmentDictionarySelector = selectorFamily({
     return get(assignmentDictionary(driveIditemIddoenetIdparentFolderId));
   }
 });
-export const variantInfoAtom = atom({
-  key: "variantInfoAtom",
-  default: {index: null, name: null, lastUpdatedIndexOrName: null, requestedVariant: {index: 1}}
+export const pageVariantInfoAtom = atom({
+  key: "pageVariantInfoAtom",
+  default: {index: 1}
 });
-export const variantPanelAtom = atom({
-  key: "variantPanelAtom",
-  default: {index: null, name: null}
+export const pageVariantPanelAtom = atom({
+  key: "pageVariantPanelAtom",
+  default: {index: 1, allPossibleVariants: [], variantIndicesToIgnore: []}
+});
+export const activityVariantPanelAtom = atom({
+  key: "activityVariantPanelAtom",
+  default: {index: 1, numberOfVariants: 0}
 });
 export function buildTimestamp() {
   const dt = new Date();
@@ -117,12 +147,12 @@ export function buildTimestamp() {
 export function ClipboardLinkButtons(props) {
   const addToast = useToast();
   let link = `http://localhost/#/content?doenetId=${props.doenetId}`;
-  if (props.contentId) {
-    link = `http://localhost/#/content?contentId=${props.contentId}`;
+  if (props.cid) {
+    link = `http://localhost/#/content?cid=${props.cid}`;
   }
   let linkData = [];
-  if (props.contentId) {
-    linkData.push(`contentId=${props.contentId}`);
+  if (props.cid) {
+    linkData.push(`cid=${props.cid}`);
   }
   if (props.doenetId) {
     linkData.push(`doenetId=${props.doenetId}`);

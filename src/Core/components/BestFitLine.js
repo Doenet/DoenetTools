@@ -5,8 +5,8 @@ export default class BestFitLine extends Line {
   static componentType = "bestFitLine";
   static rendererType = "line";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     delete attributes.draggable;
     delete attributes.equation;

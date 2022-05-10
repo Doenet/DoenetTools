@@ -12,6 +12,7 @@ function cesc(s) {
 describe('Graph Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
@@ -28,7 +29,7 @@ describe('Graph Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let curve = stateVariables["/_graph1"].activeChildren[0];
       expect(curve.stateValues.flipFunction).eq(false);
       expect(curve.stateValues.fs[0](-2)).eq(4);
@@ -49,7 +50,7 @@ describe('Graph Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let curve = stateVariables["/_graph1"].activeChildren[0];
       let functioncurve = curve.activeChildren[0];
       expect(curve.stateValues.variables[0].tree).eq("x");
@@ -75,7 +76,7 @@ describe('Graph Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       let curve = stateVariables["/_graph1"].activeChildren[0];
       let functioncurve = curve.activeChildren[0];
       expect(curve.stateValues.variables[0].tree).eq("x");
@@ -104,9 +105,9 @@ describe('Graph Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      let curve1Name = stateVariables["/_graph1"].activeChildren[0];
-      let curve2Name = stateVariables["/_graph1"].activeChildren[1];
+      let stateVariables = await win.returnAllStateVariables1();
+      let curve1Name = stateVariables["/_graph1"].activeChildren[0].componentName;
+      let curve2Name = stateVariables["/_graph1"].activeChildren[1].componentName;
 
       let f1 = createFunctionFromDefinition(stateVariables[curve1Name].stateValues.fDefinitions[0]);
       let f2 = createFunctionFromDefinition(stateVariables[curve2Name].stateValues.fDefinitions[0]);
@@ -153,7 +154,7 @@ describe('Graph Tag Tests', function () {
       cy.get('#\\/ymax').should('have.text', String(ymax));
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_graph1"].stateValues.xmin).eq(xmin);
         expect(stateVariables["/_graph1"].stateValues.xmax).eq(xmax);
         expect(stateVariables["/_graph1"].stateValues.ymin).eq(ymin);
@@ -355,7 +356,7 @@ describe('Graph Tag Tests', function () {
       cy.get('#\\/ymax').should('have.text', String(ymax));
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/g"].stateValues.xmin).eq(xmin);
         expect(stateVariables["/g"].stateValues.xmax).eq(xmax);
         expect(stateVariables["/g"].stateValues.ymin).eq(ymin);
@@ -397,6 +398,8 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
+
+    cy.reload();
 
     cy.log('xmin alone specified')
     cy.window().then(async (win) => {
@@ -453,6 +456,8 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
+    cy.reload();
+
     cy.log('xmax alone specified')
     cy.window().then(async (win) => {
       win.postMessage({
@@ -508,6 +513,8 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
+    cy.reload();
+
     cy.log('ymin alone specified')
     cy.window().then(async (win) => {
       win.postMessage({
@@ -559,6 +566,7 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
+    cy.reload();
 
     cy.log('ymax alone specified')
     cy.window().then(async (win) => {
@@ -611,6 +619,7 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
+    cy.reload();
 
     cy.log('xmin and xmax specified')
     cy.window().then(async (win) => {
@@ -668,6 +677,7 @@ describe('Graph Tag Tests', function () {
     })
 
 
+    cy.reload();
 
     cy.log('ymin and ymax specified')
     cy.window().then(async (win) => {
@@ -724,6 +734,7 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
+    cy.reload();
 
 
     cy.log('xmin, xmax, ymin and ymax specified')
@@ -779,6 +790,7 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
+    cy.reload();
 
     cy.log('leave out xmin')
     cy.window().then(async (win) => {
@@ -831,6 +843,7 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
+    cy.reload();
 
     cy.log('leave out xmax')
     cy.window().then(async (win) => {
@@ -884,6 +897,7 @@ describe('Graph Tag Tests', function () {
     })
 
 
+    cy.reload();
 
     cy.log('leave out ymin')
     cy.window().then(async (win) => {
@@ -936,7 +950,7 @@ describe('Graph Tag Tests', function () {
       checkLimits(xmin, xmax, ymin, ymax)
     })
 
-
+    cy.reload();
 
     cy.log('leave out ymax')
     cy.window().then(async (win) => {
@@ -1090,7 +1104,7 @@ describe('Graph Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/_graph1"].stateValues.xlabel).eq('\uff3f');
 
       let mathinputName = stateVariables['/x'].stateValues.inputChildren[0].componentName
@@ -1101,7 +1115,7 @@ describe('Graph Tag Tests', function () {
 
       cy.get('#\\/sr .mjx-mrow').should('contain.text', 'x')
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_graph1"].stateValues.xlabel).eq('x');
       });
 

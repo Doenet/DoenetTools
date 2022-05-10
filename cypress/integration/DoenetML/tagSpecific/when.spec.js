@@ -2,13 +2,14 @@
 describe('When Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
 
 
   it('value, fractionSatisfied, conditionSatisfied are public', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -32,9 +33,9 @@ describe('When Tag Tests', function () {
     cy.get('#\\/fs').should('have.text', '0');
 
     cy.get('#\\/n textarea').type('1{enter}', { force: true });
+    cy.get('#\\/fs').should('have.text', '0.5');
     cy.get('#\\/v').should('have.text', 'false');
     cy.get('#\\/cs').should('have.text', 'false');
-    cy.get('#\\/fs').should('have.text', '0.5');
 
     cy.get('#\\/n textarea').type('1{enter}', { force: true });
     cy.get('#\\/v').should('have.text', 'true');

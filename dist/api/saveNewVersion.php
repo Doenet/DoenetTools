@@ -13,7 +13,7 @@ $userId = $jwtArray['userId'];
 $_POST = json_decode(file_get_contents("php://input"),true);
 
 // $escapedDoenetML = mysqli_real_escape_string($conn,$_POST["doenetML"]);
-// $escapedCID = hash('sha256',$escapedDoenetML);
+// $escapedCid = hash('sha256',$escapedDoenetML);
 $title =  mysqli_real_escape_string($conn,$_POST["title"]);
 $dangerousDoenetML = $_POST["doenetML"];
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
@@ -106,13 +106,13 @@ if ($success){
 
 if ($success){
 
-//save to file as contentid
+//save to file as cid
 $SHA = hash('sha256', $dangerousDoenetML);
-$contentId = cidFromSHA($SHA);
+$cid = cidFromSHA($SHA);
 
 if ($isDraft == '1' and $isSetAsCurrent != '1'){
     $sql = "UPDATE content 
-    SET timestamp=NOW(), contentId='$contentId'
+    SET timestamp=NOW(), cid='$cid'
     WHERE isDraft='1'
     AND doenetId='$doenetId'
     ";
@@ -121,7 +121,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
       $success = FALSE;
       $message = $conn->error;
     }else{
-     $saveError = saveDoenetML($contentId,$dangerousDoenetML);
+     $saveError = saveDoenetML($cid,$dangerousDoenetML);
      if ($saveError != NULL){
       $success = FALSE;
       $message = $saveError;
@@ -132,7 +132,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
 
   //Add draft as named version
     $sql = "SELECT
-    contentId,
+    cid,
     versionId
     FROM content
     WHERE isDraft='1'
@@ -141,14 +141,14 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
 
-    $oldDraftContentId = $row['contentId'];
+    $oldDraftContentId = $row['cid'];
     $oldDraftVersionId = $row['versionId'];
 
     //Update draft to new versionId and content
     //After this we are missing the old draft info
     $sql = "UPDATE content 
     SET timestamp=NOW(), 
-    contentId='$newDraftContentId',
+    cid='$newDraftContentId',
     versionId='$newDraftVersionId'
     WHERE isDraft='1'
     AND doenetId='$doenetId'
@@ -158,7 +158,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
     //Save the old draft info as an autosave
     $sql = "INSERT INTO content 
     SET doenetId='$doenetId',
-    contentId='$oldDraftContentId', 
+    cid='$oldDraftContentId', 
     versionId='$oldDraftVersionId', 
     title='$newTitle',
     timestamp=NOW(),
@@ -180,7 +180,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
         $result = $conn->query($sql);
 }elseif($isNewToggleRelease == '1'){
   //Use Database as source of truth
-  $sql = "SELECT contentId, isReleased
+  $sql = "SELECT cid, isReleased
   FROM content
   WHERE doenetId='$doenetId'
   AND versionId='$versionId'
@@ -188,7 +188,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
   $result = $conn->query($sql);
   $row = $result->fetch_assoc();
   $db_version_isReleased = $row['isReleased'];
-  $db_version_contentId = $row['contentId'];
+  $db_version_contentId = $row['cid'];
   //Unrelease All
   $sql = "UPDATE content
   SET isReleased='0'
@@ -205,7 +205,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
   $result = $conn->query($sql);
     //update assignment to match new version
     $sql = "UPDATE assignment
-    SET contentId='$db_version_contentId'
+    SET cid='$db_version_contentId'
     WHERE doenetId='$doenetId'
     ";
     $result = $conn->query($sql);
@@ -244,20 +244,20 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
     }elseif($isNewCopy == '1'){
       //New Copy!
 
-      //Find previous contentId of draft
-      $sql = "SELECT contentId
+      //Find previous cid of draft
+      $sql = "SELECT cid
         FROM content
         WHERE doenetId='$previousDoenetId'
         AND isDraft='1'
       ";
         $result = $conn->query($sql);
         $row = $result->fetch_assoc();
-        $contentId = $row['contentId']; //Overwrite contentId with draft
+        $cid = $row['cid']; //Overwrite cid with draft
       
       //Safe the draft for the new content
       $sql = "INSERT INTO content 
         SET doenetId='$doenetId',
-        contentId='$contentId', 
+        cid='$cid', 
         versionId='$versionId', 
         title='Draft',
         timestamp=NOW(),
@@ -270,11 +270,11 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
 
     }else{
 
-        saveDoenetML($contentId,$dangerousDoenetML);
+        saveDoenetML($cid,$dangerousDoenetML);
     
         $sql = "INSERT INTO content 
         SET doenetId='$doenetId',
-        contentId='$contentId', 
+        cid='$cid', 
         versionId='$versionId', 
         title='$title',
         timestamp=NOW(),
@@ -290,7 +290,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
 
 
 function saveDoenetML($fileName,$dangerousDoenetML){
-    // $fileName = $contentId;
+    // $fileName = $cid;
     // if ($isDraft){$fileName = $doenetId;}
     //TODO: Config file needed for server
     $newfile = fopen("../media/$fileName.doenet", "w") or die("Unable to open file!");
@@ -305,7 +305,7 @@ $response_arr = array(
     "success"=>$success,
     "versionId"=> $versionId,
     "message"=>$message,
-    "contentId"=> $contentId
+    "cid"=> $cid
 );
 
 // set response code - 200 OK

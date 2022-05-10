@@ -53,7 +53,7 @@ export default function Polyline(props) {
       fillColor: "none",
       strokeColor: "none",
       highlightStrokeColor: "none",
-      highlightFillColor: "lightgray",
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: 10 * SVs.layer + 9
     });
     if (!SVs.draggable || SVs.fixed || SVs.hidden || !validCoords) {

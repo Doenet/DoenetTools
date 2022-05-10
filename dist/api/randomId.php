@@ -1,5 +1,5 @@
 <?php
-
+//For simplicity we are polluting the namespace with these varible names
 $random_id = "";
 for ($iteration_num=1; $iteration_num<=21; $iteration_num++){
     $random_num = rand(1,62);

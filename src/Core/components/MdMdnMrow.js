@@ -204,8 +204,8 @@ export class Mdn extends Md {
 export class Mrow extends M {
   static componentType = "mrow";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.number = {
       createComponentOfType: "boolean",
     };

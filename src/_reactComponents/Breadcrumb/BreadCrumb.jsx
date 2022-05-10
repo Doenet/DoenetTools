@@ -3,7 +3,7 @@ import { faTh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   folderDictionary,
-  fetchDrivesQuery,
+  fetchCoursesQuery,
   clearDriveAndItemSelections,
 } from '../Drive/NewDrive'; //TODO: Migrate to parent component
 import {
@@ -105,7 +105,7 @@ const breadcrumbItemAtomFamily = atomFamily({
           });
           folderId = folderInfo.folderInfo.parentFolderId;
         }
-        const drivesInfo = get(fetchDrivesQuery);
+        const drivesInfo = get(fetchCoursesQuery);
         let driveObj = { type: 'Drive', folderId: driveId };
         for (let drive of drivesInfo.driveIdsAndLabels) {
           if (drive.driveId === driveId) {

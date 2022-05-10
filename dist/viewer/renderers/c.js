@@ -6,7 +6,8 @@ export default function C(props) {
     return null;
   }
   return /* @__PURE__ */ React.createElement("code", {
-    id: name
+    id: name,
+    style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), children);

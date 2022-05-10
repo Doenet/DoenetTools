@@ -1,7 +1,10 @@
 import React from "../../_snowpack/pkg/react.js";
+import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
+import {pageToolViewAtom} from "../../_framework/NewToolRoot.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export default function Ref(props) {
   let {name, SVs, children} = useDoenetRender(props);
+  const pageToolView = useRecoilValue(pageToolViewAtom);
   if (SVs.hidden) {
     return null;
   }
@@ -12,11 +15,27 @@ export default function Ref(props) {
   let url = "";
   let target = "_blank";
   let haveValidTarget = false;
-  if (SVs.contentId) {
-    url = `https://www.doenet.org/#/content/?contentId=${SVs.contentId}`;
-    haveValidTarget = true;
-  } else if (SVs.doenetId) {
-    url = `https://www.doenet.org/#/course?tool=assignment&doenetId=${SVs.doenetId}`;
+  if (SVs.cid || SVs.doenetId) {
+    if (SVs.cid) {
+      url = `cid=${SVs.cid}`;
+    } else {
+      url = `doenetId=${SVs.doenetId}`;
+    }
+    if (SVs.pageNumber) {
+      url += `&page=${SVs.pageNumber}`;
+    }
+    if (SVs.variantIndex) {
+      url += `&variant=${SVs.variantIndex}`;
+    }
+    if (pageToolView.page === "public") {
+      if (SVs.edit === true || SVs.edit === null && pageToolView.tool === "editor") {
+        url = `tool=editor&${url}`;
+      }
+      url = `public?${url}`;
+    } else {
+      url = `course?tool=assignment&${url}`;
+    }
+    url = `/#/${url}`;
     haveValidTarget = true;
   } else if (SVs.uri) {
     url = SVs.uri;

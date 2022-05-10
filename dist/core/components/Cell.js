@@ -11,8 +11,8 @@ export default class Cell extends BaseComponent {
 
   static primaryStateVariableForDefinition = "text";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.rowNum = {
       createComponentOfType: "text",
       createStateVariable: "rowNum",

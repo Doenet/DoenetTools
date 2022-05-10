@@ -13,113 +13,59 @@ import { DependencyHandler } from './Dependencies.js';
 import { preprocessMathInverseDefinition } from './utils/math.js';
 import { returnDefaultGetArrayKeysFromVarName } from './utils/stateVariables.js';
 import { nanoid } from '../_snowpack/pkg/nanoid.js';
-import { CIDFromDoenetML } from './utils/cid.js';
-import { preprocessForPostMessage } from './CoreWorker.js';
+import { cidFromText } from './utils/cid.js';
+import { removeFunctionsMathExpressionClass } from './CoreWorker.js';
 import createComponentInfoObjects from './utils/componentInfoObjects.js';
+import { get as idb_get, set as idb_set } from '../_snowpack/pkg/idb-keyval.js';
+import { toastType } from '../_framework/ToastTypes.js';
+import axios from '../_snowpack/pkg/axios.js';
 
 // string to componentClass: this.componentInfoObjects.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
 
 export default class Core {
-  constructor({ doenetML, doenetId, attemptNumber,
-    requestedVariant,
+  constructor({ doenetML, doenetId, activityCid, pageNumber, attemptNumber = 1, itemNumber = 1,
+    serverSaveId,
+    requestedVariant, requestedVariantIndex,
     flags = {},
     stateVariableChanges = {},
-    coreId }) {
+    coreId, updateDataOnContentChange }) {
     // console.time('core');
 
 
     this.coreId = coreId;
     this.doenetId = doenetId;
+    this.activityCid = activityCid;
+    this.pageNumber = pageNumber;
     this.attemptNumber = attemptNumber;
+    this.itemNumber = itemNumber;
+
+    this.serverSaveId = serverSaveId;
+    this.updateDataOnContentChange = updateDataOnContentChange;
 
     this.numerics = new Numerics();
     // this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
     this.flags = flags;
 
-    this.executeProcesses = this.executeProcesses.bind(this);
-    this.requestUpdate = this.requestUpdate.bind(this);
-    this.performUpdate = this.performUpdate.bind(this);
-    this.requestAction = this.requestAction.bind(this);
-    this.performAction = this.performAction.bind(this);
-    this.recordSolutionView = this.recordSolutionView.bind(this);
-    this.triggerChainedActions = this.triggerChainedActions.bind(this);
-    this.requestRecordEvent = this.requestRecordEvent.bind(this);
-    this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
-    this._requestAnimationFrame = this._requestAnimationFrame.bind(this);
-    this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
-    this.calculateScoredItemNumberOfContainer = this.calculateScoredItemNumberOfContainer.bind(this);
-
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
-    // this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
-
-    this.postUpdateRenderers = async function (args, init = false) {
-
-      postMessage({
-        messageType: "updateRenderers",
-        args,
-        init
-      })
-    }
-    this.coreReadyCallback = async function () {
-
-      postMessage({
-        messageType: "coreCreated",
-        args: {
-          generatedVariantInfo: deepClone(await this.document.stateValues.generatedVariantInfo),
-          itemVariantInfo: deepClone(await this.document.stateValues.itemVariantInfo),
-          allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
-          rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
-          documentToRender: this.documentRendererInstructions,
-          scoredItemWeights: await this.scoredItemWeights,
-        }
-      })
-
-
-
-      // coreReadyCallback(this);
-
-      this.requestRecordEvent({
-        verb: "experienced",
-        object: {
-          componentName: this.document.componentName,
-          componentType: "document",
-        },
-      })
-    }.bind(this);
 
 
     this.componentInfoObjects = createComponentInfoObjects(flags);
 
-    this.rendererStateVariables = {};
-    for (let componentType in this.componentInfoObjects.allComponentClasses) {
-      Object.defineProperty(this.rendererStateVariables, componentType, {
-        get: function () {
-          let varDescriptions = this.componentInfoObjects.allComponentClasses[componentType].returnStateVariableInfo({
-            onlyForRenderer: true, flags: this.flags
-          }).stateVariableDescriptions;
-          delete this.rendererStateVariables[componentType];
-          return this.rendererStateVariables[componentType] = varDescriptions;
-        }.bind(this),
-        configurable: true
-      })
-    }
-
-
 
 
     this.coreFunctions = {
-      requestUpdate: this.requestUpdate,
-      performUpdate: this.performUpdate,
-      requestAction: this.requestAction,
-      performAction: this.performAction,
-      triggerChainedActions: this.triggerChainedActions,
-      requestRecordEvent: this.requestRecordEvent,
-      requestAnimationFrame: this.requestAnimationFrame,
-      cancelAnimationFrame: this.cancelAnimationFrame,
-      calculateScoredItemNumberOfContainer: this.calculateScoredItemNumberOfContainer,
-      recordSolutionView: this.recordSolutionView,
+      requestUpdate: this.requestUpdate.bind(this),
+      performUpdate: this.performUpdate.bind(this),
+      requestAction: this.requestAction.bind(this),
+      performAction: this.performAction.bind(this),
+      resolveAction: this.resolveAction.bind(this),
+      triggerChainedActions: this.triggerChainedActions.bind(this),
+      requestRecordEvent: this.requestRecordEvent.bind(this),
+      requestAnimationFrame: this.requestAnimationFrame.bind(this),
+      cancelAnimationFrame: this.cancelAnimationFrame.bind(this),
+      recordSolutionView: this.recordSolutionView.bind(this),
     }
 
     this.updateInfo = {
@@ -133,15 +79,16 @@ export default class Core {
       unresolvedByDependent: {},
       deletedStateVariables: {},
       deletedComponents: {},
-      recreatedComponents: {},
       // parentsToUpdateDescendants: new Set(),
       compositesBeingExpanded: [],
       // stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
       stateVariableUpdatesForMissingComponents: JSON.parse(JSON.stringify(stateVariableChanges, serializeFunctions.serializedComponentsReplacer), serializeFunctions.serializedComponentsReviver),
     }
 
-    this.animationIDs = {};
-    this.lastAnimationID = 0;
+    this.cumulativeStateVariableChanges = JSON.parse(JSON.stringify(stateVariableChanges, serializeFunctions.serializedComponentsReplacer), serializeFunctions.serializedComponentsReviver);
+
+
+    this.requestedVariantIndex = requestedVariantIndex;
     this.requestedVariant = requestedVariant;
 
     // console.time('serialize doenetML');
@@ -166,10 +113,10 @@ export default class Core {
       }
     }
 
-    CIDFromDoenetML(doenetML)
-      .then(CID =>
+    cidFromText(doenetML)
+      .then(cid =>
         serializeFunctions.expandDoenetMLsToFullSerializedComponents({
-          CIDs: [CID],
+          cids: [cid],
           doenetMLs: [doenetML],
           componentInfoObjects: this.componentInfoObjects,
           flags: this.flags,
@@ -179,11 +126,11 @@ export default class Core {
 
 
   async finishCoreConstruction({
-    CIDs,
+    cids,
     fullSerializedComponents,
   }) {
 
-    this.CID = CIDs[0];
+    this.cid = cids[0];
 
     let serializedComponents = fullSerializedComponents[0];
 
@@ -199,7 +146,7 @@ export default class Core {
 
 
     this.documentName = serializedComponents[0].componentName;
-    serializedComponents[0].doenetAttributes.CID = this.CID;
+    serializedComponents[0].doenetAttributes.cid = this.cid;
 
     this._components = {};
     this.componentsToRender = {};
@@ -211,13 +158,30 @@ export default class Core {
 
     this.essentialValuesSavedInDefinition = {};
 
-    this._renderComponents = [];
-    this._renderComponentsByName = {};
-    this._graphRenderComponents = [];
+    this.saveStateToDBTimerId = null;
+
+    // rendererState the current state of each renderer, keyed by componentName
+    this.rendererState = {};
+
+    // rendererVariablesByComponentType is a description 
+    // of the which variables are sent to the renderers,
+    // keyed by componentType
+    this.rendererVariablesByComponentType = {};
+    for (let componentType in this.componentInfoObjects.allComponentClasses) {
+      Object.defineProperty(this.rendererVariablesByComponentType, componentType, {
+        get: function () {
+          let varDescriptions = this.componentInfoObjects.allComponentClasses[componentType].returnStateVariableInfo({
+            onlyForRenderer: true,
+          }).stateVariableDescriptions;
+          delete this.rendererVariablesByComponentType[componentType];
+          return this.rendererVariablesByComponentType[componentType] = varDescriptions;
+        }.bind(this),
+        configurable: true
+      })
+    }
+
 
     this.processQueue = [];
-
-    this.resolveRecordSolutionView = {};
 
     this.dependencies = new DependencyHandler({
       _components: this._components,
@@ -230,12 +194,46 @@ export default class Core {
 
     // console.timeEnd('serialize doenetML');
 
-    if (this.requestedVariant !== undefined) {
-      this.parameterStack.parameters.variant = this.requestedVariant;
+    let numVariants = serializeFunctions.getNumberOfVariants({
+      serializedComponent: serializedComponents[0],
+      componentInfoObjects: this.componentInfoObjects
+    }).numberOfVariantsPreIgnore;
+
+
+    if (!this.requestedVariant) {
+
+      // don't have full variant, just requested variant index
+
+      this.requestedVariantIndex = ((this.requestedVariantIndex - 1) % numVariants + numVariants) % numVariants + 1;
+
+      if (serializedComponents[0].variants.uniqueVariants) {
+        let docClass = this.componentInfoObjects.allComponentClasses[serializedComponents[0].componentType];
+
+        let result = docClass.getUniqueVariant({
+          serializedComponent: serializedComponents[0],
+          variantIndex: this.requestedVariantIndex,
+          componentInfoObjects: this.componentInfoObjects
+        })
+
+        if (result.success) {
+          this.requestedVariant = result.desiredVariant;
+        }
+
+      }
+
+      // either didn't have unique variants
+      // or getting unique variant failed,
+      // so just set variant index
+      // and rest of variant will be generated from that index
+      if (!this.requestedVariant) {
+        this.requestedVariant = { index: this.requestedVariantIndex };
+      }
+
     }
-    serializedComponents[0].variants = {
-      desiredVariant: this.parameterStack.parameters.variant
-    }
+
+
+    this.parameterStack.parameters.variant = this.requestedVariant;
+    serializedComponents[0].variants.desiredVariant = this.parameterStack.parameters.variant;
 
     // //Make these variables available for cypress
     // window.state = {
@@ -247,7 +245,7 @@ export default class Core {
     //   componentInfoObjects: this.componentInfoObjects,
     // }
 
-    this.changedStateVariables = {};
+    // this.changedStateVariables = {};
 
     await this.addComponents({
       serializedComponents,
@@ -266,10 +264,64 @@ export default class Core {
     // console.log(this._components);
 
 
-    this.coreReadyCallback()
+    this.canonicalGeneratedVariantString = JSON.stringify(
+      await this.document.stateValues.generatedVariantInfo,
+      serializeFunctions.serializedComponentsReplacer
+    );
+    this.canonicalItemVariantStrings = (await this.document.stateValues.itemVariantInfo)
+      .map(x => JSON.stringify(x, serializeFunctions.serializedComponentsReplacer));
+
+    // Note: coreInfo is fixed even though this.rendererTypesInDocument could change
+    // Note 2: both canonical variant strings and original rendererTypesInDocument
+    // could differ depending on the initial state
+    this.coreInfo = {
+      generatedVariantString: this.canonicalGeneratedVariantString,
+      allPossibleVariants: deepClone(await this.document.sharedParameters.allPossibleVariants),
+      variantIndicesToIgnore: deepClone(await this.document.sharedParameters.variantIndicesToIgnore),
+      rendererTypesInDocument: deepClone(this.rendererTypesInDocument),
+      documentToRender: this.documentRendererInstructions,
+    };
+
+    this.coreInfoString = JSON.stringify(this.coreInfo, serializeFunctions.serializedComponentsReplacer);
+
+    this.messageViewerReady()
+
+    this.requestRecordEvent({
+      verb: "experienced",
+      object: {
+        componentName: this.document.componentName,
+        componentType: "document",
+      },
+    })
 
     this.resolveInitialized();
 
+
+  }
+
+
+  async messageViewerReady() {
+
+    postMessage({
+      messageType: "initializeRenderers",
+      args: {
+        coreInfo: this.coreInfo,
+      }
+    });
+
+    postMessage({
+      messageType: "coreCreated"
+    });
+
+  }
+
+  async postUpdateRenderers(args, init = false) {
+
+    postMessage({
+      messageType: "updateRenderers",
+      args,
+      init
+    })
   }
 
 
@@ -351,6 +403,23 @@ export default class Core {
 
       let results = await this.initializeRenderedComponentInstruction(this.document);
 
+      // initializing renderer instructions could trigger more composite updates
+      // (presumably from deriving child results)
+      // if so, make replacement changes and update renderer instructions again
+      // TODO: should we check for child results earlier so we don't have to check them
+      // when updating renderer instructions?
+      if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+        await this.replacementChangesFromCompositesToUpdate();
+
+        let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+        this.updateInfo.componentsToUpdateRenderers = [];
+
+        await this.updateRendererInstructions({
+          componentNamesToUpdate,
+        });
+      }
+
+
       this.documentRendererInstructions = results.componentToRender;
 
       let updateInstructions = [{
@@ -358,7 +427,7 @@ export default class Core {
         rendererStatesToUpdate: results.rendererStatesToUpdate,
       }]
 
-      this.postUpdateRenderers(updateInstructions, true)
+      this.postUpdateRenderers({ updateInstructions }, true)
 
       await this.processStateVariableTriggers();
 
@@ -391,6 +460,23 @@ export default class Core {
       await this.updateRendererInstructions({
         componentNamesToUpdate: await this.componentAndRenderedDescendants(parent)
       });
+
+      // updating renderer instructions could trigger more composite updates
+      // (presumably from deriving child results)
+      // if so, make replacement changes and update renderer instructions again
+      // TODO: should we check for child results earlier so we don't have to check them
+      // when updating renderer instructions?
+      if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+        await this.replacementChangesFromCompositesToUpdate();
+
+        let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+        this.updateInfo.componentsToUpdateRenderers = [];
+
+        await this.updateRendererInstructions({
+          componentNamesToUpdate,
+        });
+      }
+
       await this.processStateVariableTriggers();
 
     }
@@ -399,7 +485,7 @@ export default class Core {
   }
 
 
-  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate, recreatedComponents = {} }) {
+  async updateRendererInstructions({ componentNamesToUpdate, sourceOfUpdate = {}, actionId }) {
 
     let deletedRenderers = [];
 
@@ -431,7 +517,7 @@ export default class Core {
           for (let [ind, child] of unproxiedComponent.activeChildren.entries()) {
             if (indicesToRender.includes(ind)) {
               if (child.rendererType) {
-                currentChildIdentifiers.push(`componentName:${child.componentName}`)
+                currentChildIdentifiers.push(`nameType:${child.componentName};${child.componentType}`)
                 renderedInd++;
               } else if (typeof child === "string") {
                 currentChildIdentifiers.push(`string${renderedInd}:${child}`)
@@ -451,7 +537,7 @@ export default class Core {
         let previousChildIdentifiers = [];
         for (let [ind, child] of previousChildRenderers.entries()) {
           if (child.componentName) {
-            previousChildIdentifiers.push(`componentName:${child.componentName}`)
+            previousChildIdentifiers.push(`nameType:${child.componentName};${child.componentType}`)
           } else if (typeof child === "string") {
             previousChildIdentifiers.push(`string${ind}:${child}`)
           } else if (typeof child === "number") {
@@ -521,7 +607,7 @@ export default class Core {
           let stateValuesForRenderer = {};
           for (let stateVariable in component.state) {
             if (component.state[stateVariable].forRenderer) {
-              let value = preprocessForPostMessage(await component.state[stateVariable].value);
+              let value = removeFunctionsMathExpressionClass(await component.state[stateVariable].value);
               // if (value !== null && typeof value === 'object') {
               //   value = new Proxy(value, readOnlyProxyHandler)
               // }
@@ -535,9 +621,17 @@ export default class Core {
             rendererType: component.rendererType,  // TODO: need this to ignore baseVariables change: is this right place?
           }
 
+          // this.renderState is used to save the renderer state to the database
+          if (!this.rendererState[componentName]) {
+            this.rendererState[componentName] = {};
+          }
+
+          this.rendererState[componentName].stateValues = stateValuesForRenderer;
+
           // only add childrenInstructions if they changed
           if (newChildrenInstructions[componentName]) {
             newRendererState.childrenInstructions = newChildrenInstructions[componentName];
+            this.rendererState[componentName].childrenInstructions = newChildrenInstructions[componentName];
           }
 
           rendererStatesToUpdate.push(newRendererState);
@@ -556,7 +650,7 @@ export default class Core {
       updateInstructions.splice(0, 0, instruction);
     }
 
-    this.postUpdateRenderers(updateInstructions)
+    this.postUpdateRenderers({ updateInstructions, actionId })
 
   }
 
@@ -578,7 +672,7 @@ export default class Core {
     let stateValuesForRenderer = {};
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
-        stateValuesForRenderer[stateVariable] = preprocessForPostMessage(await component.state[stateVariable].value);
+        stateValuesForRenderer[stateVariable] = removeFunctionsMathExpressionClass(await component.state[stateVariable].value);
       }
     }
 
@@ -610,6 +704,12 @@ export default class Core {
       childrenInstructions: childrenToRender,
     });
 
+    // this.renderState is used to save the renderer state to the database
+    this.rendererState[componentName] = {
+      stateValues: stateValuesForRenderer,
+      childrenInstructions: childrenToRender,
+    }
+
     this.componentsWithChangedChildrenToRender.delete(componentName);
 
 
@@ -633,6 +733,7 @@ export default class Core {
 
     let rendererInstructions = {
       componentName: componentName,
+      effectiveName: component.componentOrAdaptedName,
       componentType: component.componentType,
       rendererType: component.rendererType,
       actions: requestActions
@@ -826,7 +927,7 @@ export default class Core {
     if (ancestors.length > 0) {
       let parentName = ancestors[0].componentName;
       let parent = this.components[parentName];
-      if (parent.attributes.newNamespace && parent.attributes.newNamespace.primitive) {
+      if (parent.attributes.newNamespace?.primitive) {
         namespaceForUnamed = parent.componentName + "/";
       } else {
         namespaceForUnamed = getNamespaceFromName(parent.componentName);
@@ -995,11 +1096,11 @@ export default class Core {
 
     if (serializedChildren !== undefined) {
 
-      let setUpVariant = false;
-      let variantControlInd;
-      let variantControlChild;
+      if (componentClass.setUpVariant) {
 
-      if (componentClass.alwaysSetUpVariant || componentClass.setUpVariantIfVariantControlChild) {
+        let variantControlInd;
+        let variantControlChild;
+
         // look for variantControl child
         for (let [ind, child] of serializedChildren.entries()) {
           if (child.componentType === "variantControl" || (
@@ -1010,22 +1111,6 @@ export default class Core {
             break;
           }
         }
-
-        if (variantControlInd !== undefined || componentClass.alwaysSetUpVariant) {
-          setUpVariant = true;
-        }
-      }
-
-      if (!setUpVariant && componentClass.setUpVariantUnlessAttributePrimitive) {
-        let attribute = componentClass.setUpVariantUnlessAttributePrimitive;
-
-        if (!(serializedComponent.attributes && serializedComponent.attributes[attribute]
-          && serializedComponent.attributes[attribute].primitive)) {
-          setUpVariant = true;
-        }
-      }
-
-      if (setUpVariant) {
 
         let descendantVariantComponents = serializeFunctions.gatherVariantComponents({
           serializedComponents: serializedChildren,
@@ -1050,8 +1135,15 @@ export default class Core {
               }
             }
 
+            if (serializedComponent.variants.numberOfVariants === undefined) {
+              serializeFunctions.getNumberOfVariants({
+                serializedComponent,
+                componentInfoObjects: this.componentInfoObjects
+              });
+            }
+
             if (serializedComponent.variants.uniqueVariants) {
-              sharedParameters.numberOfVariants = serializedComponent.variants.numberOfVariants;
+              sharedParameters.numberOfVariantsPreIgnore = serializedComponent.variants.numberOfVariantsPreIgnore;
             }
           }
 
@@ -1066,13 +1158,27 @@ export default class Core {
 
           definingChildren[variantControlInd] = childrenResult.components[0];
 
+
+          if (serializedComponent.variants.uniqueVariants && !serializedComponent.variants.selectedUniqueVariant) {
+
+            let result = componentClass.getUniqueVariant({
+              serializedComponent,
+              variantIndex: await childrenResult.components[0].stateValues.selectedVariantIndex,
+              componentInfoObjects: this.componentInfoObjects
+            })
+
+            if (result.success) {
+              serializedComponent.variants.desiredVariant = result.desiredVariant;
+            }
+
+          }
+
         }
 
         await componentClass.setUpVariant({
           serializedComponent,
           sharedParameters,
           definingChildrenSoFar: definingChildren,
-          allComponentClasses: this.componentInfoObjects.allComponentClasses,
           descendantVariantComponents
         });
 
@@ -1218,9 +1324,6 @@ export default class Core {
     });
 
     // in case component with same name was deleted before, delete from deleteComponents and deletedStateVariable
-    if (this.updateInfo.deletedComponents[componentName]) {
-      this.updateInfo.recreatedComponents[componentName] = true;
-    }
     delete this.updateInfo.deletedComponents[componentName];
     delete this.updateInfo.deletedStateVariables[componentName];
 
@@ -1319,13 +1422,27 @@ export default class Core {
         [componentName]: this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
       });
 
-      if (result.foundIgnore) {
-        let comp = this._components[componentName]
-        for (let vName in this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]) {
-          if (comp.state[vName]) {
-            await comp.state[vName].value
-          }
+      // In order to make sure that a component takes on the same value
+      // that was saved to the database,
+      // it may be necessary for a component to treat the value received differently
+      // in the first pass of the definition.
+      // Hence, we run the definition of all variables with the extra flag
+      // justUpdatedForNewComponent = true
+      let comp = this._components[componentName]
+      for (let vName in this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]) {
+        if (comp.state[vName]) {
+          await this.getStateVariableValue({ component: comp, stateVariable: vName, justUpdatedForNewComponent: true })
         }
+      }
+
+      if (result.foundIgnore) {
+        // The only case so far with ignored children is that Math ignores strings
+        // (set in inverse definition of expressionWithCodes).
+        // We need change its value a second time after evaluating
+        // so that the next time the definition of expressionWithCodes is run,
+        // the strings don't show any changes and we'll use the essential value
+        // of expressionWithCodes
+        // TODO: is this the right general approach?
 
         await this.processNewStateVariableValues({
           [componentName]: this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
@@ -1636,9 +1753,18 @@ export default class Core {
     if ("nChildrenToRender" in component.state) {
       nChildrenToRender = await component.stateValues.nChildrenToRender;
     }
+    let childIndicesToRender = null;
+    if ("childIndicesToRender" in component.state) {
+      childIndicesToRender = await component.stateValues.childIndicesToRender;
+    }
+
     for (let [ind, child] of component.activeChildren.entries()) {
       if (ind >= nChildrenToRender) {
         break;
+      }
+
+      if (childIndicesToRender && !childIndicesToRender.includes(ind)) {
+        continue;
       }
 
       if (typeof child === "object") {
@@ -1695,7 +1821,7 @@ export default class Core {
     if (adapter === undefined || adapter.componentType !== newSerializedChild.componentType) {
       if (originalChild.componentName) {
         let namespaceForUnamed;
-        if (parent.attributes.newNamespace && parent.attributes.newNamespace.primitive) {
+        if (parent.attributes.newNamespace?.primitive) {
           namespaceForUnamed = parent.componentName + "/";
         } else {
           namespaceForUnamed = getNamespaceFromName(parent.componentName);
@@ -1903,7 +2029,7 @@ export default class Core {
       uniqueIdentifiersUsed
     });
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     // TODO: is isResponse the only attribute to convert?
     if (component.attributes.isResponse) {
@@ -1930,14 +2056,43 @@ export default class Core {
       }
     }
 
+    // console.log('--------------')
     // console.log(`name of composite mediating shadow: ${nameOfCompositeMediatingTheShadow}`)
-    if (component.constructor.assignNamesToReplacements) {
+    // console.log(`name of composite shadowing: ${component.componentName}`)
+    // console.log(`name of shadowed composite: ${shadowedComposite.componentName}`)
 
-      let originalNamesAreConsistent = component.constructor.originalNamesAreConsistent
-        && newNamespace;
+    if (component.constructor.assignNamesToReplacements) {
+      let compositeMediatingTheShadow = this.components[nameOfCompositeMediatingTheShadow];
+      let mediatingNewNamespace = compositeMediatingTheShadow.attributes.newNamespace?.primitive;
+      let mediatingAssignNames = compositeMediatingTheShadow.doenetAttributes.assignNames;
+
+
+      // Note: originalNamesAreConsistent means that processAssignNames should leave
+      // the original names in the serializedComponents as is
+      // (unless their names are assigned or have been marked to create unique)
+      // If originalNamesAreConsistent is false, then all components
+      // that don't have names assigned will be renamed to random names
+
+      // We set originalNamesAreConsistent to true if we can be sure
+      // that we won't create any duplicate names.
+      // If the component begin shadowed has a newNamespace,
+      // or we get a new namespace from the composite mediating the shadow, 
+      // that will, in most cases, be enough to prevent name collisions.
+      // The one edge case is when the composite mediating the shadow also assigns names,
+      // in which case the assigned names could collide with the original names,
+      // so we can't keep the original names.
+
+
+      let originalNamesAreConsistent = newNamespace
+        || (mediatingNewNamespace && !mediatingAssignNames);
+
+      let assignNames = component.doenetAttributes.assignNames;
+      if (assignNames && await component.stateValues.addLevelToAssignNames) {
+        assignNames = assignNames.map(x => [x])
+      }
 
       let processResult = serializeFunctions.processAssignNames({
-        assignNames: component.doenetAttributes.assignNames,
+        assignNames,
         serializedComponents: serializedReplacements,
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
@@ -1947,8 +2102,6 @@ export default class Core {
 
       serializedReplacements = processResult.serializedComponents;
     } else {
-      // console.log(`since ${component.componentName} doesn't assign names to replacements, just call create component names from children`)
-      // console.log(deepClone(serializedReplacements))
       // since original names came from the targetComponent
       // we can use them only if we created a new namespace
       let originalNamesAreConsistent = newNamespace;
@@ -1991,7 +2144,7 @@ export default class Core {
     this.parameterStack.push(component.sharedParameters, false);
 
     let namespaceForUnamed;
-    if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+    if (component.attributes.newNamespace?.primitive) {
       namespaceForUnamed = component.componentName + "/";
     } else {
       namespaceForUnamed = getNamespaceFromName(component.componentName);
@@ -2046,7 +2199,7 @@ export default class Core {
         // replace with placeholders
         // otherwise, leave composite as an activeChild
         if (!child.isExpanded) {
-          if (child.attributes.componentType && child.attributes.componentType.primitive) {
+          if (child.attributes.componentType?.primitive) {
             replaceWithPlaceholders = true;
           } else {
             continue;
@@ -2654,6 +2807,19 @@ export default class Core {
 
     if (redefineDependencies.propVariable) {
       let propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
+
+      // if we have an array entry state variable that hasn't been created yet
+      // create it now so that we can look up stateVariablesPrescribingAdditionalAttributes
+      if (!propStateVariableInTarget && this.checkIfArrayEntry({
+        stateVariable: redefineDependencies.propVariable,
+        component: targetComponent
+      })) {
+        await this.createFromArrayEntry({
+          stateVariable: redefineDependencies.propVariable,
+          component: targetComponent
+        })
+        propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
+      }
       if (propStateVariableInTarget && propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
         additionalAttributesFromStateVariables = propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes
       }
@@ -3233,7 +3399,8 @@ export default class Core {
           return result;
 
         };
-        stateDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
+        stateDef.excludeDependencyValuesInInverseDefinition = true;
+        stateDef.inverseDefinition = function ({ desiredStateVariableValues }) {
 
           return {
             success: true,
@@ -3396,6 +3563,7 @@ export default class Core {
                 componentName: component.componentName,
                 actionName: chainInfo.triggeredAction,
                 stateVariableDefiningChain: varName,
+                args: {},
               });
             } else {
               // target was already chained
@@ -3507,6 +3675,32 @@ export default class Core {
           stateVarObj.additionalStateVariablesDefined.push(arrayEntryVarName);
         } else {
           stateVarObj.additionalStateVariablesDefined.push(varName);
+        }
+      }
+    }
+
+
+    // if any of the state variables prescribing additional entries are arrays,
+    // transform to their array entry
+    if (arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+      stateVarObj.stateVariablesPrescribingAdditionalAttributes = {};
+
+      let entryPrefixInd = arrayStateVarObj.entryPrefixes.indexOf(arrayEntryPrefix);
+
+      for (let attrName in arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+        let varName = arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName];
+
+        let sObj = component.state[varName];
+
+        if (sObj.isArray) {
+
+          // find the same array entry prefix in the other array state variable
+          let newArrayEntryPrefix = sObj.entryPrefixes[entryPrefixInd];
+          let arrayEntryVarName = newArrayEntryPrefix + stateVarObj.varEnding;
+
+          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = arrayEntryVarName;
+        } else {
+          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = varName;
         }
       }
     }
@@ -3859,6 +4053,13 @@ export default class Core {
         };
       }
 
+
+      if (!stateVarObj.arrayVarNameFromPropIndex) {
+        stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
+          return entryPrefixes[0] + [Number(propIndex), ...Array(stateVarObj.nDimensions - 1).fill(1)].join('_')
+        };
+      }
+
       stateVarObj.adjustArrayToNewArraySize = async function () {
         function resizeSubArray(subArray, subArraySize) {
 
@@ -3924,6 +4125,11 @@ export default class Core {
         };
       }
 
+      if (!stateVarObj.arrayVarNameFromPropIndex) {
+        stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
+          return entryPrefixes[0] + propIndex;
+        };
+      }
 
       stateVarObj.adjustArrayToNewArraySize = async function () {
         // console.log(`adjust array ${stateVariable} of ${component.componentName} to new array size: ${stateVarObj.arraySize[0]}`);
@@ -4576,6 +4782,43 @@ export default class Core {
 
   }
 
+  async arrayEntryNamesFromPropIndex({ stateVariables, component, propIndex }) {
+
+    let newVarNames = [];
+    for (let varName of stateVariables) {
+      let stateVarObj = component.state[varName];
+      if (!stateVarObj) {
+        if (!this.checkIfArrayEntry({ stateVariable: varName, component })) {
+          // varName doesn't exist.  Ignore error here
+          newVarNames.push(varName);
+          continue;
+        }
+        await this.createFromArrayEntry({ stateVariable: varName, component });
+        stateVarObj = component.state[varName];
+      }
+
+      let newName;
+      if (stateVarObj.isArray) {
+        newName = stateVarObj.arrayVarNameFromPropIndex(propIndex, varName);
+      } else if (stateVarObj.isArrayEntry) {
+        let arrayStateVarObj = component.state[stateVarObj.arrayStateVariable];
+        newName = arrayStateVarObj.arrayVarNameFromPropIndex(propIndex, varName);
+      } else {
+        console.warn(`Cannot get propIndex from ${varName} of ${component.componentName} as it is not an array or array entry state variable`);
+        newName = varName;
+      }
+      if (newName) {
+        newVarNames.push(newName);
+      } else {
+        console.warn(`Cannot get propIndex from ${varName} of ${component.componentName}`)
+        newVarNames.push(varName);
+      }
+
+    }
+
+    return newVarNames;
+
+  }
 
   recursivelyReplaceCompositesWithReplacements({
     replacements,
@@ -4637,7 +4880,7 @@ export default class Core {
     };
   }
 
-  async getStateVariableValue({ component, stateVariable }) {
+  async getStateVariableValue({ component, stateVariable, justUpdatedForNewComponent = false }) {
 
     // console.log(`getting value of state variable ${stateVariable} of ${component.componentName}`)
 
@@ -4676,6 +4919,7 @@ export default class Core {
 
     let definitionArgs = await this.getStateVariableDefinitionArguments({ component, stateVariable });
     definitionArgs.componentInfoObjects = this.componentInfoObjects;
+    definitionArgs.justUpdatedForNewComponent = justUpdatedForNewComponent;
 
     definitionArgs.freshnessInfo = stateVarObj.freshnessInfo;
 
@@ -5303,10 +5547,15 @@ export default class Core {
   }
 
 
-  async getStateVariableDefinitionArguments({ component, stateVariable }) {
+  async getStateVariableDefinitionArguments({ component, stateVariable, excludeDependencyValues }) {
     // console.log(`get state variable dependencies of ${component.componentName}, ${stateVariable}`)
 
-    let args = await this.dependencies.getStateVariableDependencyValues({ component, stateVariable });
+    let args;
+    if (excludeDependencyValues) {
+      args = {};
+    } else {
+      args = await this.dependencies.getStateVariableDependencyValues({ component, stateVariable });
+    }
 
     args.componentName = component.componentName;
 
@@ -5693,7 +5942,7 @@ export default class Core {
 
     // console.log(`mark state variable ${varName} of ${component.componentName} and updeps stale`)
 
-    if (varName in this.rendererStateVariables[component.componentType]) {
+    if (varName in this.rendererVariablesByComponentType[component.componentType]) {
       this.updateInfo.componentsToUpdateRenderers.push(component.componentName);
     }
 
@@ -5778,6 +6027,10 @@ export default class Core {
             break;
           }
         }
+      }
+
+      if (result.updateRenderedChildren) {
+        this.componentsWithChangedChildrenToRender.add(component.componentName);
       }
 
       if (result.updateActionChaining) {
@@ -6127,7 +6380,7 @@ export default class Core {
         if (foundVarChange) {
 
           for (let varName of upDep.upstreamVariableNames) {
-            if (varName in this.rendererStateVariables[this.components[upDep.upstreamComponentName].componentType]) {
+            if (varName in this.rendererVariablesByComponentType[this.components[upDep.upstreamComponentName].componentType]) {
               this.updateInfo.componentsToUpdateRenderers.push(upDep.upstreamComponentName);
               break;
             }
@@ -6224,6 +6477,10 @@ export default class Core {
                   break;
                 }
               }
+            }
+
+            if (result.updateRenderedChildren) {
+              this.componentsWithChangedChildrenToRender.add(component.componentName);
             }
 
             if (result.updateActionChaining) {
@@ -6377,7 +6634,7 @@ export default class Core {
           componentName: shadowingParent.shadows.compositeName
         });
 
-        let shadowingNewNamespace = shadowingParent.attributes.newNamespace && shadowingParent.attributes.newNamespace.primitive;
+        let shadowingNewNamespace = shadowingParent.attributes.newNamespace?.primitive;
         // we can use original only if we created a new namespace
         let originalNamesAreConsistent = shadowingNewNamespace;
 
@@ -6825,7 +7082,7 @@ export default class Core {
           let serializedReplacements = change.serializedReplacements;
 
           let namespaceForUnamed;
-          if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+          if (component.attributes.newNamespace?.primitive) {
             namespaceForUnamed = component.componentName + "/";
           } else {
             namespaceForUnamed = getNamespaceFromName(component.componentName);
@@ -7301,12 +7558,21 @@ export default class Core {
         }
 
         if (shadowingComponent.constructor.assignNamesToReplacements) {
+          let nameOfCompositeMediatingTheShadow = shadowingComponent.shadows.compositeName;
+          let compositeMediatingTheShadow = this.components[nameOfCompositeMediatingTheShadow];
+          let mediatingNewNamespace = compositeMediatingTheShadow.attributes.newNamespace?.primitive;
+          let mediatingAssignNames = compositeMediatingTheShadow.doenetAttributes.assignNames;
 
-          let originalNamesAreConsistent = shadowingComponent.constructor.originalNamesAreConsistent
-            && shadowingNewNamespace;
+          let originalNamesAreConsistent = shadowingNewNamespace
+            || (mediatingNewNamespace && !mediatingAssignNames);
+
+          let assignNames = shadowingComponent.doenetAttributes.assignNames;
+          if (assignNames && await shadowingComponent.stateValues.addLevelToAssignNames) {
+            assignNames = assignNames.map(x => [x])
+          }
 
           let processResult = serializeFunctions.processAssignNames({
-            assignNames: shadowingComponent.doenetAttributes.assignNames,
+            assignNames,
             indOffset: assignNamesOffset,
             serializedComponents: newSerializedReplacements,
             parentName: shadowingComponent.componentName,
@@ -7634,12 +7900,24 @@ export default class Core {
         if (event) {
           this.requestRecordEvent(event);
         }
+        if (!args) {
+          args = {};
+        }
         return await action(args);
       }
     }
 
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
 
+  }
+
+  resolveAction({ actionId }) {
+    if (actionId) {
+      postMessage({
+        messageType: "resolveAction",
+        args: { actionId }
+      })
+    }
   }
 
   async triggerChainedActions({ componentName }) {
@@ -7731,7 +8009,33 @@ export default class Core {
 
   }
 
-  async performUpdate({ updateInstructions, transient = false, event }) {
+  async performUpdate({ updateInstructions, actionId, event, overrideReadOnly = false }) {
+
+    if (this.flags.readOnly && !overrideReadOnly) {
+
+      let sourceInformation = {};
+
+      for (let instruction of updateInstructions) {
+
+        let componentSourceInformation = sourceInformation[instruction.componentName];
+        if (!componentSourceInformation) {
+          componentSourceInformation = sourceInformation[instruction.componentName] = {};
+        }
+
+        if (instruction.sourceInformation) {
+          Object.assign(componentSourceInformation, instruction.sourceInformation);
+        }
+      }
+
+      await this.updateRendererInstructions({
+        componentNamesToUpdate: updateInstructions.map(x => x.componentName),
+        sourceOfUpdate: { sourceInformation },
+        actionId,
+      });
+
+      return;
+
+    }
 
     let newStateVariableValues = {};
     let newStateVariableValuesProcessed = [];
@@ -7793,7 +8097,7 @@ export default class Core {
         newStateVariableValues = {};
 
       } else if (instruction.updateType === "recordItemSubmission") {
-        recordItemSubmissions.push(instruction.itemNumber)
+        recordItemSubmissions.push(instruction)
       }
 
     }
@@ -7803,101 +8107,162 @@ export default class Core {
 
     newStateVariableValuesProcessed.push(newStateVariableValues);
 
+    // always update the renderers from the update instructions themselves,
+    // as even if changes were prevented, the renderers need to be given that information
+    // so they can revert if the showed the changes before hearing back from core
+    this.updateInfo.componentsToUpdateRenderers.push(...updateInstructions.map(x => x.componentName))
 
-    await this.finishUpdate({
-      sourceInformation,
-      local: true,
+    // use set to create deduplicated list of components to update renderers
+    let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+    this.updateInfo.componentsToUpdateRenderers = [];
+
+    await this.updateRendererInstructions({
+      componentNamesToUpdate,
+      sourceOfUpdate: { sourceInformation, local: true },
+      actionId,
     });
 
+    // updating renderer instructions could trigger more composite updates
+    // (presumably from deriving child results)
+    // if so, make replacement changes and update renderer instructions again
+    // TODO: should we check for child results earlier so we don't have to check them
+    // when updating renderer instructions?
+    if (this.updateInfo.compositesToUpdateReplacements.length > 0) {
+      await this.replacementChangesFromCompositesToUpdate();
+
+      let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
+      this.updateInfo.componentsToUpdateRenderers = [];
+
+      await this.updateRendererInstructions({
+        componentNamesToUpdate,
+        sourceOfUpdate: { sourceInformation, local: true },
+        actionId,
+      });
+    }
+
+    await this.processStateVariableTriggers();
+
+    // it is possible that components were added back to componentNamesToUpdateRenderers
+    // while processing the renderer instructions
+    // so delete any names that were just addressed
+    this.updateInfo.componentsToUpdateRenderers
+      = this.updateInfo.componentsToUpdateRenderers.filter(x => !componentNamesToUpdate.includes(x));
+
+    // TODO: when should we actually warn of unmatchedChildren
+    // It shouldn't be just on update, but also on initial construction!
+    // Also, should be more than a console.warn
+    if (Object.keys(this.unmatchedChildren).length > 0) {
+      let childLogicMessage = "";
+      for (let componentName in this.unmatchedChildren) {
+        if (!this._components[componentName].isShadow) {
+          childLogicMessage += `Invalid children for ${componentName}: ${this.unmatchedChildren[componentName].message} `;
+        }
+      }
+      if (childLogicMessage) {
+        console.warn(childLogicMessage);
+      }
+    }
 
 
-    let itemsWithCreditAchieved = {};
 
     if (recordItemSubmissions.length > 0) {
-      recordItemSubmissions = [...new Set(recordItemSubmissions)];
+
+      let subitemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
+
       if (event) {
         if (!event.context) {
           event.context = {};
         }
-        if (!event.context.itemCreditAchieved) {
-          event.context.itemCreditAchieved = {};
+        if (!event.context.subitemCreditAchieved) {
+          event.context.subitemCreditAchieved = {};
         }
-        event.context.documentCreditAchieved = await this.document.stateValues.creditAchieved;
+        event.context.itemCreditAchieved = await this.document.stateValues.creditAchieved;
       }
-      let itemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
-      for (let itemNumber of recordItemSubmissions) {
-        itemsWithCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1];
-        // if (this.externalFunctions.submitResponse) {
-        //   this.externalFunctions.submitResponse({
-        //     itemNumber,
-        //     itemCreditAchieved: itemCreditAchieved[itemNumber - 1],
-        //     callBack: this.submitResponseCallBack,
-        //   });
-        // }
-        if (event) {
-          event.context.itemCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1]
+
+      let itemCreditAchieved = await this.document.stateValues.creditAchieved;
+      let subitemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
+
+      let componentsSubmitted = [];
+      for (let itemSubmission of recordItemSubmissions) {
+        componentsSubmitted.push({
+          componentName: itemSubmission.submittedComponent,
+          response: itemSubmission.response,
+          responseText: itemSubmission.responseText,
+          creditAchieved: itemSubmission.creditAchieved,
+          subitemNumber: itemSubmission.itemNumber
+        });
+      }
+
+      if (event) {
+        for (let subitemNumber of subitemsSubmitted) {
+          event.context.subitemCreditAchieved[subitemNumber] = subitemCreditAchieved[subitemNumber - 1]
         }
       }
+
+      // if itemNumber is zero, it means this document wasn't given any weight,
+      // so don't record the submission to the attempt tables
+      // (the event will still get recorded)
+      if (this.itemNumber > 0) {
+        this.saveSubmissions({ itemCreditAchieved, componentsSubmitted });
+      }
+
     }
 
 
-    //TODO: Inside for loop?
-    if (!transient) {
-
-      let newVals = {};
-
-      // start with any essential values saved when calculating definitions
-      if (Object.keys(this.essentialValuesSavedInDefinition).length > 0) {
-        for (let componentName in this.essentialValuesSavedInDefinition) {
-          let essentialState = this._components[componentName]?.essentialState;
-          if (essentialState) {
-            newVals[componentName] = {};
-            for (let varName in this.essentialValuesSavedInDefinition[componentName]) {
-              if (essentialState[varName] !== undefined) {
-                // console.log(`saving ${varName} of ${componentName}`, essentialState[varName])
-                // console.log('not using', this.essentialValuesSavedInDefinition[componentName][varName])
-                newVals[componentName][varName] = essentialState[varName];
+    // start with any essential values saved when calculating definitions
+    if (Object.keys(this.essentialValuesSavedInDefinition).length > 0) {
+      for (let componentName in this.essentialValuesSavedInDefinition) {
+        let essentialState = this._components[componentName]?.essentialState;
+        if (essentialState) {
+          if (!this.cumulativeStateVariableChanges[componentName]) {
+            this.cumulativeStateVariableChanges[componentName] = {}
+          }
+          for (let varName in this.essentialValuesSavedInDefinition[componentName]) {
+            if (essentialState[varName] !== undefined) {
+              let cumValues = this.cumulativeStateVariableChanges[componentName][varName];
+              // if cumValues is an object with mergeObject = true,
+              // then merge attributes from newStateVariableValues into cumValues
+              if (typeof cumValues === "object" && cumValues !== null && cumValues.mergeObject) {
+                Object.assign(cumValues, removeFunctionsMathExpressionClass(essentialState[varName]))
+              } else {
+                this.cumulativeStateVariableChanges[componentName][varName] = removeFunctionsMathExpressionClass(essentialState[varName]);
               }
             }
           }
-
-        }
-        this.essentialValuesSavedInDefinition = {};
-      }
-
-      // merge in new state variables set in update
-      for (let newValuesProcessed of newStateVariableValuesProcessed) {
-        for (let componentName in newValuesProcessed) {
-          if (!newVals[componentName]) {
-            newVals[componentName] = {}
-          }
-          for (let varName in newValuesProcessed[componentName]) {
-            let essentialVals = newVals[componentName][varName];
-            // if essentialVals is an object with mergeObject = true,
-            // then merge attributes from newValuesProcessed into essentialVals
-            if (typeof essentialVals === "object" && essentialVals !== null && essentialVals.mergeObject) {
-              Object.assign(essentialVals, newValuesProcessed[componentName][varName])
-            } else {
-              newVals[componentName][varName] = newValuesProcessed[componentName][varName];
-            }
-          }
         }
 
       }
+      this.essentialValuesSavedInDefinition = {};
+    }
 
-      let currentVariant = await this.document.state.generatedVariantInfo.value
-
-      postMessage({
-        messageType: "saveState",
-        args: {
-          newStateVariableValues: preprocessForPostMessage(newVals),
-          CID: this.CID,
-          itemsWithCreditAchieved,
-          currentVariant
-        },
-      })
+    // merge in new state variables set in update
+    for (let newValuesProcessed of newStateVariableValuesProcessed) {
+      for (let componentName in newValuesProcessed) {
+        if (!this.cumulativeStateVariableChanges[componentName]) {
+          this.cumulativeStateVariableChanges[componentName] = {}
+        }
+        for (let varName in newValuesProcessed[componentName]) {
+          let cumValues = this.cumulativeStateVariableChanges[componentName][varName];
+          // if cumValues is an object with mergeObject = true,
+          // then merge attributes from newStateVariableValues into cumValues
+          if (typeof cumValues === "object" && cumValues !== null && cumValues.mergeObject) {
+            Object.assign(cumValues, removeFunctionsMathExpressionClass(newValuesProcessed[componentName][varName]))
+          } else {
+            this.cumulativeStateVariableChanges[componentName][varName] = removeFunctionsMathExpressionClass(newValuesProcessed[componentName][varName]);
+          }
+        }
+      }
 
     }
+
+
+    clearTimeout(this.savePageStateTimeoutID);
+
+    //Debounce the save to database
+    this.savePageStateTimeoutID = setTimeout(() => {
+      this.saveState();
+    }, 1000);
+
 
 
     // evalute itemCreditAchieved so that will be fresh
@@ -7941,61 +8306,72 @@ export default class Core {
       event.context = {};
     }
 
-    setTimeout(() => {
+    const payload = {
+      doenetId: this.doenetId,
+      activityCid: this.activityCid,
+      pageCid: this.cid,
+      pageNumber: this.pageNumber,
+      attemptNumber: this.attemptNumber,
+      variantIndex: this.requestedVariant.index,
+      verb: event.verb,
+      object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
+      result: JSON.stringify(removeFunctionsMathExpressionClass(event.result), serializeFunctions.serializedComponentsReplacer),
+      context: JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer),
+      timestamp: event.timestamp,
+      version: "0.1.0",
+    }
 
-      const payload = {
-        doenetId: this.doenetId,
-        attemptNumber: this.attemptNumber,
-        verb: event.verb,
-        object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
-        result: JSON.stringify(event.result, serializeFunctions.serializedComponentsReplacer),
-        context: JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer),
-        timestamp: event.timestamp,
-        version: "0.1.0",
-      }
+    axios.post('/api/recordEvent.php', payload)
+      .then(resp => {
+        // console.log(">>>>resp",resp.data)
+      })
+      .catch(e => {
+        console.error(`Error saving event: ${e.message}`);
+        // postMessage({
+        //   messageType: "sendToast",
+        //   args: {
+        //     message: `Error saving event: ${e.message}`,
+        //     toastType: toastType.ERROR
+        //   }
+        // })
+      });
 
-      // axios.post('/api/recordEvent.php', payload) //TODO: need to record the event
-      // .then(resp => {
-      //   console.log(">>>>resp",resp.data)
-      // });
-
-    }, 0);
 
     return Promise.resolve();
   }
 
   async executeUpdateStateVariables(newStateVariableValues) {
 
-    // merge new variables changed from newStateVariableValues into changedStateVariables
-    for (let cName in newStateVariableValues) {
-      let component = this._components[cName];
-      if (component) {
-        let changedSvs = this.changedStateVariables[cName];
-        if (!changedSvs) {
-          changedSvs = this.changedStateVariables[cName] = {};
-        }
-        for (let vName in newStateVariableValues[cName]) {
-          let sVarObj = component.state[vName];
-          if (sVarObj) {
-            if (sVarObj.isArray) {
-              if (!changedSvs[vName]) {
-                changedSvs[vName] = new Set();
-              }
-              for (let key in newStateVariableValues[cName][vName]) {
-                if (key === "mergeObject") {
-                  continue;
-                }
-                changedSvs[vName].add(key);
-              }
-            } else {
-              // shouldn't have arrayEntries, so don't need to check
-              changedSvs[vName] = true;
-            }
-          }
-        }
-      }
+    // // merge new variables changed from newStateVariableValues into changedStateVariables
+    // for (let cName in newStateVariableValues) {
+    //   let component = this._components[cName];
+    //   if (component) {
+    //     let changedSvs = this.changedStateVariables[cName];
+    //     if (!changedSvs) {
+    //       changedSvs = this.changedStateVariables[cName] = {};
+    //     }
+    //     for (let vName in newStateVariableValues[cName]) {
+    //       let sVarObj = component.state[vName];
+    //       if (sVarObj) {
+    //         if (sVarObj.isArray) {
+    //           if (!changedSvs[vName]) {
+    //             changedSvs[vName] = new Set();
+    //           }
+    //           for (let key in newStateVariableValues[cName][vName]) {
+    //             if (key === "mergeObject") {
+    //               continue;
+    //             }
+    //             changedSvs[vName].add(key);
+    //           }
+    //         } else {
+    //           // shouldn't have arrayEntries, so don't need to check
+    //           changedSvs[vName] = true;
+    //         }
+    //       }
+    //     }
+    //   }
 
-    }
+    // }
 
     await this.processNewStateVariableValues(newStateVariableValues);
 
@@ -8017,40 +8393,6 @@ export default class Core {
     // TODO: do we need to check again if update composites to expand again?
     // If so, how would we end the loop?
 
-  }
-
-
-  async finishUpdate(sourceOfUpdate) {
-
-    // use set to create deduplicated list of components to update renderers
-    let componentNamesToUpdate = [...new Set(this.updateInfo.componentsToUpdateRenderers)];
-    this.updateInfo.componentsToUpdateRenderers = [];
-
-    await this.updateRendererInstructions({
-      componentNamesToUpdate,
-      sourceOfUpdate,
-      recreatedComponents: this.updateInfo.recreatedComponents
-    });
-
-    await this.processStateVariableTriggers();
-
-    // it is possible that components were added back to componentNamesToUpdateRenderers
-    // while processing the renderer instructions
-    // so delete any names that were just addressed
-    this.updateInfo.componentsToUpdateRenderers
-      = this.updateInfo.componentsToUpdateRenderers.filter(x => !componentNamesToUpdate.includes(x));
-
-    if (Object.keys(this.unmatchedChildren).length > 0) {
-      let childLogicMessage = "";
-      for (let componentName in this.unmatchedChildren) {
-        if (!this._components[componentName].isShadow) {
-          childLogicMessage += `Invalid children for ${componentName}: ${this.unmatchedChildren[componentName].message} `;
-        }
-      }
-      if (childLogicMessage) {
-        console.warn(childLogicMessage);
-      }
-    }
   }
 
   async replacementChangesFromCompositesToUpdate() {
@@ -8081,18 +8423,21 @@ export default class Core {
                 componentChanges,
               });
 
-              for (let componentName in result.addedComponents) {
+              // for (let componentName in result.addedComponents) {
+              //   updatedComposites = true;
+              //   this.changedStateVariables[componentName] = {};
+              //   for (let varName in this._components[componentName].state) {
+              //     let stateVarObj = this._components[componentName].state[varName];
+              //     if (stateVarObj.isArray) {
+              //       this.changedStateVariables[componentName][varName] =
+              //         new Set(stateVarObj.getAllArrayKeys(await stateVarObj.arraySize))
+              //     } else if (!stateVarObj.isArrayEntry) {
+              //       this.changedStateVariables[componentName][varName] = true;
+              //     }
+              //   }
+              // }
+              if (Object.keys(result.addedComponents).length > 0) {
                 updatedComposites = true;
-                this.changedStateVariables[componentName] = {};
-                for (let varName in this._components[componentName].state) {
-                  let stateVarObj = this._components[componentName].state[varName];
-                  if (stateVarObj.isArray) {
-                    this.changedStateVariables[componentName][varName] =
-                      new Set(stateVarObj.getAllArrayKeys(await stateVarObj.arraySize))
-                  } else if (!stateVarObj.isArrayEntry) {
-                    this.changedStateVariables[componentName][varName] = true;
-                  }
-                }
               }
               if (Object.keys(result.deletedComponents).length > 0) {
                 updatedComposites = true;
@@ -8209,7 +8554,7 @@ export default class Core {
           essentialVarName = comp.state[vName].essentialVarName;
         }
 
-        if (vName in this.rendererStateVariables[comp.componentType]) {
+        if (vName in this.rendererVariablesByComponentType[comp.componentType]) {
           this.updateInfo.componentsToUpdateRenderers.push(comp.componentName);
         }
 
@@ -8366,7 +8711,10 @@ export default class Core {
     }
 
 
-    let inverseDefinitionArgs = await this.getStateVariableDefinitionArguments({ component, stateVariable });
+    let inverseDefinitionArgs = await this.getStateVariableDefinitionArguments({
+      component, stateVariable,
+      excludeDependencyValues: stateVarObj.excludeDependencyValuesInInverseDefinition
+    });
     inverseDefinitionArgs.componentInfoObjects = this.componentInfoObjects;
     inverseDefinitionArgs.initialChange = initialChange;
     inverseDefinitionArgs.stateValues = component.stateValues;
@@ -8974,6 +9322,291 @@ export default class Core {
 
   }
 
+  async saveState() {
+
+    if (!this.flags.allowSaveState && !this.flags.allowLocalState) {
+      return;
+    }
+
+    let saveId = nanoid();
+
+    if (this.flags.allowLocalState) {
+      idb_set(
+        `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}`,
+        {
+          coreState: this.cumulativeStateVariableChanges,
+          rendererState: this.rendererState,
+          coreInfo: this.coreInfo,
+          saveId,
+        }
+      )
+    }
+
+    postMessage({
+      messageType: "savedState"
+    })
+
+    if (!this.flags.allowSaveState) {
+      return;
+    }
+
+
+    this.pageStateToBeSavedToDatabase = {
+      cid: this.cid,
+      coreInfo: this.coreInfoString,
+      coreState: JSON.stringify(this.cumulativeStateVariableChanges, serializeFunctions.serializedComponentsReplacer),
+      rendererState: JSON.stringify(this.rendererState, serializeFunctions.serializedComponentsReplacer),
+      pageNumber: this.pageNumber,
+      attemptNumber: this.attemptNumber,
+      doenetId: this.doenetId,
+      saveId,
+      serverSaveId: this.serverSaveId,
+      updateDataOnContentChange: this.updateDataOnContentChange,
+    }
+
+    // mark presence of changes
+    // so that next call to saveChangesToDatabase will save changes
+    this.changesToBeSaved = true;
+
+    // if not currently in throttle, save changes to database
+    this.saveChangesToDatabase();
+
+
+  }
+
+  async saveChangesToDatabase() {
+    // throttle save to database at 60 seconds
+
+    if (this.saveStateToDBTimerId !== null || !this.changesToBeSaved) {
+      return;
+    }
+
+
+    this.changesToBeSaved = false;
+
+    // check for changes again after 60 seconds
+    this.saveStateToDBTimerId = setTimeout(() => {
+      this.saveStateToDBTimerId = null;
+      this.saveChangesToDatabase();
+    }, 10000);
+    // }, 60000);
+
+
+    // TODO: find out how to test if not online
+    // and send this toast if not online:
+
+    // postMessage({
+    //   messageType: "sendToast",
+    //   args: {
+    //     message: "You're not connected to the internet. Changes are not saved. ",
+    //     toastType: toastType.ERROR
+    //   }
+    // })
+
+    let resp;
+
+    try {
+      resp = await axios.post('/api/savePageState.php', this.pageStateToBeSavedToDatabase);
+    } catch (e) {
+      postMessage({
+        messageType: "sendToast",
+        args: {
+          message: "Error synchronizing data.  Changes not saved to the server.",
+          toastType: toastType.ERROR
+        }
+      });
+      return;
+    }
+
+    console.log('result from saving to database:', resp.data);
+
+    if (resp.status === null) {
+      postMessage({
+        messageType: "sendToast",
+        args: {
+          message: `Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`,
+          toastType: toastType.ERROR
+        }
+      })
+      return;
+    }
+
+    let data = resp.data;
+
+    if (!data.success) {
+      postMessage({
+        messageType: "sendToast",
+        args: {
+          message: data.message,
+          toastType: toastType.ERROR
+        }
+      })
+      return;
+    }
+
+    this.serverSaveId = data.saveId;
+
+    if (this.flags.allowLocalState) {
+      idb_set(
+        `${this.doenetId}|${this.pageNumber}|${this.attemptNumber}|${this.cid}|ServerSaveId`,
+        data.saveId
+      )
+    }
+
+    if (data.stateOverwritten) {
+
+      // if a new attempt number was generated or the cid didn't change,
+      // then we reset the page to the new state
+      if (this.attemptNumber !== Number(data.attemptNumber) || this.cid === data.cid) {
+
+        if (this.flags.allowLocalState) {
+          idb_set(
+            `${this.doenetId}|${this.pageNumber}|${data.attemptNumber}|${data.cid}`,
+            {
+              coreState: JSON.parse(data.coreState, serializeFunctions.serializedComponentsReviver),
+              rendererState: JSON.parse(data.rendererState, serializeFunctions.serializedComponentsReviver),
+              coreInfo: JSON.parse(data.coreInfo, serializeFunctions.serializedComponentsReviver),
+              saveId: data.saveId,
+            }
+          )
+        }
+
+        postMessage({
+          messageType: "resetPage",
+          args: {
+            changedOnDevice: data.device,
+            newCid: data.cid,
+            newAttemptNumber: Number(data.attemptNumber),
+          }
+        })
+      } else {
+        // if the cid changed without the attemptNumber changing, something went wrong
+        postMessage({
+          messageType: "inErrorState",
+          args: {
+            errMsg: "Content changed unexpectedly!"
+          }
+        })
+
+
+      }
+
+
+    }
+
+    // TODO: send message so that UI can show changes have been synchronized
+
+    // console.log(">>>>recordContentInteraction data",data)
+  }
+
+  saveSubmissions({ itemCreditAchieved, componentsSubmitted }) {
+    if (!this.flags.allowSaveSubmissions) {
+      return;
+    }
+
+
+    const payload = {
+      doenetId: this.doenetId,
+      attemptNumber: this.attemptNumber,
+      credit: itemCreditAchieved,
+      itemNumber: this.itemNumber,
+      componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted), serializeFunctions.serializedComponentsReplacer)
+    }
+
+    console.log('payload for save credit for item', payload);
+
+    axios.post('/api/saveCreditForItem.php', payload)
+      .then(resp => {
+        console.log('>>>>saveCreditForItem resp', resp.data);
+
+        if (resp.status === null) {
+          postMessage({
+            messageType: "sendToast",
+            args: {
+              message: `Credit not saved due to error.  Are you connected to the internet?`,
+              toastType: toastType.ERROR
+            }
+          })
+        } else if (!resp.data.success) {
+          postMessage({
+            messageType: "sendToast",
+            args: {
+              message: `Credit not saved due to error: ${resp.data.message}`,
+              toastType: toastType.ERROR
+            }
+          })
+        } else {
+
+          let data = resp.data;
+
+          postMessage({
+            messageType: "updateCreditAchieved",
+            args: data
+          })
+
+          //TODO: need type warning (red but doesn't hang around)
+          if (data.viewedSolution) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since solution was viewed.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.timeExpired) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since the time allowed has expired.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.pastDueDate) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since the due date has passed.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.exceededAttemptsAllowed) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'No credit awarded since no more attempts are allowed.',
+                toastType: toastType.INFO
+              }
+            })
+          }
+          if (data.databaseError) {
+            postMessage({
+              messageType: "sendToast",
+              args: {
+                message: 'Credit not saved due to database error.',
+                toastType: toastType.ERROR
+              }
+            })
+          }
+        }
+      })
+      .catch(e => {
+        postMessage({
+          messageType: "sendToast",
+          args: {
+            message: `Credit not saved due to error: ${e.message}`,
+            toastType: toastType.ERROR
+          }
+        })
+      })
+
+
+
+  }
+
+
   // submitResponseCallBack(results) {
 
   //   // console.log(`submit response callback`)
@@ -9081,54 +9714,54 @@ export default class Core {
 
   // }
 
-  async calculateScoredItemNumberOfContainer(componentName) {
+  async recordSolutionView() {
 
-    let component = this._components[componentName];
-    let ancestorNames = [
-      ...component.ancestors.slice(0, -1).reverse().map(x => x.componentName),
-      componentName
-    ];
-    let scoredComponent;
-    let scoredItemNumber;
-    for (let [index, scored] of (await this.document.stateValues.scoredDescendants).entries()) {
-      for (let ancestorName of ancestorNames) {
-        if (scored.componentName === ancestorName) {
-          scoredComponent = ancestorName;
-          scoredItemNumber = index + 1;
-          break;
+    // TODO: check if student was actually allowed to view solution.
+
+    try {
+      const resp = await axios.post('/api/reportSolutionViewed.php', {
+        doenetId: this.doenetId,
+        itemNumber: this.itemNumber,
+        pageNumber: this.pageNumber,
+        attemptNumber: this.attemptNumber,
+      });
+
+
+      if (resp.status === null) {
+        let message = `Cannot show solution due to error.  Are you connected to the internet?`;
+        postMessage({
+          messageType: "sendToast",
+          args: {
+            message,
+            toastType: toastType.ERROR
+          }
+        })
+        return { allowView: false, message, scoredComponent: this.documentName };
+      } else {
+        let data = resp.data;
+        if (data.success) {
+          return { allowView: true, message: "", scoredComponent: this.documentName };
+        } else {
+
+          let message = `Cannot show solution due to error: ${data.message}`;
+          return { allowView: false, message, scoredComponent: this.documentName };
         }
       }
-      if (scoredComponent !== undefined) {
-        break;
-      }
+    } catch (e) {
+      let message = `Cannot show solution due to error.`;
+
+      postMessage({
+        messageType: "sendToast",
+        args: {
+          message,
+          toastType: toastType.ERROR
+        }
+      });
+
+      return { allowView: false, message, scoredComponent: this.documentName };
+
     }
 
-    // if component wasn't inside a scoredComponent and isn't a scoredComponent itself
-    // then let the scoredComponent be the document itself
-    if (scoredComponent === undefined) {
-      scoredComponent = this.document.componentName;
-      scoredItemNumber = (await this.document.stateValues.scoredDescendants).length;
-    }
-
-    return { scoredItemNumber, scoredComponent };
-  }
-
-  recordSolutionView({ itemNumber, scoredComponent }) {
-    let messageId = nanoid();
-
-    postMessage({ messageType: "recordSolutionView", args: { itemNumber, scoredComponent, messageId } })
-
-    return new Promise((resolve, reject) => {
-      this.resolveRecordSolutionView[messageId] = resolve;
-    })
-  }
-
-  get doenetState() {
-    return this._renderComponents;
-  }
-
-  set doenetState(value) {
-    return null;
   }
 
   get scoredItemWeights() {
@@ -9137,58 +9770,19 @@ export default class Core {
     ))();
   }
 
-  requestAnimationFrame(animationFunction, delay) {
-    if (!this.preventMoreAnimations) {
-
-      // // create new animationID
-      // let animationID = ++this.lastAnimationID;
-
-      // if (delay) {
-      //   // set a time out to call actual request animation frame after a delay
-      //   let timeoutID = window.setTimeout(
-      //     x => this._requestAnimationFrame(animationFunction, animationID),
-      //     delay);
-      //   this.animationIDs[animationID] = { timeoutID: timeoutID };
-      //   return animationID;
-      // } else {
-      //   // call actual request animation frame right away
-      //   this.animationIDs[animationID] = {};
-      //   return this._requestAnimationFrame(animationFunction, animationID);
-      // }
-    }
+  requestAnimationFrame(args) {
+    postMessage({
+      messageType: "requestAnimationFrame",
+      args
+    });
   }
 
-  _requestAnimationFrame(animationFunction, animationID) {
-    // let animationFrameID = window.requestAnimationFrame(animationFunction);
-    // let animationIDObj = this.animationIDs[animationID];
-    // delete animationIDObj.timeoutID;
-    // animationIDObj.animationFrameID = animationFrameID;
-    // return animationID;
+  cancelAnimationFrame(args) {
+    postMessage({
+      messageType: "cancelAnimationFrame",
+      args
+    });
   }
-
-
-  async cancelAnimationFrame(animationID) {
-    // let animationIDObj = this.animationIDs[animationID];
-    // let timeoutID = animationIDObj.timeoutID;
-    // if (timeoutID !== undefined) {
-    //   window.clearTimeout(timeoutID);
-    // }
-    // let animationFrameID = animationIDObj.animationFrameID;
-    // if (animationFrameID !== undefined) {
-    //   window.cancelAnimationFrame(animationFrameID);
-    // }
-    // delete this.animationIDs[animationID];
-
-  }
-
-  componentWillUnmount() {
-    this.preventMoreAnimations = true;
-    for (let id in this.animationIDs) {
-      this.coreFunctions.cancelAnimationFrame(id);
-    }
-    this.animationIDs = {};
-  }
-
 }
 
 

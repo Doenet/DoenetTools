@@ -5,8 +5,8 @@ export default class MathOperator extends MathComponent {
   static componentType = "_mathOperator";
   static rendererType = "math";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.forceSymbolic = {
       createComponentOfType: "boolean",
       createStateVariable: "forceSymbolic",

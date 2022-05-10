@@ -17,14 +17,16 @@ $device = $jwtArray['deviceName'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
-$contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
+$activityCid =  mysqli_real_escape_string($conn,$_POST["activityCid"]);
+$pageCid =  mysqli_real_escape_string($conn,$_POST["pageCid"]);
+$pageNumber =  mysqli_real_escape_string($conn,$_POST["pageNumber"]);
 $attemptNumber =  mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $verb =  mysqli_real_escape_string($conn,$_POST["verb"]);
 $object =  mysqli_real_escape_string($conn,$_POST["object"]);
 $result =  mysqli_real_escape_string($conn,$_POST["result"]);
 $context =  mysqli_real_escape_string($conn,$_POST["context"]);
 $version =  mysqli_real_escape_string($conn,$_POST["version"]);
-$variant =  mysqli_real_escape_string($conn,$_POST["variant"]);
+$variantIndex =  mysqli_real_escape_string($conn,$_POST["variantIndex"]);
 $timestamp =  mysqli_real_escape_string($conn,$_POST["timestamp"]);
 
 $success = TRUE;
@@ -33,9 +35,6 @@ $message = "";
 if ($doenetId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing doenetId';
-}elseif ($contentId == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing contentId';
 }elseif ($attemptNumber == ""){
   $success = FALSE;
   $message = 'Internal Error: missing attemptNumber';
@@ -54,9 +53,9 @@ if ($doenetId == ""){
 }elseif ($version == ""){
   $success = FALSE;
   $message = 'Internal Error: missing version';
-}elseif ($variant == ""){
+}elseif ($variantIndex == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing variant';
+  $message = 'Internal Error: missing variantIndex';
 }elseif ($timestamp == ""){
   $success = FALSE;
   $message = 'Internal Error: missing timestamp';
@@ -77,11 +76,25 @@ if ($doenetId == ""){
 //   $message = "You need to be signed in to create a $type";
 // }
 
+if ($pageCid == ""){
+  $pageCid = 'NULL';
+} else {
+  $pageCid = "'$pageCid'";
+}
+
+if ($activityCid == ""){
+  $activityCid = 'NULL';
+} else {
+  $activityCid = "'$activityCid'";
+}
+
+if ($pageNumber == ""){
+  $pageNumber = 'NULL';
+}
 
 if ($success){
-  $sql = "INSERT INTO event (userId,deviceName,doenetId,contentId,attemptNumber,variant,verb,object,result,context,version,timestamp,timestored)
-  VALUES ('$userId','$device','$doenetId','$contentId','$attemptNumber','$variant','$verb','$object','$result','$context','$version','$timestamp',NOW())";
-
+  $sql = "INSERT INTO event (userId,deviceName,doenetId,activityCid,pageCid,pageNumber,attemptNumber,variantIndex,verb,object,result,context,version,timestamp,timestored)
+  VALUES ('$userId','$device','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$variantIndex,'$verb','$object','$result','$context','$version','$timestamp',NOW())";
   $result = $conn->query($sql);
 }
 

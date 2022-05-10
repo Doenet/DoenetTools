@@ -1,4 +1,5 @@
 import me from '../../_snowpack/pkg/math-expressions.js';
+import { convertValueToMathExpression, normalizeMathExpression } from './math.js';
 
 
 export function createFunctionFromDefinition(fDefinition, component = 0) {
@@ -28,9 +29,29 @@ export function createFunctionFromDefinition(fDefinition, component = 0) {
       interpolationPoints: fDefinition.interpolationPoints,
       domain: fDefinition.domain
     });
+  } else if (fDefinition.functionType === "functionOperator") {
+    return returnFunctionOperatorFunction({
+      componentType: fDefinition.componentType,
+      functionOperatorArguments: fDefinition.functionOperatorArguments,
+      operatorComposesWithOriginal: fDefinition.operatorComposesWithOriginal,
+      originalFDefinition: fDefinition.originalFDefinition,
+      nOutputs: fDefinition.nOutputs,
+      component,
+    })
+  } else if (fDefinition.functionType === "ODESolution") {
+    return returnODESolutionFunction({
+      nDimensions: fDefinition.nDimensions,
+      t0: fDefinition.t0,
+      x0s: fDefinition.x0s,
+      chunkSize: fDefinition.chunkSize,
+      tolerance: fDefinition.tolerance,
+      numericalRHSfDefinitions: fDefinition.numericalRHSfDefinitions,
+      maxIterations: fDefinition.maxIterations,
+      component: fDefinition.component,
+    })
   } else {
-    // otherwise, return the zero function
-    return () => 0;
+    // otherwise, return the NaN function
+    return () => NaN;
   }
 }
 
@@ -110,6 +131,56 @@ export function returnNumericalFunctionFromFormula({ formula, nInputs, variables
   }
 
 }
+
+
+export function returnSymbolicFunctionFromFormula(dependencyValues, arrayKey) {
+
+  let formula = dependencyValues.formula;
+
+  let formulaIsVectorValued = Array.isArray(formula.tree) &&
+    ["tuple", "vector"].includes(formula.tree[0]);
+
+  if (formulaIsVectorValued) {
+    try {
+      formula = formula.get_component(Number(arrayKey));
+    } catch (e) {
+      return x => me.fromAst('\uff3f')
+    }
+  } else if (arrayKey !== "0") {
+    return x => me.fromAst('\uff3f')
+  }
+
+  let simplify = dependencyValues.simplify;
+  let expand = dependencyValues.expand;
+  let formula_transformed = formula.subscripts_to_strings();
+
+  if (dependencyValues.nInputs === 1) {
+    let varString = dependencyValues.variables[0].subscripts_to_strings().tree;
+    return (x) => normalizeMathExpression({
+      value: formula_transformed.substitute({ [varString]: x }).strings_to_subscripts(),
+      simplify,
+      expand
+    })
+  }
+
+  let varStrings = [];
+  for (let i = 0; i < dependencyValues.nInputs; i++) {
+    varStrings.push(dependencyValues.variables[i].subscripts_to_strings().tree)
+  }
+
+  return function (...xs) {
+    let subArgs = {}
+    for (let i = 0; i < dependencyValues.nInputs; i++) {
+      subArgs[varStrings[i]] = xs[i];
+    }
+    return normalizeMathExpression({
+      value: formula_transformed.substitute(subArgs).strings_to_subscripts(),
+      simplify,
+      expand
+    })
+  }
+}
+
 
 export function returnBezierFunctions({ nThroughPoints, numericalThroughPoints,
   splineCoeffs,
@@ -194,7 +265,7 @@ export function returnInterpolatedFunction({ xs, coeffs, interpolationPoints, do
 
   let minx = -Infinity, maxx = Infinity;
   if (domain !== null) {
-    let domain = domain[0];
+    domain = domain[0];
     if (domain !== undefined) {
       try {
         minx = domain[0].evaluate_to_constant();
@@ -250,5 +321,299 @@ export function returnInterpolatedFunction({ xs, coeffs, interpolationPoints, do
     return (((c[3] * x + c[2]) * x + c[1]) * x + c[0]);
 
   }
+
+}
+
+export function returnReturnDerivativesOfInterpolatedFunction({ xs, coeffs, variables }) {
+
+  if (!xs) {
+    return x => NaN
+  }
+
+  let variable1Trans = variables[0].subscripts_to_strings().tree;
+
+  let x0 = xs[0], xL = xs[xs.length - 1];
+
+  return function (derivVariables) {
+
+    let derivVariablesTrans = derivVariables.map(x => x.subscripts_to_strings().tree);
+
+    let order = derivVariablesTrans.length;
+
+    if (order > 3 || !derivVariablesTrans.every(x => x === variable1Trans)
+      || derivVariablesTrans.includes('\uff3f')
+    ) {
+      return x => 0
+    }
+
+    if (order === 0 || xs === null) {
+      return x => NaN
+    }
+
+    return function (x) {
+
+      if (isNaN(x)) {
+        return NaN;
+      }
+
+
+      if (x <= x0) {
+        // Extrapolate
+        x -= x0;
+        let c = coeffs[0];
+        if (order === 1) {
+          return (3 * c[3] * x + 2 * c[2]) * x + c[1];
+        } else if (order === 2) {
+          return 6 * c[3] * x + 2 * c[2];
+        } else {
+          return 6 * c[3]
+        }
+      }
+
+      if (x >= xL) {
+        let i = xs.length - 2;
+        // Extrapolate
+        x -= xs[i];
+        let c = coeffs[i];
+        if (order === 1) {
+          return (3 * c[3] * x + 2 * c[2]) * x + c[1];
+        } else if (order === 2) {
+          return 6 * c[3] * x + 2 * c[2];
+        } else {
+          return 6 * c[3]
+        }
+      }
+
+      // Search for the interval x is in,
+      // returning the corresponding y if x is one of the original xs
+      var low = 0, mid, high = xs.length - 1;
+      while (low <= high) {
+        mid = Math.floor(0.5 * (low + high));
+        let xHere = xs[mid];
+        if (xHere < x) { low = mid + 1; }
+        else if (xHere > x) { high = mid - 1; }
+        else {
+          // at a grid point
+          if (order === 1) {
+            return coeffs[mid][1]
+          } else if (order === 2) {
+            return 2 * coeffs[mid][2];
+          } else {
+            return 6 * coeffs[mid][3];
+          }
+        }
+      }
+      let i = Math.max(0, high);
+
+      // Interpolate
+      x -= xs[i];
+      let c = coeffs[i];
+      if (order === 1) {
+        return (3 * c[3] * x + 2 * c[2]) * x + c[1];
+      } else if (order === 2) {
+        return 6 * c[3] * x + 2 * c[2];
+      } else {
+        return 6 * c[3]
+      }
+    }
+  }
+}
+
+function returnFunctionOperatorFunction({ componentType, functionOperatorArguments,
+  operatorComposesWithOriginal,
+  originalFDefinition, nOutputs, component
+}) {
+
+  // TODO: correctly handle nOutputs > 1
+
+  if (operatorComposesWithOriginal) {
+
+    let childFs = [];
+    for (let ind = 0; ind < nOutputs; ind++) {
+      childFs.push(createFunctionFromDefinition(originalFDefinition, ind));
+    }
+
+    let functionOperator = functionOperatorDefinitions[componentType](...functionOperatorArguments);
+
+    return (...xs) => functionOperator(
+      ...childFs.map(cf => cf(...xs))
+    )
+
+  } else {
+
+    return functionOperatorDefinitions[componentType](...functionOperatorArguments);
+
+
+  }
+}
+
+export var functionOperatorDefinitions = {
+  clampFunction: function (lowerValue, upperValue) {
+    return function (x) {
+      // if don't have a number, return NaN
+      if (!Number.isFinite(x)) {
+        return NaN;
+      }
+      return Math.max(lowerValue,
+        Math.min(upperValue, x)
+      );
+    }
+  },
+
+  wrapFunctionPeriodic: function (lowerValue, upperValue) {
+
+    return function (x) {
+      // if don't have a number, return NaN
+      if (!Number.isFinite(x)) {
+        return NaN;
+      }
+
+      let lower = lowerValue
+      let upper = upperValue;
+
+      // if bounds are the same, clamp to that value
+      if (lower === upper) {
+        return lower;
+      }
+
+      // just in case lower is larger than upper, swap values
+      if (lower > upper) {
+        [upper, lower] = [lower, upper];
+      }
+
+      return (lower + me.math.mod(
+        x - lower,
+        upper - lower
+      )
+      )
+    }
+  },
+
+  derivative: function (derivDefinition, derivVariables) {
+
+    console.log('derivative def', derivDefinition, derivVariables)
+    if (derivDefinition.derivativeType === "interpolatedFunction") {
+      let derivGenerator = returnReturnDerivativesOfInterpolatedFunction({
+        xs: derivDefinition.xs,
+        coeffs: derivDefinition.coeffs,
+        variables: derivDefinition.variables.map(convertValueToMathExpression)
+      });
+
+      let vars = derivVariables.map(convertValueToMathExpression)
+      if (derivDefinition.additionalDerivVariables) {
+        let additionalVars = derivDefinition.additionalDerivVariables.map(convertValueToMathExpression);
+        vars = [...additionalVars, ...vars];
+      }
+      if (derivDefinition.variableMappings) {
+
+        for (let variableMapping of derivDefinition.variableMappings) {
+          let mappedDerivVariables = [];
+
+          for (let dVar of vars) {
+            let mapped = variableMapping[dVar.subscripts_to_strings().tree];
+            if (mapped) {
+              mappedDerivVariables.push(convertValueToMathExpression(mapped))
+            } else {
+              // have a mapping, but 
+              mappedDerivVariables.push(me.fromAst('\uff3f'))
+            }
+          }
+
+          vars = mappedDerivVariables;
+
+        }
+      }
+      let deriv = derivGenerator(vars);
+
+      return deriv;
+
+    } else {
+      return x => NaN;
+    }
+
+  }
+
+}
+
+function returnODESolutionFunction({
+  nDimensions, t0, x0s, chunkSize, tolerance,
+  numericalRHSfDefinitions, maxIterations, component
+}) {
+
+  var workspace = {};
+
+  workspace.calculatedNumericSolutions = [];
+  workspace.endingNumericalValues = [];
+  workspace.maxPossibleTime = undefined;
+
+
+  let numericalRHSfcomponents = numericalRHSfDefinitions.map(x => createFunctionFromDefinition(x));
+
+  let numericalRHSf = function (t, x) {
+    let fargs = [t];
+    if (Array.isArray(x)) {
+      fargs.push(...x)
+    } else {
+      fargs.push(x)
+    }
+    try {
+      return numericalRHSfcomponents.map(f => f(...fargs));
+    } catch (e) {
+      return NaN;
+    }
+  }
+
+  return function f(t) {
+    if (!Number.isFinite(t)) {
+      return NaN;
+    }
+    if (t === t0) {
+      return x0s[component];
+    }
+
+    let nChunksCalculated = workspace.calculatedNumericSolutions.length;
+    let chunk = Math.ceil((t - t0) / chunkSize) - 1;
+    if (chunk < 0) {
+      // console.log("Haven't yet implemented integrating ODE backward")
+      return NaN;
+    }
+    if (workspace.maxPossibleTime === undefined && chunk >= nChunksCalculated) {
+      for (let tind = nChunksCalculated; tind <= chunk; tind++) {
+        let x0 = workspace.endingNumericalValues[tind - 1];
+        if (x0 === undefined) {
+          x0 = x0s;
+        }
+        let t0shifted = t0 + tind * chunkSize;
+        let result = me.math.dopri(
+          t0shifted,
+          t0shifted + chunkSize,
+          x0,
+          numericalRHSf,
+          tolerance,
+          maxIterations,
+        )
+
+        workspace.endingNumericalValues.push(result.y[result.y.length - 1]);
+        workspace.calculatedNumericSolutions.push(result.at.bind(result));
+
+        let endingTime = result.x[result.x.length - 1];
+        if (endingTime < (t0shifted + chunkSize) * (1 - 1e-6)) {
+          workspace.maxPossibleTime = endingTime;
+          break;
+        }
+      }
+    }
+
+    if (t > workspace.maxPossibleTime) {
+      return NaN;
+    }
+
+    let value = workspace.calculatedNumericSolutions[chunk](t)[component];
+
+    return value;
+
+  }
+
+
 
 }

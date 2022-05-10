@@ -1,9 +1,8 @@
-import { r as react } from '../common/index-f66788ca.js';
-import { r as reactDom } from '../common/index-89dd978b.js';
-import { _ as _register, T as TextCellType, B as BaseEditor, C as Core, r as rootInstanceSymbol, m as metaSchemaFactory, H as Hooks, d as dictionaryKeys, g as getLanguageDictionary, a as getLanguagesDictionaries, b as registerLanguageDictionary, c as getTranslatedPhrase } from '../common/textType-e03f1ae5.js';
+import { r as react } from '../common/index-61623f21.js';
+import { r as reactDom } from '../common/index-eaf9e997.js';
+import { _ as _register, T as TextCellType, B as BaseEditor, C as Core, r as rootInstanceSymbol, m as metaSchemaFactory, H as Hooks, d as dictionaryKeys, g as getLanguageDictionary, a as getLanguagesDictionaries, b as registerLanguageDictionary, c as getTranslatedPhrase } from '../common/textType-cb5524ba.js';
 import '../common/_commonjsHelpers-f5d70792.js';
-import '../common/es.string.starts-with-d5b5fac4.js';
-import '../common/moment-613ac161.js';
+import '../common/es.string.starts-with-56da2ce2.js';
 
 _register(TextCellType);
 Handsontable.editors = {

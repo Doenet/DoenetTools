@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { animated, useSpring } from '@react-spring/web';
-import { useGesture } from 'react-use-gesture';
+import { useGesture } from '@use-gesture/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faGripLinesVertical,

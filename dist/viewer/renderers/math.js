@@ -1,14 +1,8 @@
 import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 export default function Math(props) {
   let {name, SVs, actions, sourceOfUpdate} = useDoenetRender(props);
-  useEffect(() => {
-    if (window.MathJax) {
-      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  });
   if (SVs.hidden) {
     return null;
   }
@@ -29,6 +23,9 @@ export default function Math(props) {
     beginDelim = "\\(";
     endDelim = "\\)";
   }
+  if (!SVs.latexWithInputChildren) {
+    return null;
+  }
   let latexOrInputChildren = SVs.latexWithInputChildren.map((x) => typeof x === "number" ? this.children[x] : beginDelim + x + endDelim);
   let anchors = [
     React.createElement("a", {name, key: name})
@@ -43,14 +40,26 @@ export default function Math(props) {
   } else if (latexOrInputChildren.length === 1) {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, anchors, /* @__PURE__ */ React.createElement("span", {
       id: name
-    }, latexOrInputChildren[0]));
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      hideUntilTypeset: "first",
+      inline: true,
+      dynamic: true
+    }, latexOrInputChildren[0])));
   } else if (latexOrInputChildren.length === 2) {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, anchors, /* @__PURE__ */ React.createElement("span", {
       id: name
-    }, latexOrInputChildren[0], latexOrInputChildren[1]));
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      hideUntilTypeset: "first",
+      inline: true,
+      dynamic: true
+    }, latexOrInputChildren[0], latexOrInputChildren[1])));
   } else {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, anchors, /* @__PURE__ */ React.createElement("span", {
       id: name
-    }, latexOrInputChildren[0]));
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      hideUntilTypeset: "first",
+      inline: true,
+      dynamic: true
+    }, latexOrInputChildren[0])));
   }
 }

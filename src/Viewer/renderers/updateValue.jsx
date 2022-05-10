@@ -10,18 +10,21 @@ export default function UpdateValue(props) {
     return null;
   }
 
-  return <span id={name}><a name={name} />
-  <Button
-  id={name + "_button"} 
-  onClick={()=>callAction({ action:actions.updateValue })} 
-  disabled={SVs.disabled}
-  value={SVs.label}
-  />
-    {/* <button 
-    id={name + "_button"} 
-    onClick={()=>callAction({ action:actions.updateValue })} 
-    disabled={SVs.disabled}
-    >{SVs.label}
-    </button> */}
-    </span>;
+  return (
+    <div id={name} margin="12px 0">
+      <a name={name} />
+      <Button
+        id={name + "_button"} 
+        onClick={()=>callAction({ action:actions.updateValue })} 
+        disabled={SVs.disabled}
+        value={SVs.label}
+      />
+      {/* <button 
+      id={name + "_button"} 
+      onClick={()=>callAction({ action:actions.updateValue })} 
+      disabled={SVs.disabled}
+      >{SVs.label}
+      </button> */}
+    </div>
+  )
 }

@@ -56,18 +56,61 @@ export const itemHistoryAtom = atomFamily({
   })
 })
 
-export const fileByContentId = atomFamily({
-  key:"fileByContentId",
+export const fileByCid = atomFamily({
+  key:"fileByCid",
   default: selectorFamily({
-    key:"fileByContentId/Default",
-    get:(contentId)=> async ()=>{
-      if (!contentId){
+    key:"fileByCid/Default",
+    get:(cid)=> async ()=>{
+      if (!cid){
         return "";
       }
-      // const local = localStorage.getItem(contentId);
+      // const local = localStorage.getItem(cid);
       // if (local){ return local}
       try {
-        const server = await axios.get(`/media/${contentId}.doenet`); 
+        const server = await axios.get(`/media/${cid}.doenet`); 
+        return server.data;
+      } catch (error) {
+        //TODO: Handle 404
+        // Error 😨
+        if (error.response) {
+          /*
+          * The request was made and the server responded with a
+          * status code that falls out of the range of 2xx
+          */
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+            /*
+            * The request was made but no response was received, `error.request`
+            * is an instance of XMLHttpRequest in the browser and an instance
+            * of http.ClientRequest in Node.js
+            */
+            console.log(error.request);
+        } else {
+            // Something happened in setting up the request and triggered an Error
+            console.log('Error', error.message);
+        }
+              return "Error Loading";
+        }
+    }
+  })
+  
+})
+
+
+export const fileByDoenetId = atomFamily({
+  key:"fileByDoenetId",
+  default: selectorFamily({
+    key:"fileByDoenetId/Default",
+    get:(doenetId)=> async ()=>{
+      if (!doenetId){
+        return "";
+      }
+      // const local = localStorage.getItem(doenetId);
+      // if (local){ return local}
+      try {
+        const server = await axios.get(`/media/bydoenetid/${doenetId}.doenet`); 
         return server.data;
       } catch (error) {
         //TODO: Handle 404
@@ -143,14 +186,19 @@ export let assignmentDictionarySelector = selectorFamily({
     },
 });
 
-export const variantInfoAtom = atom({
-  key:"variantInfoAtom",
-  default:{index:null,name:null,lastUpdatedIndexOrName:null,requestedVariant:{index:1}}
+export const pageVariantInfoAtom = atom({
+  key:"pageVariantInfoAtom",
+  default:{index:1}
 })
 
-export const variantPanelAtom = atom({
-  key:"variantPanelAtom",
-  default:{index:null,name:null}
+export const pageVariantPanelAtom = atom({
+  key:"pageVariantPanelAtom",
+  default:{index:1, allPossibleVariants: [], variantIndicesToIgnore: []}
+})
+
+export const activityVariantPanelAtom = atom({
+  key:"activityVariantPanelAtom",
+  default:{index:1, numberOfVariants: 0}
 })
 
 export function buildTimestamp(){
@@ -168,14 +216,14 @@ export function ClipboardLinkButtons(props){
   const addToast = useToast();
   let link = `http://localhost/#/content?doenetId=${props.doenetId}`
 
-  if (props.contentId){
-    link = `http://localhost/#/content?contentId=${props.contentId}`
+  if (props.cid){
+    link = `http://localhost/#/content?cid=${props.cid}`
   }
 
 
   let linkData = []
-  if(props.contentId) {
-    linkData.push(`contentId=${props.contentId}`);
+  if(props.cid) {
+    linkData.push(`cid=${props.cid}`);
   }
   if(props.doenetId) {
     linkData.push(`doenetId=${props.doenetId}`);
@@ -183,13 +231,13 @@ export function ClipboardLinkButtons(props){
   let embedLink = `<copy uri="doenet:${linkData.join('&')}" />`
 
 
-  // if (!props.contentId){
-  //   console.error("Component only handles contentId at this point")
+  // if (!props.cid){
+  //   console.error("Component only handles cid at this point")
   //   return null;
   // }
   
 
-  // const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
+  // const link = `http://${window.location.host}/content/#/?cid=${props.cid}`
   return <div> 
     <ButtonGroup>
   <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>

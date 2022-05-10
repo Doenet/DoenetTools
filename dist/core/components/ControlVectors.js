@@ -3,8 +3,8 @@ import VectorListComponent from './abstract/VectorListComponent.js';
 export default class ControlVectors extends VectorListComponent {
   static componentType = "controlVectors";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.direction = {
       createComponentOfType: "text",

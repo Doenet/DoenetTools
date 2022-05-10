@@ -1,26 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter as Router } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
 import ToolRoot from '../_framework/NewToolRoot';
+import { MathJaxContext } from 'better-react-mathjax';
+import { mathjaxConfig } from '../../Core/utils/math';
 
-export default function Root() {
-  return (
-    // <html dark={darkModeToggle === true ? 'true' : null}>
-    <RecoilRoot>
-      <Router>
-        <ToolRoot />
-      </Router>
-    </RecoilRoot>
-    // </html>
-  );
-}
-
-ReactDOM.render(<Root />, document.getElementById('root'));
-
-// Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
-// Learn more: https://www.snowpack.dev/concepts/hot-module-replacement
-if (import.meta.hot) {
-  import.meta.hot.accept();
-}
+ReactDOM.render(
+  <RecoilRoot>
+    <Router>
+      <Routes>
+        <Route
+          path="*"
+          element={
+            <MathJaxContext
+              version={2}
+              config={mathjaxConfig}
+              onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+            >
+              <ToolRoot />
+            </MathJaxContext>
+          }
+        />
+      </Routes>
+    </Router>
+  </RecoilRoot>,
+  document.getElementById('root'),
+);

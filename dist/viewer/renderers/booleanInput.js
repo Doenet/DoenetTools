@@ -2,10 +2,13 @@ import React, {useRef, useState} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {rendererState} from "./useDoenetRenderer.js";
+import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 export default function BooleanInput(props) {
-  let {name, SVs, actions, ignoreUpdate, callAction} = useDoenetRender(props);
+  let {name, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   BooleanInput.baseStateVariable = "value";
   const [rendererValue, setRendererValue] = useState(SVs.value);
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
   let valueWhenSetState = useRef(null);
   if (!ignoreUpdate && valueWhenSetState.current !== SVs.value) {
     setRendererValue(SVs.value);
@@ -27,6 +30,11 @@ export default function BooleanInput(props) {
     let newValue = e.target.checked;
     setRendererValue(newValue);
     valueWhenSetState.current = SVs.value;
+    setRendererState((was) => {
+      let newObj = {...was};
+      newObj.ignoreUpdate = true;
+      return newObj;
+    });
     callAction({
       action: actions.updateBoolean,
       args: {

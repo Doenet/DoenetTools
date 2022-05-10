@@ -14,8 +14,8 @@ export default class Answer extends InlineComponent {
   static variableForPlainMacro = "submittedResponses";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.weight = {
       createComponentOfType: "number",
       createStateVariable: "weight",
@@ -117,9 +117,8 @@ export default class Answer extends InlineComponent {
     };
     attributes.showCorrectness = {
       createComponentOfType: "boolean",
-      createStateVariable: "showCorrectness",
-      defaultValue: args.flags ? args.flags.showCorrectness !== false : true,
-      forRenderer: true,
+      createStateVariable: "showCorrectnessPreliminary",
+      defaultValue: null,
     }
     attributes.type = {
       createPrimitiveOfType: "string"
@@ -288,6 +287,29 @@ export default class Answer extends InlineComponent {
       oldName: "disabled",
       newName: "disabledOriginal"
     });
+
+    stateVariableDefinitions.showCorrectness = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        showCorrectnessPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "showCorrectnessPreliminary"
+        },
+        showCorrectnessFlag: {
+          dependencyType: "flag",
+          flagName: "showCorrectness"
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        let showCorrectness;
+        if (!usedDefault.showCorrectnessPreliminary) {
+          showCorrectness = dependencyValues.showCorrectnessPreliminary
+        } else {
+          showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+        }
+        return { setValue: { showCorrectness } }
+      }
+    }
 
     stateVariableDefinitions.haveAwardThatRequiresInput = {
       returnDependencies: () => ({
@@ -1102,7 +1124,7 @@ export default class Answer extends InlineComponent {
         }
 
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, justUpdatedForNewComponent, componentName }) {
 
         if (dependencyValues.disableAfterCorrect && dependencyValues.hasBeenCorrect) {
           return {
@@ -1113,8 +1135,7 @@ export default class Answer extends InlineComponent {
         let foundChange = dependencyValues.creditAchievedDependenciesAtSubmit
           !== dependencyValues.currentCreditAchievedDependencies;
 
-
-        if (foundChange) {
+        if (foundChange && !justUpdatedForNewComponent) {
           return {
             setValue: { justSubmitted: false },
             setEssentialValue: { justSubmitted: false },
@@ -1368,7 +1389,7 @@ export default class Answer extends InlineComponent {
   };
 
 
-  async submitAnswer() {
+  async submitAnswer({ actionId }) {
 
     let numberOfAttemptsLeft = await this.stateValues.numberOfAttemptsLeft;
     if (numberOfAttemptsLeft < 1) {
@@ -1465,21 +1486,15 @@ export default class Answer extends InlineComponent {
         updateType: "updateValue",
         componentName: child.componentName,
         stateVariable: "creditAchieved",
-        value: child.stateValues.creditAchievedIfSubmit 
+        value: child.stateValues.creditAchievedIfSubmit
       });
       instructions.push({
         updateType: "updateValue",
         componentName: child.componentName,
         stateVariable: "fractionSatisfied",
-        value: child.stateValues.fractionSatisfiedIfSubmit 
+        value: child.stateValues.fractionSatisfiedIfSubmit
       });
     }
-
-
-    instructions.push({
-      updateType: "recordItemSubmission",
-      itemNumber: await this.stateValues.inItemNumber
-    })
 
 
     let responseText = [];
@@ -1491,11 +1506,21 @@ export default class Answer extends InlineComponent {
       }
     }
 
+    instructions.push({
+      updateType: "recordItemSubmission",
+      itemNumber: await this.stateValues.inItemNumber,
+      submittedComponent: this.componentName,
+      response: currentResponses,
+      responseText,
+      creditAchieved,
+    })
+
     // console.log(`submit instructions`)
     // console.log(instructions);
 
     await this.coreFunctions.performUpdate({
       updateInstructions: instructions,
+      actionId,
       event: {
         verb: "submitted",
         object: {

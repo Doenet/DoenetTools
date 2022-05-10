@@ -9,12 +9,11 @@ export default class RenderDoenetML extends CompositeComponent {
   static assignNamesToReplacements = true;
 
   static createsVariants = true;
-  static alwaysSetUpVariant = true;
 
   static stateVariableToEvaluateAfterReplacements = "triggerUpdates";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
@@ -70,14 +69,14 @@ export default class RenderDoenetML extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.codeSourceComponentName){
-          return { setValue: { codeSource: dependencyValues.codeSourceComponentName } }; 
-        }else if(dependencyValues.parentCodeSource){
-          return { setValue: { codeSource: dependencyValues.parentCodeSource } }; 
-        }else{
-          return { setValue: { codeSource: null } }; 
+        if (dependencyValues.codeSourceComponentName) {
+          return { setValue: { codeSource: dependencyValues.codeSourceComponentName } };
+        } else if (dependencyValues.parentCodeSource) {
+          return { setValue: { codeSource: dependencyValues.parentCodeSource } };
+        } else {
+          return { setValue: { codeSource: null } };
         }
-     
+
       },
     }
 
@@ -128,14 +127,14 @@ export default class RenderDoenetML extends CompositeComponent {
       definition() {
         return { useEssentialOrDefaultValue: { triggerUpdates: {} } };
       },
-      inverseDefinition({desiredStateVariableValues}) {
+      inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
             setEssentialValue: "triggerUpdates",
             value: desiredStateVariableValues.triggerUpdates,
           }]
-         };
+        };
       }
     };
 
@@ -154,7 +153,7 @@ export default class RenderDoenetML extends CompositeComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
           variableNames: [
             "isVariantComponent",
             "generatedVariantInfo",
@@ -163,7 +162,7 @@ export default class RenderDoenetML extends CompositeComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMatchedComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         },
       }),
       definition({ dependencyValues, componentName }) {
@@ -210,7 +209,7 @@ export default class RenderDoenetML extends CompositeComponent {
 
     try {
       let expandResult = await serializeFunctions.expandDoenetMLsToFullSerializedComponents({
-        CIDs: [], doenetMLs: [doenetML],
+        cids: [], doenetMLs: [doenetML],
         componentInfoObjects,
         flags,
       });
@@ -297,16 +296,17 @@ export default class RenderDoenetML extends CompositeComponent {
 
   }
 
-  async updateComponents(){
+  async updateComponents({ actionId }) {
     let updateInstructions = [{
       updateType: "updateValue",
       componentName: this.componentName,
-      stateVariable:"triggerUpdates",
+      stateVariable: "triggerUpdates",
       value: true,
     }];
 
     await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       // event: {
       //   verb: "selected",
       //   object: {
