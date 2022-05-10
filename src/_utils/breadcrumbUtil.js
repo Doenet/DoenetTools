@@ -147,7 +147,7 @@ export function useNavigationCrumbs(courseId, parentDoenetId) {
   return crumbs;
 }
 
-export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
+export function useEditorCrumb({ pageId, doenetId }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const pageObj = useRecoilValue(authorItemByDoenetId(pageId));
   let {label:pageLabel} = pageObj;
@@ -162,8 +162,6 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
         tool: 'editor',
         view: '',
         params: {
-          courseId,
-          sectionId,
           doenetId,
           pageId,
         },
@@ -182,8 +180,6 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
           tool: 'editor',
           view: '',
           params: {
-            courseId,
-            sectionId,
             doenetId,
             pageId:firstPageDoenetId,
           },
@@ -198,8 +194,6 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
           tool: 'editor',
           view: '',
           params: {
-            courseId,
-            sectionId,
             doenetId,
             pageId,
           },
