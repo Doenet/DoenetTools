@@ -51,25 +51,7 @@ export default function SelectedBank() {
 
 
   if (effectiveRole === 'student') {
-    return (
-      <>
-        {heading}
-        <ActionButton
-          width="menu"
-          value="Take Assignment"
-          onClick={() => {
-            setPageToolView({
-              page: 'course',
-              tool: 'assignment',
-              view: '',
-              params: {
-                doenetId,
-              },
-            });
-          }}
-        />
-      </>
-    );
+    return null;
   }
   
   return <>

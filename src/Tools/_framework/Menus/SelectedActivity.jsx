@@ -79,6 +79,7 @@ export default function SelectedActivity() {
     label: recoilLabel,
     order,
     assignedCid,
+    isAssigned,
     parentDoenetId
   } = useRecoilValue(authorItemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
@@ -87,12 +88,11 @@ export default function SelectedActivity() {
     create,
     compileActivity,
     deleteItem,
+    updateAssignItem
   } = useCourse(courseId);
 
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(recoilLabel);
   const addToast = useToast();
-
-
 
   useEffect(() => {
     setItemTextFieldLabel(recoilLabel);
@@ -135,7 +135,7 @@ export default function SelectedActivity() {
         {heading}
         <ActionButton
           width="menu"
-          value="Take Assignment"
+          value="View Activity"
           onClick={() => {
             setPageToolView({
               page: 'course',
@@ -153,7 +153,8 @@ export default function SelectedActivity() {
   }
 
   let assignActivityText = 'Assign Activity';
-  if (assignedCid != null) {
+  if (isAssigned) {
+    // if (assignedCid != null) {
     assignActivityText = 'Update Assigned Activity';
   }
 
@@ -221,6 +222,7 @@ export default function SelectedActivity() {
         />
       </ActionButtonGroup>
       <br />
+      <ActionButtonGroup vertical>
 
       <ActionButton
         width="menu"
@@ -230,12 +232,37 @@ export default function SelectedActivity() {
             activityDoenetId: doenetId,
             isAssigned: true,
             courseId,
-            successCallback: () => {
-              addToast('Activity Assigned.', toastType.INFO);
-            },
+            // successCallback: () => {
+            //   addToast('Activity Assigned.', toastType.INFO);
+            // },
           });
+          updateAssignItem({
+            doenetId,
+            isAssigned:true,
+            successCallback: () => {
+              addToast("Activity Assigned", toastType.INFO);
+            },
+          })
         }}
       />
+      {isAssigned ? 
+      <ActionButton
+        width="menu"
+        value="Unassign Activity"
+        alert
+        onClick={() => {
+          updateAssignItem({
+            doenetId,
+            isAssigned:false,
+            successCallback: () => {
+              addToast("Activity Unassigned", toastType.INFO);
+            },
+          })
+        
+        }}
+      />
+      : null}
+      </ActionButtonGroup>
      
   
       <Textfield

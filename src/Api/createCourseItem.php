@@ -74,6 +74,7 @@ if ($success){
   $label = 'Untitled';
 
   $jsonDefinition = null;
+  $isAssigned = 0;
 
   if ($previousContainingDoenetId == $courseId) {
     $sql = "SELECT sortOrder FROM `course_content` WHERE courseId = '$courseId' ORDER BY sortOrder DESC LIMIT 1";
@@ -100,6 +101,7 @@ if ($success){
 //Defaults for each item type
 if ($itemType == 'section'){
   $jsonDefinition = '{"isIncludedInStudentNavigation":true}';
+  $isAssigned = 1;
 }else if($itemType == 'activity'){
   $pageDoenetId = include "randomId.php";
   $pageDoenetId = "_" . $pageDoenetId;
@@ -252,10 +254,11 @@ if ($success){
     parentDoenetId,
     label,
     creationDate,
+    isAssigned,
     sortOrder,
     jsonDefinition)
     VALUES
-    ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',NOW(),'$sortOrder','$jsonDefinition')
+    ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',NOW(),'$isAssigned','$sortOrder','$jsonDefinition')
     ";
     
     $result = $conn->query($sql); 
