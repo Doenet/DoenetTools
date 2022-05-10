@@ -11,6 +11,8 @@ import {
   faChevronLeft,
   faCog,
   faHome,
+  faSun,
+  faMoon,
 } from '@fortawesome/free-solid-svg-icons';
 import Logo from '../Logo';
 import { pageToolViewAtom } from '../NewToolRoot';
@@ -33,7 +35,7 @@ const MenuPanelsWrapper = styled.div`
   flex-direction: column;
   // overflow: auto;
   justify-content: flex-start;
-  background: #e3e3e3;
+  background: var(--mainGray);
   height: 100%;
   overflow-x: hidden;
   width: ${({ hide }) => (hide ? '0px' : '240px')};
@@ -42,12 +44,13 @@ const MenuPanelsWrapper = styled.div`
 const MenuPanelsCap = styled.div`
   width: 240px;
   height: 35px;
-  background: white;
+  color:var(--canvastext);
+  background: var(--canvas);
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: ${(props) => (props.fix ? 'static' : 'sticky')};
-  border-bottom: 2px solid #e2e2e2;
+  border-bottom: 2px solid var(--mainGray);
   margin-bottom: -2px;
   top: 0;
   z-index: 2;
@@ -86,10 +89,11 @@ const Branding = styled.div`
 
 const MenuPanelsCapComponent = styled.div`
   width: 240px;
-  background: white;
-  border-top: 1px solid #e2e2e2;
-  border-top: 1px solid #e2e2e2;
-  border-bottom: 2px solid #e2e2e2;
+  color: var(--canvastext);
+  background: var(--canvas);
+  border-top: 1px solid var(--mainGray);
+  border-top: 1px solid var(--mainGray);
+  border-bottom: 2px solid var(--mainGray);
   margin-bottom: -2px;
   position: sticky;
   top: 35;
@@ -99,17 +103,17 @@ const MenuPanelsCapComponent = styled.div`
 const MenuHeaderButton = styled.button`
   border: none;
   border-top: ${({ linkedPanel, activePanel }) =>
-    linkedPanel === activePanel ? '8px solid #1A5A99' : 'none'};
-  background-color: hsl(0, 0%, 100%);
+    linkedPanel === activePanel ? '8px solid var(--mainBlue)' : 'none'};
+  background-color: var(--canvas);
   border-bottom: 2px solid
     ${({ linkedPanel, activePanel }) =>
-      linkedPanel === activePanel ? '#white' : 'black'};
+      linkedPanel === activePanel ? 'var(--canvas)' : 'var(--canvastext)'};
   width: 100%;
   height: 100%;
 `;
 
 const CloseButton = styled.button`
-  background-color: #1a5a99;
+  background-color: var(--mainBlue);
   height: 35px;
   width: 20px;
   color: white;
@@ -122,11 +126,11 @@ const CloseButton = styled.button`
 `;
 
 const EditMenuPanels = styled.button`
-  background-color: #1a5a99;
+  background-color: var(--mainBlue);
   height: 35px;
   width: 35px;
   border: none;
-  color: white;
+  color: var(--canvas);
   border-radius: 17.5px;
   font-size: 24px;
 `;
@@ -134,28 +138,29 @@ const EditMenuPanels = styled.button`
 const MenuPanelTitle = styled.button`
   width: 240px;
   height: 35px;
-  background: white;
+  color:var(--canvastext);
+  background: var(--canvas);
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 0px solid white;
-  // border-top: 1px solid black;
+  border: 0px solid var(--canvas);
+  // border-top: 1px solid var(--canvastext);
   border-bottom: ${(props) =>
-    props.isOpen ? '2px solid black' : '0px solid black'};
+    props.isOpen ? '2px solid var(--canvastext)' : '0px solid var(--canvastext)'};
   margin-top: 2px;
 `;
 
 const SettingsButton = styled.button`
-  background-color: white;
-  color: black;
+  background-color: var(--canvas);
+  color: var(--canvastext);
   border: none;
   cursor: pointer;
   font-size: 20px;
 `;
 
 const HomeButton = styled.button`
-  color: black;
-  background-color: white;
+  color: var(--canvastext);
+  background-color: var(--canvas);
   border-style: none;
   cursor: pointer;
   font-size: 20px;
@@ -173,8 +178,8 @@ function SelectionMenu(props) {
           paddingLeft: '4px',
           paddingRight: '4px',
           // backgroundColor:"hsl(209,54%,90%)"
-          backgroundColor: 'white',
-          borderLeft: '8px solid #1A5A99',
+          backgroundColor: 'var(--canvas)',
+          borderLeft: '8px solid var(--mainBlue)',
         }}
       >
         {/* <h3 style={{textAlign: "center", width: "240px", height: "35px",
@@ -209,7 +214,7 @@ function Menu(props) {
           paddingBottom: '4px',
           paddingLeft: '4px',
           paddingRight: '4px',
-          backgroundColor: 'white',
+          backgroundColor: 'var(--canvas)',
         }}
       >
         {props.children}
@@ -219,7 +224,7 @@ function Menu(props) {
 }
 
 const LoadingFallback = styled.div`
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
   border-radius: 4px;
   display: flex;
   justify-content: center;
@@ -364,6 +369,8 @@ export default function MenuPanel({
           <Checkbox
             checked={darkModeToggle}
             onClick={(e) => setDarkModeToggle(!darkModeToggle)}
+            checkedIcon={<FontAwesomeIcon icon={faSun} />}
+            uncheckedIcon={<FontAwesomeIcon icon={faMoon} />}
           />
 
           <SettingsButton
