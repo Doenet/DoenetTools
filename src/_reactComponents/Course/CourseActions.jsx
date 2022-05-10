@@ -261,7 +261,7 @@ export function useInitCourseItems(courseId) {
           });
           //DoenetIds depth first search and going into json structures
           //TODO: organize by section
-          
+          // console.log("data",data)
           let pageDoenetIdToParentDoenetId = {};
           let doenetIds = data.items.reduce((items,item)=>{
             if (item.type !== 'page'){
@@ -1191,6 +1191,31 @@ export const useCourse = (courseId) => {
   },
 [courseId, defaultFailure],
 );
+
+const updateAssignItem = useRecoilCallback(
+  ({ set }) =>
+    async ({ doenetId, isAssigned, successCallback, failureCallback = defaultFailure }) => {
+      try {
+
+      let resp = await axios.get('/api/updateIsAssignedOnAnItem.php', {params:{ courseId,doenetId,isAssigned } });
+      // console.log("resp.data",resp.data)
+      if (resp.status < 300) {
+        // let isAssigned = resp.data.isAssigned;
+
+        set(authorItemByDoenetId(doenetId),(prev)=>{
+          let next = {...prev}
+          next.isAssigned = isAssigned;
+          return next
+        });
+        
+        successCallback?.();
+      } else {
+        throw new Error(`response code: ${resp.status}`);
+      }
+      } catch (err) {
+      failureCallback(err);
+      }
+    },[courseId,defaultFailure]);
 
   const compileActivity = useRecoilCallback(
     ({ set, snapshot }) =>
@@ -2126,6 +2151,7 @@ export const useCourse = (courseId) => {
     image, 
     renameItem, 
     compileActivity, 
+    updateAssignItem,
     updateOrderBehavior, 
     copyItems, 
     cutItems,

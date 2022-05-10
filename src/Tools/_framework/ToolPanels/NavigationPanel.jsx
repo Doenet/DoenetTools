@@ -80,7 +80,7 @@ export default function NavigationPanel() {
         break;
       case 'student':
         // setColumnTypes(['Due Date']);
-        setSuppressMenus(['AddDriveItems']);
+        setSuppressMenus(['AddDriveItems','CutCopyPasteMenu']);
         break;
       default:
     }
