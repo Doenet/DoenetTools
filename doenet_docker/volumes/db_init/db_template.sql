@@ -291,7 +291,6 @@ CREATE TABLE `course_content` (
   `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `cid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `parentDoenetId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled',
   `creationDate` timestamp NULL DEFAULT NULL,
@@ -887,38 +886,6 @@ LOCK TABLES `user_assignment_attempt_item` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `user_assignment_attempt_item_submission`
---
-
-DROP TABLE IF EXISTS `user_assignment_attempt_item_submission`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_assignment_attempt_item_submission` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
-  `attemptNumber` int(11) NOT NULL,
-  `itemNumber` int(11) NOT NULL,
-  `submissionNumber` int(11) NOT NULL,
-  `componentsSubmitted` mediumtext COLLATE utf8_unicode_ci COMMENT 'JSON of information about the answer component(s) submitted',
-  `credit` float DEFAULT NULL,
-  `submittedDate` datetime NOT NULL,
-  `valid` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Past the due date. When the assesment wasn''t open.',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_rows` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`,`submissionNumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `user_assignment_attempt_item_submission`
---
-
-LOCK TABLES `user_assignment_attempt_item_submission` WRITE;
-/*!40000 ALTER TABLE `user_assignment_attempt_item_submission` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user_assignment_attempt_item_submission` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `user_device`
 --
 
@@ -955,4 +922,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-04 18:00:31
+-- Dump completed on 2022-05-10  2:35:48
