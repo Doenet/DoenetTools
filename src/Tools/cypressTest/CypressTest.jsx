@@ -224,7 +224,7 @@ function Test() {
 
   return (
     <>
-      <div style={{ backgroundColor: "#e3e3e3" }}><h3><button id="testRunner_toggleControls" onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
+      <div style={{ backgroundColor: "var(--mainGray)" }}><h3><button id="testRunner_toggleControls" onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
         Test Viewer and Core
            </h3>
         {controls}

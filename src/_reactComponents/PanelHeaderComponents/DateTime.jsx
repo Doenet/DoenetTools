@@ -95,7 +95,7 @@ export default function DateTime(props) {
         // disabled
         style={{
           cursor: 'not-allowed',
-          color: '#545454',
+          color: 'var(--canvastext)',
           height: '18px',
           width: '170px',
           border: '2px solid var(--mainGray)',

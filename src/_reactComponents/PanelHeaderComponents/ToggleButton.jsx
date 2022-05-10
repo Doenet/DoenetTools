@@ -17,7 +17,7 @@ const Button = styled.button`
       : props.disabled
       ? 'var(--mainGray)'
       : 'var(--mainBlue)'};
-  background-color: white;
+  background-color: var(--canvas);
   border-radius: ${(props) => props.theme.borderRadius};
   padding: ${(props) => props.theme.padding};
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
@@ -26,7 +26,7 @@ const Button = styled.button`
 
   &:hover {
     // Button color lightens on hover
-    color: ${(props) => (props.disabled ? 'var(--mainGray)' : 'black')};
+    color: ${(props) => (props.disabled ? 'var(--mainGray)' : 'var(--canvastext)')};
     background-color: ${(props) =>
       props.alert
         ? 'var(--lightRed)'
@@ -107,7 +107,7 @@ export default function ToggleButton(props) {
       } else {
         toggleButton.backgroundColor = 'var(--mainRed)';
       }
-      toggleButton.color = '#FFF';
+      toggleButton.color = 'var(--canvas)';
       if (props.switch_value) toggleButton.value = props.switch_value;
     }
   }

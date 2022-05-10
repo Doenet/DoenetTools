@@ -15,7 +15,7 @@ const DoenetLogo = styled.div`
   position: relative;
   width: 100%;
   min-height: 340px;
-  background-color: #e3e2e2;
+  background-color: var(--mainGray);
   justify-content: center;
   align-items: center;
 `;
@@ -25,8 +25,8 @@ const DoenetImage = styled.img`
 }`;
 
 const CloudColor = styled.div`
-  background-color: #fff;
-  color: #333333;
+  background-color: var(--canvas);
+  color: var(--canvastext);
 `;
 const CloudColorSection = styled(CloudColor)`
   padding: 20px 10px 60px 10px;
@@ -37,8 +37,8 @@ const CloudColorSection = styled(CloudColor)`
 `;
 
 const LightBlueColor = styled.div`
-background-color: hsl(209,54%,82%);
-color:black;
+background-color: var(--lightBlue);
+color:var(--canvastext);
 `;
 const LightBlueColorSection = styled(LightBlueColor)`
   padding: 20px 10px 60px 10px;
@@ -80,8 +80,8 @@ const ParagraphTags = styled.p`
     }`;
 
 const Footer = styled.div`
-  background-color: #e3e2e2;
-  color: #333333;
+  background-color: var(--mainGray);
+  color: var(--canvastext);
   font-size: 14px;
   padding: 20px 40px;
   text-align: center;
@@ -130,7 +130,7 @@ export default function HomePage(props){
             <ParagraphTags>
               For more background and information on the Doenet project, see{' '}
               <a
-                style={{ color: '#6d4445' }}
+                style={{ color: 'var(--donutTopping)' }}
                 href="https://www.mathvalues.org/masterblog/reimagining-online-mathematics"
               >
                 this MAA DUE Point article

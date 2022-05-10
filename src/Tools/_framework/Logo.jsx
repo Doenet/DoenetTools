@@ -11,7 +11,7 @@ const LogoButton = styled.button`
   background-repeat: no-repeat;
   background-size: 50px 25px;
   transition: 300ms;
-  background-color: white;
+  background-color: var(--canvas);
   width: 50px;
   height: 25px;
   display: inline-block;

@@ -18,13 +18,13 @@ const DriveCardContainer = styled.figure`
   flex-direction: column; // added
   justify-content: space-between;
   
-  border: 2px solid #040f1a;
+  border: 2px solid var(--canvastext);
 `;
 
 const Image = styled.img`
   height: 100%;
   //width: 100%;
-  color: red;
+  color: var(--mainRed);
   // display: none;
   background-image: ${(props) => props.url == 'url(/media/drive_pictures/none)' ? 'none' : props.url};
   background-color: ${(props) => props.color == 'none' ? 'none' : "#" + props.color};
@@ -34,17 +34,17 @@ const Image = styled.img`
 const Info = styled.figcaption`
   border-radius: 0px 0px 5px 5px;
   // position: absolute;
-  border-top: 2px solid #040f1a;
+  border-top: 2px solid var(--canvastext);
   height: 65px;
   width: inherit;
-  background: #fff;
+  background: var(--canvas);
 `;
 
 const LabelContainer = styled.p`
   text-transform: capitalize;
   margin: 7px;
-  //width: 100%;
-  color: #040f1a;
+  width: 100%;
+  color: var(--canvastext);
   font-family: helvetica;
   font-size: 12px;
   overflow: hidden;
@@ -65,7 +65,7 @@ const DriveCard = (props) => {
       <Image url={imageURL} color={props.color} />
       <Info
         style={{
-          backgroundColor: props.isSelected ? 'rgb(184, 210, 234)' : '',
+          backgroundColor: props.isSelected ? 'var(--lightBlue)' : '',
         }}
       >
         <LabelContainer>

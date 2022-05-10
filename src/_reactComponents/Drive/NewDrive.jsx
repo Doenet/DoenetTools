@@ -348,7 +348,7 @@ const TBody = styled.tbody ``;
 //   display: block;
 // `;
 const Td2Span = styled.span `
-  background-color: rgba(0,0,0,.15);
+  background-color: var(--mainGray);
   width: 70px;
   height: 16px;
   border-radius: 5px;
@@ -356,7 +356,7 @@ const Td2Span = styled.span `
 const Td3Span = styled.span `
   height: 14px;
   border-radius: 5px;
-  background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+  background: linear-gradient(to right, var(--mainGray) 20%, var(--mainGray) 50%, var(--mainGray) 80%);
   background-size: 500px 100px;
   animation-name: ${movingGradient};
   animation-duration: 1s;
@@ -1182,7 +1182,7 @@ function Folder(props) {
   }, [props.pathItemId, setInstanceParentId]);
 
   const indentPx = 25;
-  let bgcolor = '#ffffff';
+  let bgcolor = 'var(--canvas)';
   let borderSide = '0px';
   let marginSize = '0';
   let widthSize = '60vw';
@@ -1191,21 +1191,21 @@ function Folder(props) {
     widthSize = '224px';
   }
   if (isSelected) {
-    bgcolor = 'hsl(209,54%,82%)';
+    bgcolor = 'var(--lightBlue)';
   }
   if (isSelected && dragState.isDragging) {
-    bgcolor = '#e2e2e2';
+    bgcolor = 'var(--mainGray)';
   }
 
   const isDraggedOver =
     dropState.activeDropTargetId === itemId &&
     !dragState.draggedItemsId?.has(itemId);
   if (isDraggedOver) {
-    bgcolor = '#f0f0f0';
+    bgcolor = 'var(--mainGray)';
   }
   const isDropTargetFolder = dragState.dragShadowParentId === itemId;
   if (isDropTargetFolder) {
-    bgcolor = 'hsl(209,54%,82%)';
+    bgcolor = 'var(--lightBlue)';
   }
 
   // Update refs for variables used in DnD callbacks to eliminate re-registration
@@ -1389,7 +1389,7 @@ function Folder(props) {
           // width: "300px",
           padding: '8px',
           border: '0px',
-          borderBottom: '2px solid black',
+          borderBottom: '2px solid var(--canvastext)',
           backgroundColor: bgcolor,
           // width: widthSize,
           // boxShadow: borderSide,
@@ -1517,7 +1517,7 @@ function Folder(props) {
             cursor: 'pointer',
             padding: '12.5px',
             border: '0px',
-            borderBottom: '2px solid black',
+            borderBottom: '2px solid var(--canvastext)',
             backgroundColor: bgcolor,
             marginLeft: marginSize,
             fontSize: '24px',
@@ -1569,7 +1569,7 @@ function Folder(props) {
             cursor: 'pointer',
             padding: '12.5px',
             border: '0px',
-            borderBottom: '2px solid black',
+            borderBottom: '2px solid var(--canvastext)',
             backgroundColor: bgcolor,
             marginLeft: marginSize,
             fontSize: '24px',
@@ -1817,10 +1817,10 @@ export const DragShadow = React.memo(function Node(props) {
         height: '33px',
         marginLeft: `${props.indentLevel * indentPx}px`,
         padding: '0px',
-        backgroundColor: '#f5f5f5',
-        color: '#f5f5f5',
-        boxShadow: '0 0 3px rgba(0, 0, 0, .2)',
-        border: '2px dotted #14c6ff',
+        backgroundColor: 'var(--mainGray)',
+        color: 'var(--mainGray)',
+        boxShadow: '0 0 3px var(--canvastext)',
+        border: '2px dotted var(--solidLightBlue)',
       }}
     >
       <div className="noselect">.</div>
@@ -2152,7 +2152,7 @@ export const DoenetML = React.memo(function DoenetML(props) {
     columns = '100%';
   }
 
-  let bgcolor = '#ffffff';
+  let bgcolor = 'var(--canvas)';
   let borderSide = '0px 0px 0px 0px';
   let widthSize = 'auto';
   let marginSize = '0';
@@ -2174,11 +2174,11 @@ export const DoenetML = React.memo(function DoenetML(props) {
     columns = '1fr';
   }
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) {
-    bgcolor = 'hsl(209,54%,82%)';
+    bgcolor = 'var(--lightBlue)';
     // borderSide = '8px 0px 0px 0px #1A5A99';
   }
   if (isSelected && dragState.isDragging) {
-    bgcolor = '#e2e2e2';
+    bgcolor = 'var(--mainGray)';
   }
 
   useEffect(() => {
@@ -2222,7 +2222,7 @@ export const DoenetML = React.memo(function DoenetML(props) {
         cursor: 'pointer',
         padding: '8px',
         border: '0px',
-        borderBottom: '2px solid black',
+        borderBottom: '2px solid var(--canvas)',
         backgroundColor: bgcolor,
         width: widthSize,
         // boxShadow: borderSide,
@@ -2603,7 +2603,7 @@ function useUpdateBreadcrumb(props) {
     // generate folder stack
     const breadcrumbItemStyle = {
       fontSize: '24px',
-      color: '#040F1A',
+      color: 'var(--canvastext)',
       textDecoration: 'none',
     };
 
@@ -2733,9 +2733,9 @@ const DragGhost = ({ id, element, numItems, copyMode = false }) => {
     top: '6px',
     right: '5px',
     borderRadius: '25px',
-    background: '#1A5A99',
+    background: 'var(--mainBlue)',
     fontSize: '12px',
-    color: 'white',
+    color: 'var(--canvas)',
     width: '25px',
     height: '25px',
     display: 'flex',
@@ -2749,9 +2749,9 @@ const DragGhost = ({ id, element, numItems, copyMode = false }) => {
     top: '6px',
     left: '5px',
     borderRadius: '25px',
-    background: '#08ed00',
+    background: 'var(--mainGreen)',
     fontSize: '23px',
-    color: 'white',
+    color: 'var(--canvas)',
     width: '25px',
     height: '25px',
     display: 'flex',

@@ -5,7 +5,7 @@ const Button = styled.button`
   margin: ${props => props.theme.margin};
   height: 24px;
   border: ${props => props.theme.border};
-  color: white;
+  color: var(--canvas);
   background-color: ${props => props.alert ? 'var(--mainRed)' : 'var(--mainBlue)'};
   border-radius: ${props => props.theme.borderRadius};
   padding: ${props => props.theme.padding};
@@ -13,7 +13,7 @@ const Button = styled.button`
   font-size: 12px;
 
   &:hover { // Button color lightens on hover
-    color: black;
+    color: var(--canvastext);
     background-color: ${props => props.alert ? 'var(--lightRed)' : 'var(--lightBlue)'};
   };
 `;
@@ -104,7 +104,7 @@ export default function ActionButton(props) {
 
   if (props.disabled) {
     actionButton.backgroundColor = 'var(--mainGray)';
-    actionButton.color = 'black';
+    actionButton.color = 'var(--canvastext)';
     actionButton.cursor = 'not-allowed';
   };
 

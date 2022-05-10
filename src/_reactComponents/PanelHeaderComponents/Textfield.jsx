@@ -15,7 +15,7 @@ export default function Textfield(props) {
     border: 'var(--mainBorder)',
     fontFamily: 'Arial',
     borderRadius: 'var(--mainBorderRadius)',
-    color: '#000',
+    color: 'var(--canvastext)',
     value: `${text}`,
     resize:'none',
     whiteSpace: 'nowrap',

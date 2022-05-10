@@ -21,14 +21,14 @@ const actionGroup = {
   margin: '0px -2px 0px -2px',
   borderRadius: '0',
   padding: '0px 12px 0px 10px',
-  border: '1px solid lightGray' // Adds a light border around each button in the group
+  border: '1px solid var(--mainGray)' // Adds a light border around each button in the group
 };
 
 const verticalActionGroup = {
   margin: '-2px 4px -2px 4px',
   borderRadius: '0',
   padding: '0px 10px 0px 10px',
-  border: '1px solid lightGray'
+  border: '1px solid var(--mainGray)'
 }; 
 
 const ActionButtonGroup = (props) => {

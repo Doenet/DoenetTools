@@ -5,7 +5,7 @@ const ButtonStyling = styled.button`
   margin: ${props => props.theme.margin};
   height: 24px;
   border-style: hidden;
-  // border-color: black;
+  // border-color: var(--canvastext);
   // border-width: 2px;
   color: white;
   background-color: ${props => props.alert ? 'var(--mainRed)' : 'var(--mainBlue)'};
@@ -17,7 +17,7 @@ const ButtonStyling = styled.button`
 
   &:hover {
     background-color: ${props => props.alert ? 'var(--lightRed)' : 'var(--lightBlue)'};
-    color: black;
+    color: #121212;
   };
 `;
 
@@ -102,7 +102,7 @@ export default function Button(props) {
 
   if (props.disabled) {
     button.backgroundColor = 'var(--mainGray)';
-    button.color = 'black';
+    button.color = 'var(--canvastext)';
     button.cursor = 'not-allowed';
   };
 
