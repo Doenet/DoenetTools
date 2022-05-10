@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -24,22 +25,12 @@ if ($courseId == "") {
 }
 
 if ($success){
-$sql = "
-SELECT canEditContent
-FROM course_user
-WHERE courseId='$courseId'
-AND userId='$userId'
-";
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
-	$row = $result->fetch_assoc();
-	$canEditContent = $row['canEditContent'];
-}
+	$permissions = permissionsAndSettingsForOneCourseFunction( $conn, $userId, $courseId );
+
+
 $containingDoenetIds = [];
 	//Can the user edit content?
-	
-	
-	if ($canEditContent == '1'){
+	if ($permissions["canEditContent"] == '1'){
 		//Yes then all items and json
 		$sql = "
 		SELECT cc.type,
@@ -150,7 +141,7 @@ $containingDoenetIds = [];
 			}
 		}
 
-	}else{
+	}else if($permissions["canViewCourse"] == '1'){
 		//TODO: check that user can view content
 		$sql = "
 		SELECT cc.type,
@@ -182,10 +173,13 @@ $containingDoenetIds = [];
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
 		ON a.doenetId = cc.doenetId
+		LEFT JOIN user_assignment AS ua
+		ON a.doenetId = ua.doenetId AND ua.userId = '$userId'
 		WHERE cc.courseId='$courseId'
 		AND cc.isDeleted = '0'
 		AND cc.isAssigned=1
 		AND (cc.type = 'activity' OR cc.type = 'section')
+		AND ua.isUnassigned = 0
 		ORDER BY cc.sortOrder
 		";
 
@@ -221,15 +215,16 @@ $containingDoenetIds = [];
           "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
 				);
 
-				if ($row['type'] == 'activity' || $row['type'] == 'bank'){
-					array_push($containingDoenetIds,$row['doenetId']);
-				}
 				
 				$json = json_decode($row['json'],true);
 				// var_dump($json);
 				$item = array_merge($json,$item);
 				
-
+				if ($row['type'] == 'activity'){
+					array_push($containingDoenetIds,$row['doenetId']);
+					unset($item['draftCid']);
+				}
+				
 				$item['isOpen'] = false; 
 				$item['isSelected'] = false;
 
@@ -262,8 +257,12 @@ $containingDoenetIds = [];
 
 			// }
 		}
+	}else{
+		$success = false;
+		$message = "You need permission to access this course.";
 	}
 }
+
 
 $response_arr = array(
   "success"=>$success,
