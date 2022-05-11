@@ -11,7 +11,7 @@ import {
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { useToast, toastType } from '../../Tools/_framework/Toast';
-import { fileByDoenetId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
+import { fileByPageId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 import { UTCDateStringToDate } from '../../_utils/dateUtilityFunction';
 
 const enrollmentAtomByCourseId = atomFamily({
@@ -1263,7 +1263,7 @@ const updateAssignItem = useRecoilCallback(
         async function pageToDoenetML({ pageDoenetId, indentLevel = 1 }) {
           let indentSpacing = "  ".repeat(indentLevel);
 
-          let pageDoenetML = (await snapshot.getPromise(fileByDoenetId(pageDoenetId)));
+          let pageDoenetML = (await snapshot.getPromise(fileByPageId(pageDoenetId)));
 
           let params = {
             doenetML: pageDoenetML,
@@ -1304,9 +1304,11 @@ const updateAssignItem = useRecoilCallback(
           attributeString += ` isSinglePage`;
         }
 
-        let childrenString;
+        let childrenString ="";
         try {
-          childrenString = await orderToDoenetML({ order: activity.order });
+          childrenString = (await Promise.all(activity.order.content
+            .map(x => contentToDoenetML({ content: x, indentLevel: 1 }))))
+            .join("");
         } catch (err) {
           failureCallback(err);
         }
