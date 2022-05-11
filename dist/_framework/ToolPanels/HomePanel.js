@@ -112,7 +112,7 @@ export default function HomePage(props) {
   }, "Explore what you can create with DoenetML..."))), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
     style: {display: "flex", justifyContent: "space-between"}
   }, /* @__PURE__ */ React.createElement("a", {
-    href: "/public?tool=editor&doenetId=qyPDhmvsuwjwNGM9OPy3Q",
+    href: "/public?tool=editor&doenetId=_qyPDhmvsuwjwNGM9OPy3Q",
     style: {textDecoration: "none"}
   }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
     image: "RandomlyGeneratedGraph.jpg",
@@ -123,7 +123,7 @@ export default function HomePage(props) {
     lineHeight: "15px",
     whiteSpace: "normal"
   })), /* @__PURE__ */ React.createElement("a", {
-    href: "/public?tool=editor&doenetId=i7KDJsUQeSToEv4DGmLKq",
+    href: "/public?tool=editor&doenetId=_i7KDJsUQeSToEv4DGmLKq",
     style: {textDecoration: "none"}
   }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
     image: "Cobwebbing.jpg",
@@ -134,7 +134,7 @@ export default function HomePage(props) {
     lineHeight: "15px",
     whiteSpace: "normal"
   })), /* @__PURE__ */ React.createElement("a", {
-    href: "/public?tool=editor&doenetId=JXTxrd8XXjfEy9GuFPcy6",
+    href: "/public?tool=editor&doenetId=_JXTxrd8XXjfEy9GuFPcy6",
     style: {textDecoration: "none"}
   }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
     image: "DynamicContentInteractions.jpg",
@@ -145,7 +145,7 @@ export default function HomePage(props) {
     lineHeight: "15px",
     whiteSpace: "normal"
   })), /* @__PURE__ */ React.createElement("a", {
-    href: "/public?tool=editor&doenetId=UdDWyNkqfF21O6Ew-Qh4O",
+    href: "/public?tool=editor&doenetId=_UdDWyNkqfF21O6Ew-Qh4O",
     style: {textDecoration: "none"}
   }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
     image: "BasicAnswerValidation.jpg",
@@ -162,7 +162,7 @@ export default function HomePage(props) {
   }, "DoenetML Gallery: More Examples from Course Pages"))), /* @__PURE__ */ React.createElement(Paragraph, null, /* @__PURE__ */ React.createElement("div", {
     style: {display: "flex", justifyContent: "space-between"}
   }, /* @__PURE__ */ React.createElement("a", {
-    href: "/public?tool=editor&doenetId=Sf8u9bDhC5W6ta3YP0XWD",
+    href: "/public?tool=editor&doenetId=_Sf8u9bDhC5W6ta3YP0XWD",
     style: {textDecoration: "none"}
   }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
     image: "AnteaterDynamicalSystem.jpg",
@@ -173,7 +173,7 @@ export default function HomePage(props) {
     lineHeight: "15px",
     whiteSpace: "normal"
   })), /* @__PURE__ */ React.createElement("a", {
-    href: "/public?tool=editor&doenetId=i7KDJsUQeSToEv4DGmLKq",
+    href: "/public?tool=editor&doenetId=_i7KDJsUQeSToEv4DGmLKq",
     style: {textDecoration: "none"}
   }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
     image: "SketchGaussianCurve.jpg",
@@ -184,7 +184,7 @@ export default function HomePage(props) {
     lineHeight: "15px",
     whiteSpace: "normal"
   })), /* @__PURE__ */ React.createElement("a", {
-    href: "/public?tool=editor&doenetId=2yATouuOTFtJAs9j_dzU3",
+    href: "/public?tool=editor&doenetId=_2yATouuOTFtJAs9j_dzU3",
     style: {textDecoration: "none"}
   }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
     image: "AverageRateOfChange.jpg",
@@ -195,7 +195,7 @@ export default function HomePage(props) {
     lineHeight: "15px",
     whiteSpace: "normal"
   })), /* @__PURE__ */ React.createElement("a", {
-    href: "/public?tool=editor&doenetId=cbOJJuuBUuzmhE1LcCHe6",
+    href: "/public?tool=editor&doenetId=_cbOJJuuBUuzmhE1LcCHe6",
     style: {textDecoration: "none"}
   }, /* @__PURE__ */ React.createElement(DoenetDriveCard, {
     image: "RiemannSums.jpg",
