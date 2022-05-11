@@ -11,7 +11,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRecoilCallback, useRecoilValue, useSetRecoilState, atom } from 'recoil';
 import styled from 'styled-components';
 import {
-  authorItemByDoenetId,
+  itemByDoenetId,
   enrollmentByCourseId,
   findFirstPageOfActivity,
   selectedCourseItems,
@@ -81,7 +81,7 @@ export default function SelectedActivity() {
     assignedCid,
     isAssigned,
     parentDoenetId
-  } = useRecoilValue(authorItemByDoenetId(doenetId));
+  } = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const {
     renameItem,
@@ -317,7 +317,7 @@ function AssignTo({updateAssignment}){
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const {
     isGloballyAssigned
-  } = useRecoilValue(authorItemByDoenetId(doenetId));
+  } = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
 
   const {value:enrolledStudents} = useRecoilValue(enrollmentByCourseId(courseId))
@@ -434,7 +434,7 @@ export function AssignmentSettings({ role, doenetId, courseId }) {
         secondValue,
       }) => {
         const oldAInfo = await snapshot.getPromise(
-          authorItemByDoenetId(doenetId),
+          itemByDoenetId(doenetId),
         );
         let newAInfo = { ...oldAInfo, courseId, [keyToUpdate]: value };
 
@@ -476,7 +476,7 @@ export function AssignmentSettings({ role, doenetId, courseId }) {
         );
 
         if (resp.data.success) {
-          set(authorItemByDoenetId(doenetId), newAInfo);
+          set(itemByDoenetId(doenetId), newAInfo);
           if (valueDescription) {
             addToast(`Updated ${description} to ${valueDescription}`);
           } else {
@@ -505,7 +505,7 @@ export function AssignmentSettings({ role, doenetId, courseId }) {
     ({ snapshot }) =>
       async (doenetId) => {
         const aLoadable = await snapshot.getPromise(
-          authorItemByDoenetId(doenetId),
+          itemByDoenetId(doenetId),
         );
 
         aInfoRef.current = { ...aLoadable };

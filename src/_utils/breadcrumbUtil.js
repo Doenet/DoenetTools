@@ -12,7 +12,7 @@ import {
   assignmentData,
 } from '../Tools/_framework/ToolPanels/Gradebook';
 import {
-  authorItemByDoenetId,
+  itemByDoenetId,
   coursePermissionsAndSettingsByCourseId,
   findFirstPageOfActivity,
 } from '../_reactComponents/Course/CourseActions';
@@ -68,7 +68,7 @@ const navigationSelectorFamily = selectorFamily({
           label,
           parentDoenetId: itemParentDoenetId,
           type,
-        } = await get(authorItemByDoenetId(parentDoenetId));
+        } = await get(itemByDoenetId(parentDoenetId));
         if (courseId === itemParentDoenetId) {
           return [{ label, parentDoenetId, type }];
         }
@@ -149,9 +149,9 @@ export function useNavigationCrumbs(courseId, parentDoenetId) {
 
 export function useEditorCrumb({ pageId, doenetId }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const pageObj = useRecoilValue(authorItemByDoenetId(pageId));
+  const pageObj = useRecoilValue(itemByDoenetId(pageId));
   let {label:pageLabel} = pageObj;
-  const activityObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  const activityObj = useRecoilValue(itemByDoenetId(doenetId));
   let { label:activityLabel } = activityObj;
 
   let crumbs = [{
@@ -206,7 +206,7 @@ export function useEditorCrumb({ pageId, doenetId }) {
 
 export function useAssignmentCrumb({ doenetId}) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const { label } = useRecoilValue(authorItemByDoenetId(doenetId));
+  const { label } = useRecoilValue(itemByDoenetId(doenetId));
 
   return {
     label: label ?? '_',

@@ -18,7 +18,7 @@ import {
 
 import axios from 'axios';
 import { returnNumberOfActivityVariantsForCid } from '../../../_utils/activityUtils';
-import { authorItemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 
 
 export default function DraftAssignmentViewer() {
@@ -50,7 +50,7 @@ export default function DraftAssignmentViewer() {
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
 
-  let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
+  let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
 
   useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);

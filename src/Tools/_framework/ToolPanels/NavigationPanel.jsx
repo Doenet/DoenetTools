@@ -15,7 +15,7 @@ import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { suppressMenusAtom } from '../NewToolRoot';
 import styled, { keyframes } from 'styled-components';
-import { authorItemByDoenetId, findFirstPageOfActivity, selectedCourseItems } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, findFirstPageOfActivity, selectedCourseItems } from '../../../_reactComponents/Course/CourseActions';
 import { useToast, toastType } from '../Toast';
 
 const movingGradient = keyframes `
@@ -92,7 +92,7 @@ export default function NavigationPanel() {
       async ({ selectedItems }) => {
         if (selectedItems.length == 1){
           let selectedDoenetId = selectedItems[0];
-          let selectedItem = await snapshot.getPromise(authorItemByDoenetId(selectedDoenetId));
+          let selectedItem = await snapshot.getPromise(itemByDoenetId(selectedDoenetId));
           if (selectedItem.type == "activity"){
             set(selectedMenuPanelAtom,"SelectedActivity");
           }else if (selectedItem.type == "order"){
@@ -114,7 +114,7 @@ export default function NavigationPanel() {
   const doubleClickItem = useRecoilCallback(
     ({set,snapshot}) =>
       async ({ doenetId, courseId }) => {
-        let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+        let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
         let effectiveRole = await snapshot.getPromise(effectiveRoleAtom);
     if (clickedItem.type == 'page'){
       set(pageToolViewAtom,(prev)=>{return {

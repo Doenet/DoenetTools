@@ -2,7 +2,7 @@ import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 // import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 // import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
@@ -16,8 +16,8 @@ import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/A
 export default function SelectedPage() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const pageId = useRecoilValue(selectedCourseItems)[0];
-  const pageObj = useRecoilValue(authorItemByDoenetId(pageId));
-  const containingObj = useRecoilValue(authorItemByDoenetId(pageObj.containingDoenetId));
+  const pageObj = useRecoilValue(itemByDoenetId(pageId));
+  const containingObj = useRecoilValue(itemByDoenetId(pageObj.containingDoenetId));
   const sectionId = containingObj.parentDoenetId;
   const doenetId = containingObj.doenetId;
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
