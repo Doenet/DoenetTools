@@ -113,7 +113,7 @@ export default function HomePage(props) {
         <h4 style={{ marginTop: '0px' }}>
           The free and open data-driven educational technology platform
         </h4>
-        {isSignedIn ? <div style={{ display: "flex", justifyContent: "center" }}><Button size="medium" onClick={() => history.push('/course')} value="Go to Course" /></div> : <div style={{ display: "flex", justifyContent: "center" }}><Button onClick={() => history.push('/SignIn')} size="medium" value="Sign In" /></div>}
+        {isSignedIn ? <div style={{display: "flex", justifyContent: "center"}}><Button size = "medium"  onClick={()=>navigate('/course')} value = "Go to Course" /></div> : <div style={{display: "flex", justifyContent: "center"}}><Button onClick={()=>navigate('/SignIn')} size = "medium" value = "Sign In" /></div>}
         <Paragraph>
           The Distributed Open Education Network (Doenet) is an open data-driven educational technology platform designed to measure and share student interactions with web pages.
           Anonymized and aggregated data will be stored in an open distributed data warehouse
