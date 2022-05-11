@@ -292,9 +292,9 @@ $itemEntered = array(
   "parentDoenetId"=>$row['parentDoenetId'],
   "label"=>$row['label'],
   "creationDate"=>$row['creationDate'],
-  "isAssigned"=>$row['isAssigned'],
-  "isGloballyAssigned"=>$row['isGloballyAssigned'],
-  "isPublic"=>$row['isPublic'],
+  "isAssigned"=>$row['isAssigned'] == '1' ? true : false,
+  "isGloballyAssigned"=>$row['isGloballyAssigned'] == '1' ? true : false,
+  "isPublic"=>$row['isPublic'] == '1' ? true : false,
 );
 
 $json = json_decode($row['json'],true);
