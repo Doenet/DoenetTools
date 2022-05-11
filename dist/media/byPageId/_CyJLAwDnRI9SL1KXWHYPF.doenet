@@ -1,0 +1,110 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>md</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>md</tag><idx><tag>md</tag></idx> component renders a block of aligned display mathematics when used in combination with the <tag><ref>mrow</ref></tag> component.  See also, the <tag><ref>mdn</ref></tag> component, whose function is similar to the <tag>md</tag> component but in addition creates numbered references for each equation.  See examples below.</p>
+</section> 
+
+
+
+<section><title>Usage Examples</title>
+
+
+<subsection><title>Example 1: <tag>md</tag> with Latex input</title>
+<p>In the sample code below, the <tag>md</tag> component is used with Latex input.  The data contained within an <tag>md</tag> block must be contained in an <ref><tag>mrow</tag></ref>.  Equations and content will align vertically where the text <c>\amp</c> is entered in each row. The inline mathematical display text rendered in the first sentence is enclosed in an <ref uri="doenet:doenetId=GCM8z3SDsbj9yZSkHW3YB"><tag>m</tag></ref> tag.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;The trigonometric ratios for the angle &lt;m&gt;\theta = \pi/2&lt;/m&gt;:
+  &lt;md&gt;
+    &lt;mrow&gt;\sin(\theta) \amp = 1&lt;/mrow&gt;
+    &lt;mrow&gt;\cos(\theta) \amp = 0&lt;/mrow&gt;
+    &lt;mrow&gt;\tan(\theta) \amp = \text{undefined}&lt;/mrow&gt;
+    &lt;mrow&gt;\csc(\theta) \amp = 1&lt;/mrow&gt;
+    &lt;mrow&gt;\sec(\theta) \amp = \text{undefined}&lt;/mrow&gt;
+    &lt;mrow&gt;\cot(\theta) \amp = 0&lt;/mrow&gt;
+  &lt;/md&gt;
+&lt;/p&gt;
+
+</pre>
+ 
+        </example>  
+      </subsection>
+     
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>The trigonometric ratios for the angle <m>\theta = \pi/2</m>:
+  <md>
+    <mrow>\sin(\theta) \amp = 1</mrow>
+    <mrow>\cos(\theta) \amp = 0</mrow>
+    <mrow>\tan(\theta) \amp = \text{undefined}</mrow>
+    <mrow>\csc(\theta) \amp = 1</mrow>
+    <mrow>\sec(\theta) \amp = \text{undefined}</mrow>
+    <mrow>\cot(\theta) \amp = 0</mrow>
+  </md>
+</p>  
+</example>
+
+<!--******************************************************-->
+    
+
+<subsection><title>Example 2: <tag>md</tag> with DoenetML mathematical content</title>
+<p>In the sample code below, three <ref uri="doenet:doenetId=Jwl0ys4sdoUIkguMBx0he"><tag>function</tag></ref>s are defined within a <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> block, and later referenced within the <tag>md</tag> component using the <c>&dollar;name</c> notation.  The <ref><tag>derivative</tag></ref> of each <tag>function</tag> is rendered in the <tag>md</tag> component as well. This example illustrates how display text written with Latex can be interwoven with mathematical evaluation components in DoenetML.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;setup&gt;
+  &lt;function name="f" variables="x"&gt;x^2&lt;/function&gt;
+  &lt;function name="g" variables="y"&gt;sqrt(y)&lt;/function&gt;
+  &lt;function name="h" variables="z"&gt;sin(z)&lt;/function&gt;
+&lt;/setup&gt;
+  
+&lt;p&gt;The first derivatives of functions &lt;m&gt;f(x), g(y)&lt;/m&gt; and &lt;m&gt;h(z)&lt;/m&gt; are:
+  &lt;md&gt;
+    &lt;mrow&gt;\frac{d}{dx} \left( &dollar;f \right) \amp
+      = &lt;derivative derivVariables="x"&gt;&dollar;f&lt;/derivative&gt;&lt;/mrow&gt;
+    &lt;mrow&gt;\frac{d}{dy} \left( &dollar;g \right) \amp
+      = &lt;derivative derivVariables="y"&gt;&dollar;g&lt;/derivative&gt;&lt;/mrow&gt;
+    &lt;mrow&gt;\frac{d}{dz} \left( &dollar;h \right) \amp
+      = &lt;derivative derivVariables="z"&gt;&dollar;h&lt;/derivative&gt;&lt;/mrow&gt;    
+  &lt;/md&gt;
+&lt;/p&gt;  
+</pre>
+ 
+</example>  
+</subsection>
+ 
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<setup>
+  <function name="f" variables="x">x^2</function>
+  <function name="g" variables="y">sqrt(y)</function>
+  <function name="h" variables="z">sin(z)</function>
+</setup>
+  
+<p>The first derivatives of functions <m>f(x), g(y)</m> and <m>h(z)</m> are:
+  <md>
+    <mrow>\frac{d}{dx} \left( $f \right) \amp = <derivative derivVariables="x">$f</derivative></mrow>
+    <mrow>\frac{d}{dy} \left( $g \right) \amp = <derivative derivVariables="y">$g</derivative></mrow>
+    <mrow>\frac{d}{dz} \left( $h \right) \amp = <derivative derivVariables="z">$h</derivative></mrow>    
+  </md>
+</p>  
+ 
+</example>
+
+
+</section>
+</document>

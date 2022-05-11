@@ -1,0 +1,33 @@
+<p>Factor the numerator and denominator and cancel common factor
+  to reduce the fraction to simplest terms. List the numerator and 
+  denominator separately.</p>
+
+<selectFromSequence hide="true" numberToSelect="1" from="3" to="5"
+					withReplacement="true" assignNames="a"  />
+<selectFromSequence hide="true" numberToSelect="1" from="2" to="4"
+                    withReplacement="true" assignNames="b"  />
+<selectFromSequence hide="true" numberToSelect="1" from="4" to="6"
+					withReplacement="true" assignNames="c"  />
+
+
+
+<p hide><math expand name="p1"><copy tname="b"/>*x(x+<copy tname="a"/>)</math></p>
+<p hide><math expand name="p2">(x+<copy tname="a"/>)(x^2+<copy tname="c"/>)</math></p>
+
+<p><math><copy tname="p1"/>/<copy tname="p2"/></math></p>
+
+<p>Numerator:  
+<answer>
+  <award>
+		<math>(<copy tname="b"/>*x)</math>
+		</award>
+  </answer></p>
+
+<p>Denominator:<answer>
+  <award>  
+	<math> (x^2+<copy tname="c"/>)</math>
+		</award>
+</answer></p>
+
+<p>Numerator answer: <math name="numAns"><copy tname="b"/>*x</math></p>
+<p>Denominator answer: <math name="denomAns"> (x^2+<copy tname="c"/>)</math></p>

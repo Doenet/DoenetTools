@@ -1,0 +1,129 @@
+<problem>
+<!-- <title>derivative chain, derivative of exp(2x), build up, worksheet</title> -->
+
+<setup>
+
+<math name='gx'>g(x)</math>
+<math name='x'>x</math>
+<math name='two'>2</math>
+<math name='two_x'>2x</math>
+<math name='e_x'>e^$x </math>
+<math name='e_2x'>e^(2x)</math>
+<math name='d_e_2x'>2e^(2x)</math>
+
+</setup>
+
+
+Use the following steps to compute the derivative of <m>h(x)=e^{2x}</m>.
+
+
+<ol>
+
+<li>
+<em>Statement of the chain rule.</em>  The <m>f(x)</m> be a differentiable function with derivative <m>f'(x)</m> and <m>g(x)</m> be a differentiable function with derivative <m>g'(x)</m>.  Let <m>h(x)</m> be their composition <m>h(x)=f(g(x))</m>.  Then, the derivative of <m>h</m> is the product of the derivatives of <m>f</m> and <m>g</m>.  The only trick is where to evaluate the derivatives  <m>f'</m> and <m>g'</m>.  Fill in the blanks.
+
+<p>
+<m>h'(x) = f'\Bigl(</m> 
+<mathinput name="mi11" />
+ <m>\Bigr) g'(</m> 
+<mathinput name="mi12" />
+<m>)</m>
+  <answer symbolicEquality matchPartial>
+    <award targetsAreResponses="mi11 mi12">
+      <when>$mi11=$gx and $mi12=$x</when>
+    </award>
+  </answer>
+</p>
+
+
+</li>
+
+<li>
+<p>
+If <m>g(x)=$two_x </m>, then <m>g'(x)=</m> 
+<answer>
+<award symbolicEquality='true'>$two </award>
+</answer>
+. If <m>h(x)=f(g(x))=f(2x)</m>, what is <m>h'(x)</m>?  Just take your formula from above and replace both <m>g(x)</m> and <m>g'(x)</m> with the known functions.
+
+</p>
+
+<p>
+<m>h'(x) = f'\bigl(</m>
+<mathinput name='mi21' />
+<m>\bigr)</m>
+<mathinput name='mi22' />
+</p>
+
+<p>
+<m>h'(x) = </m>
+<mathinput name='mi23' />
+<m>f'\bigl(</m> 
+<mathinput name='mi24' />
+<m>\bigr)</m>
+</p>
+
+<answer matchPartial simplifyOnCompare="numbers">
+<award targetsAreResponses="mi21 mi22 mi23 mi24"><when>$mi21=$two_x and $mi22=$two and $mi23=$two and $mi24=$two_x</when></award>
+</answer>
+
+<p>(After the second equal sign, just switch the order of the factors since it looks better that way.)</p>
+
+
+</li>
+
+<li>
+<p>
+Let <m>g(x)=$two_x </m> as above.  If <m>f(x)=$e_x </m>, then <m>f'(x)=</m> 
+<answer>
+<award symbolicEquality='true'>$e_x </award>
+</answer>
+</p>
+
+<p>
+If <m>h(x)=f(g(x))=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare="numbers">$e_2x </award>
+</answer>
+, what is <m>h'(x)</m>?  Just take your formula from above and replace <m>f'(\cdot)</m> with the known function.
+</p>
+
+<p>
+<m>h'(x) =</m>
+<answer>
+<award symbolicEquality='true' simplifyOnCompare="numbers">$d_e_2x </award>
+</answer>
+</p>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+The derivative is <m>h'(x)=f'(g(x))g'(x).</m>
+</li>
+
+<li>
+<m>h'(x)=f'(2x)2 = 2f'(2x)</m>.
+</li>
+
+<li>
+<m>h'(x)=$d_e_2x </m>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

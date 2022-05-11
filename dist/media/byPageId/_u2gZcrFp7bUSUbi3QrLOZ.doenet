@@ -1,0 +1,17 @@
+<problem name="derivativeProblem" newNamespace >
+  <title>Derivative problem</title>
+  
+  <selectFromSequence hide name="a" from="-9" to="9" exclude="-1 0 1" />
+  <selectFromSequence hide name="b" from="-9" to="9" exclude="-1 0 1" />
+  <selectFromSequence hide name="c" from="-9" to="9" exclude="-1 0 1" />
+
+  <p>What is the derivative of <math simplify name="expr">$a x^2+$b x + $c</math>?
+    <answer>
+      <award>
+        <derivative>$expr</derivative>
+      </award>
+    </answer>
+  </p>
+
+
+</problem>

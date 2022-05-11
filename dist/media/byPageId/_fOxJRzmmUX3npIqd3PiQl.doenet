@@ -1,0 +1,464 @@
+<problem>
+<!-- <title>Introduction to pure time differential equations - part 2</title> -->
+<variantControl nVariants="1" />
+  
+<setup>
+
+<function name='rate' variables='t'>2t</function>
+<math name='solution0'>t/math>
+<function name='all_solns' variables='x'>is_number(x-t^2)</function>
+<math name='gen_soln'>$solution0 +C </math>
+<math name='gen_soln_small_c'>$solution0 +c </math>
+<math name='init_cond' >800</math>
+<math name='partic_soln' >$solution0 +$init_cond </math>
+<math name='var_5' simplify='numbers' >5^2+$init_cond </math>
+<math name='var_10' simplify='numbers' >10^2+$init_cond </math>
+<math name='init_cond2' simplify='full' >550</math>
+<math name='partic_soln2' simplify='full' >$solution0 +$init_cond2 </math>
+<math name='var2_5' simplify='full' >5^2+$init_cond2 </math>
+<math name='var2_10' simplify='full' >10^2+$init_cond2 </math>
+
+<math name='units'>mu m^3</math>
+
+</setup>
+
+A cell's volume at time <m>t</m> is increasing at a rate of <m><copy prop="formula" tname="rate" /></m> <m>\mu {\rm m}^3</m> per second, where <m>t</m> indicates time in seconds.
+
+
+<ol>
+
+<li>
+<p>Write a pure-time differential equation to model this scenario.  Start by choosing a state variable to represent the volume of the cell: 
+<answer name="varAns">
+<mathinput name="input12" />
+<award name="gotLetter">
+  <when>$input12 elementof {a,b,c,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,u,v,w,x,y,z,A,B,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}</when>
+</award>
+<award symbolicEquality='true' credit='0' name='not_t'>t </award>
+<award symbolicEquality='true' credit='0' name='not_C'>C </award>
+<award symbolicEquality='true' credit='0' name='not_d'>d </award>
+</answer>. 
+</p>
+<feedback condition="$not_t">We usually use t for time. Try another letter.</feedback>
+<feedback condition="$not_C">We frequently use C as a constant when solving differential equations.  Try another letter.</feedback>
+<feedback condition="$not_d">Since we will use d for derivatives, it will be confusing to d for the variable name. Try another letter.</feedback>
+<math name="var" hide>$varAns</math>
+
+  <hint>
+Pick a letter for the state variable.  It can be pretty much anything, but you want to avoid things that might have other meaning (for instance, <m>t</m> often means time).  People often take the first letter of what they're describing, for instance <m>p</m> for population. 
+  </hint>
+    
+<p> With this state variable, the differential equation is</p>
+<p><m>\frac{d$var}{dt} =</m>  
+  <answer>
+<award symbolicEquality='true'>$rate </award>
+</answer>.
+</p>
+  
+<hint>
+<p>The right hand side of the differential equation is just a function of <m>t</m> that gives the rate of increase in volume, <m>\frac{d $var }{dt}</m>,  at time <m>t</m>.
+</p>
+</hint>
+
+<p>What is <m>t</m> measured in? 
+
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>seconds</choice>
+<choice>minutes</choice>
+<choice>hours</choice>
+<choice>days</choice>
+</choiceinput>
+</answer>
+</p>
+  
+
+</li>
+
+<li>
+<p>Use your intuition to guess a solution to the differential equation you found in part (1): 
+</p>
+<p>
+
+ <m>$var(t) =</m>  
+<answer name="solnByIntuition">
+<mathinput name="input2" />
+<award>
+  <when><isnumber><math simplify>$input2-$solution0</math></isnumber></when>
+</award>
+</answer>
+ </p>
+
+<hint hide="$(solnByIntuition{prop='nSubmissions'})<3 or $(solnByIntuition{prop='creditAchieved'}) = 1">
+  What about a solution like <m>$var(t)=t</m> or  <m>$var(t)=t^2</m> or  <m>$var(t)=t^3</m>?  If you differentiation any of these options, would you get <m>$rate</m>?
+</hint>
+<hint>
+Think about undoing taking the derivative of a polynomial.
+</hint>
+
+  
+<p> Now verify that this is a solution by taking the derivative:  <m>\frac{d $var }{dt} =</m>  
+<answer>
+<award symbolicEquality='true'>$rate </award>
+</answer>
+ </p>
+
+
+</li>
+
+<li>
+<p>Again, this is not the only solution.  What is the general solution to this differential equation?
+</p>
+<p>
+
+ <m>$var(t) =</m>  
+<answer>
+  <mathinput name="input4" />
+  <award symbolicEquality>$gen_soln </award>
+  <award  credit='0' symbolicEquality name="award_c">$gen_soln_small_c </award>
+  <award credit='0' name='award8'>
+    <when>
+      <isnumber>
+        <math simplify>$input4-$gen_soln</math>
+      </isnumber>
+    </when>
+  </award>
+  <award credit='0' name='award_noC'>
+    <when>
+      <isnumber>
+        <math simplify>$input4-$solution0</math>
+      </isnumber>
+    </when>
+  </award>
+
+</answer>
+</p>
+
+<feedback condition="$award8" >Though you could argue that this is correct, we are looking for a simpler answer.  You can get rid of the extraneous number, as it can be absorbed into <m>C</m>.</feedback>
+<feedback condition="$award_noC" >This is a particular solution.  The general solution should have an arbitrary constant <m>C</m> that represent any number.</feedback>
+<feedback condition="$award_c" >Try a capital <m>C</m> instead.
+</feedback>
+
+
+<hint>
+You need to add a constant to the solution you guessed.  Use <m>C</m> as your constant.
+</hint>
+
+</li>
+
+
+
+<li>
+<p> Suppose we know that at <m>t=0</m>, the cell has volume <m>$init_cond </m> <m>\mu {\rm m}^3</m>. What is the particular solution describing the volume of the cell?
+</p>
+  
+<p>
+ <m>$var(t) =</m>  
+<answer>
+  <mathinput name="input5" />
+  
+  <award symbolicEquality='true'>$partic_soln </award>
+  <award credit='0' name='award_missedIC'>
+    <when>
+      <isnumber>
+        <math simplify>$input5-$solution0</math>
+      </isnumber>
+    </when>
+  </award>
+  <award credit='0' name='award_withC'>
+    <when>
+      <isnumber>
+        <math simplify>$input5-$gen_soln</math>
+      </isnumber>
+    </when>
+  </award>
+</answer>
+</p>
+<feedback condition="$award_missedIC" >This is a solution to the differential equation, but it does not match the initial condition.</feedback>
+<feedback condition="$award_withC" >The answer should not have a arbitrary constant <m>C</m>, as you can determine the value of <m>C</m> from the initial condition.</feedback>
+
+<p> What is the volume of the cell after <m>5</m> seconds?</p>
+
+<p>
+<mathinput name="v5num" />
+<mathinput name="v5unit" />
+  
+<answer symbolicEquality>
+  <award targetsAreResponses="v5num v5unit">
+    <when matchPartial>
+      $v5num=$var_5 and $v5unit=$units
+    </when>
+    </award>
+</answer>
+</p>
+  <p>(The second answer blank is for units.)</p>
+  
+<hint>
+Enter <m>\mu</m> as <c>\mu</c> (press space or enter to convert it to <m>\mu</m>) or as the symbol <c>μ</c>. 
+</hint>
+  
+<p>After <m>10</m> seconds?
+<mathinput name="v10num" />
+<mathinput name="v10unit" />
+  
+<answer symbolicEquality>
+  <award targetsAreResponses="v10num v10unit">
+    <when matchPartial>
+      $v10num=$var_10 and $v10unit=$units
+    </when>
+    </award>
+</answer>
+</p>
+
+<p>What happens to <m>$var(t)</m> as <m>t</m> gets large? 
+  <m>$var(t)</m> tends to <answer>Infinity</answer>.</p>
+
+  <hint>You can enter <m>\infty</m> by typing <c>infinity</c> or entering the symbol <c>∞</c>.
+  </hint>
+</li>
+  
+<li>
+<p> What if at <m>t=0</m>, the cell has volume <m>$init_cond2 </m> <m>\mu {\rm m}^3</m>? What is the particular solution describing the volume of the cell?
+</p>
+
+  
+<p>
+
+ <m>$var(t) =</m>  
+<answer>
+  <mathinput name="input6" />
+  
+  <award symbolicEquality='true'>$partic_soln2 </award>
+  <award credit='0' name='award_missedIC2'>
+    <when>
+      <isnumber>
+        <math simplify>$input6-$solution0</math>
+      </isnumber>
+    </when>
+  </award>
+  <award credit='0' name='award_withC2'>
+    <when>
+      <isnumber>
+        <math simplify>$input6-$gen_soln</math>
+      </isnumber>
+    </when>
+  </award>
+</answer>
+</p>
+<feedback condition="$award_missedIC2" >This is a solution to the differential equation, but it does not match the initial condition.</feedback>
+<feedback condition="$award_withC2" >The answer should not have a arbitrary constant <m>C</m>, as you can determine the value of <m>C</m> from the initial condition.</feedback>
+
+<p> What is the volume of the cell after <m>5</m> seconds?</p>
+
+<p>
+<mathinput name="v5num2" />
+<mathinput name="v5unit2" />
+  
+<answer symbolicEquality>
+  <award targetsAreResponses="v5num2 v5unit2">
+    <when matchPartial>
+      $v5num2=$var2_5 and $v5unit2=$units
+    </when>
+    </award>
+</answer>
+</p>
+  <p>(The second answer blank is for units.)</p>
+  
+<hint>
+Enter <m>\mu</m> as <c>\mu</c> (press space or enter to convert it to <m>\mu</m>) or as the symbol <c>μ</c>. 
+</hint>
+  
+<p>After <m>10</m> seconds?
+<mathinput name="v10num2" />
+<mathinput name="v10unit2" />
+  
+<answer symbolicEquality>
+  <award targetsAreResponses="v10num2 v10unit2">
+    <when matchPartial>
+      $v10num2=$var2_10 and $v10unit2=$units
+    </when>
+    </award>
+</answer>
+</p>
+
+  <p>What happens to <m>$var(t)</m> as <m>t</m> gets large? 
+  <m>$var(t)</m> tends to <answer>Infinity</answer>.</p>
+
+
+</li>
+
+
+
+
+
+<li>
+Plot the functions you found in parts (4) and (5) to describe the cell's volume.
+
+
+<graph width='400' height='350' xmin='-5' xmax='30' ymin='-90' ymax='1250' xlabel='t' ylabel='$var'  fixAxes>
+
+  <parabola hide name="p800" through="(0, $init_cond) (5, $var_5) (10,$var_10)" />
+  <parabola hide name="p550" through="(0, $init_cond2) (5, $var2_5) (10,$var2_10)" />
+
+
+  <point name="A1" x="5" y="100">
+    <constraints>
+      <attractTo thresholdRelativeToGraph threshold="0.05">$p800$p550</attractTo>
+      <constrainToGraph />
+    </constraints>
+  </point>
+  <point name="A2" x="10" y="100">
+    <constraints>
+      <attractTo thresholdRelativeToGraph threshold="0.05">$p800$p550</attractTo>
+      <constrainToGraph />
+    </constraints>
+  </point>
+    <point name="A3" x="15" y="100">
+    <constraints>
+      <attractTo thresholdRelativeToGraph threshold="0.05">$p800$p550</attractTo>
+      <constrainToGraph />
+    </constraints>
+  </point>
+
+  <parabola hide through="$A1$A2$A3" name="pA"/>
+  <function domain="(0,50)" name="fA">
+    $(pA{prop='a'})x^2 + $(pA{prop='b'})x + $(pA{prop='c'})
+  </function>
+  
+
+  <point name="B1" x="5" y="200" styleNumber="2">
+    <constraints>
+      <attractTo thresholdRelativeToGraph threshold="0.05">$p800$p550</attractTo>
+      <constrainToGraph />
+    </constraints>
+  </point>
+  <point name="B2" x="10" y="200" styleNumber="2">
+    <constraints>
+      <attractTo thresholdRelativeToGraph threshold="0.05">$p800$p550</attractTo>
+      <constrainToGraph />
+    </constraints>
+  </point>
+    <point name="B3" x="15" y="200" styleNumber="2">
+    <constraints>
+      <attractTo thresholdRelativeToGraph threshold="0.05">$p800$p550</attractTo>
+      <constrainToGraph />
+    </constraints>
+  </point>
+
+  <parabola hide through="$B1$B2$B3" name="pB"/>
+  <function domain="(0,50)" styleNumber="2" name="fB">
+    $(pB{prop='a'})x^2 + $(pB{prop='b'})x + $(pB{prop='c'})
+  </function>
+   
+
+</graph>
+
+<setup>
+  <function name="f550" domain="(0,50)">
+    $(p550{prop='a'})x^2 + $(p550{prop='b'})x + $(p550{prop='c'})
+  </function>
+  <function name="f800" domain="(0,50)" styleNumber='2'>
+    $(p800{prop='a'})x^2 + $(p800{prop='b'})x + $(p800{prop='c'})
+  </function>
+</setup>
+
+<p>
+  <answer>
+    <award targetsAreResponses="A1 A2 A3 B1 B2 B3">
+      <when matchPartial>
+        ($fA=$f550 and $fB=$f800)
+        or
+        ($fA=$f800 and $fB=$f550)
+      </when>
+    </award>
+  </answer>
+</p>
+
+
+
+<hint>
+Move the three blue points so that the blue curve is the plot for one initial condition and the green points so that the green curve is the plot for the other initial condition.  (The order doesn't matter.)
+</hint>
+
+</li>
+
+<li>
+<p>Are there any initial conditions that will keep the cell volume from tending toward infinity as <m>t</m> increases?  What can we reasonably conclude about this model of the cell volume? </p>
+<answer inline='true'>
+<choiceinput>
+<choice>Nothing.</choice>
+<choice credit='1'>The model is only valid for a short time.</choice>
+<choice>The model makes sense for all time.</choice>
+<choice credit='1'>The model predicts that the cell will eventually be larger than the earth.</choice>
+<choice credit='1'>The model predicts that the cell will eventually be larger than the sun.</choice>
+<choice credit='1'>The model predicts that the cell will eventually be larger than the Milky Way galaxy.</choice>
+</choiceinput>
+</answer>
+
+
+
+</li>
+
+  
+</ol>
+
+
+<solution>
+
+  <setup>
+    <math name='diffeq_soln'>dv/dt = $rate</math>
+    <function name='v_t' variables='t'>v (t)</function>
+    <math name='find_C'>$init_cond =0^2+C </math>
+    <math name='find_C2'>$init_cond2 =0^2+C </math>
+    <math name='find_volume_5'>5^2+$init_cond </math>
+    <math name='find_volume_10'>10^2+$init_cond </math>
+    <math name='find_volume2_5'>5^2+$init_cond2 </math>
+    <math name='find_volume2_10'>10^2+$init_cond2 </math>
+  </setup>
+
+
+<ol>
+
+<li>
+The state variable can be any letter, besides <m>t</m> which we are reserving for time, capital <m>C</m>, which we reserve for the arbitrary constant, and <m>d</m>, which we use for the derivative.  A reasonable choice would be <m>v</m> for volume.  The differential equation is then <m>$diffeq_soln </m>, where <m>t</m> is measured in seconds since the rate of change is given in <m>\mu {\rm m}^3</m> per second.
+</li>
+
+<li>
+Recall that the derivative of <m>t^2</m> is <m>2t</m>.  So <m>v(t) = $solution0 </m> <m>\mu {\rm m}^3</m>.  We can add any constant to this and still have a solution.
+</li>
+
+<li>
+For the general solution, we just need to add <m>C</m> to the solution from part (2): <m>v(t)=$gen_soln </m> <m>\mu {\rm m}^3</m>.
+</li>
+
+<li>
+If we plug in <m>0</m> for <m>t</m> and <m>$init_cond </m> for <m>v(t)</m>, we get <m>$find_C </m>. Solving for <m>C</m> gives us <m>C=$init_cond </m>. So <m>v(t)=$partic_soln </m> is the particular solution. Plug in <m>t=5</m> to find the cell's volume after five seconds: <m>$find_volume_5  = $var_5 </m> <m>\mu {\rm m}^3</m>. Plug in <m>t=10</m> to find the cell's volume after two seconds: <m>$find_volume_10  = $var_10 </m> <m>\mu {\rm m}^3</m>.
+</li>
+
+<li>
+If we plug in <m>0</m> for <m>t</m> and <m>$init_cond2 </m> for <m>v(t)</m>, we get <m>$find_C2 </m>. Solving for <m>C</m> gives us <m>C=$init_cond2 </m>. So <m>v(t)=$partic_soln2 </m> is the particular solution. Plug in <m>t=5</m> to find the cell's volume after five seconds: <m>$find_volume2_5  = $var2_5 </m> <m>\mu {\rm m}^3</m>. Plug in <m>t=10</m> to find the cell's volume after two seconds: <m>$find_volume2_10  = $var2_10 </m> <m>\mu {\rm m}^3</m>.
+</li>
+
+<li>
+The solution with initial condition <m>$init_cond </m> <m>\mu {\rm m}^3</m> is shown by the thick blue line and the solution with initial condition <m>$init_cond2 </m> <m>\mu {\rm m}^3</m> is shown by the thin green line.
+
+
+
+<graph width='400' height='300' xmin='-5' xmax='30' ymin='-90' ymax='1050' xlabel='t' ylabel='v' fixAxes>
+  $f550$f800
+</graph>
+
+</li>
+
+<li>
+Regardless of the initial condition, the cell will increase in size by <m>100</m> <m>\mu {\rm m}^3</m> after <m>10</m> seconds, and <m>400</m> <m>\mu {\rm m}^3</m> after <m>20</m> seconds.  This means the cell will rapidly reach a large volume, which would cause the cell to burst.  Therefore, the model can only be valid for a short time.
+</li>
+
+
+</ol>
+
+</solution>
+
+
+
+</problem>

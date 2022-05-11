@@ -1,0 +1,31 @@
+<title>Names for components like div and span</title>
+
+<p>Not sure what to call components with behaviors like the html elements <tag>div</tag> and <tag>span</tag>.  It doesn't seem right to use those terms, as they aren't semantic.  But, the use cases I found where I need them aren't semantic.</p>
+
+<p>Here's why I created them so far.</p>
+
+<section><title>Using them to hide portions</title>
+  
+  <p>I want to hide the remaining part of this paragraph until you can this right.  What is <m>1+1</m>.  <answer name="a1" symbolicEquality>2</answer> <span hide="$(a1{prop='creditAchieved'})!=1" >That's right.  And because you now know that <m>1+1=2</m>, you can try this follow-up problem.  What is <m>1+2</m>.  <answer>3</answer></span>
+    </p>
+  
+  <p>In that example, I used <tag>span</tag> because I wanted to reveal a portion that was part of a paragraph (i.e., inline text).</p>
+  
+<p>If, on the other hand, I wanted to reveal a couple paragraph, I need a block component.  The part I reveal isn't a separate subsection or any semantic block of code.  The grouping of these paragraph don't have any special significance other than that they should both revealed together.  Not sure what to use other than <tag>div</tag>.</p>
+  
+  <p>What is <m>1+3</m>?  <answer name="a3" symbolicEquality>4</answer></p>
+  
+  
+<div hide="$(a3{prop='creditAchieved'}) != 1">
+  <p>Now that you know <m>1+3 = 4</m>, we can follow up with this paragraph.</p>
+  
+  <p>And we go further in-depth into the lesson with this paragraph.</p>
+</div>
+  
+</section>
+
+<section><title>Anything better</title>
+  
+  <p>The tag names <tag>div</tag> and <tag>span</tag> don't feel right.  Is there anything better?</p>
+  
+  </section>

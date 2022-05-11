@@ -1,0 +1,11 @@
+<choiceinput name="ci" inline>
+  <choice>a</choice>
+  <choice>b</choice>
+  <choice>c</choice>
+</choiceinput>
+
+<p>Selected value: <copy prop="selectedValue" target="ci" /></p>
+
+<footnote>hello</footnote>
+
+<copy uri="doenet:doenetId=gH-A7NKz9_fHEI9LKlVlA" />

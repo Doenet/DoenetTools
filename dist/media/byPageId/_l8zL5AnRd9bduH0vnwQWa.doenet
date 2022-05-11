@@ -1,0 +1,291 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>vector</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>draggable</attr>  <em>(boolean)</em></li>
+  <li><attr>headDraggable</attr>  <em>(boolean)</em></li>
+  <li><attr>tailDraggable</attr>  <em>(boolean)</em></li>
+  <li><attr>x</attr>  <em>(math)</em></li>
+  <li><attr>y</attr>  <em>(math)</em></li>
+  <li><attr>z</attr>  <em>(math)</em></li>
+  <li><attr>xs</attr>  <em>(mathList)</em></li>
+  <li><attr>displacement</attr>  <em>(vector)</em></li>
+  <li><attr>head</attr>  <em>(point)</em></li>
+  <li><attr>tail</attr>  <em>(point)</em></li>
+  <aside startOpen="true"><title><alert>Inherited from parent component/  <c>GraphicalComponent</c>:</alert></title>
+  <li><attr>label</attr> <em>(text)</em></li>
+  <li><attr>showLabel</attr> <em>(boolean)</em></li>
+  <li><attr>layer</attr> <em>(number)</em></li>
+  </aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>vector</tag><idx><tag>vector</tag></idx> component renders a graphical representation of a vector when nested within a <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref>.  By default, the tail of the vector originates at the origin and the tip or head of the vector is specified by a set of coordinates enclosed within the tags.  Attributes provide numerous variations on this default behavior. By default, the head of the vector is draggable for interactive activities. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tag>vector</tag> with <attr>draggable</attr> attribute</title>
+<p>In the code below, the <attr>draggable</attr> attribute has been set to false to fix the right vector in place, while the left vector can be moved freely. (Vectors are draggable by default in DoenetML, so the <attr>draggable="true"</attr> specification is not technically required here.) The vector components are specified between opening and closing tags with the syntax: <c>(x-component, y-component)</c>.</p>
+<example boxed="true"><title>Sample DoenetML (Example 1)</title>
+<pre>
+&lt;graph&gt;
+  &lt;vector draggable = "false"&gt;(5,3)&lt;/vector&gt;
+  &lt;vector draggable="true"&gt;(-5, 3)&lt;/vector&gt;
+&lt;/graph&gt;
+</pre>
+  </example>
+</subsection>
+ 
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<graph>
+  <vector draggable="false">(5, 3)</vector>
+  <vector draggable="true">(-5, 3)</vector>
+</graph>
+</example>
+  
+<!--*******************************************************-->
+
+<subsection><title>Example 2: <tag>vector</tag> with components displayed using <tage>copy</tage></title>
+<p>In the code below, the user can drag the vector and see the updated coordinates displayed to the right. To achieve this, a <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref> and an <ref uri="doenet:doenetId=GCM8z3SDsbj9yZSkHW3YB"><tag>m</tag></ref> are grouped in a <ref uri="doenet:doenetId=m60eBCbehXNF3VGwAsGO9"><tag>sideBySide</tag></ref> and vector coordinates are rendered with the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;sideBySide&gt;
+  &lt;graph&gt;
+    &lt;vector name="v"&gt;(5,3)&lt;/vector&gt;
+  &lt;/graph&gt;
+  
+  &lt;m&gt;\textbf{v} = \langle &lt;copy prop="x" tname="v" displayDecimals="2"/&gt;,
+    &lt;copy prop="y" tname="v" displayDecimals="2"/&gt; \rangle 
+  &lt;/m&gt; 
+&lt;/sideBySide&gt;
+</pre>
+        </example>
+      </subsection>
+  
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<sideBySide>
+  <graph>
+    <vector name="v">(5,3)</vector>
+  </graph>
+  
+  <m>\textbf{v} = \langle <copy prop="x" tname="v" displayDecimals="2"/>,
+    <copy prop="y" tname="v" displayDecimals="2"/> \rangle 
+  </m> 
+</sideBySide>
+</example>
+
+<!--******************************************************-->
+ 
+<subsection><title>Example 3: <tag>vector</tag> with <attr>head</attr> and <attr>tail</attr> attributes</title>
+<p>In the sample code below, the geometry of the vector is defined via its endpoints using the <attr>head</attr> and <attr>tail</attr> attributes, which take a <c>point</c> input enclosed in parentheses.  Below the graph, the vector arrow notation is rendered using two different methods in Latex, enclosed within the <ref uri="doenet:doenetId=GCM8z3SDsbj9yZSkHW3YB"><tag>m</tag></ref> component for mathematical display text.  The updated values of the vector components are rendered using the <c>&dollar;name</c> notation.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;p&gt;Click and drag the vector and it's endpoints to see the 
+  updated vector components displayed below.&lt;/p&gt;
+  
+&lt;graph&gt;
+  &lt;vector head="(5,5)" tail="(-3,-2)" name="v"/&gt;
+&lt;/graph&gt;
+
+&lt;p&gt;Below, two ways that DoenetML can interpret the Latex vector
+  arrow notation:&lt;/p&gt;
+&lt;p&gt;&lt;m&gt; \overrightarrow{v} = &dollar;v&lt;/m&gt;&lt;/p&gt;
+&lt;p&gt;&lt;m&gt; \vec{v} = &dollar;v&lt;/m&gt;&lt;/p&gt;
+</pre>
+  </example>
+</subsection>
+   
+<!--*******************************************************-->
+
+<example newNameSpace><title>What Doenet Renders (Example 3)</title>
+<p>Click and drag the vector and it's endpoints to see the 
+  updated vector components displayed below.</p>
+  
+<graph>
+  <vector head="(5,5)" tail="(-3,-2)" name="v"/>
+</graph>
+
+<p>Below, two ways that DoenetML can interpret the Latex vector
+  arrow notation:</p>
+<p><m> \overrightarrow{v} = $v</m></p>
+<p><m> \vec{v} = $v</m></p>
+
+</example>
+ 
+ 
+
+<!--******************************************************-->
+  
+<subsection><title>Example 4: Using <tag>vector</tag> with point constraints and fixing one end of vector only</title>
+<p>In the sample code below, the user can drag the head of the vector but not the tail, since the <attr>tailDraggable</attr> attribute has been set to <c>false</c>. In order to force the head of the vector to snap to a gridline position, the <ref><tage>constrainToGrid</tage></ref> component has been used when defining the initial position of the head of the vector with the <ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref> component.  Here, the output of the point is not rendered when it is defined, because it is nested inside a <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> block. Finally, the named point, <c>initialPosition</c> is referenced inside the <attr>head</attr> attribute of the <tag>vector</tag> component using the <c>&dollar;name</c> notation.  Note that the <attr>tail</attr> attribute is not always necessary as the location of the tail defaults to the origin. (See also <ref uri="doenet:doenetId=DasOYIo38JZmCquq_mcCd"><tag>constraints</tag></ref>, <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref>, <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref>.)</p>
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+&lt;setup&gt;
+  &lt;point name="initialPosition"&gt;(5,2)
+    &lt;constraints&gt;
+      &lt;constrainToGrid/&gt;
+    &lt;/constraints&gt;
+  &lt;/point&gt;
+&lt;/setup&gt;
+
+&lt;p&gt;Click and drag the point at the head of the vector to change its position.&lt;/p&gt;
+  
+&lt;graph grid="dense"&gt;
+  &dollar;initialPosition
+  &lt;vector head="&dollar;initialPosition" tailDraggable="false" name="v"/&gt;
+&lt;/graph&gt;
+
+&lt;p&gt;The vector &lt;m&gt;\textbf{v} = &lt;copy tname="v"/&gt;&lt;/m&gt;.&lt;/p&gt;
+</pre>
+</example> 
+</subsection>
+ 
+<!--*******************************************************-->
+
+<example newNameSpace><title>What Doenet Renders (Example 4)</title>
+<setup>
+  <point name="initialPosition">(5,2)
+    <constraints>
+      <constrainToGrid/>
+    </constraints>
+  </point>
+</setup>
+
+<p>Click and drag the point at the head of the vector to change its position.</p>
+<graph grid="dense">
+  $initialPosition
+  <vector head="$initialPosition" tailDraggable="false" name="v"/>
+</graph>
+
+<p>The vector <m>\textbf{v} = <copy tname="v"/></m>.</p>
+</example>
+  
+<!--******************************************************-->
+ 
+<subsection><title>Example 5: User input <tag>vector</tag> components with the <attr>x</attr> and <attr>y</attr> attributes</title>
+<p>In the sample code below, the user is prompted to enter integer-valued components for the <tag>vector</tag> with the <ref uri="doenet:doenetId=p_qPrnY-jhcqqrG2LcodH"><tage>mathInput</tage></ref> component. The named values are then forced to take on integer values by redefining them within the <ref uri="doenet:doenetId=30BB7PzOFepawWqSs43PK"><tag>integer</tag></ref> component.  These named integers, <c>x1</c> and <c>y1</c> are then referenced by the <tag>vector</tag> component with the <attr>x</attr> and <attr>y</attr> attributes and rendered by the <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref>.</p>
+  
+<example boxed="true"><title>Sample DoenetML code (Example 5)</title>
+<pre>
+&lt;p&gt;Enter an integer between -10 and 10 for the 
+  &lt;m&gt;x&lt;/m&gt;-component: &lt;mathInput name="xComponent"/&gt;&lt;/p&gt;
+&lt;p&gt;Enter an integer between -10 and 10 for the 
+  &lt;m&gt;y&lt;/m&gt;-component: &lt;mathInput name="yComponent" /&gt;&lt;/p&gt;  
+
+&lt;m&gt; \vec{v} = \langle &lt;integer name="x1"&gt;&dollar;xComponent&lt;/integer&gt; , 
+&lt;integer name="y1"&gt;&dollar;yComponent&lt;/integer&gt; \rangle&lt;/m&gt;
+  
+&lt;graph grid="dense"&gt;
+  &lt;vector x="&dollar;x1" y="&dollar;y1"/&gt;
+&lt;/graph&gt;
+</pre>
+  
+</example> 
+</subsection>
+ 
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 5)</title>
+<p>Enter an integer between -10 and 10 for the <m>x</m>-component: <mathInput name="xComponent"/></p>
+<p>Enter an integer between -10 and 10 for the <m>y</m>-component: <mathInput name="yComponent" /></p>  
+
+<m> \vec{v} = \langle <integer name="x1">$xComponent</integer> , 
+<integer name="y1">$yComponent</integer> \rangle</m>
+  
+<graph grid="dense">
+  <vector x="$x1" y="$y1"/>
+</graph>
+</example>
+
+
+
+<!--******************************************************-->
+
+<subsection><title>Example 6: <tag>vector</tag> with the <attr>displacement</attr> attribute</title>
+<p>In the sample code below, the <attr>displacement</attr> attribute is used to generate a vector with a known origin point (specified with the <attr>tail</attr> attribute) and a known displacement.  The syntax for the input parameter  in the <attr>displacement</attr> attribute is <c>(x-displacement, y-displacement)</c>.  Above the <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref>, the <attr>tail</attr> point of the vector and the components of the displacement (or, equivalently, the vector components) are rendered using the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 6)</title>
+<pre>
+&lt;p&gt;The vector located at &lt;copy prop="tail" tname="displacementVector"/&gt; is 
+  &lt;m&gt;\textbf{v} = &lt;copy tname="displacementVector"/&gt;
+  &lt;/m&gt;
+&lt;/p&gt;
+  
+&lt;graph&gt;
+  &lt;vector tail="(1,1)" displacement="(6,3)" name="displacementVector"/&gt;
+&lt;/graph&gt;
+
+</pre>
+</example>
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 6)</title>
+
+<p>The vector located at <copy prop="tail" tname="displacementVector"/> is <m>\textbf{v} = <copy tname="displacementVector"/></m></p>
+  
+<graph>
+  <vector tail="(1,1)" displacement="(6,3)" name="displacementVector"/>
+</graph>
+ 
+</example>
+
+<!--******************************************************-->
+
+<subsection><title>Example 7: <tag>vector</tag> with the <attr>xs</attr> attribute</title>
+<p>In the sample code below, the <attr>xs</attr> attribute is used to specify the geometry of the vector with a list of components.  Three vectors are contrasted, and the <attr>label</attr> attribute is employed to differentiate them within the graph.  In the first, the <attr>xs</attr> list is defined directly within the attribute.  In the second, the <attr>xs</attr> list is defined in a named <ref><tag>mathList</tag></ref> and then referenced within the attribute specification using the <c>&dollar;name</c> notation.  Finally, the third vector uses the same named list within the <attr>xs</attr> but in addition it specifies a point other than <m>(0,0)</m> for its origin using the <attr>tail</attr> attribute.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 7)</title>
+<pre>
+&lt;mathList name="list"&gt;-5 -5&lt;/mathList&gt;
+
+&lt;graph&gt;
+  &lt;vector xs="3 3" tail="(3,0)" label="a"/&gt;
+  &lt;vector xs="&dollar;list" label="b"/&gt;
+  &lt;vector xs="&dollar;list" tail="(-2,2)" label="c"/&gt;
+&lt;/graph&gt;
+
+</pre>
+</example>
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 7)</title>
+
+<mathList name="list">-5 -5</mathList>
+
+<graph>
+  <vector xs="3 3" tail="(3,0)" label="a"/>
+  <vector xs="$list" label="b"/>
+  <vector xs="$list" tail="(-2,2)" label="c"/>
+</graph>
+  
+</example>
+
+    
+
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+

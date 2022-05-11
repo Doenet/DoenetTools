@@ -1,0 +1,14 @@
+<problem>
+<!-- <title>Cobweb step-by-step, quadratic, worksheet</title> -->
+
+<setup>
+
+  <function name='f' variables='x'>2x-x^2/3</function>
+  <math name='x0' >1</math>
+
+</setup>
+
+<copy uri='doenet:contentId=1b1e507fefa53ed1937b56c180a4f6120e1c2319d26ea24ab53c8297ea31a91c&doenetId=ts_RGq-dS63iVxZDmStK4' function="$f" x0="$x0"  width='400' height='300' xmin='-1' xmax='4' ymin='-0.7' ymax='3.5'  />
+
+  
+</problem>

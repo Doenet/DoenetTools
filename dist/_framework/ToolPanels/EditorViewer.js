@@ -9,11 +9,11 @@ import {
 } from "../../_snowpack/pkg/recoil.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {
-  fileByDoenetId,
+  fileByPageId,
   pageVariantInfoAtom,
   pageVariantPanelAtom
 } from "../ToolHandlers/CourseToolHandler.js";
-import {authorItemByDoenetId, useInitCourseItems} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId} from "../../_reactComponents/Course/CourseActions.js";
 export const viewerDoenetMLAtom = atom({
   key: "viewerDoenetMLAtom",
   default: ""
@@ -41,7 +41,7 @@ export const editorViewerErrorStateAtom = atom({
 export default function EditorViewer() {
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramPageId = useRecoilValue(searchParamAtomFamily("pageId"));
-  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const courseId = useRecoilValue(courseIdAtom);
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
@@ -49,14 +49,15 @@ export default function EditorViewer() {
   const setEditorInit = useSetRecoilState(editorPageIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
-  const pageObj = useRecoilValue(authorItemByDoenetId(paramPageId));
+  const pageObj = useRecoilValue(itemByDoenetId(paramPageId));
+  useSetCourseIdFromDoenetId(doenetId);
   useInitCourseItems(courseId);
   let pageInitiated = false;
   if (Object.keys(pageObj).length > 0) {
     pageInitiated = true;
   }
   let initDoenetML = useRecoilCallback(({snapshot, set}) => async (pageId) => {
-    let response = await snapshot.getPromise(fileByDoenetId(pageId));
+    let response = await snapshot.getPromise(fileByPageId(pageId));
     const doenetML = response;
     set(updateTextEditorDoenetMLAtom, doenetML);
     set(textEditorDoenetMLAtom, doenetML);

@@ -1,0 +1,100 @@
+<title>A discrete SIR infectious disease model</title>
+
+<section><title>Part 1</title>
+
+<figure>
+<video youtube="5y8ZJnsEBvU" width="640px" height="360px" />
+  <caption>Discrete SIR infectious disease model, part 1</caption>
+</figure>
+
+<subsection><title>Question 1</title>
+
+All of the above statements are true except one.  Which statement is false?
+<answer name='answer1'>
+<choiceinput>
+<choice name='choice0'>The number of susceptibles can only decrease or stay the same with time (assuming we have nonnegative numbers of individuals).</choice>
+<choice name='choice1'>The number of removed can only increase or stay the same with time (assuming we have nonnegative numbers of individuals).</choice>
+<choice name='choice2'>The number of infectives could increases or decrease with time. </choice>
+<choice name='choice3'>The model contains two parameters.</choice>
+<choice name='choice4'>The model contains three state variables.</choice>
+<choice name='choice5' credit='1'>As long as the numbers a and b are positive, the model will always give reasonable (i.e., nonnegative) values for the numbers of individuals in each class.</choice>
+</choiceinput>
+</answer>
+<feedback condition="$choice0" >Since we assume that <m>b \gt 0</m> and we are given that <m>S_t \ge 0</m> and <m>I_t \ge 0</m>, then <m>-bS_tI_t \le 0</m>.  The change in the number of susceptives is negative or zero, and the number of susceptibles decreases with each time step or stay the same.  The statement is true.</feedback>
+<feedback condition="$choice1" >Since we assume that <m>a \gt 0</m> and we are given that <m>I_t \ge 0</m>, then <m>aI_t \le 0</m>. The change in the number of removed is always positive or zero, and the number of susceptibles decreases with each time step or stay the same.  The statement is true.</feedback>
+<feedback condition="$choice2" >The sign of <m>bS_tI_t -a I_t</m> could be positive or negative, depending on the values of the state variables.  The change in the number of infectives could positive or negative, and the number of infectives could increase or decrease.  The statement is true.</feedback>
+<feedback condition="$choice3" >The model contains two parameters: the infection rate parameter <m>b</m> and the recovery parameter <m>a</m>.</feedback>
+<feedback condition="$choice4" >The model contains three state variables: the number of suceptibles <m>S_t</m>, the number of infectives <m>I_t</m>, and the number of removed <m>R_t</m>.</feedback>
+<feedback condition="$choice5" >We cannot be sure that the decrease in the number of susceptibles <m>bS_tI_t</m> is not larger than the number of susceptibles <m>S_t</m> that we start the time step with.  If <m>bS_tI_t \gt  S_t</m>, then the new value of the number of susceptibles will be negative.  The statement is false.</feedback>
+
+  
+
+</subsection>
+</section>
+
+<section><title>Part 2</title>
+
+<figure>
+<video youtube="0k2cA8nYQiA" width="640px" height="360px"/>
+  <caption>Discrete SIR infectious disease model, part 2</caption>
+</figure>
+
+
+<subsection><title>Question</title>
+
+<setup>
+  <number name="S0">20000</number>
+  <number name="I0">500</number>
+  <number name="R0">0</number>
+  <number name="a">0.05</number>
+  <number name="b">0.0001</number>
+</setup>
+
+<p>The model introduced in the video introduction contained three state variables:</p>
+<ul>
+  <li><m>S_t</m> = the number of susceptibles in day <m>t</m></li>
+  <li><m>I_t</m> = the number of infectives in day <m>t</m></li>
+  <li><m>R_t</m> = the number of removed in day <m>t</m>.</li>
+</ul>
+
+<p>The rule by which the state variables evolve is
+<md>
+  <mrow>S_{t+1} - S_t\amp = -b S_t I_t</mrow>
+  <mrow>I_{t+1} - I_t\amp = b S_tI_t - aI_t</mrow>
+  <mrow>R_{t+1} - R_t\amp = a I_t.</mrow>
+</md></p>
+
+<p>Set the recovery rate parameter to <m>a=$a</m> and the infection rate parameter to <m>b=$b</m> (the same values as in the video).  If the initial conditions are
+<md>
+  <mrow>S_0 \amp = $S0</mrow>
+  <mrow>I_0 \amp = $I0</mrow>
+  <mrow>R_0 \amp = $R0</mrow>
+</md>
+calculate the number of suceptibles <m>S_1</m>, the number of infectives <m>I_1</m>, and the number of removed individuals <m>R_1</m> in day 1.</p>
+
+
+
+<p>
+<m>S_1 =</m> 
+  <answer name="S1" symbolicEquality>
+    <award><math simplify>$S0 - $b$S0$I0</math></award>
+  </answer>
+</p>
+<p>
+<m>I_1 =</m> 
+  <answer name="I1" symbolicEquality>
+    <award><math simplify>$I0 + $b$S0$I0 - $a$I0</math></award>
+  </answer>
+</p>
+<p>
+<m>R_1 =</m> 
+  <answer name="R1" symbolicEquality>
+    <award><math simplify>$R0 + $a$I0</math></award>
+  </answer>
+</p>
+
+<p>You can calculate these numbers by hand or use the <ref uri="http://www.doenet.org/content/#/?doenetId=HY6mAPU3HK86HUcF-p1qB">SIR simulation applet</ref> (though you'll need to change the parameters <m>a</m> and <m>b</m> under Advanced Options).</p>
+  
+</subsection>
+
+</section>

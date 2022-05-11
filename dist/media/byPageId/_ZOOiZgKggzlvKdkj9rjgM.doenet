@@ -1,0 +1,213 @@
+<document><title><tag>panel</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>columns</attr> <em>(text)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>panel</tag><idx><tag>panel</tag></idx> component renders...</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<sideBySide>
+  <panel columns=""><lorem generateWords="7"/></panel>
+  <panel><lorem generateWords="10"/></panel>
+</sideBySide>
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section><title>inline and display</title>
+  <m>\sin(x)</m>
+  <me>\cos(x)</me>
+</section>
+
+<section>
+  <title>Numbered equations</title>
+  
+  <men name="e1">\sin(x)</men>
+  <men name="e2">\cos(x)</men>
+  <men name="e3">\tan(x)</men>
+
+  <p>We have equation <ref tname="e1" name="re1" />, equation <ref tname="e2" name="re2" />, and equation <ref tname="e3" name="re3" />.</p>
+</section>
+
+
+<section newNamespace>
+  <title>dynamic numbered equation</title>
+  
+  <p>Number of equations 1: <mathinput prefill="2" name="m" /></p>
+  <p>Number of equations 2: <mathinput prefill="1" name="n" /></p>
+
+  <men name="x">x</men>
+  <map assignNames="m1 m2 m3 m4 m5 m6">
+    <template newNamespace><men name='eq'>$i m</men></template>
+    <sources indexAlias="i"><sequence length="$m" /></sources>
+  </map>
+  <men name="y">y</men>
+  <map assignNames="n1 n2 n3 n4 n5 n6">
+    <template newNamespace><men name="eq">$i n</men></template>
+    <sources indexAlias="i"><sequence length="$n" /></sources>
+  </map>
+  <men name="z">z</men>
+
+</section>
+
+
+<section>
+  <title>align equations</title>
+  
+  <md>
+    <mrow>q \amp = \sin(x)</mrow>
+    <mrow>cos(x) \amp = z</mrow>
+  </md>
+  <mdn>
+    <mrow>q \amp = \sin(x)</mrow>
+    <mrow>cos(x) \amp = z</mrow>
+  </mdn>
+  <md>
+    <mrow number="true">q \amp = \sin(x)</mrow>
+    <mrow number="true">\cos(x) \amp = z</mrow>
+  </md>
+  <mdn>
+    <mrow number="false">q \amp = \sin(x)</mrow>
+    <mrow number="false">\cos(x) \amp = z</mrow>
+  </mdn>
+  
+</section>
+
+
+
+<section newNamespace>
+  <title>dynamic numbered aligned equations</title>
+
+  <p>Number of equations 1: <mathinput prefill="2" name="m" /></p>
+  <p>Number of equations 2: <mathinput prefill="1" name="n" /></p>
+
+  <men name="x">x</men>
+  <mdn name="ms">
+    <map assignNames="m1 m2 m3 m4 m5 m6">
+      <template newNamespace><mrow name='eq' number="mod($i,2)=1">$i m &amp;= $v</mrow></template>
+      <sources indexAlias="i" alias="v"><sequence length="$m" from="11" /></sources>
+    </map>
+  </mdn>
+  <men name="y">y</men>
+  <mdn name="ns">
+    <map assignNames="n1 n2 n3 n4 n5 n6">
+      <template newNamespace><mrow name="eq" number="(-1)^$i = 1">$i n &= $v</mrow></template>
+      <sources indexAlias="i" alias="v"><sequence length="$n" from="11" /></sources>
+    </map>
+  </mdn>
+  <men name="z">z</men>
+
+
+  
+</section>
+

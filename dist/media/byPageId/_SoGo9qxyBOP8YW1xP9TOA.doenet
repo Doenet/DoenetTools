@@ -1,0 +1,123 @@
+<p>If we have a discrete dynamical system such as
+<md>
+  <mrow>x_{t+1}\amp = 1.2 x_t</mrow>
+  <mrow>x_0\amp = 0.5</mrow>
+</md>
+then it is simple to calculate <m>x_t</m> for future times.  To go from time step <m>t</m> to time step <m>t+1</m>, we need to multiply by <m>1.2</m>.  We can iterate this process to go from <m>x_0</m> to <m>x_1</m> to <m>x_2</m>, etc.
+<md>
+  <mrow>x_1 \amp = 1.2 x_0 = 1.2(0.5) = 0.6</mrow>
+  <mrow>x_2 \amp = 1.2 x_1 = 1.2(0.6) = 0.72</mrow>
+</md>
+Continuing in this process,
+<me>x_3 = 1.2 x_2 = 1.2(0.72) = 0.864</me>
+</p>
+
+<p>We could do this indefinitely.  We could calculate <m>x_{100}</m> with this process, but it would take awhile.</p>
+
+<p>For a system as simple as <m>x_{t+1} = 1.2 x_t</m>, though, there is another way to figure out what <m>x_t</m> will be for any value of <m>t</m>.  We can actually <em>solve</em> the system to give us a direct formula to calculate <m>x_t</m> directly.  By solving the system, we mean find a formula for <m>x_t</m> in terms of the time step <m>t</m> and the initial condition <m>x_0</m>.  Unlike the system we are given, it cannot depend on the value of <m>x</m> from the previous time step.</p>
+
+<p>How do we come up with such a solution?  We don't have a standard algorithm to solve discrete dynamical systems.  In fact, for most such systems, we can't even find a solution formula.  But, the above system is simple enough that we can find a solution.</p>
+
+<p>For this dynamical system, to advance one time step, we must multiply by <m>1.2</m>.  To advance two time steps, we just have to do the same thing twice: multiply by <m>1.2</m> twice, or multiply by <m>1.2^2</m>.  For example, to go from <m>x_0</m> to <m>x_2</m>, we start with <m>x_0</m>, multiply by <m>1.2</m> to get to <m>x_1=1.2 x_0</m>, and multiply by <m>1.2</m> again to get
+<me>x_2 = 1.2 x_1 = 1.2 (1.2 \cdot x_0) = 1.2^2 x_0.</me>
+  
+Similarly, <m>x_3</m> is <m>1.2</m> times <m>x_2</m>, so it is <m>1.2^3 x_0</m>.</p>
+
+<p>If we want to go from <m>x_0</m> all the way to <m>x_t</m>, we just have to multiply by <m>1.2</m> <m>t</m> times; in other words, we have to multiply by <m>1.2^t</m>.  For any initial condition <m>x_0</m>, the solution to the dynamical system is
+<me>x_t = 1.2^t x_0.</me>
+If we plug in our initial condition <m>x_0 = 0.5</m>, then the specific solution is
+<me>x_t = 1.2^t 0.5.</me>
+We can immediately calculate that
+<me>x_3 = 1.2^3 0.5 = (1.728)(0.5) = 0.864.</me>
+We can jump right to <m>t=10</m> and determine that
+<me>x_{10}= 1.2^{10} 0.5 \approx (6.192)(0.5) = 3.096.</me>
+We can even go all the way out to <m>t=100</m> without any additional effort, since
+<me>x_{100} = 1.2^{100} 0.5,</me>
+this gives us something like 41 million.
+</p>
+
+<p>The reason we could solve this dynamical system was because it is so simple.  It is a <em>linear</em> dynamical system because the right hand side is a linear function of <m>x_t</m>.  In general, we can write such a linear system as
+<md>
+  <mrow>x_{t+1}\amp = a x_t</mrow>If we have a discrete dynamical system such as
+  <mrow>x_{t+1}\amp = 1.2 x_t</mrow>
+  <mrow>x_0\amp = 0.5</mrow>
+</md>
+then it is simple to calculate <m>x_t</m> for future times.  To go from time step <m>t</m> to time step <m>t+1</m>, we need to multiply by <m>1.2</m>.  We can iterate this process to go from <m>x_0</m> to <m>x_1</m> to <m>x_2</m>, etc.
+<md>
+  <mrow>x_1\amp = 1.2 x_0 = 1.2(0.5) = 0.6</mrow>
+  <mrow>x_2\amp = 1.2 x_1 = 1.2(0.6) = 0.72</mrow>
+</md>
+Continuing in this process,
+<me>x_3 = 1.2 x_2 = 1.2(0.72) = 0.864</me>
+</p>
+
+<p>We could do this indefinitely.  We could calculate <m>x_{100}</m> with this process, but it would take awhile.</p>
+
+<p>For a system as simple as <m>x_{t+1} = 1.2 x_t</m>, though, there is another way to figure out what <m>x_t</m> will be for any value of <m>t</m>.  We can actually <em>solve</em> the system to give us a direct formula to calculate <m>x_t</m> directly.  By solving the system, we mean find a formula for <m>x_t</m> in terms of the time step <m>t</m> and the initial condition <m>x_0</m>.  Unlike the system we are given, it cannot depend on the value of <m>x</m> from the previous time step.</p>
+
+<p>How do we come up with such a solution?  We don't have a standard algorithm to solve discrete dynamical systems.  In fact, for most such systems, we can't even find a solution formula.  But, the above system is simple enough that we can find a solution.</p>
+
+<p>For this dynamical sytsem, to advance one time step, we must multiply by <m>1.2</m>.  To advance two time steps, we just have to do the same thing twice: multiply by <m>1.2</m> twice, or multiply by <m>1.2^2</m>.  For example, to go from <m>x_0</m> to <m>x_2</m>, we start with <m>x_0</m>, multiply by <m>1.2</m> to get to <m>x_1=1.2 x_0</m>, and multiply by <m>1.2</m> again to get
+<me>x_2 = 1.2 x_1 = 1.2 (1.2 \cdot x_0) = 1.2^2 x_0.</me>
+  
+Similarly, <m>x_3</m> is <m>1.2</m> times <m>x_2</m>, so it is <m>1.2^3 x_0</m>.</p>
+
+<p>If we want to go from <m>x_0</m> all the way to <m>x_t</m>, we just have to multiply by <m>1.2</m> <m>t</m> times; in other words, we have to multiply by <m>1.2^t</m>.  For any initial condition <m>x_0</m>, the solution to the dynamical system is
+<me>x_t = 1.2^t x_0.</me>
+If we plug in our initial condition <m>x_0 = 0.5</m>, then the specific solution is
+<me>x_t = 1.2^t 0.5.</me>
+We can immediately calculate that
+<me>x_3 = 1.2^3 0.5 = (1.728)(0.5) = 0.864.</me>
+We can jump right to <m>t=10</m> and determine that
+<me>x_{10} = 1.2^{10} 0.5 \approx (6.192)(0.5)</me> called parameters.  If you substitute <m>a=1.2</m> and <m>b=0.5</m>, you have the system we began with.  Let's leave the parameters as arbitrary values, though. We can still solve the linear system.  The solution is
+<me>x_t = a^t b.</me>
+To go from the initial condition <m>x_0=b</m> to <m>x_t</m>, we just have to multiply by <m>a</m> <m>t</m> times, or multiply by <m>a^t</m>.
+</p>
+<p>We can now easily solve a system like
+<md>
+  <mrow>y_{t+1}\amp = 0.7 y_t</mrow>
+  <mrow>y_0\amp = 1730.</mrow>
+</md>
+The solution is <m>y_t = 0.7^t 1730</m>.</p>
+
+<p>The solution to the system
+<md>
+  <mrow>q_{n+1}\amp = 2 q_n</mrow>
+  <mrow>q_0\amp =3</mrow>
+</md>
+is <m>q_n = 2^n 3</m>.</p>
+
+<p>In all these examples, the dynamical system was given in what we call <q>function iteration form.</q>  They were written so that the value at the next time step was a function of the value at the previous time step:
+<me>x_{n+1} = f(x_n).</me>
+In these cases, <m>f</m> was a linear function of the form <m>f(x) = ax</m>.</p>
+
+<p>Often, though, when deriving a discrete dynamical system, we start with a dynamical system in terms of the change in the value of the state variable, such as
+<md>
+  <mrow>x_{n+1} - x_n\amp = 0.3 x_n</mrow>
+  <mrow>x_0\amp = 300,</mrow>
+</md>
+which could represent a population that increases by 30% in each time step.  We say such a dynamical system is in <q>difference form</q> because the left hand side <m>x_{n+1}-x_n</m> is the difference in the state variable across a time step.</p>
+
+<p>If we start with a system in difference form, it isn't difficult to change it to function iteration form.  We can solve for <m>x_{n+1}</m> by just adding <m>x_n</m> to both sides of the equation.  If we add <m>x_n</m> to both sides of the above system, the right hand side is <m>0.3 x_n + x_n = 1.3x_n</m>.  The dynamical system converted to function iteration form is
+<md>
+  <mrow>x_{n+1}\amp = 1.3 x_n</mrow>
+  <mrow>x_0\amp = 300.</mrow>
+</md>
+Now, we see that in each time step, we must multiply by 1.3.  The solution is
+<me>x_n = 1.3^n x_0,</me>
+and we can plug in <m>x_0=300</m>.</p>
+
+<p>Similarly, if we were modeling a population that started with 500 individuals and decreased by 20% in each year, we could come up with a dynamical system in difference form:
+<md>
+  <mrow>p_{t+1} - p_t\amp = -0.2 p_t</mrow>
+  <mrow>p_0\amp = 500,</mrow>
+</md>
+where <m>p_t</m> is the population size in year <m>t</m>.
+To convert it to function iteration form, add <m>p_t</m> to both sides
+<md>
+  <mrow>p_{t+1}\amp = 0.8 p_t</mrow>
+  <mrow>p_0\amp = 500.</mrow>
+</md>
+The solution is
+<me>p_t = 0.8^t 500.</me>
+</p>

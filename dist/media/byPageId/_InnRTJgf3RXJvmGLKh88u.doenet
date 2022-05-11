@@ -1,0 +1,134 @@
+<problem>
+<variantControl nVariants="1" />
+
+<p>A colony of bacteria doubles in population every hour. The population initially contains <math name="b0">10^5</math>  bacteria.</p>
+
+<p>If we denote the state variable by <m>b</m> and the time variable by <m>t</m>, then <m>b_t</m> represents the number of <answer name="svName" type="text" size="5">bacteria</answer> in the colony during the <m>t^{th}</m> <answer type="text" size="5" name="timeUnit">hour</answer> (time unit).</p>
+
+<hint hide="($(svName{prop='nSubmissions'}) + $(timeUnit{prop='nSubmissions'}) < 8)">
+  <m>b_t</m> represents the number of bacteria in the colony during the <m>t^{th}</m> hour.
+</hint>
+
+
+<paragraphs><title>The dynamical rule</title>
+
+<p>We'll write the dynamical rule as a function in the form:
+<me>b_{t+1} = f(b_t) \qquad \text{for &dollar;t=0,1,2, \ldots&dollar;}</me>
+To go from one time step to the next we apply function <m>f</m> to the value of the state variable.</p>
+
+<p>For the above equation to be the correct rule, the function <m>f(b)</m> must be:</p>
+<p><m>f(b) =</m> 
+<answer size='5' name="rule">2b</answer>
+</p>
+
+<feedback condition="$rule=2b_t">You are close.  However, <m>f</m> is defined as a function of <m>b</m> not <m>b_t</m>, so replace <m>b_t</m> with just <m>b</m>.</feedback>
+
+<p>Note that we are using the argument <m>b</m> for the function <m>f(b)</m> rather than using <m>b_t</m>.  So, be sure to write your answer for <m>f(b)</m> using <m>b</m> rather than <m>b_t</m>.</p>
+
+
+
+
+<hint>
+<p>What is the dynamical rule given in the statement of the problem?  What happens to population every time step (i.e., every hour)?  It <answer weight="0">
+  <choiceinput inline>
+    <choice credit="1">doubles</choice>
+    <choice>triples</choice>
+    <choice>stays the same</choice>
+    <choice>increases by 2</choice>
+    <choice>decreases by 2</choice>
+    <choice>halves</choice>
+  </choiceinput>
+</answer>.
+</p>
+
+<p>If we start with <m>b</m> bacteria, how many bacteria should we have at the next time step? <answer size='5' weight="0" name="ruleHint">2b</answer>
+ The answer to this should be the value of <m>f(b)</m>.</p>
+ <feedback condition="$ruleHint=2b_t">You are close.  However, <m>f</m> is defined as a function of <m>b</m> not <m>b_t</m>, so replace <m>b_t</m> with just <m>b</m>.</feedback>
+</hint>
+
+
+</paragraphs>
+
+<paragraphs><title>The initial condition</title>
+
+<p>Specify the initial condition.</p>
+
+<p><m>b_0 =</m> 
+<answer size='10'><award><copy tname="b0" /></award></answer>
+.</p>
+
+<hint>
+The value of the initial condition is stated in the problem. How many bacteria do we start with?
+</hint>
+
+
+</paragraphs>
+
+<paragraphs><title>Evolving the dynamical system</title>
+
+<p>Given the initial colony size, calculate the number of bacteria for the next five hours.</p>
+
+<p><m>b_1=</m> 
+<answer size='10'><award><math name="b1">2<copy tname="b0" /></math></award></answer>
+</p>
+<p><m>b_2=</m> 
+<answer size='10'><award><math name="b2">2<copy tname="b1" /></math></award></answer>
+</p>
+<p><m>b_3=</m> 
+<answer size='10'><award><math name="b3">2<copy tname="b2" /></math></award></answer>
+</p>
+<p><m>b_4=</m> 
+<answer size='10'><award><math name="b4">2<copy tname="b3" /></math></award></answer>
+</p>
+<p><m>b_5=</m> 
+<answer size='10'><award><math name="b5">2<copy tname="b4" /></math></award></answer>
+</p>
+
+
+<hint>
+Start with the initial condition and apply the dynamical rule once for each time step.
+</hint>
+
+</paragraphs>
+
+<solution>
+
+
+<ol>
+
+<li>
+The state variable <m>b_t</m> represent the number of bacteria in the colony during the <m>t^\text{th}</m> hour.
+</li>
+
+<li>
+<p>During each time step the population doubles so we have the following updating function</p>
+<me>f(b) = 2b</me>
+</li>
+
+<li>
+The colony starts with <m>10^5</m> bacteria so <m>b_0=10^5</m>
+</li>
+
+<li>
+<me>\left\{ 
+  \begin{array}{r c l}
+    b_{t+1}\amp =\amp f(b_t)\\
+b_0\amp =\amp 10^5\\
+\end{array} \right.</me>
+where <m>f(b) = 2b</m>.
+
+<p>  <m>b_0= 10^5</m></p>
+<p>  <m>b_1= 2 \times 10^5</m></p>
+<p>  <m>b_2= 4 \times 10^5</m></p>
+<p>  <m>b_3= 8 \times 10^5</m></p>
+<p>  <m>b_4= 1.6 \times 10^6</m></p>
+<p>  <m>b_5= 3.2 \times 10^6</m></p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

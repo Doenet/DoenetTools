@@ -1,0 +1,90 @@
+<document><title>documentWideCheckWork attribute</title>
+
+<section><title>Associated Components</title>
+<ul>
+  <li><tag>document</tag></li>
+</ul>
+
+</section>
+<section><title>Usage Examples</title>
+</section>
+
+<section><title>Description</title>
+  <p>This boolean attribute defaults to false unless the user specifies it within the <tag>document</tag> component.  Specifying the <alert>documentWideCheckWork</alert> attribute forces all answers to the problems specified within the document tags to be evaluated as a group.  A single "Check Work" button will appear at the bottom of the page.  Unlike the <alert>sectionWideCheckWork</alert> attribute, it is not necessary to also specify the <alert>aggregateScores</alert> attribute in combination with the <alert>documentWideCheckWork</alert> attribute.</p>
+</section>  
+</document>
+<subsection><title>Sample DoenetML code:</title>
+  <pre>
+<tag>document documentWideCheckWork</tag>
+<tag>problem</tag>
+  <tag>p</tag>Which country is also considered a continent?<tag>/p</tag>
+    <tag>answer</tag>
+      <tag>choiceinput</tag>
+        <tag>choice credit="1"</tag>Australia<tag>/choice</tag>
+        <tag>choice</tag>Venezuela<tag>/choice</tag>
+        <tag>choice</tag>Italy<tag>/choice</tag>
+      <tag>/choiceinput</tag>
+    <tag>/answer</tag>
+  
+  <tag>p</tag>What do you get when you mix red and yellow?<tag>/p</tag>
+    <tag>answer</tag>
+      <tag>choiceinput</tag>
+        <tag>choice</tag>brown<tag>/choice</tag>
+        <tag>choice</tag>green<tag>/choice</tag>
+        <tag>choice credit="1"</tag>orange<tag>/choice</tag>
+      <tag>/choiceinput</tag>
+    <tag>/answer</tag>
+  
+  <tag>p</tag>Who wrote "Great Expectations"?<tag>/p</tag>
+    <tag>answer</tag>
+      <tag>choiceinput</tag>
+        <tag>choice</tag>Shakespeare<tag>/choice</tag>
+        <tag>choice credit="1.0"</tag>Charles Dickens<tag>/choice</tag>
+        <tag>choice</tag>Victor Hugo<tag>/choice</tag>
+      <tag>/choiceinput</tag>
+    <tag>/answer</tag> 
+<tag>/problem</tag>
+
+<tag>/document</tag>
+  </pre>
+
+
+
+
+</subsection>
+<subsection><title>What Doenet Renders:</title>
+<document documentWideCheckWork>
+
+  <p>Which country is also considered a continent?</p>
+    <answer>
+      <choiceinput>
+        <choice credit="1">Australia</choice>
+        <choice>Venezuela</choice>
+        <choice>Italy</choice>
+      </choiceinput>
+    </answer>
+  
+  <p>What do you get when you mix red and yellow?</p>
+    <answer>
+      <choiceinput>
+        <choice>brown</choice>
+        <choice>green</choice>
+        <choice credit="1">orange</choice>
+      </choiceinput>
+    </answer>
+  
+  <p>Who wrote "Great Expectations"?</p>
+    <answer>
+      <choiceinput>
+        <choice>Shakespeare</choice>
+        <choice credit="1.0">Charles Dickens</choice>
+        <choice>Victor Hugo</choice>
+      </choiceinput>
+    </answer> 
+
+</document>
+</subsection>
+
+
+
+

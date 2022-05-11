@@ -1,0 +1,23 @@
+<title>Test of Pagination</title>
+
+<!--<variantControl nVariants="1" />-->
+<paginatorControls paginatorTname="sprinkles" />
+
+<paginator name="sprinkles">
+
+<copy uri="doenet:contentId=c6c2011a646f41ecddb334f73f99d782bb4061ff21815148996b14fb7d6e8e94&doenetId=4gskjwpMKNCDnGpXRNh3b" componentType="problem"/> 
+ 
+
+<copy uri="doenet:contentId=2f4addeb47e6d81a73ca77ace87c357009c42c1d691a2f5c6d5f6310514fb86b&doenetId=evQLpfOSMh9MZGIwhmDOO" componentType="section"/>
+  
+<copy uri="doenet:contentId=2d85c2f3998d637d383187688af099870b0b187acf5e8dc76c07bc35bc9af8b9&doenetId=P3Cpp7H95yY3JBTjoRUNW" componentType="document" />
+  
+<copy uri="doenet:contentId=57691bbc18c7eb5d80fe1b75edce3fc92163cdd2134216bcc479020aa1aada2d&doenetId=WOxEg_HgbMHZHSWHYXN4F" componentType="section" assignNames="example1" />
+
+<copy uri="doenet:contentId=928498e950b52b72f1b7661fb3b6ba32cd5b2300fbd1ef32568a994f4d9c8ea4&doenetId=Yscv_sJ2CKlJ_F37qHyOy" componentType="section" assignNames="example2" />
+
+<copy uri="doenet:contentId=6f19ffda7d992511bed9a8ad05a1d416527eeb21ca6a4526a550e641325835ee&doenetId=BPcQJ3T5JR5h9tcADxbjP" componentType="section" assignNames="example3"/>
+
+</paginator>
+
+<paginatorControls paginatorTname="sprinkles" />

@@ -1,0 +1,52 @@
+<!--***********************************************************
+*Dear aspiring mad scientists, 
+*please do not alter the source file for the course, but instead 
+*use CMD+A (or CNTRL+A) to select all the text, then copy and 
+*paste into a separate DoenetML for practice. 
+*
+*
+*Your humble lab servant,
+*the DoenetML Igor
+************************************************************-->
+<title>Practice Example: <tag>alert</tag><tag>/alert</tag>component</title>
+<ref createButton="true" uri="https://docs.google.com/document/d/13BaLGprJj8S5QFJQGCP-TBoScMGwoITwptZRHLD2h_I/edit?usp=sharing">Get Text File</ref>
+
+
+
+<!--***********************************************************
+*  Example 1:  Using an <alert></alert> tag in a photo credit
+*                                   
+************************************************************-->
+
+
+<p>
+<figure>
+  <image width="400" source="https://lh3.googleusercontent.com/pw/AM-JKLWWF6Ab4ztjjDNk2YR14z5anfS_yiVKY1xJlmdtEY1foZtvNrNGcL6ScdmEdHxlCjLKuIzkQt7JzJ8tEtCGunJVd6pWdzWJh6LvO8jbfkT_1727-YQsG94kTXaYgT7Dh1hh5y_WfmSZ_feqlIdEDzSnjOLb5tAOjc_HXP-cD_Z9tEw2IJp_ZQSTS0nUAWQs8jCDIiEzDfgn2OkcGWL1h8aAipGnNhz0KaEWhDtgBXBWSYJWeQ-5sRR-o-mifWDSDEQ3NL5LnMEM0DDc3LKXzIOPZjNufdV2meFy4R77ZT3-BkMtED_G1tpxcLMJsh91-H4338T7Q9R-dwIncEEjnfo0uW37UtkwUqWenfSFtdA8XIBqLtQxKENn-z52i8pOw5RBmOA1XzPD2EAZhqK6pvzSyJa0fakKEuWhG6F-TqyIeLFtzhgWzo9Cell4lOnJs4lJM3xZr9zicWLBz_QbiVsXyue30BYshvoykbilwWgVlHhy7PbKnJPVtRnwjwlQBypazPOnYnl5S1duhsAH_EE7_BU8-i_K9zFGZlDpoMvZ8s8yVYcnahQtDYmba3XMSkQXgpsp9i5CDSdNU2j6i5VZChwptGFN0mwuwwRJuHJ4h5b3CSKEEHrOa6NatgAMwg8hQfmMwIe5cw1gC8Mc_IPP99_BCLvt1FbSgmEmgT6ZZZRQeXJcU4paFcuaoVHhuwIF34cYjvrnnuw2VLhnSR2gNMkh6CNMCH01Q15Wg8je-A=w2132-h1578-no?authuser=0&authuser=0" />
+  <caption>Photo by <alert>The New York Public Library</alert> on <alert>Unsplash</alert> 
+  </caption>
+</figure>
+</p>
+  
+
+<!--Delete this comment and insert your own photo with bold
+type in the caption using the <alert></alert> tag->
+
+
+
+
+<!--***********************************************************
+*  Example 2:  Using the <alert></alert> tag within a paragraph
+*  of text to highlight important vocabulary
+*  
+************************************************************-->
+<p>
+  Your new <alert>Ginglymostoma bubalis</alert> can work up to 10x faster than the previous <alert>Prionon lagurong</alert>.  It can detect both <alert>Coleoptera fragilis</alert> and stained samples of <alert>Ginglymostoma bubalis</alert> with stunning clarity.  The <alert>Tridolagus dromediensis</alert> feature creates incredible imaging power and the built-in <alert>Threskiornioninae sphon</alert> apparatus will analyze your data with our revolutionary new computational model.
+</p>
+   
+
+<!--Delete this comment and create your own paragraph with highlighted words using the <alert></alert> tag-->
+
+
+
+
+

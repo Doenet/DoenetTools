@@ -1,0 +1,207 @@
+<problem>
+<!-- <title>SIS model, meaning of terms</title> -->
+
+<setup>
+
+<math name='one_minus_I' >1-I </math>
+<math name='one_minus_I_t' >1-I (t)</math>
+<math name='I_t'  >I(t)</math>
+
+</setup>
+
+
+<p>In the SIS model of an infectious disease, individuals are either infected or susceptible to infection, so that infected individuals become susceptible once again when they recover.  If the state variable <m>I(t)</m> is the fraction of infected individuals at time <m>t</m>, the evolution of the model can be written as
+<me>\frac{ dI }{ dt } = \alpha I (1-I) - \mu I,</me>
+where <m>\alpha</m>  and <m>\mu</m> (<q>alpha</q> and <q>mu</q>) are positive parameters.</p>
+
+
+<ol>
+
+<li>
+Why don't we need a state variable to track the fraction of susceptible individuals?  Because each individual is either 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>susceptible</choice>
+<choice>removed</choice>
+<choice>tall</choice>
+<choice>asleep</choice>
+<choice>dead</choice>
+</choiceinput>
+</answer>
+ or 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>infected</choice>
+<choice>recovered</choice>
+<choice>short</choice>
+<choice>awake</choice>
+<choice>alive</choice>
+</choiceinput>
+</answer>
+.  In this model, we don't allow individuals to be in any other state (like recovered or removed).
+
+<p>Because of this fact, we can write the fraction of susceptible individuals in terms of the state variable <m>I</m>.  If the fraction of infected individual is <m>I</m>, then the fraction of susceptible individuals is 
+<answer>
+<award symbolicEquality='true'>$one_minus_I</award>
+<award symbolicEquality='true'>$one_minus_I_t </award>
+</answer>
+.</p>
+
+
+</li>
+
+<li>
+Explain the meaning of the two terms on the right hand side of the differential equation, including the meaning of the two parameters <m>\alpha</m> and <m>\mu</m>.
+  
+<p>
+
+The term <m>\alpha I (1-I)</m> is the rate at which 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>susceptible</choice>
+<choice>infected</choice>
+<choice>recovered</choice>
+</choiceinput>
+</answer>
+ individuals 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>get infected</choice>
+<choice>recover</choice>
+<choice>die</choice>
+<choice>become susceptible again</choice>
+</choiceinput>
+</answer>
+.  Since a 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>susceptible</choice>
+<choice>infected</choice>
+<choice>recovered</choice>
+</choiceinput>
+</answer>
+ person needs to encounter an 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>infected</choice>
+<choice>susceptible</choice>
+<choice>recovered</choice>
+</choiceinput>
+</answer>
+ person to get the infection, the rate is proportional both to the fraction 
+<answer>
+<award symbolicEquality='true'>I</award>
+<award symbolicEquality='true'>$I_t</award>
+</answer>
+ of infected individuals and the fraction 
+<answer>
+<award symbolicEquality='true'>$one_minus_I </award>
+<award symbolicEquality='true'>$one_minus_I_t </award>
+</answer>
+ of susceptible individuals.  (Write an answer in terms of the state variable in the last two blanks.)  The parameter <m>\alpha</m> captures how likely it is for a 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>susceptible</choice>
+<choice>infected</choice>
+<choice>recovered</choice>
+</choiceinput>
+</answer>
+ person to encounter an 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>infected</choice>
+<choice>susceptible</choice>
+<choice>recovered</choice>
+</choiceinput>
+</answer>
+ person and then subsequently 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>get infected</choice>
+<choice>recover</choice>
+<choice>die</choice>
+<choice>become susceptible again</choice>
+</choiceinput>
+</answer>
+.</p>
+
+<p>The term <m>-\mu I</m> is the rate at which 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>infected</choice>
+<choice>susceptible</choice>
+<choice>recovered</choice>
+</choiceinput>
+</answer>
+ individuals 
+<answer inline='true'>
+<!--Duane, please review. Credit was given for all three of choices below (also on Math Insight), but it sounds like only "recover" s/b correct.-->
+  <choiceinput>
+<choice credit='1'>recover</choice>
+<choice>get infected</choice>
+<choice>die</choice>
+</choiceinput>
+</answer>
+ and become 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>susceptible</choice>
+<choice>infected</choice>
+<choice>recovered</choice>
+</choiceinput>
+</answer>
+ again.  This rate is just proportional to the number of 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>infected</choice>
+<choice>susceptible</choice>
+<choice>recovered</choice>
+</choiceinput>
+</answer>
+ individuals.  The parameter <m>\mu</m> captures how quickly 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>infected</choice>
+<choice>susceptible</choice>
+<choice>recovered</choice>
+</choiceinput>
+</answer>
+ individuals 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>recover</choice>
+<choice credit='1'>get infected</choice>
+<choice credit='1'>die</choice>
+</choiceinput>
+</answer>
+.</p>
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+We don't need to separately track susceptible individuals because each individual is either susceptible or infected.  The fraction of susceptible individuals is <m>1-I</m>.
+</li>
+
+<li>
+<p>The term <m>\alpha I (1-I)</m> is the rate at which susceptible individuals get infected.  Since a susceptible person needs to encounter an infected person to get the infection, the rate is proportional both to the fraction <m>I</m> of infected individuals and the fraction <m>1-I</m> of susceptible individuals.  The parameter <m>\alpha</m> captures how likely it is for a susceptible person to encounter an infected person and then subsequently get infected.</p>
+
+<p>The term <m>-\mu I</m> is the rate at which infected individuals recover and become susceptible again.  This rate is just proportional to the number of infected individuals.  The parameter <m>\mu</m> captures how quickly infected individuals recover.</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

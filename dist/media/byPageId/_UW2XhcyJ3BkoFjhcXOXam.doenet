@@ -1,0 +1,221 @@
+<problem>
+<variantControl nVariants="1" />
+
+<!-- <title>Bacteria growing in beaker</title> -->
+
+<setup>
+
+<math name='difference_form_rhs'>0.1487 b_t</math>
+<math name='difference_form_rhs_bad1'>14.87 b_t</math>
+<math name='Tdouble'>log(2)/log(1.1487)</math>
+<math name='TdoubleRound'>5</math>
+<math name='factor1'>1.1487^60</math>
+<math name='factor2'>1.1487^120</math>
+<math name='factor4'>1.1487^240</math>
+<math name='factor1_rounded'>2**(60/5)</math>
+<math name='factor2_rounded'>2**(120/5)</math>
+<math name='factor4_rounded'>2**(240/5)</math>
+<math name='hour_half_full' >1</math>
+<math name='minute_half_full' >55</math>
+<math name='hour_quad'  >2</math>
+<math name='minute_quad'>10</math>
+
+</setup>
+
+
+Bacteria are growing in a beaker so that the population size increases by 14.87% every minute.
+
+
+<ol>
+
+<li>
+<p>If <m>b_t</m> is the bacteria population size in minute <m>t</m>, set up a dynamics system model that describes the evolution of the population size. </p>
+
+<p><m>b_{t+1} - b_t =</m> 
+<answer name="answer1">
+<award symbolicEquality='true' allowedErrorInNumbers='0.0001' allowedErrorIsAbsolute="true">$difference_form_rhs </award>
+<award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.001' allowedErrorIsAbsolute="true" feedbackCodes='numericalerror'>$difference_form_rhs </award>
+<award credit='0.25' symbolicEquality='true' allowedErrorInNumbers='0.01' allowedErrorIsAbsolute="true" feedbackCodes='numericalerror'>$difference_form_rhs </award>
+<award symbolicEquality='true' allowedErrorInNumbers='0.0001' allowedErrorIsAbsolute="true" credit='0' name='award1'>$difference_form_rhs_bad1 </award>
+</answer>
+, for <m>t=0,1,2,3 \ldots</m>
+</p>
+<feedback condition="$award1">That would have the population increase by 1487% each minute!</feedback>
+<copy prop="feedbacks" tname="answer1" />
+
+
+</li>
+
+<li>
+<p>How long does it take the population size to double?</p>
+
+<p><m>T_{\text{double}} =</m> <mathinput name="dtVal" /> <textinput name="dtUnit" />
+<answer name='answer2'>
+<award allowedErrorInNumbers='0.001' matchPartial targetsAreResponses="dtVal dtUnit">
+  <when>$dtVal = $Tdouble and $dtUnit=minutes</when>
+</award>
+<award credit='0.5' matchPartial allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>
+  <when>$dtVal = $Tdouble and $dtUnit=minutes</when>
+</award>
+<award credit='0.25' matchPartial allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'> 
+  <when>$dtVal = $Tdouble and $dtUnit=minutes</when>
+</award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer2" />
+
+<p>The second blank is for a unit.</p>
+
+<hint>
+Hint: first rewrite the dynamical system into function iteration form.  Then, solve the system for <m>b_t</m>.  Then, find the condition for doubling.  Alternatively, use the formula for doubling time.
+</hint>
+
+<p>Your answer will look a lot prettier if you round to four significant digits.  (In this case, this means round to the nearest thousandth, as there should be one digit to the left of the decimal.) To make the rest of the question easier, write the doubling time again, but this we insist you round your answer to the nearest thousandth.</p>
+
+<p><m>T_{\text{double}} =</m> <mathinput name="dtRoundVal" /> <textinput name="dtRoundUnit" />
+<answer name='answer3'>
+<award matchPartial targetsAreResponses="dtRoundVal dtRoundUnit">
+  <when>$dtRoundVal = $TdoubleRound and $dtUnit=minutes</when>
+</award>
+</answer>
+</p>
+
+
+
+</li>
+
+<li>
+<p>If the population continues to grow at this rate, by what factor does the population size increase in one hour?  
+<answer name='answer4'>
+<award allowedErrorInNumbers='0.001'>$factor1 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$factor1 </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$factor1 </award>
+<award allowedErrorInNumbers='0.001'>$factor1_rounded </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$factor1_rounded </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$factor1_rounded </award>
+</answer>
+<copy prop="feedbacks" tname="answer4" />
+ In two hours?  
+<answer name='answer5'>
+<award allowedErrorInNumbers='0.001'>$factor2 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$factor2 </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$factor2 </award>
+<award allowedErrorInNumbers='0.001'>$factor2_rounded </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$factor2_rounded </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$factor2_rounded </award>
+</answer>
+<copy prop="feedbacks" tname="answer5" />
+ In four hours? 
+<answer name='answer6'>
+<award allowedErrorInNumbers='0.001'>$factor4 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$factor4 </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$factor4 </award>
+<award allowedErrorInNumbers='0.001'>$factor4_rounded </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$factor4_rounded </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$factor4_rounded </award>
+</answer>
+<copy prop="feedbacks" tname="answer6" />
+</p>
+
+
+<hint>
+You have two ways to solve this.  One way is to go back to the solution of the dynamical system and plug in the number of minutes elapsed for each interval.  A different way is to calculate how many times the population size doubled in each interval and use that to infer by what factor the population size increased.  (Using the rounded value of <m>T_{\text{double}}</m> makes the second approach much easier.)
+</hint>
+
+</li>
+
+<li>
+<p>An experiment is begun at midnight with just a few bacteria so that the fraction of the beaker that the bacteria occupy is approximately <m>0.00000005959 = 5.959 \times 10^{-8}</m>.  With this initial condition, the bacteria completely fill the beaker after two hours, at 2 AM.  At what time was the beaker half full?  The beaker was half full at 
+<mathinput name="hfHour" />:<mathinput name="hfMinute" /> 
+<choiceinput inline name="hfAMPM">
+<choice>AM</choice>
+<choice>PM</choice>
+</choiceinput>
+<answer name='hfTime'>
+<award targetsAreResponses="hfHour hfMinute hfTime" matchPartial>
+  <when>$hfHour = $hour_half_full and $hfMinute = $minute_half_full and $hfAMPM = AM</when>
+</award>
+</answer>
+.</p>
+
+<p>Write your answer in the form: hh:mm AM/PM.  Round your answer to the nearest minute.</p>
+
+
+<hint>
+There are two ways to answer this problem.  One is the hard way, which is to start your calculation at midnight.  The second way is to completely ignore the information you were given at midnight.
+</hint>
+
+</li>
+
+<li>
+<p>Imagine the researchers realized before 2AM that the bacteria were about to overflow the beaker.  They found three more empty beakers of the same size as the original beaker so that they had a total of four beakers to hold the bacteria.  At what time did the bacteria fill all four beakers?
+<mathinput name="quadHour" />:<mathinput name="quadMinute" /> 
+<choiceinput inline name="quadAMPM">
+<choice>AM</choice>
+<choice>PM</choice>
+</choiceinput>
+<answer name='quadTime'>
+<award targetsAreResponses="quadHour quadMinute quadTime" matchPartial>
+  <when>$quadHour = $hour_quad and $quadMinute = $minute_quad and $quadAMPM = AM</when>
+</award>
+</answer>
+
+</p>
+
+
+<hint>
+Thinking about the doubling time could be helpful.
+</hint>
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<p>Let <m>t=</m> time in minutes.  Let <m>b_t=</m> the population size of the bacteria in minute <m>t</m>.  Given that the increase from time <m>t</m> to time <m>t+1</m> is <m>0.1487</m> times the population size at time <m>t</m>, the dynamical system model is
+<me>b_{t+1}-b_t = 0.1487 b_t, \quad \text{for $ t=0,1,2,3 \ldots $ }</me></p>
+</li>
+
+<li>
+<p>By adding <m>b_t</m> to both size, we can rewrite the dynamical system as
+<me>b_{t+1} = 1.1487 b_t, \quad \text{for $ t=0,1,2,3 \ldots $ }</me>
+Given that the population size is multiplied by 1.1487 each time step, the solution is 
+<me>b_t = 1.1487^t b_0.</me>
+The population size doubles when <m>1.1487^t = 2</m>, i.e., when
+<md>
+  <mrow>t=T_{\text{double}}\amp = \frac{\log 2}{\log 1.1487}</mrow>
+  <mrow>\amp \approx \frac{0.6931}{0.1386} \approx 5.</mrow>
+</md>
+Therefore, the bacteria population size doubles every 5 minutes.  We used the natural log to calculate the numbers in the fraction, but you would get the same result if you used any other base for the logarithm.</p>
+</li>
+
+<li>
+<p>If the population continues to grow at this rate for one hour, or sixty minutes, the population increases by the factor <m>1.1487^{60} \approx 4096</m>, which is the same as doubling about <m>60/5=12</m> times.  In two hours, the population size doubles about 24 times, increasing by a factor of <m>1.1487^{120} \approx 1.678 \times 10^7</m>, which is about 16.78 million.  In four hours, the population size doubles about 48 times, increasing by a factor of <m>1.1487^{240} \approx 2.816 \times 10^{14}</m>, which is about 28.16 trillion.</p>
+</li>
+
+<li>
+<p>Let <m>b_t</m> measure the bacteria population size in units of the volume of the beaker, so that <m>b_t=1</m> means the beaker is exactly full.  If <m>t</m> is minutes after midnight, then the initial conditions are <m>b_0=5.959 \times 10^{-8}</m>.  As a double check, we can calculate the population size at 2 AM, when <m>t=120</m>.  By our solution formula, <me>b_{120} = 1.1487^{120} \cdot 5.959 \times 10^{-8} \approx 1.</me>  Indeed, the beaker is exactly full at 2 AM.</p>
+
+<p>However, this calculation was just optional, as the problem didn't ask us to calculate that the bacteria completely fill the beaker after two hours.  We could have taken that for granted.</p>
+
+<p>Given that the beaker was full at 2 AM, the beaker was half full exactly one doubling time <m>T_{\text{double}}</m> before 2 AM.  Since we calculated that <m>T_{\text{double}}</m> was 5 minutes, the beaker was half full at 5 minutes to 2:00, or 1:55 AM.</p>
+</li>
+
+<li>
+<p>The bacteria filled one beaker at 2 AM.  To fill four beakers, they just need to double two more times.  The bacteria fill all four beakers after two doubling times, <m>2T_{\text{double}}</m>, or 10 minutes, i.e., at 2:10 AM.  Not much time was gained by quadrupling the available space.</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

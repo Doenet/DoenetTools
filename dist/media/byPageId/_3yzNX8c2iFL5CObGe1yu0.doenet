@@ -1,0 +1,71 @@
+<title>Activity</title>
+
+
+<section>
+  <title>Introduction</title>
+
+  <subsection>
+    <title>Video</title>
+    
+    <p>Watch this video</p>
+  
+    <video youtube="tJ4ypc5L6uU" width="400" height="225" name="DoenetIntro" />
+
+  </subsection>
+
+  <subsection name="checkup" aggregateScores>
+    <title>Check up</title>
+
+    <p>What is the content effective measure calculated from the open data warehouse of student interactions?</p>
+
+    <answer name="effectiveMeasure">
+      <choiceinput randomizeOrder>
+        <choice credit="1">A measure that captures how one activity improves performance and engagement on other activities</choice>
+        <choice>A measure that captures which students are in danger of failing a course</choice>
+        <choice>A measure that captures the effectiveness of an activity on the final grade</choice>
+        <choice>A measure that captures the likelihood of student success on future courses</choice>
+      </choiceinput>
+    </answer>
+    
+  </subsection>
+  
+</section>
+
+
+<section>
+  <title>The actual work</title>
+
+  <problem name="someMath">
+    <title>Some math</title>
+
+    <p>Differentiate <math name="expr">e^(2x)</math>. 
+      <answer name="derivative">
+        <award><derivative>$expr</derivative></award>
+      </answer>
+    </p>
+
+    <p>1+1 = <answer name="sum">2</answer></p>
+    
+  </problem>
+
+  <problem>
+    <title>Graph problem</title>
+
+    <p>Move the point into the first quadrant.</p>
+
+    <graph><point name="P">(-3,-2)</point></graph>
+
+    <p>
+      <answer name="firstQuad">
+        <award targetsAreResponses="P">
+          <when>
+            <copy prop="x" tname="P"/> > 0
+            and
+            <copy prop="y" tname="P" /> >0
+          </when>
+        </award>
+      </answer>
+    </p>
+  </problem>
+  
+</section>

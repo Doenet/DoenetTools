@@ -1,0 +1,49 @@
+<problem>
+<title>Derivative of logarithm times linear polynomial</title>
+
+<setup>
+
+<selectFromSequence assignNames='a' from='-10' to=' 10' exclude='0'/>
+<selectFromSequence assignNames='b' from='-10' to=' 10' />
+
+<select assignNames='function' > u v w x y z</select>
+<select assignNames='x' > s t</select>
+
+<math name='linear' simplify='full' >$a *$x +$b </math>
+<math name='d_linear' simplify="numbers">$a *ln($x ) + $a +$b /$x </math>
+
+</setup>
+
+
+Calculate the derivative of <m>$function ($x ) = ($linear ) \ln ($x )</m>.
+
+<p><m>$function'($x) = </m>
+<answer><award>$d_linear</award></answer>
+</p>
+
+<hint>
+<p>You'll need to use the product rule</p>
+
+
+<paragraphs>
+<title>Helpful pages</title>
+<ul>
+<li><ref uri='doenet:product_rule_idea'>The idea of the product rule</ref></li>
+</ul></paragraphs>
+</hint>
+
+
+<solution>
+<p>By the product rule
+<md>
+  <mrow>$function '($x )\amp =  ($linear  )'\ln($x ) + ($linear  )  (\ln($x ))'</mrow>
+  <mrow>\amp = $a  \ln($x ) +  ($linear )  \frac{1}{ $x  }</mrow>
+  <mrow>\amp = $d_linear.</mrow>
+</md>
+</p>
+
+
+</solution>
+
+
+</problem>

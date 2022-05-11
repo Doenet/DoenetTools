@@ -1,0 +1,151 @@
+<module>
+  <setup>
+  </setup>
+  <p>
+    <row><alert>Remark</alert></row>
+    You can return to the previous page or open a second browser in order to keep
+    the example/definition page up while working the problems.
+    You should try and do one or two problems by hand to make sure you can quickly
+    compute modular inverses, but once you feel confident, you can use technology to
+    find them quickly and make sure you are applying the theorem correctly without
+    worrying about the arithmetic.
+  </p>
+  <p>
+    On <ref uri="https://www.wolframalpha.com/">Wolfram Alpha</ref>, for example, you can use
+    <c>5^(-1) mod 7</c>.
+  </p>
+
+  <p>
+    <row><alert>You practice</alert></row>
+  </p>
+  <module newNamespace>
+  <p>
+    <setup>
+      <select numberToSelect="3" assignNames="(m1) (m2) (m3)">
+        <option><math>2</math></option>
+        <option><math>3</math></option>
+        <option><math>5</math></option>
+        <option><math>7</math></option>
+        <option><math>11</math></option>
+      </select>
+      <math simplify name="k1">$m1-1</math>
+      <math simplify name="k2">$m2-1</math>
+      <math simplify name="k3">$m3-1</math>
+      <selectFromSequence from="0" to="$k1" step="1" name="a1" />
+      <selectFromSequence from="0" to="$k2" step="1" name="a2" />
+      <selectFromSequence from="0" to="$k3" step="1" name="a3" />
+      <math name="ans1" simplify>
+        mod(
+        $a1*$m2*$m3*<math simplify>mod(($m2*$m3)^($m1-2),$m1)</math>+
+        $a2*$m1*$m3*<math simplify>mod(($m1*$m3)^($m2-2),$m2)</math>+
+        $a3*$m1*$m2*<math simplify>mod(($m1*$m2)^($m3-2),$m3)</math>,
+        $m1*$m2*$m3)
+      </math>
+    </setup>
+    <alert>1.</alert>
+    Solve the following system of congruences:
+    <me>
+      \begin{align*}
+        x &amp; \equiv $a1 \mod $m1, \\
+        x &amp; \equiv $a2 \mod $m2, \\
+        x &amp; \equiv $a3 \mod $m3. \\
+      \end{align*}
+    </me>
+    <answer>
+      <award>
+        <math>
+          $ans1
+        </math>
+      </award>
+    </answer>
+  </p>
+  </module>
+
+  <module newNamespace>
+  <p>
+    <setup>
+      <select numberToSelect="4" assignNames="(m1) (m2) (m3) (m4)">
+        <option><math>2</math></option>
+        <option><math>3</math></option>
+        <option><math>5</math></option>
+        <option><math>7</math></option>
+        <option><math>11</math></option>
+      </select>
+      <math simplify name="k1">$m1*$m4-1</math>
+      <math simplify name="k2">$m2-1</math>
+      <math simplify name="k3">$m3-1</math>
+      <selectFromSequence from="0" to="$k1" step="1" name="a1" />
+      <selectFromSequence from="0" to="$k2" step="1" name="a2" />
+      <selectFromSequence from="0" to="$k3" step="1" name="a3" />
+      <math name="ans1" simplify>
+        mod(
+        $a1*$m2*$m3*<math simplify>mod(($m2*$m3)^(($m1-1)($m4-1)-1),$m1*$m4)</math>+
+        $a2*$m1*$m3*$m4*<math simplify>mod(($m1*$m3*$m4)^($m2-2),$m2)</math>+
+        $a3*$m1*$m2*$m4*<math simplify>mod(($m1*$m2*$m4)^($m3-2),$m3)</math>,
+        $m1*$m2*$m3*$m4)
+      </math>
+    </setup>
+    <alert>2.</alert>
+    Solve the following system of congruences:
+    <me>
+      \begin{align*}
+        x &amp; \equiv $a1 \mod <math simplify>$m1*$m4</math>, \\
+        x &amp; \equiv $a2 \mod $m2, \\
+        x &amp; \equiv $a3 \mod $m3. \\
+      \end{align*}
+    </me>
+    <answer>
+      <award>
+        <math>
+          $ans1
+        </math>
+      </award>
+    </answer>
+  </p>
+  </module>
+
+  <module newNamespace>
+  <p>
+    <setup>
+      <select numberToSelect="1" assignNames="(m1)">
+        <option><math>2</math></option>
+        <option><math>3</math></option>
+      </select>
+      <select numberToSelect="2" assignNames="(m2) (m3)">
+        <option><math>5</math></option>
+        <option><math>7</math></option>
+        <option><math>11</math></option>
+      </select>
+      <math simplify name="k1">$m1^2-1</math>
+      <math simplify name="k2">$m2-1</math>
+      <math simplify name="k3">$m3-1</math>
+      <selectFromSequence from="0" to="$k1" step="1" name="a1" />
+      <selectFromSequence from="0" to="$k2" step="1" name="a2" />
+      <selectFromSequence from="0" to="$k3" step="1" name="a3" />
+      <math name="ans1" simplify>
+        mod(
+        $a1*$m2*$m3*<math simplify>mod(($m2*$m3)^($m1^2-$m1-1),$m1^2)</math>+
+        $a2*$m1*$m3*$m1*<math simplify>mod(($m1*$m3*$m1)^($m2-2),$m2)</math>+
+        $a3*$m1*$m2*$m1*<math simplify>mod(($m1*$m2*$m1)^($m3-2),$m3)</math>,
+        $m1*$m2*$m3*$m1)
+      </math>
+    </setup>
+    <alert>3.</alert>
+    Solve the following system of congruences:
+    <me>
+      \begin{align*}
+        x &amp; \equiv $a1 \mod <math simplify>$m1^2</math>, \\
+        x &amp; \equiv $a2 \mod $m2, \\
+        x &amp; \equiv $a3 \mod $m3. \\
+      \end{align*}
+    </me>
+    <answer>
+      <award>
+        <math>
+          $ans1
+        </math>
+      </award>
+    </answer>
+  </p>
+  </module>
+</module>

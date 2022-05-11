@@ -1,0 +1,61 @@
+<!--
+#DESCRIPTION
+##  Calculus: Functions
+##ENDDESCRIPTION
+
+
+## DBsubject(Algebra)
+## DBchapter(Exponential and logarithmic expressions and functions)
+## DBsection(Exponential and logarithmic equations)
+## Date(08/29/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## Level(2)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('1.6')
+## Problem1('52')
+## KEYWORDS('calculus', 'function', 'exponential function')
+-->
+
+<setup>
+  <selectFromSequence from="2" to="5" name="a" />
+
+  <math name="ans">
+    e^(e^$a)
+  </math>
+</setup>
+
+<p>
+  Solve the equation for <m>x</m>.
+  <me>\ln (\ln x) = $a</me>
+</p>
+
+<p>
+  Answer:
+  <m>
+    x=
+  </m>
+  <answer>
+    <award>
+      $ans
+    </award>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        Inverse:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans
+      </cell>
+    </row>
+  </tabular>
+</solution>

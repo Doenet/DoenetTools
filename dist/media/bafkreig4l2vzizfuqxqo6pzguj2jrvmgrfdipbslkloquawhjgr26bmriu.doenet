@@ -1,0 +1,58 @@
+<title>Quiz 2</title>
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <select numberToSelect="4" assignNames="((problem1)) ((problem2)) ((problem3)) ((problem4))">
+    <option>
+      <select assignNamesSkip="2">
+        <option>
+          <copy uri="doenet:contentId=25afc4580517c3106bd0c03aacc2d32f89695cd2e8f654a9db69bf2fff1461cf&doenetId=MoOaLsRQowzse9ajXquNJ" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=f017a4f4abf33d0a143e1d556b28732446128488ba8f8e6ea57f02afeca03726&doenetId=IZdvcqt8HzydmOGWVy2AF" componentType="problem" />
+        </option>
+      </select>
+    </option>
+    <option>
+      <select assignNamesSkip="2">
+        <option>
+          <copy uri="doenet:contentId=72e21c4d1347a4c452b6cc65b2afe4f8f93c084f1c83af9378cf17daf9db1db3&doenetId=KIWCzsgHfmnszTOkCdLrA" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=8f4abb8b58f06cd6b01cd81089bdcd9e8dfcb61c4f5db4a11d5dca17b6b96b7d&doenetId=gYTYcnvDFAHzHmx-SMt1_" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=eb00ec532c97333c46bf3d35bf2bda489a5cd3cfdc40c64f805ac5c99b9b30f8&doenetId=AMhUicRt4-k3gcbUepW3k" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=d09565ac398d98b7cdde4eb2e17f97eb562f57d09c63e906c4b56430cbc6f1ca&doenetId=mr-Ngrv9r00wTZoMh8gPK" componentType="problem" />
+        </option>
+      </select>
+    </option>
+    <option>
+      <copy uri="doenet:contentId=173aaca0f778a162a8cf596aee3c1ae48f9f0e0d22581bb51c69a637b1a72c35&doenetId=e8EGv3UREkt_ha8tSia5M" componentType="problem" />
+    </option>
+    <option>
+      <select assignNamesSkip="2">
+        <option>
+          <copy uri="doenet:contentId=4dc1743d3ee7f628bcd98a0bf30bc171a257f8863a7bd70a264c8263769119f5&doenetId=c-KrlfNu7BQKONhLxTtyV" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=52bd45c0e3d608f696c91a24cb0c9cacb759d295a2778e072470196570dfbf2c&doenetId=JvKQQYLpv_WtAVjChbaKU" componentType="problem" />
+        </option>
+      </select>
+    </option>
+    
+  </select>
+</paginator>
+
+
+
+
+
+
+<paginatorControls paginatorTname="pgn" />
+  

@@ -1,0 +1,13 @@
+
+<p>right hand side= <mathinput name="rhs" prefill="3x"/></p>
+<p>initial condition = <mathinput name="ic" prefill="1"/></p>
+<odesystem name="ode" initialconditions="$ic" independentVariable="s" initialIndependentVariableValue="$(A{prop='x'})">
+  <righthandside>$rhs</righthandside>
+</odesystem>
+
+<graph>
+  <copy prop="numericalsolution" tname="ode" />
+  <point x='0' y='$ic' name="A" />
+</graph>
+
+<number fixed hide name="zeroFixed">3</number>

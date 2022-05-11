@@ -1,0 +1,86 @@
+<problem>
+<!-- <title>Pure time DiffEq - exponential - no initial cond</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a' from='-10' to=' 10' exclude='0' />
+<selectFromSequence assignNames='b' from='-5' to='5' exclude='0' />
+
+<function name='f' variables='t' simplify="numbers" symbolic><math simplify="numbers">$a *e^($b *t)</math></function>
+
+<math name='intfeval'>
+  $a * e^($b*t)/$b
+</math>
+<math name='intfeval2'>
+  $a /$b /e^(-$b*t)
+</math>
+<function name='antiderivfpart' variables='t'>
+  <math simplify="numbers">e^($b*t)/$b</math>
+</function>
+
+<select assignNames='f_name' >g h p q r y z</select>
+<math name='dxdt'>d$f_name/dt</math>
+<math name='x_0' targetsAreFunctionSymbols="f_name">$f_name (0)</math>
+<math name='x_t' targetsAreFunctionSymbols="f_name">$f_name (t)</math>
+
+
+<math name='finalans' >$intfeval +C </math>
+<math name='finalans2' >$intfeval2 +C </math>
+
+</setup>
+
+<p>
+Find all solutions to the pure-time differential equation <m>$dxdt  = <copy prop="formula" tname="f" /></m>.
+</p>
+ 
+<p>
+<m>$x_t =</m> 
+<answer name="answer1">
+<award symbolicEquality='true' simplifyOnCompare>$finalans </award>
+<award symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.0001' credit='0.8' name='award3'>$finalans </award>
+<award credit='0.64' symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$finalans </award>
+<award symbolicEquality='true' simplifyOnCompare>$finalans2 </award>
+<award symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.0001' credit='0.8' name='award3a'>$finalans2 </award>
+<award credit='0.64' symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$finalans2 </award>
+<award symbolicEquality='true' simplifyOnCompare credit='0.8' name='award1'>$intfeval </award>
+<award symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.0001' credit='0.64' name='award2'>$intfeval </award>
+<award credit='0.512' symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$intfeval </award>
+<award symbolicEquality='true' simplifyOnCompare credit='0.8' name='award1a'>$intfeval2 </award>
+<award symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.0001' credit='0.64' name='award2a' >$intfeval2 </award>
+<award credit='0.512' symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$intfeval2 </award>
+</answer>
+</p>
+<feedback condition="$award1 or $award1a">Don't forget the constant.</feedback>
+<feedback condition="$award2 or $award2a">Leave fractions as fractions, and don't forget the constant.</feedback>
+<feedback condition="$award3 or $award3a">Don't round, but leave fractions as fractions.</feedback>
+<copy prop="feedbacks" tname="answer1" />
+
+<p>
+For full credit, do not round your answer to a decimal.  (Maximum of 80% credit will be awarded for rounded answers that include at least 5 correct significant digits.)
+</p>
+
+<solution>
+<p>The solution is given by the sum of the indefinite integral <m>\displaystyle \int $f \, dt </m> and an arbitrary constant.  To solve the integral, we first use the constant product rule for integration: 
+</p>
+
+<p>
+<m>\displaystyle \int $f \, dt  = $a \int <math simplify="numbers">e^($b *t)</math> \, dt</m>
+</p>
+  
+<p>
+We then find the antiderivative:
+</p>
+<p><m>\displaystyle $a  \left( <copy prop="formula" tname="antiderivfpart" /> \right) = <math simplify>$intfeval</math> </m>
+</p>
+  
+<p>
+Finally, we add the arbitrary constant:
+</p>
+  
+<p><m>\displaystyle $x_t  = <math><math simplify>$intfeval</math>+C</math> </m>
+</p>
+  
+</solution>
+
+
+</problem>

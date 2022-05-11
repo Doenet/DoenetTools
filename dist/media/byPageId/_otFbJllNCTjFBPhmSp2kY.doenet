@@ -1,0 +1,128 @@
+<problem>
+<variantControl nVariants="1" />
+<!-- <title>Solution to linear discrete dynamical system, steps, with numbers function iteration</title> -->
+
+<setup>
+
+<math name='x' >y</math>
+<math name='n' >n</math>
+<math name='r' >0.3</math>
+<math name='x0' >15</math>
+<math name='r_squared' simplify='full'>$r*$r</math>
+<math name='r_cubed' simplify='full'>$r^3</math>
+<math name='x1' simplify='full'>$r*$x0</math>
+<math name='x2' simplify='full'>$r*$x1</math>
+<math name='x3' simplify='full'>$r*$x2</math>
+<math name='r_n' simplify='full'>$r^$n</math>
+<math name='xn' simplify='full'>$r^$n*$x0</math>
+<math name='x17' simplify='full'>$r^17*$x0</math>
+<math name='three'>3</math>
+
+</setup>
+
+Consider the discrete dynamical system
+<md>
+  <mrow>$(x)_{ $n+1}\amp = $r $(x)_$n \qquad \text{for $ <copy tname="n" />  = 0,1,2, \ldots $ }</mrow>
+  <mrow>$(x)_0\amp = $x0</mrow>
+</md>
+
+<p>We've been given the fact that <m>$(x)_0 =</m><answer>
+<award>$x0</award>
+</answer>. 
+
+Since <m>$(x)_1 = </m><mathinput name="mi1_intermediate" /> <m>\times\: $(x)_0</m>
+<answer><award targetsAreResponses="mi1_intermediate"><when>$mi1_intermediate = $r</when></award></answer>
+
+then <m>$(x)_1 = </m><answer><award>$x1</award></answer></p>
+
+<hint>
+  The system <m>$(x)_{ $n+1} = $r $(x)_$n</m> means that you multiply by <answer weight="0"><award>$r</award></answer> to go from one time step to the next.  That's what the second answer blank, above, is looking for.  The last answer above expects you to plug in the given number for <m>$(x)_0</m>.
+</hint>
+
+  
+<p>Similarly:</p>
+
+<p><m>$(x)_2 =</m><mathinput name="mi2_step1" /> <m>\times\: $(x)_1</m></p>
+<p><m>$(x)_2 =</m><mathinput name="mi2_step2" /> <m>\times\: $(x)_0</m></p>
+<p><m>$(x)_2 =</m><mathinput name="mi2_step3" /></p>
+<answer>
+<award matchPartial targetsAreResponses="mi2_step1 mi2_step2 mi2_step3"><when>$mi2_step1 = $r and $mi2_step2 = $r_squared and $mi2_step3 = $x2</when></award>
+</answer>
+
+<hint>
+  To go from <m>$(x)_1</m> to <m>$(x)_2</m>, you need to multiply by <answer weight="0" name="rhint"><award>$r</award></answer> one more time.  If you want to go from <m>$(x)_0</m> directly to to <m>$(x)_2</m>, you must multiply by <copy tname="rhint" prop="submittedResponse" componentType="math" /> <answer weight="0">2</answer> times, which is the same as multiplying by the number <answer weight="0"><award>$r_squared</award></answer>.  Remember to use the numerical value of <m>$(x)_0</m> in the last blank, above.
+</hint>
+  
+<p><m>$(x)_3 =</m><mathinput name="mi3_step1" /> <m>\times\: $(x)_2</m></p>
+<p><m>$(x)_3 =</m><mathinput name="mi3_step2" /> <m>\times\: $(x)_0</m></p>
+<p><m>$(x)_3 =</m><mathinput name="mi3_step3" /></p>
+<answer>
+<award matchPartial targetsAreResponses="mi3_step1 mi3_step2 mi3_step3"><when>$mi3_step1 = $r and $mi3_step2 = $r_cubed and $mi3_step3 = $x3</when></award>
+</answer>
+
+
+<p>This means that to calculate <m>$(x)_{3}</m>, you start with <m>$(x)_0</m> and multiply by 
+<answer name='answer9' size='5'>
+<award symbolicEquality='true'>$r</award>
+</answer>
+ how many times? 
+<answer name='answer10' size='3'>
+<award symbolicEquality='true'><copy tname="three" /></award>
+</answer>
+</p>
+
+
+<p>Continuing the pattern <m>$n</m> times, to calculate <m>$(x)_$n</m>, you start with <m>$(x)_0</m> and multiply by 
+<answer name='answer11' size='5'>
+<award symbolicEquality='true'>$r</award>
+</answer>
+ how many times? 
+<answer name='answer12' size='3'>
+<award symbolicEquality='true'>$n</award>
+</answer>
+</p>
+
+
+
+<p>Since repeated multiplication can be written as exponentiation, the formula for <m>$(x)_$n</m> is:
+</p>
+<p>
+
+<p><m>$(x)_n =</m><mathinput name="mi_n_step1" /> <m>\times\: $(x)_0</m></p>
+<p><m>$(x)_n =</m><mathinput name="mi_n_step2" /></p>
+<answer>
+<award matchPartial targetsAreResponses="mi_n_step1 mi_n_step2 "><when>$mi_n_step1 = $r_n and $mi_n_step2 = $xn</when></award>
+</answer>
+
+</p>
+
+<p>Calculate <m>$(x)_{17}=</m> 
+<answer name='answer15' size='10' symbolicEquality simplifyOnCompare="numbers">
+<award symbolicEquality='true'  allowedErrorInNumbers='0.00001'>$x17</award>
+<award credit='0.5' allowedErrorInNumbers='0.0001' feedbackCodes='numericalerror'>$x17</award>
+<award credit='0.25' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$x17</award>
+<award credit='0.125' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$x17</award>
+</answer>
+<copy prop="feedbacks" tname="answer15" />
+
+</p>
+<p>
+
+(Keep at least 6 significant digits in your response.)</p>
+
+<hint>
+This question all comes down to recognizing that the system, <m>$(x)_{ $n+1} = $r $(x)_$n</m>, means that you multiply by <m>$r</m> to go from one time step to the next.  To advance one time step (i.e., go from <m>$x_0</m> to <m>$x_1</m>, or from <m>$x_1</m> to <m>$x_2</m>, or from <m>$x_7</m> to <m>$x_8</m>), you multiply by <m>$r</m> one time.  Repeat the procedure to advance more than one time step.
+
+<p>Presumably, you will use your calculator to get these numbers.  Be sure, though, to keep lots of digits.  We require you keep 6 digits, but it's always a good idea to enter at least one more digit that we require to be one the safe side.  So, if your calculator says something like <c>6.866455078125E-05</c> or <c>6.866455078125 x 10^-5</c>, then go ahead and enter a number such as <m>6.8664551 \cdot 10^{-5}</m> for your answer.</p>
+
+<p>One last thing: if you are doing a multi-step calculation with your calculator, don't round numbers in the middle of your calculations.  Just keep all the digits your calculator has (for example by storing values in your calculator memory or recalling the previous answer and building on it).  If you round numbers from the middle of your calculations to 6 digits, the end result might be accurate to only 5 digits, given the way rounding errors can accumulate.</p>
+
+<paragraphs>
+<title>Helpful pages</title>
+<ul>
+<li><ref uri='doenet:solving_linear_discrete_dynamical_systems'>Solving linear discrete dynamical systems</ref></li>
+</ul></paragraphs>
+</hint>
+
+
+</problem>

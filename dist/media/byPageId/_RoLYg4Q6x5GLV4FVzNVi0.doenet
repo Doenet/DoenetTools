@@ -1,0 +1,121 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>figure</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>suppressFigureNameInCaption</attr>  <em>(boolean)</em></li>
+  <li><attr>number</attr>   <em>(boolean)</em></li>   
+</ul>
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>figure</tag><idx><tag>figure</tag></idx> component is a sectional component which acts as a container for an <tag><ref>image</ref></tag> or <tag><ref>video</ref></tag>.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tag>figure</tag> without attributes </title>
+<p>The sample code below uses the lorem ipsum generating component, <tag><ref>lorem</ref></tag> to demonstrate the appearance of a <tag>figure</tag> with a <tag>caption</tag> within a larger document.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;&lt;lorem generateWords="40"/&gt;&lt;/p&gt;
+  &lt;figure&gt;
+    &lt;image width="200" source="https://upload.wikimedia.org/wikipedia/commons/1/16/DoricParthenon.jpg"/&gt;
+    &lt;caption&gt;Example of the Doric order in greek architecture.&lt;/caption&gt;
+  &lt;/figure&gt;
+&lt;p&gt;&lt;lorem generateWords="40"/&gt;&lt;/p&gt;
+
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p><lorem generateWords="40"/></p>
+  <figure>
+    <image width="200" source="https://upload.wikimedia.org/wikipedia/commons/1/16/DoricParthenon.jpg"/>
+    <caption>Example of the Doric order in greek architecture.</caption>
+  </figure>
+<p><lorem generateWords="40"/></p>
+      </example>
+
+<!--******************************************************-->
+  
+<subsection><title>Example 2:  <tag>figure</tag> with <attr>suppressFigureNameInCaption</attr> attribute </title>
+<p>In the sample code below, the <attr>suppressFigureNameInCaption</attr>
+  attribute is demonstrated.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;figure suppressFigureNameInCaption="true"&gt;
+  &lt;image width="300" source="https://upload.wikimedia.org/wikipedia/commons/thumb/
+  b/bd/Sous_la_Tour_Eiffel_1.jpg/640px-Sous_la_Tour_Eiffel_1.jpg"/&gt;
+  &lt;caption&gt;View from the base of the Eiffel Tower&lt;/caption&gt;
+&lt;/figure&gt;
+
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<figure suppressFigureNameInCaption="true">
+  <image width="300" source="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Sous_la_Tour_Eiffel_1.jpg/640px-Sous_la_Tour_Eiffel_1.jpg"/>
+  <caption>View from the base of the Eiffel Tower</caption>
+</figure>
+
+</example>
+
+<!--******************************************************-->
+
+<subsection><title>Example 3: <tag>figure</tag> with <attr>number</attr> attribute</title>
+<p>In the sample code below, the <attr>number</attr>
+  attribute is set to "false" to suppress the automatic figure 
+  numbering in the caption.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;figure number="false"&gt;
+  &lt;image width="300" source="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/
+  Currier_%26_Ives_Brooklyn2.jpg/640px-Currier_%26_Ives_Brooklyn2.jpg"/&gt;
+  &lt;caption&gt;Aerial depiction of Brooklyn as it appeared in 1879.&lt;/caption&gt;
+&lt;/figure&gt;
+
+</pre>
+</example>
+  </subsection>
+
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 3)</title>
+<figure number="false">
+  <image width="300" source="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Currier_%26_Ives_Brooklyn2.jpg/640px-Currier_%26_Ives_Brooklyn2.jpg"/>
+  <caption>Aerial depiction of Brooklyn as it appeared in 1879.</caption>
+</figure>
+
+</example>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

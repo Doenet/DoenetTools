@@ -1,0 +1,252 @@
+<problem>
+<!-- <title>Pure time quadratic population growth, increasing only</title> -->
+
+<setup>
+
+
+<select assignNames="(animal p time_unit pop_unit pop_unit_number)">
+  <option>
+    <text>bacterium</text>
+    <math>b</math>
+    <text>minute</text>
+    <text>thousand</text>
+    <number>1000</number>
+  </option>
+  <option>
+    <text>fish</text>
+    <math>f</math>
+    <text>month</text>
+    <text>hundred</text>
+    <number> 100</number>
+  </option>
+  <option>
+    <text>rabbit</text>
+    <math>r</math>
+    <text>year</text>
+    <text>thousand</text>
+    <number>1000</number>
+  </option>
+  <option>
+    <text>deer</text>
+    <math>p</math>
+    <text>year</text>
+    <text>hundred</text>
+    <number>100</number>
+  </option>
+  <option>
+    <text>antelope</text>
+    <math>a</math>
+    <text>year</text>
+    <text>hundred</text>
+    <number>100</number>
+  </option>
+  <option>
+    <text>penguin</text>
+    <math>p</math>
+    <text>year</text>
+    <text>hundred</text>
+    <number>100</number>
+  </option>
+  <option>
+    <text>sparrow</text>
+    <math>s</math>
+    <text>year</text>
+    <text>hundred</text>
+    <number>100</number>
+  </option>
+  <option>
+    <text>cat</text>
+    <math>c</math>
+    <text>year</text>
+    <text>hundred</text>
+    <number>100</number>
+  </option>
+</select>
+
+<selectFromSequence assignNames='p_0' from='5' to='50' step='5'/>
+<math name='dpdt'>d$p/dt</math>
+
+<selectFromSequence assignNames='aa' from='1' to='4' />
+<selectFromSequence assignNames='bb cc' from='1' to='5' numberToSelect="2" withReplacement />
+
+<function name='ff' variables='t' symbolic simplify="numbers">
+  <math expand simplify>$cc *(t-$aa )^2+$bb</math>
+</function>
+
+<function name="antideriv_ff" variables="t" symbolic simplify>
+  <math simplify expand><math simplify>$cc *(t^3/3 -(2$aa)*t^2/2 + $aa^2*t) + $bb*t </math></math>
+</function>
+
+    
+<math name='p_t' targetsAreFunctionSymbols="p">$p (t)</math>
+
+<math name='diffeq'>d$p/dt = $$ff(t)</math>
+<math name='diffeq2' targetsAreFunctionSymbols="p">$p'(t) = $$ff(t)</math>
+<math name='diffeq_rhs'>$$ff(t)</math>
+<math name='diffeq_badderiv'>(d*$p )/(d*t) = $$ff(t)</math>
+
+
+<math name='antideriv_ff_0' >$$antideriv_ff(0)</math>
+<math name='C_value' simplify>$p_0 -$antideriv_ff_0 </math>
+<math name='peq' simplify="numbers">$$antideriv_ff(t) + $C_value</math>
+<math name='peq_wrong_unit' simplify="numbers">$$antideriv_ff(t) - $antideriv_ff_0+$p_0 *$pop_unit_number </math>
+<math name='peq_with_C'>$$antideriv_ff(t) + C</math>
+
+<math name='ff_constant_term' simplify="numbers">$cc *$aa *$bb </math>
+
+
+<math name='t_gt_0' simplify='full' >t>0</math>
+<math name='t_ge_0' simplify='full' >t>=0</math>
+<math name='never' simplify='full' >never</math>
+<math name='never2' simplify='full' >Never</math>
+
+</setup>
+
+
+<p>The population <m>$p_t </m> of <pluralize><copy tname="animal" /></pluralize>, measured in <copy tname="pop_unit" />s, is growing at a rate of <m><copy prop="formula" tname="ff" /></m> $pop_unit /$time_unit.</p>
+
+<ol>
+
+<li>
+<p>Write a differential equation modeling this scenario.
+</p>
+<p>
+<answer forceFullCheckworkButton symbolicEquality simplifyOnCompare>
+<mathinput functionSymbols="b f r p a s c" />
+<award>$diffeq </award>
+<award>$diffeq2 </award>
+<award credit='0.5' name='award1'>$diffeq_rhs </award>
+<award credit='0.9' name='award2'>$diffeq_badderiv </award>
+</answer>
+</p>
+<feedback condition="$award1">The differential equation should be an equation (with an = sign), involving the derivative of the population size.</feedback>
+<feedback condition="$award2">Derivative entered incorrectly.  Enter derivative as <c>d$(p{prop='text'})/dt</c>, <alert>without</alert> parenthesis.</feedback>
+
+
+<p>
+(To enter the derivative, for example, of a function <m>f(t)</m>, enter it as <c>df/dt</c> or as <c>f'(t)</c>.)</p>
+
+
+</li>
+
+<li>
+<p>
+If the population at time <m>t=0</m> is <m>$p_0 </m> $pop_unit  <pluralize>$animal</pluralize>, find an expression for the population at any time <m>t</m>.
+</p>
+<p>
+<m>\displaystyle $p_t  =</m> 
+<answer forceFullCheckworkButton>
+<award>$peq </award>
+<award allowedErrorInNumbers='0.0001' credit='0.8' name='award4'>$peq </award>
+<award credit='0.9' name='award5'>$peq_wrong_unit </award>
+<award allowedErrorInNumbers='0.0001' credit='0.9*0.8' name='award6'>$peq_wrong_unit </award>
+<award credit='0.6' name='award7'>$antideriv_ff </award>
+<award allowedErrorInNumbers='0.0001' credit='0.6*0.8' name='award8'>$antideriv_ff </award>
+<award credit='0.6' name='award9'>$peq_with_C</award>
+<award allowedErrorInNumbers='0.0001' credit='0.6*0.8' name='award10'>$peq_with_C</award>
+</answer>
+</p>
+<feedback condition="$award4">Don't round, but leave fractions as fractions</feedback>
+<feedback condition="$award5">The variable <m>$p </m> represents <copy tname="pop_unit" />s of <pluralize><copy tname="animal" /></pluralize>, so don't multiply the initial condition by $pop_unit_number.</feedback>
+<feedback condition="$award6">The variable <m>$p </m> represents <copy tname="pop_unit" />s of <pluralize><copy tname="animal" /></pluralize>, so don't multiply the initial condition by $pop_unit_number.  Don't round, but leave fractions as fractions.</feedback>
+<feedback condition="$award7">The answer is growing at the correct rate, but it doesn't match the initial condition.</feedback>
+<feedback condition="$award8">The answer is growing at the correct rate, but it doesn't match the initial condition. Don't round, but leave fractions as fractions.</feedback>
+<feedback condition="$award9">Determine the value of the integration constant using the initial condition.</feedback>
+<feedback condition="$award10">Determine the value of the integration constant using the initial condition. Don't round, but leave fractions as fractions.</feedback>
+
+<p>
+For full credit, do not round your answer to a decimal.  (Maximum of 80% credit will be awarded for rounded answers that include at least 5 correct significant digits.)
+</p>
+
+
+</li>
+
+<li>
+<p>Determine when the population of <pluralize><copy tname="animal" /></pluralize> is increasing and when it is decreasing.  Include only times <m>t \gt 0</m>.
+</p>
+  
+<p>
+The population is increasing for 
+<answer forceFullCheckworkButton>
+<award symbolicEquality='true' simplifyOnCompare>t > 0 </award>
+<award symbolicEquality='true' simplifyOnCompare>t >= 0 </award>
+</answer>
+.
+</p>
+<p>
+The population is decreasing for 
+<answer forceFullCheckworkButton>
+<award symbolicEquality='true'>never </award>
+<award symbolicEquality='true'>Never</award>
+</answer>
+.
+</p>
+  
+<p>
+In each blank enter an inequality in terms of <m>t</m>, such as <c>t > 5</c> or <c>3 < t < 5</c>.  If the answer is all time, enter <c>t > 0</c>.  If the answer is never, enter <c>never</c> in the answer blank (even though it doesn't make grammatical sense for the sentence).
+</p>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+<setup>
+<math name='quadratic_formula_1' simplify='numbers' >2*$cc *$aa 
+</math>
+<math name='quadratic_formula_2' simplify='numbers' >4*$cc ^2*$aa ^2 - 4 $cc *($cc *$aa ^2+$bb )</math>
+<math name='quadratic_formula_3' simplify='numbers' >2*$cc </math>
+<math name='ff_0' >$$ff(0)</math>
+
+</setup>
+
+
+<ol>
+
+<li>
+Since the population is growing at a rate of <m><copy prop="formula" tname="ff" /></m> $pop_unit /$time_unit , the derivative of <m>$p_t </m> is <m><copy prop="formula" tname="ff" /></m>. Therefore, a differential equation modeling this is <m>$diffeq </m>.
+</li>
+
+<li>
+<p>To solve this, we need to evaluate the integral <m>\displaystyle \int $ff \, dt </m> and use the initial condition <m>$p (0)=$p_0 </m>.
+</p>
+<p>
+<m>\displaystyle \int $ff \, dt  = <copy prop="formula" tname="antideriv_ff" />+C</m>
+</p>
+<p>
+Plugging in the initial condition <m>$p (0)=$p_0 </m> lets us determine <m>C</m>:
+</p>
+<p>
+<m>\displaystyle $p_0  = $antideriv_ff_0 +C</m>
+</p>
+<p>
+<m>\displaystyle C = $C_value </m>
+</p>
+<p>
+Finally, we get
+</p>
+<p>
+<m>\displaystyle $p_t  = $peq </m>
+</p>
+</li>
+
+
+<li>
+The population of <pluralize><copy tname="animal" /></pluralize> is increasing when its derivative <m>$diffeq </m> is positive.
+
+<p>We check when the derivative is zero.  We solve for <m><copy prop="formula" tname="ff" />=0</m>.  Using the quadratic formula, we find that the derivative is zero if
+<me>t = \frac{ $quadratic_formula_1  \pm \sqrt{ $quadratic_formula_2  } }{ $quadratic_formula_3  }.</me>
+Since the quantity in the square root is negative, there is no real value of <m>t</m> where the derivative is zero.  The derivative never changes sign.  Since, when <m>t=0</m>, <m>$dpdt  = $ff_0  \gt  0</m>, the  derivative must be positive for all <m>t</m>.  We conclude that the population of <pluralize><copy tname="animal" /></pluralize> is increasing for all <m>t \gt 0</m>.</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

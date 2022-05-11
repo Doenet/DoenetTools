@@ -1,0 +1,251 @@
+<problem>
+<!-- <title>Introduction to integration - polynomials</title> -->
+
+<setup>
+<function name='f' variables='t'>8 *t^3 +6 *t +5 </function>
+<math name='integral_f'>2t^4 +3t^2 +5t</math>
+<function name='g' variables='t'>t^7+4t^5+11t</function>
+<derivative name="derivative_g">$g</derivative>
+<function name='f1' variables='t'>8 *t^3 </function>
+<math name='f2' >6 *t</math>
+<math name='f3' >5</math>
+<math name='f3spec' simplify='numbersPreserveOrder' >5 *t^0</math>
+<math name='integral_f_C'>2t^4 +3t^2 +5t+C</math>
+<math name='h'>a*t^n</math>
+<math name='integral_h' simplify>(a/(n+1))*t^(n+1)</math>
+<function name='x_t' variables='t'>3t^8+7t^3+4t</function>
+<math name='integral_x' simplify>(1/3)t^9+(7/4)t^4+2t^2</math>
+<math name='integral_x_C'>$integral_x + C</math>
+<function name='y_t' variables='t'>4t^3+t^2+42</function>
+<math name='integral_y' simplify>t^4 + (1/3)t^3 + 42t</math>
+<math name='integral_y_C'>$integral_y + C</math>
+<function name='z_t' variables='t'>5t^9+7t^5+4t^4+3t^2+10t</function>
+<math name='integral_z' simplify>(1/2)t^10 + (7/6)t^6 +(4/5)t^5 +t^3 +5t^2</math>
+<math name='integral_z_C'>$integral_z + C</math>
+
+</setup>
+
+<p>
+In order to solve a pure time differential equation, we need to undo the process of taking a derivative.  This process can be complicated and cannot always be done.  But, for many simple functions, following some rules will let you undo a derivative.</p>
+  
+<p>Before we can learn these rules, we need some notation and terminology.  If the derivative of <m>F(t)</m> is <m>f(t)</m>, i.e., if <m>\frac{ dF }{ dt } = f</m>, then we call <m>F(t)</m> an <em>antiderivative</em> of <m>f(t)</m>.  We've seen that if <m>F(t)</m> is an antiderivative of <m>f(t)</m>, then so is <m>F(t)+C</m> for any constant <m>C</m>.  When we want to talk about all of these functions, we use an <em>indefinite integral</em>:
+<me>\int f(t) \, dt = F(t)+C</me>
+which is read <q>the integral of <m>f dt</m></q> or <q>the integral of <m>f</m> with respect to <m>t</m></q>.  We call <m>f(t)</m> the <em>integrand</em>. The <m>dt</m> is a necessary part of the expression and serves to identify the variable with respect to which we are integrating.</p>
+
+
+<ol>
+
+<!--Problem #1*********************************************-->
+<li>
+<p>Consider the following integral:
+
+<men>\displaystyle \int ($f)  dt</men>
+
+Recall the rules for taking the derivative of a polynomial: the derivative of <m><copy prop="formula" tname="g" /></m> is 
+<answer>
+<award>$derivative_g</award>
+</answer>
+. When we take the derivative of a polynomial, we treat each term separately.  For each term, we multiply the coefficient by the 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>exponent</choice>
+<choice>logarithm</choice>
+<choice>function</choice>
+</choiceinput>
+</answer>
+, and 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>decrease the exponent by 1</choice>
+<choice>leave the exponent the same</choice>
+<choice>increase the exponent by 1</choice>
+<choice credit='1'>multiply the exponent by 2</choice>
+</choiceinput>
+</answer>
+.  Does the order of these two operations matter? 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>yes</choice>
+<choice>no</choice>
+<choice>yes, but only sometimes</choice>
+</choiceinput>
+</answer>
+</p>
+
+<p>If we want to undo taking the derivative of a polynomial, we again treat each term separately, and need to undo both operations in the 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>reverse</choice>
+<choice name='choice12'>same</choice>
+</choiceinput>
+</answer>
+<feedback condition="$choice12" >Think about the order in which you put on and take off socks and shoes.</feedback>
+ order.  We need to 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>increase the exponent by 1</choice>
+<choice>decrease the exponent by 1</choice>
+<choice>multiply the coefficient by the exponent</choice>
+<choice>divide the coefficient by the exponent</choice>
+</choiceinput>
+</answer>
+ and then 
+<answer inline='true'>
+<choiceinput>
+<choice>increase the exponent by 1</choice>
+<choice>decrease the exponent by 1</choice>
+<choice>multiply the coefficient by the new exponent</choice>
+<choice credit='1'>divide the coefficient by the new exponent</choice>
+</choiceinput>
+</answer>
+.</p>
+
+<p>Let's look at the first term (see equation (1) above): $f1.  The new exponent is 
+<answer>
+<award >4</award>
+</answer>
+, and the new coefficient is 
+<answer>
+<award >2</award>
+</answer>
+.  Therefore, an antiderivative of $f1 is <answer>2t^4</answer>.</p>
+
+<p>For the second term, $f2, the new exponent is 
+<answer>
+<award>2</award>
+</answer>
+, and the new coefficient is 
+<answer>
+<award>3</award>
+</answer>
+.  Therefore, an antiderivative of $f2 is <answer>3t^2</answer>.</p>
+
+<p>For the third term, <m>$f3 =$f3spec </m>, the new exponent is 
+<answer>
+<award>1</award>
+</answer>
+, and the new coefficient is 
+<answer>
+<award>5</award>
+</answer>
+. Therefore, an antiderivative of $f3 is <answer>5t</answer>.</p>
+
+<p>Adding the antiderivatives of each term together, we can calculate that <m>\displaystyle \int ($f)  dt=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare credit='0.75' name='award_noC'>$integral_f </award>
+<award>$integral_f_C </award>
+</answer>
+<feedback condition="$award_noC">Don't forget the constant!</feedback></p>
+
+
+</li>
+
+<!--Problem #2*************************************************-->
+<li>
+Now that we've worked through an example, let's write down a general rule for integrating polynomials.  For each term of the form <me>$h ,</me> an antiderivative is 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$integral_h </award>
+</answer>
+.  Are there any values of <m>n</m> for which this doesn't work? If so, what are they?  (If not, enter <c>none</c>.)  
+<answer>
+<award >-1</award>
+<award credit='0' name='award44'>none </award>
+<award  credit='0' name='award45'>zero </award>
+</answer>
+<feedback condition="$award44">There is one value of <m>n</m> that doesn't work. Recall that a constant <m>c</m> can be written as <m>ct^0</m>.</feedback>
+<feedback condition="$award45">If <m>n+1=0</m>, there is a problem, but not if <m>n=0</m>.</feedback>
+ Once we've done this for each term, we can find the integral of the polynomial by 
+<answer inline='true'>
+<choiceinput randomizeOrder>
+<choice credit='1'>adding them all together and adding a constant</choice>
+<choice name='choice31' credit='0.75'>adding them all together</choice>
+<choice>multiplying them all together</choice>
+<choice> multiplying them all together and adding a constant</choice>
+</choiceinput>
+</answer>
+<feedback condition="$choice31" >Don't forget the constant!</feedback>
+
+
+
+<hint>
+Recall that the formula for the derivative of <m>bt^m</m> is <m>mbt^{m-1}</m> for all <m>m</m>, positive and negative.  What happens when <m>m=0</m>?
+</hint>
+
+</li>
+
+<!--Problem #3***********************************************-->  
+<li>
+<p>Evaluate the following integrals.</p>
+
+<p><m>\displaystyle \int ($x_t)  dt = </m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare credit='0.75' name='award_noC2'>$integral_x</award>
+<award symbolicEquality='true' simplifyOnCompare >$integral_x_C</award>
+</answer>
+</p>
+  
+<feedback condition="$award_noC2">Don't forget the constant!</feedback>
+
+
+<p><m>\displaystyle \int ($y_t)  dt = </m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare credit='0.75' name='award_noC3'>$integral_y </award>
+<award symbolicEquality='true' simplifyOnCompare>$integral_y_C </award>
+</answer>
+</p>
+
+<feedback condition="$award_noC3">Don't forget the constant!</feedback>
+
+<p><m>\displaystyle \int ($z_t)  dt = </m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare credit='0.75' name='award_noC4'>$integral_z </award>
+<award symbolicEquality='true' simplifyOnCompare>$integral_z_C </award>
+</answer>
+<feedback condition="$award_noC4">Don't forget the constant!</feedback>
+
+</p>
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<p>The derivative of <m><copy prop="formula" tname="g" /></m> is  <m>$derivative_g</m>.  Remember that we can take the derivative term by term.  For each term, we need to multiply by the exponent and then decrease the exponent by one.  We have to do the multiplication before changing the exponent. If we did it in the other order, in the case of <m><copy prop="formula" tname="g" /></m> we would get <m>6t^6+16t^4+0</m>, which is not the same as <m><derivative>$g</derivative></m>.</p>
+
+<p>For an integral, we are undoing the process of integration, so for each term, we need to undo the terms in the opposite order.  First, we increase the exponent by one, then we have to divide by the new exponent.</p>
+
+<p>To integrate <m><copy prop="formula" tname="f" /></m> we can split it into <m><copy prop="formula" tname="f1" /></m>, <m>$f2 </m>, and <m>$f3 </m>.  For <m><copy prop="formula" tname="f1" /></m>, the new exponent is <m>4</m>.  After we divide by that, the new coefficient is <m>2</m>.</p>
+
+<p>For <m>$f2 </m>, the new exponent is <m>2</m>.  After we divide by that, the new coefficient is <m>3</m>.</p>
+
+<p>For <m>$f3 </m>, we first rewrite it as <m>$f3spec </m>, and then the new exponent is <m>1</m>. Since dividing by one doesn't change anything, the coefficient is still <m>5</m>.</p>
+
+<p>Now, we can put this all together.  We add the three terms, and the arbitrary constant <m>C</m>, to get <m>\displaystyle \int ($f) dt = $integral_f + C</m>.</p>
+
+</li>
+
+<li>
+The general rule for integrating polynomials is to take each term of the form <m>$h </m>, integrate them, and then add them together.  The integral of <m>$h </m> is <m>\displaystyle $integral_h </m>.  This works for all values of <m>n</m> except <m>-1</m>, because if we increased <m>-1</m> by one, we would get a constant.  We know the derivative of a constant is <m>0</m>, not anything involving <m>\frac{1}{x}</m>.
+</li>
+
+<li>
+<p><m>\displaystyle \int ($x_t) dt = $integral_x + C</m></p>
+<p><m>\displaystyle \int ($y_t) dt = $integral_y + C</m></p>
+<p><m>\displaystyle \int ($z_t) dt = $integral_z + C</m></p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

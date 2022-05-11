@@ -1,0 +1,40 @@
+<section><title>Project Part I: Exploring Basic Doenet Components</title></section>
+<subsection><title>Goal</title></subsection>
+<p>Build the first (or first two?) section of the Exploring an Anteater Dynamical System page in Doenet.</p>
+
+<subsection><title>Skills</title></subsection>
+<ul><li>Format paragraphs and headers</li>
+<li>Insert images</li>
+<li>Format dropdowns</li>
+<li>Insert an answer box</li>
+<li>Validate answers in an answer box</li>
+<li>Gate content based on correct answers</li>
+<li>Insert links to DoenetML pages</li>
+<em><li>Insert an interactive number line</li>
+<li>Add points and labels to a number line </li>
+<li>Validate answers from student input on a number line</li></em>
+</ul>
+<subsection><title>Resources</title></subsection>
+<ul><li><ref uri='https://docs.google.com/document/d/1nEIJqMGJnajB6WaeWxLPOaC7wj-7Axc6uBJXx8D4yKc/edit#heading=h.tnsc7uswqzt4'>Google Doc: Exploring an Anteater Dynamical System text</ref></li>
+ <li><ref uri='https://drive.google.com/open?id=1TwHfJkR9CJNRmMS4fROaSqFFkpyj8Yt6&authuser=and08118%40umn.edu&usp=drive_fs'>Image: Anteater photo</ref></li>
+<li><ref uri='https://drive.google.com/open?id=1TwHfJkR9CJNRmMS4fROaSqFFkpyj8Yt6&authuser=and08118%40umn.edu&usp=drive_fs'>Image: Anteater drawing</ref></li>
+  <li><ref uri='doenet:doenetId=KHgLzlJAo6uj0NyFSylPI&path=AnCHQQqhk0F1R_g1YT-SX%3AAnCHQQqhk0F1R_g1YT-SX%3A72xTBie6ENn-l9oryrrIf%3ADoenetML'>DoenetML: Anteater Example Page </ref></li>
+</ul>
+<subsection><title>Relevant DoenetML Documentation</title></subsection>
+<ul>
+  <li>
+<ref uri='doenet:doenetId=ZKtFO1M4oFzd4S8zfJj55&path=sylbRj3AA0e4ovl1kLGXE%3ASwXqYTCBjVFGNvLkZkiWf%3AEM3ONo8AKmV9C8ONO5lr3%3ADoenetML'> <tag>p</tag></ref></li>
+  <li><tag>section</tag></li>
+<li><tag>title</tag></li>
+  <li><tag>image</tag></li>
+  <li><tag>aside</tag></li>
+  <li><tag>m</tag></li>
+  <li><tag>me</tag></li>
+  <li><tag>math</tag></li>
+  <li><tag>mathinput</tag></li>
+  <li><tag>when</tag></li>
+   <li><tag>answer</tag></li>
+  <li><tag>award</tag></li>
+  <li><tag>hide</tag></li>
+  </ul>
+

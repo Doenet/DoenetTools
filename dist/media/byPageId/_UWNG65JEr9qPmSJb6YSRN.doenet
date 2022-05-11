@@ -1,0 +1,179 @@
+<!--
+  Text Decoration? Italic, bold, etc.
+-->
+
+<!--
+#DESCRIPTION
+##  Calculus: Limits of Functions
+##ENDDESCRIPTION
+
+
+## DBsubject(Calculus - single variable)
+## DBchapter(Limits and continuity)
+## DBsection(One-sided limits - concept of)
+## Date(08/29/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(limits_one_sided_three_line_spline)
+## MLTleader(1)
+## Level(2)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('2.2')
+## Problem1('7')
+## KEYWORDS('calculus', 'function', 'limit', 'piecewise function')
+-->
+
+<setup>
+  <selectFromSequence from="1" to="5" numberToSelect="2" assignNames="a b" />
+  <math name="c" simplify>2+$b</math>
+
+  <math name="ans1" simplify>
+    -1-$a
+  </math>
+  <math name="ans2" simplify>
+    1+$b
+  </math>
+  <math name="ans3">
+    DNE
+  </math>
+  <math name="ans4" simplify>
+    1+$b
+  </math>
+  <math name="ans5" simplify>
+    -1-$a
+  </math>
+</setup>
+
+<p>
+  Sketch the graph of the following function and use it to determine the following limits.
+  If a limit \emph{does not exist},
+  type \textbb{DNE}.
+  <me>
+    f(x) = 
+      \begin{cases}
+        x-$a, &\text{for } x \le -1 \\
+        x^2+$b, &\text{for } -1 < x \le 1 \\
+        $c-x, &\text{for } x > 1
+      \end{cases}
+  </me>
+</p>
+
+<p>
+  1.
+  <m>
+    \displaystyle \lim_{x \to -1^{-}}f(x) =
+  </m>
+  <answer>
+    <award>
+      $ans1
+    </award>
+  </answer>
+</p>
+
+<p>
+  2.
+  <m>
+    \displaystyle \lim_{x \to -1^{+}}f(x) = 
+  </m>
+  <answer>
+    <award>
+      $ans2
+    </award>
+  </answer>
+</p>
+
+<p>
+  3.
+  <m>
+    \displaystyle \lim_{x \to -1}f(x) =
+  </m>
+  <answer symbolicEquality>
+    <award>
+      $ans3
+    </award>
+  </answer>
+</p>
+
+<p>
+  4.
+  <m>
+    \displaystyle \lim_{x \to 1}f(x) =
+  </m>
+  <answer>
+    <award>
+      $ans4
+    </award>
+  </answer>
+</p>
+
+<p>
+  5.
+  <m>
+    \displaystyle f(-1) =
+  </m>
+  <answer>
+    <award>
+      $ans5
+    </award>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        <m>1.</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans1
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <m>2.</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans2
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <m>3.</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <text>
+          $ans3
+        </text>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <m>4.</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans4
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <m>5.</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans5
+      </cell>
+    </row>
+  </tabular>
+</solution>

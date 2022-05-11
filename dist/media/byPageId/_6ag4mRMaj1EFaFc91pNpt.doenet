@@ -1,0 +1,238 @@
+<!--work in progress - do not release (VM)-->
+
+<setup>
+    
+  <!--
+    Calculate Answers
+  -->
+  <math simplify="full" name="ans1_a">
+   6/7
+  </math>
+   <math simplify="full" name="ans1_b">
+   6/x
+  </math>
+   <math simplify="full" name="ans1_c">
+   -2/(x+2)
+  </math>
+  <math name="ans1_d">
+   (x-2)/(x^2+2)
+  </math>
+  <math simplify="full" name="ans1_e">
+   <!--text answer, process to add fractions with common 
+   denominators--> 
+  </math>
+  <math simplify="full" name="ans1_f">
+   <!--text answer, why the use of 'add' in the instructions is 
+   not a 
+   typo-->
+  </math>
+  <math simplify="full" name="ans2_a">
+   (18)/(7)
+  </math>
+  <math simplify="full" name="ans2_b">
+   (2x+4)/(x)
+  </math>/
+  <math simplify="full" name="ans2_c">
+   (x^2+2x-4)/(x+2)
+  </math>
+  <math simplify="full" name="ans2_d">
+   <!--text answer, describe how to add an integer to a 
+   fraction-->
+  </math>
+  <math simplify="full" name="ans3_a">
+   5/6
+  </math>
+  <math simplify="full" name="ans3_b">
+   41/35
+  </math>
+   <math simplify="full" name="ans3_c">
+   17/30
+  </math>
+  <math simplify="full" name="ans3_d">
+   <!--text answer, describe the process to add two fractions-->
+  </math>
+   <math simplify="full" name="ans4_a">
+   (ad+bc)/(bd)
+  </math>
+  <math simplify="full" name="ans4_b">
+   (4(x-3))/((x+2)(x-4))
+  </math>
+   <math simplify="full" name="ans4_c">
+   (-2(x+8))/((x+2)(x-4))
+  </math>
+  <math simplify="full" name="ans4_d">
+   (x^2-5x+6)/((x+2)(x-5)(x-4))
+  </math>
+</setup>
+
+<title>Activity 1e - Adding and Subtracting Fractions</title>
+
+<!--Problem 1-->
+<p>1. </p>
+<p>(a) Add
+  <me>
+    \dfrac{2}{7} + \dfrac{4}{7}
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans1_a
+  </award></answer>
+  <!--Instructor note:  Students should explain this process.-->
+</p>
+
+<p>(b) Add
+  <me>
+    \dfrac{2}{x} + \dfrac{4}{x}
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans1_b
+  </award></answer>
+</p>
+
+<p>(c) Add
+  <me>
+    \dfrac{2}{x+2} - \dfrac{4}{x+2}
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans1_c
+  </award></answer>
+</p>
+
+<p>(d) Add 
+  <me>
+    \dfrac{2}{x^2+2} - \dfrac{4-x}{x^2+2}
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans1_d
+  </award></answer>
+</p>
+
+<p>(e) Describe how to add two fractions that have common 
+  denominators
+  <textinput></textinput>
+</p>
+
+<p>(f) On part (c), the instructions are to 'add' but the 
+  fractions are subtracted.  Why is this not a typo?
+  <textinput></textinput>
+</p>
+
+<!--Problem 2-->
+<p>2.</p>
+<p>(a) Add 
+  <me>
+    2 + \dfrac{4}{7}
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans2_a
+  </award></answer>
+</p>
+
+<p>(b) Add
+  <me>
+    2 + \dfrac{4}{x}
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans2_b
+  </award></answer>
+</p>
+
+<p>(c) Add
+  <me>
+    x - \dfrac{4}{x+2}
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans2_c
+  </award></answer>
+</p>
+
+<p>(d) Describe how to add an integer to a fraction
+  <textinput></textinput>
+</p>
+
+
+
+<!--Problem 3-->
+<p>3. Add</p>
+<p>(a) 
+  <me>
+    \dfrac{2}{3} + \dfrac{1}{6} 
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans3_a
+  </award></answer>
+</p>
+
+<p>(b) 
+  <me>
+    \dfrac{4}{7} + \dfrac{3}{5} 
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans3_b
+  </award></answer>
+</p>
+
+<p>(c) 
+  <me>
+    \dfrac{3}{10} + \dfrac{4}{15} 
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans3_c
+  </award></answer>
+</p>
+
+<p>(d) Describe the process to add two fractions (be specific 
+  when you are discussing finding a common denominator.)
+  <textinput></textinput>
+</p>
+
+<!--Problem 4-->
+<p>4. Add</p>
+<p>(a) 
+  <me>
+    \dfrac{a}{b} + \dfrac{c}{d} 
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans4_a
+  </award></answer>
+</p>
+
+<p>(b) 
+  <me>
+    \dfrac{3}{x+2} + \dfrac{x}{(x+2)(x-4)} 
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans4_b
+  </award></answer>
+</p>
+
+<p>(c) 
+  <me>
+    \dfrac{2}{x+2} - \dfrac{4}{x-4} 
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans4_c
+  </award></answer>
+</p>
+
+<p>(d) 
+  <me>
+    \dfrac{x+1}{(x+2)(x-5)} - \dfrac{2}{(x-4)(x+2)} 
+  </me>
+  <answer><award allowedErrorIsAbsolute 
+    allowedErrorInNumbers="0.05">
+    $ans4_d
+  </award></answer>
+</p>

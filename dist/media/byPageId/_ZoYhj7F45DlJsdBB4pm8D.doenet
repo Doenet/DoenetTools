@@ -1,0 +1,49 @@
+<title>Suggestion form</title>
+
+<p>Thank you for patience as we piloted the Doenet web system this semester.  I hope the interactive exercises and activities helped you learned some of the dynamical systems concepts of the course (and that the technical glitches didn't stand in the way too often).</p>
+
+<p>We'd like to get your feedback on how to improve the system.  It goes without saying that we need to fix the slowness and the crashing.  (You can mentioned that you if you like, but there's no need as we are painfully aware that we have to address those issues.)</p>
+
+
+<paragraphs>
+  <title>Interactive graphs</title>
+  <p>Many problem sets contained interactive graphs that helped explain concepts or allowed you to answer questions.  Can you list any examples where you found that the graphics particularly helped you learn the course concepts?   </p>
+
+  <textinput name="graphicsHelpful" expanded />
+
+<p>Were there cases where you felt that the interactive graphs got in the way of your learning?</p>
+
+  <textinput name="graphicsHarmful" expanded />
+
+<p>Any other comments on the use of interactive graphs in this course?</p>
+  <textinput name="graphicsOther" expanded />
+
+  
+</paragraphs>
+
+
+<paragraphs>
+  <title>Communicating course progress</title>
+
+  <p>One area which we would like to do better is in communicating course progress throughout the semester so that you can understand how well you are doing and estimate final course outcomes.  What type of information on your progress would be most helpful for you?  For example, would a projection of best/worst/expected final course score be useful?  Or would simply the percentage of points on completed assignments be sufficient?  Anything else?</p>
+
+  <textinput name="courseProgress" expanded />
+  
+
+</paragraphs>
+
+<paragraphs>
+  <title>Other suggestions</title>
+
+  <p>Any other suggestions for us?</p>
+
+  <textinput name="other" expanded />
+  
+
+</paragraphs>
+
+<p>Thanks for the suggestions!</p>
+
+<answer showCorrectness="false">
+  <award><when>true</when></award>
+</answer>

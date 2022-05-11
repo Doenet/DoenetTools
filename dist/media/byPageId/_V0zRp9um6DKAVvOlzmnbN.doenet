@@ -1,0 +1,29 @@
+<problem><title>Solve for x</title>
+<setup>
+  <math name='answer1'>1</math>
+</setup>
+  <m>x+4=5</m>
+  <p>
+  <m>x =</m>
+    <answer>
+      <award symbolicEquality="true" simplifyOnCompare>
+      $answer1
+      </award>
+    </answer>
+  </p>
+</problem>
+
+<!--<problem>
+<setup>
+  <math name='answer2'>5</math>
+</setup>
+  <m>x-3=2</m>
+  <p>
+  <m>x =</m>
+    <answer>
+      <award symbolicEquality="true" simplifyOnCompare>
+      $answer2
+      </award>
+    </answer>
+  </p>
+</problem>-->

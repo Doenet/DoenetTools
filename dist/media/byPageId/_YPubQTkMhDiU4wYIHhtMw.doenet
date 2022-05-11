@@ -1,0 +1,81 @@
+<!--
+#DESCRIPTION
+##  Calculus: Functions
+##ENDDESCRIPTION
+
+
+## DBsubject(Algebra)
+## DBchapter(Inverse functions)
+## DBsection(Finding the inverse function)
+## Date(08/29/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(InverseFunctions_FindInverse_15)
+## Level(3)
+## Static(1)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('1.6')
+## Problem1('19')
+## KEYWORDS('calculus', 'function', 'temperature conversion', 'inverse')
+-->
+
+<p>
+  The formula <m>C=\frac{5}{9}(F-32)</m>, 
+  where <m>F\geq -459.67</m>,
+  expresses the Celsius temperature <m>C</m>
+  as a function of Fahrenheit temerature <m>F</m>.
+</p>
+
+<p>
+  1. Find the formula for the inverse function.
+</p>
+
+<p>
+  Answer: <m>C^{-1}(F) =</m>
+  <answer>
+    <award>
+      <math>9/5*F+32</math>
+    </award>
+  </answer>
+</p>
+
+<p>
+  2. What is the domain of the inverse function <m>C^{-1}</m>?
+</p>
+
+<p>
+  Answer (in interval notation):
+  <answer>
+    <award>
+      <math format="latex">[-273.15,\infty)</math>
+    </award>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        Domain:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <math>9/5*F+32</math>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        Domain:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <math format="latex">[-273.15,\infty)</math>
+      </cell>
+    </row>
+  </tabular>
+</solution>

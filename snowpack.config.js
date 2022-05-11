@@ -16,6 +16,7 @@ module.exports = {
     'src/Tools/uiDocs': '/uiDocs',
     'src/Media': { url: '/media', static: true, resolve: false },
     'src/Media/profile_pictures': '/profile_pictures',
+    'src/Media/byPageId': '/media/byPageId',
     'src/Parser': '/parser',
     'src/Api': '/api',
     'src/Tools/_framework': '/_framework',

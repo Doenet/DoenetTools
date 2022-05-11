@@ -8,7 +8,7 @@ import {
 } from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom, searchParamAtomFamily} from "../NewToolRoot.js";
 import {
-  fileByDoenetId,
+  fileByPageId,
   pageVariantInfoAtom,
   pageVariantPanelAtom
 } from "../ToolHandlers/CourseToolHandler.js";
@@ -42,7 +42,7 @@ export default function EditorViewer() {
     setPageId(page2);
   }, [doenetId, paramPageId]);
   let initDoenetML = useRecoilCallback(({snapshot, set}) => async (pageId2) => {
-    let response = await snapshot.getPromise(fileByDoenetId(pageId2));
+    let response = await snapshot.getPromise(fileByPageId(pageId2));
     const doenetML = response;
     set(updateTextEditorDoenetMLAtom, doenetML);
     set(textEditorDoenetMLAtom, doenetML);

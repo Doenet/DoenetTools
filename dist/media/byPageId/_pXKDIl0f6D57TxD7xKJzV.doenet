@@ -1,0 +1,102 @@
+<title>How to Use this Course</title>
+
+<p>Click directly on one of the links in the <alert>Tutorial Table of Contents</alert> below to skip to your desired section, or complete the lessons in order.  If you would like to see examples of usage of a particular DoenetML component, click the arrow on the section titled <alert>Sample Code by Component</alert> for links to sample code.</p>
+  
+<p>Each tutorial has the following basic structure:</p>
+<p>
+  <ul>
+    <p><li><em>Preview</em> the sample code using the links at the top of the page.</li></p>
+    <p><li><em>Learn</em> by watching the video and reading the examples</li></p>
+    <p><li><em>Practice</em> with built-in tutorial exercises or by editing the sample code</li></p>
+    <p><li><em>Check your understanding</em> using the 4-question quiz at the end of the page</li></p>
+    </ul>
+</p>
+
+<section><title>Tutorial Table of Contents</title>
+  <ul>
+    <li><alert>Module 1: Introduction to DoenetML</alert></li>
+      <ol>
+        <li>What is Doenet/ DoenetML?</li>
+        <li>The Doenet Instructor User Interface</li>
+        <li>How to use Doenet for your course (CMS/LMS)</li>
+      </ol>
+    <li><alert>Module 2:  Creating a Course</alert></li>
+      <ol>
+        <li>Customizing the name, photo, password for your course</li>
+        <li>Course Roles</li>
+        <li>Layout - DoenetML folder and file structure</li>
+        <li>Setting class times</li>
+        <li>Enrolling students</li>
+        <li>Initial setup of the gradebook</li>
+      </ol>
+    <li><alert>Module 3: Managing the Student Experience Part 1</alert></li>
+      <ol>
+        <li>The current content screen</li>
+        <li>Creating assignments</li>
+        <li>Assignment settings</li>
+      </ol>
+    <li><alert>Module 4: Creating Course Content (Beginner)</alert></li>
+      <ol>
+        <li><ref uri="doenet:doenetId=DQYti10l_EOXUAHZtDggc">Creating Titles, Paragraphs, and Images</ref></li>
+        <li><ref uri="doenet:doenetId=9DBZ4fnYo5FUi-oJ7IY7P">Creating Sections, Subsections, and Problems</ref></li>
+        <li><ref uri="doenet:doenetId=3bg-Px4nAJ64L06G9Hr2H">Creating Video links, Lists, and Tables</ref></li>
+        <li><ref uri="doenet:doenetId=yX1XdnrDpGClwJmEi6_ta">Basic formatting of display text</ref></li>
+        <li><ref uri="doenet:doenetId=A9wqehi3YpDK_C5B8uocT" >Linking with the <tag>ref</tag> component </ref></li>
+        <li><ref uri="doenet:doenetId=QEYVB5sZBAQpT5aPi-O_g">Naming Components</ref></li>
+        <li>Creating Multiple choice exercises</li>
+        <li>Creating Text-input questions</li>
+        <li>Displaying mathematical text and symbols</li>
+        <li>Multiple-choice math questions</li>
+        <li>Using the setup component</li>
+        <li>Creating basic math-input questions (predefined answers)</li>
+        <li>Providing Solutions and feedback</li>
+        <li>Basic Geometry</li>
+        <li>Graphing with Geometric components</li>
+      </ol>
+    <li><alert>Module 5: Creating Course Content (Intermediate)</alert></li>
+      <ol>
+        <li>Style Definitions</li>
+        <li>Functions</li>
+        <li>Copy</li>
+        <li>Graphing functions</li>
+        <li>Awards</li>
+        <li><ref uri="doenet:" >Grouping content with the <tag>pagination</tag> component </ref></li>
+      </ol>
+    <li><alert>Module 6: Creating Course Content (Advanced)</alert></li>
+      <ol>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ol>
+    <li><alert>Module 7: Managing the Student Experience Part 2</alert></li>
+      <ol>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ol>
+    <li><alert>Module 8: Data-driven Instruction</alert></li>
+      <ol>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ol>
+    <li><alert>Module 9: Creating new components</alert></li>
+      <ol>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ol>
+        
+  </ul>
+</section>
+
+
+<section><title>Sample Code by Component</title>
+  <aside><title></title>
+
+
+  </aside>
+</section>
+
+        
+      

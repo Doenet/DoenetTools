@@ -1,0 +1,171 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+<document><title><tag>sideBySide</tag> component</title>
+  
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>width</attr>  <em>(_componentSize)</em></li>
+  <li><attr>widths</attr>  <em>(_componentSizeList)</em></li>
+  <li><attr>margins</attr>  <em>(_componentSizeList)</em></li>
+  <li><attr>valign</attr>  <em>(text)</em></li>
+  <li><attr>valigns</attr>  <em>(_textList)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>sideBySide</tag><idx><tag>sideBySide</tag></idx> is a block component that takes enclosed sectional components and renders them in a sideBySide horizontal format.  Examples of components that can be rendered in this format are <ref uri="doenet:doenetId=NscifFtWYTqus6MOefEoH"><tag>ul</tag></ref> and <ref uri="doenet:doenetId=MP-Q8bsNcXgOTRoqD-vFk"><tag>ol</tag></ref> components, <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref> components, <ref uri="doenet:doenetId=Y9rAqRFFOPw6BphJ5eErY"><tage>image</tage></ref>components, and <tag><ref>section</ref></tag> components. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tag>sideBySide</tag> with <tag>ul</tag> and <tag>p</tag> components</title>
+<p>In the sample code below, an unordered list <tag>ul</tag>
+  and a paragraphs <tag>p</tag> generated with the <tag>lorem</tag> component are formatted with <tag>sideBySide</tag> without any additional attributes.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;sideBySide&gt;
+  &lt;ul&gt;
+    &lt;li&gt;red&lt;/li&gt;
+    &lt;li&gt;orange&lt;/li&gt;
+    &lt;li&gt;yellow&lt;/li&gt;
+    &lt;li&gt;green&lt;/li&gt;
+    &lt;li&gt;blue&lt;/li&gt;
+    &lt;li&gt;indigo&lt;/li&gt;
+    &lt;li&gt;violet&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;p&gt;&lt;lorem generateWords="50"/&gt;&lt;/p&gt;
+
+&lt;/sideBySide&gt;
+
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<sideBySide>
+  
+  <ul>
+    <li>red</li>
+    <li>orange</li>
+    <li>yellow</li>
+    <li>green</li>
+    <li>blue</li>
+    <li>indigo</li>
+    <li>violet</li>
+  </ul>
+
+  <p><lorem generateWords="50"/></p>
+
+</sideBySide>
+</example>
+  
+
+<!--******************************************************-->
+    
+<subsection><title>Example 2: <tag>sideBySide</tag> with <tag>figure</tag> and <tag>p</tag></title>
+<p>In the sample code below, a <ref uri="doenet:doenetId=2KaoB8xx2bDxXab40co9i"><tag>figure</tag></ref> and a paragraph, <tag>p</tag> are displayed with <tag>sideBySide</tag> using the <attr>widths</attr> attribute.  Note that the displayed size of the <tag>image</tag> is also specified with the <attr>width</attr> attribute within that component.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;sideBySide widths="70% 30%"&gt;
+  
+  &lt;figure&gt;
+    &lt;image width="500" 
+    source="https://upload.wikimedia.org/wikipedia/
+    commons/8/86/Machupicchu_hb10.jpg" description=
+    "Machu Picchu, 1912"/&gt;
+    &lt;caption&gt;Machu Picchu, 1912&lt;/caption&gt;
+  &lt;/figure&gt;
+
+  &lt;p&gt;&lt;lorem generateWords="10"/&gt;&lt;/p&gt;
+  
+&lt;/sideBySide&gt;
+
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders:</title>
+<sideBySide widths="70% 30%">
+  
+  <figure>
+    <image width="500" source="https://upload.wikimedia.org/wikipedia/commons/8/86/Machupicchu_hb10.jpg" description="Machu Picchu, 1912"/>
+    <caption>Machu Picchu, 1912</caption>
+  </figure>
+
+  <p><lorem generateWords="10"/></p>
+  
+</sideBySide>
+</example>
+   
+
+<!--******************************************************-->
+ 
+<subsection><title>Example 3: Three items arranged <tag>sideBySide</tag> with <attr>width</attr> and <attr>margins</attr> attributes</title>
+<p>In the sample code below, three items are arranged with the <tag>sideBySide</tag> component.  The <attr>widths</attr> attribute is used to specify their relative sizes and the <attr>margins</attr> attribute is used to provide space between the items.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+  &lt;sideBySide widths="20% 36% 36%" margins="2% 2% 2% 2%" valigns="bottom top center"&gt;
+
+  &lt;subsection&gt;&lt;title&gt;Lab notes&lt;/title&gt;
+  &lt;/subsection&gt;
+  
+  &lt;spreadsheet minNumRows="10" minNumColumns="2"/&gt;
+
+  &lt;graph&gt;
+    &lt;point&gt;(1,1)&lt;/point&gt;
+    &lt;point&gt;(4,2)&lt;/point&gt;
+    &lt;point&gt;(5,3)&lt;/point&gt;
+  &lt;/graph&gt;
+  
+&lt;/sideBySide&gt;
+
+
+</pre>
+        </example>
+      </subsection>
+  
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders:</title>
+<sideBySide widths="20% 36% 36%" margins="2% 2% 2% 2%" valigns="bottom top center">
+
+  <subsection><title>Lab notes</title>
+  </subsection>
+  
+  <spreadsheet minNumRows="10" minNumColumns="2"/>
+
+  <graph>
+    <point>(1,1)</point>
+    <point>(4,2)</point>
+    <point>(5,3)</point>
+  </graph>
+  
+</sideBySide>
+</example>
+
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

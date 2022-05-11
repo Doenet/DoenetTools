@@ -1,0 +1,120 @@
+<setup>
+ <selectfromsequence from="2" to="6" name="p" />
+  <selectfromsequence from="1" to="4" name="q" />
+ 
+  <!--
+    Calculate Answers
+  -->
+<math simplify="none" name="ans1">sqrt($q^2+2*$p*$q)/($p+$q)</math>
+<math simplify="none" name="ans2">sqrt($q^2+2*$p*$q)/$p</math>
+<math simplify="none" name="ans3">$p/sqrt($q^2+2*$p*$q)</math>
+<math simplify="none" name="ans4">($p+$q)/$p</math>
+<math simplify="none" name="ans5">($p+$q)/sqrt($q^2+2*$p*$q)</math>
+  
+</setup>
+
+
+<p>if <m>cos(\theta) = $p/($p+$q)</m> and <m>0 < \Theta < Pi/2 </m></p>
+<p>Find the values of the other five trig functions. Enter your answer as an exact value using square roots when necessary.  Do not use a calculator to give a decimal approximation.</p>
+
+
+<p>
+ <m>sin(\theta)=</m>
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05" >
+      $ans1
+    </award>  
+  </answer>
+</p>
+
+  <p>
+ <m>tan(\theta)=</m>
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05" >
+      $ans2
+    </award>  
+  </answer>
+</p>
+
+<p>
+ <m>cot(\theta)=</m>
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05" >
+      $ans3
+    </award>  
+  </answer>
+</p>
+
+<p>
+ <m>sec(\theta)=</m>
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05" >
+      $ans4
+    </award>  
+  </answer>
+</p>
+
+<p>
+ <m>csc(\theta)=</m>
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05" >
+      $ans5
+    </award>  
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+       <m>sin(\theta)</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="2">$ans1</number>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+       <m>tan(\theta)=</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="2">$ans2</number>
+      </cell>
+    </row>
+     <row bottom="minor">
+      <cell>
+       <m>cot(\theta)</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="2">$ans3</number>
+      </cell>
+    </row>
+     <row bottom="minor">
+      <cell>
+       <m>sec(\theta)</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="2">$ans4</number>
+      </cell>
+    </row>
+     <row bottom="minor">
+      <cell>
+       <m>csc(\theta)</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="2">$ans5</number>
+      </cell>
+    </row>
+  </tabular>
+</solution>
+

@@ -1,0 +1,152 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tage>attractToGrid</tage> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>dx</attr>  <em>(number)</em></li>
+  <li><attr>dy</attr>  <em>(number)</em></li>
+  <li><attr>dz</attr>  <em>(number)</em></li>
+  <li><attr>xoffset</attr>  <em>(number)</em></li>
+  <li><attr>yoffset</attr>  <em>(number)</em></li>
+  <li><attr>xthreshold</attr>  <em>(number)</em></li>
+  <li><attr>ythreshold</attr>  <em>(number)</em></li>
+  <li><attr>zthreshold</attr>  <em>(number)</em></li>
+  <li><attr>includeGridlines</attr>  <em>(boolean)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>attractToGrid</tag><idx><tag>attractToGrid</tag></idx> component is nested within a <ref uri="doenet:doenetId=DasOYIo38JZmCquq_mcCd"><tag>constraints</tag></ref> component and is used to specify how a <c>GraphicalComponent</c>, such as a <ref uri="doenet:doenetId=JoBPIQwjZ5merftAHL5UF"><tage>line</tage></ref> or a <ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref> "snaps" to a gridline. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1:  <tage>attractToGrid</tage> used with <attr>dx</attr> and <attr>dy</attr> attributes</title>
+<p>In the sample code below, the <tage>attractToGrid</tage> component is used within the <ref uri="doenet:doenetId=DasOYIo38JZmCquq_mcCd"><tag>constraints</tag></ref> component and is used to snap <ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref> <m>A</m> into a gridline spaced at intervals of 0.5 in both the <m>x</m>-direction and the <m>y</m>-direction using the <attr>dx</attr> and the <attr>dy</attr> attributes.  Following the <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref>, the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component is used with the property <c>coords</c> to display the updated position of point <m>A</m>.</p> 
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;Move point &lt;m&gt;A&lt;/m&gt; to &lt;m&gt;(1.5,-1.5)&lt;/m&gt;. 
+  The coordinates of point &lt;m&gt;A&lt;/m&gt; are displayed below as 
+  you move it.&lt;/p&gt;
+  
+&lt;graph grid="true" xmin="-3" xmax="3" ymin="-3" ymax="3"&gt;
+  &lt;point name="A" x="0" y="0" label="A"&gt;
+    &lt;constraints&gt;
+      &lt;attractToGrid dx="0.5" dy="0.5"/&gt;
+    &lt;/constraints&gt;
+  &lt;/point&gt;
+&lt;/graph&gt;
+  
+&lt;p&gt;Point &lt;m&gt;A&lt;/m&gt; is now at:  &lt;copy prop="coords" tname="A"/&gt;&lt;/p&gt;
+</pre>
+ 
+        </example>  
+      </subsection>
+ 
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>Move point <m>A</m> to <m>(1.5,-1.5)</m>. The coordinates of point <m>A</m> 
+are displayed below as you move it.</p>
+<graph grid="true" xmin="-3" xmax="3" ymin="-3" ymax="3">
+  <point name="A" x="0" y="0" label="A">
+    <constraints>
+      <attractToGrid dx="0.5" dy="0.5" />
+    </constraints>
+  </point>
+</graph>
+<p>Point <m>A</m> is now at:  <copy prop="coords" tname="A"/></p>
+</example>
+   
+
+<!--******************************************************-->
+<!--    
+ 
+<subsection><title>Example 2: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+    
+<!--*******************************************************-->
+<!-- 
+  
+<example><title>What Doenet Renders (Example 2)</title>
+
+</example>
+   -->
+ 
+
+<!--******************************************************-->
+    
+<!--  
+<subsection><title>Example 3: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+    -->
+<!--*******************************************************-->
+ 
+<!--  
+<example><title>What Doenet Renders (Example 3)</title>
+
+</example>
+   -->
+
+
+<!--******************************************************-->
+    
+<!--  
+<subsection><title>Example 4: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+  -->
+<!--*******************************************************-->
+ 
+<!-- 
+<example><title>What Doenet Renders (Example 4)</title>
+
+</example>
+    -->
+
+
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

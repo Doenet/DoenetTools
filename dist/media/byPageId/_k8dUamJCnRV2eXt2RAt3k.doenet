@@ -1,0 +1,68 @@
+<problem>
+
+<setup>
+<selectFromSequence assignNames='a b' exclude='0' numberToSelect='3' withReplacement="true" from="-10" to="10" excludecombinations="(1 1) (1 -1) (-1 1) (-1 -1)" />
+<selectFromSequence assignNames='c' exclude='0' from="-10" to="10" />
+
+<selectFromSequence assignNames='n' from="1" to="4" />
+<select assignNames='x'>x y z</select>
+
+<math name='factored_quadratic' simplify='full'>($x+$a)($x+$b)</math>
+<math name='expanded_quadratic' simplify='full' expand='true'>$factored_quadratic</math>
+<convertSetToList name='zero_list' simplify='full'><math>{-$a,-$b,0}</math></convertSetToList>
+<math name='factor1' simplify='full'>$x+$a</math>
+<math name='factor2' simplify='full'>$x+$b</math>
+<math name='minus_a' simplify='full'>-$a</math>
+<math name='minus_b' simplify='full'>-$b</math>
+<math name='monomial' simplify='full'>$c*$x^$n</math>
+<math name='monomial_times_expanded_quadratic' simplify='full'>$monomial*$expanded_quadratic</math>
+<math name='monomial_times_factored_quadratic' simplify='full'>$monomial*$factored_quadratic</math>
+</setup>
+
+Solve the equation <m>$monomial_times_expanded_quadratic =0</m> by factoring.
+
+<p>How many solutions are there? <mathinput name="user_num_sol" /></p>
+
+<p>The solutions are:</p>
+
+<map name="xs">
+  <template>
+    <p><m>$x =</m> <mathinput /></p>
+  </template>
+  <sources>
+    <sequence length="min(10,$user_num_sol)" />
+  </sources>
+</map>
+
+<answer>
+  <award>
+    <when matchpartial="true">
+      <mathlist>
+        <collect componentTypes="mathinput" tname="xs" prop="value" isResponse />
+      </mathlist>
+      =
+      $zero_list
+    </when>
+  </award>
+
+</answer>
+
+
+<solution>
+Factoring the quadratic <m>$expanded_quadratic</m>, we obtain <m>$factored_quadratic</m>.  Therefore, the solutions to 
+<me>$monomial_times_expanded_quadratic =0</me>
+are the same as the solutions to
+<me>$monomial_times_factored_quadratic=0.</me>
+For this factored expression to be zero, one of the factors must be zero.  
+<conditionalcontent>
+  <case condition="$a=$b">
+Either <m>$x=0</m> or <m>$factor1=0</m>.  Therefore there are two solutions: <m>$x=0</m> and <m>$x = $minus_a</m>.
+  </case>
+  <else>
+Either <m>$x=0</m>, <m>$factor1=0</m>, or <m>$factor2=0</m>.  Therefore, there are three solutions: <m>$x=0</m>,  <m>$x=$minus_a</m>, and <m>$x=$minus_b</m>.
+  </else>
+</conditionalcontent>
+
+</solution>
+
+</problem>

@@ -1,0 +1,10 @@
+<number displayDigits="2" name="n"><selectFromSequence from="0" to="1" step="0.0001"  /></number>
+
+
+<number name="m">$n*100</number>
+
+<answer allowedErrorInNumbers="0.01">$m</answer>
+
+<solution>
+  <p>The right answer is <copy tname="m" displayDigits="2"/></p>
+</solution>

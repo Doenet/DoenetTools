@@ -1,0 +1,36 @@
+<ol>
+  <li>For the <m>45^\circ-45^\circ-90^\circ</m> triangle, (the isosceles right triangle), there are two legs of length <m>a</m>
+and the hypotenuse of length 1.	
+<p>
+<image source="https://drive.google.com/uc?id=1Wl_mIhCHZug5Oz6Q5axp46AzV1EOLWrp" width="300px" description="45-45-90 triangle" />
+
+</p>
+    
+<ul><li>Use the Pythagorean Theorem to write an equation relating the lengths of the sides of the triangle.</li>
+<li>Solve the equation for <m>a</m>. (Note: Only the positive answer will make sense.)</li></ul>
+</li>
+
+<li>To find the lengths of the legs of the <m>30^\circ-60^\circ-90^\circ</m> triangle, begin with an equilateral triangle, all of whose sides are length 1.
+<men>
+\begin{tikzpicture}[scale=2]
+		\draw (0,0) -- node[below] {$1$} (2,0) -- node[above right] {$1$} (1,1.732) -- node[above left] {$1$} (0,0) -- cycle;
+		\node at (0.3,0.15) {$60^\circ$};		
+		\node at (1,1.4) {$60^\circ$};		
+		\node at (1.7,0.15) {$60^\circ$};		
+\end{tikzpicture}			
+
+</men>
+<ul>
+<li>From the top vertex, draw a line segment perpendicular to the bottom side, cutting the original triangle into to congruent triangles. (Geometry review: The new line segment is called the perpendicular bisector, it is also called the median, it is also called the altitude.)</li>
+<li>Find the lengths of the two halves of the bottom side.</li>
+<li>Find all the angles in the triangles.</li>
+<li>Label the length of the altitude <m>h</m></li>
+<li>Use the Pythagorean Theorem to write an equation involving <m>h</m>.</li>
+<li>Solve the equation for <m>h</m>.</li> 
+</ul>
+</li>
+<li>Draw the <m>45^\circ-45^\circ-90^\circ</m> triangle in as many orientations as possible, keeping the legs either horizontal or vertical. (Hint: You can rotate and reflect the triangle.)</li>
+
+<li>Draw the <m>30^\circ-60^\circ-90^\circ</m> triangle in as many orientations as possible, keeping the legs either horizontal or vertical. </li>
+
+</ol>

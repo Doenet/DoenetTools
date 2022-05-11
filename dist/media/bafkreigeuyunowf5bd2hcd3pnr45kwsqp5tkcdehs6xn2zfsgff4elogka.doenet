@@ -1,0 +1,145 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tage>angle</tage> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>draggable</attr> <em>(boolean)</em></li>
+  <li><attr>radius</attr> <em>(math)</em></li>
+  <li><attr>renderAsAcuteAngle</attr> <em>(boolean)</em></li>
+  <li><attr>inDegrees</attr> <em>(boolean)</em></li>
+  <li><attr>radians</attr> <em>(math)</em></li>
+  <li><attr>degrees</attr> <em>(math)</em></li>
+  <li><attr>through</attr> <em>(_pointListComponent)</em></li>
+  <li><attr>betweenLines</attr> <em>(_lineListComponent)</em></li>
+  <aside><title><alert>Inherited from parent component/  <c>GraphicalComponent</c>:</alert></title>
+  <li><attr>label</attr> <em>(text)</em></li>
+  <li><attr>showLabel</attr> <em>(boolean)</em></li>
+  <li><attr>layer</attr> <em>(number)</em></li>
+  </aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+  <p>The <tage>angle</tage><idx><tage>angle</tage></idx> component renders a geometric angle when nested inside a <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref> component.  Points are drawn in the order they are specified in the <attr>through</attr> attribute. The <tage>angle</tage> tag is self-closing. See examples below for details on specific attribute usage. </p>
+</section> 
+  
+<section><title>Usage Examples</title>
+
+
+<subsection newNameSpace><title>Example 1: <tage>angle</tage> with <attr>betweenLines</attr> attribute</title> 
+<p>In the sample code below, each <ref uri="doenet:doenetId=JoBPIQwjZ5merftAHL5UF"><tage>line</tage></ref> is defined within the <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref> and referenced in the <tage>angle</tage> component's <attr>betweenLines</attr> attribute using the <c>&dollar;name</c> notation.  The effect of the <attr>radius</attr> and the <attr>renderAsAcuteAngle</attr> attributes are illustrated as well.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre> 
+&lt;graph width="300px" height="300px"&gt;
+  &lt;line name="line1"&gt;y=2x-4&lt;/line&gt;
+  &lt;line name="line2"&gt;y=-x-2&lt;/line&gt;
+  &lt;angle betweenLines="&dollar;line1 &dollar;line2" radius="3" renderAsAcuteAngle="true" name="angle1"/&gt;
+&lt;/graph&gt;
+</pre>
+</example>
+</subsection>
+    
+<!--*******************************************************-->
+ 
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<graph width="300px" height="300px">
+  <line name="line1">y=2x-4</line>
+  <line name="line2">y=-x-2</line>
+  <angle betweenLines="$line1 $line2" radius="3" renderAsAcuteAngle="true" name="angle1"/>
+</graph>
+
+</example>
+   
+<!--*******************************************************-->
+  
+<subsection newNameSpace><title>Example 2: <tage>angle</tage> inside of <tage>triangle</tage> with <attr>through</attr> attribute</title> 
+<p>In the sample code below, the <tage>angle</tage> component references the samed named <ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref>s as a <ref uri="doenet:doenetId=RJW2wne2i7D0KsJjrX5bs"><tage>triangle</tage></ref> using the <c>&dollar;name</c> notation. The <attr>through</attr> attribute is used to specify these defining points for the angle, starting with an outside point, then the vertex point of the angle, followed by the other outside point. The <attr>renderAsAcuteAngle</attr> attribute is set to <c>true</c> to acheive the interior angle of the triangle, and the <attr>radius</attr> attribute is adjusted to achieve the desired appearance.</p> 
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;setup&gt;
+  &lt;point name="a"&gt;(3,3)&lt;/point&gt;
+  &lt;point name="b"&gt;(-4,-2)&lt;/point&gt;
+  &lt;point name="c"&gt;(5,-7)&lt;/point&gt;
+&lt;/setup&gt;
+  
+&lt;graph&gt;
+  &lt;triangle vertices="&dollar;a &dollar;b &dollar;c"/&gt;
+  &lt;angle through="&dollar;a &dollar;b &dollar;c" radius="2" renderAsAcuteAngle="true"/&gt;
+&lt;/graph&gt;
+</pre>
+</example>
+</subsection>
+    
+<!--*******************************************************-->
+
+  
+<example><title>What Doenet Renders (Example 2)</title>
+<setup>
+  <point name="a">(3,3)</point>
+  <point name="b">(-4,-2)</point>
+  <point name="c">(5,-7)</point>
+</setup>
+<graph>
+  <triangle vertices="$a $b $c"/>
+  <angle through="$a $b $c" radius="2" renderAsAcuteAngle="true"/>
+</graph>
+</example>
+    
+
+<!--*******************************************************-->
+  
+<subsection newNameSpace><title>Example 3: <tage>angle</tage> with user-input points</title> 
+<p>In the sample code below, the user is prompted to enter coordinates for three named <ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref>s using a <ref uri="doenet:doenetId=p_qPrnY-jhcqqrG2LcodH"><tage>mathInput</tage></ref>.  The user can also switch the type of angle from acute to obtuse by clicking a checkbox that has been rendered with the <ref uri="doenet:doenetId=1GOagmW0_QHN4m_zmuE-I"><tage>booleanInput</tage></ref> component. This boolean value is referenced in the DoenetML code within the 
+<attr>renderAsAcuteAngle</attr> attribute of the <tage>angle</tage> component.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre> 
+&lt;p&gt;Enter three points below in the format &lt;m&gt;(x,y)&lt;/m&gt; and select the type of angle:&lt;/p&gt;
+&lt;p&gt;Point &lt;m&gt;A&lt;/m&gt;: &lt;mathInput name="userPointA" /&gt;&lt;/p&gt;
+&lt;p&gt;Point &lt;m&gt;B&lt;/m&gt;: &lt;mathInput name="userPointB" /&gt;&lt;/p&gt;
+&lt;p&gt;Point &lt;m&gt;C&lt;/m&gt;: &lt;mathInput name="userPointC" /&gt;&lt;/p&gt;
+
+&lt;p&gt;Change the Type of Angle:
+&lt;booleanInput name="acute" label="show obtuse angle"/&gt;&lt;/p&gt;
+
+&lt;graph&gt;
+      &lt;point name="A" label="A"&gt;&dollar;userPointA&lt;/point&gt;
+      &lt;point name="B" label="B"&gt;&dollar;userPointB&lt;/point&gt;
+      &lt;point name="C" label="C"&gt;&dollar;userPointC&lt;/point&gt;
+      &lt;angle through="&dollar;A &dollar;B &dollar;C" radius="3" renderAsAcuteAngle="!&dollar;acute"/&gt;
+&lt;/graph&gt;
+</pre>
+</example>
+</subsection>
+    
+<!--*******************************************************-->
+
+
+<example><title>What Doenet Renders (Example 3)</title>
+
+<p>Enter three points below in the format <m>(x,y)</m> and select the type of angle:</p>
+<p>Point <m>A</m>: <mathInput name="userPointA" /></p>
+<p>Point <m>B</m>: <mathInput name="userPointB" /></p>
+<p>Point <m>C</m>: <mathInput name="userPointC" /></p>
+
+<p>Change the Type of Angle:
+<booleanInput name="acute" label="show obtuse angle"/></p>
+
+<graph>
+      <point name="A" label="A">$userPointA</point>
+      <point name="B" label="B">$userPointB</point>
+      <point name="C" label="C">$userPointC</point>
+      <angle through="$A $B $C" radius="3" renderAsAcuteAngle="!$acute" />
+</graph>
+</example>
+   
+</section>
+</document>
+
+
+
+
+ 

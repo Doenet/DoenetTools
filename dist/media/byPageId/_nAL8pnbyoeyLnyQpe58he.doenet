@@ -1,0 +1,65 @@
+<!--
+   Missing text decorations (Italics, Bold, etc)
+-->
+
+<!--
+#DESCRIPTION
+##  Calculus: Limit laws
+##ENDDESCRIPTION
+
+
+## DBsubject(Calculus - single variable)
+## DBchapter(Limits and continuity)
+## DBsection(Evaluating limits - factoring)
+## Date(08/30/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(elf-h)
+## Level(2)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('2.3')
+## Problem1('14')
+## KEYWORDS('calculus', 'limit laws', 'limit')
+-->
+
+<setup>
+  <selectFromSequence from="2" to="7" exclude="6" name="a" />
+  <math name="f" simplify>
+    x^2+(6-$a)*x-6*$a
+  </math>
+  <math name="ans" simplify>(6+$a)/7</math>
+</setup>
+
+<p>
+  Evaluate the limit, if it exists.  If a limit \emph{does not exist}, type \textbf{DNE}.
+  <me>
+    \lim_{x \to -6} \frac{$f}{x^2+5x-6}
+  </me>
+</p>
+
+<p>
+  Limit:
+  <answer>
+    <award>
+      $ans
+    </award>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        Limit
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans
+      </cell>
+    </row>
+  </tabular>
+</solution>

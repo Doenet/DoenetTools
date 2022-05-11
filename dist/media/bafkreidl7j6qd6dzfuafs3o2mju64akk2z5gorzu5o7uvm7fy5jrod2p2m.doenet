@@ -1,0 +1,125 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>pre</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>pre</tag><idx><tag>pre</tag></idx> component renders a block of text that preserves the formatting of the text directly as input into the editor, including line spacing, font and indentation.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: Using <tag>pre</tag> to modify default spacing</title>
+<p>In the code below, the <tag>pre</tag> component is used to precisely
+  space the lines of a Haiku as they are typed in the editor.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;pre&gt;
+            A world of dew,
+          And within every dewdrop
+            A world of struggle.
+
+                      -Kobayashi Issa
+&lt;/pre&gt;
+
+</pre>
+</example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<pre>
+            A world of dew,
+          And within every dewdrop
+            A world of struggle.
+
+                      -Kobayashi Issa
+</pre>
+</example>
+
+
+<!--******************************************************-->
+<!--    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>-->
+<!--*******************************************************-->
+<!--
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>-->
+  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<!--<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>-->
+<!--*******************************************************-->
+<!-- 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>-->
+
+<aside>
+    <title>Citations</title>
+    <p>[1]"A World of Dew" by Kobayashi Issa:  Voutiritsas, T. (2021, July 21). 10 Vivid Haikus to Leave you Breathless. Read Poetry. https://www.readpoetry.com/10-vivid-haikus-to-leave-you-breathless/
+    </p>
+</aside>
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

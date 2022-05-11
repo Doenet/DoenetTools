@@ -1,6 +1,7 @@
-import React, {useRef, useState, useEffect} from "../../_snowpack/pkg/react.js";
+import React, {useRef, useState} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 import {
   faCheck,
   faLevelDownAlt,
@@ -130,25 +131,34 @@ export default function MathInput(props) {
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
     let checkWorkStyle = {
-      position: "relative",
-      width: "30px",
-      height: "24px",
-      fontSize: "20px",
-      fontWeight: "bold",
-      color: "#ffffff",
-      display: "inline-block",
-      textAlign: "center",
-      top: "3px",
-      padding: "2px",
-      zIndex: "0"
+      cursor: "pointer"
     };
+    const Button = styled.button`
+    position: relative;
+    width: 24px;
+    height: 24px;
+    color: #ffffff;
+    background-color: var(--mainBlue);
+    display: inline-block;
+    text-align: center;
+    padding: 2px;
+    z-index: 0;
+    /* border: var(--mainBorder); */
+    border: none;
+    border-radius: var(--mainBorderRadius);
+    margin: 0px 10px 12px 10px;
+
+    &:hover {
+      background-color: var(--lightBlue);
+      color: black;
+    };
+  `;
     if (validationState.current === "unvalidated") {
       if (SVs.disabled) {
-        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
-      } else {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        checkWorkStyle.cursor = "not-allowed";
       }
-      checkWorkButton = /* @__PURE__ */ React.createElement("button", {
+      checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
         id: name + "_submit",
         tabIndex: "0",
         disabled: SVs.disabled,
@@ -170,8 +180,8 @@ export default function MathInput(props) {
     } else {
       if (SVs.showCorrectness) {
         if (validationState.current === "correct") {
-          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
             id: name + "_correct",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -182,13 +192,13 @@ export default function MathInput(props) {
           let partialCreditContents = `${percent} %`;
           checkWorkStyle.width = "50px";
           checkWorkStyle.backgroundColor = "#efab34";
-          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
             id: name + "_partial",
             style: checkWorkStyle
           }, partialCreditContents);
         } else {
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
-          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
             id: name + "_incorrect",
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -197,7 +207,7 @@ export default function MathInput(props) {
         }
       } else {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-        checkWorkButton = /* @__PURE__ */ React.createElement("span", {
+        checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
           id: name + "_saved",
           style: checkWorkStyle
         }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -207,18 +217,20 @@ export default function MathInput(props) {
     }
     if (SVs.numberOfAttemptsLeft < 0) {
       checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(1 attempt remaining)"));
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
-      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", SVs.numberOfAttemptsLeft, ")"));
+      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(", SVs.numberOfAttemptsLeft, " attempts remaining)"));
     }
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("span", {
     className: "textInputSurroundingBox",
-    id: name
-  }, /* @__PURE__ */ React.createElement("span", {
-    style: {margin: "10px"}
-  }, /* @__PURE__ */ React.createElement(EditableMathField, {
+    id: name,
+    style: {marginBottom: "12px"}
+  }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(EditableMathField, {
+    style: {border: "var(--mainBorder)"},
     latex: rendererValue.current,
     config: {
       autoCommands: "alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity",

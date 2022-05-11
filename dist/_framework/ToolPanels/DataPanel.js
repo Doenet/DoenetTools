@@ -3,7 +3,7 @@ import {useRecoilCallback, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
 import CourseNavigator from "../../_reactComponents/Course/CourseNavigator.js";
 import styled, {keyframes} from "../../_snowpack/pkg/styled-components.js";
-import {authorItemByDoenetId, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 import {useToast, toastType} from "../Toast.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 const movingGradient = keyframes`
@@ -64,7 +64,7 @@ export default function DataPanel() {
     }
   });
   const doubleClickItem = useRecoilCallback(({set, snapshot}) => async ({doenetId, courseId: courseId2}) => {
-    let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+    let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
     if (clickedItem.type == "section") {
       set(pageToolViewAtom, (prev) => {
         return {

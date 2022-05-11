@@ -1,0 +1,5 @@
+<variantControl nVariants="5" seeds="1 2 3 44 43" />
+
+In many cases, the choices for a variant are chosen deterministically from a seed using a pseudorandom number generator.  The default seeds are 1, 2, 3, etc., but they can be specified via a  <tag>variantControl</tag>.
+
+<p>A number: <selectFromSequence from="1" to="1000000" /></p>

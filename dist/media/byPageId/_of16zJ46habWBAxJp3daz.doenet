@@ -1,0 +1,56 @@
+<!-- To comment use these tags -->
+<ol>
+  <p>We begin by examining the slope between two points on the parabola ,<m>y = x^2</m>
+. Some of the points
+on the parabola are (0, 0),(1, 1),(2, 4),(3, 9),(4, 16),(5, 25)
+.</p>
+  <li>Find the slope between ...
+<p>(a) the point (2, 4) and the point (5, 25)</p>
+<p>(b) the point (2, 4) and the point (4, 16)</p>
+<p>(c) the point (2, 4) and the point (3, 9)</p>
+<p>(d) the point (2, 4) and the point (1, 1)</p>
+Can you guess a simple formula to calculate the slope between (2, 4) and an arbitrary point on
+the parabola?</li>
+
+<li> Suppose the second point on the parabola is unknown, that is, suppose that the second point is
+<m>(x, x^2)</m> and that we wish to find the slope between the point (2, 4) and the point <m>(x, x^2)</m>.
+<p>• Use the slope formula to write an expression for the slope between these two points.</p>
+<p>• Factor and cancel to simplify this formula.</p>
+<p>• Does this formula agree with what you guessed in part 1?</p>
+</li>
+
+<li> Find the slope between ...
+<p>(a) the point (3, 9) and the point (5, 25)</p>
+<p>(b) the point (3, 9) and the point (4, 16)</p>
+<p>(c) the point (3, 9) and the point (2, 4)</p>
+<p>(d) the point (3, 9) and the point (1, 1)</p>
+Can you guess a simple formula to calculate the slope between (3, 9) and an arbitrary point on
+the parabola?
+</li>
+
+<li>Find the slope between ...
+<p>(a) the point (4, 16) and the point (5, 25)</p>
+<p>(b) the point (4, 16) and the point (3, 9)</p>
+<p>(c) the point (4, 16) and the point (2, 4)</p>
+<p>(d) the point (4, 16) and the point (1, 1)</p>
+Can you guess a simple formula to calculate the slope between (4, 16) and an arbitrary point
+on the parabola?
+
+</li>
+<li>Can you guess what the slope is between any two points on a parabola?
+
+</li>
+
+<li>Suppose both points on the parabola are unknown, that is, suppose that the second point is
+<m>(x, x^2)</m> and that the first fixed point is <m>(h, h^2)</m>. We wish to find the slope between the point
+<m>(h, h^2)</m> and the point <m>(x, x^2)</m>.
+<p>• Use the slope formula to write an expression for the slope between these two points.</p>
+<p>• Factor and cancel to simplify this formula.</p>
+<p>• Does this formula agree with what you guessed in part 5?</p>
+
+</li>
+
+  
+
+  
+</ol>

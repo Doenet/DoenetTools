@@ -1,0 +1,77 @@
+<sideBySide>
+  <ref createButton="true" uri="doenet:doenetId=vkIa2lwfR1JOxEdcxBvhE">Previous</ref>
+   <ref createButton="true"  uri="doenet:doenetId=HgLUOtFwSOWnE-wD_wIiT">Next</ref>
+</sideBySide>
+
+
+
+<document><title>Chapter 3:  Structure</title>
+<section><title>3.1.1 Paragraphs</title>
+<p>Paragraphs of text are created with the  <idx></idx><alert><tag>p</tag></alert> component. <ref uri="doenet:doenetId=vkIa2lwfR1JOxEdcxBvhE">Sectional components</ref>, such as <alert><tag>p</tag></alert>, <alert><tag>section</tag></alert>, <alert><tag>subsection</tag></alert>                                                                                                                                                                                                                                                                                             and <alert><tag>problem</tag></alert> are primarily used to format and organize your content.  Of these components, paragraphs are the most basic building block in the hierarchy. Most of the content in your document, and almost all blocks of text should be included within an opening <alert><tag>p</tag></alert> and a closing <alert><tag>/p</tag></alert> for clarity.</p>
+<p>The default formatting associated with a <alert><tag>p</tag></alert> is simply to drop down a line, and it can therefore be effectively used nested within other components, such as lists, which are created with the <alert><tag>ol</tag></alert> tag and the <alert><tag>ul</tag></alert> tag.  It can also be included before and after an anonymous <alert><tag>image/</tag></alert> tag (i.e. one that is <em>not</em> nested within a <alert><tag>figure</tag></alert> tag) to generate the return for a new line of text following the image. 
+</p>
+<p>Unlike in PreTeXt, there are no restrictions on what content in DoenetML <em>must</em> or <em>must not</em> be placed in a paragraph. Text within paragraphs can be modified using the paragraph markup components, <alert><tag>alert</tag></alert> (for creating bold text), <alert><tag>em</tag></alert> (for creating emphasized or italicized text), and the <alert><tag>q</tag></alert> (for creating quotations).  It is also possible to create inline mathematics or multiple choice questions within a paragraph. 
+</p>
+</section>
+
+<subsection><title><tag>p</tag> Attributes</title>
+<p>The paragraph component does not have any additional attributes.</p>
+  
+</subsection>
+<aside><title>Examples</title>  
+  <tabular>
+    
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    
+    <row bottom="minor">
+      <cell>
+        <pre><alert><tag>subsection</tag><tag>title</tag></alert>Types of Coffee<alert><tag>/title</tag></alert>
+    <alert><tag>p</tag></alert>French Roast<alert><tag>/p</tag></alert>
+    <alert><tag>p</tag></alert>Hazelnut<alert><tag>/p</tag></alert>
+    <alert><tag>p</tag></alert>Light Roast<alert><tag>/p</tag></alert>
+  <alert><tag>/subsection</tag></alert>
+        </pre>
+      </cell>
+      <cell>
+      <subsection><title>Types of Coffee</title>
+        <p>French Roast</p>
+        <p>Hazelnut</p>
+        <p>Light Roast</p>
+      </subsection>
+      </cell>
+    </row>
+    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   Once upon a time... 
+      <alert><tag>p</tag></alert>there were seven wise wizards <alert><tag>/p</tag></alert>
+        </pre>
+      </cell>
+      <cell>
+        Once upon a time...
+        <p>there were seven wise wizards</p>
+      </cell>
+    </row>
+      
+    <row bottom="minor">
+      <cell>
+        <pre>
+   <alert><tag>image width="300" source="https://media.istockphoto..." /</tag></alert>
+    <alert><tag>p</tag></alert>Delicious Berry Recipes<alert><tag>/p</tag></alert>
+        </pre>
+      </cell>
+      <cell>
+      <image width="300" source="https://media.istockphoto.com/photos/isolated-berries-picture-id182187173?k=20&m=182187173&s=612x612&w=0&h=9AjNdusO2GPqTinTKv_pmD55OJmDoolSnqBi8_oNETk=" />
+        <p>Delicious Berry Recipes</p>
+      </cell>
+    </row>
+
+  </tabular>  
+
+</aside>
+  
+</document>

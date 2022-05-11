@@ -1,0 +1,128 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tage>spreadsheet</tage> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>width</attr>  <em>(_componentSize)</em></li>
+  <li><attr>minNumRows</attr>  <em>(number)</em></li>
+  <li><attr>minNumCols</attr>  <em>(number)</em></li>
+  <li><attr>columnHeaders</attr>  <em>(boolean)</em></li>
+  <li><attr>rowHeaders</attr>  <em>(boolean)</em></li>
+  <li><attr>fixedRowsTop</attr>  <em>(integer)</em></li>
+  <li><attr>fixedColumnsLeft</attr>  <em>(integer)</em></li>
+  <li><attr>hiddenColumns</attr>  <em>(numberList)</em></li>
+  <li><attr>hiddenRows</attr>  <em>(numberList)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tage>spreadsheet</tage><idx><tage>spreadsheet</tage></idx> component renders a 4x4 celled embedded spreadsheet tool.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tage>spreadsheet</tage> with <attr>minNumRows</attr> and <attr>minNumCols</attr> attributes </title>
+<p>In the sample code below, the default size <tage>spreadsheet</tage> of 4 rows by 4 columns has been modified with the <attr>minNumRows</attr> and the <attr>minNumCols</attr> attributes.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;spreadsheet minNumRows="2" minNumColumns="6"/&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+  
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<spreadsheet minNumRows="2" minNumColumns="6"/>
+</example>
+   
+<!--******************************************************-->
+
+<subsection><title>Example 2: <tage>spreadsheet</tage> with <attr>width</attr>, <attr>rowHeaders</attr>, and <attr>columnHeaders</attr> attributes</title>
+<p>In the sample code below, two spreadsheets are shown vertically for comparison.  In the second spreadsheet, the <attr>rowHeaders</attr> and <attr>columnHeaders</attr> are suppressed by setting these default-<c>true</c> booleans to <c>false</c>. Also in the second spreadsheet, the default <attr>width</attr> has been reduced.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;spreadsheet/&gt;
+&lt;spreadsheet rowHeaders="false" columnHeaders="false" width="300"/&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+ 
+<!--*******************************************************-->
+  
+<example><title>What Doenet Renders (Example 2)</title>
+<spreadsheet/>
+<spreadsheet rowHeaders="false" columnHeaders="false" width="300"/>
+</example>
+
+<!--******************************************************-->
+
+<subsection><title>Example 3: <tage>spreadsheet</tage> with <attr>hiddenRows</attr> and <attr>hiddenColumns</attr> attributes</title>
+<p>In the sample code below, two spreadsheets are shown vertically for comparison.  In the second spreadsheet, the <attr>hiddenRows</attr> and <attr>hiddenColumns</attr> attributes are employed to hide a list of each of these fields.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;spreadsheet/&gt;
+&lt;spreadsheet hiddenRows="2 4" hiddenColumns="1 3"/&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+  
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 3)</title>
+<spreadsheet/>
+<spreadsheet hiddenRows="2 4" hiddenColumns="1 3"/>
+</example>
+
+
+<!--******************************************************-->
+    
+<!-- 
+<subsection><title>Example 4: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+   -->
+<!--*******************************************************-->
+ 
+<!--  
+<example><title>What Doenet Renders (Example 4)</title>
+
+</example>
+  -->
+ 
+
+
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

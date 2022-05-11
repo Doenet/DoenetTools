@@ -1,0 +1,312 @@
+<problem>
+<!-- <title>SIR vaccination</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='aa' step=' 0.01' from='0.01' to='1' />
+<selectFromSequence assignNames='bb' step=' 0.00001' from='0.00001' to='0.001' />
+<selectFromSequence assignNames='S01' step=' 1000' from='1000' to='100000' />
+<selectFromSequence assignNames='I01' step=' 10' from='10' to='1000' />
+<selectFromSequence assignNames='R01' from='0' to='100' />
+
+<number name='a_over_b'>$aa / $bb </number>
+
+<sequence name="excludeForS02" from="round($a_over_b - 10)" to="round($a_over_b + 10)" />
+
+<selectFromSequence assignNames='S02' from='round(($a_over_b )*0.5)' to='round(($a_over_b )*1.5)' exclude="$excludeForS02" />
+<selectFromSequence assignNames='S03' from='round(($a_over_b )*1.1)' to='round(($a_over_b )*4.0)' />
+
+<math name='S11' simplify='full'>$S01 - $bb * $S01 * $I01</math>
+<math name='I11' simplify='full'>$I01 + $bb * $S01 * $I01 - $aa * $I01</math>
+<math name='R11' simplify='full'>$R01 + $aa * $I01</math>
+
+
+<conditionalContent assignNames='(I2_increase_decrease sign_b_S02_minus_a)'>
+<case condition='$S02 > $a_over_b'><text>increase</text><text>positive</text></case>
+<else><text>decrease</text><text>negative</text></else>
+</conditionalContent>
+
+<math name='S_critical' simplify='full'>$a_over_b</math>
+<math name='S0_above_critical' simplify='full'>S_0 > $a_over_b</math>
+<math name='S0_below_critical' simplify='full'>S_0 < $a_over_b</math>
+<math name='minimum_vaccinated' simplify='full'>ceil($S03 -$a_over_b)</math>
+<math name='b_S02_minus_a' simplify='full'>$bb *$S02-$aa </math>
+
+<math name='S03_minus_a_over_b' simplify='full'>$S03 -$a_over_b</math>
+
+</setup>
+
+<p>The SIR model for the outbreak of a disease
+<md>
+  <mrow>S_{t+1} - S_t\amp = -b S_t I_t</mrow>
+  <mrow>I_{t+1} - I_t\amp = b S_tI_t - aI_t</mrow>
+  <mrow>R_{t+1} - R_t\amp = a I_t</mrow>
+</md>
+gives the evolution of the number of susceptible (<m>S</m>), infective (<m>I</m>), and removed (<m>R</m>) individuals.</p>
+
+<aside>
+  <title>Equation for the first time step</title>
+
+  <p>This question focuses solely on the first time step.  In case it is helpful, here are the equations for the evolution from <m>t=0</m> to <m>t=1</m>, where we just set <m>t=0</m> in the above model.</p>
+
+<md>
+  <mrow>S_{1} - S_0\amp = -b S_0 I_0</mrow>
+  <mrow>I_{1} - I_0\amp = b S_0I_0 - aI_0</mrow>
+  <mrow>R_{1} - R_0\amp = a I_0,</mrow>
+</md>
+
+<p>These equations give the formulas for going from the numbers of individuals <m>(S_0, I_0, R_0)</m> at time step zero to the numbers of individuals <m>(S_1, I_1, R_1)</m>.</p>
+</aside>
+
+<p>The model has two parameters <m>a</m> and <m>b</m>, which we'll give the following values:
+<md>
+  <mrow>a\amp = $aa </mrow>
+  <mrow>b\amp = $bb .</mrow>
+</md>
+</p>
+
+
+<ol>
+
+<li>
+<p>If there are <m>S_0 = $S01 </m> susceptibles, <m>I_0 = $I01</m> infectives, and <m>R_0=$R01 </m> removed individuals at time step 0,  how many of each type of individual are at time step 1? </p>
+
+<p><m>S_1 =</m> 
+<answer name='answer1'>
+<award symbolicEquality='true' allowedErrorInNumbers='0.00001'>$S11</award>
+<award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.0001' feedbackCodes='numericalerror'>$S11</award>
+<award credit='0.25' symbolicEquality='true' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$S11</award>
+<award credit='0.125' symbolicEquality='true' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$S11</award>
+</answer>
+<copy prop="feedbacks" tname="answer1" />
+
+</p>
+<p>
+
+<m>I_1 =</m> 
+<answer name='answer2'>
+<award symbolicEquality='true' allowedErrorInNumbers='0.00001'>$I11</award>
+<award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.0001' feedbackCodes='numericalerror'>$I11</award>
+<award credit='0.25' symbolicEquality='true' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$I11</award>
+<award credit='0.125' symbolicEquality='true' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$I11</award>
+</answer>
+<copy prop="feedbacks" tname="answer2" />
+
+</p>
+<p>
+
+<m>R_1 =</m> 
+<answer name='answer3'>
+<award symbolicEquality='true' allowedErrorInNumbers='0.00001'>$R11</award>
+<award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.0001' feedbackCodes='numericalerror'>$R11</award>
+<award credit='0.25' symbolicEquality='true' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$R11</award>
+<award credit='0.125' symbolicEquality='true' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$R11</award>
+</answer>
+<copy prop="feedbacks" tname="answer3" />
+</p>
+
+<p>(For all answers, keep at least 6 significant digits in your numbers to make sure you get full credit.)</p>
+
+
+</li>
+
+<li>
+<p>If the initial number of susceptibles is <m>S_0=$S02</m> and the number of infectives is some (unknown) positive number, will the number of infectives increase or decrease during the first time step?</p>
+
+<p>The number of infectives will 
+<answer name='answer4' maximumNumberOfAttempts="1">
+  <choiceInput inline>
+    <choice credit='$I2_increase_decrease = increase'>increase</choice>
+    <choice credit='$I2_increase_decrease = decrease'>decrease</choice>
+  </choiceInput>
+
+</answer>
+
+</p>
+
+<hint><p>The change in the number of infectives is
+<md>
+  <mrow>I_1-I_0\amp = b S_0I_0 - aI_0</mrow>
+  <mrow>\amp = (b S_0 - a)I_0.</mrow>
+</md></p>
+<p>You can calculate <m>b S_0-a = </m>
+<answer weight="0">
+  <award symbolicEquality allowedErrorInNumbers='0.0001' simplifyOnCompare="numbers">
+    <math simplify>$bb * $S02 - $aa</math>
+  </award>
+</answer>.</p>
+
+<p>What is the sign of <m>I_0</m>?  
+<answer weight="0">
+  <choiceInput inline>
+    <choice credit='1'>positive</choice>
+    <choice>negative</choice>
+  </choiceInput>
+</answer>
+</p>
+
+<p>Therefore, what is the sign of <m>I_1-I_0</m> (i.e., the sign of <m>(b S_0 - a)I_0</m>)?  Does this mean the number of infectives is increasing or decreasing?</p>
+</hint>
+
+</li>
+
+<li>
+<p>Again, we assume that the initial number of infectives <m>I_0</m> is some (unknown) positive number. What value of the initial number of susceptibles <m>S_0</m> will cause the number of infectives to remain constant in the first time step?  
+<answer name='critNumAns'>
+<award symbolicEquality='true' allowedErrorInNumbers='0.00001'>$S_critical</award>
+<award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.0001' feedbackCodes='numericalerror'>$S_critical</award>
+<award credit='0.25' symbolicEquality='true' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$S_critical</award>
+<award credit='0.125' symbolicEquality='true' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$S_critical</award>
+</answer>
+<copy prop="feedbacks" tname="critNumAns" />
+  (It's OK if this number is not an integer.)  </p>
+
+<hint>
+  <p>The number of infectives will remain constant in the first time step if <m>I_1-I_0 = 0</m>.  According to the module, this change is <m>I_1-I_0 = (b S_0 - a)I_0</m>.</p>
+
+  <p>If we know that <m>I_0</m> is a positive number, what value must the quantity <m>bS_0-a</m> have for the change in the number of infectives to be zero?  <answer weight="0">0</answer></p>
+
+  <p>We have numbers for <m>a</m> and <m>b</m>.  Therefore what value must <m>S_0</m> have for the number of infectives to remain constant in the first step?</p>
+
+</hint>
+
+
+<p>Call this special number of suceptibles the <q>critical number</q> of suceptibles.</p>
+
+<p>Assuming you got the above answer right, then you successfully calculated that the number of infectives stays constant when <m>S_0</m> equals this critical number, i.e., when <m>S_0 = <copy tname="critNumAns" prop="submittedResponse" componentType="math" /></m>.</p>
+
+<p>If <m>S_0</m> is not equal to this critical number, the number of infectives will increase or decrease in the first step.</p>
+
+<p>What is the condition (an inequality involving <m>S_0</m>) for the number of infectives to increase in the first time step?
+<answer name='aboveCritNumAns'>
+<award allowedErrorInNumbers='0.00001'>$S0_above_critical</award>
+<award credit='0.5' allowedErrorInNumbers='0.0001' feedbackCodes='numericalerror'>$S0_above_critical</award>
+<award credit='0.25' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$S0_above_critical</award>
+<award credit='0.125' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$S0_above_critical</award>
+</answer></p>
+<copy prop="feedbacks" tname="aboveCritNumAns" />
+
+
+<p>What is the condition (an inequality involving <m>S_0</m>) for the number of infectives to decrease in the first time step?
+<answer name='belowCritNumAns'>
+<award allowedErrorInNumbers='0.00001'>$S0_below_critical</award>
+<award credit='0.5' allowedErrorInNumbers='0.0001' feedbackCodes='numericalerror'>$S0_below_critical</award>
+<award credit='0.25' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$S0_below_critical</award>
+<award credit='0.125' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$S0_below_critical</award>
+</answer></p>
+<copy prop="feedbacks" tname="belowCritNumAns" />
+
+
+</li>
+
+<li>
+<p>If the initial number of susceptibles is <m>S_0=$S03 </m>, then the number of infectives should increase in the first time step.  In this case, what's the minimum whole number of susceptibles that should be vaccinated so that the number of infectives decreases in the first time step? In other words, by how much do you need to reduce <m>S_0</m> so that the number of infectives decreases (or at least doesn't increase) in the first time step?</p>
+
+<p>Minimum number of susceptibles to vaccinated = 
+<answer name='minVaxAns'>
+<award symbolicEquality='true'>$minimum_vaccinated</award>
+</answer></p>
+<feedback condition="isnumber($minVaxAns) and not isinteger($minVaxAns)">
+  <p>We can only vaccinate an integer number of individuals, so your answer must be an integer.</p>
+</feedback>
+<feedback condition="$minVaxAns = $minimum_vaccinated - 1">
+  <p>You're close!  If you vaccinated $minVaxAns individuals, the number of people left susceptible would be <math simplify>$S03-$minVaxAns</math>, which is just above the threshold for getting the numbere of effectives to decrease.</p>
+</feedback>
+
+<hint>
+  <p>We can get this answer by comparing to the previous one.</p>
+  <p>When we start with <m>S_0=$S03</m>, we know the number of infectives should increase because <m>S_0 > </m>
+  <answer weight="0" name="critNum2">
+  <award symbolicEquality='true' allowedErrorInNumbers='0.00001'>$S_critical</award>
+  <award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.0001' feedbackCodes='numericalerror'>$S_critical</award>
+  <award credit='0.25' symbolicEquality='true' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$S_critical</award>
+  <award credit='0.125' symbolicEquality='true' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$S_critical</award>
+  </answer>
+  <copy prop="feedbacks" tname="critNum2" />
+  </p>
+
+  <p>For the number of susceptibles to decrease (or at least not increase), we need the number of susceptibles to be no more than
+  <answer weight="0" name="critNum3">
+  <award symbolicEquality='true' allowedErrorInNumbers='0.00001'>$S_critical</award>
+  <award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.0001' feedbackCodes='numericalerror'>$S_critical</award>
+  <award credit='0.25' symbolicEquality='true' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$S_critical</award>
+  <award credit='0.125' symbolicEquality='true' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$S_critical</award>
+  </answer>
+  <copy prop="feedbacks" tname="critNum3" />
+  </p>
+
+  <p>By how much do we have to reduce the number of susceptibles to get to this threshold?</p>
+
+</hint>
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+To calculate the evolution of <m>S</m>, <m>I</m>, and <m>R</m> over one time step, we just plug the given values into the formula
+<md>
+  <mrow>S_{1} - S_0\amp = -b S_0 I_0</mrow>
+  <mrow>I_{1} - I_0\amp = b S_0I_0 - aI_0</mrow>
+  <mrow>R_{1} - R_0\amp = a I_0.</mrow>
+</md>
+It's easier if we first solve the equations for <m>S_1</m>, <m>I_1</m>, and <m>R_1</m>, turning the formulas into
+<md>
+  <mrow>S_{1}\amp = S_0-b S_0 I_0</mrow>
+  <mrow>I_{1}\amp = I_0+ b S_0I_0 - aI_0</mrow>
+  <mrow>R_{1}\amp =R_0+ a I_0.</mrow>
+</md>
+Then, plugging in the numbers, we get
+<md>
+  <mrow>S_{1}\amp = $S01 - $bb \cdot $S01   \cdot $I01 \approx <round numberdigits="6"><number>$S11</number></round></mrow>
+  <mrow>I_{1}\amp = $I01 +$bb \cdot $S01   \cdot $I01  - $aa  \cdot $I01 \approx <round numberdigits="6"><number>$I11</number></round></mrow>
+  <mrow>R_{1}\amp =$R01   + $aa  \cdot$I01 \approx <round numberdigits="6"><number>$R11</number></round></mrow>
+</md>
+
+
+</li>
+
+<li>
+<p>If the initial number of susceptibles is <m>S_0=$S02</m>, then the change in the number of infectives in the first time step is
+<md>
+  <mrow>I_1-I_0\amp = b S_0I_0 - aI_0</mrow>
+  <mrow>\amp = (b S_0 - a)I_0</mrow>
+  <mrow>\amp = ($bb  \cdot $S02 - $aa )I_0</mrow>
+  <mrow>\amp = $b_S02_minus_a I_0.</mrow>
+</md>
+Since <m>I_0 \gt 0</m>, this change is $sign_b_S02_minus_a. The number of infectives will $I2_increase_decrease.</p>
+</li>
+
+<li>
+<p>The number of infectives will remain constant in the first time step if 
+<me>I_1-I_0 = (b S_0 - a)I_0 = ($bb  S_0 - $aa )I_0 =0.</me>
+Since <m>I_0 \gt 0</m>, we know that
+<me>$bb S_0 -$aa  = 0</me>
+or 
+<me>S_0 = \frac{ $aa  }{ $bb  } \approx <round numberdigits="6"><number>$S_critical</number></round>.</me>
+This value of <m>S_0</m> is the critical number of susceptibles.</p>
+
+<p>If <m>S_0</m> is larger than <m><round numberdigits="6"><number>$S_critical</number></round></m>, the number of infectives will increase in the first time step.  If <m>S_0</m> is smaller than <m><round numberdigits="6"><number>$S_critical</number></round></m>, the number of infectives will decrease in the first time step.  </p>
+</li>
+
+<li>
+<p>To make the sure the number of infectives decreases in the first time step, we need to get <m>S_0</m> below the critical value <m>S_0 = <round numberdigits="6"><number>$S_critical</number></round></m>.  Since we start with <m>S_0 = $S03 </m>, we must decrease <m>S_0</m> by
+<me>$S03  - <round numberdigits="6"><number>$S_critical</number></round> = <round numberdigits="6"><number>$S03_minus_a_over_b</number></round>.</me>
+Rounding up to the nearest integer, we conclude we must vaccinate at least <m>$minimum_vaccinated</m> susceptible individuals for the number of infectives to decrease in the first time step.</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

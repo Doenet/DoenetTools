@@ -1,0 +1,16 @@
+<title>
+  This is a test file
+</title>
+
+What is 4+1?
+
+<answer>5</answer>
+
+What is the best animal?
+<answer>
+      <choiceinput>
+        <choice credit="1">Cat</choice>
+        <choice>Dog</choice>
+        <choice>worm</choice>
+      </choiceinput>
+    </answer>

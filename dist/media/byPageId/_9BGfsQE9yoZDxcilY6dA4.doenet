@@ -1,0 +1,71 @@
+<title>Interpolated functions</title>
+
+<p>One can specify desired extrema and points along a function and obtain an interpolated (spline) function through those points.  These feature can be used to randomly generate functions with desired behavior.</p>
+
+<section>
+<title>Specifying extrema</title>
+
+<p>A function with a maximum of 4 when <m>x=3</m>.</p>
+<graph>
+  <function maxima="(3,4)" />
+</graph>
+
+<p>A function where specify two maxima and a minimum</p><graph>
+  <function maxima="(3,4) (-8,-2)" minima="(7,2)" />
+</graph>
+
+  <p>As can be seen in the above example, 
+    the function may have additional extrema beyond those specified,
+ but it will at least satisfy the given requirements.</p>
+  
+
+</section>
+
+<section>
+<title>Controlling the scale of the extrema</title>
+
+<p>The size of the peaks and valleys (when not determined by specified value) is controlled by the yscale parameter.  The default is 1.</p>
+
+<graph>
+  <function minima="(-2,1) (2,1)" />
+  <function minima="(-2,1) (2,1)" yscale="4" stylenumber="2" />
+  <function minima="(-2,1) (2,1)" yscale="0.2" stylenumber="3" />
+</graph>
+
+<p>The yscale parameter is also used if one doesn't specify the y value of an extremum.</p>
+
+<graph>
+  <function minima="(4,5)" maxima="(6,)" />
+  <function minima="(4,5)" maxima="(6,)" yscale="4" stylenumber="2" />
+  <function minima="(4,5)" maxima="(6,)" yscale="0.1" stylenumber="3" />
+</graph>
+
+<p>The xscale parameter if used if one doesn't specify the x value of an extremum.</p>
+
+<graph>
+  <function maxima="(-8,6)" minima="(,3) (,3)"/>
+  <function maxima="(-8,6)" minima="(,3) (,3)" xscale="4" stylenumber="2"/>
+  <function maxima="(-8,6)" minima="(,3) (,3)" xscale="0.1" stylenumber="3"/>
+</graph>
+
+</section>
+
+<section>
+  <title>Specifying additional points</title>
+
+  <p>One can also specify points that the function must pass through.</p>
+
+  <graph>
+    <function name="m" through="(-8,1) (-7,5) (-4,6) (-1,9) (6,3)" />
+  </graph>
+
+  <p>A spline that preserves the monotonicity of the points is used.  The function is less smooth than a typical spline, but won't have additional oscillations.  If other extrema (or slopes) aren't specified, the extrema will coincide with a through point.  The maximum of the above function ocurs at <copy tname="m" prop="maxima" />.</p>
+
+  <p>One can also specify the slope of the function at the through points.</p>
+
+ <graph>
+    <function through="(-8,1) (-7,5) (-4,6) (-1,9) (6,3)" throughSlopes="1 4 -2 6 3" />
+  </graph>
+
+
+</section>

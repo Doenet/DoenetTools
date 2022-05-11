@@ -1,0 +1,282 @@
+<problem>
+  <variantControl nVariants="1" />
+
+<number name="stage" hide>1</number>
+
+<p>A railway from one city to another is being steadily constructed.  <text name="rateSentence">Each day 10 meters of track is laid down.</text>  We will determine a mathematical model for the total length track as a function of time.</p>
+
+
+<paragraphs>
+  <title>Deterimining the state variable</title>
+
+  <p>The first step is to determine the state variable of the system. The variable that changes each day is the length of 
+<answer name='user_statevar_description' size='5' type="text">
+  <award><text>track</text></award>
+  <award><text>railway</text></award>
+  <award><text>railroad</text></award>
+</answer>
+laid down.  Choose a unit for the length of $user_statevar_description :
+<answer name='user_unit' size='7' type="text">
+  <award><text>yottameters</text></award>
+  <award><text>zettameters</text></award>
+  <award><text>exameters</text></award>
+  <award><text>petameters</text></award>
+  <award><text>terameters</text></award>
+  <award><text>gigameters</text></award>
+  <award><text>megameters</text></award>
+  <award><text>kilometers</text></award>
+  <award><text>hectometers</text></award>
+  <award><text>decameters</text></award>
+  <award><text>meters</text></award>
+  <award><text>decimeters</text></award>
+  <award><text>centimeters</text></award>
+  <award><text>millimeters</text></award>
+  <award><text>micrometers</text></award>
+  <award><text>nanometers</text></award>
+  <award><text>picometers</text></award>
+  <award><text>femtometers</text></award>
+  <award><text>attometers</text></award>
+  <award><text>zeptometers</text></award>
+  <award><text>yoctometers</text></award>
+</answer>. (Use a plural metric unit.)</p>
+
+<feedback condition="$(user_unit{prop='creditAchieved'})=1 and $user_unit!=meters and $user_unit!=decameters and $user_unit!=heptameters and $user_unit!=kilometers and $user_unit!=decimeters and $user_unit!=centimeters and $user_unit!=millimeters">
+  Have fun converting these measurements into $user_unit!
+</feedback>
+
+<conditionalContent assignNames="conversionFactor" hide>
+  <case condition="$user_unit=yottameters">
+    <number>10^(-24)</number>
+  </case>
+  <case condition="$user_unit=zettameters">
+    <number>10^(-21)</number>
+  </case>
+  <case condition="$user_unit=exameters">
+    <number>10^(-18)</number>
+  </case>
+  <case condition="$user_unit=petameters">
+    <number>10^(-15)</number>
+  </case>
+  <case condition="$user_unit=terameters">
+    <number>10^(-12)</number>
+  </case>
+  <case condition="$user_unit=gigameters">
+    <number>10^(-9)</number>
+  </case>
+  <case condition="$user_unit=megameters">
+    <number>10^(-6)</number>
+  </case>
+  <case condition="$user_unit=kilometers">
+    <number>10^(-3)</number>
+  </case>
+  <case condition="$user_unit=hectometers">
+    <number>10^(-2)</number>
+  </case>
+  <case condition="$user_unit=decameters">
+    <number>10^(-1)</number>
+  </case>
+  <case condition="$user_unit=meters">
+    <number>1</number>
+  </case>
+  <case condition="$user_unit=decimeters">
+    <number>10^(1)</number>
+  </case>
+  <case condition="$user_unit=centimeters">
+    <number>10^(2)</number>
+  </case>
+  <case condition="$user_unit=millimeters">
+    <number>10^(3)</number>
+  </case>
+  <case condition="$user_unit=micrometers">
+    <number>10^(6)</number>
+  </case>
+  <case condition="$user_unit=nanometers">
+    <number>10^(9)</number>
+  </case>
+  <case condition="$user_unit=picometers">
+    <number>10^(12)</number>
+  </case>
+  <case condition="$user_unit=femtometers">
+    <number>10^(15)</number>
+  </case>
+  <case condition="$user_unit=attometers">
+    <number>10^(18)</number>
+  </case>
+  <case condition="$user_unit=zeptometers">
+    <number>10^(21)</number>
+  </case>
+  <case condition="$user_unit=yoctometers">
+    <number>10^(24)</number>
+  </case>
+</conditionalContent>
+ 
+ <p>Next, choose a variable (i.e., a letter) to represent the state variable: $user_statevar_description.  We'll use the variable <m>n</m> to represent time step, so pick any letter other than <m>n</m>.  Chosen state variable: 
+  <answer name='user_x' size='3'>
+    <mathinput name="stateVarInput" />
+    <award name="gotLetter">
+      <when><copy prop="immediateValue" tname="stateVarInput" /> elementof {a,b,c,d,e,f,g,h,i,j,k,l,m,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W,X,Y,Z}</when>
+    </award>
+  </answer>
+
+</p>
+
+  <feedback condition="$user_x({prop='nSubmissions'})>0 and $user_x notelementof {a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z}" >
+  You must choose just a single letter for the variable.</feedback>
+  <feedback condition="$user_x = n or $user_x = N">Since we will use <m>n</m> to represent time, choose a different letter.</feedback>
+
+<p>Since we will be using a discrete dynamical system, you don't have a choice for the unit for time.  We image that we measure the length of $user_statevar_description every day, so the time variable <m>n</m> indicates how many days have passed since the railway construction was begun.</p>
+
+<p>Given that you chose $user_x to represent the length of $user_statevar_description, the state variable at a particular time can be written as 
+<math name='user_x_t' simplify='full'><copy prop="submittedResponse" tname="user_x" componentType="math" />_n </math>. The state variable $user_x_t represents the length of $user_statevar_description in $user_unit that is laid down after <m>n</m> days.</p>
+
+
+<boolean name="firstCorrect" hide>
+  <copy prop="creditAchieved" tname="user_statevar_description" /> = 1
+  and
+  <copy prop="creditAchieved" tname="user_unit" /> = 1
+  and
+  <copy prop="creditAchieved" tname="user_x" /> = 1
+</boolean>
+<p hide="$firstCorrect">
+  Correctly answer the first three answer blanks to continue.
+</p>
+
+<updateValue label="continue" disabled="not $firstCorrect" tname="stage" newValue="2" hide="$stage >=2" />
+
+
+</paragraphs>
+
+
+<paragraphs hide="$stage < 2">
+  <title>The dynamical rule</title>
+<p>Now, the actual math.  Specify the rule for going from one time step to the next.  The rule gives the value of the state variable at the next time point <m name="user_x_tp1"><copy prop="submittedResponse" tname="user_x" componentType="math" />_{ n+1}</m> as a function of the value at the previous time point <copy tname="user_x_t" />.  (Your rule should take into account that you chose to measure the $user_statevar_description in $user_unit, but don't include the word $user_unit in your answer.)</p>
+
+<p><m><copy tname="user_x_tp1" /> =</m> 
+<answer name="theRule">
+   <award><math><copy tname="user_x_t" /> + 10$conversionFactor</math></award>
+</answer>
+.</p>
+
+
+<hint hide="$(theRule{prop='nSubmissions'}) < 4 or $(theRule{prop='creditAchieved'})=1">
+  Since you chose the unit $user_unit, the rule is <m>$user_x_tp1 = $user_x_t + <math simplify>10$conversionFactor</math></m>.
+</hint>
+
+<hint hide="$(theRule{prop='nSubmissions'}) < 2 or $(theRule{prop='creditAchieved'})=1">
+  To find the rule, you have to go back to the statement of the situation at the beginning of the problem. The key sentence  is: "$rateSentence"
+  <conditionalContent condition="$user_unit!=meters">Just remember to convert 10 meters into $user_unit.</conditionalContent>
+</hint>
+
+<hint hide="$(theRule{prop='creditAchieved'})=1">
+  <p>What you need to do is define the updating function.  What function gives you the length of $user_statevar_description in one day from the length of $user_statevar_description of the previous day?</p>
+
+  <p>Your rule should involve <m>$user_x_t</m>.  For example, if the length of $user_statevar_description tripled each day, then the rule would be <m>$user_x_tp1 = 3$user_x_t</m>, and you would enter <m>3$user_x_t</m> in the answer blank.</p>
+</hint>
+
+</paragraphs>
+
+<paragraphs hide="$stage < 2"><title>Initial condition</title>
+
+
+<p>Specify the initial conditions, which is the given value of the state variable at the initial time point <m>n=0</m>.</p>
+
+<p><m>$(user_x)_0 =</m> 
+<answer name='initialConditions'>0</answer>
+</p>
+
+
+
+<hint hide="$(initialConditions{prop='creditAchieved'}) = 1">
+We are looking for the initial value of the state variable, i.e., the length of $user_statevar_description on day <m>n=0</m>.  Remember that <m>n</m> represents how many days have passed since the railway construction began.
+  <hint>
+  The initial length of the railroad isn't explicitly stated, but it should be clear that there was no railroad constructed before construction began.
+
+  </hint>
+
+</hint>
+
+
+<boolean name="secondCorrect" hide>
+  <copy prop="creditAchieved" tname="theRule" /> = 1
+  and
+  <copy prop="creditAchieved" tname="initialConditions" /> = 1
+</boolean>
+<p hide="$secondCorrect">
+  Correctly answer the previous two answer blanks to continue.
+</p>
+
+<updateValue label="continue" disabled="not $secondCorrect" tname="stage" newValue="3" hide="$stage >=3" />
+
+
+</paragraphs>
+
+<paragraphs hide="$stage < 3"><title>Evolving the dynamical system</title>
+
+<p>To recap, if $user_x_t is the length of $user_statevar_description in $user_unit laid down after <m>n</m> days, then the dynamical system for $user_x_t is</p>
+<md>
+  <mrow>$user_x_tp1 &amp; = $user_x_t + <math simplify>10$conversionFactor</math></mrow>
+  <mrow>$(user_x)_0 &amp; = 0</mrow>
+</md>
+
+<p>Now. starting with the initial condition, calculate the next four points of the solution.  All values are in $user_unit.</p>
+
+<p><m>$(user_x)_1 =</m>
+<answer><award><math simplify>10$conversionFactor</math></award></answer>
+</p>
+<p><m>$(user_x)_2 =</m> 
+<answer><award><math simplify>20$conversionFactor</math></award></answer>
+</p>
+<p><m>$(user_x)_3 =</m> 
+<answer><award><math simplify>30$conversionFactor</math></award></answer>
+</p>
+<p><m>$(user_x)_4 =</m> 
+<answer><award><math simplify>40$conversionFactor</math></award></answer>
+</p>
+
+
+
+<hint>
+For <m>$(user_x)_1</m> through <m>$(user_x)_4</m>, you need to calculate actual numbers corresponding to the values of the state variable at the corresponding time points.  Starting with the initial condition, apply the rule four times.
+</hint>
+
+</paragraphs>
+
+
+<solution>
+
+
+<paragraphs>
+  <title>Deterimining the state variable</title>
+
+  <p>If one uses track, meters, and <m>x</m> for the state variable description, units, and notation, respectively, then state variable <m>x</m> will be the amount of track in meters that is laid down.  The state variable <m>x_n</m> represents the amount of track in meters that is laid down after <m>n</m> days.</p>
+
+</paragraphs>
+
+<paragraphs>
+  <title>The dynamical rule</title>
+
+<p>After an additional day the model should add another 10 meters of track so we have the following rule.</p>
+<me>x_{n+1}=x_n + 10</me>
+
+</paragraphs>
+
+<paragraphs><title>Initial condition</title>
+
+<p>There is no track to begin with so the initial condition is <m>x_0=0</m>.</p>
+</paragraphs>
+
+<paragraphs><title>Evolving the dynamical system</title>
+
+<p><m>x_0=0</m></p>
+<p><m>x_1=10</m></p>
+<p><m>x_2=20</m></p>
+<p><m>x_3=30</m></p>
+<p><m>x_4=40</m></p>
+
+</paragraphs>
+
+
+</solution>
+
+
+</problem>

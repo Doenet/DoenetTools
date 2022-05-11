@@ -1,0 +1,50 @@
+<p>original expression: <mathinput name="expr" functionSymbols="f g" prefill="f(x)+g(y,z)+h(q)" /></p>
+
+<subsubsection>
+  <title>Extracting math operator</title>
+  <p>Operator: <extractMathOperator name="operator">$expr</extractMathOperator></p>
+</subsubsection>
+
+
+<subsubsection>
+  <title>Extracting operands</title>
+  <p>First operand: <extractMathOperand name="operand1" >$expr</extractMathOperand></p>
+  <p>First operand again: <extractMathOperand operandNumber="1" name="operand1a">$expr</extractMathOperand></p>
+  <p>Second operand: <extractMathOperand operandNumber="2" name="operand2">$expr</extractMathOperand></p>
+  <p>Third operand: <extractMathOperand operandNumber="3" name="operand3">$expr</extractMathOperand></p>
+  <p>No fourth operand: <extractMathOperand operandNumber="4" name="blank1">$expr</extractMathOperand></p>
+
+</subsubsection>
+
+<subsubsection>
+  <title>Extracting functions</title>
+
+  <p>Function from first operand: <extractMathFunction name="f">$operand1</extractMathFunction></p>
+  <p>Function from second operand: <extractMathFunction name="g">$operand2</extractMathFunction></p>
+  <p>No function from third operand: <extractMathFunction name="blank2">$operand3</extractMathFunction></p>
+</subsubsection>
+
+<subsubsection>
+  <title>Extracting function arguments</title>
+
+
+  <p>Function argument from first operand: <extractFunctionArgument name="farg1">$operand1</extractFunctionArgument></p>
+  <p>Function argument from first operand again: <extractFunctionArgument argumentNumber="1" name="farg1a">$operand1</extractFunctionArgument></p>
+  <p>No second function argument from first operand: <extractFunctionArgument argumentNumber="2" name="blank3">$operand1</extractFunctionArgument></p>
+  <p>All function arguments from second operand: <extractFunctionArgument name="gargAll">$operand2</extractFunctionArgument></p>
+  <p>First function argument from second operand: <extractFunctionArgument argumentNumber="1" name="garg1">$operand2</extractFunctionArgument></p>
+  <p>Second function argument from second operand: <extractFunctionArgument argumentNumber="2" name="garg2">$operand2</extractFunctionArgument></p>
+  <p>No third function argument from second operand: <extractFunctionArgument argumentNumber="3" name="blank4">$operand2</extractFunctionArgument></p>
+  <p>No function argument from third operand: <extractFunctionArgument name="blank5">$operand3</extractFunctionArgument></p>
+
+</subsubsection>
+
+<subsubsection>
+  <title>Dynamic extraction</title>
+
+  <p>Pick operand number: <mathinput name="nOperand" prefill="1" /></p>
+  <p>Resulting operand: <extractMathOperand operandNumber="$nOperand" name="operandN">$expr</extractMathOperand></p>
+  <p>Function of resulting operand: <extractMathFunction name="functionN">$operandN</extractMathFunction></p>
+  <p>Pick argument number: <mathinput name="nArgument" prefill="1" /></p>
+  <p>Resulting argument: <extractFunctionArgument argumentNumber="$nArgument" name="argumentN">$operandN</extractFunctionArgument></p>
+</subsubsection>

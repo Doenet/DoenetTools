@@ -1,0 +1,165 @@
+<problem>
+<variantControl nVariants='1' />
+<!-- <title>Stability of discrete dynamical systems, difference form</title>
+ -->
+<setup>
+
+<math name='Elist'>1,2</math>
+<math name='Elist_unsort' unordered>$Elist </math>
+<math name='difference_form'>(x_n-1)(x_n-2)/2</math>
+<math name='function_iteration_form' simplify='full' >$difference_form  + x_n</math>
+<math name='derivativeList' >1/2, 3/2</math>
+<text name='stability' >stable,unstable</text>
+
+</setup>
+
+
+For a dynamical system in difference form, such as
+<md>
+  <mrow>x_{n+1} - x_n\amp = $difference_form </mrow>
+  <mrow></mrow>
+</md>
+one needs to convert to function iteration form before determining stability. 
+
+
+
+<ol>
+
+<li>
+
+<p>
+The first step is to find the equilibria.</p>
+
+  <p>How many equilibria are there? <answer name="n_e">2</answer></p>
+  
+  <p>Enter the values of the equilibria in increasing order.</p>
+
+  <map name="EsMap">
+    <template><p><m>E_{$i} =</m> <mathinput /></p></template>
+    <sources indexAlias="i">
+      <sequence length="min($n_e,10)" />
+    </sources>
+  </map>
+
+  <mathlist name="Es" hide><collect componentTypes="mathInput" prop="value" tname="EsMap" /></mathlist>
+  
+<answer>
+  <award matchPartial='true' symbolicEquality='true' targetsAreResponses="Es">
+    <when>$Es = $Elist</when>
+  </award>
+  <award symbolicEquality='true' credit='0.75' name='award1'>
+    <when>$Es = $Elist_unsort</when>
+  </award>
+</answer>
+
+  
+<feedback condition="$award1">Enter the values in increasing order.</feedback>
+
+</li>
+
+<li>
+<p>
+Next, add <m>x_n</m> to both sides to convert to function iteration form.
+</p>
+<p>
+
+<m>x_{n+1}=</m> 
+<answer>
+<award allowedErrorInNumbers='1e-14'>$function_iteration_form </award>
+</answer>
+
+
+</p>
+
+<hint>
+Use an underscore <c>_</c> to start the subscript to enter <m>x_n</m>.
+</hint>
+
+</li>
+
+<li>
+Then, calculate the derivative of the right hand side to determine stability of the equilibria.
+
+<hint>
+Let <m>f(x)</m> be the function whose value is the right hand side of the function iteration form you calculated in the previous part, only replace each <m>x_n</m> with <m>x</m>.  This is function whose derivative you must evaluate at the equilibria.
+</hint>
+
+  
+  <map name="DerivMap">
+    <template><p>The derivative at <m>E_{$i}</m> is <mathinput /></p></template>
+    <sources indexAlias="i">
+      <sequence length="min($n_e,10)" />
+    </sources>
+  </map>
+
+
+  <mathlist name="Derivs" hide><collect componentTypes="mathInput" prop="value" tname="DerivMap" /></mathlist>
+  
+<answer>
+  <award matchPartial='true' matchByExactPositions symbolicEquality='true' targetsAreResponses="Derivs">
+    <when>$Derivs = $derivativeList</when>
+  </award>
+</answer>
+
+ 
+
+    
+  <map name="StabilityMap">
+    <template><p>The equilibrium <m>E_{$i}</m> is <choiceinput inline ><choice>stable</choice><choice>unstable</choice></choiceinput>.</p></template>
+    <sources indexAlias="i">
+      <sequence length="min($n_e,10)" />
+    </sources>
+  </map>
+
+
+  <textlist name="Stability" hide><collect componentTypes="choiceinput" prop="values" tname="StabilityMap" /></textlist>
+  
+<answer>
+  <award matchPartial='true' matchByExactPositions targetsAreResponses="Stability">
+    <when>$Stability = <textlist>stable unstable</textlist></when>
+  </award>
+</answer>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<p>The equilibria are <m>E_1=1</m> and <m>E_2=2</m>. </p>
+
+</li>
+
+<li>
+<p>The dynamical system in function iteration form is
+<me>x_{n+1} = (x_n-1)(x_n-2)/2 + x_n</me>
+or
+<me>x_{n+1} = \frac{1}{2}x_n^2 - \frac{1}{2}x_n+1.</me>
+
+</p>
+</li>
+
+<li>
+<p>The derivative of the function <m>f(x)=\frac{1}{2}x^2 - \frac{1}{2}x+1</m> is <m>f'(x)=x-1/2</m>.</p>
+
+<p>The derivative at <m>E_1</m> is <m>f'(1)=1/2</m>.  Therefore the equilibrium <m>E_1=1</m> is stable.</p>
+
+<p>The derivative at <m>E_2</m> is <m>f'(2)=3/2</m>.  Therefore the equilibrium <m>E_2=2</m> is unstable.</p>
+
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

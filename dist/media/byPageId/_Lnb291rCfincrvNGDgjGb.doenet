@@ -1,0 +1,68 @@
+<section sectionWideCheckWork aggregateScores>
+  <answer>
+  <choiceinput name="q1">
+    <choice credit='1' name="c1">Hello this is a long sentence and it is compound.</choice>
+    <choice>This, has &lt; stuff &gt; that isn't just text</choice>
+  </choiceinput>
+  </answer>
+
+  <answer>
+  <choiceinput name="q2">
+    <choice>Hello this is a long sentence</choice>
+    <choice credit='1'>This, has &lt; stuff &gt; that isn't just text</choice>
+  </choiceinput>
+  </answer>
+
+<answer>
+<textInput name="tI_1" prefill="<>"></textInput>
+<award credit="1.0">
+  <when>$tI_1= <text>&lt;title&gt;</text></when>
+</award>
+</answer>
+  
+Heroes & Sirens
+<answer>
+<textInput name="tI_2" prefill="<>"></textInput>
+<award credit="1.0">
+  <when>$tI_2= <text>&lt;/title&gt;</text></when>
+</award>
+</answer>  
+  
+  
+  </section>
+
+<section newNamespace><title>other approach</title>
+
+
+  
+  <choiceinput name="q1">
+    <choice credit='1' name="c1">Hello this is a long sentence and it is compound.</choice>
+    <choice>This, has &lt; stuff &gt; that isn't just text</choice>
+  </choiceinput>
+
+
+
+  <choiceinput name="q2">
+    <choice>Hello this is a long sentence</choice>
+    <choice credit='1'>This, has &lt; stuff &gt; that isn't just text</choice>
+  </choiceinput>
+
+
+
+  <answer>
+    <award targetsAreResponses="q1" matchPartial>
+      <when>$q1 = <text>Hello this is a long sentence and it is compound.</text> and $q2 = Hello this is a long sentence</when>
+
+    </award>
+  </answer>
+
+
+  <answer>
+    <award targetsAreResponses="q1" matchPartial>
+      <when>$q1 = $(c1{prop='text'}) and $q2 = $(_choice4{prop='text'})</when>
+    </award>
+  </answer>
+
+
+
+</section>

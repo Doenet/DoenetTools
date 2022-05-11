@@ -1,0 +1,313 @@
+<title>Exploring the derivative of the exponential function</title>
+
+<description>
+A guided tour into the reasons that the derivative of the exponential function with base e is the function itself.
+</description>
+
+<figure>
+<video youtube="fwKVQ0W_91o" width="640px" height="360px"/>
+<caption>The derivative of an exponential function</caption>
+</figure>
+<!--Video transcript -->
+
+<!-- End video transcript -->
+<!-- boxedvideo derivative_exponential_function -->
+
+
+
+
+<section><title>The derivative of the exponential function with base 2</title>
+
+
+<p>In order to take the derivative of the exponential function, say
+<me>f(x)=2^x</me>
+we may be tempted to use the  
+<ref uri='doenet:doenetId=5vKtOk-Mp79vle-aL8wJL'>power rule</ref>
+.  However, the exponential function <m>2^x</m> is very different from the power <m>x^2</m>, because in <m>2^x</m> the variable <m>x</m> itself is in the exponent.  We'd get into a lot of trouble with completely bogus results if we replaced the derivative of <m>2^x</m> with <m>x 2^{x-1}</m>.  Don't do this.</p>
+
+<p>To determine the derivative of the exponential function, we need to go back to the limit definition of the derivative.  According to the limit definition, 
+<mdn>
+  <mrow>f'(x)\amp = \lim_{h \to 0}\frac{f(x+h) - f(x)}{h}\notag</mrow>
+  <mrow name='limit_definition_2_to_x' >\amp =  \lim_{h \to 0} \frac{2^{x+h}-2^x}{h}.</mrow>
+</mdn>
+Here we used <m>h</m> for the step size instead of <m>\Delta x</m>, but it doesn't matter what we call it.</p>
+
+<p>The situation might look hopeless, until we remember the 
+<ref uri='doenet:exponentiation_basic_rules'>rules for exponents</ref>
+.  We can replace <m>2^{x+h}</m> with <m>2^x 2^h</m> in the numerator.  Then, we can factor <m>2^{x}</m> out of the numerator since <m>2^{x}2^h-2^x = 2^x(2^h-1)</m>.  In fact, we can do even better than that.  The factor <m>2^x</m> doesn't even depend on <m>h</m>, so we are allowed to pull it out of the limit.  Our resulting simplified form for the derivative of <m>2^x</m> is
+<men name='limit_number' >f'(x) = 2^x \lim_{h \to 0} \frac{2^{h}-1}{h}.</men>
+</p>
+<p>Did we make any progress?  We calculated that the derivative of the function <m>f(x)=2^x</m> is equal to the function itself (<m>2^x</m>) times a mysterious looking expression involving a limit.  But, the mysterious expression involving a limit is just a single number.  Nothing more, nothing less.  What number is it?  It's an irrational number, but you can estimate it yourself by calculating <m>(2^h-1)/h</m> for smaller and smaller values of <m>h</m>.</p>
+
+<p>Use the following applet to estimate 
+<me>\lim_{h \to 0} \frac{2^{h}-1}{h}.</me>
+Type in smaller and smaller values of <m>h</m> in the first column, and it will display <m>(2^h-1)/h</m> in the second column, calculated using the values of <m>h</m> you entered. When you keep making <m>h</m> smaller and smaller, you'll notice that eventually, the first four digits of <m>(2^h-1)/h</m> don't change any more.  Those four unchanging digits are an estimate of the number 
+<me>\lim_{h \to 0} \frac{2^{h}-1}{h}</me>
+accurate to four decimal places.  Since <m>h</m> can be positive or negative, also check negative values of <m>h</m> to make sure that <m>(2^h-1)/h</m> approaches the same number as <m>h</m> approaches zero from below.</p>
+
+
+<figure>
+  <embed width="500 px" height="350 px" encodedGeogebraContent = "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" />
+  <caption>To estimate the limit <m>\lim_{h \to 0} (b^h-1)/h,</m> one can calculate <m>(b^h-1)/h</m> for smaller and smaller values of <m>h</m>.  The value of <m>b</m> is determined by the number in the third column, which defaults to <m>b=2</m>.  Enter a value for <m>h</m> in the first column; the corresponding value of <m>(b^h-1)/h</m> is displayed in the second column.  To estimate the limit, enter smaller and smaller value of <m>h</m>.  You should notice that, for sufficiently small values of <m>h</m>, the first few digits of <m>(b^h-1)/h</m> remain unchanged as you make <m>h</m> even smaller.  In that case, those unchanged digits represent a good estimate of the limit, accurate to the number of digits than remain unchanged. One should obtain the same limiting value if one uses negative values for <m>h</m> and enters successive values of <m>h</m> that are smaller and smaller in absolute value (i.e., closer to zero).</caption>
+</figure>
+
+
+<p>However, we can do even better than this.  Look at the limit definition of equation <ref tname='limit_definition_2_to_x' /> for <m>f'(x)</m>, and plug in <m>x=0</m>.  What do you get?  You get exactly
+<men>f'(0) = \lim_{h \to 0} \frac{2^{h}-1}{h}.</men>
+Our mysterious number in equation <ref tname='limit_number' /> for the derivative <m>f'(x)</m> is just the derivative itself evaluated at <m>x=0</m>.  We can rewrite expression <ref tname='limit_number' /> for the derivative of <m>f(x)=2^x</m> as
+<men name='derivative_f_fprime' >f'(x) =f(x) f'(0).</men>
+</p>
+
+<p>Equation <ref tname='derivative_f_fprime' /> states that the derivative <m>f'(x)</m> is just equal to the function <m>f(x)</m> itself, multiplied by our mysterious number, which is also the slope <m>f'(0)</m> of the tangent line at <m>x=0</m>.  This is a strange conclusion, so we better confirm that it is really true.</p>
+
+<p>Use the following applet to convince yourself that the result is valid.  Check that the derivative <m>f'(x)</m> is really a multiple of the function <m>f(x)</m> by verifying that the ratio <m>f'(x)/f(x)</m> doesn't change as you change <m>x</m>.  This ratio should be <m>f'(0)</m>, which should be the mysterious number you estimated to four digits as well as the slope of the tangent line when <m>x=0</m>.</p>
+
+
+<figure name="applet">
+  <embed  width="600 px" height="350 px" encodedGeogebraContent = "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" />
+  <caption>Illustration of how the derivative of the exponential function is a multiple of the function, where that multiple is the derivative at zero.  The graph of the function <m>f(x)=b^x</m>, where you can enter a value for <m>b</m>, is shown by the thick blue curve.  The graph of its derivative <m>f'(x)</m> is shown by the thin green curve, and the ratio <m>f'(x)/f(x)</m> is shown by the horizontal gray line.  The value of the function and its derivative evaluated at <m>x_0</m> are displayed at the left and illustrated by the blue and green points on the curves.  You can change <m>x_0</m> by typing in a new value or dragging one of the points.  The red line is the tangent line at <m>x_0</m> with slope <m>f'(x_0)</m>. The ratio <m>f'/f</m> evaluated at <m>x_0</m> is also displayed at the left.  If you check the <q>more options</q> check box, the function changes to <m>f(x)=c b^{kx}</m> and two new boxes appear in which you can change the values of <m>c</m> and <m>k</m>. You can use the buttons at the top to zoom in and out as well as pan the view.</caption>
+</figure>
+
+
+<p>Assuming you've verified that equation <ref tname='derivative_f_fprime' /> seems to be correct, we've done all we can for the derivative of <m>f(x)=2^x</m>.  The result is just expressed in terms of the mysterious number
+<me>f'(0) = \lim_{h \to 0} \frac{2^h-1}{h},</me>
+but it is just some irrational number which you've estimated.
+</p>
+
+
+
+
+
+</section>
+
+<section><title>Exponential functions with other bases</title>
+
+
+<p>Does the result that we obtained for <m>f(x)=2^x</m> generalize to other bases besides base 2?  See if you can get similar results for the exponential function
+<me>g(x)=b^x</me>
+where the base <m>b</m> is a positive parameter.</p>
+
+<p>First, repeat the same analytic calculation, starting with the limit definition and replacing 2 with <m>b</m>.  You should obtain that
+<me>g'(x) =g(x) g'(0)</me>
+where
+<me>g'(0) = \lim_{h \to 0} \frac{b^h-1}{h}.</me>
+</p>
+
+<p>Second, pick two other values of <m>b</m> besides <m>b=2</m>. Try one value of <m>b</m> less than one and one value of <m>b</m> greater than one, so you experiment with both exponential decay and exponential growth. For each of your choices for <m>b</m>, use the first applet to estimate the first four digits of the value of the mysterious limit expression defining <m>g'(0)</m>.  Then, use the second applet to verify that this value is both the derivative <m>g'(0)</m> at zero and the ratio between the derivative <m>g'(x)</m> and the function <m>g(x)</m>.</p>
+
+
+
+
+</section>
+
+<section><title>The exponential function with base <m>e</m></title>
+
+
+<p>As you should have experienced, the mysterious limit expression
+<me>\lim_{h \to 0} \frac{b^h-1}{h}</me>
+is pretty annoying.  Sure it is just a number, but it's some crazy irrational number that is different for each value of the base <m>b</m>.  Everytime you'd like to calculate the derivative of <m>b^x</m> for another base <m>b</m>, you'd have to go through the same calculation to determine the mysterious factor.  That's inconvenient, and, moreover, you'd have to come up with some nice way to communicate your result to others.</p>
+
+<p>Let's take a slightly different approach.  We'll use the fact that
+<me>\lim_{h \to 0} \frac{b^h-1}{h}</me>
+changes with the base <m>b</m> to our advantage.  Let's find a value of <m>b</m> for which the mysterious factor is as simple as possible: the value 1.  Using either the first applet with a very small <m>h</m> or the second applet, experiment with different values of <m>b</m> to find a particular value of <m>b</m> where
+<me>\lim_{h \to 0} \frac{b^h-1}{h} \approx 1.</me>
+</p>
+
+<p>Were you able to find such a number? It turns out there is only one value of <m>b</m> for which the mysterious factor is exactly one.  We denote this number by <m>e</m>, which <em>is defined to be</em> the one number for which 
+<me>\lim_{h \to 0} \frac{e^h-1}{h} = 1.</me>
+Since <m>e</m> is irrational, we won't be able to get an exact representation of this number using these methods.  But, if you were really patient and had a tool like these applets that could estimate the limit with sufficient accuracy, you could estimate <m>e</m> to 30 digits, and determine that
+<me>e \approx 2.71828182845904523536028747135.</me>
+The above applets understand <m>e</m>, so you can type in <m>e</m> for <m>b</m> in either applet and see that the mysterious limit is indeed one for this case.</p>
+
+<p>Another way to see this is to plot the mysterious limit as a function of <m>b</m> and to observe that it crosses one when <m>b=e</m>.</p>
+
+<image source="http://mathinsight.org/media/image/image/limit_e_to_h_minus_1_over_h.png" description="A limit involving an exponential is one when the base of the exponential is the number e." />
+
+<p>We can conclude that for <m>b=e</m>, the derivative of the function
+<me>g(x)=e^x,</me>
+evaluated at zero is <m>g'(0)=1</m>.  This means that the derivative of <m>g</m> is exactly the function itself:
+<me>g'(x)=g(x).</me>
+For this reason, only when you enter <m>e</m> for <m>b</m> in the second applet do the function and its derivative exactly coincide.
+</p>
+
+<p>This fundamental property of <m>e^x</m>, that it is its own derivative, is one of the reasons that <m>e</m> is the most common base used for the exponential function throughout the sciences.  The function <m>e^x</m> is often referred to as simply
+<em>
+<ref uri='doenet:exponential_function' tname='exponent_base_e'>the exponential function</ref>
+</em>.</p>
+
+
+
+
+</section>
+
+<section><title>Adding parameters to the exponential function</title>
+
+
+<p>When 
+<ref uri='doenet:exponential_function'>discussing the exponential function</ref>
+, we introduced a few parameters, writing the general exponential function as 
+<me>f(x)=cb^{kx}</me>
+with parameters <m>b</m>, <m>c</m>, and <m>k</m>.  We then showed how the parameters <m>b</m> and <m>k</m> were redundant, so we only needed one of them.  Since we found <m>b=e</m> makes the derivatives nice, let's just use the base <m>e</m> and write our exponential functions as
+<me>f(x)=ce^{kx},</me>
+which has just two parameters <m>c</m> and <m>k</m>.</p>
+
+<p>Do the parameters <m>c</m> and <m>k</m> change the properties of the exponential function?  So far, we've just looked at the case where <m>c=1</m> and  <m>k=1</m> and found that <m>f'(x)=f(x)</m>.  Is <m>f'(x)=f(x)</m> for other values of <m>c</m> and <m>k</m>?  You can use the <ref tname="applet">second applet</ref>, above, to explore this question.  Check the <q>more options</q> check box, which will reveal boxes in which to change <m>c</m> and <m>k</m>.  You can observe if the graph of <m>f</m> and <m>f'</m> are still identical and if the ratio <m>f'/f</m> is still one when <m>b=e</m> but <m>c</m> and <m>k</m> are different values.  If the ratio <m>f'(x_0)/f(x_0)</m> changes when you change <m>c</m> or <m>k</m>, is the value still independent of <m>x_0</m>?  (In other words, is <m>f'</m> still a multiple of <m>f</m>?)  How does the ratio depend on <m>c</m> and <m>k</m>?
+</p>
+
+<p>To obtain a definitive answer on the derivative of <m>f(x)=ce^{kx}</m>, we can repeat the above calculation using the limit definition.
+<md>
+  <mrow>f'(x_0)\amp = \lim_{h \to 0} \frac{f(x_0+h) - f(x_0)}{h}</mrow>
+  <mrow>\amp = \lim_{h \to 0} \frac{ce^{k(x_0+h)}-ce^{kx_0}}{h}</mrow>
+</md>
+Again, the 
+<ref uri='doenet:exponentiation_basic_rules'>rules for exponents</ref>
+ help us simplify this limit.  Since <m>e^{k(x_0+h)} = e^{kx_0+kh} = e^{kx}e^{kh}</m>, we can factor out a <m>ce^{kx_0}</m> from the numerator: <m>ce^{kx_0}e^{kh}-ce^{kx_0} = ce^{kx_0}(e^{kh} -1)</m>.  The number <m>ce^{kx_0}</m> is the same thing as <m>f(x_0)</m>.  It doesn't depend on <m>h</m>, so we can pull it out of the limit and conclude that 
+<me>f'(x_0) = f(x_0) \lim_{h \to 0} \frac{e^{kh}-1}{h}.</me>
+</p>
+
+<p>Except for the factor of <m>k</m> in the exponent, we have exactly the same expression as before.  The parameter <m>c</m> doesn't change the result (as presumably you determined from exploring the applet).  The parameter <m>k</m> does change things, though, as it alters the mysterious limit expression.  Can we reduce this new mysterious limit back into the old one?</p>
+
+<p>We can get our old mysterious limit back with just one manipulation.  Let's define a new quantity to be equal to the exponent in our new expression: <m>w = kh</m>.  Since <m>h=w/k</m>, we can rewrite the fraction inside the limit as
+<me>\frac{e^{w}-1}{w/k} = k\frac{e^{w}-1}{w}.</me>
+Since the parameter <m>k</m> is just some number, the new quantity <m>w=kh</m> goes to zero just as <m>h</m> is going to zero.  So, we can replace the limit <m>h \to 0</m> with the equivalent limit <m>w \to 0</m>.  We can rewrite the new mysterious limit as
+<me>\lim_{h \to 0} \frac{e^{kh}-1}{h} = k \lim_{w \to 0} \frac{e^{w}-1}{w}.</me>
+</p>
+
+<p>But wait, the <m>w</m> limit is exactly the same as our original myterious limit.  OK, it is written in terms of <m>w</m> rather than the original <m>h</m>.  But that is just notation; it doesn't matter what symbol we use for the quantity that goes to zero in the limit.  All the following expressions are exactly the same number.
+<md>
+  <mrow>\lim_{h \to 0} \frac{e^h-1}{h}\amp =  \lim_{w \to 0} \frac{e^{w}-1}{w}</mrow>
+  <mrow>\amp =\lim_{\bigstar \to 0} \frac{e^\bigstar-1}{\bigstar}</mrow>
+</md>
+And what number are these expressions equal to again?  Remember the definition of the number <m>e</m>.  It is exactly the number that makes these limits equal to 1.</p>
+<p>Therefore
+<me>\lim_{h \to 0} \frac{e^{kh}-1}{h} = k \lim_{w \to 0} \frac{e^{w}-1}{w} = k \cdot 1 = k,</me>
+and the derivative of <m>f(x)=ce^{kx}</m> is
+<me>f'(x_0) = f(x_0) \lim_{h \to 0} \frac{e^{kh}-1}{h} = kf(x_0).</me>
+It's that simple, and you probably figured this out already from exploring the applet.  When you differentiate <m>e^{kx}</m>, you just get the function back again, multiplied by the parameter <m>k</m>.</p>
+
+<p>Let's write this result using some fancy notation.  Recall that we can write the derivative <m>f'(x)</m> also as <m>\frac{df}{dx}(x)</m>. We can separate this into <m>\frac{d}{dx} f(x)</m>.  The <m>\frac{d}{dx}</m> by itself means to take the derivative of whatever comes after it, where <m>x</m> is the variable.  (We often say <q>taking the derivative with respect to <m>x</m>.</q>)  Using this <m>\frac{d}{dx}</m> notation, we can write our result for the derivative of <m>e^{kx}</m> as
+<men name='derivative_ekx' >\frac{d}{dx} e^{kx} = ke^{kx}.</men>
+</p>
+
+
+
+
+</section>
+
+<section><title>What is this mysterious limit?</title>
+
+
+<p>We have just one more matter of business before we've wrapped up our exploration of the derivative of the exponential function.  What about the derivative of exponential functions with base <m>b</m> equal to a number besides <m>e</m>?  According to our calculations, the derivative of <m>g(x)=b^x</m> is equal to <m>g'(x) =g(x) g'(0)</m>, where the factor <m>g'(0)</m> was the mysterious limit
+<me>g'(0) = \lim_{h \to 0} \frac{b^h-1}{h}.</me>
+Let's see if we can find a nicer looking expression for that limit.  It will still probably be some irrational number, but we'll look for a better way to calculate this expression than trying to evaluate the limit directly.</p>
+
+<p>The answer is one simple trick.  We can turn any exponential base <m>b</m> into the nicer exponential base <m>e</m>.  We just have to remember that the inverse of the exponential function <m>e^x</m> is the logarithm base <m>e</m>, or the <em>natural logarithm</em>.  We often write the natural logarithm of <m>x</m> simply as <m>\log x</m>, because if you are going to take a logarithm and no one tells you otherwise, you might as well do the natural thing and use base <m>e</m>.  To be absolutely explicit, we can also use the notation <m>\ln x</m> for the natural logarithm, which we'll use for now.</p>
+
+<p>Since <m>\ln x</m> and <m>e^x</m> are inverses, it follows that for any number <m>x\gt 0</m>, we can also write <m>x</m> as
+<me>x = e^{\ln x}.</me>
+If instead of <m>x</m>, we insert the expression <m>b^x</m>, we can rewrite <m>b^x</m> as
+<me>b^x = e^{\ln b^x} = e^{x \ln b},</me>
+where for the last step, we used one of the 
+<ref uri='doenet:logarithm_basics' tname='rules'>basic rules for logarithms</ref>
+: <m>\log b^x = x \log b</m>.
+We've determined that <m>b^x</m> is the same thing as <m>e^{kx}</m> where <m>k=\ln b</m>.  This explains why <m>k</m> and <m>b</m> are 
+<ref uri='doenet:redundant_parameters_exponential_function'>redundant parameters of the exponential function</ref>
+.  We don't need to use <m>b^x</m> with different bases <m>b</m>, we could get the same function by using <m>e</m> for the base and writing the function as <m>e^{kx}</m> where <m>k=\ln b</m>. </p>
+
+<p>Given that <m>k=\ln b</m>, we can use formula <ref tname='derivative_ekx' /> for the derivative of <m>e^{kx}</m> to compute the derivative of <m>b^x</m>.  We just need to multiply the function by <m>k</m>, which is the same thing as multiply by <m>\ln b</m>.  Our revised formula for the derivative of <m>b^x</m> is
+<me>\frac{d}{dx} b^x = b^x \ln b.</me>
+</p>
+
+<p>Finally we've figured out what the mysterious limit was.  The mysterious limit was simply <m>\ln b</m> in disguise:
+<me>\lim_{h \to 0} \frac{b^h -1}{h} = \ln b.</me>
+</p>
+
+<p>In case you aren't comfortable with these manipulations, you should do the best to convince yourself that this limit is the natural logarithm.  Test it out on a calculator.  When you enter <m>\ln 2</m>, do you get a result similar to the estimate you made above for the limit <m>\lim_{h \to 0} (2^h-1)/h</m>?  Look at how the graph of <m>(b^h-1)/h</m> for different values of <m>h</m> converges to <m>\ln b</m> as <m>h</m> gets smaller and smaller.
+</p>
+
+
+<figure>
+  <embed width="600 px" height="350 px" encodedGeogebraContent = "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" />
+  <caption>Demonstration that a function <m>m(b)=(b^h-1)/h</m> approaches the natural logarithm in the limit as the parameter h goes to zero.  For a given value of <m>h</m>, determined by the red slider, <m>(b^h-1)/h</m> is plotted as a function of <m>b</m> by the thin green curve.  The graph of the function <m>\ln b</m> is plotted by the thick blue curve.  As you change <m>h</m> to make it closer and closer to zero, the thin green curve converges to the thick blue curve, demonstrating that <m>(b^h-1)/h</m> approaches <m>\ln b</m> as <m>h</m> approaches zero.</caption>
+</figure>
+
+
+<p>It's a lot nicer to have a formula for the derivative of <m>b^x</m> without the mysterious limit, using <m>\ln b</m> instead.  Usually, in calculus, though, we'll stay away from bases another than the natural one <m>e</m>.  The most important of the formulas that we've derived are
+<me>\frac{d}{dx}e^x = e^x</me>
+and its generalization
+<me>\frac{d}{dx}e^{kx} = ke^{kx}.</me>
+(You can always multiply either formula by a constant number <m>c</m>.)</p>
+
+<p>In fact, <m>e^{x}</m> (including its multiples <m>ce^{x}</m>) is the only function that is its own derivative.  So, if you were told to find a function <m>f(x)</m> where <m>f'(x)=f(x)</m>, you'd know that the function must be <m>f(x)=ce^x</m> for some (unknown) number <m>c</m>.</p>
+
+<!-- <p>The 
+<ref uri='doenet:exploring_derivative_exponential_function|class=assessment'>worksheet on exploring the derivative of the exponential function</ref>
+ contains questions to guide you through discovering the properties of the exponential function derivative.</p>
+ -->
+
+
+<!-- Django comment -->
+
+<!--
+</section>
+
+<section><title>Summary of questions</title>
+
+
+<p>To aid you in writing up a report on your results, we summarize the main questions posed above that you should be able to answer and added a few more questions.</p>
+
+<ol>
+  <li><p><alert>The derivative of the exponential function with base 2</alert></p>
+
+    <p>For the following questions, let <m>f(x)=2^x</m>.</p>
+    <ol><li>Why can't we say that the derivative of <m>f(x)</m> is <m>x2^{x-1}</m>?</li>
+      <li>Calculate <m>(2^h-1)/h</m> for increasingly smaller values of <m>h</m> until you are confident that you have estimated <m>\lim_{h \to 0} (2^h-1)/h</m> to four decimal places.  Create a chart of your calculations to demonstrate that these four digits seem to be unchanged as you test with values of <m>h</m> closer to zero.  Be sure to show this result for both positive and negative <m>h</m>.</li>
+      <li>Using the limit definition of the derivative, show that 
+	<me>f'(0) = \lim_{h \to 0} \frac{2^{h}-1}{h}.</me>
+	</li>
+      <li>Explain what you discovered about the relationship among <m>f(x)</m> and <m>f'(x)</m>.  Be sure your explanation includes reference to their ratio <m>f'/f</m> as well as the slope <m>f'(0)</m> of the tangent line at <m>x=0</m>.</li>
+      <li>Using your estimate of the limit <m>\lim_{h \to 0} (2^h-1)/h</m>, write down a formula for <m>f'(x)</m>.</li>
+    </ol>
+  </li>
+  <li><p><alert>Exponential functions with other bases</alert></p>
+
+    <p>For the following questions, let <m>g(x)=b^x</m>.</p>
+    <ol><li>Using the limit definition of the derivative, show that 
+	<me>g'(x) =g(x) g'(0)</me>
+	where
+	<me>g'(0) = \lim_{h \to 0} \frac{b^h-1}{h}.</me></li>
+      <li>Pick two values of <m>b</m> besides <m>b=2</m>. Try one value of <m>b</m> less than one and one value of <m>b</m> greater than one.  For each of your choices for <m>b</m>, use the first applet to estimate the first four digits of <m>g'(0)</m>.  Show a chart documenting this result.  Explain how you used the second applet to verify this result. </li>
+    </ol>    
+  </li>
+  <li><p><alert>The exponential function with base <m>e</m></alert></p>
+
+    <p>Show how you obtain an estimate of <m>e</m> by showing a chart of <m>b</m> and <m>\lim_{h \to 0} (b^h-1)/h</m> for different values of <m>b</m> approaching your estimage of <m>e</m>.  Based on your calculations, how many digits of your estimate can you trust?</p>
+  </li>
+
+  <li><p><alert>Adding parameters to the exponential function</alert></p>
+
+    <p>For the following questions, let <m>f(x)=ce^{kx}</m>.</p>
+    <ol><li>What did you discover from exploring the second applet how the relationship between the derivative <m>f'(x)</m> and the function <m>f(x)</m> depended on the parameters <m>c</m> and <m>k</m>?  How did you use the applet to figure this out?</li>
+      <li>Did you manipulations of the limits to determine <m>f'(x)</m> see reasonable or did they seem suspect?  Why or why not?</li>
+      <li>Why should the limit <m>\lim_{h \to 0} (e^h-1)/h</m> be the same thing as <m>\lim_{w \to 0} (e^w-1)/w</m>?</li>
+      <li>What is <m>f'(x)</m>?</li>
+      <li>If <m>c=-17</m> and <m>k=-5</m>, what is <m>f'(x)</m>?</li>
+      <li>What is <m>\frac{d}{dx}\left(14e^{-x}\right)</m>?</li>
+    </ol>
+  </li>
+
+  <li><p><alert>What is this mysterious limit?</alert></p>
+    
+    <ol><li>Why is <m>b^x = e^{x\ln b}</m>?</li>
+      <li>Does your estimate of <m>\lim_{h \to 0}(2^h-1)/h</m> agree with <m>\ln 2</m>?  How many digits of your estimate matched <m>\ln 2</m>?</li>
+      <li>Which functions are their own derivative?</li>
+      <li>Imagine you were given the <q>differential equation</q> <m>f'(x)=f(x)</m>.  What functions <m>f(x)</m> could satisfy this equation?</li>
+      <li>Imagine you were given the <q>differential equation</q> <m>f'(x)=3f(x)</m>. What functions <m>f(x)</m> could satisfy this equation?</li>
+      
+    </ol>
+  </li>
+</ol>
+
+-->
+
+</section>

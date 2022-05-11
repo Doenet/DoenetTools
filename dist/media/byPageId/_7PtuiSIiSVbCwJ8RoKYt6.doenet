@@ -1,0 +1,28 @@
+<problem>
+
+<selectFromSequence assignNames='a' hide='true' step=' 3' from="3" to ="33" />
+<selectFromSequence assignNames='b' hide='true' from="2" to="6" />
+<selectFromSequence assignNames='c' hide='true' from="1" to="9" />
+<math name='AA' hide='true' simplify='full'>$a e^$c</math>
+<math name='kk' hide='true' simplify='full'>$b</math>
+
+Write the function <m>f(x)=$a e^{ $b x+$c }</m> in the form <m>f(x)=Ae^{kx}</m>. <nbsp/>  What are the values of the parameters <m>A</m> and <m>k</m>?
+
+<p> <m>A=</m> <mathinput name="input1"/>, <m>k=</m> <mathinput name="input2"/>
+</p>
+
+<answer>
+  <award matchpartial="true" targetsAreResponses="input1 input2"><when> 
+    <mathlist>
+      $input1 $input2
+    </mathlist>
+    =
+    <mathlist>$AA $kk</mathlist>
+  </when> </award>
+</answer>
+
+<solution>
+<m>A=$a e^$c</m>, <m>k=$b </m>
+</solution>
+
+</problem>

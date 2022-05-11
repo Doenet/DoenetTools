@@ -1,0 +1,59 @@
+<problem>
+<!-- <title>linear approximation, cubic, x^2*(x-a)</title> -->
+
+<setup>
+
+<select assignNames='x' >x y z t s</select>
+<select assignNames='f' >f g h u v w p q r</select>
+
+<selectFromSequence assignNames='a' from='1' to=' 5' />
+<selectFromSequence assignNames='c' from='-10' to=' 10' />
+<selectFromSequence assignNames='d' from='1' to=' 2' />
+<math name='b' simplify='full' >$a +$d </math>
+<function name='F' variables='$x' symbolic>$x ^2*($x -$a )</function>
+<math name='answer' simplify='full' expand='true'>$d *$b ^2 + $b *($a +3*$d )*($x -$b )</math>
+<math name='F_expand' expand='true'>$$F($x )</math>
+<derivative name='dF' variables='$x'>$F_expand</derivative>
+<math name='F_b' simplify='full' >$$F($b )</math>
+<math name='dF_b' simplify='full' >$$dF($b )</math>
+
+</setup>
+
+<p>
+Find the linear approximation to the function
+<me>$f ( $x  ) =  $F</me>
+around <m>$x = $b </m>.
+</p>
+  
+<p>
+<m>L_{$b}( $x  ) =</m>
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers'>$answer </award>
+<award credit="0.8" name="simplifyMore">$answer </award>
+</answer>
+</p>
+<feedback condition="$simplifyMore">
+  <p>For full credit, simplify your answer.</p>
+</feedback>
+
+
+<solution>
+<p>The linear approximation is the same thing as the tangent line.  The equation for the linear approximation around <m>$x =$b </m> is
+<me>L_{ $b  }($x ) = $f '($b )($x -$b ) + $f ($b ).</me>
+</p>
+
+<p>To calculate the derivative of <m>$f </m>, we expand the quadratic to write <m>$f </m> as
+<me>$f ($x ) = $F_expand .</me>
+The derivative is
+<me>$f '($x ) = $dF.</me>
+Therefore <m>$f '($b ) = $dF_b </m> and <m>$f ($b ) = $F_b </m>, and the linear approximation is
+<md>
+  <mrow>L_{ $b  }( $x  )\amp = <math>$dF_b ($x -$b )  + $F_b </math></mrow>
+  <mrow>\amp =$answer .</mrow>
+</md>
+</p>
+
+</solution>
+
+
+</problem>

@@ -1,0 +1,217 @@
+<problem>
+<!-- <title>Applications of integration - average value</title> -->
+
+<setup>
+
+
+<function name='f' variables = 't' >t</function>
+<function name='g' variables='t' symbolic>e^(2t)</function>
+<math name='lb' >0</math>
+<math name='ub' >3</math>
+<function name='integral_g' variables = 't' symbolic >(1/2)e^(2t) </function>
+<math name='ave_g' simplify='full' >$integral_g /($ub -$lb )</math>
+<math name='average_g_evaluated' simplify='full'>($$integral_g($ub)-$$integral_g($lb))/($ub -$lb)</math>
+<evaluate name="intg0" forceNumeric function="$integral_g" input="0" />
+<evaluate name="intg3" forceNumeric function="$integral_g" input="3" />
+<number name='numeric_ave_g_eval'>($intg3-$intg0)/($ub -$lb )</number>
+<math name='integral_g_eval' simplify='full' >$$integral_g($ub)-$$integral_g($lb) </math>
+
+  
+<function name='h' variables='t' symbolic> 10t^2+20t+10</function>
+<function name='integral_h' variables = 't' >(10/3)*t^3+10*t^2+10t</function>
+<math name='ave_h' simplify='full' >$integral_h /14</math>
+<math name='ave_h_eval' simplify='full' >($$integral_h(14))/14 </math>
+<math name='integral_h_eval' >$$integral_h(14) </math>
+<evaluate name='inth14' forceNumeric function="$integral_h" input="14" />
+<number name="numeric_ave_h_eval">$inth14/14</number>
+<evaluate name='sym_h_eval' function="$integral_h" forceSymbolic input='14' />
+<math name='sym_ave_h_eval' simplify='full'>($sym_h_eval)/14</math>
+
+</setup>
+
+<p>
+We can use definite integrals to help us find averages.</p>
+
+<!--Problem #1*******************************************-->
+<ol>
+
+<li>
+<p>Suppose we know that the volume of a cell is changing at a rate of <m>f(t)</m> <m>\mu {\rm m}^3/s</m> and we want to know the average rate from <m>t=a</m> to <m>t=b</m> seconds.  The average rate of change is given by 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>the total change divided by the time that has passed</choice>
+<choice>the time that has passed divided by the total change</choice>
+<choice>the total change times the time that has passed</choice>
+</choiceinput>
+</answer>
+.  Since the total change is given by 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>the definite integral of f</choice>
+<choice>the indefinite integral of f</choice>
+<choice>the derivative of f</choice>
+</choiceinput>
+</answer>
+ and the time that has passed is given by 
+
+<answer name='diff1'>b-a</answer>
+
+, we can write down a formula for the average rate of change:
+</p>
+
+<p><m>\displaystyle  \frac{1}{<copy prop="submittedResponse" tname="diff1" componentType="math" />}
+\int_{ <copy prop="immediateValue" tname="a1" /> }^{ <copy prop="immediateValue" tname="b1" /> }</m>  
+<mathinput name="u_f" />
+ <m>dt</m>, where integration limits are from 
+<mathinput name="a1" />
+to 
+<mathinput name="b1" />.
+<answer name="ansAve1">
+<award matchPartial targetsAreResponses="a1 b1">
+  <when>($(u_f{prop='value' isResponse})=f(t) or $u_f=f) and <when>$a1=a and $b1=b</when>
+</when></award>
+</answer>
+</p>
+
+
+
+<p>For any function <m>f(t)</m>, the formula gives us the average value of <m>f(t)</m> between <m>t=a</m> and <m>t=b</m>.  Suppose we want to know the average volume of the cell between <m>t=a</m> and <m>t=b</m>, where the volume at time <m>t</m> is given by <m>F(t)</m>.  The formula for this is:
+</p>
+
+<p><mathinput name="ab2" />
+<m>\displaystyle  \int_{ <copy prop="immediateValue" tname="a2" /> }^{ <copy prop="immediateValue" tname="b2" /> }</m>  
+<mathinput name="u_F" />
+ <m>dt</m>, where integration limits are from 
+<mathinput name="a2" />
+to 
+<mathinput name="b2" />.
+<answer name="ansAve2">
+<award matchPartial targetsAreResponses="ab2 a2 b2">
+  <when>$ab2 = 1/(b-a) and ($(u_F{prop='value' isResponse})=F(t) or $u_F=F) and <when>$a2=a and $b2=b</when>
+</when></award>
+</answer>
+</p>
+
+
+</li>
+
+
+<!--Problem #2********************************************-->
+<li>
+<p>
+Find the average value of the function <m>g(t)=<copy prop="formula" tname="g" /></m> between <m>t= $lb </m> and <m>t=$ub </m>.  First write down the expression involving an integral that will give the average value, then evaluate it.
+</p>
+
+<p>The integration limits are from <mathinput name="a3" />
+to 
+<mathinput name="b3" /> 
+<answer matchPartial>
+  <award targetsAreResponses="a3 b4">
+    <when>$a3=0 and $b3=3</when>
+  </award>
+</answer>.</p>
+
+<p>Average value = <mathinput name="ab3" />
+<m>\displaystyle  \int_{ <copy prop="immediateValue" tname="a3" /> }^{ <copy prop="immediateValue" tname="b3" /> }</m>  
+<mathinput name="u_g" />
+ <m>dt</m>
+<answer name="ansAve3">
+<award matchPartial targetsAreResponses="ab3 u_g">
+  <when>$ab3 = 1/3 and $u_g=$g</when>
+</award>
+</answer>
+</p>
+  
+
+<p>
+<m> = </m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare> $average_g_evaluated </award>
+<award  credit='0.9' name='award12' allowedErrorInNumbers='0.001'>$numeric_ave_g_eval </award>
+<award symbolicEquality='true' simplifyOnCompare credit='0' name='award13'>$integral_g_eval </award>
+</answer>
+</p>
+<feedback condition="$award12">For full credit, don't round your answer but leave it in terms of <c>e^()</c> and/or a fraction.</feedback>
+<feedback condition="$award13">Don't forget to divide by the change in time.</feedback>
+
+</li>
+
+
+<!--Problem#3*************************************************-->
+<li>
+<p>A disease is infecting people at a rate of <m><copy prop="formula" tname="h" /></m> people per day, where <m>t</m> gives time in days.  Write down an expression involving an integral that gives the average rate of infection over the first two weeks and evaluate it. 
+</p>
+
+<p>The integration limits are from <mathinput name="a4" />
+to 
+<mathinput name="b4" />.
+<answer matchPartial nAwardsCredited="2">
+  <award targetsAreResponses="a4 b4">
+    <when>$a4=0 and $b4=14</when>
+  </award>
+  <award credit="0" name="weeks">
+    <when>$b4=2</when>
+  </award>
+</answer>.</p>
+<feedback condition="$weeks">Since <m>t</m> is in days, enter expression in terms of days, not weeks.
+</feedback>
+  
+<p>Average value = <mathinput name="ab4" />
+<m>\displaystyle  \int_{ <copy prop="immediateValue" tname="a4" /> }^{ <copy prop="immediateValue" tname="b4" /> }</m>  
+<mathinput name="u_h" />
+ <m>dt</m>
+<answer name="ansAve4">
+<award matchPartial targetsAreResponses="ab4 u_g">
+  <when>$ab4 = 1/14 and $u_h=$h</when>
+</award>
+</answer>
+</p>
+  
+
+<p>
+<m> = </m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare> $ave_h_eval </award>
+<award  credit='0.9' name='award14' allowedErrorInNumbers='0.1'>$numeric_ave_h_eval </award>
+<award symbolicEquality='true' simplifyOnCompare credit='0' name='award15'>$integral_h_eval </award>
+</answer>
+<feedback condition="$award14">For full credit, don't round your answer but leave it in terms of <c>e^()</c> and/or a fraction.</feedback>
+<feedback condition="$award15">Don't forget to divide by the change in time.</feedback>
+</p>
+
+<hint>
+Since the infection rate <m><copy prop="formula" tname="h" /></m> and time <m>t</m> are given in days, be sure to think in terms of days, not weeks.
+</hint>
+</li>
+
+</ol>
+
+
+
+  
+<solution>
+<ol>
+<li>
+<p>The average rate of change of a function is given by the total change divided by the total time that has passed.  We have seen how to find the total change by evaluating a definite integral, namely <m>\displaystyle \int_a^b f(t)dt</m>, and the total time that has passed is just <m>b-a</m>.  So the average rate of change is <m>\displaystyle \frac{1}{b-a} \int_a^b f(t)dt</m>.</p>
+
+<p>The average rate of change is the average of the function <m>f(t)</m>.  We can use the same formula to determine the average value of any function <m>F</m>: <m>\displaystyle \frac{1}{b-a} \int_a^b F(t)\, dt</m> gives the average value of <m>F(t)</m> from <m>a</m> to <m>b</m>.</p>
+</li>
+
+<li>
+The average value of the function <m>g(t)=<copy prop="formula" tname="g" /></m> between <m>t= $lb </m> and <m>t=$ub </m> is given by
+<me>\frac{1}{ $ub -$lb  } \int_{$lb}^{$ub} $g dt =\frac{1}{ $ub -$lb } \displaystyle \left($integral_g \right) \Bigg|_0^3 = $average_g_evaluated </me>
+</li>
+
+<li>
+The average rate of infection over the first two weeks is given by
+<me>\frac{1}{14-0} \int_{0}^{14} $h dt =\frac{1}{14 - 0} \displaystyle \left($integral_h \right) \Bigg|_0^{14} = $sym_ave_h_eval </me>
+  
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

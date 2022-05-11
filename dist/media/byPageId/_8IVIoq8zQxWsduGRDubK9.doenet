@@ -1,0 +1,85 @@
+<section name="Class18">
+  <title>Guided Practice for Class 18: Numerical Experimentation</title>
+
+  <paginatorControls paginatorTname="pgn" />
+  <paginator name="pgn">
+
+      <subsection>
+        <title>Overview</title>
+        <p>
+          This class's PGP will be a little different, as I will ask you to go do some
+          numerical experimentation, and then make some conjectures (educated guesses)
+          based on that experimentation on the Google form linked on the next page.
+          So there will only be this page and the Wrap-up page following it this time.
+        </p>
+        <p>
+          You may use any tool you like, but I went ahead and added a tab to the <ref uri="https://docs.google.com/spreadsheets/d/1brpGErTCWhQ-rWg7ekPRIyj1OLpvnOjbKct1BjqvkGo/edit?usp=sharing">
+          class Google Sheet</ref>
+          with some of this already set-up for you (make a copy to your own drive in order to edit/play with it).
+          My first
+          version of the formulas very quickly broke Google Sheets word size limit for integers.
+          You might run into similar issues during your experimentation. You should be able to
+          work up to Modulus 21 without any issues, beyond that you will need to extend
+          my fix to split the calculations up to more than two parts,
+          but doing it in on this form or elsewhere you should be able to get enough
+          cases to see a pattern and make some guesses.
+        </p>
+        <p>
+          The Google sheet is setup to let you try different modulus and
+          quickly compute equations of the form
+          <me>\large b^e \mod n</me>
+          for many different exponents <m>e</m> with fixed base and modulus.
+          (You could also extend this to include all the possible bases for each
+          modulus entered, but I'll leave that to you if you're interested.)
+          For the basic requirements, this shouldn't take more than 20-30 minutes, at most.
+        </p>
+        <p>
+          <ul>
+            <li>Try several small values of <m>n</m> to start with, 3,4,5,6,7 etc.</li>
+            <li>Compute all the exponents up to <m>n</m> for each possible remainder, <m>\mod n</m>.</li>
+            <li>For what values does <m>b^e \equiv 1 \mod n</m>?</li>
+            <li>Look for patterns and try several differents values of <m>n=15,16,17,18...</m>.</li>
+            <li>Can you make a guess as to what value exponent always works?</li>
+            <li>Can you try the computation on some larger values of <m>b</m> and <m>n</m>? You may need
+            to compute these on <ref uri="https://www.wolframalpha.com/">Wolfram Alpha</ref> to avoid the
+            limit on integer sizes to test your guesses.</li>
+          </ul>
+        </p>
+      </subsection>
+
+      <subsection>
+        <title>Wrap-up</title>
+        <p>
+          <row><alert>Short Response Questions</alert></row>
+        </p>
+        <p>
+        Complete the short response questions in this
+          <ref uri="https://forms.gle/c4WUho9tDTXcQAPm7">Google Form</ref>
+          (https://forms.gle/c4WUho9tDTXcQAPm7).
+        </p>
+      </subsection>
+    </paginator>
+  <paginatorControls paginatorTname="pgn" />
+</section>
+<!--
+
+<subsection>
+  <title>Wrap-up</title>
+  <p>
+    <row><alert>Short Response Questions</alert></row>
+  </p>
+  <p>
+    <row>[Short Response Question 1]</row>
+    <row><textInput name="SR1" width="450" height="50" expanded /></row>
+    <answer>
+      <award targetsAreResponses="SR1"><when>$SR1!=<text></text></when></award>
+    </answer>
+  </p>
+  <p>
+    <row>[Short Response Question 2]</row>
+    <row><textInput name="SR2" width="450" height="50" expanded /></row>
+    <answer>
+      <award targetsAreResponses="SR2"><when>$SR2!=<text></text></when></award>
+    </answer>
+  </p>
+</subsection>

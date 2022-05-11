@@ -1,0 +1,232 @@
+<problem>
+<!-- <title>Equilibria and stability of linear differential equation with parameters</title> -->
+
+<setup>
+
+<function name='fun1' variables='y'>y+1</function>
+<function name='fun2' variables='y'>1/2*y-3/2</function>
+<function name='zero' variables='y'>0</function>
+<math name='equilibrium'>-b/a</math>
+<number name='ymin'>-5</number>
+<number name='ymax'>5</number>
+<function name='fun3' variables='y'>-2y-4</function>
+<function name='fun4' variables='y'>-1/4y+1/2</function>
+
+</setup>
+
+<p>
+Consider the dynamical system, with parameters <m>a</m>, <m>b</m>, and <m>c</m>:
+<md>
+  <mrow>\frac{ dy }{ dt }\amp = a y +b</mrow>
+  <mrow>y(0)\amp = c.</mrow>
+</md>
+</p>
+
+
+<paragraphs>
+  <title>Equilibria</title>
+  
+<p>
+As long as <m>a \ne 0</m>, what is the equilibrium of the dynamical system?
+</p>
+  
+<p>
+<m>y_e=</m> 
+<answer>
+<award>$equilibrium </award>
+</answer>
+</p>
+
+<p>In this case, the only thing a nonzero value of <m>b</m> does is shift the equilibrium away from zero.</p>
+
+
+<hint>
+An equilibrium is where <m>\frac{ dy }{ dt }=0</m>.
+</hint>
+
+</paragraphs>
+
+<paragraphs>
+  <title>Solve dynamical system</title>
+
+<p>Solve the dynamical system graphically, for the following values of <m>a</m> and <m>b</m>.  (As above, first sketch the right hand side <m>f(y)=ay+b</m>, although we didn't include a graph for those sketches.)</p>
+
+<ol>
+<li><p><m>a=1</m>, <m>b=1</m>.  Use initial conditions <m>c=0</m>, <m>c=-1</m>, and <m>c=-2</m>.</p>
+
+  <copy uri="doenet:contentId=0d36cd6e683fa36d2c4717dc4377a250b85462d1bb3c882f66d984d2db2b3b85&doenetId=hMRCBB72QUn89g054358W" width="400" height="250" nPoints="3" var="y" vmin="$ymin" vmax="$ymax" IC1="0" final1="Infinity" IC2="-1" final2="-1" IC3="-2" final3="-Infinity"  grid="true" ICvar="c" />
+
+
+
+</li>
+
+<li><p><m>a=1/2</m>, <m>b=-3/2</m>.  Use initial conditions <m>c=4</m>, <m>c=3</m>, and <m>c=2</m>.</p>
+
+  <copy uri="doenet:contentId=0d36cd6e683fa36d2c4717dc4377a250b85462d1bb3c882f66d984d2db2b3b85&doenetId=hMRCBB72QUn89g054358W" width="400" height="250" nPoints="3" var="y" vmin="$ymin+2" vmax="$ymax+2" IC1="4" final1="Infinity" IC2="3" final2="3" IC3="2" final3="-Infinity"  grid="true" ICvar="c" />
+
+
+</li>
+
+<li><p><m>a=-2</m>, <m>b=-4</m>.  Use initial conditions <m>c=3</m>, <m>c=-2</m>, and <m>c=-4</m>.</p>
+
+
+  <copy uri="doenet:contentId=0d36cd6e683fa36d2c4717dc4377a250b85462d1bb3c882f66d984d2db2b3b85&doenetId=hMRCBB72QUn89g054358W" width="400" height="250" nPoints="3" var="y" vmin="$ymin" vmax="$ymax" IC1="3" final1="-2" IC2="-2" final2="-2" IC3="-4" final3="-2"  grid="true" ICvar="c" />
+
+
+</li>
+
+<li><p><m>a=-1/4</m>, <m>b=1/2</m>.  Use initial conditions <m>c=4</m>, <m>c=2</m>, and <m>c=-2</m>.</p>
+
+  <copy uri="doenet:contentId=0d36cd6e683fa36d2c4717dc4377a250b85462d1bb3c882f66d984d2db2b3b85&doenetId=hMRCBB72QUn89g054358W" width="400" height="250" nPoints="3" var="y" vmin="$ymin" vmax="$ymax" IC1="4" final1="2" IC2="2" final2="2" IC3="-2" final3="2"  grid="true" ICvar="c" />
+
+</li>
+
+</ol>
+
+
+
+</paragraphs>
+
+<paragraphs>
+  <title>Dependence of stability on parameters</title>
+
+<p>Based on your experimentation with the above values of <m>a</m> and <m>b</m>, determine how the stability of the equilibrium depends on <m>a</m> and <m>b</m>.  (If needed, try graphically solving the system for different values of <m>a</m> and <m>b</m> to further explore the dependence of stability on <m>a</m> and <m>b</m>.)</p>
+
+<p>What is the condition on <m>a</m> for the equilibrium to be stable? 
+<answer>
+<award>a < 0</award>
+<award credit='0.5' name='award14'>a <= 0</award>
+</answer>
+</p>
+<feedback condition="$award14">Close, but we want to exclude the value <m>a=0</m>.</feedback>
+
+<p>
+What is the condition on <m>a</m> for the equilibrium to be unstable? 
+<answer>
+<award>a > 0</award>
+<award credit='0.5' name='award12'>a >= 0</award>
+</answer>
+</p>
+<feedback condition="$award12">Close, but we want to exclude the value <m>a=0</m>.</feedback>
+
+<p>Does the stability of the equilibrium depend on the value of <m>b</m>? 
+<answer inline='true'>
+<choiceinput>
+<choice>yes</choice>
+<choice credit='1'>no</choice>
+</choiceinput>
+</answer>
+</p>
+  
+<p>
+Does the location of the equilibrium depend on the value of <m>b</m>? 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>yes</choice>
+<choice>no</choice>
+</choiceinput>
+</answer>
+</p>
+
+
+</paragraphs>
+  
+<solution>
+
+
+<ol>
+
+<li>
+To find the equilibrium, set <m>\frac{ dy }{ dt }=0</m>, i.e, <m>ay+b=0</m>.  If <m>a \ne 0</m>, the equilibrium is <m>y_e = -b/a</m>.
+</li>
+
+<li>
+<ol>
+<li><p>For <m>a=1</m> and <m>b=1</m>, the graph of <m>f(y)=ay+b</m> looks like the following.  The equilibrium is <m>y_e=-1</m>.</p>
+
+
+<graph xmin='-5' xmax='5' ymin='-5' ymax='5' xlabel='y' ylabel='dy/dt' fixAxes>
+  <line>y=x+1</line>
+</graph>
+
+<p>The solutions move away from the equilibrium, as shown in the plot of the solutions for the three initial conditions:</p>
+
+<graph xmin='-2' xmax='10' ymin="$ymin" ymax="$ymax" xlabel="t" ylabel="y" fixAxes>
+  <function domain="(0,50)">e^(x)-1</function>
+  <lineSegment styleNumber="2" endpoints="(0,-1) (50,-1)" />
+  <function styleNumber="3" domain="(0,50)">-e^(x)-1</function>
+</graph>
+</li>
+
+<li>
+<p>For <m>a=1/2</m> and <m>b=-3/2</m>, the graph of <m>f(y)=ay+b</m> looks like the following.  The equilibrium is <m>y_e=3</m>.</p>
+
+<graph xmin='-5' xmax='5' ymin='-5' ymax='5' xlabel='y' ylabel='dy/dt' fixAxes>
+  <line>y=x/2-3/2</line>
+</graph>
+
+
+<p>The solutions move away from the equilibrium, as shown in the plot of the solutions for the three initial conditions:</p>
+
+<graph xmin='-2' xmax='10' ymin="$ymin+2" ymax="$ymax+2" xlabel="t" ylabel="y" fixAxes>
+  <function domain="(0,50)">e^(x/2)+3</function>
+  <lineSegment styleNumber="2" endpoints="(0,3) (50,3)" />
+  <function styleNumber="3" domain="(0,50)">-e^(x/2)+3</function>
+</graph>
+  
+</li>
+
+<li>
+<p>For <m>a=-2</m> and <m>b=-4</m>, the graph of <m>f(y)=ay+b</m> looks like the following.  The equilibrium is <m>y_e=-2</m>.</p>
+
+
+<graph xmin='-5' xmax='5' ymin='-5' ymax='5' xlabel='y' ylabel='dy/dt' fixAxes>
+  <line>y=-2x-4</line>
+</graph>
+
+<p>The solutions move toward the equilibrium, as shown in the plot of the solutions for the three initial conditions:</p>
+
+<graph xmin='-2' xmax='10' ymin="$ymin" ymax="$ymax" xlabel="t" ylabel="y" fixAxes>
+  <function domain="(0,50)">6e^(-2x)-2</function>
+  <lineSegment styleNumber="2" endpoints="(0,-2) (50,-2)" />
+  <function styleNumber="3" domain="(0,50)">-2e^(-2x)-2</function>
+</graph>
+
+
+</li>
+
+<li>
+<p>For <m>a=-1/4</m> and <m>b=1/2</m>, the graph of <m>f(y)=ay+b</m> looks like the following.  The equilibrium is <m>y_e=2</m>.</p>
+
+
+
+<graph xmin='-5' xmax='5' ymin='-5' ymax='5' xlabel='y' ylabel='dy/dt' fixAxes>
+  <line>y=-x/4+1/2</line>
+</graph>
+
+<p>The solutions move toward the equilibrium, as shown in the plot of the solutions for the three initial conditions:</p>
+
+<graph xmin='-2' xmax='10' ymin="$ymin" ymax="$ymax" xlabel="t" ylabel="y" fixAxes>
+  <function domain="(0,50)">2e^(-x/4)+2</function>
+  <lineSegment styleNumber="2" endpoints="(0,2) (50,2)" />
+  <function styleNumber="3" domain="(0,50)">-4e^(-x/4)+2</function>
+</graph>
+
+</li>
+</ol>
+
+</li>
+
+<li>
+The conditions for stability are the same as in the previous problem with <m>b=0</m>.  If <m>a \lt  0</m>, the equilibrium is stable.  If <m>a \gt  0</m>, the equilibrium is unstable.
+
+<p>The location but not the stability of the equilibrium depends on <m>b</m>.</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

@@ -1,0 +1,22 @@
+<title>Derivative and graphing problem set</title>
+
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <copy uri="doenet:contentId=42bedf413709921d977f9318e56d78a68e71f07d77e5790ef91d7e8b2afe6cd0&doenetId=BHgvihNzJ8GTme_HDgot0" componentType="problem" assignNames="problem1" />
+
+  <copy uri="doenet:contentId=b4264d3cf689e321b234b476ed4a05f83ea51c1500597143c9ade217ab119fff&doenetId=9tDsDlZ8ZACLxFSReI-4o" componentType="problem" assignNames="problem2"  />
+
+  <copy uri="doenet:contentId=baf216b2227d5147ce721c0acea2997805fc8fed95faf5115803387134d762dc&doenetId=yu1Zay4l6YCJ8O03zaoXS" componentType="problem" assignNames="problem3" />
+
+  <copy uri="doenet:contentId=e10646a8ebdda6e82b3b6643130a7b5e2406e47878146abb0b24665399bc27af&doenetId=SMxJfKq4nouDgwqgMjhga" componentType="problem" assignNames="problem4" />
+
+  <copy uri="doenet:contentId=8f433a8cb76dc933326288fef2693b78a1995422d5a3a7d3b4f8d7c4d56ef47f&doenetId=aEZoho4nLXQwsFAc6iyRG" componentType="problem" assignNames="problem5" />
+  
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

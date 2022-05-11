@@ -1,0 +1,496 @@
+
+<title>Basic answer forms</title>
+
+<section>
+  <title>Simplest form (sugared answers)</title>
+
+  <subsection><title>Sugared math answers</title>
+
+    <p>The default answer type is math. A simple <c>&lt;answer&gt;4x&lt;/answer&gt;</c> will create a <tag>mathinput</tag> along with a check work button that will mark anything mathematically equivalent to <m>4x</m> as correct. What is <m>2x+2x</m>? <answer>4x</answer></p>
+      
+    <p>The default answer checking algorithm uses a numerical comparison, evaluating the expressions are random points to determine if the are the same.  The result is a liberal determination of a correct answer.  This validation isn't appropriate to determine if someone can combine the terms <m>2x + 2x</m> to obtain <m>4x</m>, as the verbatim response <m>2x+2x</m> will obtain full credit.</p>
+
+    <p>To obtain more control over what expressions are considered correct, one can use the attribute <attr>symbolicEquality</attr> to specify that the answers are the same mathematical expression.  As this validation is a very strict determination of a correct answer, one can use the attributes <attr>simplifyOnCompare</attr> and <attr>expandOnCompare</attr> to expand the set of correct answers.  See the following table for a sample of options.  Only a few options are currently available and more will be created.</p>
+
+    <table>
+      <title>Some sugared math answers</title>
+      <tabular>
+        <row header bottom="medium">
+          <cell>DoenetML</cell>
+          <cell>
+            Rendered<nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/>
+          </cell>
+          <cell>Explanation</cell>
+        </row>
+        
+        <row bottom="minor"><cell><pre>&lt;answer&gt;x^2+2x+1&lt;/answer&gt;</pre></cell><cell><answer>x^2+2x+1</answer></cell><cell>Any math expressions that is equivalent to <m>x^2+2x+1</m> is correct.</cell></row>
+        
+        <row bottom="minor">
+          <cell>
+          <pre>&lt;answer symbolicEquality&gt;
+  x^2+2x+1
+&lt;/answer&gt;</pre>
+        </cell>
+          <cell>
+            <answer symbolicEquality>x^2+2x+1</answer>
+          </cell>
+          <cell>
+            Only the expression <m>x^2+2x+1</m> (or equivalently <m>x^2+2 \cdot x+1</m>) is correct.
+          </cell>
+        </row>
+        <row bottom="minor">
+          <cell>
+            <pre>&lt;answer symbolicEquality
+  simplifyOnCompare
+&gt;
+  x^2+2x+1
+&lt;/answer&gt;</pre>
+          </cell>
+          <cell>
+            <answer symbolicEquality simplifyOnCompare>
+              x^2+2x+1
+            </answer>
+          </cell>
+          <cell>
+            Any expression that can be simplified with basic operations to <m>x^2+2x+1</m> is correct, not including expanding multiplication of polynomials, as that is controlled separately with <attr>expandOnCompare</attr>.  For example, <m>x \cdot x + x + x + 3 -2</m> is correct, but <m>(x+1)^2</m> is incorrect. <alert>Warning:</alert> currently only very basic simplification has been implemented.  Additional simplification algorithms will be added, which will change the behavior of this option.
+          </cell>
+        </row>
+
+       <row>
+         <cell>
+           <pre>&lt;answer symbolicEquality
+  simplifyOnCompare
+  expandOnCompare
+&gt;
+  x^2+2x+1
+&lt;/answer&gt;</pre>
+         </cell>
+         <cell>
+           <answer symbolicEquality simplifyOnCompare expandOnCompare>
+             x^2+2x+1
+           </answer>
+         </cell>
+         <cell>
+           In addition to the basic simplification operations, products of polynomials are expanded when evaluating the response.  <m>(x+1)^2</m> is now a correct answer.
+         </cell>
+       </row>
+      </tabular>
+    </table>
+
+
+
+
+  </subsection>
+  
+  <subsection>
+    <title>Sugared text answers</title>
+
+    <p>Specify <attr>type</attr> = "text" to create a sugared text answer.  In this case, a <tag>textinput</tag> is created along with a check work button.  The response must exactly match, except for whitespace on either side.</p>
+
+    <table>
+      <title>A sugared text answer</title>
+      <tabular>
+        <row header bottom="medium">
+          <cell>DoenetML</cell>
+          <cell>
+            Rendered<nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/>
+          </cell>
+          <cell>Explanation</cell>
+        </row>
+        
+        <row>
+          <cell>
+            <pre>&lt;answer type="text"&gt;
+  animal
+&lt;/answer&gt;</pre>
+          </cell>
+          <cell>
+            <answer type="text">animal</answer>
+          </cell>
+          <cell>
+            The only correct answer is <q>animal</q> (without the quotes), possibly with spaces on either side, such as <q><nbsp/><nbsp/><nbsp/>animal<nbsp/><nbsp/></q>.
+          </cell>
+        </row>
+       
+      </tabular>
+    </table>
+
+    
+    
+
+  </subsection>
+
+
+
+</section>
+
+
+<section>
+  <title>Simple form using award</title>
+  
+  <p>You can give <tag>answer</tag> one or more <tag>award</tag> children.
+    If the answer type is math (the default),
+    the award child must be a math.
+    If you set the answer type to be text,
+    the award child must be a text.</p>
+  <p>The student earns the maximum credit from
+    any awards that are matched.  One use of multiple awards is to create answers that are awarded partial credit.</p>
+
+
+ <table>
+    <title>answers with simple form of award</title>
+    <tabular>
+      <row header bottom="medium">
+        <cell>DoenetML</cell>
+        <cell>
+          Rendered<nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/>
+        </cell>
+        <cell>Explanation</cell>
+      </row>
+
+      <row bottom="minor">
+        <cell>
+          <pre>Expand &lt;m&gt;(x+1)(x+2)&lt;/m&gt;:
+&lt;answer&gt;
+  &lt;award symbolicEquality 
+    simplifyOnCompare
+  &gt;
+    &lt;math&gt;x^2+3x+2&lt;/math&gt;
+  &lt;/award&gt;
+  &lt;award credit=&quot;0.5&quot; 
+    symbolicEquality 
+    simplifyOnCompare
+  &gt;
+    &lt;math&gt;x^2+2x+2&lt;/math&gt;
+  &lt;/award&gt;
+&lt;/answer&gt;</pre>
+        </cell>
+        <cell>
+          Expand <m>(x+1)(x+2)</m>:
+          <answer>
+            <award symbolicEquality simplifyOnCompare>
+              <math>x^2+3x+2</math>
+            </award>
+            <award credit="0.5" symbolicEquality simplifyOnCompare>
+              <math>x^2+2x+2</math>
+            </award>
+          </answer>
+          </cell>
+        <cell>
+          The correct answer <m>x^2+3x+2</m> gets full credit, while 50% credit is awarded to the close answer <m>x^2+2x+2</m>.
+        </cell>
+      </row>
+      <row>
+        <cell>
+          <pre>A dog is a type of
+&lt;answer type=&quot;text&quot;&gt;
+  &lt;award&gt;
+    &lt;text&gt;animal&lt;/text&gt;
+  &lt;/award&gt;
+  &lt;award credit=&quot;0.5&quot;&gt;
+    &lt;text&gt;being&lt;/text&gt;
+  &lt;/award&gt;
+&lt;/answer&gt;</pre>
+        </cell>
+        <cell>
+          A dog is a type of
+          <answer type="text">
+            <award><text>animal</text></award>
+            <award credit="0.5"><text>being</text></award>
+          </answer>
+        </cell>
+        <cell>
+          The answer <q>animal</q> (no quotes) gets full credit, while 50% credit is awarded to the answer <q>being</q>.
+        </cell>
+      </row>
+    </tabular>
+  </table>
+
+  
+</section>
+
+<section>
+  <title>Multiple choice</title>
+  
+  <p>Use a <tag>choiceinput</tag> inside an <tag>answer</tag> to
+    create a multiple choice question.
+    Unlike award children, choice children default to zero credit so the correct answer needs to include the attribute <attr>credit</attr> = "1".  
+  </p>
+
+  <p>Randomize choice order with the <attr>randomizeOrder</attr> attribute; specify an inline (drop-down style) format with the <attr>inline</attr> attribute.</p>
+
+
+
+  <table>
+    <title>Multiple choice answers</title>
+    <tabular>
+      <row header bottom="medium">
+        <cell>DoenetML</cell>
+        <cell>
+          Rendered<nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/>
+        </cell>
+        <cell>Explanation</cell>
+      </row>
+
+      <row bottom="minor">
+        <cell>
+          <pre>A dog is a type of 
+&lt;answer&gt;
+  &lt;choiceinput&gt;
+    &lt;choice credit=&quot;1&quot;&gt;animal&lt;/choice&gt;
+    &lt;choice&gt;vegetable&lt;/choice&gt;
+    &lt;choice&gt;mineral&lt;/choice&gt;
+    &lt;choice credit=&quot;0.5&quot;&gt;being&lt;/choice&gt;
+  &lt;/choiceinput&gt;
+&lt;/answer&gt;</pre>
+        </cell>
+        <cell>
+          A dog is a type of 
+          <answer>
+            <choiceinput>
+              <choice credit="1">animal</choice>
+              <choice>vegetable</choice>
+              <choice>mineral</choice>
+              <choice credit="0.5">being</choice>
+            </choiceinput>
+          </answer>   
+        </cell>
+        <cell>
+          The choice <q>animal</q> gets full credit while <q>being</q> gets 50% credit.
+        </cell>
+      </row>
+
+      <row bottom="minor">
+        <cell>
+          <pre>A dog is a type of 
+&lt;answer&gt;
+  &lt;choiceinput inline&gt;
+    &lt;choice credit=&quot;1&quot;&gt;animal&lt;/choice&gt;
+    &lt;choice&gt;vegetable&lt;/choice&gt;
+    &lt;choice&gt;mineral&lt;/choice&gt;
+    &lt;choice credit=&quot;0.5&quot;&gt;being&lt;/choice&gt;
+  &lt;/choiceinput&gt;
+&lt;/answer&gt;</pre>
+        </cell>
+        <cell>
+          A dog is a type of 
+          <answer>
+            <choiceinput inline>
+              <choice credit="1">animal</choice>
+              <choice>vegetable</choice>
+              <choice>mineral</choice>
+              <choice credit="0.5">being</choice>
+            </choiceinput>
+          </answer>  
+        </cell>
+        <cell>Inline version of above.</cell>
+      </row>
+
+      <row>
+        <cell>
+          <pre>A dog is a type of 
+&lt;answer&gt;
+  &lt;choiceinput randomizeOrder&gt;
+    &lt;choice credit=&quot;1&quot;&gt;animal&lt;/choice&gt;
+    &lt;choice&gt;vegetable&lt;/choice&gt;
+    &lt;choice&gt;mineral&lt;/choice&gt;
+    &lt;choice credit=&quot;0.5&quot;&gt;being&lt;/choice&gt;
+  &lt;/choiceinput&gt;
+&lt;/answer&gt;</pre>
+        </cell>
+        <cell>
+          A dog is a type of 
+          <answer>
+            <choiceinput randomizeOrder>
+              <choice credit="1">animal</choice>
+              <choice>vegetable</choice>
+              <choice>mineral</choice>
+              <choice credit="0.5">being</choice>
+            </choiceinput>
+          </answer>   
+        </cell>
+        <cell>
+          The order of the choices are randomized.  (Different variants of the document will have different orders.)
+        </cell>
+      </row>
+    </tabular>
+  </table>
+
+
+
+</section>
+
+
+<section>
+  <title>Answers with arbitrary logic</title>
+  
+  <p>To include arbitrary logic in answer,
+    give each award a <tag>when</tag> child that contains
+    the criteria for achieving credit.
+    In this case, the answer is not automatically
+    given an mathinput or textinput child,
+    so you must manually include an input
+    if you want one.  (The <attr>type</attr> of an answer is ignored in these cases.)
+  </p>
+  
+  <table>
+    <title>Answer with award logic</title>
+    <tabular>
+      <row header bottom="medium">
+        <cell>DoenetML</cell>
+        <cell>
+          Rendered<nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/>
+        </cell>
+        <cell>Explanation</cell>
+      </row>
+
+      <row bottom="minor">
+        <cell>
+          <pre>Enter a number between 0 and 1:
+&lt;answer&gt;
+  &lt;mathinput name=&quot;myNum&quot; /&gt;
+  &lt;award&gt;
+    &lt;when&gt;
+      &dollar;myNum &gt;= 0
+        and
+      &dollar;myNum <= 1
+    &lt;/when&gt;
+  &lt;/award&gt;
+&lt;/answer&gt;</pre>
+        </cell>
+        <cell>
+          Enter a number between 0 and 1:
+          <answer>
+            <mathinput name="myNum" />
+            <award>
+              <when>
+                $myNum >= 0
+                  and
+                $myNum <= 1
+              </when>
+            </award>
+          </answer>
+        </cell>
+        <cell>
+          The input is given the name <c>myNum</c>.  One gets full credit if myNum <m>\ge 0</m> and myNum <m>\le 1</m>, i.e., the response is between 0 and 1.
+        </cell>
+      </row>
+
+      <row bottom="minor">
+        <cell>
+          <pre>Enter two values than add up to 1:
+&lt;answer&gt;
+  &lt;mathinput name=&quot;num2&quot; /&gt;
+  &lt;mathinput name=&quot;num1&quot; /&gt;
+  &lt;award&gt;
+    &lt;when&gt;
+      &dollar;num1 + &dollar;num2 = 1
+    &lt;/when&gt;
+  &lt;/award&gt;
+&lt;/answer&gt;</pre>
+        </cell>
+        <cell>
+          Enter two values than add up to 1:
+            <answer>
+              <mathinput name="num2" />
+              <mathinput name="num1" />
+              <award>
+                <when>
+                  $num1 + $num2 = 1
+                </when>
+              </award>
+            </answer>
+        </cell>
+        <cell>
+          The inputs are given the names <c>num1</c> and <c>num2</c> and credit is awarded if their sum is 1.
+        </cell>
+      </row>
+
+      <row>
+        <cell>
+          <pre>Enter two articles:
+&lt;answer&gt;
+  &lt;textinput name=&quot;a1&quot; /&gt;
+  &lt;textinput name=&quot;a2&quot; /&gt;
+  &lt;award&gt;&lt;when&gt;
+    (&dollar;a1 = a or &dollar;a1 = an or &dollar;a1 = the) 
+    and 
+    (&dollar;a2 = a or &dollar;a2 = an or &dollar;a2 = the)
+    and
+    &dollar;a1 != &dollar;a2
+  &lt;/when&gt;&lt;/award&gt;
+&lt;/answer&gt;</pre>
+        </cell>
+        <cell>
+          Enter two articles:
+          <answer>
+            <textinput name="a1" />
+            <textinput name="a2" />
+            <award><when>
+              ($a1 = a or $a1 = an or $a1 = the) 
+              and 
+              ($a2 = a or $a2 = an or $a2 = the)
+              and
+              $a1 != $a2
+            </when></award>
+          </answer> 
+        </cell>
+        <cell>
+          The two textinputs <c>a1</c> and <c>a2</c> must be one of <q>a</q>, <q>an</q>, or <q>the</q>, and they must be distinct.  (At present, comparison is case sensitive.)
+        </cell>
+      </row>
+
+      <!-- use newNamespace here so can reuse the names a1 and a2 -->
+      <row newNamespace>
+        <cell>
+          <pre>Enter two articles:
+&lt;answer&gt;
+  &lt;textinput name=&quot;a1&quot; /&gt;
+  &lt;textinput name=&quot;a2&quot; /&gt;
+  &lt;award matchPartial&gt;&lt;when&gt;
+    (
+      &lt;boolean name=&quot;a1Matched&quot;&gt;
+        &dollar;a1 = a or &dollar;a1 = an or &dollar;a1 = the
+      &lt;/boolean&gt;
+      or
+      &lt;boolean name=&quot;a2Matched&quot;&gt;
+        &dollar;a2 = a or &dollar;a2 = an or &dollar;a2 = the
+      &lt;/boolean&gt;
+    )
+    and
+    &lt;boolean&gt;
+      &dollar;a1Matched and &dollar;a2Matched and &dollar;a1 != &dollar;a2
+    &lt;/boolean&gt;
+  &lt;/when&gt;&lt;/award&gt;
+&lt;/answer&gt;</pre>
+        </cell>
+        <cell>
+          Enter two articles:
+          <answer>
+            <textinput name="a1" />
+            <textinput name="a2" />
+            <award matchPartial><when>
+              (
+                <boolean name="a1Matched">
+                  $a1 = a or $a1 = an or $a1 = the
+                </boolean>
+                or
+                <boolean name="a2Matched">
+                  $a2 = a or $a2 = an or $a2 = the
+                </boolean>
+              )
+              and
+              <boolean>
+                $a1Matched and $a2Matched and $a1 != $a2
+              </boolean>
+            </when></award>
+          </answer> 
+        </cell>
+        <cell>
+          The same as the previous, except that one gets 50% credit for getting one article.
+        </cell>
+      </row>
+    </tabular>
+  </table>
+
+</section>

@@ -1,0 +1,203 @@
+<module>
+  <setup>
+  </setup>
+  <p>
+    It's an unfortunate fact that computing prime decompositions
+    is actually quite difficult (at least, once the numbers become large.)
+    For example, is it at all clear what the factors of a number like
+    <me>
+      396908524703
+    </me>
+    would be? And that's only twelve decimal digits.
+    Real-world crypto mostly uses that are at least 100 digits long,
+    or about 10 times more digits than this! Ugh! (And then we might take products of pairs of numbers like this!)
+  </p>
+  <p>
+    This means we definitely need a better system.
+    And in fact, there is a straightforward way using
+    only division with remainder (a number of times) in
+    order to compute the GCD of two numbers.
+  </p>
+  <p>
+    <row><alert>Example 1</alert></row>
+    Let's once more use our example of 60 and 24.
+    To proceed, we take the larger of the two numbers and divide
+    it by the smaller one using the division algorithm.
+    For 60 and 24, this would yield:
+    <me> 60 = 2\cdot 24+12. </me>
+    However, if we apply it again to the divisor and the remainder, we get
+    <me>24=2\cdot 12+0.</me>
+    Now that the remaidner is zero, we stop, and the previous remainder is our GCD!
+  </p>
+  <p>
+    <row><alert>Example 2</alert></row>
+    Unfortunately, the example we used before for primes is very simple when
+    using the Euclidean algorithm. I've written a longer example here
+    to give you a better idea of how the algorithm runs. Here, we use the Euclidean algorithm to find <m>\gcd(198,252)</m>
+    <me>
+      \begin{align*}
+        252 & = 1 \cdot 198 + 54 \\
+        198 & = 3\cdot 54 +36 \\
+        54 & = 1 \cdot36  + 18 \\
+        36 & = 2 \cdot 18 .
+      \end{align*}
+    </me>
+    Therefore <m>\gcd(198,252)=18</m>.
+  </p>
+
+    <p>
+    <row><alert>The Abstract Process and Notation</alert></row>
+    If we want to find the <m>\gcd(a,b)</m> of two natural numbers <m>a</m> and <m>b</m>, we compute the following series of quotients and remainders. Without loss of generality, suppose <m>a>b</m>, then let <m>a=r_0</m> and <m>b=r_1</m> for consistency of notation below. Then
+      <me>
+        \begin{align*}
+          r_0 & = q_1r_1 + r_2 & 0 \leq r_2 < r_1 \\
+          r_1 & = q_2r_2 + r_3 & 0 \leq r_3 < r_2 \\
+          r_2 & = q_3r_3 + r_4 & 0 \leq r_4 < r_3 \\
+            & \;\; \vdots \\
+          r_{j-2} & = q_{j-1}r_{j-1} + r_j & 0 \leq r_j < r_{j-1} \\
+            & \;\; \vdots \\
+          r_{n-3} & = q_{n-2}r_{n-2} + r_{n-1} & 0 \leq r_{n-1} < r_{n-2} \\
+          r_{n-2} & = q_{n-1}r_{n-1} + r_{n} & 0 \leq r_{n} < r_{n-1} \\
+          r_{n-1} & = q_{n}r_{n}
+        \end{align*}
+      </me>
+      Where we terminate the process once the remainder becomes 0, and the last positive remainder is <m>\gcd(a,b)</m>.
+  </p>
+
+  <p>
+    <row><alert>Theorem (Euclidean Algorithm)</alert></row>
+    Let <m>r_0=a</m> and <m>r_1=b</m> be integers such that <m> a\geq b > 0</m>.
+    If the division algorithm is successively applied to  obtain <m> r_j=q_{j+1}r_{j+1}+r_{j+2}</m>, with <m>0 < r_{j+2}<r_{j+1}</m> for
+    <m>j=1,2,\ldots,n-2</m> and <m>r_{n+1}=0</m>, then <m>\gcd(a,b)=r_n</m>, the last nonzero remainder.
+  </p>
+
+  <p>
+    <row><alert>Proof:</alert></row>
+    The proof relies on proving a couple of lemmas about greatest common divisors. I will likely make carefully proving them all and combining them to complete the proof of the Euclidean Algorithm a future challenge problem, although it is fairly straight-forward once you know what the lemmas are, which I will give you.
+  </p>
+
+ <p>
+   <row><alert>You try once:</alert></row>
+   If you'd like to try more than once, you can hit the "new attempt" button at the top, but it will reset your entire assignment so far and regenerate any random portions of the assignment. Note: You do <alert>not</alert> need to redo any parts you had finished on a previous attempt. Just scroll back to the exercises you would like to try again with new values. (I'm also publishing this page individually under the "Practice Modules" folder -- so you can regenerate just this page there without changing the rest of your assignment.)
+   
+   <setup>
+       <select assignNames="(r0 r1)">
+         <option>
+           <math>2260</math>
+           <math>940</math>
+         </option>
+         <option>
+           <math>960</math>
+           <math>70</math>
+         </option>
+         <option>
+           <math>1020</math>
+           <math>75</math>
+         </option>
+         <option>
+           <math>1026</math>
+           <math>316</math>
+         </option>
+         <option>
+           <math>1001</math>
+           <math>105</math>
+         </option>
+         <option>
+           <math>1886</math>
+           <math>105</math>
+         </option>
+         <option>
+           <math>1902</math>
+           <math>111</math>
+         </option>
+         <option>
+           <math>1902</math>
+           <math>111</math>
+         </option>
+         <option>
+           <math>1983</math>
+           <math>38</math>
+         </option>
+       </select>
+       <p>
+         Use the Euclidean Algorithm to find <m>\gcd($r0,$r1)</m>
+         <me>
+           \begin{align*}
+             $r0 & = <math simplify name="q1">floor($r0/$r1)</math>\cdot $r1 + <math simplify name="r2">mod($r0,$r1)</math> \\
+             $r1 & = <math simplify name="q2">floor($r1/$r2)</math>\cdot $r2 + <math simplify name="r3">mod($r1,$r2)</math> \\
+             $r2 & = <math simplify name="q3">floor($r2/$r3)</math>\cdot $r3 + <math simplify name="r4">mod($r2,$r3)</math> \\
+             $r3 & = <math simplify name="q4">floor($r3/$r4)</math>\cdot $r4 + <math simplify name="r5">mod($r3,$r4)</math>
+          \end{align*}
+         </me>
+         So <m>\gcd($r0,$r1)=$r4</m>
+       </p>
+     </setup>
+   
+   <tabular width="500">
+     <row>Use the Euclidean algorithm to find <m>\gcd($r0,$r1)</m></row>
+     <row><cell /></row>
+     <row><cell /></row>
+     <row><cell /></row>
+     <row>
+       Row 1:
+       <mathInput name="a00" />
+       <m>=</m>
+       <mathInput name="a01" /><m>\cdot</m>
+       <mathInput name="a02" />
+       <m>+</m>
+       <mathInput name="a03" />
+     </row>
+     <row><cell /></row>
+     <row>
+       Row 2:
+       <mathInput name="a10" />
+       <m>=</m>
+       <mathInput name="a11" /><m>\cdot</m>
+       <mathInput name="a12" />
+       <m>+</m>
+       <mathInput name="a13" />
+     </row>
+     <row><cell /></row>
+     <row>
+       Row 3:
+       <mathInput name="a20" />
+       <m>=</m>
+       <mathInput name="a21" /><m>\cdot</m>
+       <mathInput name="a22" />
+       <m>+</m>
+       <mathInput name="a23" />
+     </row>
+     <row><cell /></row>
+     <row>
+       Row 4:
+       <mathInput name="a30" />
+       <m>=</m>
+       <mathInput name="a31" /><m>\cdot</m>
+       <mathInput name="a32" />
+       <m>+</m>
+       <mathInput name="a33" />
+     </row>
+     <row><cell /></row>
+     <row><cell /></row>
+     <row><cell /></row>
+     <row>So <m>\gcd($r0,$r1) = </m> <mathInput name="gcd" /></row>
+   </tabular>
+   <answer matchPartial>
+     <award targetsAreResponses="a00 a01 a02 a03 a10 a11 a12 a13 a20 a21 a22 a23 a30 a31 a32 a33 gcd">
+       <when>
+         $a00=$r0 and $a01=$q1 and $a02=$r1 and $a03=$r2 and
+         $a10=$r1 and $a11=$q2 and $a12=$r2 and $a13=$r3 and
+         $a20=$r2 and $a21=$q3 and $a22=$r3 and $a23=$r4 and
+         $a30=$r3 and $a31=$q4 and $a32=$r4 and $a33=$r5 and
+         $gcd=$r4
+       </when>
+     </award>
+   </answer>
+ </p>
+
+  <p>
+    <row><alert>Coming up in Class</alert></row>
+    We'll use the Euclidean Algorithm to solve linear congruence equations! I've also publish this module in the Practice Modules folder, in case you want to practice a couple of times without restarting the whole assignment.
+  </p>
+            
+</module>

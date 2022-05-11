@@ -1,0 +1,8 @@
+<slider name='s' from='1'/>
+  <mathinput name='m' />
+<graph name='g'>
+  <function>$m</function>
+  
+</graph>
+<copy tname='g' />
+  <answer>2</answer>

@@ -1,0 +1,1480 @@
+<problem>
+<!-- <title>Sketch solution of autonomous differential equation from graph</title> -->
+
+<setup>
+
+<number name='a'>-8</number>
+<number name='b'>3</number>
+<number name='c'>7</number>
+<number name="ab1" displayDecimals="1">(2*$a+$b)/3</number>
+<number name="ab2" displayDecimals="1">($a+2*$b)/3</number>
+
+<function name='fun' variables='w' styleNumber='10'>-exp(-w ^2/50)(w -$a )*(w -$b )*(w -$c )/100</function>
+<number name='wmin'>-11</number>
+<number name='wmax'>11</number>
+<number name="zeroFixed" fixed>0</number>
+
+<styleDefinitions>
+  <styleDefinition styleNumber="2" markerStyle="circle" markerSize="3" />
+  <styleDefinition styleNumber="4" markerColor="lightgreen" markerSize="6" />
+  <styleDefinition styleNumber="5" markerColor='magenta' markerSize="4" />
+  <styleDefinition styleNumber="6" lineColor="cyan" markerColor='cyan' lineWidth="2" lineStyle="solid" />
+  <styleDefinition styleNumber="7" markerColor='cyan' markerSize="0" markerStyle="circle" />
+  <styleDefinition styleNumber="8" lineColor='brown' lineWidth="2" markerColor="brown" />
+  <styleDefinition styleNumber="9" lineColor='lightgray' lineWidth="2" />
+  <styleDefinition styleNumber="10" lineColor="purple" lineWidth="2" />
+</styleDefinitions>
+
+</setup>
+
+<p>Consider the dynamical system
+<md>
+  <mrow>\frac{ dw }{ dt }\amp = f(w )</mrow>
+  <mrow>w (0)\amp = w_0,</mrow>
+</md>
+where the function <m>f</m> is graphed in the top panel, below, and <m>w _0</m> is an initial condition.  (The zeros of <m>f</m> are <m>$a </m>, <m>$b </m>, and <m>$c </m>.)</p>
+
+<paragraphs><title>Sketch direction vectors on state line</title>
+
+<p>In the top panel, the horizontal axis is the <m>w</m>-axis or state line.  The first step is to plot vectors along the state line indicating how <m>w(t)</m> changes </p>
+
+<p>Click <updateValue name="revealVector1" label="show vector" type="boolean" tname="showVector1" newValue="true" disabled="$showVector1" /> and plot a vector in the interval where <m>w < $a</m>.
+  <answer disabled="not $showVector1" name="ansVec1">
+    <award matchPartial>
+      <when>
+        <boolean name="v1OnAxis">$(fw/v1ty) = 0 and $(fw/v1hy)=0</boolean>
+        and
+        <boolean name="v1Location">$v1OnAxis and $(fw/v1hx) < $a and $(fw/v1tx) < $a</boolean>
+        and
+        <boolean name="v1Right">$v1Location and $(fw/v1hx) > $(fw/v1tx) + 1</boolean>
+      </when>
+    </award>
+    <considerAsResponses>
+      $(fw/v1tx) $(fw/v1ty) $(fw/v1hx) $(fw/v1hy)
+    </considerAsResponses>
+  </answer>
+</p>
+<feedback updateWithTname="ansVec1" condition="not $v1OnAxis">
+  The vector must be on the <m>w</m>-axis.
+</feedback>
+<feedback updateWithTname="ansVec1" condition="$v1OnAxis and not $v1Location">
+  The vector must be in the interval where <m>w < $a</m>.
+</feedback>
+<feedback updateWithTname="ansVec1" condition="$v1Location and $(fw/v1hx) <= $(fw/v1tx)">
+  The vector is not pointing in the right direction.
+</feedback>
+<feedback updateWithTname="ansVec1" condition="$v1Location and $(fw/v1tx) < $(fw/v1hx) < $(fw/v1tx)+1">
+  Make the vector a little longer.
+</feedback>
+  
+
+<p>Click <updateValue name="revealVectors234" label="show three vectors" type="boolean" tname="showVector234" newValue="true" disabled="$showVector234" /> and plot three vectors in the interval where <m>$a < w < $b</m>.
+  <answer disabled="not $showVector234" name="ansVec234">
+    <award matchPartial>
+      <when>
+        <boolean name="v2sOnAxis">$(fw/v2Aty) = 0 and $(fw/v2Ahy)=0 and $(fw/v2Bty) = 0 and $(fw/v2Bhy)=0 and $(fw/v2Cty) = 0 and $(fw/v2Chy)=0</boolean>
+        and
+        <boolean name="v2sLocation">$v2sOnAxis and min($(fw/v2Ahx), $(fw/v2Atx), $(fw/v2Bhx), $(fw/v2Btx), $(fw/v2Chx), $(fw/v2Ctx)) > $a and max($(fw/v2Ahx), $(fw/v2Atx), $(fw/v2Bhx), $(fw/v2Btx), $(fw/v2Chx), $(fw/v2Ctx)) < $b</boolean>
+        and
+        <boolean name="v2sRightDirection">$v2sLocation and $(fw/v2Ahx) < $(fw/v2Atx) and $(fw/v2Bhx) < $(fw/v2Btx) and $(fw/v2Chx) < $(fw/v2Ctx)</boolean>
+        and
+        <boolean name="v2BLocation">$v2sRightDirection and $(fw/v2Bhx) < ($a+$b)/2 < $(fw/v2Btx)</boolean>
+        and
+        <boolean name="v2sNotOverlap">$v2BLocation and $(fw/v2Atx) < $(fw/v2Bhx) and $(fw/v2Btx) < $(fw/v2Chx)</boolean>
+        and
+        <boolean name="v2sOuterLongEnough">$v2sNotOverlap and $(fw/v2Atx) - $(fw/v2Ahx) > 1 and $(fw/v2Ctx) - $(fw/v2Chx) > 1</boolean>
+        and
+        <boolean name="v2BLongEnough">$v2sOuterLongEnough and $(fw/v2Btx) - $(fw/v2Bhx) > 1.5 max($(fw/v2Atx) - $(fw/v2Ahx), $(fw/v2Ctx) - $(fw/v2Chx))</boolean>
+      </when>
+    </award>
+    <considerAsResponses>
+      $(fw/v2tx) $(fw/v2ty) $(fw/v2hx) $(fw/v2hy)
+      $(fw/v3tx) $(fw/v3ty) $(fw/v3hx) $(fw/v3hy)
+      $(fw/v4tx) $(fw/v4ty) $(fw/v4hx) $(fw/v4hy)
+    </considerAsResponses>
+  </answer>
+</p>
+<feedback updateWithTname="ansVec234" condition="not $v2sOnAxis">
+  All vectors must be on the <m>w</m>-axis.
+</feedback>
+<feedback updateWithTname="ansVec234" condition="$v2sOnAxis and not $v2sLocation">
+  All vectors must be in the interval where <m>$a < w < $b</m>.
+</feedback>
+<feedback updateWithTname="ansVec234" condition="$v2sLocation and not $v2sRightDirection">
+  All vector must point in right direction.
+</feedback>
+<feedback updateWithTname="ansVec234" condition="$v2sRightDirection and not $v2BLocation">
+  The middle vector should be in the middle of the interval <m>$a < w < $b</m> (where the velocity is largest).
+</feedback>
+<feedback updateWithTname="ansVec234" condition="$v2BLocation and not $v2sNotOverlap">
+  The vectors must be separated from each other.
+</feedback>
+<feedback updateWithTname="ansVec234" condition="$v2sNotOverlap and not $v2sOuterLongEnough">
+  Make the outer vectors a little longer.
+</feedback>
+<feedback updateWithTname="ansVec234" condition="$v2sOuterLongEnough and not $v2BLongEnough">
+  The middle vector should be significantly longer than the outer vectors.
+</feedback>
+
+
+<p>Click <updateValue name="revealVector5" label="show vector" type="boolean" tname="showVector5" newValue="true" disabled="$showVector5" /> and plot a vector in the interval where <m>$b < w < $c</m>.
+  <answer disabled="not $showVector5" name="ansVec5">
+    <award matchPartial>
+      <when>
+        <boolean name="v5OnAxis">$(fw/v5ty) = 0 and $(fw/v5hy)=0</boolean>
+        and
+        <boolean name="v5Location">$v5OnAxis and min($(fw/v5hx), $(fw/v5tx)) > $b and max($(fw/v5hx), $(fw/v5tx)) < $c</boolean>
+        and
+        <boolean name="v5Right">$v5Location and $(fw/v5hx) > $(fw/v5tx) + 1</boolean>
+      </when>
+    </award>
+    <considerAsResponses>
+      $(fw/v5tx) $(fw/v5ty) $(fw/v5hx) $(fw/v5hy)
+    </considerAsResponses>
+  </answer>
+</p>
+<feedback updateWithTname="ansVec5" condition="not $v5OnAxis">
+  The vector must be on the <m>w</m>-axis.
+</feedback>
+<feedback updateWithTname="ansVec5" condition="$v5OnAxis and not $v5Location">
+  The vector must be in the interval where <m>$b < w < $c</m>.
+</feedback>
+<feedback updateWithTname="ansVec5" condition="$v5Location and $(fw/v5hx) <= $(fw/v5tx)">
+  The vector is not pointing in the right direction.
+</feedback>
+<feedback updateWithTname="ansVec5" condition="$v5Location and $(fw/v5tx) < $(fw/v5hx) < $(fw/v5tx)+1">
+  Make the vector a little longer.
+</feedback>
+  
+
+<p>Click <updateValue name="revealVector6" label="show vector" type="boolean" tname="showVector6" newValue="true" disabled="$showVector6" /> and plot a vector in the interval where <m>w > $c</m>.
+  <answer disabled="not $showVector6" name="ansVec6">
+    <award matchPartial>
+      <when>
+        <boolean name="v6OnAxis">$(fw/v6ty) = 0 and $(fw/v6hy)=0</boolean>
+        and
+        <boolean name="v6Location">$v6OnAxis and min($(fw/v6hx), $(fw/v6tx)) > $c</boolean>
+        and
+        <boolean name="v6Right">$v6Location and $(fw/v6tx) > $(fw/v6hx) + 1</boolean>
+      </when>
+    </award>
+    <considerAsResponses>
+      $(fw/v6tx) $(fw/v6ty) $(fw/v6hx) $(fw/v6hy)
+    </considerAsResponses>
+  </answer>
+</p>
+<feedback updateWithTname="ansVec6" condition="not $v6OnAxis">
+  The vector must be on the <m>w</m>-axis.
+</feedback>
+<feedback updateWithTname="ansVec6" condition="$v6OnAxis and not $v6Location">
+  The vector must be in the interval where <m>$w > $c</m>.
+</feedback>
+<feedback updateWithTname="ansVec6" condition="$v6Location and $(fw/v6tx) <= $(fw/v6hx)">
+  The vector is not pointing in the right direction.
+</feedback>
+<feedback updateWithTname="ansVec6" condition="$v6Location and $(fw/v6hx) < $(fw/v6tx) < $(fw/v6hx)+1">
+  Make the vector a little longer.
+</feedback>
+  
+
+<p>Click <updateValue name="revealEquilibria" label="show points" type="boolean" tname="showEquilibria" newValue="true" disabled="$showEquilibria" /> move the points to the equilibria.
+<answer name="ansEquil" disabled="not $showEquilibria">
+  <award targetsAreResponses="fw/E1 fw/E2 fw/E3" matchPartial>
+    <when>
+      <mathlist>$(fw/E1) $(fw/E2) $(fw/E3)</mathlist> = 
+      <mathlist unordered><math>($a,0)</math><math>($b,0)</math><math>($c,0)</math></mathlist>
+    </when>
+  </award>
+</answer>
+</p>
+
+</paragraphs>
+
+
+
+<setup>
+  <boolean name="showVector1">false</boolean>
+  <boolean name="showVector234">false</boolean>
+  <boolean name="showVector5">false</boolean>
+  <boolean name="showVector6">false</boolean>
+  <boolean name="showEquilibria">false</boolean>
+</setup>
+
+<p>Show test point: <booleanInput name="showTestPoint" /></p>
+<graph width='500' height='250' xmin="$wmin" xmax="$wmax" ymin="-3.2" ymax="1.2"  fixAxes xlabel="w" name="fw" newNamespace>
+  $(../fun)
+  
+  <line name="xAxis" fixed styleNumber='8'>y=0</line>
+
+  <conditionalContent condition="$(../showTestPoint)">
+    <point name="TP" x="1" y="$(../zeroFixed)" styleNumber="6" label="w = $TPx" showCoordsWhenDragging="false" layer="3" />
+    <setup>
+      <copy prop="x" tname="TP" assignNames="TPx" displayDigits="3" />
+      <evaluate function="$(../fun)" input="$TPx" name="fTPx" displayDigits="3" />
+    </setup>
+    <point name="TPtop" x="$TPx" y="$fTPx" styleNumber="7" label="f(w)=$fTPx" layer="3" />
+    <lineSegment endpoints="$TP ($TPx, $fTPx)" styleNumber="6" showCoordsWhenDragging="false" layer="3"/>
+
+    <vector tail="$TP" displacement="($fTPx, 0)" styleNumber="6" fixed layer="3" />
+  </conditionalContent>
+
+  <conditionalContent condition="$(../showVector1)">
+    <setup>
+      <copy prop="x" tname="vector1Tail" assignNames="v1tx" />
+      <copy prop="y" tname="vector1Tail" assignNames="v1ty" />
+      <copy prop="x" tname="vector1Head" assignNames="v1hx" />
+      <copy prop="y" tname="vector1Head" assignNames="v1hy" />
+    </setup>
+    <point name="vector1Tail" x="-10" y="-1.5" hide="$(../ansVec1{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <point name="vector1Head" x="-8" y="-1.5" hide="$(../ansVec1{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <vector name="vector1" tail="$vector1Tail" head="$vector1Head" styleNumber="1" layer="2" fixed="$(../ansVec1{prop='creditAchieved'}) = 1" />
+  </conditionalContent>
+
+
+  <conditionalContent condition="$(../showVector234)">
+    <setup>
+      <sort sortVectorsBy="tail" assignNames="v2A v2B v2C">
+        $vector2$vector3$vector4
+      </sort>
+      <copy prop="tailX1" tname="v2A" assignNames="v2Atx" />
+      <copy prop="tailX2" tname="v2A" assignNames="v2Aty" />
+      <copy prop="headX1" tname="v2A" assignNames="v2Ahx" />
+      <copy prop="headX2" tname="v2A" assignNames="v2Ahy" />
+      <copy prop="tailX1" tname="v2B" assignNames="v2Btx" />
+      <copy prop="tailX2" tname="v2B" assignNames="v2Bty" />
+      <copy prop="headX1" tname="v2B" assignNames="v2Bhx" />
+      <copy prop="headX2" tname="v2B" assignNames="v2Bhy" />
+      <copy prop="tailX1" tname="v2C" assignNames="v2Ctx" />
+      <copy prop="tailX2" tname="v2C" assignNames="v2Cty" />
+      <copy prop="headX1" tname="v2C" assignNames="v2Chx" />
+      <copy prop="headX2" tname="v2C" assignNames="v2Chy" />
+    </setup>
+    <point name="vector2Tail" x="-4" y="-1.5" hide="$(../ansVec234{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <point name="vector2Head" x="-2" y="-1.5" hide="$(../ansVec234{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <vector name="vector2" tail="$vector2Tail" head="$vector2Head" styleNumber="1" layer="2" fixed="$(../ansVec234{prop='creditAchieved'}) = 1" />
+
+
+    <point name="vector3Tail" x="-4" y="-2" hide="$(../ansVec234{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <point name="vector3Head" x="-2" y="-2" hide="$(../ansVec234{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <vector name="vector3" tail="$vector3Tail" head="$vector3Head" styleNumber="1" layer="2" fixed="$(../ansVec234{prop='creditAchieved'}) = 1" />
+
+    <point name="vector4Tail" x="-4" y="-1" hide="$(../ansVec234{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <point name="vector4Head" x="-2" y="-1" hide="$(../ansVec234{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <vector name="vector4" tail="$vector4Tail" head="$vector4Head" styleNumber="1" layer="2" fixed="$(../ansVec234{prop='creditAchieved'}) = 1" />
+  </conditionalContent>
+
+  <conditionalContent condition="$(../showVector5)">
+    <setup>
+      <copy prop="x" tname="vector5Tail" assignNames="v5tx" />
+      <copy prop="y" tname="vector5Tail" assignNames="v5ty" />
+      <copy prop="x" tname="vector5Head" assignNames="v5hx" />
+      <copy prop="y" tname="vector5Head" assignNames="v5hy" />
+    </setup>
+    <point name="vector5Tail" x="4" y="-1.5" hide="$(../ansVec5{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <point name="vector5Head" x="6" y="-1.5" hide="$(../ansVec5{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <vector name="vector5" tail="$vector5Tail" head="$vector5Head" styleNumber="1" layer="2" fixed="$(../ansVec5{prop='creditAchieved'}) = 1" />
+  </conditionalContent>
+
+
+  <conditionalContent condition="$(../showVector6)">
+    <setup>
+      <copy prop="x" tname="vector6Tail" assignNames="v6tx" />
+      <copy prop="y" tname="vector6Tail" assignNames="v6ty" />
+      <copy prop="x" tname="vector6Head" assignNames="v6hx" />
+      <copy prop="y" tname="vector6Head" assignNames="v6hy" />
+    </setup>
+    <point name="vector6Tail" x="8" y="-1.5" hide="$(../ansVec6{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <point name="vector6Head" x="10" y="-1.5" hide="$(../ansVec6{prop='creditAchieved'}) = 1">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+      </constraints>
+    </point>
+    <vector name="vector6" tail="$vector6Tail" head="$vector6Head" styleNumber="1" layer="2" fixed="$(../ansVec6{prop='creditAchieved'}) = 1" />
+  </conditionalContent>
+
+
+  <conditionalContent condition="$(../showEquilibria)">
+    <point name="E1" x="-4" y="-1.5" fixed="$(../ansEquil{prop='creditAchieved'}) = 1" styleNumber="3">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+        <attractTo threshold="0.4"><point>($(../a),0)</point></attractTo>
+        <attractTo threshold="0.4"><point>($(../b),0)</point></attractTo>
+        <attractTo threshold="0.4"><point>($(../c),0)</point></attractTo>
+      </constraints>
+    </point>
+    <point name="E2" x="-1" y="-1.5" fixed="$(../ansEquil{prop='creditAchieved'}) = 1" styleNumber="3">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+        <attractTo threshold="0.4"><point>($(../a),0)</point></attractTo>
+        <attractTo threshold="0.4"><point>($(../b),0)</point></attractTo>
+        <attractTo threshold="0.4"><point>($(../c),0)</point></attractTo>
+      </constraints>
+    </point>
+    <point name="E3" x="4" y="-1.5" fixed="$(../ansEquil{prop='creditAchieved'}) = 1" styleNumber="3">
+      <constraints>
+        <attractTo threshold="0.2">$xAxis</attractTo>
+        <attractTo threshold="0.4"><point>($(../a),0)</point></attractTo>
+        <attractTo threshold="0.4"><point>($(../b),0)</point></attractTo>
+        <attractTo threshold="0.4"><point>($(../c),0)</point></attractTo>
+      </constraints>
+    </point>
+  </conditionalContent>
+
+  <conditionalContent condition="$(../animation1On) and $(../ansSol1{prop='creditAchieved'}) = 1">
+    <point styleNumber="5" x="$(../wt/ut1Eff)" y="0" label="w($(../wt/t1Eff)) = $(../wt/ut1Eff)" fixed />
+  </conditionalContent>
+   
+  <conditionalContent condition="$(../animation2On) and $(../ansSol2{prop='creditAchieved'}) = 1">
+    <point styleNumber="5" x="$(../wt/ut2Eff)" y="0" label="w($(../wt/t2Eff)) = $(../wt/ut2Eff)" fixed />
+  </conditionalContent>
+      
+  <conditionalContent condition="$(../animation3On) and $(../ansSol3{prop='creditAchieved'}) = 1">
+    <point styleNumber="5" x="$(../wt/ut3Eff)" y="0" label="w($(../wt/t3Eff)) = $(../wt/ut3Eff)" fixed />
+  </conditionalContent>
+   
+
+</graph>
+  
+
+
+
+
+<setup>
+  <boolean name="showSolVecs1">false</boolean>
+  <boolean name="showSolVecs2">false</boolean>
+  <boolean name="showSolVecs3">false</boolean>
+  <boolean name="showSolVecs4">false</boolean>
+  <boolean name="showSolVecs5">false</boolean>
+  <boolean name="showSolVecs6">false</boolean>
+  <boolean name="showSolVecs789">false</boolean>
+  <boolean name="showShadowVecs">false</boolean>
+  <boolean name="showSolution1">false</boolean>
+  <boolean name="showSolution2">false</boolean>
+  <boolean name="showSolution3">false</boolean>
+  <boolean name="showSolution456">false</boolean>
+  <boolean name="animation1On">true</boolean>
+  <boolean name="animation2On">true</boolean>
+  <boolean name="animation3On">true</boolean>
+  
+</setup>
+
+<graph width='500' height='350'  xmin="-2" xmax="18" ymin="$wmin" ymax="$wmax" ylabel="w" xlabel="t" fixAxes name="wt" newNamespace identicalAxisScales>
+
+  <line name="yAxis" styleNumber="8" hide="v$(../ansUAxis2{prop='creditAchieved'}) < 1" fixed>x=0</line>
+
+  <point name="u02" stylenumber="4" fixed hide="$(../ansU0s{prop='creditAchieved'})<1">(0,$(../u01))</point>
+
+  <conditionalContent condition="$(../showTestPoint)">
+    <point name="TPt" x="0" y="$(../fw/TPx)" styleNumber="6" label="w = $(../fw/TPx)" showCoordsWhenDragging="false" layer="3" labelPosition="lowerleft" />
+    <setup>
+      <copy prop="x" tname="TPt" name="TPtx" />
+      <number name="theta">arctan($(../fw/fTPx))</number>
+      <number name="dx">1.5*cos($theta)</number>
+      <number name="dy">1.5*sin($theta)</number>
+    </setup>
+    <vector tail="$TPt" displacement="($dx, $dy)" styleNumber="6" fixed layer="3" label="slope=$(../fw/fTPx)" />
+  </conditionalContent>
+
+  <conditionalContent condition="$(../showSolVecs1)">
+    <setup>
+      <copy prop="y" tname="vector1Tail" assignNames="v1ty" />
+      <boolean name="v1r">$(vector1Disp{prop='x'}) > 0</boolean>
+      <number name="v1m">$(vector1Disp{prop='y'})/$(vector1Disp{prop='x'})</number>
+    </setup>
+    <point name="vector1Tail" x="$(../zeroFixed)" y="1" styleNumber="1" hide="$(../ansSolVec1{prop='creditAchieved'})=1" >
+      <constraints>
+        <attractTo threshold="1.1"><lineSegment endpoints="(0, -11) (0, $(../a)-1)" /></attractTo>
+      </constraints>
+    </point>
+    <point name="vector1Disp" x="1" y="0" hide>
+      <constraints>
+        <constrainTo>
+          <circle radius="1.5" />
+        </constrainTo>
+      </constraints>
+    </point>
+    <vector name="vector1" tail="$vector1Tail" displacement="$vector1Disp" styleNumber="1" fixed="$(../ansSolVec1{prop='creditAchieved'})=1" />
+  </conditionalContent>
+
+  <conditionalContent condition="$(../showSolVecs2)">
+    <setup>
+      <copy prop="y" tname="vector2Tail" assignNames="v2ty" />
+      <boolean name="v2r">$(vector2Disp{prop='x'}) > 0</boolean>
+      <number name="v2m">$(vector2Disp{prop='y'})/$(vector2Disp{prop='x'})</number>
+    </setup>
+    <point name="vector2Tail" x="$(../zeroFixed)" y="1" styleNumber="1" hide="$(../ansSolVec2{prop='creditAchieved'})=1">
+      <constraints>
+        <attractTo threshold="1.1"><lineSegment endpoints="(0, $(../a)+1) (0, $(../ab1)-0.5)" /></attractTo>
+      </constraints>
+    </point>
+    <point name="vector2Disp" x="1" y="0" hide>
+      <constraints>
+        <constrainTo>
+          <circle radius="1.5" />
+        </constrainTo>
+      </constraints>
+    </point>
+    <vector name="vector2" tail="$vector2Tail" displacement="$vector2Disp" styleNumber="1" fixed="$(../ansSolVec2{prop='creditAchieved'})=1" />
+  </conditionalContent>
+
+  <conditionalContent condition="$(../showSolVecs3)">
+    <setup>
+      <copy prop="y" tname="vector3Tail" assignNames="v3ty" />
+      <boolean name="v3r">$(vector3Disp{prop='x'}) > 0</boolean>
+      <number name="v3m">$(vector3Disp{prop='y'})/$(vector3Disp{prop='x'})</number>
+    </setup>
+    <point name="vector3Tail" x="$(../zeroFixed)" y="1" styleNumber="1" hide="$(../ansSolVec3{prop='creditAchieved'})=1">
+      <constraints>
+        <attractTo threshold="1.1"><lineSegment endpoints="(0, $(../ab1)+0.5) (0, $(../ab2)-0.5)" /></attractTo>
+      </constraints>
+    </point>
+    <point name="vector3Disp" x="1" y="0" hide>
+      <constraints>
+        <constrainTo>
+          <circle radius="1.5" />
+        </constrainTo>
+      </constraints>
+    </point>
+    <vector name="vector3" tail="$vector3Tail" displacement="$vector3Disp" styleNumber="1" fixed="$(../ansSolVec3{prop='creditAchieved'})=1" />
+  </conditionalContent>
+
+  <conditionalContent condition="$(../showSolVecs4)">
+    <setup>
+      <copy prop="y" tname="vector4Tail" assignNames="v4ty" />
+      <boolean name="v4r">$(vector4Disp{prop='x'}) > 0</boolean>
+      <number name="v4m">$(vector4Disp{prop='y'})/$(vector4Disp{prop='x'})</number>
+    </setup>
+    <point name="vector4Tail" x="$(../zeroFixed)" y="1" styleNumber="1" hide="$(../ansSolVec4{prop='creditAchieved'})=1">
+      <constraints>
+        <attractTo threshold="1.1"><lineSegment endpoints="(0, $(../ab2)+0.5) (0, $(../b)-0.5)" /></attractTo>
+      </constraints>
+    </point>
+    <point name="vector4Disp" x="1" y="0" hide>
+      <constraints>
+        <constrainTo>
+          <circle radius="1.5" />
+        </constrainTo>
+      </constraints>
+    </point>
+    <vector name="vector4" tail="$vector4Tail" displacement="$vector4Disp" styleNumber="1" fixed="$(../ansSolVec4{prop='creditAchieved'})=1" />
+  </conditionalContent>
+
+    
+  <conditionalContent condition="$(../showSolVecs5)">
+    <setup>
+      <copy prop="y" tname="vector5Tail" assignNames="v5ty" />
+      <boolean name="v5r">$(vector5Disp{prop='x'}) > 0</boolean>
+      <number name="v5m">$(vector5Disp{prop='y'})/$(vector5Disp{prop='x'})</number>
+    </setup>
+    <point name="vector5Tail" x="$(../zeroFixed)" y="1" styleNumber="1" hide="$(../ansSolVec5{prop='creditAchieved'})=1">
+      <constraints>
+        <attractTo threshold="1.1"><lineSegment endpoints="(0, $(../b)+0.5) (0, $(../c)-1)" /></attractTo>
+      </constraints>
+    </point>
+    <point name="vector5Disp" x="1" y="0" hide>
+      <constraints>
+        <constrainTo>
+          <circle radius="1.5" />
+        </constrainTo>
+      </constraints>
+    </point>
+    <vector name="vector5" tail="$vector5Tail" displacement="$vector5Disp" styleNumber="1" fixed="$(../ansSolVec5{prop='creditAchieved'})=1" />
+  </conditionalContent>
+
+        
+  <conditionalContent condition="$(../showSolVecs6)">
+    <setup>
+      <copy prop="y" tname="vector6Tail" assignNames="v6ty" />
+      <boolean name="v6r">$(vector6Disp{prop='x'}) > 0</boolean>
+      <number name="v6m">$(vector6Disp{prop='y'})/$(vector6Disp{prop='x'})</number>
+    </setup>
+    <point name="vector6Tail" x="$(../zeroFixed)" y="1" styleNumber="1" hide="$(../ansSolVec6{prop='creditAchieved'})=1">
+      <constraints>
+        <attractTo threshold="1.1"><lineSegment endpoints="(0, $(../c)+1) (0, 11)" /></attractTo>
+      </constraints>
+    </point>
+    <point name="vector6Disp" x="1" y="0" hide>
+      <constraints>
+        <constrainTo>
+          <circle radius="1.5" />
+        </constrainTo>
+      </constraints>
+    </point>
+    <vector name="vector6" tail="$vector6Tail" displacement="$vector6Disp" styleNumber="1" fixed="$(../ansSolVec6{prop='creditAchieved'})=1" />
+  </conditionalContent>
+
+
+  <conditionalContent condition="$(../showSolVecs789)">
+    <setup>
+      <copy prop="y" tname="vector7Tail" assignNames="v7ty" />
+      <boolean name="v7r">$(vector7Disp{prop='x'}) > 0</boolean>
+      <number name="v7m">$(vector7Disp{prop='y'})/$(vector7Disp{prop='x'})</number>
+      <copy prop="y" tname="vector8Tail" assignNames="v8ty" />
+      <boolean name="v8r">$(vector8Disp{prop='x'}) > 0</boolean>
+      <number name="v8m">$(vector8Disp{prop='y'})/$(vector8Disp{prop='x'})</number>
+      <copy prop="y" tname="vector9Tail" assignNames="v9ty" />
+      <boolean name="v9r">$(vector9Disp{prop='x'}) > 0</boolean>
+      <number name="v9m">$(vector9Disp{prop='y'})/$(vector9Disp{prop='x'})</number>
+    </setup>
+    <point name="vector7Tail" x="$(../zeroFixed)" y="4" styleNumber="1" hide="$(../ansSolVec789{prop='creditAchieved'})=1">
+      <constraints>
+        <attractTo threshold="0.8"><point>(0, $(../a))</point></attractTo>
+        <attractTo threshold="0.8"><point>(0, $(../b))</point></attractTo>
+        <attractTo threshold="0.8"><point>(0, $(../c))</point></attractTo>
+      </constraints>
+    </point>
+    <point name="vector7Disp" x="1" y="0" hide>
+      <constraints>
+        <constrainTo>
+          <circle radius="1.5" />
+        </constrainTo>
+        <attractTo><point>(1.5,0)</point></attractTo>
+      </constraints>
+    </point>
+    <vector name="vector7" tail="$vector7Tail" displacement="$vector7Disp" styleNumber="1" fixed="$(../ansSolVec789{prop='creditAchieved'})=1" />
+    <point name="vector8Tail" x="$(../zeroFixed)" y="1" styleNumber="1" hide="$(../ansSolVec789{prop='creditAchieved'})=1">
+      <constraints>
+        <attractTo threshold="0.8"><point>(0, $(../a))</point></attractTo>
+        <attractTo threshold="0.8"><point>(0, $(../b))</point></attractTo>
+        <attractTo threshold="0.8"><point>(0, $(../c))</point></attractTo>
+      </constraints>
+    </point>
+    <point name="vector8Disp" x="1" y="0" hide>
+      <constraints>
+        <constrainTo>
+          <circle radius="1.5" />
+        </constrainTo>
+        <attractTo><point>(1.5,0)</point></attractTo>
+      </constraints>
+    </point>
+    <vector name="vector8" tail="$vector8Tail" displacement="$vector8Disp" styleNumber="1" fixed="$(../ansSolVec789{prop='creditAchieved'})=1" layer="2" />
+    <point name="vector9Tail" x="$(../zeroFixed)" y="-2" styleNumber="1" hide="$(../ansSolVec789{prop='creditAchieved'})=1">
+      <constraints>
+        <attractTo threshold="0.8"><point>(0, $(../a))</point></attractTo>
+        <attractTo threshold="0.8"><point>(0, $(../b))</point></attractTo>
+        <attractTo threshold="0.8"><point>(0, $(../c))</point></attractTo>
+      </constraints>
+    </point>
+    <point name="vector9Disp" x="1" y="0" hide>
+      <constraints>
+        <constrainTo>
+          <circle radius="1.5" />
+        </constrainTo>
+        <attractTo><point>(1.5,0)</point></attractTo>
+      </constraints>
+    </point>
+    <vector name="vector9" tail="$vector9Tail" displacement="$vector9Disp" styleNumber="1" fixed="$(../ansSolVec789{prop='creditAchieved'})=1" layer="2" />
+  </conditionalContent>
+    
+  <conditionalContent condition="$(../showShadowVecs)">
+    <map>
+      <template>
+        <vector tail="($t, $v1ty)" displacement="$vector1Disp" styleNumber="9" fixed />
+        <vector tail="($t, $v2ty)" displacement="$vector2Disp" styleNumber="9" fixed />
+        <vector tail="($t, $v3ty)" displacement="$vector3Disp" styleNumber="9" fixed />
+        <vector tail="($t, $v4ty)" displacement="$vector4Disp" styleNumber="9" fixed />
+        <vector tail="($t, $v5ty)" displacement="$vector5Disp" styleNumber="9" fixed />
+        <vector tail="($t, $v6ty)" displacement="$vector6Disp" styleNumber="9" fixed />
+        <vector tail="($t, $(../a))" displacement="(1.5,0)" styleNumber="9" fixed />
+        <vector tail="($t, $(../b))" displacement="(1.5,0)" styleNumber="9" fixed />
+        <vector tail="($t, $(../c))" displacement="(1.5,0)" styleNumber="9" fixed />
+      </template>
+      <sources alias="t"><sequence from="3" to="27" step="3" /></sources>
+    </map>
+
+  </conditionalContent>
+
+
+  <conditionalContent condition="$(../showSolution1)">
+    <setup>
+      <copy prop="y" tname="P11" assignNames="p11y" />
+      <number name="p11m">$(P11disp{prop='y'})/$(P11disp{prop='x'})</number>
+      <copy prop="y" tname="P12" assignNames="p12y" />
+      <copy prop="x" tname="P12" assignNames="p12x" />
+      <boolean name="p12r">$(P12disp{prop='x'}) < 0</boolean>
+      <copy prop="y" tname="P12disp" assignNames="p12dy" />
+    </setup>
+    <point name="P11" x="$(../zeroFixed)" y="4" hide="$(../ansSol1{prop='creditAchieved'}) = 1" styleNumber="2" layer="2">
+      <constraints>
+        <attractTo><point>(0, 2)</point></attractTo>
+      </constraints>
+    </point>
+    <point name="P11disp" x="-1" y="-1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle /></constrainTo>
+      </constraints>
+    </point>
+      <point name="P12" x="10" y="1" hide="$(../ansSol1{prop='creditAchieved'}) = 1" styleNumber="2" layer="2">
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="5" /></constrainTo>
+        <constrainTo><regionHalfPlane boundaryValue="20" greaterThan="false" /></constrainTo>
+        <attractTo><line>y=$(../a)</line></attractTo>
+      </constraints>
+    </point>
+    <point name="P12disp" x="-1" y="-1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle radius="0.7$(P12{prop='x'})" /></constrainTo>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+
+    <curve name="C1" through="$P11 $P12" extrapolateForward draggable="$(../ansSol1{prop='creditAchieved'})< 1" styleNumber="2" layer="2">
+      <bezierControls alwaysVisible >
+        <controlVectors><vector>
+          (0.5 $(P12{prop='x' fixed}) $(P11disp{prop='x'}),
+          0.5 $(P12{prop='x' fixed}) $(P11disp{prop='y'}))
+        </vector></controlVectors>
+        <controlVectors><vector>$P12disp</vector></controlVectors>
+      </bezierControls>
+    </curve>
+    
+  </conditionalContent>
+
+  <conditionalContent condition="$(../animation1On) and $(../ansSol1{prop='creditAchieved'}) = 1">
+    <setup>
+      <number name="t1">0</number>
+      <animateFromSequence tname="t1" animationMode="increase" from="0" to="25" step="0.2" animationOn="$(../animation1On)" animationInterval="50" />
+      <number name="midP1s">0.4*$p12x</number>
+      <number name="midP1sSlope">2*(-8-2)/$p12x</number>
+      <number name="t1Eff" displayDecimals="1">$(PAn1{prop='x'})</number>
+      <number name="ut1Eff" displayDecimals="1">$(PAn1{prop='y'})</number>
+    </setup>
+    <point name="PAn1" styleNumber="5" x="$t1" y="max(min($midP1sSlope*($t1-$midP1s),2),-8)" label="w($t1Eff) = $ut1Eff" fixed layer="3">
+      <constraints>
+        <constrainTo>$C1</constrainTo>
+      </constraints>
+    </point>
+  </conditionalContent>
+    
+
+
+  <conditionalContent condition="$(../showSolution2)">
+    <setup>
+      <copy prop="y" tname="P21" assignNames="p21y" />
+      <number name="p21m">$(P21disp{prop='y'})/$(P21disp{prop='x'})</number>
+      <copy prop="y" tname="P22" assignNames="p22y" />
+      <copy prop="x" tname="P22" assignNames="p22x" />
+      <boolean name="p22r">$(P22disp{prop='x'}) < 0</boolean>
+      <copy prop="y" tname="P22disp" assignNames="p22dy" />
+    </setup>
+    <point name="P21" x="$(../zeroFixed)" y="-2" hide="$(../ansSol2{prop='creditAchieved'}) = 1" styleNumber="2" layer="2">
+      <constraints>
+        <attractTo><point>(0, 4)</point></attractTo>
+      </constraints>
+    </point>
+    <point name="P21disp" x="-1" y="-0.1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle radius="2" /></constrainTo>
+      </constraints>
+    </point>
+      <point name="P22" x="10" y="-1" hide="$(../ansSol2{prop='creditAchieved'}) = 1" styleNumber="2" layer="2">
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="8" /></constrainTo>
+        <constrainTo><regionHalfPlane boundaryValue="20" greaterThan="false" /></constrainTo>
+        <attractTo><line>y=$(../c)</line></attractTo>
+      </constraints>
+    </point>
+    <point name="P22disp" x="-1" y="-1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle radius="0.5$(P22{prop='x'})" /></constrainTo>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+
+    <curve through="$P21 $P22" extrapolateForward draggable="$(../ansSol2{prop='creditAchieved'})< 1" name="C2" styleNumber="2" layer="2">
+      <bezierControls alwaysVisible>
+        <controlVectors><vector>$P21disp</vector></controlVectors>
+        <controlVectors><vector>$P22disp</vector></controlVectors>
+      </bezierControls>
+    </curve>
+  </conditionalContent>
+   
+
+  <conditionalContent condition="$(../animation2On) and $(../ansSol2{prop='creditAchieved'}) = 1">
+    <setup>
+      <number name="t2">0</number>
+      <animateFromSequence tname="t2" animationMode="increase" from="0" to="25" step="0.2" animationOn="$(../animation2On)" animationInterval="50" />
+      <number name="midP2sSlope">2*($(../c)-4)/$p22x</number>
+      <number name="t2Eff" displayDecimals="1">$(PAn2{prop='x'})</number>
+      <number name="ut2Eff" displayDecimals="1">$(PAn2{prop='y'})</number>
+    </setup>
+    <point name="PAn2" styleNumber="5" x="$t2" y="min($midP2sSlope*$t2 + 4,$(../c))" label="w($t2Eff) = $ut2Eff" fixed layer="3">
+      <constraints>
+        <constrainTo>$C2</constrainTo>
+      </constraints>
+    </point>
+  </conditionalContent>
+    
+ 
+  <conditionalContent condition="$(../showSolution3)">
+    <setup>
+      <copy prop="y" tname="P31" assignNames="p31y" />
+      <number name="p31m">$(P31disp{prop='y'})/$(P31disp{prop='x'})</number>
+      <copy prop="y" tname="P32" assignNames="p32y" />
+      <copy prop="x" tname="P32" assignNames="p32x" />
+      <boolean name="p32r">$(P32disp{prop='x'}) < 0</boolean>
+      <copy prop="y" tname="P32disp" assignNames="p32dy" />
+    </setup>
+    <point name="P31" x="$(../zeroFixed)" y="-2" hide="$(../ansSol3{prop='creditAchieved'}) = 1" styleNumber="2" layer="2">
+      <constraints>
+        <attractTo><point>(0, 10)</point></attractTo>
+      </constraints>
+    </point>
+    <point name="P31disp" x="-1" y="-0.1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle radius="2" /></constrainTo>
+      </constraints>
+    </point>
+      <point name="P32" x="10" y="-1" hide="$(../ansSol3{prop='creditAchieved'}) = 1" styleNumber="2" layer="2">
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="8" /></constrainTo>
+        <constrainTo><regionHalfPlane boundaryValue="20" greaterThan="false" /></constrainTo>
+        <attractTo><line>y=$(../c)</line></attractTo>
+      </constraints>
+    </point>
+    <point name="P32disp" x="-1" y="-1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle radius="0.5$(P32{prop='x'})" /></constrainTo>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+
+    <curve through="$P31 $P32" extrapolateForward draggable="$(../ansSol3{prop='creditAchieved'})< 1" name="C3" styleNumber="2" layer="2">
+      <bezierControls alwaysVisible>
+        <controlVectors><vector>$P31disp</vector></controlVectors>
+        <controlVectors><vector>$P32disp</vector></controlVectors>
+      </bezierControls>
+    </curve>
+  </conditionalContent>
+   
+
+  <conditionalContent condition="$(../animation3On) and $(../ansSol3{prop='creditAchieved'}) = 1">
+    <setup>
+      <number name="t3">0</number>
+      <animateFromSequence tname="t3" animationMode="increase" from="0" to="25" step="0.2" animationOn="$(../animation3On)" animationInterval="50" />
+      <number name="midP3sSlope">2*($(../c)-10)/$p32x</number>
+      <number name="t3Eff" displayDecimals="1">$(PAn3{prop='x'})</number>
+      <number name="ut3Eff" displayDecimals="1">$(PAn3{prop='y'})</number>
+    </setup>
+    <point name="PAn3" styleNumber="5" x="$t3" y="max($midP3sSlope*$t3,$(../c))" label="w($t3Eff) = $ut3Eff" fixed layer="3">
+      <constraints>
+        <constrainTo>$C3</constrainTo>
+      </constraints>
+    </point>
+  </conditionalContent>
+    
+
+  <conditionalContent condition="$(../showSolution456)">
+    <setup>
+      <copy prop="y" tname="P41" assignNames="p41y" />
+      <copy prop="y" tname="P51" assignNames="p51y" />
+      <copy prop="y" tname="P61" assignNames="p61y" />
+      <number name="p41m">$(P41disp{prop='y'})/$(P41disp{prop='x'})</number>
+      <number name="p51m">$(P51disp{prop='y'})/$(P51disp{prop='x'})</number>
+      <number name="p61m">$(P61disp{prop='y'})/$(P61disp{prop='x'})</number>
+      <copy prop="y" tname="P42" assignNames="p42y" />
+      <copy prop="y" tname="P52" assignNames="p52y" />
+      <copy prop="y" tname="P62" assignNames="p62y" />
+      <copy prop="y" tname="P42disp" assignNames="p42dy" />
+      <copy prop="y" tname="P52disp" assignNames="p52dy" />
+      <copy prop="y" tname="P62disp" assignNames="p62dy" />
+    </setup>
+    <point name="P41" x="$(../zeroFixed)" y="-2" hide="$(../ansSol456{prop='creditAchieved'}) = 1" styleNumber="3" layer="2">
+      <constraints>
+        <attractTo><point>(0, $(../a))</point></attractTo>
+        <attractTo><point>(0, $(../b))</point></attractTo>
+        <attractTo><point>(0, $(../c))</point></attractTo>
+      </constraints>
+    </point>
+    <point name="P51" x="$(../zeroFixed)" y="2" hide="$(../ansSol456{prop='creditAchieved'}) = 1" styleNumber="3" layer="2">
+      <constraints>
+        <attractTo><point>(0, $(../a))</point></attractTo>
+        <attractTo><point>(0, $(../b))</point></attractTo>
+        <attractTo><point>(0, $(../c))</point></attractTo>
+      </constraints>
+    </point>
+    <point name="P61" x="$(../zeroFixed)" y="4" hide="$(../ansSol456{prop='creditAchieved'}) = 1" styleNumber="3" layer="2">
+      <constraints>
+        <attractTo><point>(0, $(../a))</point></attractTo>
+        <attractTo><point>(0, $(../b))</point></attractTo>
+        <attractTo><point>(0, $(../c))</point></attractTo>
+      </constraints>
+    </point>
+    <point name="P41disp" x="-1" y="-1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle radius="2" /></constrainTo>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <point name="P51disp" x="-1" y="1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle radius="2" /></constrainTo>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <point name="P61disp" x="-1" y="1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle radius="2" /></constrainTo>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <point name="P42" x="10" y="-1" hide="$(../ansSol456{prop='creditAchieved'}) = 1" styleNumber="3" layer="2">
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="5" /></constrainTo>
+        <constrainTo><regionHalfPlane boundaryValue="20" greaterThan="false" /></constrainTo>
+        <attractTo><line>y=$(../a)</line></attractTo>
+        <attractTo><line>y=$(../b)</line></attractTo>
+        <attractTo><line>y=$(../c)</line></attractTo>
+      </constraints>
+    </point>
+    <point name="P52" x="10" y="1" hide="$(../ansSol456{prop='creditAchieved'}) = 1" styleNumber="3" layer="2">
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="5" /></constrainTo>
+        <constrainTo><regionHalfPlane boundaryValue="20" greaterThan="false" /></constrainTo>
+        <attractTo><line>y=$(../a)</line></attractTo>
+        <attractTo><line>y=$(../b)</line></attractTo>
+        <attractTo><line>y=$(../c)</line></attractTo>
+      </constraints>
+    </point>
+    <point name="P62" x="10" y="2" hide="$(../ansSol456{prop='creditAchieved'}) = 1" styleNumber="3" layer="2">
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="5" /></constrainTo>
+        <constrainTo><regionHalfPlane boundaryValue="20" greaterThan="false" /></constrainTo>
+        <attractTo><line>y=$(../a)</line></attractTo>
+        <attractTo><line>y=$(../b)</line></attractTo>
+        <attractTo><line>y=$(../c)</line></attractTo>
+      </constraints>
+    </point>
+    <point name="P42disp" x="-1" y="-1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle radius="2" /></constrainTo>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <point name="P52disp" x="-1" y="1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle radius="2" /></constrainTo>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <point name="P62disp" x="-1" y="1" hide>
+      <constraints>
+        <constrainTo><regionHalfPlane boundaryValue="-0.01" greaterThan="false" /></constrainTo>
+        <constrainTo><circle radius="2" /></constrainTo>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+
+    <curve through="$P41 $P42" extrapolateForward draggable="$(../ansSol456{prop='creditAchieved'})< 1" name="C4" styleNumber="3" layer="2">
+      <bezierControls alwaysVisible>
+        <controlVectors><vector>$P41disp</vector></controlVectors>
+        <controlVectors><vector>$P42disp</vector></controlVectors>
+      </bezierControls>
+    </curve>
+    <curve through="$P51 $P52" extrapolateForward draggable="$(../ansSol456{prop='creditAchieved'})< 1" name="C5" styleNumber="3" layer="2">
+      <bezierControls alwaysVisible>
+        <controlVectors><vector>$P51disp</vector></controlVectors>
+        <controlVectors><vector>$P52disp</vector></controlVectors>
+      </bezierControls>
+    </curve>
+    <curve through="$P61 $P62" extrapolateForward draggable="$(../ansSol456{prop='creditAchieved'})< 1" name="C6" styleNumber="3" layer="2">
+      <bezierControls alwaysVisible>
+        <controlVectors><vector>$P61disp</vector></controlVectors>
+        <controlVectors><vector>$P62disp</vector></controlVectors>
+      </bezierControls>
+    </curve>
+  </conditionalContent>
+   
+
+
+</graph>
+
+<paragraphs><title>Slope vectors in plot of <m>w</m> versus time</title>
+
+<p>When creating a slope vector in the bottom panel for each of the vectors you drew in the top panel, remember that you can move the test point near corresponding value of <m>w(t)</m> to get a gauge the appropriate slope of the vector.</p>
+
+
+<p>Click <updateValue name="revealSolVecs1" label="show vector" type="boolean" tname="showSolVecs1" newValue="true" disabled="$showSolVecs1" /> to draw a slope vector in the interval where <m>w < $a</m>.
+<answer disabled="not $showSolVecs1" name="ansSolVec1">
+  <award matchPartial>
+    <when>
+      <boolean name="sv1Location">$(wt/v1ty) < $a</boolean>
+      and
+      <boolean name="sv1Direction">$sv1Location and $(wt/v1r) and $(wt/v1m) > 0</boolean>
+      and
+      <boolean>$sv1Direction and 0.1 < $(wt/v1m) < 1</boolean>
+    </when>
+  </award>
+  <considerAsResponses>
+    $(wt/v1ty) $(wt/vector1Disp) $(wt/v1m)
+  </considerAsResponses>
+</answer>
+</p>
+<feedback updateWithTname="ansSolVec1" condition="not $sv1Location">
+  The vector must start in the interval where <m>w < $a</m>.
+</feedback>
+<feedback updateWithTname="ansSolVec1" condition="$sv1Location and not $(wt/v1r)">
+  The vector must point rightward, as it should point in the direction where time is increasing.
+</feedback>
+<feedback updateWithTname="ansSolVec1" condition="$sv1Location and $(wt/v1r) and not $sv1Direction">
+  Since <m>w(t)</m> is increasing in this interval, the vector must angle upward.
+</feedback>
+<feedback updateWithTname="ansSolVec1" condition="$sv1Direction and $(wt/v1m) <= 0.1">
+  Increase the upward angle slightly to make it more noticeable.
+</feedback>
+<feedback updateWithTname="ansSolVec1" condition="$sv1Direction and $(wt/v1m) >= 1">
+  The upward angle shouldn't be so steep.
+</feedback>
+
+
+
+<p hide="$(ansSolVec1{prop='creditAchieved'}) = 1">(<em>Correctly place the first slope vector to unlock the second slope vector.</em>)</p>
+
+<p>Click <updateValue name="revealSolVecs2" label="show second vector" type="boolean" tname="showSolVecs2" newValue="true" disabled="$(ansSolVec1{prop='creditAchieved'}) < 1 or $showSolVecs2" /> to draw a vector in the bottom third of the interval <m>$a < w < $b</m>.
+<answer disabled="not $showSolVecs2" name="ansSolVec2">
+  <award matchPartial>
+    <when>
+      <boolean name="sv2Location">$a < $(wt/v2ty) < $ab1</boolean>
+      and
+      <boolean name="sv2Direction">$sv2Location and $(wt/v2r) and $(wt/v2m) < 0</boolean>
+      and
+      <boolean>$sv2Direction and  -1.6 < $(wt/v2m) < -0.3</boolean>
+    </when>
+  </award>
+  <considerAsResponses>
+    $(wt/v2ty) $(wt/vector2Disp) $(wt/v2m)
+  </considerAsResponses>
+</answer>
+</p>
+<feedback updateWithTname="ansSolVec2" condition="not $sv2Location">
+  The vector must start in the lower third of the interval ($a, $b), i.e., in the interval ($a, $ab1).
+</feedback>
+<feedback updateWithTname="ansSolVec2" condition="$sv2Location and not $(wt/v2r)">
+  The vector must point rightward, as it should point in the direction where time is increasing.
+</feedback>
+<feedback updateWithTname="ansSolVec2" condition="$sv2Location and $(wt/v2r) and not $sv2Direction">
+  The vector must angle downward.
+</feedback>
+<feedback updateWithTname="ansSolVec2" condition="$sv2Direction and -0.3 <= $(wt/v2m)">
+  Increase the downward angle slightly to make it more noticeable.
+</feedback>
+<feedback updateWithTname="ansSolVec2" condition="$sv2Direction and $(wt/v2m) <= -1.6">
+  The downward angle should be less steep.
+</feedback>
+
+
+<p hide="$(ansSolVec2{prop='creditAchieved'}) = 1">(<em>Correctly place the second slope vector to unlock the third slope vector.</em>)</p>
+
+
+<p>Click <updateValue name="revealSolVecs3" label="show third vector" type="boolean" tname="showSolVecs3" newValue="true" disabled="$(ansSolVec2{prop='creditAchieved'}) < 1 or $showSolVecs3" /> to draw a vector in the middle third of the interval <m>$a < w < $b</m>.
+<answer disabled="not $showSolVecs3" name="ansSolVec3">
+  <award matchPartial>
+    <when>
+      <boolean name="sv3Location">$ab1 < $(wt/v3ty) < $ab2</boolean>
+      and
+      <boolean name="sv3Direction">$sv3Location and $(wt/v3r) and $(wt/v3m) < 0</boolean>
+      and
+      <boolean>$sv3Direction and  -4 < $(wt/v3m) < -2</boolean>
+    </when>
+  </award>
+  <considerAsResponses>
+    $(wt/v3ty) $(wt/vector3Disp) $(wt/v3m)
+  </considerAsResponses>
+</answer>
+</p>
+<feedback updateWithTname="ansSolVec3" condition="not $sv3Location">
+  The vector must start in the middle third of the interval ($a, $b), i.e., in the interval ($ab1, $ab2).
+</feedback>
+<feedback updateWithTname="ansSolVec3" condition="$sv3Location and not $(wt/v3r)">
+  The vector must point rightward, as it should point in the direction where time is increasing.
+</feedback>
+<feedback updateWithTname="ansSolVec3" condition="$sv3Location and $(wt/v3r) and not $sv3Direction">
+  The vector must angle downward.
+</feedback>
+<feedback updateWithTname="ansSolVec3" condition="$sv3Direction and -2 <= $(wt/v3m)">
+  Increase the downward angle.
+</feedback>
+<feedback updateWithTname="ansSolVec3" condition="$sv3Direction and $(wt/v3m) <= -4">
+  The downward angle should be less steep.
+</feedback>
+
+
+
+<p hide="$(ansSolVec3{prop='creditAchieved'}) = 1">(<em>Correctly place the third slope vector to unlock the fourth slope vector.</em>)</p>
+
+<p>Click <updateValue name="revealSolVecs4" label="show fourth vector" type="boolean" tname="showSolVecs4" newValue="true" disabled="$(ansSolVec3{prop='creditAchieved'}) < 1 or $showSolVecs4" /> to draw a vector in the upper third of the interval <m>$a < w < $b</m>.
+<answer disabled="not $showSolVecs4" name="ansSolVec4">
+  <award matchPartial>
+    <when>
+      <boolean name="sv4Location">$ab2 < $(wt/v4ty) < $b</boolean>
+      and
+      <boolean name="sv4Direction">$sv4Location and $(wt/v4r) and $(wt/v4m) < 0</boolean>
+      and
+      <boolean>$sv4Direction and -1.6 < $(wt/v4m) < -0.2</boolean>
+    </when>
+  </award>
+  <considerAsResponses>
+    $(wt/v4ty) $(wt/vector4Disp) $(wt/v4m)
+  </considerAsResponses>
+</answer>
+</p>
+<feedback updateWithTname="ansSolVec4" condition="not $sv4Location">
+  The vector must start in the upper third of the interval ($a, $b), i.e., in the interval ($ab2, $b).
+</feedback>
+<feedback updateWithTname="ansSolVec4" condition="$sv4Location and not $(wt/v4r)">
+  The vector must point rightward, as it should point in the direction where time is increasing.
+</feedback>
+<feedback updateWithTname="ansSolVec4" condition="$sv4Location and $(wt/v4r) and not $sv4Direction">
+  The vector must angle downward.
+</feedback>
+<feedback updateWithTname="ansSolVec4" condition="$sv4Direction and -0.2 <= $(wt/v4m)">
+  Increase the downward angle slightly to make it more noticeable.
+</feedback>
+<feedback updateWithTname="ansSolVec4" condition="$sv4Direction and $(wt/v4m) <= -1.6">
+  The downward angle should be less steep.
+</feedback>
+
+<p hide="$(ansSolVec4{prop='creditAchieved'}) = 1">(<em>Correctly place the fourth slope vector to unlock the fifth slope vector.</em>)</p>
+
+<p>Click <updateValue name="revealSolVecs5" label="show fifth vector" type="boolean" tname="showSolVecs5" newValue="true" disabled="$(ansSolVec4{prop='creditAchieved'}) < 1 or $showSolVecs5" /> to draw a vector in the interval <m>$b < w < $c</m>.
+<answer disabled="not $showSolVecs5" name="ansSolVec5">
+  <award matchPartial>
+    <when>
+      <boolean name="sv5Location">$b < $(wt/v5ty) < $c</boolean>
+      and
+      <boolean name="sv5Direction">$sv5Location and $(wt/v5r) and $(wt/v5m) > 0</boolean>
+      and
+      <boolean>$sv5Direction and 0.1 < $(wt/v5m) < 0.6</boolean>
+    </when>
+  </award>
+  <considerAsResponses>
+    $(wt/v5ty) $(wt/vector5Disp) $(wt/v5m)
+  </considerAsResponses>
+</answer>
+</p>
+<feedback updateWithTname="ansSolVec5" condition="not $sv5Location">
+  The vector must start in the interval ($b, $c).
+</feedback>
+<feedback updateWithTname="ansSolVec5" condition="$sv5Location and not $(wt/v5r)">
+  The vector must point rightward, as it should point in the direction where time is increasing.
+</feedback>
+<feedback updateWithTname="ansSolVec5" condition="$sv5Location and $(wt/v5r) and not $sv5Direction">
+  The vector must angle upward.
+</feedback>
+<feedback updateWithTname="ansSolVec5" condition="$sv5Direction and 0.1 >= $(wt/v5m)">
+  Increase the upward angle slightly to make it more noticeable.
+</feedback>
+<feedback updateWithTname="ansSolVec5" condition="$sv5Direction and $(wt/v5m) >= 0.6">
+  The upward angle should be less steep.
+</feedback>
+
+<p hide="$(ansSolVec5{prop='creditAchieved'}) = 1">(<em>Correctly place the fifth slope vector to unlock the sixth slope vector.</em>)</p>
+
+<p>Click <updateValue name="revealSolVecs6" label="show sixth vector" type="boolean" tname="showSolVecs6" newValue="true" disabled="$(ansSolVec5{prop='creditAchieved'}) < 1 or $showSolVecs6" /> to draw a vector in the interval <m>w > $c</m>.
+<answer disabled="not $showSolVecs6" name="ansSolVec6">
+  <award matchPartial>
+    <when>
+      <boolean name="sv6Location">$(wt/v6ty) > $c</boolean>
+      and
+      <boolean name="sv6Direction">$sv6Location and $(wt/v6r) and $(wt/v6m) < 0</boolean>
+      and
+      <boolean>$sv6Direction and -1 < $(wt/v6m) < -0.2</boolean>
+    </when>
+  </award>
+  <considerAsResponses>
+    $(wt/v6ty) $(wt/vector6Disp) $(wt/v6m)
+  </considerAsResponses>
+</answer>
+</p>
+<feedback updateWithTname="ansSolVec6" condition="not $sv6Location">
+  The vector must start in the interval where <m>w > $c</m>.
+</feedback>
+<feedback updateWithTname="ansSolVec6" condition="$sv6Location and not $(wt/v6r)">
+  The vector must point rightward, as it should point in the direction where time is increasing.
+</feedback>
+<feedback updateWithTname="ansSolVec6" condition="$sv6Location and $(wt/v6r) and not $sv6Direction">
+  The vector must angle downward.
+</feedback>
+<feedback updateWithTname="ansSolVec6" condition="$sv6Direction and -0.2 <= $(wt/v6m)">
+  Increase the downward angle slightly to make it more noticeable.
+</feedback>
+<feedback updateWithTname="ansSolVec6" condition="$sv6Direction and $(wt/v6m) <= -1">
+  The downward angle should be less steep.
+</feedback>
+
+<p hide="$(ansSolVec6{prop='creditAchieved'}) = 1">(<em>Correctly place the sixth slope vector to unlock the last slope vectors.</em>)</p>
+
+<p>Click <updateValue name="revealSolVecs789" label="show last vectors" type="boolean" tname="showSolVecs789" newValue="true" disabled="$(ansSolVec6{prop='creditAchieved'}) < 1 or $showSolVecs789" /> to draw vectors at the equilibria.
+<answer disabled="not $showSolVecs789" name="ansSolVec789">
+  <award matchPartial>
+    <when>
+      <mathlist name="vec789tails">$(wt/v7ty) $(wt/v8ty) $(wt/v9ty)</mathlist> = <mathlist name="theEs" unordered>$a $b $c</mathlist>
+      and
+      <boolean>$(wt/v7r) and $(wt/v7m) = 0</boolean>
+      and
+      <boolean>$(wt/v8r) and $(wt/v8m) = 0</boolean>
+      and
+      <boolean>$(wt/v9r) and $(wt/v9m) = 0</boolean>
+    </when>
+  </award>
+  <considerAsResponses>
+    $(wt/v7ty) $(wt/vector7Disp) $(wt/v7m)
+    $(wt/v8ty) $(wt/vector8Disp) $(wt/v8m)
+    $(wt/v9ty) $(wt/vector9Disp) $(wt/v9m)
+  </considerAsResponses>
+</answer>
+</p>
+<feedback updateWithTname="ansSolVec789" condition="$vec789tails != $theEs">
+  The vectors must start at the equilibria <m>w=$a</m>, <m>w=$b</m>, and <m>w=$c</m>.
+</feedback>
+<feedback updateWithTname="ansSolVec789" condition="not ($(wt/v7r) and $(wt/v8r) and $(wt/v9r))">
+  The vectors must point rightward, as they should point in the direction where time is increasing.
+</feedback>
+<feedback updateWithTname="ansSolVec789" condition="($(wt/v7r) and $(wt/v7m) != 0) or ($(wt/v8r) and $(wt/v8m) != 0) or ($(wt/v9r) and $(wt/v9m) != 0)">
+  Since <m>w(t)</m> is not changing, the vectors must point straight to the right.
+</feedback>
+
+
+<p hide="$(ansSolVec789{prop='creditAchieved'}) = 1">(<em>Correctly place all the slope vectors to unlock the the shadow vectors.</em>)</p>
+
+<p>Click 
+<updateValue name="revealShadowVecs" label="show shadow vectors" type="boolean" tname="showShadowVecs" newValue="true" disabled="$(ansSolVec789{prop='creditAchieved'}) < 1 or $showShadowVecs" /> (and wait because it is slow...)
+to reveal copies of the slope vectors you drew shifted in time.</p>
+
+</paragraphs>
+
+<paragraphs><title>Drawing the solution</title>
+
+
+<p hide="$showShadowVecs">(<em>Show the shadow vectors using the above button to unlock plotting solutions.</em>)</p>
+
+<p>Click <updateValue name="revealSolution1" label="show first solution curve" type="boolean" tname="showSolution1" newValue="true" disabled="$showSolution1 or not $showShadowVecs" /> adjust the curve so that it begins at the initial condition <m>w(0) = 2</m> and starts moving with the right slope.
+<answer disabled="not $showSolution1" name="ansSol1Slope1">
+  <award targetsAreResponses="wt/p11y" matchPartial>
+    <when>$(wt/p11y) = 2 and -0.6 < $(wt/p11m) < -0.1</when>
+  </award>
+  <considerAsResponses>
+    $(wt/P11disp)
+  </considerAsResponses>
+</answer>
+</p>
+
+<feedback updateWithTname="ansSol1Slope1" condition="$(wt/p11y) != 2">
+  The initial point is not in the correct location.
+</feedback>
+<feedback updateWithTname="ansSol1Slope1" condition="$(wt/p11y) = 2 and $(wt/p11m) >= 0">
+  Given that <m>w(0)=2</m>, the solution must begin by decreasing.
+</feedback>
+<feedback updateWithTname="ansSol1Slope1" condition="$(wt/p11y) = 2 and 0 > $(wt/p11m) >= -0.1">
+  Increase the magnitude of the initial slope to make it easier to see that the solution begins by decreasing.
+</feedback>
+<feedback updateWithTname="ansSol1Slope1" condition="$(wt/p11y) = 2 and $(wt/p11m) <= -0.6">
+  The solution stating at <m>w(0)=2</m> begins by decreasing slowly.  Decrease the magnitude of the initial slope to match.
+</feedback>
+
+
+<p>Move the right point on the curve and set its slope so that the solution curve <m>w(t)</m> has the proper behavior for large values of <m>t</m>.
+<answer disabled="not $showSolution1" name="ansSol1">
+  <award>
+    <when>
+      $(wt/p11y) = 2 and -0.6 < $(wt/p11m) < -0.1
+      and $(wt/p12y) = $a
+      and $(wt/p12dy) = 0
+    </when>
+  </award>
+  <considerAsResponses>
+    $(wt/P12) $(wt/P12disp)
+  </considerAsResponses>
+</answer>
+</p>
+<feedback updateWithTname="ansSol1" condition="not ($(wt/p11y) = 2 and -0.6 < $(wt/p11m) < -0.1)">
+  The initial point and slope are not correct.  First, set up up the beginning of the curve before adjusting the second point.
+</feedback>
+<feedback updateWithTname="ansSol1" condition="$(wt/p11y) = 2 and -0.6 < $(wt/p11m) < -0.1 and $(wt/p12dy) > 0">
+  Can the solution <m>w(t)</m> keep decreasing to smaller and smaller values?
+</feedback>
+<feedback updateWithTname="ansSol1" condition="$(wt/p11y) = 2 and -0.6 < $(wt/p11m) < -0.1 and $(wt/p12dy) < 0">
+  Can the solution <m>w(t)</m> starting at <m>w(0) = 2</m> turn around and start increasing?
+</feedback>
+<feedback updateWithTname="ansSol1" condition="$(wt/p11y) = 2 and -0.6 < $(wt/p11m) < -0.1 and $(wt/p12dy) = 0 and $(wt/p12y) != $a">
+  The solution should asymptote by approaching what value?
+</feedback>
+
+<aside hide="$(ansSol1{prop='creditAchieved'}) < 1" collapsible="false" boxed>
+  <title>Solution correct!</title>
+
+  <p>We've started an animation illustrating the value of <m>w(t)</m> changing with time. </p>
+
+  <p><updateValue name="hideAnimation1" label="Hide animation" type="boolean" tname="animation1On" newValue="false" hide='not $animation1On' />
+  <updateValue name="showAnimation1" label="Show animation" type="boolean" tname="animation1On" newValue="true" hide='$animation1On' /></p>
+</aside>
+
+<p>Click <updateValue name="revealSolution2" label="show second solution curve" type="boolean" tname="showSolution2" newValue="true" disabled="$showSolution2" /> and adjust the curve so that it begins at the initial condition <m>w(0) = 4</m> and starts moving with the right slope.
+<answer disabled="not $showSolution2" name="ansSol2Slope1">
+  <award targetsAreResponses="wt/p21y" matchPartial>
+    <when>$(wt/p21y) = 4 and 0.1 < $(wt/p21m) < 0.4</when>
+  </award>
+  <considerAsResponses>
+    $(wt/P21disp)
+  </considerAsResponses>
+</answer>
+</p>
+
+<feedback updateWithTname="ansSol2Slope1" condition="$(wt/p21y) != 4">
+  The initial point is not in the correct location.
+</feedback>
+<feedback updateWithTname="ansSol2Slope1" condition="$(wt/p21y) = 4 and $(wt/p21m) <= 0">
+  Given that <m>w(0)=4</m>, the solution must begin by increasing.
+</feedback>
+<feedback updateWithTname="ansSol2Slope1" condition="$(wt/p21y) = 4 and 0 < $(wt/p21m) <= 0.1">
+  Increase the magnitude of the initial slope to make it easier to see that the solution begins by increasing.
+</feedback>
+<feedback updateWithTname="ansSol2Slope1" condition="$(wt/p21y) = 4 and $(wt/p21m) >= 0.4">
+  Decrease the magnitude of the initial slope.
+</feedback>
+
+
+<p>Move the right point on the curve and set its slope so that the solution curve <m>w(t)</m> has the proper behavior for large values of <m>t</m>.
+<answer disabled="not $showSolution2" name="ansSol2">
+  <award>
+    <when>
+      $(wt/p21y) = 4 and 0.1 < $(wt/p21m) < 0.4
+      and $(wt/p22y) = $c
+      and $(wt/p22dy) = 0
+    </when>
+  </award>
+  <considerAsResponses>
+    $(wt/P22) $(wt/P22disp)
+  </considerAsResponses>
+</answer>
+</p>
+<feedback updateWithTname="ansSol2" condition="not ($(wt/p21y) = 4 and 0.1 < $(wt/p21m) < 0.4)">
+  The initial point and slope are not correct.  First, set up up the beginning of the curve before adjusting the second point.
+</feedback>
+<feedback updateWithTname="ansSol2" condition="$(wt/p21y) = 4 and 0.1 < $(wt/p21m) < 0.4 and $(wt/p22dy) > 0">
+  Can the solution <m>w(t)</m> starting at <m>w(0) = 4</m> turn around and start decreasing?
+</feedback>
+<feedback updateWithTname="ansSol2" condition="$(wt/p21y) = 4 and 0.1 < $(wt/p21m) < 0.4 and $(wt/p22dy) < 0">
+  Can the solution <m>w(t)</m> keep increasing to larger and larger values?
+</feedback>
+<feedback updateWithTname="ansSol2" condition="$(wt/p21y) = 4 and 0.1 < $(wt/p21m) < 0.4 and $(wt/p22dy) = 0 and $(wt/p22y) != $c">
+  The solution should asymptote by approaching what value?
+</feedback>
+
+
+<aside hide="$(ansSol2{prop='creditAchieved'}) < 1" collapsible="false" boxed>
+  <title>Another solution correct!</title>
+
+  <p>Great, another one conquered!  We've started an animation in both panels, above, illustrating the value of <m>w(t)</m> changing with time. </p>
+
+  <p><updateValue name="hideAnimation2" label="Hide animation" type="boolean" tname="animation2On" newValue="false" hide='not $animation2On' />
+  <updateValue name="showAnimation2" label="Show animation" type="boolean" tname="animation2On" newValue="true" hide='$animation2On' /></p>
+</aside>
+
+<p>Click <updateValue name="revealSolution3" label="show third solution curve" type="boolean" tname="showSolution3" newValue="true" disabled="$showSolution3" /> and adjust the curve so that it begins at the initial condition <m>w(0) = 10</m> and starts moving with the right slope.
+<answer disabled="not $showSolution3" name="ansSol3Slope1">
+  <award targetsAreResponses="wt/p31y" matchPartial>
+    <when>$(wt/p31y) = 10 and -1 < $(wt/p31m) < -0.2</when>
+  </award>
+  <considerAsResponses>
+    $(wt/P31disp)
+  </considerAsResponses>
+</answer>
+</p>
+
+<feedback updateWithTname="ansSol3Slope1" condition="$(wt/p31y) != 10">
+  The initial point is not in the correct location.
+</feedback>
+<feedback updateWithTname="ansSol3Slope1" condition="$(wt/p31y) = 10 and $(wt/p31m) >= 0">
+  Given that <m>w(0)=10</m>, the solution must begin by decreasing.
+</feedback>
+<feedback updateWithTname="ansSol3Slope1" condition="$(wt/p31y) = 10 and -0.2 <= $(wt/p31m) < 0">
+  Increase the magnitude of the initial slope to make it easier to see that the solution begins by decreasing.
+</feedback>
+<feedback updateWithTname="ansSol3Slope1" condition="$(wt/p31y) = 10 and $(wt/p31m) <= -1">
+  Decrease the magnitude of the initial slope.
+</feedback>
+
+
+
+<p>Move the right point on the curve and set its slope so that the solution curve <m>w(t)</m> has the proper trend as <m>t</m> increases.
+<answer disabled="not $showSolution3" name="ansSol3">
+  <award>
+    <when>
+      $(wt/p31y) = 10 and -1 < $(wt/p31m) < -0.2
+      and $(wt/p32y) = $c
+      and $(wt/p32dy) = 0
+    </when>
+  </award>
+  <considerAsResponses>
+    $(wt/P32) $(wt/P32disp)
+  </considerAsResponses>
+</answer>
+</p>
+<feedback updateWithTname="ansSol3" condition="not ($(wt/p31y) = 10 and -1 < $(wt/p31m) < -0.2)">
+  The initial point and slope are not correct.  First, set up up the beginning of the curve before adjusting the second point.
+</feedback>
+<feedback updateWithTname="ansSol3" condition="$(wt/p31y) = 10 and -1 < $(wt/p31m) < -0.2 and $(wt/p32dy) > 0">
+  Can the solution <m>w(t)</m> keep decreasing to smaller and smaller values?
+</feedback>
+<feedback updateWithTname="ansSol3" condition="$(wt/p31y) = 10 and -1 < $(wt/p31m) < -0.2 and $(wt/p32dy) < 0">
+  Can the solution <m>w(t)</m> starting at <m>w(0) = 10</m> turn around and start increasing?
+</feedback>
+<feedback updateWithTname="ansSol3" condition="$(wt/p31y) = 10 and -1 < $(wt/p31m) < -0.2 and $(wt/p32dy) = 0 and $(wt/p32y) != $c">
+  The solution should asymptote by approaching what value?
+</feedback>
+
+
+<aside hide="$(ansSol3{prop='creditAchieved'}) < 1" collapsible="false" boxed>
+  <title>Third solution correct!</title>
+
+  <p>You're unstoppable!  We've started one more animation in both panels, above, illustrating the value of <m>w(t)</m> changing with time. </p>
+
+  <p><updateValue name="hideAnimation3" label="Hide animation" type="boolean" tname="animation3On" newValue="false" hide='not $animation3On' />
+  <updateValue name="showAnimation3" label="Show animation" type="boolean" tname="animation3On" newValue="true" hide='$animation3On' /></p>
+</aside>
+
+
+
+<p>Click <updateValue name="revealSolution456" label="show last solution curves" type="boolean" tname="showSolution456" newValue="true" disabled="$showSolution456" /> and move the points and slopes so that the curves are the solutions for <m>w(0)=$a</m>, <m>w(0)=$b</m>, and <m>w(0)=$c</m>.
+<answer disabled="not $showSolution456" name="ansSol456">
+  <award matchPartial>
+    <when>
+      <mathlist>$(wt/p41y) $(wt/p51y) $(wt/p61y)</mathlist>
+      = <mathlist unordered>$a $b $c</mathlist>
+      and
+      <boolean>$(wt/p41m) = 0 and $(wt/p42y) = $(wt/p41y) and $(wt/p42dy) = 0</boolean>
+      and
+      <boolean>$(wt/p51m) = 0 and $(wt/p52y) = $(wt/p51y) and $(wt/p52dy) = 0</boolean>
+      and
+      <boolean>$(wt/p61m) = 0 and $(wt/p62y) = $(wt/p61y) and $(wt/p62dy) = 0</boolean>
+    </when>
+  </award>
+</answer>
+</p>
+
+
+<aside hide="$(ansSol456{prop='creditAchieved'}) < 1" collapsible="false" boxed>
+  <title>Last solutions correct!</title>
+
+  <p>You correctly graph the equilibrium solutions.</p>
+
+  <p>Since the values of <m>w(t)</m> at an equilibrium don't change, an animation would be pretty boring. </p>
+
+</aside>
+
+
+</paragraphs>
+
+
+
+<!-- <solution>
+
+
+<ol>
+
+<li>
+Highlight the horizontal axis of the plot of <m>f</m> versus <m>w</m> and plot the point <m>(-2,0)</m>.
+</li>
+
+<li>
+Highlight the vertical axis and plot the point <m>(0,-2)</m>.
+</li>
+
+<li>
+From the formula <m>w'(0)=1-w(0)^2/9 = 1-($u01 )^2/9 = <round numberdigits="5"><number>$fu01 </number></round></m>.  Since <m>w'(0)</m> is positive, <m>w(t)</m> is increasing at <m>t=0</m>.
+</li>
+
+<li>
+Draw rightward arrow on plot of <m>f</m> versus <m>w</m>.  Plot the beginning of the green curve, below.
+</li>
+
+<li>
+As <m>w(t)</m> increases toward <m>-1</m>, the velocity increases.  <m>w(t)</m> speeds up.
+</li>
+
+<li>
+<m>w(t)</m> reaches it maximum speed when <m>w(t)=0</m>.  It slows down to a halt, as <m>w(t)</m> approaches 3.  As <m>t</m> gets large, <m>w(t)</m> approaches 3.  Finish green curve on plot, below.
+</li>
+
+<li>
+When <m>u_0=4</m>, <m>w(t)</m> decreases toward 3, and approaches 3 for large <m>t</m>.  The plot is the blue curve, below.  When <m>u_0=-3.1</m>, <m>w(t)</m> decreases and speeds up, shooting downward off the graph.  The plot is the red curve, below.
+
+<p>When <m>u_0=-3</m> and when <m>u_0=3</m>, the velocity is zero.  <m>w(t)</m> stays constants for these initial conditions.  Equilibria are zeros the graph of <m>f</m>.  The equilibria solutions are the pink lines, below.</p>
+
+<p>Here is the graph of the solutions for the five initial conditions mentioned above.</p>
+
+
+
+<graph xmin='' xmax='' xlabel='w'  fixAxes>
+
+</graph>
+
+</li>
+
+<li>
+
+</li>
+
+
+</ol>
+
+</solution>
+ -->
+
+</problem>

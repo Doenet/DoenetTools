@@ -1,0 +1,140 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>constraints</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>constraints</tag><idx><tag>constraints</tag></idx> component is nested within a <c>GraphicalComponent</c> and delineates a block of code for defining various constraints to be placed on the element.  The <tag>constraints</tag> component is a container element for components such as <ref><tag>attractToGrid</tag></ref>, or <ref><tag>constrainToGraph</tag></ref>. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1:  </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+
+</example>
+
+<!--******************************************************-->
+<subsection><title>Example 2: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+  
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+
+</example>
+
+ 
+
+<!--******************************************************-->
+
+<subsection><title>Example 3: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 3)</title>
+
+</example>
+ 
+
+
+<!--******************************************************-->
+ 
+<subsection><title>Example 4: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 4)</title>
+
+</example>
+  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<aside newNameSpace><title>Edge case:    </title>
+
+
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+
+<!--*******************************************************-->
+ 
+
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+ 
+</aside>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

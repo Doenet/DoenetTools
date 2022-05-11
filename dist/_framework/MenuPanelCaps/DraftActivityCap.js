@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {authorItemByDoenetId, courseIdAtom, coursePermissionsAndSettingsByCourseId, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, courseIdAtom, coursePermissionsAndSettingsByCourseId, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 export default function DraftActivityCap() {
   const courseId = useRecoilValue(courseIdAtom);
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));

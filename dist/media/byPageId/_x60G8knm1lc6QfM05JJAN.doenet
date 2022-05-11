@@ -1,0 +1,14 @@
+<title>The Forward Euler algorithm for solving an autonomous differential equation</title>
+
+<description>
+Using the linear approximation, or tangent line, to the solution of a differential equation to estimate the solution over small intervals.
+</description>
+
+<figure>
+<video youtube="6sQ6jJp21yM" width="640px" height="360px"/>
+<caption>The Forward Euler algorithm for solving an autonomous differential equation </caption>
+</figure>
+<!--Video transcript -->
+
+<!-- End video transcript -->
+<!-- boxedvideo forward_euler_algorithm_autonomous_differential_equation -->

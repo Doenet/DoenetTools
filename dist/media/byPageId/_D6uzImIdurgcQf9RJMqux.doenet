@@ -1,0 +1,158 @@
+<problem>
+<!-- <title>Discrete equilibria, compute iterations, function iteration form</title> -->
+
+<setup>
+
+<function name='f' variables='x'>1/8*(x-3)*(x+3)</function>
+<math name='f_of_3' simplify='full' >$$f(3)</math>
+<math name='f_of_neg3' simplify='full' >$$f(-3)</math>
+<math name='f_of_neg1' simplify='full' >$$f(-1)</math>
+<math name='f_of_9' simplify='full' >$$f(9)</math>
+
+</setup>
+
+Consider the dynamical system:
+<md>
+  <mrow>y_{n+1}\amp = \frac{1}{8}(y_n-3)(y_n+3)</mrow>
+  <mrow>y_0\amp = b</mrow>
+</md>
+
+<ol>
+
+<li>
+<p>Let the initial condition be <m>b=3</m>.  With this initial condition calculate:
+</p>
+
+<m>y_1 =</m> 
+<answer>
+<award>$f_of_3 </award>
+</answer>
+
+
+<p>Given this calculation, we can conclude that <m>y_n=3</m> 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>is not</choice>
+<choice>is</choice>
+</choiceinput>
+</answer>
+ an equilibrium.
+
+</p>
+
+
+<hint>
+Wait, in the last problem, when the right hand side was zero, we got an equilibrium.  What changed here?  The last problem was in difference form, so when the right hand side was zero, the difference between time steps was zero.  Therefore, in the last problem, when the right hand side was zero, the variable did not change with the time step. 
+
+<p>This problem is in function iteration form.  When the right hand side is zero, it means the next value of the state variable will be zero.  If we start at a nonzero value and move to zero, the value changed and we are not at an equilibrium.</p>
+</hint>
+
+</li>
+
+<li>
+<p>Let the initial condition be <m>b=-3</m>.  With this initial condition calculate:
+</p>
+
+<m>y_1 =</m> 
+<answer>
+<award>$f_of_neg3 </award>
+</answer>
+
+
+<p>Given this calculation, we can conclude that <m>y_n=-3</m> 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>is not</choice>
+<choice>is</choice>
+</choiceinput>
+</answer>
+ an equilibrium.</p>
+
+
+
+</li>
+
+<li>
+<p>
+Let the initial condition be <m>b=9</m>.  With this initial condition calculate:
+</p>
+
+<m>y_1 =</m> 
+<answer>
+<award>$f_of_9 </award>
+</answer>
+
+
+<p>Given this calculation, we can conclude that <m>y_n=9</m> 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>is</choice>
+<choice>is not</choice>
+</choiceinput>
+</answer>
+ an equilibrium.</p>
+
+
+
+<hint>
+It's not so easy to glance at the problem to see whether or not <m>y_n=9</m> is an equilibrium.  The fact that the right hand side is factored does not help you.  (We factored it just to make you have to think why <m>3</m> and <m>-3</m> are not equilibria.)  You just have to do the arithmetic.  (Or you just guess and let the computer tell you, but why waste this opportunity to think through what is going on?)
+</hint>
+
+</li>
+
+<li>
+<p>
+Let the initial condition be <m>b=-1</m>.  With this initial condition calculate:
+</p>
+
+<m>y_1 =</m> 
+<answer>
+<award>$f_of_neg1 </award>
+</answer>
+
+
+<p>Given this calculation, we can conclude that <m>y_n=-1</m> 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>is</choice>
+<choice>is not</choice>
+</choiceinput>
+</answer>
+ an equilibrium.</p>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<m>y_1= $f_of_3 </m>.  Since <m>y_1 \ne 3</m>, we can conclude that <m>y_n=3</m> is not an equilibrium.
+</li>
+
+<li>
+<m>y_1= $f_of_neg3 </m>.  Since <m>y_1 \ne -3</m>, we can conclude that <m>y_n=-3</m> is not an equilibrium.
+</li>
+
+<li>
+<m>y_1=9</m>.  Since <m>y_1=y_0</m>, we can conclude that <m>y_n=9</m> is an equilibrium.
+</li>
+
+<li>
+<m>y_1=-1</m>.  Since <m>y_1=y_0</m>, we can conclude that <m>y_n=-1</m> is an equilibrium.
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

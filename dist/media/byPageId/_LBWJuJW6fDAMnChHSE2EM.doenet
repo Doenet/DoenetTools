@@ -1,0 +1,27 @@
+<p>
+  Find the domain and range for the function:
+  <me>
+      G(x)=\frac{10x+|x|}{x}
+  </me>
+</p>
+<p>
+  Domain  (in interval or set notation):
+  <answer>
+    <award>
+      <math>(-infinity, 0) union (0,infinity)</math>
+    </award>
+  </answer>
+</p>
+
+<p>
+  Domain  (in interval or set notation) 2:
+  <answer>
+    <award>
+      <math format="latex">(-\infty,0)\cup (0,\infty)</math>
+    </award>
+  </answer>
+</p>
+
+<math>(-\infty,0)\cup (0,\infty)</math>
+
+<math>(infinity, 0) union (0,infinity)</math>

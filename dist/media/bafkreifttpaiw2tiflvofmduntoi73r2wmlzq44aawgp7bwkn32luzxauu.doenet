@@ -1,0 +1,296 @@
+<title>Advanced answer forms</title>
+
+<p>Here we discuss five different advanced concepts for answers.</p>
+<ul>
+  <li>Designating what should be considered the response of an answer</li>
+  <li>Comparisons where order doesn't matter</li>
+  <li>Giving partial credit to partial matches</li>
+  <li>Comparison with de-duplicated sets</li>
+  <li>Creating answers with a variable number of answer blanks</li>
+</ul>
+
+<section><title>Answers based on inputs outside the answer</title>
+
+<p>When using the full logic of an <tag>award</tag> tag, the expression inside the <tag>when</tag> can refer to components outside the <tag>answer</tag> tag.  However, in this case, Doenet cannot tell what values should be considered the <term>response</term> of that answer.  In this case, you must indicate what values are to be used for the responses.   There are three ways to tell Doenet that a value is a response: adding an <attr>isResponse</attr> attribute to the value, adding a <attr>targetsAreResponses</attr> attribute to the <tag>award</tag>, or adding a <tag>considerAsResponses</tag> child to the <tag>answer</tag>.</p> 
+  
+
+<aside><title>The response of an answer</title>
+
+  <p>The response of an answer is what the user entered to be evaluated for credit.  For a typical answer, the responses is what the user entered in the blank or selected from a lists of choices.  Doenet always uses any input tag (e.g., <tag>mathinput</tag>, <tag>textinput</tag>, <tag>choiceinput</tag>) inside the <tag>answer</tag> tag for the response.  Any other value referenced inside a <tag>when</tag> is not considered a response, by default.</p>
+  
+<p>Although answer responses do not affect the credit awarded, they are used for the data analytics and giving feedback to instructors and authors.  They can also be referenced inside the DoenetML document to create dynamic content that depends on the user's response. Every answer should have some values flagged as the responses.</p>
+  
+</aside>
+
+<subsection><title>isResponse</title>
+
+  <p>Adding the attribute <attr>isResponse</attr> to a component inside a <tag>when</tag> tells Doenet that value should be a response.  The following example illustrates.</p>
+
+  <example newNamespace><title>Move point example</title>
+     
+    <p>Move the point to be in the first quadrant.</p>
+    <graph><point name="A" x="1" y="-3" /></graph>
+    <answer name="firstQuad">
+      <award>
+        <when>
+          <copy prop="x" tname="A" isResponse /> > 0
+          and
+          <copy prop="y" tname="A" isResponse /> > 0
+        </when>
+      </award>
+    </answer>
+
+    
+    <p>The point on the graph cannot be put inside the answer.  Instead, we added the <attr>isResponse</attr> to the <tag>copy</tag> tags referencing the coordinates of the points.</p>
+
+    <p>One can see what is a response by looking at the <c>submittedResponses</c> prop of the answer.  We get two submitted responses: <aslist><copy prop="submittedResponses" tname="firstQuad" displayDigits="4" /></aslist></p>
+
+  </example>
+</subsection>
+
+
+<subsection><title>targetsAreResponses</title>
+
+  <p>The <attr>isResponse</attr> attribute is less convenient when using macros such as &dollar;x to refer to a value.  In this case, one could use the <attr>targetsAreResponses</attr> attribute of the <tag>award</tag> to specify that targets matched by those variables should be considered as responses to the answer.</p>
+
+
+  <example newNamespace><title>First three primes</title>
+
+    <p>The first three prime numbers are (in ascending order) <mathinput name="p1"/>, <mathinput name="p2"/>, and <mathinput name="p3" />.
+      <answer name="primes">
+        <award targetsAreResponses="p1 p2 p3">
+          <when>$p1 = 2 and $p2 = 3 and $p3 = 5</when>
+        </award>
+      </answer>
+    </p>
+
+
+    <p>Since the <tag>mathinput</tag> tags are embedded in a sentence, they cannot be included inside the <tag>answer</tag> tag.  Instead, adding their names to the <attr>targetsAreResponses</attr> attribute of the award tells Doenet that the references (via macros) to those inputs are the responses.</p>
+
+    <p>Now, once you click the check work button, you will see three submitted responses: <aslist><copy prop="submittedResponses" tname="primes" /></aslist>.</p>
+    
+  </example>
+
+</subsection>
+
+  <subsection><title>considerAsResponses</title>
+
+    <p>For some questions, you may want the response to be something that isn't exactly inside a <tag>when</tag> tag.  In that case, you can use the <tag>considerAsResponses</tag> to specify the preferred form for the response.  We repeat the above point example, but this time create a single response of an ordered pair rather than two responses of the individual coordinates.</p>
+
+
+    <example newNamespace><title>Move point example, revisited</title>
+
+    
+      <p>Move the point to be in the first quadrant.</p>
+      <graph><point name="A" x="1" y="-3" /></graph>
+      <answer name="firstQuad">
+        <award>
+          <when>
+            <copy prop="x" tname="A" /> > 0
+            and
+            <copy prop="y" tname="A" /> > 0
+          </when>
+        </award>
+        <considerAsResponses>$A</considerAsResponses>
+      </answer>
+    
+    
+      <p>By putting the macro &dollar;A referring the point inside <tag>considerAsResponses</tag>, we get a single response consisting as the order pair of the point's coordinates.  Submitted responses: <copy prop="submittedResponses" tname="firstQuad" displayDigits="4" /></p>
+    
+    </example>
+    
+  </subsection>
+  
+</section>
+
+
+<section><title>Unordered compare</title>
+
+  <p>If an answer depends on multiple responses and the order doesn't matter, there are two ways to specify that the answer validate should use an unordered comparison.</p>
+  <ol>
+    <li>Add an  <attr>unorderedCompare</attr> attribute to the award, making all comparisons for that award use an unordered comparison.</li>
+    <li>Add an <attr>unordered</attr> attribute to a <tag>math</tag> or a list (<tag>mathList</tag>, <tag>numberList</tag>, <tag>textList</tag>, or <tag>booleanList</tag>), and any comparison involving that tag will use an unordered comparison.</li>
+  </ol>
+  
+
+  <example newNamespace><title>First three primes (in any order)</title>
+
+    <p>The first three prime numbers are (in any order) <mathinput name="p1"/>, <mathinput name="p2"/>, and <mathinput name="p3" />.
+    <answer name="primes">
+      <award targetsAreResponses="p1 p2 p3" unorderedCompare>
+        <when>($p1, $p2, $p3) = (2, 3, 5)</when>
+      </award>
+    </answer>
+    </p>
+
+  </example>
+
+  <example newNamespace><title>First three primes (in any order), alternative form</title>
+
+    <p>The first three prime numbers are (in any order) <mathinput name="p1"/>, <mathinput name="p2"/>, and <mathinput name="p3" />.
+    <answer name="primes">
+      <award targetsAreResponses="p1 p2 p3">
+        <when>($p1, $p2, $p3) = <math unordered>(2, 3, 5)</math></when>
+      </award>
+    </answer>
+    </p>
+
+  </example>
+
+
+
+</section>
+
+<section><title>Match partial</title>
+
+  <p>To give partial credit based on a partial match, add the <attr>matchPartial</attr> attribute to the <tag>award</tag>.  The match partial logic works on components of lists or vectors as well as pieces of a boolean logic combined with the <q>and</q> boolean operator.</p>
+
+  
+  <example newNamespace><title>First three primes (with match partial in fixed slots)</title>
+
+    <p>The first three prime numbers are (in ascending order) <mathinput name="p1"/>, <mathinput name="p2"/>, and <mathinput name="p3" />.
+    <answer name="primes">
+      <award targetsAreResponses="p1 p2 p3" matchPartial>
+        <when>$p1 = 2 and $p2 = 3 and $p3 = 5</when>
+      </award>
+    </answer>
+    </p>
+
+
+    <p>In this case, the numbers must be entered in the appropriate slots, but one will receive partial credit for each slot that matches.  For example, <m>3,4,5</m> will receive 33% credit (for the 5), but <m>3,5,2</m> will receive no credit.</p>
+
+  </example>
+
+
+  
+  <example newNamespace><title>First three primes (with match partial, no slots when use lists or vectors)</title>
+
+    <p>The first three prime numbers are (in ascending order) <mathinput name="p1"/>, <mathinput name="p2"/>, and <mathinput name="p3" />.
+    <answer name="primes">
+      <award targetsAreResponses="p1 p2 p3" matchPartial>
+        <when>($p1, $p2, $p3) = (2, 3, 5)</when>
+      </award>
+    </answer>
+    </p>
+
+      
+    <p>When matching partial using a vector, any combination of numbers in the correct order will match, regardless of their position in the vector. For example, both <m>3,4,5</m> and  <m>3,5,2</m> will receive 67% credit, as they contain a 3 followed by a 5.</p>
+
+
+  </example>
+
+  
+  <example newNamespace><title>First three primes (with match partial, restore fixed slots behavior even with lists or vectors)</title>
+
+    <p>The first three prime numbers are (in any order) <mathinput name="p1"/>, <mathinput name="p2"/>, and <mathinput name="p3" />.
+    <answer name="primes">
+      <award targetsAreResponses="p1 p2 p3" matchPartial matchByExactPositions>
+        <when>($p1, $p2, $p3) = (2, 3, 5)</when>
+      </award>
+    </answer>
+    </p>
+
+      
+    <p>When matching partial using a vector or a list, one can use the <attr>matchByExactPositions</attr> attribute to force the numbers to be in the matching slots.  For example, <m>3,4,5</m> will receive 33% credit (for the 5), but <m>3,5,2</m> will receive no credit.</p>
+
+
+  </example>
+
+
+  <example newNamespace><title>First three primes (with match partial and unordered)</title>
+
+    <p>The first three prime numbers are (in any order) <mathinput name="p1"/>, <mathinput name="p2"/>, and <mathinput name="p3" />.
+    <answer name="primes">
+      <award targetsAreResponses="p1 p2 p3" matchPartial unorderedCompare>
+        <when>($p1, $p2, $p3) = (2, 3, 5)</when>
+      </award>
+    </answer>
+    </p>
+
+      
+    <p>When matching partial and unordered compare, credit will be based on the number of matches, in any order. For example, both <m>5,4,3</m> will receive 67% credit and  <m>3,5,2</m> will receive full credit.</p>
+
+
+  </example>
+
+
+    
+  <example newNamespace><title>First three primes (with match partial, unordered, and single answer blank)</title>
+
+
+    <p>The first three prime numbers are (separated by commas, any order) .
+    <answer name="primes">
+      <award matchPartial unorderedCompare>
+        <math>2,3,5</math>
+      </award>
+    </answer>
+    </p>
+
+      
+    <p>Since have a single answer blank, we can use the simple <tag>award</tag> format (with no <tag>when</tag> tag and no <attr>targetsAreResponses</attr> attribute needed).  The partial credit will be based on the number of matches, but the demoninator will be the maximum of the number of items in the correct answer (3) and the number of items entered as the response.  For example, <m>5,4,3</m> will receive 67% credit and  <m>5,4,3,2</m> will receive 75% credit.</p>
+
+
+  </example>
+    
+</section>
+
+<section><title>De-duplicating</title>
+
+  <p>Although DoenetML does not yet have much support for sets, one can create a discrete set using the syntax <m>\{a,b,c\}</m> and then convert the set to a list with the <tag>convertSetToList</tag> to perform comparisons on the resulting list.</p>
+
+  <p>For example, imagine that S is a set of numbers containing duplicates, say <m>S = <math name="S">{a,b,b,c,a}</math></m>, converting it a list gives <convertSetToList>$S</convertSetToList>.  </p>
+
+
+  <p>An answer that requires the user to enter the list without duplicates compares the user's response to the converted set:
+  <answer>
+    <award matchPartial unorderedCompare><convertSetToList>$S</convertSetToList></award>
+  </answer>
+  </p>
+
+  <p>An answer that would allow the user to enter a list including duplicates would convert the user's response to a set and then back to a list before comparing it to the converted set:
+    <answer>
+      <mathinput name="userSet" />
+      <award matchPartial unorderedCompare>
+        <when><convertSetToList>{$userSet}</convertSetToList> =
+      <convertSetToList>$S</convertSetToList></when>
+      </award>
+  </answer>
+  </p>
+
+  <p>In the future, once direct comparisons of sets has been added, converting the sets to lists should be unnecessary.</p>
+</section>
+
+<section><title>Variable number of answer blanks</title>
+
+  <p>The above examples illustrated how to ask a user to specify a variable number of values by using a comma-separated list.  Another option is to use a variable number of answer blanks, where the user first requests the number of answer blanks.</p>
+  
+  <p>We illustrate this possibility with an example.  This example is more complex than the previous, as it uses both a <tag>map</tag> and a <tag>collect</tag> to create a variable number of <tag>mathinput</tag> tags and then collect them inside the <tag>award</tag>.</p>
+  
+  <p>It's a good idea to limit the number of answer blanks so that a user doesn't crash the brower by typing huge number.</p>
+    
+  <example newNamespace><title>Roots of a quadratic</title>
+    <setup>
+      <math name="a">4</math>
+      <math name="b">-3</math>
+      <math name="poly" simplify expand>(x-$a)(x-$b)</math>
+    </setup>
+  
+    <p>Find the roots of the polynomial <m>f(x) = $poly</m></p>
+  
+    <p>Number of roots: <mathinput name="n" /></p>
+  
+    <p>Values of roots: 
+    <map name="m">
+      <template><mathinput /></template>
+      <sources><sequence length="min($n,10)" /></sources>
+    </map>
+    </p>
+  
+    <answer>
+      <award matchPartial unorderedCompare><when>
+        <mathlist><collect tname="m" componentTypes="mathinput" prop="value"/></mathlist> = <mathlist>$a $b</mathlist>
+      </when></award>
+    </answer>
+  </example>
+
+</section>

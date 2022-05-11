@@ -1,0 +1,56 @@
+<problem>
+
+<setup>
+<selectFromSequence assignNames='a b' numberToSelect='2' withReplacement="true" from="2" to="10" />
+
+<math name='c' simplify='full'>$a-1</math>
+<math name='d' simplify='full'>$b+1</math>
+<math name="solution2" simplify>$c/$d</math>
+<math name='solutions' unordered='true'>0,$solution2</math>
+</setup>
+
+
+Solve for <m>x</m>:
+<me>x($a-x)=x+$b x^2</me>
+
+<p>How many solutions are there? <mathinput name="user_num_sol" size="3" /></p>
+
+<p>Enter the solutions:</p>
+
+<map name="xs">
+  <template>
+    <p><m>x =</m> <mathinput /></p>
+  </template>
+  <sources><sequence length="min($user_num_sol,10)" /></sources>
+</map>
+
+<answer>
+  <award>
+    <when matchpartial="true">
+      <mathlist>
+        <collect componentTypes="mathinput" prop="value" tname="xs" isResponse />
+      </mathlist>
+      =
+      <copy tname="solutions" />
+    </when>
+  </award>
+
+</answer>
+
+  <p>(Don't round your answer, but enter your result as a fraction, if needed.)</p>
+
+<solution>
+<p>To solve for <m>x</m>, we move all terms to one side then factor the result.  Subtracting <m>x+$b x^2</m> from both sides of the equation, we obtain:</p>
+<md>
+  <mrow>x($a-x)\amp =x+$b x^2</mrow>
+  <mrow>x($a-x) - x -$b x^2\amp =0</mrow>
+  <mrow>x($a-x -1 -$b x)\amp =0</mrow>
+  <mrow>x(<copy tname="c" /> -$d x)\amp =0.</mrow>
+</md>
+<p>Since we have the product of two factors equal to zero, one of the two factors must be zero.</p>
+
+<p>Either <m>x=0</m> or <m><copy tname="c" />-$d x=0</m>.  In the latter case, <m>x=<copy tname="c" />/$d</m>, so the solutions are
+<m>x=0</m> and <m>x=$solution2</m>.</p>
+</solution>
+
+</problem>

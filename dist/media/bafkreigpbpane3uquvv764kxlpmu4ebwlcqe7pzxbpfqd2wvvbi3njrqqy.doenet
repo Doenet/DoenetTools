@@ -1,0 +1,21 @@
+<title>Single linear equations problem set</title>
+
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <copy uri="doenet:contentId=000d38b65ea5cdc4237bb1e29225cb6cabb00a4ca42193d45a7f9083b9f89a42&doenetId=oB47Ie-Uf6OZ2I3xbak8V" componentType="problem" />
+
+  <copy uri="doenet:contentId=7abf7232e2f75bb4b6699803af2852dfc96cf18439c3c3fbf24a1b23204879dc&doenetId=x8tGhL381aqKQL6PRGrv4" componentType="problem" />
+
+  <copy uri="doenet:contentId=545cc8c2ae5c1be4223d6c1936927a9581e8db473ae9472a50e271bbfcb34d4e&doenetId=uaO3SJ2akz_tj82VCysP9" componentType="problem" />
+
+<copy uri="doenet:contentId=c41c88d89c7f167f9f64f1d40700e099f3b09584e64c94b7b4af1a2b53600d31&doenetId=hie9rp_6aCLcqROoegUOS" componentType="problem" />
+  
+  
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

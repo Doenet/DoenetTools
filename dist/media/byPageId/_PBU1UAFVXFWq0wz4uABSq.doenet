@@ -1,0 +1,35 @@
+<!--
+# DESCRIPTION
+# Introduction for UMTYMP Algebra Students
+## Author('Jonathan Rogness')
+## Institution('UMN')
+-->
+<problem>
+
+<setup>
+  <math name="ans">1</math>
+</setup>
+  
+<p>Your online homework problems this year will be assigned using the Distributed Open Education Network (Doenet).  This system has been developed by faculty and staff at the University of Minnesota, in collaboration with Ohio State University and Ithaca College.</p>
+
+<p>(In the WebWork orientation the next paragraph has a tour of the user interface on the screen.  We'll have to write that description later.)</p>
+
+<p>Remember that any scores listed in Doenet are only for your online assignments. Your written homework is still collected and graded by your teaching assistant and remains a separate score.  Incidentally, because Doenet allows you re-submit most problems until you receive full credit, we expect your online homework score to be above 95%.)</p>
+
+<p>Now it's time to answer your first question!  Doenet lets you type your answers in a box on the screen, and it is smart enough to understand arithmetic and other algebraic expressions.  For example, the correct answer to the problem below is the number <math>1</math>, but try to enter some other expression which equals one, like <math>4-3</math>, <math>-1+2</math>, or <math>0+1</math>.</p>
+
+<p>Once you have entered your answer, click the blue SUBMIT button to the right of the answer blank.  (The button has a bent arrow on it, which you might recognize as a symbol sometimes used for the "Enter" key on computers.)  If your answer is correct, the button will change to a green check mark.  If your answer is incorrect, you'll see a red X.  If that happens, fix your solution 
+and try again until you get it correct.</p>
+
+<p>Enter an expression which equals <math>1</math>:
+    <answer>
+      <award>
+      $ans
+      </award>
+  </answer>
+</p>
+</problem>
+
+<p>Some teachers, especially in elementary schools, use a check mark to say a problem is wrong, but as you move on to high school and college, it becomes more common for the check mark to mean "We checked this answer and it's correct."</p>
+
+<p>Remember: in Doenet, a check mark means your answer is correct!</p>

@@ -1,0 +1,122 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>ceil</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+    <aside><title>Attributes inherited from parent component <tag><ref>math</ref></tag> </title>
+    <li><attr>simplify</attr>
+      <em>(text)</em></li>
+    <li><attr>format</attr>  <em>(text)</em></li>
+    <li><attr>expand</attr>  <em>(boolean)</em></li>
+    <li><attr>displayDigits</attr>  <em>(integer)</em></li>
+    <li><attr>displayDecimals</attr>  <em>(integer)</em></li>
+    <li><attr>displaySmallAsZero</attr>  <em>(number)</em></li>
+    <li><attr>renderMode</attr>  <em>(text)</em></li>
+    <li><attr>unordered</attr>  <em>(boolean)</em></li>
+    <li><attr>createVectors</attr>  <em>(boolean)</em></li>
+    <li><attr>createIntervals</attr>  <em>(boolean)</em></li>
+    <li><attr>functionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>targetsAreFunctionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>splitSymbols</attr> <em>(boolean)</em></li>
+    <li><attr>groupCompositeReplacements</attr> <em>(boolean)</em></li></aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>ceil</tag><idx><tag>ceil</tag></idx> component renders the result of the ceiling function applied to the enclosed numerical expression or math input.  The ceiling function returns the least integer greater than or equal to a given rational number.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1:  <tag>ceil</tag> used within a mathematical display (<tag>m</tag>)</title>
+<p>In the sample code below, the <tag>ceil</tag> component is used to display the result of the ceiling function evaluated at a numerical input within a block of mathematical text which has been rendered with the <ref><tag>m</tag></ref> component.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;
+  &lt;m&gt;\mathrm{ceil} (4.2) = \lceil 4.2 \rceil = &lt;ceil&gt;4.2&lt;/ceil&gt;&lt;/m&gt;
+&lt;/p&gt;
+</pre>
+        </example>
+      </subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>
+  <m>\mathrm{ceil} (4.2) = \lceil 4.2 \rceil = <ceil>4.2</ceil></m>
+</p>
+      </example>
+
+<!--******************************************************-->
+
+<subsection><title>Example 2: ceiling function input defined in <tag>setup</tag></title>
+<p>In the sample code below, the input to be evaluated with the <tag>ceil</tag> function has been predefined using the <ref><tag>number</tag></ref> component within a <ref><tag>setup</tag></ref> block.</p>
+  
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title> 
+<pre>
+&lt;setup&gt;
+  &lt;number name="x"&gt;12/5&lt;/number&gt;
+&lt;/setup&gt;
+
+&lt;me&lt;x = \frac{12}{5} = &dollar;x&lt;/me&gt;
+&lt;me&gt;\mathrm{ceil}(x) = \left\lceil \frac{12}{5} \right\rceil = &lt;ceil&gt;&dollar;x&lt;/ceil&gt;&lt;/me&gt;
+</pre>
+        </example>
+      </subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 2)</title>
+<setup>
+  <number name="x">12/5</number>
+</setup>
+
+<me>x = \frac{12}{5} = $x</me>
+<me>\mathrm{ceil}(x) = \left\lceil \frac{12}{5} \right\rceil = <ceil>$x</ceil></me>
+ 
+</example>
+
+<!--******************************************************-->
+
+<subsection><title>Example 3:  User-input to ceiling function </title>
+<p>In the sample code below, the input to be evalutated with the <tag>ceil</tag> function is supplied by the user through a <ref><tag>mathInput</tag></ref></p>
+  
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;m&gt;y = &lt;/m&gt;&lt;mathInput name="y"/&gt;
+&lt;p&gt;The ceiling of &lt;m&gt;y&lt;/m&gt; is: &lt;me&gt;\lceil y \rceil = &lt;ceil&gt;&dollar;y&lt;/ceil&gt;&lt;/me&gt;&lt;/p&gt;
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 3)</title>
+<m>y = </m><mathInput name="y"/>
+<p>The ceiling of <m>y</m> is: <me>\lceil y \rceil = <ceil>$y</ceil></me></p>
+</example>
+ 
+ 
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,58 @@
+<problem>
+<!-- <title>stability of a given discrete equilibrium, f=ax+bx^2</title> -->
+
+<setup>
+
+<select assignNames='x' > x y z u v w p alpha beta gamma</select>
+<select assignNames='n' > n t</select>
+
+<selectFromSequence assignNames='a' from='.1' to=' 1.9' step=' .1' exclude='1'/>
+<selectFromSequence assignNames='d' from='.5' to=' 2' step=' .5'/>
+<selectFromSequence assignNames='i' from='0' to='3' />
+<selectFromSequence assignNames='j' from='max(0, 1-$i)' to='3' />
+
+<number name='B'>2^$i *5^$j </number>
+<number name='b'>1/$B </number>
+
+<number name='E'>$a *$B </number>
+<number name='alpha'>$a +1</number>
+<number name='two_b'>2*$b </number>
+<number name='f_prime_E'>$alpha -2*$b *$E </number>
+<number name='abs_f_prime_E'>abs($f_prime_E )</number>
+
+</setup>
+
+
+The discrete dynamical system below has an equilibrium <m>E=$E </m>.  Determine if the equilibrium point, <m>E=$E </m>,  is stable or unstable.  Hint: Use the stability theorem for discrete systems.
+<md>
+  <mrow>$x _{ $n +1}\amp = $alpha $x _$n  - $b $x _$n ^2</mrow>
+  <mrow>$x _0\amp = $d</mrow>
+</md>
+
+<m>E = $E </m> is 
+<answer maximumNumberOfAttempts="1">
+<choiceinput inline>
+<choice credit='1'>stable</choice>
+<choice>unstable</choice>
+</choiceinput>
+</answer>
+
+
+<solution>
+<p>
+The dynamical system is already in function iteration form, with <m>$x _{ $n +1}  = f($x _$n )</m>
+for <m>f($x ) = $alpha x - $b $x ^2.</m>  The stability is determined by the derivative of <m>f</m> evaluated at the equilibria.</p>
+
+<p>Since
+<me>f'($x ) = $alpha  - $two_b $x ,</me>
+and 
+<me>f'($E ) = $alpha  -$two_b ($E ) = $f_prime_E ,</me>
+we see that
+<me>\left|f'($E ) \right| = $abs_f_prime_E  \lt  1.</me>
+The equilibrium <m>E=$E </m> is stable.
+</p>
+
+</solution>
+
+
+</problem>

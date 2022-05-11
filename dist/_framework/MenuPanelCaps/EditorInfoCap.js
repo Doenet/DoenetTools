@@ -1,14 +1,14 @@
 import React from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {authorItemByDoenetId, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, courseIdAtom, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 export default function EditorInfoCap() {
-  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const courseId = useRecoilValue(courseIdAtom);
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const pageId = useRecoilValue(searchParamAtomFamily("pageId"));
   let {color, image, label: course_label} = useCourse(courseId);
-  const pageInfo = useRecoilValue(authorItemByDoenetId(pageId));
-  const activityInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  const pageInfo = useRecoilValue(itemByDoenetId(pageId));
+  const activityInfo = useRecoilValue(itemByDoenetId(doenetId));
   if (!pageInfo) {
     return null;
   }

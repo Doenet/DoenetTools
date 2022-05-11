@@ -1,0 +1,62 @@
+<problem>
+<!-- <title>linear approximation, cubic, (x-a)^3 + c</title> -->
+
+<setup>
+
+  <select assignNames='x' >x y z t s</select>
+  <select assignNames='f' >f g h u v w p q r</select>
+  <selectFromSequence assignNames='a' from='1' to=' 7' />
+  <selectFromSequence assignNames='c' from='-10' to=' 10' />
+  <selectFromSequence assignNames='d' from='1' to=' 2' />
+  <math name='b' simplify='full' >$a +$d </math>
+  <math name='F' simplify='full' >($x -$a )^3 + $c </math>
+  <math name='answer' simplify='full' expand='true' >$d ^3 + $c  + 3 $d^2*($x -$b )</math>
+
+</setup>
+
+<p>
+Find the linear approximation to the function
+<me>$f ( $x  ) =   $F </me>
+around <m>$x = $b </m>.
+
+</p>
+<p>
+
+<m>L_{ $b  }( $x  ) =</m>
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers'>$answer </award>
+<award credit="0.8" name="simplifyMore">$answer </award>
+</answer>
+</p>
+<feedback condition="$simplifyMore">
+  <p>For full credit, simplify your answer.</p>
+</feedback>
+
+
+
+<solution>
+  <setup>
+    <math name='dF_b' simplify='full' >3*$d ^2</math>
+    <math name='F_b' simplify='full' >$d ^3 + $c </math>
+  </setup>
+
+<p>The linear approximation is the same thing as the tangent line.  The equation for the linear approximation around <m>$x =$b </m> is
+<me>L_{ $b  }($x ) = $f '($b )($x -$b ) + $f ($b ).</me>
+</p>
+
+<p>We could multiply out the cubic to calculate the derivative of <m>$f </m>, but we'll use the chain rule instead.   The derivative is
+
+<me>$f '($x ) = 3($x -$a )^2 \cdot 1 = 3($x -$a )^2.</me>
+
+Therefore <m>$f '($b ) = 3($b -$a )^2 = $dF_b </m> and <m>$f ($b ) = ($b -$a )^3  + $c  = $F_b</m>, and the linear approximation is
+<md>
+  <mrow>L_{ $b  }( $x  )\amp = <math simplify="numbersPreserveOrder">$dF_b ($x -$b )  + $F_b </math></mrow>
+  <mrow>\amp =$answer .</mrow>
+</md>
+
+</p>
+
+</solution>
+
+
+</problem>

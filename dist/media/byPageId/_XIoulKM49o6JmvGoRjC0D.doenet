@@ -1,0 +1,157 @@
+<title>Introduction to autonomous differential equations</title>
+
+<description>
+Introduction to solving autonomous differential equations, using a linear differential equation as an example.
+</description>
+
+
+
+
+<section><title>Video introduction</title>
+
+<figure>
+<video youtube="WtoVZL_doco" width="640px" height="360px"/>
+<caption>Introduction to autonomous differential equations</caption>
+</figure>
+<!--Video transcript -->
+
+<!-- End video transcript -->
+<!-- boxedvideo autonomous_differential_equation_introduction -->
+
+
+
+
+
+</section>
+
+<section><title>Overview of autonomous differential equation</title>
+
+
+<p>An autonomous differential equation is an equation of the form 
+<me>\frac{ dy }{ dt } = f(y).</me>
+Let's think of <m>t</m> as indicating time. This equation says that the
+rate of change <m>dy/dt</m> of the function <m>y(t)</m> is given by a some rule.
+The rule says that if the current value is <m>y</m>, then the rate of
+change is <m>f(y)</m>.</p>
+
+<p>The equation is called a differential equation, because it is an
+equation involving the derivative <m>dy/dt</m>.  The differential equation
+is called autonomous because the rule doesn't care what time <m>t</m> it
+is.  It only cares about the current value of the variable <m>y</m>.</p>
+
+<p>Given an autonomous differential equation, we'll often want to solve
+the equation, which means find a function a <m>y(t)</m> whose derivative
+<m>dy/dt</m> is equal to <m>f(y)</m>.</p>
+
+
+
+
+</section>
+
+<section><title>A linear differential equation</title>
+
+
+<p>An example of an autonomous differential equation, let's let <m>f(y)</m> be
+the linear function <m>f(y)=2y</m>, so the equation is
+<me>\frac{ dy }{ dt } = 2y.</me>
+which we could also write as
+ <me>\frac{ dy }{ dt }(t) = 2y(t),</me>
+but, usually, we won't write out the explicit dependence on <m>t</m>.</p>
+
+<p>We've ended up with a linear differential equation, one of the
+simplest types.</p>
+
+
+
+
+<subsection><title>Solution methods</title>
+
+
+<p>How can we solve this equation, i.e., find a function <m>y(t)</m> that, if we
+differentiate, we get the function <m>y(t)</m> back, only multiplied by
+two?  We have three main methods for solving autonomous differential
+equations.</p>
+
+<ol><li><alert>Numerical methods.</alert> We can approximate the continuous change of the
+differential equation with discrete jumps in time,  By doing this, we
+get a formula for evolving from one time step to the next (like a a discrete
+dynamical system).  We can then use a computer to calculate this
+approximation to the solution.</li>
+
+<li><alert>Graphical methods.</alert>  We can use a plot of the graph of <m>f(y)</m> to
+determine the behavior of <m>y(t)</m>.</li>
+
+<li><alert>Analytic methods.</alert>  We can use mathematics to find a function <m>y(t)</m>
+that satisfies the differential equation.</li>
+</ol>
+
+
+
+
+</subsection>
+
+<subsection><title>The Guess and Check method</title>
+
+
+<p>Here, let's try an analytic method.  We'll use an important analytic
+method, which is called <em>guess and check</em>.  Guess and check is a
+perfectly valid method because, if you can find any function that
+satisfies the equation, you've found a solution.  It doesn't matter
+what method you use to find the function; as long as you can show it
+is a solution, you've accomplished the task.</p>
+
+<p>The way to guess is to use your knowledge and intuition above
+derivatives to find a function whose derivative behaves in the
+required way.</p>
+
+<p>Here we want to find a function where, if we take the derivative, we
+get the function back, only multiplied by 2.  Let's forget about the
+factor of two for a moment.  Do you know any function that is it's own
+derivative?  </p>
+
+<p>The exponential function fits the bill.  Remember that
+<me>\frac{ d }{ dt } e^t = e^t.</me>
+so if <m>y(t)=e^t</m>, then <m>\frac{ dy }{ dt } = e^t = y(t)</m>.  </p>
+
+<p>That's pretty close to the right behavior.  We just want the
+derivative to bring down a factor of two.  Remember the chain
+rule and how the chain rule says that the derivative of <m>f(g(t))</m>
+gives the derivative of <m>f</m> multiplied by the derivative of <m>g</m>.  If
+we make <m>g(t)=2t</m>, then its derivative is 2, so we multiply by 2.  In
+fact, if
+<me>y(t) = e^{2t}</me>
+then 
+<me>\frac{ dy }{ dt } = 2e^{2t} = 2y(t).</me>
+That's exactly what we are looking for.  The function <m>y(t)=e^{2t}</m>
+solves the differential equation
+<me>\frac{ dy }{ dt } = 2y.</me>
+Our guess and check method found the solution.</p>
+
+
+
+
+</subsection>
+
+<subsection><title>The general solution</title>
+
+
+<p>We found a solution OK, but is <m>y(t)=e^{2t}</m> the only solution?  Is
+there any other function whose derivative is twice the function?</p>
+
+<p>What if we multiplied <m>y(t)</m> by 3?  We know that if we multiply a
+function by a constant number, that number just comes out of the
+derivative.  Let's try the function
+<me>y(t) = 3e^{2t}.</me>
+With that <m>y(t)</m>,
+<me>\frac{ dy }{ dt } = 6 e^{2t} = 2(3 e^{2t}) = 2y(t).</me>
+So the function <m>y(t)=3e^{2t}</m> works.  In fact so does <m>5e^{2t}</m>, <m>2.3
+e^{2t}</m> or <m>Ce^{2t}</m> for any number <m>C</m>.  In general any function of
+the form
+<me>y(t) = Ce^{2t}</me>
+will satisfy the differential equation <m>\frac{ dy }{ dt } = 2y</m>.  The
+constant number <m>C</m> just comes out of the derivative.  It turns out
+that all solutions are of this form.  We call <m>y(t)</m>,
+the <em>general solution</em> to the differential equation.</p>
+</subsection>
+
+</section>

@@ -1,0 +1,114 @@
+<!--
+  Where/Who/How should # of attempts be set?
+
+  In WebWork, this one limited to two attempts.
+-->
+
+<!--
+#DESCRIPTION
+##  Calculus: Functions
+##ENDDESCRIPTION
+
+
+## DBsubject(Algebra)
+## DBchapter(Transformations of functions and graphs)
+## DBsection(Symmetry: even, odd, neither)
+## Date(08/26/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## Level(2)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('1.1')
+## Problem1('63')
+## KEYWORDS('calculus', 'function', 'even', 'odd')
+-->
+<setup>
+  <variantControl nvariants="4" variants="1 2 3 4"/>
+  <select assignNames="(f ans1 g ans2)" >
+    <option selectForVariants="1">
+      <math>2 cos(x/2)+4</math>
+      <text>Even</text>
+      <math>(x-2.5)(x+2.5)x</math>
+      <text>Odd</text>
+    </option>
+    <option selectForVariants="2">
+      <math>2 sin(x/2)-4</math>
+      <text>Neither</text>
+      <math>(1/32)(x-2)(x+2)(x-4)(x+4)</math>
+      <text>Even</text>
+    </option>
+    <option selectForVariants="3">
+      <math>4 arctan(x)</math>
+      <text>Odd</text>
+      <math>4-(1/8)*x^2</math>
+      <text>Even</text>
+    </option>
+    <option selectForVariants="4">
+      <math>2 sin(x/2)+4</math>
+      <text>Neither</text>
+      <math>4-(1/8)*x^2</math>
+      <text>Even</text>
+    </option>
+  </select>
+</setup>
+
+The graph below has two functions <m>f</m> (<copy tname="curveF" prop="styleDescription" /> line) and <m>g</m> (<copy tname="curveG" prop="styleDescription" /> line).
+
+<p>Expanded polynomial: $polyExpandSimplify.</p>
+<graph xmax="8" xmin="-8" ymin="-8" ymax="8">
+  <curve name="curveF" styleNumber="1">
+    <function formula="$f" />
+  </curve>
+  <curve name="curveG" styleNumber="2">
+    <function formula="$g" />
+  </curve>
+</graph>
+
+<p>The function <m>f</m> (<copy tname="curveF" prop="styleDescription" /> line) is:
+
+  <answer name="studentAns1">
+  <choiceinput inline>
+    <choice credit="$ans1=Even">Even</choice>
+    <choice credit="$ans1=Odd">Odd</choice>
+    <choice credit="$ans1=Neither">Neither</choice>
+  </choiceinput>
+  </answer>
+</p>
+
+<p>The function <m>g</m> (<copy tname="curveG" prop="styleDescription" /> line) is:
+
+  <answer name="studentAns2">
+  <choiceinput inline>
+    <choice credit="$ans2=Even">Even</choice>
+    <choice credit="$ans2=Odd">Odd</choice>
+    <choice credit="$ans2=Neither">Neither</choice>
+  </choiceinput>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        <m>f</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans1
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <m>g</m>
+      </cell>
+      <cell></cell><cell></cell>
+      <cell>
+        $ans2
+      </cell>
+   </row>
+  </tabular>
+</solution>

@@ -1,0 +1,226 @@
+<problem>
+<!-- <title>Sketch the derivative of piecewise linear, worksheet</title> -->
+
+<setup>
+
+<function name='g1' variables='x'>-x</function>
+<function name='g2' variables='x'>x</function>
+<function name='g3' variables='x'>6-2*x</function>
+
+<math name='m1'>0.5</math>
+<math name='m2'>-1.5</math>
+<math name='m3'>3</math>
+
+<math fixed name='x1'>-3</math>
+<math fixed name='x2'> 0</math>
+<math fixed name='x3'> 3</math>
+<math fixed name='x4'> 6</math>
+
+</setup>
+
+
+The graph of a piecewise linear function  <m>f(x)</m> is given below.  It is composed of three linear pieces.
+
+<graph xmin='-3.5' xmax='7' ymin='-3' ymax='8' xlabel='x' ylabel='f(x)' showNavigation="false" grid>
+
+<polyline name="polyline1" fixed vertices="(-3,1) (0,2.5) (3,-2) (6,7)" />
+<point>(0,0)
+<constraints><constrainTo>$polyline1</constrainTo></constraints>
+</point>
+
+</graph>
+
+
+<ol>
+
+<li>
+<p>For each of the three linear pieces, pick two points on the graph, estimate their coordinates, and from those coordinates estimate the slope of that line.</p>
+
+<p>You can drag a point around to get estimates of the coordinates of different points on each segment.</p>
+
+<p>Slope of left segment: 
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='0.1' allowedErrorIsAbsolute="true" simplifyOnCompare='numbers'>$m1 </award>
+</answer>
+
+</p>
+<p>
+
+Slope of middle segment: 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers' allowedErrorInNumbers='0.1' allowedErrorIsAbsolute="true">$m2 </award>
+</answer>
+
+</p>
+<p>
+
+Slope of right segment: 
+<answer>
+<award simplifyOnCompare='numbers' symbolicEquality='true' allowedErrorInNumbers='0.1' allowedErrorIsAbsolute="true">$m3 </award>
+</answer>
+
+</p>
+<p>
+
+(Round answer to nearest 10th or less.)</p>
+
+<p>Should your estimate of the slope depend on your choice of points? 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>no</choice>
+<choice>yes</choice>
+</choiceinput>
+</answer>
+</p>
+
+
+
+
+</li>
+
+<li>
+Imagine that, for each of the three linear pieces, you picked points that were closer and closer together.  The slope that you calculated would be the derivative.  For each linear piece, what is the derivative of <m>f(x)</m>?
+
+<p><m>f'(x)</m> for left segment: 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers' allowedErrorInNumbers='0.1' allowedErrorIsAbsolute="true">$m1 </award>
+</answer>
+
+</p>
+<p>
+
+<m>f'(x)</m> for middle segment: 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers' allowedErrorInNumbers='0.1' allowedErrorIsAbsolute="true">$m2 </award>
+</answer>
+
+</p>
+<p>
+
+<m>f'(x)</m> for right segment: 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers' allowedErrorInNumbers='0.1' allowedErrorIsAbsolute="true">$m3 </award>
+</answer>
+
+</p>
+<p>
+
+(Round answer to nearest 10th or less.)</p>
+
+
+
+</li>
+
+<li>
+Sketch the derivative of <m>f</m>.  Drag the points so that each <copy prop="styleDescription" tname="derivSeg1" /> line segment corresponds to the corresponding segment of the original function.
+
+
+
+<graph xmin='-3.5' xmax='7' ymin='-3' ymax='8' xlabel='x' ylabel='f(x)' showNavigation="false" grid>
+
+<copy tname='polyline1' />
+
+<point stylenumber='2' name='p1' x="$x1" y="2">
+<constraints><constrainToGrid dy="0.5"/></constraints></point>
+
+<point stylenumber='2' name='p2' x="$x2" y="3">
+<constraints><constrainToGrid dy="0.5"/></constraints></point>
+
+<linesegment name="derivSeg1" stylenumber='2' endpoints="$p1 $p2" />
+
+
+
+<point stylenumber='2' name='p3' x="$x2" y="-1">
+<constraints><constrainToGrid dy="0.5"/></constraints></point>
+
+<point stylenumber='2' name='p4' x="$x3" y="1">
+<constraints><constrainToGrid dy="0.5"/></constraints></point>
+
+<linesegment stylenumber='2' endpoints="$p3 $p4" />
+
+
+<point stylenumber='2' name='p5' x="$x3" y="4">
+<constraints><constrainToGrid dy="0.5"/></constraints></point>
+
+<point stylenumber='2' name='p6' x="$x4" y="4">
+<constraints><constrainToGrid dy="0.5"/></constraints></point>
+
+<linesegment stylenumber='2' endpoints="$p5 $p6" />
+
+</graph>
+
+<answer>
+<award matchPartial><when>
+<boolean><copy tname="p1" prop="y" /> = $m1 and
+<copy tname="p2" prop="y" /> = $m1</boolean>
+  and
+<boolean><copy tname="p3" prop="y" /> = $m2 and
+<copy tname="p4" prop="y" /> = $m2</boolean>
+  and
+<boolean><copy tname="p5" prop="y" /> = $m3 and
+<copy tname="p6" prop="y" /> = $m3</boolean>
+</when></award>
+</answer>
+
+<hint>
+  <p>For each segment of the function, is the slope constant or does it change? 
+  <answer weight="0"><choiceinput inline>
+    <choice credit="1">constant</choice>
+    <choice>changing</choice>
+  </choiceinput></answer>
+  Therefore, each segment that you draw should be
+    <answer weight="0"><choiceinput inline>
+    <choice credit="1">constant</choice>
+    <choice>changing</choice>
+  </choiceinput></answer>.
+  </p>
+</hint>
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+Many sets of points would do.  The slopes, from left to right, are <round numberdecimals="1">$m1  </round>, <round numberdecimals="1">$m2  </round>, and <round numberdecimals="1">$m3  </round>.  The estimates should not depend on choice of points as long as both points are on the same segment.
+</li>
+
+<li>
+The derivatives would be <round numberdecimals="1">$m1  </round>, <round numberdecimals="1">$m2  </round>, and <round numberdecimals="1">$m3  </round>, for the three segments, respectively.
+</li>
+
+<li>
+
+<graph xmin='-3.5' xmax='7' ymin='-3' ymax='8' xlabel='x' ylabel='f(x)' showNavigation="false">
+
+<copy tname='polyline1' />
+
+<point stylenumber="2" fixed>($x1,$m1)</point>
+<point stylenumber="2" fixed>($x2,$m1)</point>
+<point stylenumber="2" fixed>($x2,$m2)</point>
+<point stylenumber="2" fixed>($x3,$m2)</point>
+<point stylenumber="2" fixed>($x3,$m3)</point>
+<point stylenumber="2" fixed>($x4,$m3)</point>
+
+<linesegment stylenumber="2" fixed endpoints="($x1, $m1) ($x2, $m1)" />
+<linesegment stylenumber="2" fixed endpoints="($x2, $m2) ($x3, $m2)" />
+<linesegment stylenumber="2" fixed endpoints="($x3, $m3) ($x4, $m3)" />
+
+</graph>
+
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

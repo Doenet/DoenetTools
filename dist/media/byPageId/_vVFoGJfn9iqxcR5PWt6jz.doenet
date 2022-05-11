@@ -1,0 +1,208 @@
+<document><title><tag>when</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>matchPartial</attr>  <em>(boolean)</em></li>
+  <li><attr>unorderedCompare</attr>  <em>(boolean)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>when</tag><idx><tag>when</tag></idx> component is used for logical constructions relating to <tag><ref>award</ref></tag> conditions, <tag><ref>feedback</ref></tag> conditions, or displaying <tag><ref>conditionalContent</ref></tag>.  It's function is similar to an "if" statement in other languages.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: Using <tag>when</tag> within an <tag>award</tag></title>
+<p>The code below illustrates a simple use of the <tag>when</tag> component to award multiple answers to a math problem.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;1.  &lt;m&gt;\sqrt{4}  = &lt;/m&gt;
+  &lt;answer&gt;&lt;mathInput name="ans1"/&gt;
+    &lt;award&gt;
+      &lt;when&gt;
+        &dollar;ans1 = 2 or &dollar;ans1 = -2
+      &lt;/when&gt;
+    &lt;/award&gt;
+  &lt;/answer&gt;
+&lt;/p&gt;
+
+</pre>
+</example> 
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>1.  <m>\sqrt{4}  = </m>
+  <answer><mathInput name="ans1"/>
+    <award>
+      <when>
+        $ans1 = 2 or $ans1 = -2
+      </when>
+    </award>
+  </answer>
+</p>
+
+</example>
+
+
+<!--******************************************************-->
+<!-- revise.  Turns out this does not need a <when> at all...(in boolean) reference sketching the Gaussian curve for when you might need a <when> inside a boolean...
+
+
+<subsection><title>Example 2: Using <tag>when</tag> in a <tag>boolean</tag></title>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<p>In the sample code below, the <tag>when</tag> component is used within a <ref uri="doenet:doenetId=NyyVAjdloVrablDyGwaJu"><tag>boolean</tag></ref> defined within the <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> block. The <attr>unorderedCompare</attr> attribute allows the <ref><tag>group</tag></ref> of user-defined points and the <tag>group</tag> of predefined points to be seen as "equivalent" upon comparison without regard to the specific order in which the points are placed by the user. (See also <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref>, <ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref>, <ref uri="doenet:doenetId=STMxLaf-ic80S9duBU1WK"><tage>rectangle</tage></ref>, <ref uri="doenet:doenetId=DasOYIo38JZmCquq_mcCd"><tag>constraints</tag></ref>.)</p>
+<pre>
+&lt;p&gt;Draw an upward-pointing isoceles triangle inscribed within the square 
+  by dragging the points in the center to the correct locations.&lt;/p&gt;
+
+&lt;setup&gt;
+  &lt;point name="a"&gt;(-4,-4)&lt;/point&gt;
+  &lt;point name="b"&gt;(0,4)&lt;/point&gt;
+  &lt;point name="c"&gt;(4,-4)&lt;/point&gt;
+  &lt;point name="d"&gt;(4,4)&lt;/point&gt;
+  &lt;rectangle vertices="&dollar;a &dollar;d" draggable="false" name="square"/&gt;
+  
+  &lt;group name="triangleUp"&gt;&dollar;a &dollar;b &dollar;c&lt;/group&gt;
+  
+  &lt;group name="userGroup"&gt;
+    &lt;point name="userA"&gt;(0,0)
+      &lt;constraints&gt;&lt;constrainToGrid/&gt;&lt;/constraints&gt;
+    &lt;/point&gt;
+    &lt;point name="userB"&gt;(0,0)
+      &lt;constraints&gt;&lt;constrainToGrid/&gt;&lt;/constraints&gt;
+    &lt;/point&gt;
+    &lt;point name="userC"&gt;(0,0)
+      &lt;constraints&gt;&lt;constrainToGrid/&gt;&lt;/constraints&gt;
+    &lt;/point&gt;
+  &lt;/group&gt;
+  
+  &lt;boolean name="notPlaced"&gt;
+    &lt;when unorderedCompare&gt;&dollar;userGroup != &dollar;triangleUp&lt;/when&gt;
+  &lt;/boolean&gt;
+&lt;/setup&gt;
+  
+&lt;graph grid="dense"&gt;
+  &dollar;userGroup &dollar;square
+  &lt;triangle hide="&dollar;notPlaced" vertices="&dollar;triangleUp"/&gt;
+&lt;/graph&gt;
+
+&lt;p&gt;List of user-placed vertices: &dollar;userGroup&lt;/p&gt;
+&lt;p&gt;List of predefined vertices: &dollar;triangleUp&lt;/p&gt;
+</pre>
+</example> 
+</subsection>
+-->
+<!--*******************************************************-->
+<!-- 
+<example><title>What Doenet Renders (Example 2)</title>
+<p>Draw an upward-pointing isoceles triangle inscribed within the square by dragging the points in the center to the correct locations.</p>
+
+<setup>
+  <point name="a">(-4,-4)</point>
+  <point name="b">(0,4)</point>
+  <point name="c">(4,-4)</point>
+  <point name="d">(4,4)</point>
+  <rectangle vertices="$a $d" draggable="false" name="square"/>
+  
+  <group name="triangleUp">$a $b $c</group>
+  
+  <group name="userGroup">
+    <point name="userA">(0,0)
+      <constraints><constrainToGrid/></constraints>
+    </point>
+    <point name="userB">(0,0)
+      <constraints><constrainToGrid/></constraints>
+    </point>
+    <point name="userC">(0,0)
+      <constraints><constrainToGrid/></constraints>
+    </point>
+  </group>
+  
+<boolean name="notPlaced">$userGroup != $triangleUp</boolean>
+</setup>
+  
+<graph grid="dense">
+  $userGroup $square
+  <triangle hide="$notPlaced" vertices="$triangleUp"/>
+</graph>
+
+<p>List of user-placed vertices: $userGroup</p>
+<p>List of predefined vertices: $triangleUp</p>
+  
+</example>-->
+
+<!--******************************************************-->
+<!--
+
+for (let attrName of ["symbolicEquality", "expandOnCompare",
+      "simplifyOnCompare", "unorderedCompare", "matchByExactPositions",
+      "allowedErrorInNumbers", "includeErrorInNumberExponents",
+      "allowedErrorIsAbsolute",
+      "nSignErrorsMatched",
+      "nPeriodicSetMatchesRequired"
+
+
+
+
+
+
+  
+<subsection><title>Example 3: Using <tag>when</tag> in feedback</title>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+
+</pre>
+</example> 
+</subsection>-->
+
+<!--*******************************************************-->
+<!-- 
+<example><title>What Doenet Renders (Example 3)</title>
+
+</example>-->
+
+<!--  
+<boolean name="bool">$a = 1 and $b = 2 and $c = 3</boolean>
+<answer>
+  <mathInput name="a"/>
+  <mathInput name="b"/>
+  <mathInput name="c"/>
+  <mathInput name="d"/>
+  <award matchPartial>
+    <when>
+    $a = 1 and $b = 2
+    </when>
+  </award>
+</answer>
+
+
+  <conditionalContent condition="$bool">
+    <graph>
+      <conditionalContent>
+      <point x="1" y="1">
+        <when>$d=4</when>
+      </point>
+      </conditionalContent>
+    </graph>
+  </conditionalContent>-->
+
+  
+
+
+</section>
+</document>
+
+
+
+
+

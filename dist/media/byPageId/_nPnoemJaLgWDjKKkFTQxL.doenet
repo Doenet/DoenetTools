@@ -1,0 +1,76 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>tage</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>tage</tag><idx><tag>tage</tag></idx> component is a paragraph markup function which renders the enclosed text in the conventional markup-language self-closing tag format (i.e. &lt; componentName /&gt;).</p>
+<p>See also, the<tag><ref>tag</ref></tag> component, which may be used to render a standard tag (i.e. &lt; componentName &gt;).  Use of <tag>tage</tag> and <tag>tag</tag> will prevent errors with rendering these symbols, allowing them to be used for display rather than as functional components within the document. See example below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tag>tage</tag> component to render an <c>image</c> tag as text in the viewer</title>
+<p>In the sample code below, the use of the <tag>tage</tag> component to render the correct self-closing brackets for an <c>img</c> tag in HTML and an <c>image</c> tag in DoenetML is illustrated.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;When inserting an image into a basic HTML file, you can use the 
+  &lt;tage&gt;img&lt;/tage&gt; tag.  Not to be confused with the Doenet 
+  &lt;tage&gt;image&lt;/tage&gt; tag!&lt;/p&gt;
+</pre>
+</example> 
+</subsection>
+ 
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+
+<p>When inserting an image into a basic HTML file, you can use the 
+  <tage>img</tage> tag.  Not to be confused with the Doenet 
+  <tage>image</tage> tag!</p>
+  
+</example>
+
+<!--******************************************************-->
+
+<subsection><title>Example 2: <tag>tage</tag> component to render a <c>triangle</c> tag as text in the viewer</title>
+<p>In the sample code below, a paragraph of text explains how to use the <tag>triangle</tag> tag.  The text is enclosed within the <tag>tage</tag> component to render the self-closing brackets.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;p&gt;To create a 3-sided polygon within a graph, you can use the &lt;tage&gt;triangle&lt;/tage&gt; component.
+</pre>
+</example> 
+</subsection>
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<p>To create a 3-sided polygon within a graph, you can use the <tage>triangle</tage> component. </p> 
+</example>
+
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

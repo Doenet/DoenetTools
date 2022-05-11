@@ -1,0 +1,106 @@
+<title>Information about the Integration Exam</title>
+
+<p>The integration module exam is based on the Pure-time Differential Equation module.</p>
+
+<section><title>Material for the exam</title>
+
+<ol>
+<li><p>Solving pure-time differential equations</p>
+
+<ol>
+<li>Calculate a general solution to a pure-time differential equation as an indefinite integral, including an arbitrary constant.</li>
+
+<li>Given an initial condition, determine the value of the constant, resulting in a specific solution. </li>
+
+<li>Given a graph of the right hand side of a pure-time differential equation (e.g.,, a graph of <m>f(t)</m> for the equation <m>\frac{dx}{dt} = f(t)</m>), sketch a graph of the solution.  Be sure that your sketch matches the initial condition, as well as the intervals where the solution is increasing or decreasing. </li>
+
+<li>Estimate the solution to a pure-time differential equation using the Forward Euler algorithm.</li>
+</ol>
+</li>
+
+
+<li>
+<p>Integration</p>
+
+<ol>
+<li>Calculate an indefinite integral as an antiderivative, including an arbitrary constant.</li>
+<li>Calculate a definite integral, resulting in a single number.  Use the Fundamental Theorem of Calculus to determine that single number from the indefinite integral.</li>
+<li>Estimate a definite integral using a left or right Riemann sum.</li>
+</ol>
+</li>
+
+<li>
+<p>Applications of integration</p>
+
+<ol>
+<li>Compute the area between the graph of a function and the <m>x</m>-axis.</li>
+<li>Use an integral to calculate the average of a quantity over an interval.</li>
+<li>Use a pure time differential equation to solve for population size as a function of time.</li>
+</ol>
+</li>
+
+</ol>
+</section>
+
+<section>
+  <title>Study aids</title>
+
+<ol>
+<li><p><ref uri="doenet:doenetId=qjUm6FBgW_dSytFKOj_Ze" >Integration practice exam</ref></p>
+
+<p>All questions that may appear in the Integration exam are available in the <ref uri="doenet:doenetId=qjUm6FBgW_dSytFKOj_Ze" >Integration practice exam</ref>.  In both the practice exam and the actual Integration Exam, the set of problems as well as values of numbers, variables, parameters, and other quantities are selected randomly.  You will want to generate attempts of the practice exam to see the larger array of problems.  Given the random nature, we cannot guarantee that you will actually see all the problems that will appear on the actual Integration Exam.  But the more problems you work on, the greater the chance you will work on problems that will show up on the test.</p>
+
+<p>Unlike the actual Integration Exam, the practice exam will give you immediate feedback and allow you to view the solutions.</p>
+</li>
+  
+<li><p>Quiz problems</p>
+<p><ref uri="doenet:doenetId=rvaeyhtHHy499dBkx918i">Quiz 7</ref> and <ref uri="doenet:doenetId=ZLlfG53YaDyWD3GOo7qsZ">Quiz 8</ref> also contains some of the problems that are on the Integration Exam.  Even after the due date of quizzes, you can still generate more attempts and check out how well you can answer those questions.
+</p></li>
+
+<li><p>Problem sets</p>
+<p>
+The problem sets from the Pure-time Differential Equation module are also good review.</p></li>
+</ol>
+
+</section>
+
+<section>
+  <title>Exam rules</title>
+
+<ol>
+<li>You must bring your University ID card.</li>
+<li>You are allowed 50 minutes to take the exam.</li>
+<li>You are allowed to have one-half of one letter (8.5in <m>\times</m> 11in) sized sheet of paper of handwritten notes.  Double-sided is OK.</li>
+<li>You are allowed to have a scientific calculator in the exam.  However, graphing calculators are NOT allowed on this exam. </li>
+<li>No textbook or electronic equipment (other than scientific calculator) allowed.</li>
+
+</ol>
+</section>
+
+<section>
+  <title>Exam format</title>
+
+  <p>The exam will be taken on iPads and will essentially look like the practice exam, except that you will not be given feedback on your responses.</p>
+  
+  <p>You can change your response to each question as often as you like.  Your last response for each question at the time you submit exam will be the one that is graded.</p>
+
+  <p>The exam will not tell you which questions you got right or wrong.  However, immediately after taking the exam, you can go to the gradebook and click on the Integration Exam to see your score and the solutions to the problems.</p>
+</section>
+
+
+
+<section>
+  <title>Exam times</title>
+
+<p>You can take the exam up to two times.  You can take it once on Thursday, November 18 and once on Thursday, December 2. Each day, the exam is offered at the following times.  Plan to take it during the time that you are officially registered.  (You can check with a proctor to see if there is a computer available to take the exam at one of the other times, but there may not be extra computers available.)</p>
+
+<ul>
+<li>11:15 AM - 12:05 PM</li>
+<li>12:20 PM - 1:10 PM</li>
+<li>1:25 PM - 2:15 PM</li>
+</ul>
+<p>Exam location:  Vincent Hall, room 16</p>
+
+<p>If you take the exam twice, your exam score will be the maximum of your scores from the two attempts.</p>
+
+</section>

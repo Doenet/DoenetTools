@@ -1,0 +1,85 @@
+<title>Quiz 4</title>
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <select numberToSelect="6" assignNames="((problem1)) ((problem2)) ((problem3)) ((problem4)) ((problem5)) ((problem6))">
+    <option>
+      <select assignNamesSkip="2">
+        <option>
+          <copy uri="doenet:contentId=bf85d055a2ab4fe84eb59ca750f76e35abcebcf1ddc91942c2d0e73bda7c6ada&doenetId=14WZ26bC4zq4LuJFQcv99" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=12ac2a4e31fca65598e88becfe4d1b10898b38d3cf27f7fc4614b92a7f80112b&doenetId=V92VnfkD59VqCm4d7l4M7" componentType="problem" />
+        </option>
+      </select>
+    </option>
+
+    <option>
+      <select assignNamesSkip="2">
+        <option>
+          <copy uri="doenet:contentId=8409e2b87c6daeb201782022b12388682e5b9dc71b2848f03a58af31ac4af575&doenetId=h-wCu50GFOJGVpXZ1buIM" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=8ad6973f2bcc516260ddced09cb66a5d1f0976082720afac943161ffd9d21c2f&doenetId=WnBir_IkhDyNPVCeRxUWq" componentType="problem" />
+        </option>
+      </select>
+    </option>
+
+
+    <option>
+      <select assignNamesSkip="2">
+        <option>
+          <copy uri="doenet:contentId=cc3a6dabd9a726f5dddeecb2b4b85f4596bdb4cc0a1c37c8609347140a86e42e&doenetId=uTWFz_LhGl7ueSfQ25NUw" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=766fe80c8a29035f9e8c200e98bce6b2c6b570a57623a6770b6912897073d5fa&doenetId=F8e4PiJGvtW93DLLCzfSy" componentType="problem" />
+        </option>
+      </select>
+    </option>
+
+    <option>
+      <copy uri="doenet:contentId=a959843013a0cac883522d275259585c8974c18b382fa4b8a0124c04726f68df&doenetId=Fjim-ntSSnMnyA7pksyuf" componentType="problem" />
+    </option>
+
+    <option>
+      <select assignNamesSkip="2">
+        <option>
+        <copy uri="doenet:contentId=c518e9e8ea656d6134fde8f1f54e6a9022f891feaeb142b1067598b7d5fe2a92&doenetId=iVUSqiwAK1Wp6oUAVoMy9" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=a4ae0bfa36252c050e7acbea08c82adad0c309efac7af154be2af4380f423298&doenetId=pq_7Ua-0ZfT_Mi3cOWoij" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=f8682c0ca1342887f712ffd8f887ab6e4874efec4afd58f06f866c48344ddc52&doenetId=Q-aqDl7TYoqnuN8ta7E-u" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=885ecc661b40fe4541a37f57236b10a89712066b10d068dcffb7f554bdfa1e82&doenetId=Tl9DjpAv9fvSZaomtZ6et" componentType="problem" />
+        </option>
+      </select>
+    </option>
+
+    <option>
+      <select assignNamesSkip="2">
+        <option>
+          <copy uri="doenet:contentId=b084ee734b9655d546536134305607738483a9f457a09612068e466b29d1f8f7&doenetId=y1_KvPj2PiJBKLyFMTsub" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=f6a5e872b79b20d67c7c7ae36eb91d26094f555af19ae9e88266af94dbd54dda&doenetId=BbX6qS1E1DR2Aay85isOU" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=82fa43faffcb3a2ee22e29b58029cfe859e04164bb015e41d07e3c1c2ae6efc2&doenetId=0KwZxue1XxzixdazqMDiS" componentType="problem" />
+        </option>
+        
+      </select>
+    </option>
+    
+  </select>
+  
+</paginator>
+
+
+
+<paginatorControls paginatorTname="pgn" />
+  

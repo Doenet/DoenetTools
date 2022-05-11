@@ -1,0 +1,251 @@
+<title>Elementary discrete dynamical systems problems</title>
+
+<description>
+Sample problems illustrating discrete dynamical systems.
+</description>
+<!-- 
+<style type="text/css">
+ol {list-style-type: lower-alpha;}
+ol ol {list-style-type: lower-roman;}
+</style> -->
+
+
+<section><title>Problem 1</title>
+
+<p>Consider the dynamical system
+<me>x_{n+1} = f(x_n) \quad \text{ for $ n=0,1,2,3, \ldots $ }</me>
+where the function <m>f</m> is graphed along with the diagonal <m>x_n =
+x_{n+1}</m>, below.</p>
+
+<image source="http://mathinsight.org/media/image/image/discrete_dynamical_system_example_function_1.png" description="A plot of a function along with the diagonal line." />
+
+<ol>
+<li>Find the equilibria of the dynamical system.  Indicate them on
+  the graph along as well as list them with their approximate
+  numerical values.</li>
+<li>Using cobwebbing, determine the stability of each equilibrium.
+  Be sure to indicate the direction of your cobwebbing with arrows.</li>
+</ol>
+
+</section>
+
+<section><title>Problem 2</title>
+
+
+<p>Consider the dynamical system
+<me>y_{t+1} = g(y_t) \quad \text{for $ t=0,1,2,3, \ldots $  ,}</me>
+where the function <m>g</m> is graphed along with the diagonal <m>y_t =
+y_{t+1}</m>, below.</p>
+
+<image source="http://mathinsight.org/media/image/image/discrete_dynamical_system_example_function_2.png" description="A plot of a function along with the diagonal line." />
+
+<ol>
+<li>Find the equilibria of the dynamical system.  Indicate them on
+  the graph along as well as list them with their approximate
+  numerical values.</li>
+<li>Using cobwebbing, determine the stability of each equilibrium.
+  Be sure to indicate the direction of your cobwebbing with arrows.</li>
+</ol>
+
+
+</section>
+
+<section><title>Problem 3</title>
+
+
+<p>Consider the dynamical system
+  <me>q_{t+1} - q_t = \frac{a q_t +b}{c}, \quad \text{for $ t=0,1,2,3,
+  \ldots $ }</me>
+  where <m>a</m>, <m>b</m>, and <m>c</m> are parameters.  Find all
+  equilibria.</p>
+
+
+</section>
+
+<section><title>Problem 4</title>
+
+<p>Consider the dynamical system
+  <me>m_{n+1} - m_n = \frac{b m_n +c}{d}, \quad \text{for $ n=0,1,2,3,
+  \ldots $ }</me>
+  where <m>b</m>, <m>c</m>, and <m>d</m> are parameters.  Find all
+  equilibria.</p>
+
+
+</section>
+
+<section><title>Problem 5</title>
+
+<p>Consider the dynamical system
+  <me>r_{t+1} = \frac{a r_t +b}{c}, \quad \text{for $ t=0,1,2,3,
+  \ldots $  }</me>
+  where <m>a</m>, <m>b</m>, and <m>c</m> are parameters.  Find all
+  equilibria.</p>
+  
+</section>
+
+<section><title>Problem 6</title>
+
+<p>Consider the dynamical system
+  <me>c_{t+1}-c_{t} = \frac{(c_t -a)(c_t-b)}{d}, \quad \text{for $ t=0,1,2,3,
+  \ldots $  }</me>
+  where <m>a</m>, <m>b</m>, and <m>d</m> are parameters.  Find all
+  equilibria.</p>
+
+</section>
+
+<section><title>Problem 7</title>
+
+
+<p>Consider the dynamical system
+  <me>b_{n+1}-b_{n} = \frac{(b_n -\alpha)(b_n-\beta)(b_n-\gamma)}{\delta}, \quad \text{for $ n=0,1,2,3,
+  \ldots $  }</me>
+  where <m>\alpha</m>, <m>\beta</m>,<m>\gamma</m>, and <m>\delta</m> are parameters.  Find all
+  equilibria.</p>
+ 
+
+</section>
+
+<section><title>Problem 8</title>
+
+<p>Consider the dynamical system
+  <me>m_{t+1} - m_t = -\frac{a}{b} m_t + \frac{a}{b}c, \quad \text{for $ t=0,1,2,3,
+  \ldots $  }</me>
+  where <m>a</m>, <m>b</m>, and <m>c</m> are parameters.</p>
+
+<ol>
+  <li>If one doubles the parameter <m>a</m> and doubles the parameter
+      <m>b</m>, how does the dynamical system change?</li>
+
+  <li>If you know that value of <m>\lambda = \frac{a}{b}</m>, do you
+      need to know the values of <m>a</m> and <m>b</m> individually to determine
+      the evolution of the dynamical system?  Why or why not?</li>
+      
+  <li>Rewrite the dynamical system in terms of <m>\lambda</m> and <m>c</m>
+      (with no dependence on <m>a</m> or <m>b</m> individually).</li>
+</ol>
+
+</section>
+
+<section><title>Problem 9</title>
+
+<p>Consider the dynamical system
+  <me>l_{n+1} = \frac{ab}{c} l_n e^{-l_n a b /c}, \quad \text{for $ n=0,1,2,3,
+  \ldots $  }</me>
+  where <m>a</m>, <m>b</m>, and <m>c</m> are parameters.</p>
+
+<ol>
+  <li>If one doubles the parameter <m>a</m> and doubles the parameter
+      <m>c</m>, how does the dynamical system change?</li>
+
+  <li>If one doubles the parameter <m>b</m> and doubles the parameter
+      <m>c</m>, how does the dynamical system change?</li>
+
+  <li>If one doubles the parameter <m>a</m> and halves the parameter
+      <m>b</m>, how does the dynamical system change?</li>
+
+  <li>If you know that value of <m>\gamma = \frac{ab}{c}</m>, do you
+      need to know the values of <m>a</m>, <m>b</m>, and <m>c</m> individually to determine
+      the evolution of the dynamical system?  Why or why not?</li>
+      
+  <li>Rewrite the dynamical system in terms of <m>\gamma</m>
+      (with no dependence on <m>a</m>, <m>b</m>, or <m>c</m> individually).</li>
+</ol>
+
+
+</section>
+
+<section><title>Problem 10</title>
+
+<p>What is an equilibrium of a dynamical system?  What does it mean
+  for an equilibrium to be stable?  To be unstable?</p>
+
+</section>
+
+<section><title>Problem 11</title>
+
+
+<p>Consider the dynamical system
+<me>h_{t+1} -h_t = \frac{h_t(h_t -1)}{2} \quad \text{for $ t=0,1,2,3, \ldots $  .}</me></p>
+
+<ol>
+<li>Find the equilibria.</li>
+
+<li><ol>
+<li>If <m>h_0 = -0.1</m>, calculate <m>h_1</m>, <m>h_2</m>, <m>h_3</m>, and <m>h_4</m>.</li>
+<li>If <m>h_0= 0.1</m>, calculate <m>h_1</m>, <m>h_2</m>, <m>h_3</m>, and <m>h_4</m>.</li>
+<li>Based on the above calculations, what can you infer about the
+  stability of one of the equilibria?</li>
+</ol></li>
+<li><ol>
+<li>If <m>h_0 = 0.99</m>, calculate <m>h_1</m>, <m>h_2</m>, <m>h_3</m>, and <m>h_4</m>.</li>
+<li>If <m>h_0= 1.01</m>, calculate <m>h_1</m>, <m>h_2</m>, <m>h_3</m>, and <m>h_4</m>.</li>
+<li>Based on the above calculations, what can you infer about the
+  stability of one of the equilibria?</li>
+</ol></li>
+</ol>
+
+
+</section>
+
+
+<section><title>Problem 12</title>
+
+
+<p>Consider the dynamical system
+<me>S_{t+1} -S_t = \frac{S_t(1-S_t)}{2} \quad \text{for $ t=0,1,2,3, \ldots $  .}</me></p>
+
+<ol>
+<li>Find the equilibria.</li>
+
+<li><ol>
+<li>If <m>S_0 = -0.01</m>, calculate <m>S_1</m>, <m>S_2</m>, <m>S_3</m>, and <m>S_4</m>.</li>
+<li>If <m>S_0= 0.01</m>, calculate <m>S_1</m>, <m>S_2</m>, <m>S_3</m>, and <m>S_4</m>.</li>
+<li>Based on the above calculations, what can you infer about the
+  stability of one of the equilibria?</li>
+</ol></li>
+<li><ol>
+<li>If <m>S_0 = 0.9</m>, calculate <m>S_1</m>, <m>S_2</m>, <m>S_3</m>, and <m>S_4</m>.</li>
+<li>If <m>S_0= 1.1</m>, calculate <m>S_1</m>, <m>S_2</m>, <m>S_3</m>, and <m>S_4</m>.</li>
+<li>Based on the above calculations, what can you infer about the
+  stability of one of the equilibria?</li>
+</ol></li>
+</ol>
+
+
+
+</section>
+
+<section><title>Problem 13</title>
+
+
+<p>Consider the dynamical system
+<me>q_{n+1} -q_n = a q_n \quad \text{for $ n=0,1,2,3, \ldots $  }</me>
+where <m>a</m> is a parameter.</p>
+
+<ol>
+<li>Solve the dynamical system to give a formula for <m>q_n</m> in terms of the initial condition <m>q_0</m>, the parameter <m>a</m>, and the number <m>n</m>.</li>
+<li>Find the equilibria.</li>
+<li>For each equilibrium, determine for which values of <m>a</m> the equilibrium is stable.</li>
+</ol>
+
+
+</section>
+
+<section><title>Problem 14</title>
+
+
+<p>Consider the dynamical system
+<me>p_{n+1} = b p_n \quad \text{for $ n=0,1,2,3, \ldots $  }</me>
+where <m>b</m> is a parameter.</p>
+
+<ol>
+<li>Solve the dynamical system to give a formula for <m>p_n</m> in terms of the initial condition <m>p_0</m>, the parameter <m>b</m>, and the number <m>n</m>.</li>
+<li>Find the equilibria.</li>
+<li>For each equilibrium, determine for which values of <m>b</m> the equilibrium is stable.</li>
+</ol>
+
+<p>One you have worked on a few problems, you can compare your solutions to the 
+<ref uri='doenet:discrete_dynamical_system_elementary_problem_solutions'>ones we came up with</ref>
+.</p>
+
+</section>

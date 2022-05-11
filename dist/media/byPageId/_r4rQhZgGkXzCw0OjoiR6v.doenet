@@ -1,0 +1,437 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+<document><title><tag>function</tag> component</title>
+  
+<section><title>Associated Attributes</title>
+<sideBySide>
+<ul>
+  <li><attr>simplify</attr>  <em>(text)</em></li>
+  <li><attr>expand</attr>  <em>(boolean)</em></li>
+  <li><attr>xscale</attr>  <em>(number)</em></li>
+  <li><attr>yscale</attr>  <em>(number)</em></li>
+  <li><attr>nInputs</attr>  <em>(integer)</em></li>
+  <li><attr>nOutputs</attr>  <em>(integer)</em></li>
+  <li><attr>domain</attr>  <em>(_pointListComponent)</em></li>
+  <li><attr>label</attr>  <em>(text)</em></li>
+  <li><attr>showLabel</attr>  <em>(boolean)</em></li>
+  <li><attr>labelPosition</attr>  <em>(text)</em></li>
+</ul>
+<ul>
+  <li><attr>layer</attr>  <em>(number)</em></li>
+  <li><attr>minima</attr>  <em>(extrema)</em></li>
+  <li><attr>maxima</attr>  <em>(extrema)</em></li>
+  <li><attr>through</attr>  <em>(_pointListComponent)</em></li>
+  <li><attr>throughSlopes</attr>  <em>(mathList)</em></li>
+  <li><attr>variables</attr>  <em>(variables)</em></li>
+  <li><attr>symbolic</attr>  <em>(boolean)</em></li>
+  <li><attr>displayDigits</attr>  <em>(integer)</em></li>
+  <li><attr>displayDecimals</attr>  <em>(integer)</em></li>
+  <li><attr>displaySmallAsZero</attr>  <em>(boolean/number)</em></li>
+</ul>
+</sideBySide>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>function</tag><idx><tag>function</tag></idx> component defines a mathematical function that can be used for numerical or symbolic evaluation, answer validation, graphing, and other computations within Doenet.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<!--*******************************************************-->
+<!--No attributes - display with $function & evaluate using $$function()-->
+<!--*******************************************************-->  
+  
+<subsection><title>Example 1:  <tag>function</tag> without attributes</title>
+<p>In the sample code below, the <tag>function</tag> component
+is used without attributes to define a polynomial with
+<attr>name</attr> <c>f</c> in the <tag><ref>setup</ref></tag>
+section.  Unless otherwise specified, the default variable in DoenetML is <m>x</m>.</p>
+<p>There are several methods for displaying functions in the
+viewer as well as evaluating functions for answer validation.
+One method, which uses the notation &dollar;<c>f</c> for
+function display and &dollar;&dollar;<c>f(x)</c> for function
+evaluation, is shown below.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1) </title>
+<pre>
+&lt;setup&gt;
+  &lt;function name="f"&gt;x^2 + 3x - 2&lt;/function&gt;
+&lt;/setup&gt;
+  
+&lt;p&gt;Evaluate the function &lt;m&gt;f(x) = &dollar;f &lt;/m&gt; 
+  at &lt;m&gt;x = 2&lt;/m&gt;&lt;/p&gt;
+  
+&lt;p&gt;&lt;m&gt;f(2) = &lt;/m&gt;
+  &lt;answer&gt;
+    &lt;mathInput/&gt;
+      &lt;award&gt;&dollar;&dollar;f(2)&lt;/award&gt;
+  &lt;/answer&gt;
+&lt;/p&gt;
+
+</pre>
+</example>
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<setup>
+  <function name="f">x^2 + 3x - 2</function>
+</setup>
+
+<p>Evaluate the function <m>f(x) = $f </m> at <m>x = 2</m></p>
+  <p><m>f(2) = </m>
+    <answer>
+      <mathInput/>
+        <award>$$f(2)</award>
+    </answer>
+  </p>
+</example>
+  
+
+
+<!--*******************************************************-->
+<!--No attributes - display with <copy> & evaluate using <evaluate>-->  
+<!--******************************************************-->
+ 
+<subsection><title>Example 2:  <tag>function</tag> used with <tag>copy</tag> and <tag>evaluate</tag> components</title>
+<p>There are several methods for displaying functions in the viewer
+as well as evaluating functions for answer validation.  In the sample
+code below, an alternative method to that of the previous example is shown.
+In this case, the <tag><ref>copy</ref></tag> component is used for function
+display and the <tag><ref>evaluate</ref></tag> component is used for
+for function evaluation.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 2) </title>
+<pre>
+&lt;setup&gt;
+  &lt;function name="g"&gt;x^2 + 3x - 2&lt;/function&gt;
+&lt;/setup&gt;
+
+&lt;p&gt;Evaluate the function &lt;m&gt;g(x) = &lt;copy prop="formula" tname="g" /&gt;&lt;/m&gt;
+  at &lt;m&gt;x = 2&lt;/m&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;m&gt;g(2) = &lt;/m&gt;
+  &lt;answer&gt;
+    &lt;mathInput/&gt;
+      &lt;award&gt;&lt;evaluate function="&dollar;g" input="2"/&gt;&lt;/award&gt;
+  &lt;/answer&gt;
+&lt;/p&gt;
+
+</pre> 
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<setup>
+  <function name="g">x^2 + 3x - 2</function>
+</setup>
+
+<p>Evaluate the function <m>g(x) = <copy prop="formula" tname="g" /></m>
+  at <m>x = 2</m></p>
+
+<p><m>g(2) = </m>
+  <answer>
+    <mathInput/>
+      <award><evaluate function="$g" input="2"/></award>
+  </answer>
+</p>
+</example>
+
+
+<!--******************************************************-->
+<!--Numerical Evaluation of functions:-->
+
+<!--******************************************************-->
+  
+<subsection><title>Example 3:  <tag>function</tag> is numerical by default</title>
+<p>In the sample code below, the default numerical evaluation of
+functions in DoenetML is illustrated, as well as one way to force
+symbolic evaluation instead.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3) </title> 
+<pre>
+&lt;setup&gt;
+  &lt;function name="f"&gt;3x^2 - 15x^4/32 + 3x^6/192+1&lt;/function&gt;
+&lt;/setup&gt;
+
+&lt;p&gt;Using the &lt;tag&gt;function&lt;/tag&gt; component, functions 
+are defined numerically (rather than symbolically) by default.  As a 
+result, evaluation is accomplished with floating point arithmetic.  The
+function &lt;m&gt;f&lt;/m&gt; defined in the &lt;tag&gt;setup&lt;/tag&gt;
+section as &lt;copy prop="formula" tname="f"/&gt; evaluated at
+  &lt;m&gt;\pi&lt;/m&gt; yeilds:&lt;/p&gt;  
+  &lt;m&gt;f(\pi) = &dollar;&dollar;f(pi)&lt;/m&gt;.
+  
+&lt;p&gt;To acheive symbolic evaluation, you can specify the
+&lt;attr&gt;symbolic&lt;/attr&gt; attribute within the &lt;tag&gt;function&lt;/tag&gt;
+definition, as shown in the subsequent examples. Alternatively, you
+can override numerical evaluation and force symbolic evaluation using
+the &lt;tag&gt;evaluate&lt;/tag&gt; component with the &lt;attr&gt;forceSymbolic&lt;/attr&gt;
+attribute.  This method now yields:&lt;/p&gt;
+  &lt;m&gt;f(\pi) = &lt;evaluate forceSymbolic function="&dollar;f" input="pi" /&gt;&lt;/m&gt;. 
+
+&lt;p&gt;Numeric evaluation with symbolic values gives NaN.  As a result,
+using &lt;tag&gt;evaluate&lt;/tag&gt; without the &lt;attr&gt;forceSymbolic&lt;/attr&gt;
+attribute and evaluating at &lt;m&gt;x&lt;/m&gt; yields:&lt;/p&gt;
+  &lt;m&gt;f(x) = &lt;evaluate function="&dollar;f" input="x" /&gt;&lt;/m&gt;.
+</pre>
+</example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example newNameSpace><title>What Doenet Renders (Example 3)</title>
+<setup>
+  <function name="f">3x^2 - 15x^4/32 + 3x^6/192+1</function>
+</setup>
+
+<p>Using the <tag>function</tag> component, functions are defined numerically
+(rather than symbolically) by default.  As a result, evaluation is
+accomplished with floating point arithmetic.  The function <m>f</m>
+defined in the <tag>setup</tag> section as <copy prop="formula" tname="f"/> evaluated at <m>\pi</m> yeilds:</p>  
+  <m>f(\pi) = $$f(pi)</m>.
+  
+<p>To acheive symbolic evaluation, you can specify the
+<attr>symbolic</attr> attribute within the <tag>function</tag>
+definition, as shown in the subsequent examples. Alternatively, you
+can override numerical evaluation and force symbolic evaluation using
+the <tag>evaluate</tag> component with the <attr>forceSymbolic</attr>
+attribute.  This method now yields:</p>
+  <m>f(\pi) = <evaluate forceSymbolic function="$f" input="pi" /></m>. 
+
+<p>Numeric evaluation with symbolic values gives NaN.  As a result,
+using <tag>evaluate</tag> without the <attr>forceSymbolic</attr>
+attribute and evaluating at <m>x</m> yields:</p>
+  <m>f(x) = <evaluate function="$f" input="x" /></m>.
+</example>
+
+<!--******************************************************-->
+<!--Symbolic function with simplify attribute: none, full, 
+  numbers-->
+
+<!--******************************************************-->  
+
+<subsection><title>Example 4:  <tag>function</tag> with <attr>simplify</attr> attribute (part 1)</title>
+
+<p>In the sample code below, the same primary function is defined 
+with different values for the <attr>simplify</attr> attribute.  The 
+<attr>simplify</attr> attribute accepts the following text values: 
+<c>"full", "none", "numbers", and "numbersPreserveOrder"</c>.  To 
+correctly display the simplified form of the function, it must be 
+referenced within the <ref uri="doenet:doenetId=BYXQro7P7NJrtKyTCxJcX"><tag>math</tag></ref> component. The primary 
+function is <m>f(x) = g(x) = h(x) = 2x + 4 +3x + 7</m>. Since the aim 
+here is for symbolic simplification of the function, the <attr>symbolic</attr> 
+attribute is also used within the function definitions.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 4) </title>
+<pre>
+&lt;setup&gt;
+  &lt;function name="f" simplify="none" symbolic&gt;2x + 4 + 3x + 7&lt;/function&gt;
+  &lt;function name="g" simplify="full" symbolic&gt;2x + 4 + 3x + 7&lt;/function&gt;
+  &lt;function name="h" simplify="numbers" symbolic&gt;2x +2x + 4 + 3x + 7&lt;/function&gt;
+&lt;/setup&gt;
+
+  
+&lt;p&gt;This function uses the &lt;attr&gt;simplify="none"&lt;/attr&gt; attribute:
+  &lt;m&gt;f(x) = &lt;math&gt;&dollar;f&lt;/math&gt;&lt;/m&gt;&lt;/p&gt;
+
+&lt;p&gt;This function uses the &lt;attr&gt;simplify="full"&lt;/attr&gt; attribute:
+  &lt;m&gt;g(x) = &lt;math&gt;&dollar;g&lt;/math&gt;&lt;/m&gt;&lt;/p&gt;
+
+&lt;p&gt;This function uses the &lt;attr&gt;simplify="numbers"&lt;/attr&gt; attribute:
+  &lt;m&gt;h(x) = &lt;math&gt;&dollar;h&lt;/math&gt;&lt;/m&gt;&lt;/p&gt;
+
+</pre>
+</example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example newNameSpace><title>What Doenet Renders (Example 4)</title>
+<setup>
+  <function name="f" simplify="none" symbolic>2x + 4 + 3x + 7</function>
+  <function name="g" simplify="full" symbolic>2x + 4 + 3x + 7</function>
+  <function name="h" simplify="numbers" symbolic>2x + 4 + 3x + 7</function>
+</setup>
+
+
+<p>This function uses the <attr>simplify="none"</attr> attribute:  <m>f(x) = <math>$f</math></m></p>
+
+<p>This function uses the <attr>simplify="full"</attr> attribute:  <m>g(x) = <math>$g</math></m></p>
+
+<p>This function uses the <attr>simplify="numbers"</attr> attribute:  <m>h(x) = <math>$h</math></m></p>
+
+
+</example>
+
+
+<!--******************************************************-->
+<!--Symbolic function with simplify attribute: none, numbers, 
+  numbersPreserveOrder-->
+
+<!--******************************************************--> 
+  
+<subsection><title>Example 5:  <tag>function</tag> with <attr>simplify</attr> attribute (part 2)</title>
+<p>In the sample code below, the same primary function is defined with
+different values for the <attr>simplify</attr> attribute.  The primary function
+for all three cases is <m>f(x) = g(x) = h(x) = 2 - 5x - 3y + 5 + 5</m>.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 5) </title>
+<pre>
+&lt;setup&gt;
+  &lt;function name="f" simplify="none" symbolic&gt;2 - 5x - 3y + 5 + 5&lt;/function&gt;
+  &lt;function name="g" simplify="numbers" symbolic&gt;2 - 5x - 3y + 5 + 5&lt;/function&gt;
+  &lt;function name="h" simplify="numbersPreserveOrder" symbolic&gt;2 - 5x - 3y + 5 + 5&lt;/function&gt;
+&lt;/setup&gt;
+
+
+&lt;p&gt;This function uses the &lt;attr&gt;simplify="none"&lt;/attr&gt; attribute:
+  &lt;m&gt;f(x) = &lt;math&gt;&dollar;f&lt;/math&gt;&lt;/m&gt;&lt;/p&gt;
+
+&lt;p&gt;This function uses the &lt;attr&gt;simplify="numbers"&lt;/attr&gt; attribute:
+  &lt;m&gt;g(x) = &lt;math&gt;&dollar;g&lt;/math&gt;&lt;/m&gt;&lt;/p&gt;
+
+&lt;p&gt;This function uses the &lt;attr&gt;simplify="numbersPreserveOrder"&lt;/attr&gt; attribute:
+  &lt;m&gt;h(x) = &lt;math&gt;&dollar;h&lt;/math&gt;&lt;/m&gt;&lt;/p&gt;
+
+</pre>
+</example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example newNameSpace><title>What Doenet Renders (Example 5)</title>
+<setup>
+  <function name="f" simplify="none" symbolic>2 - 5x - 3y + 5 + 5</function>
+  <function name="g" simplify="numbers" symbolic>2 - 5x - 3y + 5 + 5</function>
+  <function name="h" simplify="numbersPreserveOrder" symbolic>2 - 5x - 3y + 5 + 5</function>
+</setup>
+
+
+<p>This function uses the <attr>simplify="none"</attr> attribute:  <m>f(x) = <math>$f</math></m></p>
+
+<p>This function uses the <attr>simplify="numbers"</attr> attribute:  <m>g(x) = <math>$g</math></m></p>
+
+<p>This function uses the <attr>simplify="numbersPreserveOrder"</attr> attribute:  <m>h(x) = <math>$h</math></m></p>
+
+
+</example>
+ 
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<!--<aside newNameSpace><title>Edge case:    </title>
+
+
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>-->
+
+<!--*******************************************************-->
+<!--
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+   
+</aside>-->
+ 
+</section>
+</document>
+
+<!--below taken from glossary-->
+<!--
+<section newNameSpace>
+  <title>Defining and evaluating a function</title>
+
+<p>Create a function with the default variable <m>x</m>:
+  <m>f(x) = <function name="f">3x^2 - 15x^4/32 + 3x^6/192+1</function></m>.
+</p>
+
+<p>Function is created as numerical function, by default, so
+  evaluating is done with floating point arithemetc.  <m>f(\pi) = $$f(pi)</m>.
+  One can override and force symbolic evaluation using the
+  full &lt;evaluate&gt; tag: 
+  <evaluate forceSymbolic function="$f" input="pi" />. 
+ Numeric evaluation with symbolic values gives NaN: $$f(x).</p>
+
+  <p>Define a symbolic function of <m>y</m>: 
+    <m>g(y) = <function name="g" variables="y" symbolic>sin(2pi y/10)</function>
+    </m>.  Now evaluations will be done symbolically by default, 
+    <m>g(20) = $$g(20)</m> or can be forced to be numeric: 
+    <evaluate forceNumeric function="$g" input="20" />.  
+    (We can display small numbers, less than <m>10^{-14}</m> in magnitude, 
+    as zero with <c>displaySmallAsZero</c>: 
+<evaluate forceNumeric displaySmallAsZero function="$g" input="20" />.)</p>
+
+
+  <p>Both symbolic and numerical functions can be graphed,
+ assuming they have numerical values.</p>
+
+<graph>
+  $f<copy tname="g" stylenumber="2" />
+</graph>
+
+</section>
+
+<section>
+  <title>Taking derivatives</title>
+
+  <p>Take the derivative of a function: <m>f'(x) = <derivative name="fp">$f</derivative></m>.  Since <m>f</m> was numerical so is <m>f'</m>: <m>f'(\pi) = $$fp(pi)</m>.</p>
+
+  <p>In addition to taking derivatives of functions, one can also take derivatives of expressions with the default variable <m>x</m>,  <derivative>1/y+e^(x^2)</derivative>, or <derivative>1/y+e^(x^2)</derivative>.</p>
+
+  <p>To include components inside the expression, wrap the expression in a &lt;math&gt;:  <number name="a" hide>5</number> 
+  <derivative><math>$a x^2y^3</math></derivative>.</p>
+
+</section>
+
+<section>
+<title>Extrema</title>
+
+  <p>If a function has numerical values, one can numerically calculate 
+    the extrema. (By default, extrema in the interval <m>[-100,100]</m> are
+    return.  Change the attribute xscale from its default of 1 to modify this
+ interval.)
+  </p>
+
+  <p>Use prop "minima" to get an array of minimum points of the form
+    <m>(x_i,f(x_i))</m>, where the <m>x_i</m> are the locations of the minima 
+    and the <m>f(x_i)</m> are the values of the minima.  
+<aslist><copy tname="f" prop="minima" /></aslist>.</p>
+
+  <p>The prop "minimumLocations" gives the locations <m>x_i</m> 
+    where the minima occur
+    (<aslist><copy tname="f" prop="minimumLocations" /></aslist>) and
+    "minimumValues" gives the values of those minima 
+    (<aslist><copy tname="f" prop="minimumValues" /></aslist>).  
+The third minimum occurs at <m>x_3 = <copy prop="minimumLocation3" tname="f" /></m> and the value of that minimum is <copy prop="minimumValue3" tname="f" />.</p>
+
+<p>One can similarly obtain the maximum points <aslist><copy tname="f" prop="maxima" /></aslist>, locations <aslist><copy tname="f" prop="maximumlocations" /></aslist> and values <aslist><copy tname="f" prop="maximumvalues" /></aslist>.  Or, get minima and maxima together using the "extrema" prop: <aslist><copy tname="f" prop="extrema" /></aslist>.</p>
+
+<graph>
+  $f
+  <copy tname="f" prop="minima" stylenumber="2"/>
+  <copy tname="f" prop="maxima" stylenumber="3"/>
+</graph>
+
+</section>-->
+
+
+
+
+
+
+
+
+
+
+
+
+

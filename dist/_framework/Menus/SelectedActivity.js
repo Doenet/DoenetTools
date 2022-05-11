@@ -8,10 +8,10 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import {toastType, useToast} from "../Toast.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import React, {useEffect, useRef, useState} from "../../_snowpack/pkg/react.js";
-import {useRecoilCallback, useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {useRecoilCallback, useRecoilValue, useSetRecoilState, atom} from "../../_snowpack/pkg/recoil.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {
-  authorItemByDoenetId,
+  itemByDoenetId,
   enrollmentByCourseId,
   findFirstPageOfActivity,
   selectedCourseItems,
@@ -71,14 +71,16 @@ export default function SelectedActivity() {
     label: recoilLabel,
     order,
     assignedCid,
+    isAssigned,
     parentDoenetId
-  } = useRecoilValue(authorItemByDoenetId(doenetId));
+  } = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const {
     renameItem,
     create,
     compileActivity,
-    deleteItem
+    deleteItem,
+    updateAssignItem
   } = useCourse(courseId);
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(recoilLabel);
   const addToast = useToast();
@@ -113,7 +115,7 @@ export default function SelectedActivity() {
   if (effectiveRole === "student") {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement(ActionButton, {
       width: "menu",
-      value: "Take Assignment",
+      value: "View Activity",
       onClick: () => {
         setPageToolView({
           page: "course",
@@ -131,7 +133,7 @@ export default function SelectedActivity() {
     }));
   }
   let assignActivityText = "Assign Activity";
-  if (assignedCid != null) {
+  if (isAssigned) {
     assignActivityText = "Update Assigned Activity";
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement(ActionButtonGroup, {
@@ -150,9 +152,7 @@ export default function SelectedActivity() {
             view: prev.view,
             params: {
               doenetId,
-              pageId: firstPageDoenetId,
-              sectionId: parentDoenetId,
-              courseId: prev.params.courseId
+              pageId: firstPageDoenetId
             }
           };
         });
@@ -191,20 +191,39 @@ export default function SelectedActivity() {
         }
       });
     }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ActionButton, {
+  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ActionButtonGroup, {
+    vertical: true
+  }, /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: assignActivityText,
     onClick: () => {
       compileActivity({
         activityDoenetId: doenetId,
         isAssigned: true,
-        courseId,
+        courseId
+      });
+      updateAssignItem({
+        doenetId,
+        isAssigned: true,
         successCallback: () => {
-          addToast("Activity Assigned.", toastType.INFO);
+          addToast("Activity Assigned", toastType.INFO);
         }
       });
     }
-  }), /* @__PURE__ */ React.createElement(Textfield, {
+  }), isAssigned ? /* @__PURE__ */ React.createElement(ActionButton, {
+    width: "menu",
+    value: "Unassign Activity",
+    alert: true,
+    onClick: () => {
+      updateAssignItem({
+        doenetId,
+        isAssigned: false,
+        successCallback: () => {
+          addToast("Activity Unassigned", toastType.INFO);
+        }
+      });
+    }
+  }) : null), /* @__PURE__ */ React.createElement(Textfield, {
     label: "Label",
     vertical: true,
     width: "menu",
@@ -240,19 +259,45 @@ export default function SelectedActivity() {
     }
   }));
 }
+const temporaryRestrictToAtom = atom({
+  key: "temporaryRestrictToAtom",
+  default: []
+});
 function AssignTo({updateAssignment}) {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const {
     isGloballyAssigned
-  } = useRecoilValue(authorItemByDoenetId(doenetId));
+  } = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const {value: enrolledStudents} = useRecoilValue(enrollmentByCourseId(courseId));
+  const [restrictedTo, setRestrictedTo] = useState([]);
+  async function getAndSetRestrictedTo({courseId: courseId2, doenetId: doenetId2}) {
+    let resp = await axios.get("/api/getRestrictedTo.php", {params: {courseId: courseId2, doenetId: doenetId2}});
+    setRestrictedTo(resp.data.restrictedTo);
+  }
+  async function updateRestrictedTo({courseId: courseId2, doenetId: doenetId2, emailAddresses}) {
+    let resp = await axios.post("/api/updateRestrictedTo.php", {courseId: courseId2, doenetId: doenetId2, emailAddresses});
+    setRestrictedTo(emailAddresses);
+  }
+  useEffect(() => {
+    if (!isGloballyAssigned) {
+      getAndSetRestrictedTo({courseId, doenetId});
+    }
+  }, [doenetId, isGloballyAssigned]);
   let enrolledJSX = enrolledStudents.reduce((allrows, row) => {
     if (row.withdrew == "0") {
-      return [...allrows, /* @__PURE__ */ React.createElement("option", {
-        key: `enrolledOpt${row.email}`,
-        value: row.email
-      }, row.firstName, " ", row.lastName)];
+      if (!isGloballyAssigned && restrictedTo.includes(row.email)) {
+        return [...allrows, /* @__PURE__ */ React.createElement("option", {
+          selected: true,
+          key: `enrolledOpt${row.email}`,
+          value: row.email
+        }, row.firstName, " ", row.lastName)];
+      } else {
+        return [...allrows, /* @__PURE__ */ React.createElement("option", {
+          key: `enrolledOpt${row.email}`,
+          value: row.email
+        }, row.firstName, " ", row.lastName)];
+      }
     } else {
       return allrows;
     }
@@ -274,8 +319,8 @@ function AssignTo({updateAssignment}) {
     options: enrolledJSX,
     disabled: isGloballyAssigned,
     onChange: (e) => {
-      let values = Array.from(e.target.selectedOptions, (option) => option.value);
-      console.log("values", values);
+      let emailAddresses = Array.from(e.target.selectedOptions, (option) => option.value);
+      updateRestrictedTo({courseId, doenetId, emailAddresses});
     },
     multiple: true
   }));
@@ -311,7 +356,7 @@ export function AssignmentSettings({role, doenetId, courseId}) {
     secondKeyToUpdate = null,
     secondValue
   }) => {
-    const oldAInfo = await snapshot.getPromise(authorItemByDoenetId(doenetId2));
+    const oldAInfo = await snapshot.getPromise(itemByDoenetId(doenetId2));
     let newAInfo = {...oldAInfo, courseId, [keyToUpdate]: value};
     if (secondKeyToUpdate) {
       newAInfo[secondKeyToUpdate] = secondValue;
@@ -335,7 +380,7 @@ export function AssignmentSettings({role, doenetId, courseId}) {
     }
     const resp = await axios.post("/api/saveAssignmentToDraft.php", dbAInfo);
     if (resp.data.success) {
-      set(authorItemByDoenetId(doenetId2), newAInfo);
+      set(itemByDoenetId(doenetId2), newAInfo);
       if (valueDescription) {
         addToast(`Updated ${description} to ${valueDescription}`);
       } else {
@@ -348,7 +393,7 @@ export function AssignmentSettings({role, doenetId, courseId}) {
     }
   }, [addToast, courseId]);
   const loadRecoilAssignmentValues = useRecoilCallback(({snapshot}) => async (doenetId2) => {
-    const aLoadable = await snapshot.getPromise(authorItemByDoenetId(doenetId2));
+    const aLoadable = await snapshot.getPromise(itemByDoenetId(doenetId2));
     aInfoRef.current = {...aLoadable};
     setAssignedDate(aLoadable?.assignedDate);
     setDueDate(aLoadable?.dueDate);

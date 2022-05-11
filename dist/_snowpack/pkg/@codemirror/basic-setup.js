@@ -567,8 +567,7 @@ function foldGutter(config = {}) {
         update(update) {
             if (update.docChanged || update.viewportChanged ||
                 update.startState.facet(language) != update.state.facet(language) ||
-                update.startState.field(foldState, false) != update.state.field(foldState, false) ||
-                syntaxTree(update.startState) != syntaxTree(update.state))
+                update.startState.field(foldState, false) != update.state.field(foldState, false))
                 this.markers = this.buildMarkers(update.view);
         }
         buildMarkers(view) {

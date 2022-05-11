@@ -1,0 +1,6 @@
+<p>If restrict the domain of <m>f(x) = 
+<function name="f" formula="sin(2pi x/4)" domain="(-2,7)" /></m> to the interval <m>[-2,7]</m>, then evaluations of the function outside the domain return NaN: <m>f(-2) = $$f(-2), f(6) = $$f(7), f(8) = $$f(8)</m>.</p>
+
+<p>
+<m>f(7.01) = $$f(7.01)</m>
+</p>

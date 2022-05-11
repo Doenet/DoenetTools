@@ -1,0 +1,17 @@
+<title>Derivative intuition problem set</title>
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <copy uri="doenet:contentId=6a2a3172be83c7248ae2070b7d617e2d9aca0bdc1e38df7b736cae781180a94b&doenetId=dFggWn0729rjo5BedecsY" componentType='problem' />
+  <copy uri="doenet:contentId=f14703654b2fba3aeb617bfe30eedb5c7a63b90fd73cd839d30d987d5f9cdc9c&doenetId=gGWdRnxquogUwC7QonMQb" componentType='problem' />  
+  <copy uri="doenet:contentId=3df9847a44dd92b6dd70b9ab54737235eb321c86fbefe1664c2cfb26ebd9e55e&doenetId=pItnOaz4eI7OWV5DD2bX2" componentType='problem' />
+
+<copy uri="doenet:contentId=0e8e3184aa5657d4e1636b6196ab1560563618638ca7ec2929928680517cab56&doenetId=f5q-nzvMvJ-80XWtZgJ57" componentType='problem' />
+    
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

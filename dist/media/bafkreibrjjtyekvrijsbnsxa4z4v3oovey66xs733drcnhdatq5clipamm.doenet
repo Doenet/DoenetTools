@@ -1,0 +1,52 @@
+<title>case 2: weight="0" sections that don't count</title>
+
+
+<paginatorControls paginatorTname="pgn" />
+<paginator name="pgn" submitAllOnPageChange>
+
+
+<problem weight='0' name="overview">
+  <title>Overview</title>
+
+  <p>No answers in this section.  Just here for an explanation.  Just want this section to be completely ignored in gradebook, Credit Achieved menu, everywhere else.</p>
+
+  <p>The only reason this actually has to have a separate score is due to the paginator.  For the document score to be calculated even if this page isn't loaded, it needs to know that, whatever is in this page, it totals to zero weight.</p>
+
+</problem>
+
+<problem>
+  <title>Main activity 1</title>
+
+  <p>Here's where we teach you how to do the problems.  You should get feedback, see the Credit Achieved, and have score count in gradebook.</p>
+
+  <p>1: <answer>1</answer></p>
+
+  <p>1: <answer>1</answer></p>
+
+  
+</problem>
+
+<problem>
+  <title>Main activity 2</title>
+
+  <p>2: <answer>2</answer></p>
+
+  <p>2: <answer>2</answer></p>
+
+  
+</problem>
+
+<problem weight='0' name="addendum">
+  <title>Addendum</title>
+
+  <p>Some final words.  Works same as overview.</p>
+
+
+
+</problem>
+
+</paginator>
+
+
+<paginatorControls paginatorTname="pgn" />
+  

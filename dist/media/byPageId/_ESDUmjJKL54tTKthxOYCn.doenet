@@ -1,0 +1,248 @@
+<problem>
+<!-- <title>Forward euler, logistic with sketch</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='r' from='0.1' to=' 3.0' step=' 0.1'/>
+<selectFromSequence assignNames='K' from='100' to=' 1000' step=' 10'/>
+
+<!--original ceiling and floor function changed to a rounding function-->  
+<!--<selectFromSequence assignNames='y0' from='ceiling($K /10)' to=' floor($K *0.8)' />-->
+<math name='a'><round>$K/10</round></math>
+<math name='b'><round>$K*0.8</round></math>
+<!--<math name='a'>ceiling($K/10)</math>
+<math name='b'>floor($K*0.8)</math>-->
+  
+<selectFromSequence assignNames='y0' from='$a' to='$b' step='1' />
+<select assignNames='y' >x y z v w p</select>
+
+<function name='fun' variables='y'>$r *y *(1-y /$K )</function>
+<number name='dt'>floor(1/$r *10)*0.1</number>
+<evaluate name='f_y0' function="$fun" input="$y0" displayDigits="8" />
+<number name='y1' displayDigits="8">$y0 +$f_y0*$dt </number>
+<evaluate name='f_y1' function="$fun" input="$y1" displayDigits="8" />
+<number name='y2' displayDigits="8">$y1 +$f_y1*$dt </number>
+<evaluate name='f_y2' function="$fun" input="$y2" displayDigits="8" />
+<number name='y3' displayDigits="8">$y2 +$f_y2*$dt </number>
+<evaluate name='f_y3' function="$fun" input="$y3" displayDigits="8" />
+<number name='y4' displayDigits="8">$y3 +$f_y3*$dt </number>
+<number name='t1'>$dt </number>
+<number name='t2'>2*$dt </number>
+<number name='t3'>3*$dt </number>
+<number name='t4'>4*$dt </number>
+<number name='ymax'>$K *1.2</number>
+<number name='ymin'>-0.2*$ymax </number>
+
+<number name="grid_dy">ceil(0.02($ymax-$ymin)/5)5</number>
+</setup>
+
+<!--
+<p>debug r=<m>$r</m></p>
+<p>debug K=<m>$K</m></p>
+<p>debug y0=<m>$y0</m></p>
+<p>debug dt=<m>$dt</m></p>
+<p>debug a=<m>$a</m></p>
+<p>debug b=<m>$b</m></p>
+<p>debug fun=<m><copy prop="formula" tname="fun" /></m></p>
+<p>debug y1=<m>$y1</m></p>
+<p>debug y2=<m>$y2</m></p>
+<p>debug y3=<m>$y3</m></p>
+<p>debug y4=<m>$y4</m></p>-->
+
+  
+Consider the differential equation
+<md>
+  <mrow>\frac{ d$y }{ dt }\amp = <math simplify="numbersPreserveOrder" format="latex">$r  $y  \left(1- \frac{ $y  }{ $K  } \right)</math></mrow>
+  <mrow>$y _0\amp = $y0</mrow>
+</md>
+Using the Forward Euler algorithm and a time step of <m>\Delta t =$dt </m>, approximate <m>$y (t)</m> for <m>t= $t1 , $t2 , $t3 ,  $t4 </m>. 
+
+<p>If you round, keep at least four digits (meaning a number like 520100.0, 23.14, or 0.003421) for the answers you type in.  However, when calculating <m>$y ($t2 )</m>, for example, don't use the rounded version of <m>$y ($t1 )</m>, or you might not get four correct digits for <m>$y ($t2 )</m> or later times.</p>
+
+<p><m>$y ($t1 ) \approx</m> 
+<answer name="answer1">
+<award symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.001'>$y1 </award>
+<award credit='0.5' symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$y1 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer1" />
+
+  
+<p><m>$y ($t2 ) \approx</m> 
+<answer name="answer2">
+<award symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.001'>$y2 </award>
+<award credit='0.5' symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$y2 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer2" />
+
+  
+<p><m>$y ($t3 ) \approx</m> 
+<answer name="answer3">
+<award symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.001'>$y3 </award>
+<award credit='0.5' symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$y3 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer3" />
+
+  
+<p><m>$y ($t4 ) \approx</m> 
+<answer name="answer4">
+<award symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.001'>$y4 </award>
+<award credit='0.5' symbolicEquality='true' simplifyOnCompare allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$y4 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer4" />
+
+<p>Use the below applet to sketch the Forward Euler solution <m>$y (t)</m>.  For each time step, drag the corresponding point to the correct value of <m>$y (t)</m>.</p>
+
+
+<!-- graph 3 -->
+
+
+<setup>
+  <boolean name="showdt05">false</boolean>
+  <math name='xmax'>5*$dt</math>
+</setup>
+
+<p>
+  
+  <updateValue name="revealdt05" label="Show approximation points" type="boolean" tname="showdt05" newValue="true" hide="$showdt05" />
+  <updateValue name="hidedt05" label="Hide approximation points" type="boolean" tname="showdt05" newValue="false" hide="not $showdt05" />
+
+</p>
+
+<graph xmin="-0.1*$xmax" xmax="$xmax" ymin="$ymin" ymax="$ymax" width="500" height="400" fixAxes xlabel="t" ylabel="$y" grid>
+
+ 
+  <point name="P05_0" x="0" y="0" styleNumber="2" hide="not $showdt05">
+    <constraints>
+      <constrainToGrid dx="10" dy="$grid_dy" xoffset='0' yoffset='$y0'/>
+    </constraints>
+  </point>
+  <point name="P05_05" x="$dt" y="0" styleNumber="2" hide="not $showdt05">
+    <constraints>
+      <constrainToGrid dx="10" dy="$grid_dy" xoffset="$dt" yoffset="$y1" />
+    </constraints>
+  </point>
+  <point name="P05_1" x="2*$dt" y="0" styleNumber="2" hide="not $showdt05">
+    <constraints>
+      <constrainToGrid dx="10" dy="$grid_dy" xoffset="2*$dt" yoffset="$y2" />
+    </constraints>
+  </point>
+  <point name="P05_15" x="3*$dt" y="0" styleNumber="2" hide="not $showdt05">
+    <constraints>
+      <constrainToGrid dx="10" dy="$grid_dy" xoffset="3*$dt" yoffset="$y3" />
+    </constraints>
+  </point>
+  <point name="P05_2" x="4*$dt" y="0" styleNumber="2" hide="not $showdt05">
+    <constraints>
+      <constrainToGrid dx="10" dy="$grid_dy" xoffset="4*$dt" yoffset="$y4" />
+    </constraints>
+  </point>
+  <polyline stylenumber="2" vertices="$P05_0 $P05_05 $P05_1 $P05_15 $P05_2" fixed  hide="not $showdt05" />
+
+
+</graph>
+
+
+<p>Check <m>\Delta t =$dt </m> approximation:
+  <answer matchPartial>
+    <award targetsAreResponses="P05_0 P05_05 P05_1 P05_15 P05_2">
+      <when>
+        $(P05_0{prop='y'}) = $y0
+        and
+        $(P05_05{prop='y'}) = $y1
+        and
+        $(P05_1{prop='y'}) = $y2
+        and
+        $(P05_15{prop='y'}) = $y3
+        and
+        $(P05_2{prop='y'}) = $y4
+      </when>
+    </award>
+  </answer>
+</p>
+
+
+
+<solution>
+<p>For a differential equation
+<me>\frac{ d$y }{ dt } = f($y ),</me>
+(or we could write it as <m>\frac{ d$y }{ dt }(t)= f($y (t))</m>),
+the Forward Euler formula gives the value of <m>$y (t+ \Delta)</m> in terms of the previous value <m>$y (t)</m> and the slope <m>f($y (t))</m>:
+<me>$y (t+\Delta t) = $y (t) + f($y (t)) \Delta t.</me>
+</p>
+
+<p>In our case, the right hand side of the equation is 
+<me>f($y )=<math simplify="numbersPreserveOrder" format="latex">$r  $y  \left(1- \frac{ $y  }{ $K  } \right)</math></me>
+We let <m>\Delta t=$dt </m> and set <m>t=0</m> in order to calculate <m>$y ($t1 )</m>.</p>
+<p>
+<md>
+  <mrow>$y \left($t1 \right)\amp = $y (0) + f($y (0)) \Delta t</mrow>
+  <mrow>\amp = $y0 + f($y0) $dt </mrow>
+  <mrow>\amp = $y0+ \left[$r \times $y0 \left(1- \frac{ $y0 }{ $K  } \right) \right]$dt </mrow>
+  <mrow>\amp = $y0 + (<round numberdigits="8"><number>$f_y0 </number></round>)($dt )</mrow>
+  <mrow>\amp = $y1</mrow>
+</md>
+</p>
+
+<p>(Here we are rounding our intermediate calculations at 8 digits when displaying them, though we actually are keeping all the digits that the computer stores, which is 16, when making the calculations.  If you keep just these 8 digits for your future calculations, you later results might differ slightly, but they should be accurate enough to get the right 4 digit answers required.)</p>
+
+<p>Our first answer is that <m>$y ($t1 ) \approx <round numberdigits="4"><number>$y1 </number></round></m>.</p>
+
+<p>To calculate <m>$y ($t2 )</m> we set <m>t=$t1 </m> in our formula.
+<md>
+  <mrow>$y ($t2 )\amp = $y \left($t1 \right) + f\left($y \left($t1 \right)\right) \Delta t</mrow>
+  <mrow>\amp = $y1 + f($y1) $dt </mrow>
+  <mrow>\amp = $y1 + \left[$r \times $y1 \left(1- \frac{ $y1 }{ $K  } \right) \right]$dt </mrow>
+  <mrow>\amp = $y1 + ($f_y1)($dt )</mrow>
+  <mrow>\amp = $y2</mrow>
+</md>
+Our second answer is that <m>$y ($t2 ) \approx <round numberdigits="4"><number>$y2 </number></round></m>.</p>
+
+<p>To calculate <m>$y ($t3 )</m> we set <m>t=$t2 </m> in our formula.
+<md>
+  <mrow>$y ($t3 )\amp = $y ($t2 ) + f($y ($t2 )) \Delta t</mrow>
+  <mrow>\amp = $y2 + f($y2) $dt </mrow>
+  <mrow>\amp = <math format="latex">$y2 + \left[$r  $y2 \left(1- \frac{ $y2 }{ $K  } \right) \right]$dt </math></mrow>
+  <mrow>\amp = $y2 + ($f_y2)($dt )</mrow>
+  <mrow>\amp = $y3</mrow>
+</md>
+Our third answer is that <m>$y ($t3 ) \approx <round numberdigits="4"><number>$y3 </number></round></m>.</p>
+
+<p>To calculate <m>$y ($t4 )</m> we set <m>t=$t3 </m> in our formula.
+<md>
+  <mrow>$y ($t4 )\amp = $y ($t3 ) + f($y ($t3 )) \Delta t</mrow>
+  <mrow>\amp = $y3 + f($y3) $dt </mrow>
+  <mrow>\amp = <math format="latex">$y3 + \left[$r  $y3 \left(1- \frac{ $y3 }{ $K  } \right) \right]$dt </math></mrow>
+  <mrow>\amp = $y3 + ($f_y3)($dt )</mrow>
+  <mrow>\amp = $y4</mrow>
+</md>
+Our fourth answer is that <m>$y ($t4 ) \approx <round numberdigits="4"><number>$y4 </number></round></m>.</p>
+
+<p>Below is the graph of the Forward Euler solution of <m>$y (t)</m>.</p>
+
+<graph xmin="-0.1*$xmax" xmax="$xmax" ymin="$ymin" ymax="$ymax" width="500" height="400" fixAxes xlabel="t" ylabel="$y" grid>
+
+  <point name="P0sol" x="0" y="$y0" styleNumber="2" >
+  </point>
+  <point name="P1sol" x="$dt" y="$y1" styleNumber="2">
+  </point>
+  <point name="P2sol" x="2*$dt" y="$y2" styleNumber="2" >
+  </point>
+  <point name="P3sol" x="3*$dt" y="$y3" styleNumber="2" >
+  </point>
+  <point name="P4sol" x="4*$dt" y="$y4" styleNumber="2" >
+  </point>
+  <polyline stylenumber="2" vertices="$P0sol $P1sol $P2sol $P3sol $P4sol" fixed />
+
+
+</graph>
+
+
+
+</solution>
+
+
+</problem>

@@ -1,0 +1,173 @@
+<problem>
+<!-- <title>Secant line</title> -->
+
+<setup>
+
+<function name='f' variables='x' symbolic>x^3</function>
+<function name='s' variables='a b' symbolic simplify>($$f(a)-$$f(b))/(a-b)</function>
+<math name='ansa'>$$s(3,4)</math>
+<math name='ansb'>$$s(3,3.1)</math>
+<math name='ansc'>$$s(3,3.01)</math>
+<math name='ansd'>$$s(2,3)</math>
+<math name='anse'>$$s(2.9,3)</math>
+<math name='ansf'>$$s(2.99,3)</math>
+<!-- <math name='ansg'>$$s(3,x_1)</math>
+<math name='ansh'>$$s(3,3+dx)</math>
+<math name='ansi'>$$s(x_0,x_1)</math>
+<math name='ansj'>$$s(x_0,x_0+dx)</math> -->
+<math name='ansk'>$$s(a,b)</math>
+<math name='ansl'>$$s(a,a+h)</math>
+
+</setup>
+
+
+Let <m>g(x) = x^3</m>.  Find the average rate of change in <m>g(x)</m> between:
+
+
+<ol>
+
+<li>
+<p><m>x=3</m> and <m>x=4</m>.  
+<answer>
+<award symbolicEquality='true'>$ansa </award>
+</answer>
+</p>
+
+<hint>
+The average rate of change is the slope of the secant line, i.e., the slope of the line from the point <m>(3,3^3)</m> to the point <m>(4,4^3)</m>.
+
+<paragraphs><title>Helpful pages</title>
+<ul>
+<li><ref uri='doenet:doenetId=tDysJYVhTeK-2me_pW9sO'>Approximating a nonlinear function by a linear function</ref></li>
+</ul></paragraphs>
+</hint>
+
+</li>
+
+<li>
+<m>x=3</m> and <m>x=3.1</m>.  
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='0.01' allowedErrorIsAbsolute="true">$ansb </award>
+</answer>
+
+
+
+</li>
+
+<li>
+<m>x=3</m> and <m>x=3.01</m>.  
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='0.01' allowedErrorIsAbsolute="true">$ansc </award>
+</answer>
+
+
+
+<hint>
+You can round your answer to the nearest 0.01.
+</hint>
+
+</li>
+
+<li>
+<m>x=2</m> and <m>x=3</m>.  
+<answer>
+<award symbolicEquality='true'>$ansd </award>
+</answer>
+
+
+
+</li>
+
+<li>
+<m>x=2.9</m> and <m>x=3</m>.  
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='0.01' allowedErrorIsAbsolute="true">$anse </award>
+</answer>
+
+
+
+</li>
+
+<li>
+<m>x=2.99</m> and <m>x=3</m>. 
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='0.01' allowedErrorIsAbsolute="true">$ansf </award>
+</answer>
+
+
+
+<hint>
+You can round your answer to the nearest 0.01.
+
+<p>If all went well, your answer should be close to your answer for part (c).</p>
+</hint>
+
+</li>
+
+<li>
+<m>x=a</m> and <m>x=b</m> 
+<answer>
+<award>$ansk </award>
+</answer>
+
+
+</li>
+
+<li>
+<m>x=a</m> and <m>x=a+h</m> 
+<answer>
+<award>$ansl </award>
+</answer>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<m>\frac{4^3-3^3}{4-3} = $ansa</m>
+</li>
+
+<li>
+<m>\frac{3.1^3-3^3}{3.1-3} = $ansb</m>
+</li>
+
+<li>
+<m>\frac{3.01^3-3^3}{3.01-3} = $ansc \approx $(ansc{displayDecimals='2'})</m>
+</li>
+
+<li>
+<m>\frac{3^3-2^3}{3-2} = $ansd</m>
+</li>
+
+<li>
+<m>\frac{3^3-2.9^3}{3-2.9} = $anse</m>
+</li>
+
+<li>
+<m>\frac{3^3-2.99^3}{3-2.99} = $ansf \approx $(ansf{displayDecimals='2'})</m>
+</li>
+
+<li>
+<m>\frac{b^3-a^3}{b-a} = \frac{a^3-b^3}{a-b}</m>
+</li>
+
+<li>
+<m>\frac{(a+h)^3-a^3}{h}</m>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

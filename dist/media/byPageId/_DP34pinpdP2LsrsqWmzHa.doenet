@@ -1,0 +1,291 @@
+<problem>
+<!-- <title>Cobweb linear approx: linear dynamical system with no constant</title> -->
+
+<setup>
+
+<number name='one'>1</number>
+<number name='zero'>0</number>
+<number name='n1'>-1</number>
+
+</setup>
+
+<p>The simplest form of a linear discrete dynamical system is one where there is no constant term, i.e., a dynamical system of the form
+<me>z_{n+1} = a z_n, \quad \text{for n=0,1,2,…n=0,1,2,…n=0,1,2, \ldots   }</me>
+where <m>a</m> is a parameter. This form of dynamical system includes 
+<ref uri='doenet:exponential_growth_decay_discrete'>exponential growth and decay</ref>, which occurs when <m>a</m> is positive.  But, here we will also allow <m>a</m> to be negative, so we'll get a larger range of behavior.</p>
+
+<p>To answer the questions, you can use this cobweb applet, where you can change the value of the parameter <m>a</m>.</p>
+
+  
+<p>a = <mathinput prefill="1/2" name="a" /></p>
+
+<function hide name="az" variables="z_n" simplify>$a z_n</function>
+
+<p>Cobweb applet for
+  <me>z_{n+1} = $az</me>
+</p>
+
+
+  <setup>
+    <function name="f" symbolic>$formula</function>
+    <solveEquations variables="x" name="solveForE" minVar="$xmin" maxVar="$xmax">$formula = x</solveEquations>
+    <copy prop="x" tname="A" assignNames='px' />
+    <derivative name="df">$f</derivative>
+    <number name="nPoints">10</number>
+    <number name="zeroFixed" fixed>0</number>
+    <point x="5" y="$(initialPoint{prop='x'})" name="initialPoint" hide>
+      <constraints>
+        <constrainToGraph />
+      </constraints>
+    </point>
+
+    <number fixed name="xmin">-10</number>
+    <number fixed name="xmax">10</number>
+
+  </setup>
+
+  <updateValue label="Add line" name="addLine" tname="nPoints" newValue="$nPoints+1" type="number" />
+  <updateValue label="Delete line" name="deleteLine" tname="nPoints" newValue="$nPoints-1" type="number" disabled="$nPoints <= 1" />
+
+  <graph xlabel="z_n" ylabel="z_{n+1}" identicalAxisScales grid  showNavigation="false" xmin="$xmin" xmax="$xmax" ymin="$xmin" ymax="$xmax">
+
+    <cobwebpolyline function="$az" nPoints="$nPoints" name="cobwebPolyline" initialPoint="$initialPoint" lockToSolution draggable="false" />
+    <copy tname="initialPoint" layer="2" />
+  </graph>
+
+  <aside name="calculatedValue">
+    <title>Calculated values</title>
+
+    <md>
+    <map>
+      <template>
+        <mrow>
+          z_{<number>$i-1</number>} \amp = $(x{displayDigits="5"})
+        </mrow>
+      </template>
+      <sources alias="x" indexAlias="i">
+        <copy prop="iterateValues" tname="cobwebPolyline" />
+      </sources>
+    </map>
+    </md>
+
+  </aside>
+
+  
+
+<ol>
+
+<li>
+<p>
+What condition on the parameter <m>a</m> will ensure there is exactly one equilibrium?  <m>a \ne</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers'>$one </award>
+</answer>
+
+</p>
+<p>
+
+Given that condition, what is the equilibrium? <m>E=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers'>$zero </award>
+</answer>
+
+</p>
+<p>
+
+The value of this equilibrium 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>does not</choice>
+<choice>does</choice>
+</choiceinput>
+</answer>
+ depend on the value of the parameter <m>a</m>.
+
+ </p>
+
+<p>Under what conditions are there more than one equilibrium? <m>a =</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers'>$one </award>
+</answer>
+</p>
+
+<p>Are there any conditions for which there are no equilibria? 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>no</choice>
+<choice>yes</choice>
+</choiceinput>
+</answer>
+</p>
+
+</li>
+
+
+
+<li>
+<p>
+How does the stability of the equilibria depend on the value of the parameter <m>a</m>?  
+</p>
+
+  <hint>
+    <p>Use the above applet to investigate the dependence of the stability on <m>a</m>.  For what values of <m>a</m> does the trajectory move toward the equilibrium?  For what values of <m>a</m> does the trajectory move away from the equilibrium?  Can you find any values of <m>a</m> where the trajectory does not move closer or further away from the equilibrium?</p>
+  </hint>
+  
+<p>
+The equilibrium is stable for 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers'>$n1 </award>
+</answer>
+ <m>\lt a \lt</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers'>$one </award>
+</answer>
+
+</p>
+<p>
+
+The equilibrium is unstable for <m>a \gt</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers'>$one </award>
+</answer>
+ or <m>a \lt</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers'>$n1 </award>
+</answer>
+
+</p>
+<p>
+
+In both these cases, the one equilibrium is <m>E=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers'>$zero </award>
+</answer>
+
+</p>
+
+<p>We have two special cases that are missed by the above two conditions. </p>
+
+<ul>
+<li>
+
+For <m>a=</m> 
+<answer><award symbolicEquality='true' simplifyOnCompare='numbers'>$n1 </award></answer>
+
+, the solution spirals around the one equilibrium at <m>E=</m> 
+<answer><award symbolicEquality='true' simplifyOnCompare='numbers'>$zero </award></answer>
+
+.  Since the solution 
+<answer inline='true'>
+<choiceinput><choice credit='1'>does not</choice><choice>does</choice></choiceinput>
+</answer>
+
+ get further away from the equilibrium, we still say the equilibrium is 
+<answer inline='true'>
+<choiceinput><choice credit='1'>stable</choice><choice>unstable</choice></choiceinput>
+</answer>
+
+.
+
+</li>
+
+<li>
+For <m>a=</m> 
+<answer><award symbolicEquality='true' simplifyOnCompare='numbers'>$one </award></answer>
+
+, there are an infinite number of equilibria.  However, since the solution 
+<answer inline='true'>
+<choiceinput><choice credit='1'>does not</choice><choice>does</choice></choiceinput>
+</answer>
+
+ move for any initial condition, the solution 
+<answer inline='true'>
+<choiceinput><choice credit='1'>does not</choice><choice>does</choice></choiceinput>
+</answer>
+
+ get further away from any equilibrium.  Therefore, we still say each equilibrium is 
+<answer inline='true'>
+<choiceinput><choice credit='1'>stable</choice><choice>unstable</choice></choiceinput>
+</answer>
+
+.</li>
+
+</ul>
+
+
+</li>
+
+<li>
+<p>
+How does the behavior of the dynamical system depend on the sign of <m>a</m>?
+</p>
+<p>
+
+When <m>a</m> is negative, the solution 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>spirals around</choice>
+<choice>moves steadily toward or away from</choice>
+</choiceinput>
+</answer>
+ the equilibrium.
+</p>
+<p>
+
+When <m>a</m> is positive, the solution 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>moves steadily toward or away from</choice>
+<choice>spirals around</choice>
+</choiceinput>
+</answer>
+ the equlibrium.
+
+
+</p>
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+If <m>a \ne 1</m>, then there is exactly one equilibrium, <m>E=0</m>.  The value of this equilibrium does not depend on <m>a</m> as long as <m>a \ne 1</m>.
+
+<p>If <m>a=1</m>, then there are more than one equilibrium.  In fact, there are an infinite number of equilibria, as any number is an equilibrium.</p>
+
+<p>For this model, there are no conditions under which there are no equilibria.</p>
+</li>
+
+<li>
+The equilibrium <m>E=0</m> is stable for <m>-1 \le a \le 1</m>.  It is unstable for <m>a \gt 1</m> or <m>a \lt -1</m>.
+
+<ul>
+<li>For <m>a=-1</m>, the solution spirals around the one equilibrium at <m>E=0</m>.  Since the solution does not get further away from the equilibrium, we still say the equilibrium is stable.</li>
+
+<li>For <m>a=1</m>, there are an infinite number of equilibria.  However, since the solution does not move for any initial condition, the solution does not get further away from any equilibrium.  Therefore, we still say each equilibrium is stable.</li>
+</ul>
+</li>
+
+<li>
+<p>
+When <m>a</m> is negative, the solution spirals around the equilibrium.
+</p>
+<p>
+
+When <m>a</m> is positive, the solution moves steadily toward or away from the equlibrium.
+</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

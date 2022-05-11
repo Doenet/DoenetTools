@@ -1,0 +1,175 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>m</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>m</tag><idx><tag>m</tag></idx> component renders mathematical text inline with a paragraph or alone in a left-justified format.  It accepts Latex or computational input.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: mathematical display text nested within a paragraph</title>
+<p>In the sample code below, the <tag>m</tag> component is used to format isolated content within a section of text that has been enclosed within a <ref><tag>p</tag></ref>, or paragraph component.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;In this example, &lt;m&gt;F=5.27&lt;/m&gt; &lt;m&gt;kN&lt;/m&gt; applied in the &lt;m&gt;y&lt;/m&gt; direction.
+&lt;/p&gt;
+</pre>
+        </example>
+      </subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders:</title>
+<p>In this example, <m>F=5.27</m> <m>kN</m> applied in the <m>y</m> direction.
+</p>
+</example>
+ 
+
+<!--******************************************************-->
+
+<subsection><title>Example 2: mathematical display text from Latex input</title>
+<p>In the sample code below, the mathematical display text is written in Latex within the <tag>m</tag> component.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;m&gt;n! \sim \left( \frac{n}{e}\right)^n \sqrt{2 \pi n}&lt;/m&gt;
+</pre>
+        </example>
+      </subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<m>n! \sim \left( \frac{n}{e}\right)^n \sqrt{2 \pi n}</m>
+</example>
+
+<!--******************************************************-->   
+
+<subsection><title>Example 3: inline mathematical display text referenced from named mathematical objects</title>
+<p>In the sample code below, two ways for displaying the content of a predefined function are shown. In order to render the symbolic formula, the <ref><tag>copy</tag></ref> component is used.  To evaluate the function at a specific point and display the result, the &dollar;&dollar;<m>f(x,y)</m> notation is used.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;setup&gt;
+  &lt;function name="f" variables="x y"&gt;x^2-12y^2&lt;/function&gt;
+&lt;/setup&gt;
+
+&lt;p&gt;
+  &lt;m&gt;f(x,y) = &lt;copy prop="formula" tname="f"/&gt;&lt;/m&gt;
+&lt;/p&gt;
+&lt;m&gt;f(2,5) = &dollar;&dollar;f(2,5)&lt;/m&gt;
+</pre>
+  </example>
+</subsection>
+   
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 3)</title>
+<setup>
+  <function name="f" variables="x y">x^2-12y^2</function>
+</setup>
+
+<p>
+  <m>f(x,y) = <copy prop="formula" tname="f"/></m>
+</p>
+<m>f(2,5) = $$f(2,5)</m>
+
+</example>
+
+ 
+
+<!--******************************************************-->   
+
+<subsection><title>Example 4: inline mathematical display text referenced from user input</title>
+<p>In the sample code below, user input is collected with the <ref><tag>mathInput</tag></ref> component, and then later referenced within the <tag>m</tag> display block by name. The named input, <c>ans1</c> is also referenced in the <ref><tag>award</tag></ref> blocks and in the <ref><tag>copy</tag></ref> component which renders the feedback in the viewer.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>  
+<pre>
+&lt;setup&gt;
+  &lt;function name="g" variables="x"&gt;x+1&lt;/function&gt; 
+&lt;/setup&gt;
+
+&lt;p&gt;Given &lt;m&gt;g(x) = &dollar;g&lt;/m&gt;,  let &lt;m&gt;x = 5&lt;/m&gt;.  Then,&lt;/p&gt;
+&lt;p&gt;
+&lt;m&gt;g(x) = &lt;/m&gt;
+  &lt;answer&gt;
+    &lt;mathInput name="ans1"/&gt;
+      &lt;award  feedbacktext="Great Job!"&gt;
+        &lt;when&gt;
+         &dollar;ans1 = &dollar;&dollar;g(5)
+        &lt;/when&gt;
+      &lt;/award&gt;
+      &lt;award credit="0.75" feedbacktext="Almost there,   
+      what happens when you substitute the given value for
+      x into the expression?"&gt;
+        &lt;when&gt;
+          &dollar;ans1 = &lt;math&gt;x+1&lt;/math&gt;
+        &lt;/when&gt;
+      &lt;/award&gt;
+  &lt;/answer&gt; 
+&lt;/p&gt;
+&lt;p&gt;You answered, &lt;m&gt;g(x) = &dollar;ans1&lt;/m&gt;&lt;/p&gt;
+
+&lt;copy prop="feedbacks" tname="ans1" /&gt;
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 4)</title>
+
+<setup>
+  <function name="g" variables="x">x+1</function>
+</setup>
+
+<p>Given <m>g(x) = $g</m>,  let <m>x = 5</m>.  Then,</p>
+<p>
+<m>g(x) = </m>
+  <answer name="ans1">
+    <mathInput/>
+      <award feedbacktext="Great Job!">
+        <when>
+         $ans1 = $$g(5)
+        </when>
+      </award>
+      <award credit="0.75" feedbacktext="Almost there, what happens when you substitute the given value for x into the expression?">
+      <when>
+        $ans1 = <math>x+1</math>
+      </when>
+    </award>
+  </answer> 
+</p>
+<p>You answered, <m>g(x) = $ans1</m></p>
+
+<copy prop="feedbacks" tname="ans1" />
+   
+</example>
+     
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

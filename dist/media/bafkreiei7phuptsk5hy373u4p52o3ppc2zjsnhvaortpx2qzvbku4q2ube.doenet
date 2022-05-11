@@ -1,0 +1,51 @@
+<title>Quiz 3</title>
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <select numberToSelect="4" assignNames="((problem1)) ((problem2)) ((problem3)) ((problem4))">
+    <option>
+      <select assignNamesSkip="2">
+        <option>
+          <copy uri="doenet:contentId=310d2672ceed560c3390e601b87dda5bd1e0915fe39d8a1aeb1d5e549c0a7317&doenetId=ArTQrGxl8hXzex5t0UbQ6" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=b832b191539866d7f3c360940344147ba5812d3c524c93a5e8e14e46f26f34aa&doenetId=qbkj_-5C2ZIjyjTuv20sU" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=826bc94f4e7dc169ef004e8cb5a8bb342013c0460500236a2b8aae5fced01c1b&doenetId=Thw6vWnTjXTskkL4lrPvQ" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=920bde3cbb2c7b9b4898c3a14ed940e9b1cb466e3fe479a6ff566cc7faefc800&doenetId=RpR-ccTQKiJT0FGXmLHO1" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=3f410f54fa35c9ae60df3ccc9272348084eb7b3517cb37bba426c7dea5710124&doenetId=GXl7KvfMcSafRUf1va4cI" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=871ec6d79f0ed0dec7e8826ecc5cdbb446fd71e13ff60dc60f43fa49a667b8b2&doenetId=oducOb8qSgL-Zth-0LwWF" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=6d93a0abe89f2a33e7bcec79cade978a23fa321249f8e006b786fe40f121f2d0&doenetId=CYPCTy4u_EUc9EEGNO7-j" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=32e72e4b4e8b80e2ce60496f9c016091c8e194a45d021a30182415a092e0bd19&doenetId=VunM7o9i80_nJTBCCIvJu" componentType="problem" />
+        </option>
+      </select>
+    </option>
+    <option>
+      <copy uri="doenet:contentId=086add389213794c7dcf16978968a08992844eda1cbde7b0a530f7e7f22130ab&doenetId=wmpGP8jo0ssFIx57RVcDX" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=1bc090a1e3a64279d5572f4eefd98d7e9779f96e697bbed41fd151ac9d699e1a&doenetId=4zri3cZS5KtViOsL1Gh4k" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=87e3f8b205572b254b838c5e579a45dfe630fa85af2f388f398fdbdcbce472eb&doenetId=Nw1dRTSv8xq_itjSMrbMr" componentType="problem" />
+    </option>
+  </select>
+</paginator>
+
+
+
+<paginatorControls paginatorTname="pgn" />
+  

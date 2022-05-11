@@ -1,0 +1,34 @@
+<problem>
+
+<setup>
+<selectFromSequence assignNames='a' from="1" to="10" />
+<selectFromSequence assignNames='b' from="2" to="5" />
+<selectFromSequence assignNames='c' from="1" to="8" />
+<math name='ans' simplify='full'>$a*$b**3+($b**2+$b+1)*$c</math>
+<math name='ans_sub1' simplify='full'>$b*$a+$c</math>
+<math name='ans_sub2' simplify='full'>$b*$ans_sub1+$c</math>
+</setup>
+
+Compute the value of <m>f(f(f($a)))</m> for the function <m>f(x)=$b x+$c</m>.
+
+<p><m>f(f(f($a))) =</m> <mathinput name="input1"/></p>
+
+<answer>
+<award symbolicEquality='true' targetsAreResponses="$input1"><when>
+  $input1 = $ans
+</when></award>
+</answer>
+
+
+<solution>
+<md>
+  <mrow>f(f(f($a)))\amp = f(f($b \cdot $a+$c))</mrow>
+  <mrow>\amp = f(f($ans_sub1))</mrow>
+  <mrow>\amp = f($b \cdot $ans_sub1 + $c)</mrow>
+  <mrow>\amp = f($ans_sub2)</mrow>
+  <mrow>\amp = $b \cdot $ans_sub2 + $c</mrow>
+  <mrow>\amp = $ans</mrow>
+</md>
+</solution>
+
+</problem>
