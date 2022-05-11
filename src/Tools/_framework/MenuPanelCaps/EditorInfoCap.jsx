@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { authorItemByDoenetId, courseIdAtom, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, courseIdAtom, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
 // import { ClipboardLinkButtons } from '../ToolHandlers/CourseToolHandler';
 
@@ -10,8 +10,8 @@ export default function EditorInfoCap(){
   const pageId = useRecoilValue(searchParamAtomFamily('pageId'));
   let {color, image, label:course_label} = useCourse(courseId);
 
-  const pageInfo = useRecoilValue(authorItemByDoenetId(pageId));
-  const activityInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  const pageInfo = useRecoilValue(itemByDoenetId(pageId));
+  const activityInfo = useRecoilValue(itemByDoenetId(doenetId));
 
   if (!pageInfo){ return null;}
  if (image != 'none'){

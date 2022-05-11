@@ -12,7 +12,7 @@ import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import CourseNavigator from '../../../_reactComponents/Course/CourseNavigator';
 
 import styled, { keyframes } from 'styled-components';
-import { authorItemByDoenetId, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { useToast, toastType } from '../Toast';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 
@@ -83,7 +83,7 @@ export default function DataPanel() {
   const doubleClickItem = useRecoilCallback(
     ({set,snapshot}) =>
       async ({ doenetId, courseId }) => {
-        let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+        let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
         if (clickedItem.type == 'section'){
           set(pageToolViewAtom,(prev)=>{return {
             page: 'course',

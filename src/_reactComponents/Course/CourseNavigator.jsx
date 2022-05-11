@@ -47,7 +47,7 @@ import {
 
 import { 
   authorCourseItemOrderByCourseId, 
-  authorItemByDoenetId,
+  itemByDoenetId,
   coursePermissionsAndSettingsByCourseId, 
   useInitCourseItems,
   selectedCourseItems,
@@ -85,7 +85,7 @@ export default function CourseNavigator(props) {
     set(selectedMenuPanelAtom,null);
     set(selectedCourseItems,[]);
     for (let deselectId of selectedItems){
-      set(authorItemByDoenetId(deselectId),(was)=>{
+      set(itemByDoenetId(deselectId),(was)=>{
           let newObj = {...was};
           newObj.isSelected = false;
           return newObj;
@@ -136,7 +136,7 @@ function StudentCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVis
 
 function StudentItem({courseId,doenetId,numberOfVisibleColumns,indentLevel,previousSections,courseNavigatorProps}){
   //TODO: Investigate if type should be a selector and these three would subscribe to item info
-  let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  let itemInfo = useRecoilValue(itemByDoenetId(doenetId));
 
   if (itemInfo.type == 'section' && previousSections?.current){
     previousSections.current.push(itemInfo.doenetId);
@@ -185,7 +185,7 @@ function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNu
 
 function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel,previousSections,courseNavigatorProps}){
   //TODO: Investigate if type should be a selector and these three would subscribe to item info
-  let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  let itemInfo = useRecoilValue(itemByDoenetId(doenetId));
 
   if (itemInfo.type == 'section' && previousSections?.current){
     previousSections.current.push(itemInfo.doenetId);
@@ -258,7 +258,7 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
 
 function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,orderInfo,courseNavigatorProps}){
   let {behavior,doenetId,content, numberToSelect, withReplacement} = orderInfo;
-  let recoilOrderInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  let recoilOrderInfo = useRecoilValue(itemByDoenetId(doenetId));
 
    let contentJSX = [];
    if (behavior == 'sequence'){
@@ -301,7 +301,7 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
 }
 
 function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentLevel,number=null,courseNavigatorProps}){
-  let recoilPageInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  let recoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
   // console.log("Page recoilPageInfo",recoilPageInfo,"doenetId",doenetId)
   //TODO: numbered
   return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
@@ -312,7 +312,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=fal
 
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set})=>()=>{
-    set(authorItemByDoenetId(doenetId),(was)=>{
+    set(itemByDoenetId(doenetId),(was)=>{
       let newObj = {...was};
       newObj.isOpen = !newObj.isOpen;
       return newObj;
@@ -344,7 +344,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   e.preventDefault();
   e.stopPropagation();
   let selectedItems = await snapshot.getPromise(selectedCourseItems);
-  let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+  let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
   console.log("clickedItem",clickedItem.type,clickedItem.doenetId,clickedItem)
   
   let newSelectedItems = [];
@@ -352,7 +352,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   if (selectedItems.length == 0){
   //No items selected so select this item
   newSelectedItems = [doenetId]
-  set(authorItemByDoenetId(doenetId),(was)=>{
+  set(itemByDoenetId(doenetId),(was)=>{
     let newObj = {...was};
     newObj.isSelected = true;
     return newObj;
@@ -362,7 +362,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     if(e.metaKey){
       //If cmd then clear the one item
       newSelectedItems = [];
-      set(authorItemByDoenetId(doenetId),(was)=>{
+      set(itemByDoenetId(doenetId),(was)=>{
         let newObj = {...was};
         newObj.isSelected = false;
         return newObj;
@@ -384,7 +384,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       let parentDoenetIdsToSkip = [];
       for (let i = 0; i < authorItemDoenetIds.length; i++){
         let itemDoenetId = authorItemDoenetIds[i];
-        const authorItemInfo = await snapshot.getPromise(authorItemByDoenetId(itemDoenetId))
+        const authorItemInfo = await snapshot.getPromise(itemByDoenetId(itemDoenetId))
         if (skip){
           //Check if back to same parent
           if (!parentDoenetIdsToSkip.includes(authorItemInfo.parentDoenetId)){
@@ -419,7 +419,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       for (let newDoenetId of itemsToSelect){
         if (!selectedItems.includes(newDoenetId)){
           newSelectedItems.push(newDoenetId);
-          set(authorItemByDoenetId(newDoenetId),(was)=>{
+          set(itemByDoenetId(newDoenetId),(was)=>{
             let newObj = {...was};
             newObj.isSelected = true;
             return newObj;
@@ -431,7 +431,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       let itemWasSelected = selectedItems.includes(doenetId);
       if (itemWasSelected){
         newSelectedItems = selectedItems.filter((testId)=>{return testId != doenetId});
-        set(authorItemByDoenetId(doenetId),(was)=>{
+        set(itemByDoenetId(doenetId),(was)=>{
           let newObj = {...was};
           newObj.isSelected = false;
           return newObj;
@@ -440,7 +440,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       }else{
         //Add this item to the selected items
         newSelectedItems = [...selectedItems,doenetId];
-        set(authorItemByDoenetId(doenetId),(was)=>{
+        set(itemByDoenetId(doenetId),(was)=>{
           let newObj = {...was};
           newObj.isSelected = true;
           return newObj;
@@ -451,14 +451,14 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       //No Shift or Command Click
       //Only select this option and remove the others
       newSelectedItems = [doenetId];
-      set(authorItemByDoenetId(doenetId),(was)=>{
+      set(itemByDoenetId(doenetId),(was)=>{
                 let newObj = {...was};
                 newObj.isSelected = true;
                 return newObj;
               })
       for (let doenetIdToUnselect of selectedItems){
         if (doenetId != doenetIdToUnselect){ //Leave the selected on selected
-          set(authorItemByDoenetId(doenetIdToUnselect),(was)=>{
+          set(itemByDoenetId(doenetIdToUnselect),(was)=>{
             let newObj = {...was};
             newObj.isSelected = false;
             return newObj;
