@@ -1304,9 +1304,11 @@ const updateAssignItem = useRecoilCallback(
           attributeString += ` isSinglePage`;
         }
 
-        let childrenString;
+        let childrenString ="";
         try {
-          childrenString = await orderToDoenetML({ order: activity.order });
+          childrenString = (await Promise.all(activity.order.content
+            .map(x => contentToDoenetML({ content: x, indentLevel: 1 }))))
+            .join("");
         } catch (err) {
           failureCallback(err);
         }
