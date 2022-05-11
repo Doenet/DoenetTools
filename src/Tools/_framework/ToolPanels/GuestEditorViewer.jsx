@@ -8,7 +8,7 @@ import {
 } from 'recoil';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import {
-  fileByDoenetId,
+  fileByPageId,
   pageVariantInfoAtom,
   pageVariantPanelAtom,
 } from '../ToolHandlers/CourseToolHandler';
@@ -67,7 +67,7 @@ export default function EditorViewer() {
 
   let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (pageId) => {
 
-    let response = await snapshot.getPromise(fileByDoenetId(pageId));
+    let response = await snapshot.getPromise(fileByPageId(pageId));
     // if (typeof response === "object"){
     //   response = response.data;
     // }

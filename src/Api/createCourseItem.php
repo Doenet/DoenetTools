@@ -189,8 +189,8 @@ if ($success){
             ));
 
             //Create a copy of original file for page
-            $sourceFilePath = "../media/bydoenetid/$sourcePageDoenetId.doenet";
-            $destFilePath = "../media/bydoenetid/$clonePageDoenetId.doenet";
+            $sourceFilePath = "../media/byPageId/$sourcePageDoenetId.doenet";
+            $destFilePath = "../media/byPageId/$clonePageDoenetId.doenet";
             if (!copy($sourceFilePath, $destFilePath)) {
               $success = false;
               $message = "failed to copy media\n";
@@ -218,7 +218,7 @@ if ($success){
           
     
           //Create blank file for page
-          $filename = "../media/bydoenetid/$pageDoenetId.doenet";
+          $filename = "../media/byPageId/$pageDoenetId.doenet";
           $dirname = dirname($filename);
           if (!is_dir($dirname)) {
               mkdir($dirname, 0755, true);
