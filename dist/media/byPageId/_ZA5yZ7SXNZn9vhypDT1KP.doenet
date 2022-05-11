@@ -1,0 +1,64 @@
+<title>Function iteration applet</title>
+
+<p>The below applet shows the result of repeated applying a function <m>f($varName)</m> to the starting value <m>$(varName)_0</m>.</p>
+
+<p>Enter the desired function and starting value.  Clicking the iterate button will calculate <m>$(varName)_1 = f($(varName)_0)</m>, then <m>$(varName)_2 = f($(varName)_1)</m>, and so on.</p>
+
+<setup>
+  <number name="nIterations">0</number>
+  <function formula="$fformula" variable="$varName" name="f" />
+  <number name="zeroFixed" fixed>0</number>
+</setup>
+
+<p>
+  <m>f($varName) =</m>
+  <mathinput name="fformula" prefill="0.8x" />
+  <m>$(varName)_0 = </m>
+  <mathinput name="initialValue" prefill="5" displayDigits="4" />
+</p>
+
+
+<functionIterates initialValue="$initialValue" function="$f" nIterates="$nIterations" name="fIterates" />
+
+<updateValue label="iterate" tName="nIterations" newValue="$nIterations+1" />
+<updateValue label="reset" tName="nIterations" newValue="0" />
+
+
+<setup>
+  <copy prop="iterates" tname="fIterates" name="allIterates" displayDigits="4" />
+  <map name="iterateVertices">
+    <template><point draggable="false" styleNumber="2">($i, $v)</point></template>
+    <sources alias="v" indexAlias="i">$allIterates</sources>
+  </map>
+  <copy prop="finalIterate" tname="fIterates" assignNames="finalValue" displayDigits="4" />
+  
+</setup>
+
+
+<graph xmin="-0.1$tmax" xmax="$tmax" ymin="$xmin" ymax="$xmax" xlabel="n" ylabel="$varName" >
+  <linesegment endpoints="(0,$xmin) (0, $xmax)" fixed name="stateLine" />
+
+  <point label="$(varName)_0" name="x0">($zeroFixed, $initialValue)</point>
+  <polyline draggable="false" vertices="(0, $initialValue) $iterateVertices" styleNumber="2"/>
+  $iterateVertices
+  <point draggable="false" styleNumber="3" name="xn" label='$(varName)_{$nIterations} = $finalValue' hide="$nIterations = 0">($zeroFixed, $finalValue)</point>
+  <lineSegment endpoints="$xn ($nIterations, $finalValue)" hide="$nIterations=0" styleNumber="3" draggable="false" name="linkLine" />
+</graph>
+
+<stack>
+<p>Iterate values</p>
+<p><m>$(varName)_0 = $initialValue</m></p>
+<map>
+  <template><p><m>$(varName)_{$i} = $v</m></p></template>
+  <sources alias="v" indexAlias="i">$allIterates</sources>
+</map>
+</stack>
+
+<aside><title>Additional controls</title>
+
+<p>Variable name: <mathinput name="varName" prefill = "x" /></p>
+<p><m>$(varName)_{min}</m>: <mathinput name="xmin" prefill="-10" /></p>
+<p><m>$(varName)_{max}</m>: <mathinput name="xmax" prefill="10" /></p>
+<p><m>t_{max}</m>: <mathinput name="tmax" prefill="10" /></p>
+
+</aside> 

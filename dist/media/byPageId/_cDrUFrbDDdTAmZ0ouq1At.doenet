@@ -1,0 +1,87 @@
+<section name="Class03">
+  <title>Guided Practice for Class 03: Modular Arithmetic</title>
+
+  <paginatorControls paginatorTname="pgn" />
+  <paginator name="pgn">
+
+      <subsection>
+        <title>Overview</title>
+        <p>Last class, we reviewed and proved the division algorithm, or as you previously likely learned it, division with remainder. This week, we'll make use of the division algorithm to define the basic objects and operations we will be interested in to develop classical crytographic techniques next week, and modern crytographic techniques a few weeks later.</p>
+        <p>First, you will learn the definition of divisibility, and practice determining with one number is divisible by another.</p>
+        <p>Then you will learn the definition of modular arithmetic as a way to do mathematical operations when you are only interested in the remainder after applying the division algorithm, and you will get practice using this to solve <em>linear congruence equations</em>.</p>
+        <p>The last activity in this Preclass Guided Practice will develop the technique utilized by the ancient Egyptians to perform multiplication. This involves looking at the binary expansion of the smaller number to be multiplied! In class, we will use a similar technique to develop the <em>fast power algorithm</em> for quickly exponentiating numbers to large powers, which is something we will find useful later in the semester when studying RSA encryption.</p>
+      </subsection>
+
+      <subsection>
+        <title>Learning Objectives</title>
+        <alert>BASIC objectives</alert> (to be learned prior to class):
+        <ul>
+          <li>State the definition of divisibility and modular arithmetic.</li>
+          <li>Complete a Cayley table for additive and multiplicative operations <m>\mod p</m> using standard transversals.</li>
+          <li>Solve <m>a\cdot x\equiv b \mod p</m> using a Cayley table.</li>
+          <li>Complete a Cayley table for additive and multiplicative operations <m>\mod p</m> using non-standard transversals.</li>
+          <li>Calculate multiplication using base 2 expansions, (almost exactly as the ancient Egyptians did!).</li>
+        </ul>
+        <alert>ADVANCED objectives</alert> (to be learned during and after class):
+        <ul>
+          <li>Complete a Cayley table for additive and multiplicative operations <m>\mod n</m> using standard transversals for general <m>n</m>.</li>
+          <li>Solve <m>a\cdot x\equiv b \mod n</m> using a Cayley table and explain why it is not always possible in the general setting.</li>
+          <li>Adapt the method of Egyptian multiplication to derive the <em>fast power algorithm</em> to compute large exponents modulo <m>n</m>.</li>
+          <li>Prove <m>n\;|\;a-b</m> if and only if <m>a \equiv b \mod n</m> using the division algorithm.</li>
+        </ul>
+      </subsection>
+
+      <subsection>
+        <title>Learning Resources</title>
+        <ul>
+          <li />
+          <li>The sections of your <ref uri="http://math.gordon.edu/ntic/ntic/frontmatter-1.html">online number theory textbook</ref> on <ref uri="http://math.gordon.edu/ntic/ntic/first-review.html#defn-divisibility">Divisibility</ref> and <ref uri="http://math.gordon.edu/ntic/ntic/section-intro-congruence.html">basic congruence</ref> (note that they use a different definition of congruence. We will prove they are "equivalent" in class).</li>
+          <li />
+          <li>YouTube video showing examples of <ref uri="https://www.youtube.com/watch?v=yHVq0g6XWes">Ancient Egyptian Multiplication</ref>.</li>
+          <li />
+        </ul>
+      </subsection>
+
+      <subsection>
+        <title>Practice 1: Divisibility</title>
+        <copy uri="doenet:contentId=d094bcd9c1121cdee5b9e10e8eb70e73e69fd361f87ac97c5a94e33e25d0ca95&doenetId=Nz-Qwfik0pWwLZdK2chYA" />
+      </subsection>
+
+      <subsection>
+        <title>Practice 2: Modular Arithmetic</title>
+        <copy uri="doenet:contentId=f5d34fc02b50269d919cc8a006624ef50383c5c2d06b80bcbf20a4e57228b73a" />
+      </subsection>
+
+      <subsection>
+        <title>Practice 3: Cayley Tables (Standard Trasversal)</title>
+        <copy uri="doenet:contentId=b9e0179ace34911581fe1e8a994920c8ead1f50184318ffae4225382cc069b7c" />
+      </subsection>
+
+      <subsection>
+        <title>Practice 4: Cayley Tables (Arbitrary Trasversal)</title>
+        <copy uri="doenet:contentId=e344652d01de02712dfecbf0bc0638d522389b34be35c24dad9430d3472d38e2&doenetId=VyEjlxx9DZ7kEBmvkL5Ja" />
+      </subsection>
+
+      <subsection>
+        <title>Practice 5: Egyptian Multiplication</title>
+        <copy uri="doenet:contentId=894d522d7434fa9472b025f744f50a83a598e0ba41af61480b4ba2c84dfe3f6c" />
+      </subsection>
+
+      <subsection>
+        <title>Wrap-up</title>
+        <p>
+          <row><alert>Short Response Questions</alert></row>
+        </p>
+        <p>
+        Complete the short response questions in this <ref uri="https://forms.gle/LSfrejcpSXXotkbW9">Google Form</ref> (https://forms.gle/LSfrejcpSXXotkbW9).
+        </p>
+        <p>
+          <alert>Note:</alert>
+          Eventually we will move these questions within the Doenet Guided Practice assignments, but there is a few updates that need to happen to the system first.
+          We should be able to stop needing to use Google Forms by the first Assessment Day.
+        </p>
+      </subsection>
+
+    </paginator>
+  <paginatorControls paginatorTname="pgn" />
+</section>

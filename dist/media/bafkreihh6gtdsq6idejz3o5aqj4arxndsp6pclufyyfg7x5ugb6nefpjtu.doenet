@@ -1,0 +1,139 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>me</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>me</tag><idx><tag>me</tag></idx> component renders mathematical text centered within the page.  See <tag><ref>men</ref></tag> also, whose function is the same as the <tag>me</tag> component, but which also numbers the equations.  The <tag>me</tag> component accepts DoenetML mathematical content as well as Latex.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tag>me</tag> nested within a paragraph</title>
+<p>In the sample code below, the <tag>me</tag> component is used to render centered mathematical content within a paragraph.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;Given the following equations relating polar and Cartesian coordinate systems,
+  &lt;me&gt;x = r cos \theta&lt;/me&gt;
+  &lt;me&gt;y = r sin \theta&lt;/me&gt;
+determine the Cartesian form of the polar equation:
+  &lt;me&gt;r cos \theta = 1&lt;/me&gt;
+&lt;/p&gt;
+
+</pre>
+</example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>Given the following equations relating polar and Cartesian coordinate systems,
+  <me>x = r cos \theta</me>
+  <me>y = r sin \theta</me>
+determine the Cartesian form of the polar equation:
+  <me>r cos \theta = 1</me>
+</p>
+</example>
+
+
+<!--******************************************************-->
+
+<subsection><title>Example 2: <tag>me</tag> with Latex input</title>
+<p>The sample code below illustrates the use of Latex within an <tag>me</tag> component to render centered mathematical display text.  In the sentence below the equation, the inline mathematical content is rendered within an <ref uri="doenet:doenetId=GCM8z3SDsbj9yZSkHW3YB"><tag>m</tag></ref> tag.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;p&gt;Torricelli's Law for the flow rate of water through the bottom of a tank gives
+    &lt;me&gt;\frac{dV}{dt} = -a \sqrt{2gh}&lt;/me&gt;
+  where &lt;m&gt;a&lt;/m&gt; is the area at the base of the tank, &lt;m&gt;g&lt;/m&gt; 
+  is the acceleration due to gravity, and &lt;m&gt;h&lt;/m&gt; is the height of the 
+  water in the tank.
+&lt;/p&gt;
+</pre>
+
+</example> 
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<p>Torricelli's Law for the flow rate of water through the bottom of a tank gives
+  <me>\frac{dV}{dt} = -a \sqrt{2gh},</me>
+where <m>a</m> is the area at the base of the tank, <m>g</m> is the acceleration due to gravity, and <m>h</m> is the height of the water in the tank.
+</p>
+  
+</example>
+
+
+<!--******************************************************-->   
+
+<subsection><title>Example 3: <tag>me</tag> with named mathematical content</title>
+<p>In the sample code below, the named mathematical <ref uri="doenet:doenetId=Jwl0ys4sdoUIkguMBx0he"><tag>function</tag></ref> is referenced within the <tag>me</tag> component using the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component. This function is also later evalutated with a <ref uri="doenet:doenetId=BYXQro7P7NJrtKyTCxJcX"><tag>math</tag></ref> nested inside the second <tag>me</tag> component using the function evaluation notation <c>&dollar;&dollar;functionName(x)</c> (note that you could also use the <ref><tag>evaluate</tag></ref> component here.) </p> 
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;setup&gt;
+  &lt;number name="g"&gt;9.81&lt;/number&gt;
+  &lt;number name="radiusEarth"&gt;6.371*10^6&lt;/number&gt;
+  &lt;number name="rocketHeight"&gt;200&lt;/number&gt;
+  &lt;function variables="R h" name="v_0"&gt;sqrt((2&dollar;g R h)/(R + h))&lt;/function&gt;
+&lt;/setup&gt;
+
+&lt;p&gt;The rocket's initial velocity is given by
+  &lt;me&gt;v_0 = &lt;copy prop="formula" tname="v_0"/&gt;.&lt;/me&gt;
+Which, when &lt;m&gt;R = &dollar;radiusEarth&lt;/m&gt; meters and &lt;m&gt;h = &dollar;rocketHeight&lt;/m&gt; meters, is found to be
+  &lt;me&gt;v_0 = 
+    &lt;math displayDecimals="2"&gt;&dollar;&dollar;v_0(&dollar;radiusEarth, &dollar;rocketHeight)&lt;/math&gt;
+  \; m/s&lt;/me&gt;
+&lt;/p>
+</pre>
+  
+</example>
+</subsection>
+
+<!--*******************************************************-->
+
+<subsection><title>What Doenet Renders (Example 3)</title>
+<setup>
+  <number name="g">9.81</number>
+  <number name="radiusEarth">6.371*10^6</number>
+  <number name="rocketHeight">200</number>
+  <function variables="R h" name="v_0">sqrt((2$g R h)/(R + h))</function>
+</setup>
+
+<p>The rocket's initial velocity is given by
+  <me>v_0 = <copy prop="formula" tname="v_0"/>.</me>
+Which, when <m>R = $radiusEarth</m> meters and <m>h = $rocketHeight</m> meters, is found to be
+  <me>v_0 = <math displayDecimals="2">$$v_0($radiusEarth, $rocketHeight)</math>
+    \; m/s.</me>
+</p>
+
+</subsection>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

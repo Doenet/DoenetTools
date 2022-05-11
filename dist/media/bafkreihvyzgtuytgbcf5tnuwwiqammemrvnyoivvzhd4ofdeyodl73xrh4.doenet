@@ -1,0 +1,515 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>map</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>assignNamesSkip <em>(number)</em></li>
+  <li>behavior  <em>(text)</em></li>
+  <li>isResponse <em>(attributeType)</em></li>
+</ul>
+<!--note, ref glossary section at the bottom of page-->
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>map</tag><idx><tag>map</tag></idx> component The &lt;map&gt; component takes a list of <ref uri="doenet:doenetId=7DHdSFMGgXO23YarWCeYj"><tag>sources</tag></ref> and applies a <ref uri="doenet:doenetId=RwwwA15KDsX6ZvjlkZmCm"><tag>template</tag></ref> to each source in turn. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1:  Mapping a list of <tag>text</tag> elements into a sentence <tag>template</tag></title>
+<p>In the sample code below, the <tag>map</tag> component uses a sentence as a <ref uri="doenet:doenetId=RwwwA15KDsX6ZvjlkZmCm"><tag>template</tag></ref>. The sentence defined within the template references the string <c>"plant"</c> specified in the <attr>alias</attr> attribute within the <ref uri="doenet:doenetId=7DHdSFMGgXO23YarWCeYj"><tag>sources</tag></ref> component. The template is applied sequentially to each <ref><tag>text</tag></ref> element that shares the same <c>alias</c> and is defined within the <tag>sources</tag> block.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;To say hello to a list of plants:
+  &lt;map&gt;
+    &lt;template&gt;Hello, &dollar;plant! &lt;/template&gt;
+    &lt;sources alias="plant"&gt;
+      &lt;text&gt;tree&lt;/text&gt;
+      &lt;text&gt;flower&lt;/text&gt;
+      &lt;text&gt;cactus&lt;/text&gt;
+    &lt;/sources&gt;
+  &lt;/map&gt;
+&lt;/p&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+  
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>To say hello to a list of plants:
+  <map>
+    <template>Hello, $plant! </template>
+    <sources alias="plant">
+      <text>tree</text>
+      <text>flower</text>
+      <text>cactus</text>
+    </sources>
+  </map>
+</p>
+</example>
+
+<!--******************************************************-->
+    
+<subsection><title>Example 2: <tag>map</tag> used to generate a <tage>sequence</tage></title>
+<p>In the sample code below, the user specifies the number of terms desired for a sequential math computation with a named <ref><tag>mathInput</tag></ref>.  This value is then used within a <tag>map</tag> to generate a <ref uri="doenet:doenetId=__VgxVIdpE3sN4POU0EKT"><tage>sequence</tage></ref> within the <ref uri="doenet:doenetId=7DHdSFMGgXO23YarWCeYj"><tag>sources</tag></ref> component.  The <ref uri="doenet:doenetId=RwwwA15KDsX6ZvjlkZmCm"><tag>template</tag></ref> applied to each term in the sequence is given by a <ref uri="doenet:doenetId=BYXQro7P7NJrtKyTCxJcX"><tag>math</tag></ref> which contains a reference to the <attr>alias</attr> <c>"m"</c> used for all terms.</p> 
+<p>Rendering the expression consists of two parts:</p>  
+<ol><li>First, the left hand side of the computed sequence is rendered to the viewer by nesting the <tag>map</tag> within a <ref><tag>sum</tag></ref> component, and including the <attr>forceSymbolic</attr> attribute. (Note, without the <attr>forceSymbolic</attr> attribute, the <tag>sum</tag> would simply render the final computed value, rather than the individual terms as desired.)</li>
+<li>Next, on the right hand side we want to render the value of the sum. One way to achieve this is to use the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component with the <attr>simplify</attr> attribute specified and the target name, or <attr>tname</attr> equal to the name of the <tag>sum</tag>.  An alternate method is to use the <c>&dollar;name</c> notation as shown directly below the <tage>copy</tage> method.</li>
+</ol> (See also, <ref uri="doenet:doenetId=p6ag34ShuMOnmaYw4GJcU"><tag>alert</tag></ref>, <ref><tag>pluralize</tag></ref>.) 
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;p&gt;In combination with sequence, maps can be used to create a dynamic list of objects.&lt;/p&gt;
+
+&lt;p&gt;How many numbers? &lt;mathinput name="n" prefill="2" /&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;alert&gt;Copy method for rendering result:&lt;/alert&gt;&lt;/p&gt;
+
+&lt;p&gt;The sum of the squares of the first 
+  &lt;pluralize&gt;&dollar;n positive integer&lt;/pluralize&gt; is:
+  &lt;m&gt;&lt;sum name="squareSum" forceSymbolic&gt;
+    &lt;map&gt;
+      &lt;template&gt;&lt;math simplify&gt;&dollar;m^2&lt;/math&gt;&lt;/template&gt;
+      &lt;sources alias="m"&gt;&lt;sequence from="1" to="&dollar;n"/&gt;  &lt;/sources&gt;
+    &lt;/map&gt;
+  &lt;/sum&gt; 
+  = &lt;copy tname="squareSum" simplify /&gt;
+  &lt;/m&gt;.
+&lt;/p&gt;
+
+&lt;p&gt;&lt;alert&gt;Alternate method for rendering result:&lt;/alert&gt;&lt;/p&gt;
+
+&lt;p&gt;The sum of the squares of the first 
+&lt;pluralize&gt;&dollar;n positive integer&lt;/pluralize&gt; is:
+  &lt;m&gt;
+    &dollar;squareSum = &lt;math simplify&gt;&dollar;squareSum&lt;/math&gt;
+  &lt;/m&gt;.
+&lt;/p&gt;
+
+</pre>
+ 
+  </example>  
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<p>In combination with sequence, maps can be used to create a dynamic list of objects.</p>
+
+<p>How many numbers? <mathinput name="n" prefill="2" />.</p>
+
+<p><alert>Copy method for rendering result:</alert></p>
+
+<p>The sum of the squares of the first 
+  <pluralize>$n positive integer</pluralize> is:
+  <m><sum name="squareSum" forceSymbolic>
+    <map>
+      <template><math simplify>$m^2</math></template>
+      <sources alias="m"><sequence from="1" to="$n"/>  </sources>
+    </map>
+  </sum> 
+  = <copy tname="squareSum" simplify />.
+  </m>
+</p>
+
+<p><alert>Alternate method for rendering result:</alert></p>
+
+<p>The sum of the squares of the first 
+<pluralize>$n positive integer</pluralize> is:
+  <m>$squareSum = <math simplify>$squareSum</math></m>.
+</p>
+</example>
+ 
+<!--******************************************************-->
+  
+<subsection><title>Example 3: Assigning names within a <tag>map</tag></title>
+<p>The sample code below illustrates how names can be given to each instance of the map computed by the <ref uri="doenet:doenetId=RwwwA15KDsX6ZvjlkZmCm"><tag>template</tag></ref> using the <tag>map</tag> attribute <attr>assignNames</attr> (Line [5]). Rendering these instances to the viewer can be acheived with the <c>&dollar;name</c> notation (Lines [19-20]) or by using the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component (Lines [13-16]).  Note that, if the template instance has not been created yet (as is here the case for any <ref><tage>mathInput</tage></ref> &lt; 4), then Doenet will return nothing when the instance is called.</p>
+<p>If, rather than rendering individual instances it is desired to list all of the entries within the <tag>map</tag>, the <ref uri="doenet:doenetId=CHfbDoJ7WA37EqgBROYWW"><tag>asList</tag></ref> component can be used to make the entries more clearly formatted in the viewer (Line [2]).  (See also <ref uri="doenet:doenetId=__VgxVIdpE3sN4POU0EKT"><tage>sequence</tage></ref>, <ref><tag>sources</tag></ref>, <ref uri="doenet:doenetId=BYXQro7P7NJrtKyTCxJcX"><tag>math</tag></ref>, and <ref><tag>setup</tag></ref>.)</p>
+
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+[1]  &lt;p&gt;How many numbers? &lt;mathinput name="n" prefill="2" /&gt;.&lt;/p&gt;  
+[2]  &lt;p&gt;The first &dollar;n squares are &lt;asList&gt;&dollar;squaredNumbersMap&lt;/asList&gt;.&lt;/p&gt;
+[3]
+[4]  &lt;setup&gt;
+[5]    &lt;map name="squaredNumbersMap" assignNames="s1 s2 s3 s4"&gt;
+[6]      &lt;template&gt;&lt;math simplify&gt;&dollar;m^2&lt;/math&gt;&lt;/template&gt;
+[7]      &lt;sources alias="m"&gt;&lt;sequence from="1" to="&dollar;n"/&gt;&lt;/sources&gt;
+[8]    &lt;/map&gt;
+[9]  &lt;/setup&gt;
+[10]  
+[11]  &lt;p&gt;&lt;alert&gt;Copy method for rendering result:&lt;/alert&gt;&lt;/p&gt;
+[12]  &lt;p&gt;Of these numbers, the first is 
+[13]    &lt;copy tname="s1"/&gt;, the second is 
+[14]    &lt;copy tname="s2"/&gt;, the third is 
+[15]    &lt;copy tname="s3"/&gt;, and the fourth is 
+[16]    &lt;copy tname="s4"/&gt;.
+[17]  &lt;/p&gt;
+[18]
+[19]  &lt;p&gt;&lt;alert&gt;Alternate method for rendering result:&lt;/alert&gt;&lt;/p&gt;
+[20]  &lt;p&gt;Of these numbers, the first is &dollar;s1, the second is &dollar;s2, the 
+[21]          third is &dollar;s3, and the fourth is &dollar;s4.&lt;/p&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+ 
+<!--*******************************************************-->
+ 
+<example newNameSpace><title>What Doenet Renders (Example 3)</title>
+
+<p>How many numbers? <mathinput name="n" prefill="2" />.</p>  
+<p>The first $n squares are <asList>$squaredNumbersMap</asList>.</p>
+
+<setup>
+  <map name="squaredNumbersMap" assignNames="s1 s2 s3 s4">
+    <template><math simplify>$m^2</math></template>
+    <sources alias="m"><sequence from="1" to="$n"/></sources>
+  </map>
+</setup>
+  
+
+<p><alert>Copy method for rendering result:</alert></p>
+<p>Of these numbers, the first is <copy tname="s1"/>, the second is <copy tname="s2"/>, the third is <copy tname="s3"/>, and the fourth is <copy tname="s4"/>.
+</p>
+
+<p><alert>Alternate method for rendering result:</alert></p>
+<p>Of these numbers, the first is $s1, the second is $s2, the third is $s3, 
+and the fourth is $s4.</p>
+
+</example>
+
+<!--******************************************************-->
+
+<subsection><title>Example 4: <tag>map</tag> with default <attr>behavior</attr> attribute value - <c>"combination"</c></title>
+<p>In the sample code below, multiple <ref><tag>sources</tag></ref> are used with distinct aliases.  There are two possible methods by which <tag>map</tag> can apply the <ref><tag>template</tag></ref> for multiple sources: <c>"combination"</c> behavior (default) and <c>"parallel"</c> behavior (see Example 5).  Below, the <attr>behavior</attr> attribute for the <tag>map</tag> is not specified so Doenet assumes the default behavior - the <tag>template</tag> operation is applied to each possible combination of the two <tag>sources</tag> sets.  (See also <ref><tag>sideBySide</tag></ref>, <ref><tag>mathInput</tag></ref>, <ref uri="doenet:doenetId=BYXQro7P7NJrtKyTCxJcX"><tag>math</tag></ref>, <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> and <ref uri="doenet:doenetId=Jwi35-iUB_BaSCNWFGNbh"><tag>number</tag></ref>.)</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+&lt;sideBySide&gt;
+&lt;p&gt;Enter 3 &lt;m&gt;x&lt;/m&gt;-values:
+  &lt;p&gt;&lt;mathInput name="inputX1"/&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;mathInput name="inputX2"/&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;mathInput name="inputX3"/&gt;&lt;/p&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Enter 3 &lt;m&gt;y&lt;/m&gt;-values:
+  &lt;p&gt;&lt;mathInput name="inputY1"/&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;mathInput name="inputY2"/&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;mathInput name="inputY3"/&gt;&lt;/p&gt;
+&lt;/p&gt;  
+&lt;/sideBySide&gt;
+
+&lt;setup&gt;
+&lt;map name="mapDefaultBehavior"&gt;
+  &lt;template&gt;&lt;p&gt;&lt;math&gt;&dollar;x+&dollar;y&lt;/math&gt; = &lt;math simplify="true"&gt;&dollar;x + &dollar;y&lt;/math&gt;&lt;/p&gt;&lt;/template&gt;
+  &lt;sources alias="x"&gt;
+    &lt;number&gt;&dollar;inputX1&lt;/number&gt;
+    &lt;number&gt;&dollar;inputX2&lt;/number&gt;
+    &lt;number&gt;&dollar;inputX3&lt;/number&gt;
+  &lt;/sources&gt;
+  &lt;sources alias="y"&gt;
+    &lt;number&gt;&dollar;inputY1&lt;/number&gt;
+    &lt;number&gt;&dollar;inputY2&lt;/number&gt;
+    &lt;number&gt;&dollar;inputY3&lt;/number&gt;
+  &lt;/sources&gt;
+&lt;/map&gt;
+&lt;/setup&gt;
+
+&dollar;mapDefaultBehavior
+</pre>
+ 
+  </example>  
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 4)</title>
+<sideBySide>
+<p>Enter 3 <m>x</m>-values:
+  <p><mathInput name="inputX1"/></p>
+  <p><mathInput name="inputX2"/></p>
+  <p><mathInput name="inputX3"/></p>
+</p>
+
+<p>Enter 3 <m>y</m>-values:
+  <p><mathInput name="inputY1"/></p>
+  <p><mathInput name="inputY2"/></p>
+  <p><mathInput name="inputY3"/></p>
+</p>  
+</sideBySide>
+
+<setup>
+<map name="mapDefaultBehavior">
+  <template><p><math>$x+$y</math> = <math simplify="true">$x + $y</math></p></template>
+
+  <sources alias="x">
+    <number>$inputX1</number>
+    <number>$inputX2</number>
+    <number>$inputX3</number>
+  </sources>
+  <sources alias="y">
+    <number>$inputY1</number>
+    <number>$inputY2</number>
+    <number>$inputY3</number>
+  </sources>
+</map>
+</setup>
+
+$mapDefaultBehavior
+  
+</example>
+
+ 
+
+<!--******************************************************-->
+  
+<subsection><title>Example 5: <tag>map</tag> with <attr>behavior</attr> attribute value - <c>"parallel"</c></title>
+<p>In the sample code below, multiple <ref><tag>sources</tag></ref> are used with distinct aliases.  There are two possible methods by which <tag>map</tag> can apply the <ref><tag>template</tag></ref> for multiple sources: <c>"combination"</c> behavior (default - see Example 4) and <c>"parallel"</c> behavior.  Below, the <attr>behavior</attr> attribute for the <tag>map</tag> is specified as <c>"parallel"</c>.  This means that the <tag>template</tag> operation is applied to the first indexed value of the first alias with the first indexed value of the second alias, the second with the second, and so forth. (See also <ref><tag>sideBySide</tag></ref>, <ref><tag>mathInput</tag></ref>, <ref uri="doenet:doenetId=BYXQro7P7NJrtKyTCxJcX"><tag>math</tag></ref>, <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> and <ref uri="doenet:doenetId=Jwi35-iUB_BaSCNWFGNbh"><tag>number</tag></ref>.)</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 5)</title>
+<pre>
+&lt;sideBySide&gt;
+&lt;p&gt;Enter 3 &lt;m&gt;x&lt;/m&gt;-values:
+  &lt;p&gt;&lt;mathInput name="inputX1"/&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;mathInput name="inputX2"/&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;mathInput name="inputX3"/&gt;&lt;/p&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Enter 3 &lt;m&gt;y&lt;/m&gt;-values:
+  &lt;p&gt;&lt;mathInput name="inputY1"/&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;mathInput name="inputY2"/&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;mathInput name="inputY3"/&gt;&lt;/p&gt;
+&lt;/p&gt;  
+&lt;/sideBySide&gt;
+
+&lt;setup&gt;
+&lt;map name="mapParallelBehavior" behavior="parallel"&gt;
+  &lt;template&gt;&lt;p&gt;&lt;math&gt;&dollar;x+&dollar;y&lt;/math&gt; = &lt;math simplify="true"&gt;&dollar;x + &dollar;y&lt;/math&gt;&lt;/p&gt;&lt;/template&gt;
+  &lt;sources alias="x"&gt;
+    &lt;number&gt;&dollar;inputX1&lt;/number&gt;
+    &lt;number&gt;&dollar;inputX2&lt;/number&gt;
+    &lt;number&gt;&dollar;inputX3&lt;/number&gt;
+  &lt;/sources&gt;
+  &lt;sources alias="y"&gt;
+    &lt;number&gt;&dollar;inputY1&lt;/number&gt;
+    &lt;number&gt;&dollar;inputY2&lt;/number&gt;
+    &lt;number&gt;&dollar;inputY3&lt;/number&gt;
+  &lt;/sources&gt;
+&lt;/map&gt;
+&lt;/setup&gt;
+
+&dollar;mapParallelBehavior
+</pre>
+ 
+        </example>  
+      </subsection>
+
+<!--*******************************************************-->
+
+<example newNameSpace><title>What Doenet Renders (Example 5)</title>
+<sideBySide>
+<p>Enter 3 <m>x</m>-values:
+  <p><mathInput name="inputX1"/></p>
+  <p><mathInput name="inputX2"/></p>
+  <p><mathInput name="inputX3"/></p>
+</p>
+
+<p>Enter 3 <m>y</m>-values:
+  <p><mathInput name="inputY1"/></p>
+  <p><mathInput name="inputY2"/></p>
+  <p><mathInput name="inputY3"/></p>
+</p>  
+</sideBySide>
+
+<setup>
+<map name="mapParallelBehavior" behavior="parallel">
+  <template><p><math>$x+$y</math> = <math simplify="true">$x + $y</math></p></template>
+
+  <sources alias="x">
+    <number>$inputX1</number>
+    <number>$inputX2</number>
+    <number>$inputX3</number>
+  </sources>
+  <sources alias="y">
+    <number>$inputY1</number>
+    <number>$inputY2</number>
+    <number>$inputY3</number>
+  </sources>
+</map>
+</setup>
+
+$mapParallelBehavior
+  
+</example>
+
+  
+</section>
+</document>
+
+
+
+
+
+<!--<title>map</title>
+
+<p>The &lt;map&gt; component takes a list of sources and applies a template to each source in turn.</p>
+
+  <p>You access the source by copying the alias specified for the source.  
+    You can also access the index of the source with the alias specified
+ for the index.
+  <map>
+    <template>Plant $i is a $plant. </template>
+    <sources alias="plant" indexAlias="i">
+      <text>tree</text>
+      <text>flower</text>
+      <text>cactus</text>
+    </sources>
+  </map>
+</p>
+
+  <p>Note that the aliases for a source and its index do not 
+follow the same rules as names.  One difference is that they are not part of a namespace and can be accessed by specified alias even inside new namespaces. Since they don't abide by the same rules as names, conflicts between aliases and names are not identified.  If an alias and a name conflict, the name will be used (with no warning issued).</p>
+
+<p>In combination with sequence, maps can be used to create a dynamic list of objects.</p>
+
+  <p>How many numbers? <mathinput name="n" prefill="2" />.  
+    The sum of the squares of the first 
+<pluralize>$n positive integer</pluralize> is:
+<m><sum forceSymbolic name="squareSum">
+  <map>
+    <template><math simplify>$m^2</math></template>
+    <sources alias="m"><sequence from="1" to="$n"/></sources>
+  </map>
+</sum>
+= <copy tname="squareSum" simplify />
+</m>
+</p>
+
+</section>
+
+<section newNamespace>
+<title>Assigning names</title>
+
+  <p>You can refer to the entire map using the name of the map.  
+    To refer to each instance of the template, you can assign names to them. 
+    Once a component corresponding to that name is created, a copy referring to
+    the name will return that component.  
+Copies that refer to targets that don't (yet) exist return nothing.</p>
+
+  <p>How many numbers? <mathinput name="n" prefill="2" />.  
+The first $n squares are 
+  <aslist><map assignNames="s1 s2 s3 s4">
+    <template><math simplify>$m^2</math></template>
+    <sources alias="m"><sequence from="1" to="$n"/></sources>
+  </map></aslist>.
+    Of these numbers, the first is $s1, the second is $s2, the third is $s3, 
+and the fourth is $s4.
+  </p>
+
+</section>
+
+<section>
+<title>Using template namespace to access children</title>
+
+  <p>If you create a new namespace for the map template, you can refer to the children of the template if you assign names.</p>
+
+  <p>
+  <map assignNames="p1 p2 p3">
+    <template newNamespace>Hello, <text name="plant">$plantName</text>! </template>
+    <sources alias="plantName"><text>tree</text><text>flower</text><text>cactus</text></sources>
+  </map>
+  </p>
+  <p>The first plant is a $(p1/plant), the second is a $(p2/plant), and the third is a $(p3/plant).
+</p>
+
+</section>
+
+<section newNamespace>
+  <title>Multiple sources in a map</title>
+
+  <p>If you include multiple &lt;sources&gt; tags in a map, it will iterate across both lists of sources.  Each source can be accessed by its corresponding alias.</p>
+
+  <p>The default behavior is "combination", which iterates over every combination of one item from each source.</p>
+
+  <p>Multiplication table from <mathinput name="m1" prefill="2" /> to 
+    <mathinput name="m2" prefill="4" /> and from 
+    <mathinput name="n1" prefill="8" /> to 
+<mathinput name="n2" prefill="9" />.</p>
+  <ul>
+  <map>
+    <template>
+      <li><m>$m \times $n = <math simplify>$m$n</math></m></li>
+    </template>
+    <sources alias="m"><sequence from="$m1" to="$m2" /></sources>
+    <sources alias="n"><sequence from="$n1" to="$n2" /></sources>
+  </map>
+  </ul>
+
+  <p>You can also specify parallel behavior, 
+    where the map iterates across all lists of sources simultaneously.  
+    If one list has more items than the rest, 
+the extra item is ignored (with a warning).</p>
+
+  <p><map behavior="parallel">
+    <template>
+      The $animal eats $food.
+    </template>
+    <sources alias="animal"><text>termite</text><text>mouse</text>
+<text>cow</text><text>extra</text></sources>
+    <sources alias="food"><text>wood</text><text>cheese</text>
+<text>grass</text></sources>
+  </map>
+  </p>
+
+</section>
+
+<section newNamespace>
+  <title>Nested maps</title>
+
+  <p>If you nest a map inside a template of another map, you can access sources from the outside map even from within the inside template.  Recall that namespaces are ignored with source aliases.</p>
+
+
+  <map>
+    <template newNamespace>
+      <p>Graph of <m>f(x) = $fformula</m> and translations</p>
+      <graph>
+        <map>
+          <template newNamespace>
+            <function styleNumber="$i">$fformula+$c</function>
+          </template>
+          <sources alias="c" indexAlias="i">
+            <sequence from="0" to="4" step = "2" />
+          </sources>
+        </map>
+      </graph>
+    </template>
+    <sources alias="fformula">
+      <math>x^4 - 4x^2</math><math>sin(x)</math>
+    </sources>
+  </map>
+
+</section>
+</document>-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+

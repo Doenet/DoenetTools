@@ -1,0 +1,245 @@
+<!--***********************************************************
+*Dear gourmand, 
+*please do not alter the source file for the course, but instead 
+*use CMD+A (or CNTRL+A) to select all the text, then copy and 
+*paste into a separate DoenetML for practice. Bon Appetit! 
+*
+*
+*Respectfully yours,
+*the DoenetML culinary masters
+************************************************************-->
+<title>Practice Example: <tag>problem</tag> and <tag>exercise</tag> components</title>
+<ref createButton="true" uri="https://docs.google.com/document/d/1Z8AXseceh1JAAmPtdkA2NGxsyVNLRmjVxLFpVQQEYWI/edit?usp=sharing">Get Text File</ref>
+
+<!--***********************************************************
+*  Example 1:  Using a <problem></problem> tag with the 
+* default numbering for multiple problems                                  
+************************************************************-->
+
+<section>Classic American Cuisine 
+    <problem>What food item below was NOT invented in America?
+        <answer>
+            <choiceInput>
+                <choice>Corn Dogs</choice>
+                <choice>Donuts</choice>
+                <choice credit="1">Pizza</choice>
+            </choiceInput>
+        </answer>
+    </problem>
+
+    <problem>What food item is considered the most traditional to consume at a baseball game?
+        <answer>
+            <choiceInput>
+                <choice credit="1">Hot Dogs</choice>
+                <choice>Escargot</choice>
+                <choice>Pumpkin pie</choice>
+            </choiceInput>
+        </answer>
+    </problem>
+
+    <problem>Essential southern U.S. comfort food?
+        <answer>
+            <choiceInput>
+                <choice>Lobster sandwich</choice>
+                <choice credit = "1">Biscuits n' Gravy</choice>
+                <choice>Sourdough Bread</choice>
+            </choiceInput>
+        </answer>
+    </problem>
+        
+    
+</section>
+
+<!--Delete this comment and make your own set of
+default-numbered problems-->
+
+
+
+
+<!--***********************************************************
+*  Example 2:  Using the <exercise></exercise> tag to create
+*  subsections within problems
+************************************************************-->
+
+<problem>American diner food quiz
+    <exercise><image width="100" source = "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Strawberry_milk_shake_%28cropped%29.jpg/1024px-Strawberry_milk_shake_%28cropped%29.jpg"/>
+        <answer>
+            <choiceInput>
+                <choice>cheeseburger</choice>
+                <choice>hash browns</choice>
+                <choice credit = "1">milkshake</choice>
+            </choiceInput>
+        </answer>
+    </exercise>
+    
+    <exercise><image width="100" source = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Bowl_of_chili.jpg/1600px-Bowl_of_chili.jpg"/>
+        <answer>
+            <choiceInput>
+                <choice credit = "1">chili</choice>
+                <choice>cheese fries</choice>
+                <choice>key lime pie</choice>
+            </choiceInput>
+        </answer>
+    </exercise>
+   
+    <exercise><image width="100" source = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Cheeseburger_with_fries.jpg/1920px-Cheeseburger_with_fries.jpg"/>
+        <answer>
+            <choiceInput>
+                <choice>tator tots</choice>
+                <choice>eggs sunnyside up</choice>
+                <choice credit = "1">cheeseburger</choice>
+            </choiceInput>
+        </answer>
+    </exercise>
+</problem>
+        
+   
+
+<!--Delete this comment and create your own auto-numbered 
+nested exercises within a problem using the 
+<exercise></exercise> tag-->
+
+
+  
+<!--***********************************************************
+*  Example 4:  Using the "sectionWideCheckWork" and 
+* "aggregateScores" attributes within a problem. 
+*  Method 1:  Using the 'credit = "1"'' attribute within a
+*  <choice></choice> tag to mark correct answer.
+************************************************************-->
+
+<section><p><em>Cuisines of the World Game</em></p>
+
+<p>The "sectionWideCheckWork" and "aggregateScores" attributes can be used within a <tag>problem</tag><tag>/problem</tag> or an <tag>exercise</tag><tag>/exercise</tag> to suppress solution checking on individual problems.  This atttribute allows for one single checkwork button to occur at the bottom of the subsection.</p>
+
+<p>In this example, the "correct" choice is marked by assigning credit with the credit attribute within the <tag>choice</tag><tag>/choice</tag> component.</p>
+
+
+    <problem sectionWideCheckWork aggregateScores>
+        <exercise>Tom Yum soup originated in which country?
+            <answer>
+                <choiceinput>
+                    <choice>Japan</choice>
+                    <choice>China</choice>
+                    <choice credit="1">Thailand</choice>
+                </choiceinput>
+            </answer>
+        </exercise>
+        
+        <exercise>Borscht refers to what exactly?
+            <answer>
+                <choiceinput>
+                    <choice>land snails cooked in a butter-wine sauce</choice>
+                    <choice credit = "1">a cold beet soup</choice>
+                    <choice>a delicious paste made from goose liver</choice>
+                </choiceinput>
+            </answer>
+        </exercise>
+        
+        <exercise>Haggis is a Scottish __________ prepared from sheep organs and yummy spices
+            <answer>
+                <choiceinput>
+                    <choice credit="1">pudding</choice>
+                    <choice>dumpling</choice>
+                    <choice>stew</choice>
+                </choiceinput>
+            </answer>
+        </exercise>
+    </problem>
+ 
+ </section>
+
+
+<!--Delete this comment and use "sectionWideCheckWork" and "aggregateScores" with the <problem></problem> or the <exercise></exercise> tag 
+to create a scored multiple choice quiz with a single Check Work button at the bottom.  Use Method 1 to assign correct answers
+-->
+
+
+
+<!--***********************************************************
+*  Example 5:  Using the "sectionWideCheckWork" attribute 
+*  and "aggregateScores" attribute within a problem --
+*  Method 2: Using a boolean statement nested within an 
+*  the <answer></answer> and following the list of choices.
+*  The boolean syntax is: 
+*  <award><when>conditional statement</when></award>
+************************************************************-->
+
+
+
+<section><p><em>Cuisines of the World Game Part 2</em></p>
+
+<p>The "sectionWideCheckWork" and "aggregateScores" attributes can be used within a <tag>problem</tag><tag>/problem</tag> or an <tag>exercise</tag><tag>/exercise</tag> to suppress solution checking on individual exercises.  This atttribute allows for one single checkwork button to occur at the bottom of the problem.</p>
+  
+<p>In this example, the "correct" choice is marked by a boolean within the <tag>answer</tag><tag>/answer</tag> component below the choice definitions.</p>
+
+  
+    <problem sectionWideCheckWork aggregateScores>
+   
+        <exercise>Escargot is french for what?
+            <choiceinput name="answer1">
+                <choice>snail</choice>
+                <choice>quail egg</choice>
+                <choice>coctail onion</choice>
+            </choiceinput>
+        <answer>
+        <award>
+            <when>$answer1=snail
+            </when>
+        </award>
+        </answer>
+        </exercise>
+    
+        <exercise>San Diego claims to have originated this brilliant Californian fusion cuisine dish:
+            <choiceinput name="answer2">
+                <choice>mexican pizza</choice>
+                <choice>fish tacos</choice>
+                <choice>Vietnamese sandwiches</choice>
+            </choiceinput>
+        <answer>
+        <award>
+            <when>$answer2=fish tacos
+            </when>
+        </award>
+        </answer>
+        </exercise>
+
+        <exercise>A type of flatbread originating in India:
+            <choiceinput name="answer3">
+                <choice>pita bread</choice>
+                <choice>tortillas</choice>
+                <choice>naan bread</choice>
+            </choiceinput>
+        <answer>
+        <award>
+            <when>$answer3=naan bread
+            </when>
+        </award>
+        </answer>
+        </exercise>
+   
+    </problem>
+ 
+</section>
+
+
+<!--Delete this comment and use "sectionWideCheckWork" and "aggregateScores" with the <problem></problem> tag or the <exercise></exercise> tag 
+to create a scored multiple choice quiz with a single Check Work button at the bottom using Method 2 of assigning correct answers-->
+
+
+
+
+
+<aside>
+    <title>Citations</title>
+    <p>Strawberry Shake Photo:  By Renee Comet (Photographer) - This image was released by the National Cancer Institute, an agency part of the National Institutes of Health, with the ID 2605 (image) (next)., Public Domain, https://commons.wikimedia.org/w/index.php?curid=99042010
+    </p>
+    <p>Bowl of Chili Photo:  Carstor, CC BY-SA 2.5 <https://creativecommons.org/licenses/by-sa/2.5>, via Wikimedia Commons
+    </p>
+    <p>Cheeseburger Photo:  By Mark Miller - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=82000109
+    </p>
+</aside>
+
+
+
+

@@ -1,0 +1,89 @@
+<document><title>Text Section 1.2 - Sets and the Like</title>
+<section>
+
+<p><alert>Set:</alert> Any collection of distinct objects, referred to as elements, is a set.</p>  
+    <table><title>Set Definitions</title>
+      <tabular top="minor" bottom="minor" left="minor" right="minor">
+        <row header>
+          <cell>Symbol</cell>
+          <cell>Description</cell>
+          <cell>in Set Notation</cell>
+        </row>
+        <row>
+          <cell><m>\varnothing</m></cell>
+          <cell>the empty set</cell>
+          <cell><m>\{ \}</m></cell>
+        </row>
+        <row>
+          <cell><m>[n]</m></cell>
+          <cell>the set of natural numbers excluding <m>0</m></cell>
+          <cell><m>\{1,2,3,...\}</m></cell>
+        </row>
+        <row>
+          <cell><m>\mathbb{N}</m> or <m>\mathbb{Z}_{+}</m></cell>
+          <cell>the set of non-negative integers</cell>
+          <cell><m>\{0,1,2,3...\}</m></cell>
+        </row>
+        <row>
+          <cell><m>\mathbb{Z}</m></cell>
+          <cell>the set of integers</cell>
+          <cell><m>\{..,-2,-1,0,1,2,..\}</m></cell>
+        </row>
+        <row>
+          <cell><m>\mathbb{Q}</m></cell>
+          <cell>the set of rational numbers of the form <m>a/b</m>, where <m>a</m> and <m>b</m> are integers</cell>
+          <cell><m>\{..,\frac{-1}{2} ,..,0,..,0.5,..,\frac{128}{43},...\}</m></cell>
+        </row>
+        <row>
+          <cell><m>\mathbb{R}</m></cell>
+          <cell>the set of real numbers</cell>
+          <cell><m>\{..-\pi,..,-1,..,0,..,\sqrt{2},..,4,..\}</m></cell>
+        </row>
+      </tabular>
+    </table>
+</section>
+
+<section>
+<p><alert>Set Operations</alert></p>
+<p>Given any three sets <m>\mathbb{A}, \mathbb{B}</m>, and <m>\mathbb{C}</m>.  Let <m>\mathbb{A}=\{1,2,3\}</m>, <m> \mathbb{B}=\{1,2,3,4\}</m>, and <m>\mathbb{C}=\{4,5,6,7\}</m>, we define: </p>
+  <ol>
+    <p><li><m>\mathbb{A} \subseteq \mathbb{B} </m>, or <m>\mathbb{A}</m> is a <alert>subset</alert> of <m>\mathbb{B} </m> means that every element of <m>\mathbb{A}</m> is also an element of <m>\mathbb{B}</m></li></p>
+    <p><li><m>x\in \mathbb{A}</m> means <m>x</m> is an element of <m>\mathbb{A}</m></li></p>
+    <p><li><m>| \mathbb{A} |</m> is the <alert>cardinality</alert> of <m>\mathbb{A}</m>, the number of elements in <m>\mathbb{A}</m></li></p>
+    <p><li><m>\mathbb{A} \subset \mathbb{B}</m>, per text, <m>\mathbb{A}</m> is contained in <m>\mathbb{B}</m>, and <m>\mathbb{A}</m> is not equal to <m>\mathbb{B}</m></li></p>
+    <p><li><m>\mathbb{A} \subsetneq \mathbb{B}</m>, per instructor, <m>\mathbb{A}</m> is contained in <m>\mathbb{B}</m>, and <m>\mathbb{A}</m> is not equal to <m>\mathbb{B}</m></li></p>
+    <p><li><m>\mathbb{A} \cap \mathbb{B}</m> means the intersection of <m>\mathbb{A}</m> and <m>\mathbb{B}</m></li>
+        <ul>
+          <li><m>\mathbb{A} \cap \mathbb{B} = \{1,2,3\}</m></li>
+          <li><figure><image width="200" source=""/><caption>Venn Diagram of <m>\mathbb{A} \cap \mathbb{B}</m></caption></figure></li>
+        </ul></p>
+    <p><li><m>\mathbb{A} \cup \mathbb{B}</m> means the union of <m>\mathbb{A}</m> and <m>\mathbb{B}</m></li>
+        <ul>
+          <li><m>\mathbb{A} \cup \mathbb{B} = \{1,2,3,4\}</m></li>
+          <li><figure><image width="200" source=""/><caption>Venn Diagram of <m>\mathbb{A} \cup \mathbb{B}</m></caption></figure></li>
+        </ul></p>
+    <p><li><m>\mathbb{A} \cap \mathbb{B}</m> means the intersection of <m>\mathbb{A}</m> and <m>\mathbb{B}</m></li>
+        <ul>
+          <li><m>\mathbb{A} \cap \mathbb{B} = \{1,2,3\}</m></li>
+          <li><figure><image width="200" source=""/><caption>Venn Diagram of <m>\mathbb{A} \cap \mathbb{B}</m></caption></figure></li>
+        </ul></p>
+    <p><li><alert>disjoint</alert>: two sets are called disjoint if they have no elements in common. Another way to express the idea that sets <m>\mathbb{A}</m> and <m>\mathbb{C}</m> are disjoint is: <m>\mathbb{A} \cap \mathbb{C} = \varnothing</m></li></p>
+  <p><li>the <alert>difference</alert> of <m>\mathbb{B}</m> and <m>\mathbb{A}</m> consists of the set of elements that are contained in <m>\mathbb{B}</m> but not in <m>\mathbb{A}</m>.</li>
+      <ul>
+        <li><m>\mathbb{B} \ \mathbb{A} = \{4\}</m></li>
+        <li><figure><image width="200" source=""/><caption>Venn Diagram of <m>\mathbb{B} \ \mathbb{A}</m></caption></figure></li>
+        </ul></p>
+    <p><li><m>\mathbb{B} \bigtriangleup \mathbb{C}</m> is called the <alert>symmetric difference</alert> of <m>\mathbb{B}</m> and <m>\mathbb{C}</m> and is the set of elements that belong to exactly one of <m>\mathbb{B}</m> and <m>\mathbb{C}</m>.</li>
+      <ul>
+        <li><m>\mathbb{B} \bigtriangleup \mathbb{C} = \{1,2,3,5,6,7\}</m></li>
+        <li><figure><image width="200" source=""/><caption>Venn Diagram of <m>\mathbb{B} \bigtriangleup \mathbb{C}</m></caption></figure></li>
+      </ul></p>
+
+    
+  
+
+  </ol>
+  
+</section>  
+</document>
+        

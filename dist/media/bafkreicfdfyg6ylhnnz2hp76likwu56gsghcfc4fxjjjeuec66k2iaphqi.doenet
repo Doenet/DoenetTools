@@ -1,0 +1,92 @@
+<section name="Class06">
+  <title>Guided Practice for Class 06: Euclidean Algorithm and Applications</title>
+
+  <paginatorControls paginatorTname="pgn" />
+  <paginator name="pgn">
+
+      <subsection>
+        <title>Overview</title>
+        <p>
+          We now want to fully classify
+          <ul>
+            <li>what values are valid for <m>a</m> in the affine cipher to allow decryption.</li>
+            <li>when the linear congruence <m>ax\equiv y</m> has a solution.</li>
+          </ul>
+          It is clear that these two problems should be closely related, since to decrypt
+          the affine cipher, we would need to solve equations of the form
+          <me> at+b \equiv c \mod n,</me>
+          where <m>t</m> is the value of the plaintext character and <m>c</m> is
+          the value of the cipher text after applying the affine cipher.
+        </p>
+        <p>
+          To accomplish both these tasks, we'll learn a new application of the
+          division algorithm, which is itself another algorithm called Euclid's or the
+          Euclidean algorithm. It will give us a systematic (and quick) way of
+          computing the GCD of two numbers, and what is more, in class
+          we'll see how this algorithm also solves the problem of finding solutions
+          to the linear congruence equations above.
+        </p>
+      </subsection>
+
+      <subsection>
+        <title>Learning Objectives</title>
+        <alert>BASIC objectives</alert> (to be learned prior to class):
+        <ul>
+          <li>Define multiplicative inverse and units.</li>
+          <li>State examples of both units and non-units modulo <m>n=4,5,6</m>.</li>
+          <li>Apply the <em>Euclidean algorithm</em> to find the GCD of two integers.</li>
+        </ul>
+        <alert>ADVANCED objectives</alert> (to be learned during and after class):
+        <ul>
+          <li>Apply the <em>Euclidean algorithm</em> to solve <m>ax+by=gcd(a,b)</m>. (Known as <em>Bezout's Identity</em>)</li>
+          <li>Explain how the fact from last class, that <m>x\equiv y \mod n \implies cx\equiv cy \mod n</m> combined with Bezout's Identity can be used to find modular inverses.</li>
+          <li>Prove That <m>\gcd(a,b)</m> is the least positive integer which can be written as a linear combination of <m>a</m> and <m>b</m>.</li>
+          <li>Apply the previous result to classify all units <m>\mod n</m>.</li>
+        </ul>
+      </subsection>
+
+      <subsection>
+        <title>Learning Resources</title>
+        <ul>
+          <li />
+          <li>The section on <ref uri="http://math.gordon.edu/ntic/ntic/section-groups-numbers.html">units modulo n in your Number Theory Textbook</ref> which proves a bunch of abstract algebra facts you don't really need to know in this course.
+        (I'd skip this resource unless you've had Abstract Algebra and want to see the connections.)</li>
+          <li />
+          <li>An short example of the <ref uri="https://www.youtube.com/watch?v=fwuj4yzoX1o">basic Euclidean Algorithm</ref> on youtube (using notation of long division), they just repeat the long divisions instead of writing out the division algorithm repeatedly.</li>
+          <li />
+          <li>The section on the <ref uri="http://math.gordon.edu/ntic/ntic/section-euclid-alg.html">Euclidean Algorithm in your Number Theory Textbook</ref> (which frustratingly I realize reversed the order of remainders and quotients from the notation I use in the PGP and answer forms)</li>
+          <li />
+        </ul>
+      </subsection>
+
+      <subsection>
+        <title>Practice 1: Multiplicative Inverses and Units</title>
+        <copy uri="doenet:contentId=8f9a8f8af09d1127675a3f86305643f89e88ca1dfeae4e9ad2387d4f1d8b8e84&doenetId=KQKWHkX8BgPpx1Ybflf29" />
+      </subsection>
+
+      <subsection>
+        <title>Practice 2: The Euclidean Algorithm</title>
+        <copy uri="doenet:contentId=1af402f634d478b0f3ea0b2f923df7743fcd41e21152bc95b44eee07efa2ba1e&doenetId=SMh3gayCCfUplphnR9VPS" />
+      </subsection>
+
+
+      <subsection>
+        <title>Wrap-up</title>
+        <p>
+          <row><alert>Short Response Questions</alert></row>
+        </p>
+        <p>
+        Complete the short response questions in this
+          <ref uri="https://forms.gle/bViyxZj1aLUmYJ3CA">Google Form</ref>
+          (https://forms.gle/bViyxZj1aLUmYJ3CA).
+        </p>
+        <p>
+          <alert>Note:</alert>
+          Eventually we will move these questions within the Doenet Guided Practice assignments, but there is a few updates that need to happen to the system first.
+          We should be able to stop needing to use Google Forms by the first Assessment Day.
+        </p>
+      </subsection>
+
+    </paginator>
+  <paginatorControls paginatorTname="pgn" />
+</section>

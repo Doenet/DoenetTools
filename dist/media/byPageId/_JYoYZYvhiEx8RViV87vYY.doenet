@@ -1,0 +1,12 @@
+<polygon name='poly' vertices="$p $p2 $p3" />
+<graph>
+  <point name='p' label='p' >(-6,6)</point>
+  <point name='p2' label='p2' >(6,6)</point>
+  <point name='p3' label='p3' >(-6,-6)</point>
+  $poly
+</graph>
+
+<slider />
+
+<answer>2</answer>
+

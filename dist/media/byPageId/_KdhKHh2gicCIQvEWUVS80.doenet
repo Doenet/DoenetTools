@@ -1,0 +1,252 @@
+<problem>
+<!-- <title>Find equilibria of discrete dynamical system graphically, cubic, worksheet</title> -->
+
+<setup>
+
+<function name='f' variables='x' symbolic>x^3-8x</function>
+<math name='n_e'>3</math>
+<math name='EsFound' unordered='true'>1,2,3</math>
+<math name='x0ex2'>1</math>
+<math name='A0found'>1</math>
+<math name='equilibria' unordered='true'>-3,0,3</math>
+<math name='equilibria_expression' simplify='full' >$$f(E)-E</math>
+<math name='equilibria_expression2' simplify='full' >E - $$f(E)</math>
+<math name='x0ex1' >-3</math>
+<math name='x1ex2' simplify='full' >$$f($x0ex2)</math>
+<math name='pointex2' simplify='full' >($x0ex2 ,$x1ex2 )</math>
+<math name='equilibria_expression_x' simplify='full' >$$f(x)-x</math>
+<math name='equilibria_expression2_x' simplify='full' >x-$$f(x)</math>
+<math name='fE' simplify='full'>$$f(E)</math>
+
+</setup>
+
+<p>For the dynamical system
+<md>
+  <mrow>x_{n+1}\amp = f(x_n)</mrow>
+  <mrow>x_0\amp = a,</mrow>
+</md>
+where <m>f(x) = x^3-8x</m>, the function <m>f</m> along with the diagonal are plotted on a graph of <m>x_{n+1}</m> versus <m>x_n</m>.</p>
+
+
+
+<graph name='g1' xmin='-5' xmax='5' ymin='-10' ymax='10' width='500' height='250' showNavigation='false'>
+
+<function fixed>x^3 - 8x</function>
+<line fixed stylenumber="2">y=x</line>
+
+<point name='equi_1' hide >(-3,-3)</point>
+<point name='equi_2' hide >(0,0)</point>
+<point name='equi_3' hide >(3,3)</point>
+
+
+<map name="map1" assignNames="(e1) (e2) (e3) (e4) (e5)">
+<template>
+
+<point name="dragPoint" stylenumber="3" x="$(i{prop='value' link='false'})" y='1'
+label="($(dragPoint{prop='x' displayDigits='3'}), $(dragPoint{prop='y' displayDigits='3'}))">
+
+<constraints>
+<attractTo threshold="0.3">$equi_1</attractTo>
+<attractTo threshold="0.3">$equi_2</attractTo>
+<attractTo threshold="0.3">$equi_3</attractTo>
+</constraints>
+
+</point>
+
+</template>
+<sources alias="i"><sequence from="1" to="$n_i" /></sources>
+
+</map>
+
+</graph>
+
+
+<slider name="n_i" label="n_e" from="0" to="5" width="100"/>
+
+
+<ol>
+
+<li>
+<p>Find the equilibria using the above graph. Move the <m>n_e</m> slider to indicate how many equilibria you found and drag the resulting points to the locations of the equilibria.
+<answer><award unorderedCompare matchPartial><when>
+<mathlist> $map1 </mathlist> = <mathlist>(0,0) (-3,-3) (3,3)</mathlist>
+</when></award>
+</answer>
+</p>
+
+<p>Remember the values of the equilibria are the first components of the points you found. 
+</p>
+<p>
+ The equilibria are: <m>E=</m> 
+<answer>
+<award matchPartial='true'>$equilibria </award>
+</answer>
+
+</p>
+<p>
+
+(Separate multiple values by commas.)</p>
+
+
+<p>Note: the diagonal line doesn't look like it is going up at a 45° angle because the vertical scale is compressed compared to the horizontal scale.  But, indeed points on the diagonal have the same value for both coordinates.</p>
+
+</li>
+
+<li>
+<p>To find the equilibria <m>x_n=x_{n+1}=E</m> analytically, you must solve the equation
+<answer>
+<award>$equilibria_expression </award>
+<award>$equilibria_expression2 </award>
+<award credit='0' name='award6'>$equilibria_expression_x </award>
+<award credit='0' name='award7'>$equilibria_expression2_x </award>
+<award credit='0' name='award8'>$fE </award>
+</answer>
+ <m>=0</m>.  (We are expecting an equation in terms of <m>E</m>.)
+</p>
+  <feedback condition="$award6">This would be correct, but you need to write your answer in terms of <m>E</m>, not <m>x</m>.</feedback>
+<feedback condition="$award7">This would be correct, but you need to write your answer in terms of <m>E</m>, not <m>x</m>.</feedback>
+<feedback condition="$award8">Remember you need to subtract <m>E</m> from both sides to set the equation equal to zero.</feedback>
+<hint>
+  <p>You need to look up the formula for <m>f(x)</m>, above.  An equilibrium must satisfy <m>f(E)=E</m>.</p>
+</hint>
+  
+<p>
+You should be able to factor the left hand side of the equation into three factors.  (Remember you can factor <m>a^2-b^2 = (a-b)(a+b)</m>.)  Therefore, you get three equations for <m>E</m>.  The equilibria are:
+</p>
+<p>
+
+<m>E=</m> 
+<answer>
+<award matchPartial='true'>$equilibria </award>
+</answer>
+
+</p>
+<p>(Separate multiple values by commas.)</p>
+
+</li>
+
+<li>
+<p>Starting with the initial condition <m>x_0 = $x0ex1 </m>, calculate <m>x_1=</m> 
+<answer>
+<award>$x0ex1 </award>
+</answer>
+, <m>x_2=</m> 
+<answer>
+<award>$x0ex1 </award>
+</answer>
+, and <m>x_3 =</m> 
+<answer>
+<award>$x0ex1 </award>
+</answer>
+.
+</p>
+
+</li>
+
+<li>
+<p>If we start with the initial condition <m>x_0 = 1</m>, use the graph to approximate <m>x_1=f(x_0)</m>.</p>
+
+<graph xmin='-5' xmax='5' ymin='-10' ymax='10' width='500' height='250' showNavigation='false'>
+
+  <function name='func1' fixed>x^3 - 8x</function>
+  <line fixed stylenumber="2">y=x</line>
+
+  <collect componentTypes='point' tname='g1' draggable='false'/>
+
+  <point stylenumber='4' name='p1' x='0.7' y='6.1'
+  label="(x_0, x_1) = ( $(p1{prop='x' displaydecimals='2'}) , $(p1{prop='y' displaydecimals='2'}) )">
+
+    <constraints>
+      <attractTo>$func1</attractTo>
+      <attractTo><point hide>(1,-7)</point></attractTo>
+    </constraints>
+  </point>
+
+  <point stylenumber="5" fixed x="$(p1{prop='x'})" y="0" label="x_0 = $(p1{prop='x' displayDecimals='2'})" />
+
+  <point stylenumber="5" fixed x="0" y="$(p1{prop='y'})" label="x_1 = $(p1{prop='y' displayDecimals='2'})" labelPosition="upperLeft" />
+  
+  
+  <lineSegment stylenumber='4' fixed endPoints="$p1 (0, $(p1{prop='y'}) )"/>
+  <lineSegment stylenumber='4' fixed endPoints="$p1 ( $(p1{prop='x'}) , 0)"/>
+
+</graph>
+
+<p>Move the <copy prop="styleDescriptionWithNoun" tname="p1" /> to estimate the value of <m>x_1 = f(x_0)</m> when <m>x_0=1</m>.
+<answer><award><when>
+$p1 = (1,-7)
+</when></award>
+</answer>
+  </p>
+  
+<p>
+<m>x_1=</m> 
+<answer>
+<award>$x1ex2</award>
+</answer>
+</p>
+
+<p>Check the accuracy of your estimate by calculating <m>f(x_0)</m> from the analytic expression for <m>f</m>.</p>
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+The following graph shows the equilibria as well as the point from the last part.
+
+<graph xmin='-5' xmax='5' ymin='-10' ymax='10' width='500' height='250' showNavigation='false'>
+
+<function fixed>x^3 - 8x</function>
+<line fixed stylenumber="2">y=x</line>
+
+<point stylenumber='3' fixed label="(-3, -3)">(-3,-3)</point>
+<point stylenumber='3' fixed label="(0, 0)">(0,0)</point>
+<point stylenumber='3' fixed label="(3, 3)">(3,3)</point>
+
+<point fixed stylenumber='4' label="(x_n, x_{n+1}) = (1, -7)">(1, -7)</point>
+
+<lineSegment fixed stylenumber='4' endPoints="(1, -7) (0,-7)"/>
+<lineSegment fixed stylenumber='4' endPoints="(1, -7) (1, 0)"/>
+
+</graph>
+
+
+<p>The equilibria are <m>E=$equilibria </m>.</p>
+</li>
+
+<li>
+We must solve the equation <m>$equilibria_expression =0</m>.  Factoring out the <m>E</m>, the expression becomes
+<me>E(E^2-9)=0.</me>
+Continuing factoring, the equation becomes
+<me>E(E-3)(E+3)=0.</me>
+The equilibria are <m>E=-3,0,3</m>.
+</li>
+
+<li>
+<m>x_1 = f(x_0)= f($x0ex1 ) = $x0ex1 </m>.
+
+<p>We are at an equilibrium, so <m>f</m> does not change the value.  <m>x_1=$x0ex1 </m>, <m>x_2=$x0ex1 </m>, <m>x_3=$x0ex1 </m>.</p>
+</li>
+
+<li>
+The point with <m>x_0=1</m> is shown on the above graph.  Since the point has coordinates <m>(1,-7)</m>, we see that <m>x_1=-7</m>.
+
+<p>Checking analytically: <m>x_1 = f(x_0)= f(1) = 1^3-8(1) = -7</m>.</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

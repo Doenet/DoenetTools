@@ -1,0 +1,276 @@
+<problem>
+<!-- <title>Properties leading up to derivative of polynomials, worksheet</title> -->
+
+<setup>
+
+<math name='d_3_f'>3*df/dx</math>
+<math name='d_c_f'>c*df/dx</math>
+
+<math name='d_x_cubed'>3x^2</math>
+<math name='d_4_x_cubed'>12x^2</math>
+<math name='d_c_x_cubed'>3*c*x^2</math>
+<math name='d_c'>0</math>
+<math name='d_f_plus_c'>df/dx</math>
+<math name='d_f_plus_g'>df/dx + dg/dx</math>
+<math name='d_x_squared'>2x</math>
+<math name='d_x'>1</math>
+<math name='d_x_squared_plus_x'>2x+1</math>
+<math name='d_10_x_cubed'>30x^2</math>
+<math name='d_5'>0</math>
+<math name='d_10_x_cubed_plus_5'>30x^2</math>
+<math name='d_11_x_5'>55x^4</math>
+<math name='d_8_x_9'>72x^8</math>
+<math name='d_11_x_5_plus_8_x_9'>$d_11_x_5 +$d_8_x_9 </math>
+
+</setup>
+
+The derivative of a polynomial is based on the derivative of power functions plus some basic properties of the derivative.
+
+<ol>
+
+<li>
+<p>
+<em>Derivative of a constant multiple.</em> Let <m>f(x)</m> be a differentiable function with derivative <m>\frac{df}{dx}</m>.  Let <m>g(x)=3f(x)</m> and let <m>h(x)=cf(x)</m> for some constant number <m>c</m>. What are the derivatives <m>\frac{dg}{dx}</m> and <m>\frac{dh}{dx}</m>?
+</p>
+<p>
+ <m>\frac{dg}{dx}=</m> 
+<answer>
+<award>$d_3_f</award>
+<award><math>3 f'(x)</math></award>
+<award credit="0" name="three_in_numerator"><math>(3df)/(dx)</math></award>
+</answer>
+</p>
+<feedback condition="$three_in_numerator">
+  Close, but since <m>\frac{df}{dx}</m> isn't a fraction, you can't put the three in the numerator as <m>\frac{3df}{dx}</m>.  Instead, make sure that the three is outside the fraction, as in <m>3\frac{df}{dx}</m>.
+</feedback>
+  
+<p>
+
+<m>\frac{dh}{dx} =</m> 
+<answer>
+<award>$d_c_f </award>
+<award><math>c f'(x)</math></award>
+<award credit="0" name="c_in_numerator"><math>(cdf)/(dx)</math></award>
+</answer>
+</p>
+<feedback condition="$c_in_numerator">
+  Close, but since <m>\frac{df}{dx}</m> isn't a fraction, you can't put the <m>c</m> in the numerator as <m>\frac{cdf}{dx}</m>.  Instead, make sure that the <m>c</m> is outside the fraction, as in <m>c\frac{df}{dx}</m>.
+</feedback>
+  
+
+<hint>
+We don't know what the function <m>f(x)</m>.  Therefore, the expressions for <m>\frac{dg}{dx}</m> and <m>\frac{dh}{dx}</m> will depend on <m>\frac{df}{dx}</m>.
+
+<p>You can enter the derivative of <m>f</m> as either <c>f'(x)</c> or as <c>df/dx</c>.</p>
+</hint>
+
+</li>
+
+
+
+<li>
+<p>
+If <m>f(x)=x^3</m>, what is <m>\frac{df}{dx}</m>?   
+<answer>
+<award>$d_x_cubed </award>
+</answer>
+
+</p>
+<p>
+
+If <m>g(x)=4f(x)=4x^3</m>, what is <m>\frac{dg}{dx}</m>? 
+<answer>
+<award>$d_4_x_cubed </award>
+</answer>
+
+</p>
+<p>
+
+If <m>h(x)=cf(x)=cx^3</m>, what is <m>\frac{dh}{dx}</m>? 
+<answer>
+<award>$d_c_x_cubed </award>
+</answer>
+
+</p>
+
+</li>
+
+<li>
+<em>Derivative of  constant.</em> What is the derivative of <m>f(x)=c</m> for a constant <m>c</m>?  
+<answer>
+<award>$d_c </award>
+</answer>
+
+
+
+
+</li>
+<li>
+<em>Derivative of a function plus a constant.</em> Let <m>f(x)</m> be some differentiable function with derivative <m>\frac{df}{dx}</m>.   Let <m>g(x)=f(x) + c</m> for some constant number <m>c</m>.  What is the derivative of <m>g</m>?   <m>\frac{dg}{dx} =</m> 
+<answer>
+<award>$d_f_plus_c </award>
+<award><math>f'(x)</math></award>
+</answer>
+
+<hint>
+Enter a derivative like <m>\frac{dh}{dy}</m> as <c>dh/dy</c> or <c>h'(y)</c>.
+</hint> 
+
+</li>
+
+
+<li>
+<p>
+<em>Derivative of a sum.</em> Let <m>f(x)</m> be a differentiable function with derivative <m>\frac{df}{dx}</m>.  Let <m>g(x)</m> be another differentiable function with derivative <m>\frac{dg}{dx}</m>.  Let <m>h(x)</m> be the sum of <m>f</m> and <m>g</m>, <m>h(x)=f(x)+g(x)</m>.  What is the derivative of <m>h</m>?
+</p>
+<p>
+
+<m>\frac{dh}{dx}=</m> 
+<answer>
+<award credit='1'>$d_f_plus_g </award>
+<award credit='1'><math>f'(x) + g'(x)</math></award>
+<award credit='1'><math>df/dx + g'(x)</math></award>
+<award credit='1'><math>f'(x) + dg/dx</math></award>
+
+</answer>
+
+</p>
+
+<hint>
+Enter a derivative like <m>\frac{dp}{dt}</m> as <c>dp/dt</c> or <c>p'(t)</c>.
+</hint>
+
+</li>
+
+<li>
+<p>If <m>f(x)=x^2</m> and <m>g(x)=x</m>, what are <m>\frac{df}{dx}</m> and <m>\frac{dg}{dx}</m>?
+</p>
+<p>
+
+<m>\frac{df}{dx}=</m> 
+<answer>
+<award>$d_x_squared </award>
+</answer>
+
+</p>
+<p>
+
+<m>\frac{dg}{dx}=</m> 
+<answer>
+<award>$d_x </award>
+</answer>
+</p>
+
+<p>If <m>h(x)=f(x)+g(x)=x^2+x</m>, what is <m>\frac{dh}{dx}</m>?  
+<answer>
+<award>$d_x_squared_plus_x </award>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+<p>If <m>f(x)=10x^3</m> and <m>g(x)=5</m>, what are <m>\frac{df}{dx}</m> and <m>\frac{dg}{dx}</m>?
+</p>
+<p>
+
+<m>\frac{df}{dx}=</m> 
+<answer>
+<award>$d_10_x_cubed </award>
+</answer>
+
+</p>
+<p>
+
+<m>\frac{dg}{dx}=</m> 
+<answer>
+<award>$d_5 </award>
+</answer>
+</p>
+
+<p>If <m>h(x)=f(x)+g(x)=10x^3+5</m>, what is <m>\frac{dh}{dx}</m>? 
+<answer>
+<award>$d_10_x_cubed_plus_5 </award>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+<p>Let <m>g(x)=11x^5</m> and <m>h(x)=8x^9</m>.  What are <m>g'(x)</m> and <m>h'(x)</m>?
+</p>
+<p>
+
+<m>g'(x)=</m> 
+<answer>
+<award>$d_11_x_5 </award>
+</answer>
+
+</p>
+<p>
+
+<m>h'(x)=</m> 
+<answer>
+<award>$d_8_x_9 </award>
+</answer>
+</p>
+
+<p>Let <m>f(x)=g(x)+h(x)</m>.  What is <m>f'(x)</m>? 
+<answer>
+<award>$d_11_x_5_plus_8_x_9 </award>
+</answer>
+</p>
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<m>\frac{dg}{dx} = $d_3_f </m>, <m>\frac{dh}{dx}=$d_c_f </m>.
+</li>
+
+<li>
+<m>\frac{df}{dx}=$d_x_cubed </m>, <m>\frac{dg}{dx}=$d_4_x_cubed </m>, <m>\frac{dh}{dx}=$d_c_x_cubed </m>.
+</li>
+
+<li>
+<m>\frac{df}{dx}=$d_c </m>
+</li>
+
+<li>
+<m>\frac{dg}{dx}=$d_f_plus_c </m>.
+</li>
+
+<li>
+<m>\frac{dh}{dx} = \frac{df}{dx} + \frac{dg}{dx}</m>.
+</li>
+
+<li>
+<m>\frac{df}{dx}=$d_x_squared </m>, <m>\frac{dg}{dx}=$d_x </m>, <m>\frac{dh}{dx}=$d_x_squared_plus_x </m>.
+</li>
+
+<li>
+<m>\frac{df}{dx}=$d_10_x_cubed </m>, <m>\frac{dg}{dx}=$d_5 </m>, <m>\frac{dh}{dx}=$d_10_x_cubed_plus_5 </m>.
+</li>
+
+<li>
+<m>g'(x)=$d_11_x_5 </m>, <m>h'(x)=$d_8_x_9 </m>, <m>f'(x)=$d_11_x_5_plus_8_x_9 </m>.
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

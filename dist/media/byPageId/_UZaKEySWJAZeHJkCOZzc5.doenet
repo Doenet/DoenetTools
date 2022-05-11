@@ -1,0 +1,88 @@
+<title>Harvest of natural populations exercises</title>
+
+<description>
+Exercises on optimizing the yield when harvesting a population.
+</description>
+
+
+<p>In the 
+<ref uri='doenet:harvest_natural_populations'>page on harvesting natural populations</ref>
+, we introduced the logstic equation with a harvesting rate of the form
+<men name='harvest_fraction' >P_{t+1}-P_{t} = r P_t\left(1-\frac{P_t}{M}\right) -h_t P_t,</men>
+and analyzed a specific example with <m>r=0.2</m>.  In these exercises, you will analyze the general from with constant <m>h_t=h</m> and <m>0 \lt  r \lt  2</m>. </p>
+
+
+
+<section><title>Exercise 1</title>
+
+
+<p>Divide each term of equation <ref tname='harvest_fraction' /> by <m>M</m> to obtain
+<men name='harvest_fraction_normalized' >p_{t+1} - p_t = r p_t  \left(1 - p_t \right) - h  p_t</men>
+where <m>p_t = P_t/M</m>.</p>
+
+
+
+
+</section>
+
+<section><title>Exercise 2</title>
+
+
+<ol>
+<li>Show that the equilibria of equation <ref tname='harvest_fraction_normalized' />
+are <m>p_{e} = 0</m> and <m>p_{e} = 1 - h/r</m>.</li>
+<li>Show that in order for there to be a positive equilibrium,
+the fractional harvest rate, <m>h</m>, must be less than the
+low density growth rate, <m>r</m>.</li>
+</ol>
+
+</section>
+
+
+
+<section><title>Exercise 3</title>
+
+
+<p>
+<ol>
+<li>Convert equation <ref tname='harvest_fraction_normalized' /> (which is in difference form) to function iteration form <m>p_{t+1}=F(P_t)</m>.  Show that
+<men name='harvest_fraction_iteration' >p_{t+1} = F(p_t) = p_t + r  p_t  (1 - p_t) - h p_t.</men>
+</li>
+<li>Show that the equilibria of iteration <ref tname='harvest_fraction_iteration' />
+are <m>p_{e} = 0</m> and <m>p_{e} = 1 - h/r</m>. 
+</li>
+<li>
+Assume that <m>h \lt  r \lt  2</m>.  Compute <m>F'(p)</m> and evaluate
+<m>F'(0)</m> and <m>F'(1-h/r)</m>.  Conclude that <m>0</m>
+is an unstable equilibrium and <m>1-h/r</m> is a stable equilibrium.
+</li>
+</ol>
+</p>
+
+</section>
+
+
+
+<section><title>Exercise 4</title>
+
+
+<p>Assume that <m>h \lt  r \lt  2</m> so that <m>1-h/r</m> is a positive, stable equilibrium of the iteration of equation <ref tname='harvest_fraction_iteration' />.</p>
+The harvest at that equilibrium will be <m>h  (1 - h/r)</m>.
+<ol>
+  <li>Find the value of <m>h</m> for which <m>h  (1-h/r)</m> is the largest.
+Conclude that in order to maximize harvest, the harvest fraction
+<m>h</m> should be set at one-half the low density growth rate, <m>r</m>.</li>
+<li>Find the positive equilibrium <m>p_e</m> for this value of <m>h</m>.</li>
+<li>The variable <m>p_t</m> was the actual population size <m>P_t</m> normalized by the carrying capacity <m>p_t=P_t/M</m>.  What is the equilibrium value of the population size <m>P_t</m> when the harvest rate is set at the value that maximizes harvest?  Your answer will be in terms of <m>M</m>.</li>
+</ol>
+
+
+</section>
+
+<section><title>Selected answers</title>
+
+
+<p>Once you've worked out some of these exercises, you can check your work with the 
+<ref uri='doenet:harvest_natural_populations_answers'>answers to selected problems</ref>
+.</p>
+</section>

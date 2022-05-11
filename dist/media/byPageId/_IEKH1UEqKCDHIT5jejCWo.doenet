@@ -1,0 +1,406 @@
+<problem>
+<!-- <title>extrema of quadratic*exp(ax)</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='half_a' from='-2' to=' 2' exclude="0" />
+<number name="a">2$half_a</number>
+<selectFromSequence assignNames='b' from='-5' to=' 5' exclude="0" />
+<selectFromSequence assignNames='c' from='-5' to=' 5' />
+
+<selectFromSequence assignNames='dint1 dint2' from='1' to=' 3' numberToSelect="2" withReplacement />
+
+<select assignNames="(d sr)">
+  <option><number>$c+3$half_a</number><number>5*$half_a*$b</number></option>
+  <option><number>$c-3$half_a</number><number>5*$half_a*$b</number></option>
+  <option><number>$c</number><number>2*$a*$b</number></option>
+</select>
+
+<math name='quadratic_F' simplify='numbers'>$b*x^2-$b*($c+$d)*x+$b$c$d</math>
+
+<!-- <function name='quadratic' variables='x' symbolic><math expand>$b *(x-$c )*(x-$d )</math></function> -->
+<function name='quadratic' variables='x' symbolic>$quadratic_F</function>
+
+
+
+<function name='fun' variables='x' symbolic><math>$$quadratic(x)*e^(<math simplify>x/$a</math> )</math></function>
+<math name="d_quadratic_F" simplify="numbers">2$b x-$b*($c+$d)</math>
+<function name='d_quadratic' variables='x' symbolic>$d_quadratic_F</function>
+<!-- <derivative name="d_quadratic">$quadratic</derivative> -->
+
+<math name="fpqB" simplify="numbers">2$a$b-$b*($c+$d)</math>
+<math name="fpqC" simplify="numbers">-$a$b*($c+$d)+$b$c$d</math>
+
+<math name="fun_prime_quadratic_F" simplify="numbers">1/$a*($b*x^2 + $fpqB*x + $fpqC)</math>
+
+<function name='fun_prime_quadratic' variables='x' symbolic> $fun_prime_quadratic_F</function>
+<function name='fun_prime' variables='x'>$$fun_prime_quadratic(x)*exp(x/$a )</function>
+
+<!-- <math name="sr" simplify>sqrt($fpqB*$fpqB-4*$b*$fpqC)</math> -->
+
+<math name="cp1" simplify="numbers">(-$fpqB -$sr)/(2*$b)</math>
+<math name="cp2" simplify="numbers">(-$fpqB +$sr)/(2*$b)</math>
+<p><mathlist name="critical_points">$cp1$cp2</mathlist></p>
+
+<!-- <solveEquations name="solveForRoots" minVar="-100" maxVar="100">$$fun_prime_quadratic(x)=0</solveEquations>
+<p><mathlist name='critical_points'><copy prop="solutions" tname="solveForRoots"/></mathlist></p>
+<copy prop="math1" tname="critical_points" assignNames="cp1" />
+<copy prop="math2" tname="critical_points" assignNames="cp2" /> -->
+
+<number name='auxpoint1'>floor($cp1 -1)</number>
+<number name='auxpoint3'>ceil($cp2 +1)</number>
+<number name='auxpoint2a'>($cp1 +$cp2 )/2</number>
+<number name='auxpoint2b'>floor($auxpoint2a )</number>
+<conditionalContent assignNames="(auxpoint2c)">
+  <case condition="$auxpoint2b  >$cp1">
+  $auxpoint2b
+  </case>
+  <else><math>ceil($auxpoint2a)</math></else>
+</conditionalContent>
+<conditionalContent assignNames="(auxpoint2)">
+  <case condition="$auxpoint2c  < $cp2">
+  $auxpoint2c
+  </case>
+  <else><math>$auxpoint2a</math></else>
+</conditionalContent>
+<evaluate function="$fun_prime" input="$auxpoint1" name="fun_prime_a1" />
+<evaluate function="$fun_prime" input="$auxpoint2" name="fun_prime_a2" />
+<evaluate function="$fun_prime" input="$auxpoint3" name="fun_prime_a3" />
+<conditionalContent assignNames='(increasedecrease1)'>
+  <case condition="$fun_prime_a1 >0">
+    <text>increasing</text>
+  </case>
+  <else><text>decreasing</text></else>
+</conditionalContent>
+<conditionalContent assignNames='(increasedecrease2)'>
+  <case condition="$fun_prime_a2 >0">
+    <text>increasing</text>
+  </case>
+  <else><text>decreasing</text></else>
+</conditionalContent>
+<conditionalContent assignNames='(increasedecrease3)'>
+  <case condition="$fun_prime_a3 >0">
+    <text>increasing</text>
+  </case>
+  <else><text>decreasing</text></else>
+</conditionalContent>
+<conditionalContent assignNames="cp1_characterization">
+  <case condition="$fun_prime_a1 > 0 and $fun_prime_a2 < 0">
+    <text>maximum</text>
+  </case>
+  <case condition="$fun_prime_a1 < 0 and $fun_prime_a2 > 0">
+    <text>minimum</text>
+  </case>
+  <else><text>none</text></else>
+</conditionalContent>
+<conditionalContent assignNames="cp2_characterization">
+  <case condition="$fun_prime_a2 > 0 and $fun_prime_a3 < 0">
+    <text>maximum</text>
+  </case>
+  <case condition="$fun_prime_a2 < 0 and $fun_prime_a3 > 0">
+    <text>minimum</text>
+  </case>
+  <else><text>none</text></else>
+</conditionalContent>
+
+<mathlist name='extrema_locations'>$critical_points </mathlist>
+<textList name='extrema_characterizations'>$cp1_characterization $cp2_characterization </textList>
+<evaluate name="fun_cp1" function="$fun" input='$cp1' forceNumeric displayDigits="4" />
+<evaluate name="fun_cp2" function="$fun" input='$cp2' forceNumeric displayDigits="4" />
+<!-- <math name='fun_cp1' simplify='numbers' >$$fun($cp1 )</math>
+<math name='fun_cp2' simplify='numbers' >$$fun($cp2 )</math> -->
+<math name='extrema_values'>$fun_cp1 ,$fun_cp2 </math>
+<number name='I1'>$cp1 -$dint1 </number>
+<number name='I2'>$cp2 +$dint2 </number>
+<!-- <math name='fun_I1' simplify='numbers' >$$fun($I1 )</math>
+<math name='fun_I2' simplify='numbers' >$$fun($I2 )</math> -->
+<evaluate name="fun_I1" function="$fun" input='$I1' forceNumeric displayDigits="4" />
+<evaluate name="fun_I2" function="$fun" input='$I2' forceNumeric displayDigits="4" />
+
+
+<max name='global_maximum_numeric' forceNumeric>$fun_I1$fun_I2$fun_cp1$fun_cp2</max>
+
+<conditionalContent assignNames="(global_maximum global_maximum_location)">
+  <case condition="$fun_I1=$global_maximum_numeric">$fun_I1$I1</case>
+  <case condition="$fun_cp1=$global_maximum_numeric">$fun_cp1$cp1</case>
+  <case condition="$fun_I2=$global_maximum_numeric">$fun_I2$I2</case>
+  <case condition="$fun_cp2=$global_maximum_numeric">$fun_cp2$cp2</case>
+</conditionalContent>
+
+<min name='global_minimum_numeric' forceNumeric>$fun_I1$fun_I2$fun_cp1$fun_cp2</min>
+<conditionalContent assignNames="(global_minimum global_minimum_location)">
+  <case condition="$fun_I1=$global_minimum_numeric">$fun_I1$I1</case>
+  <case condition="$fun_cp1=$global_minimum_numeric">$fun_cp1$cp1</case>
+  <case condition="$fun_I2=$global_minimum_numeric">$fun_I2$I2</case>
+  <case condition="$fun_cp2=$global_minimum_numeric">$fun_cp2$cp2</case>
+</conditionalContent>
+
+
+
+</setup>
+
+
+Let <m>f(x) =<copy prop="formula" tname="fun" /></m>.
+
+
+
+<ol>
+
+<li>
+<p>Calculate <m>f'(x)</m>.</p>
+
+<p><m>f'(x) =</m> 
+<answer>
+<award>$fun_prime </award>
+</answer>
+</p>
+
+
+
+</li>
+
+<li>
+<p>Find the critical points of <m>f</m>. </p>
+
+<p>Critical points = 
+<answer>
+<mathinput name="miCP" />
+<award matchPartial>
+  <when>$miCP = $critical_points</when>
+</award>
+</answer>
+  (If there are multiple answers, separate by commas; do not round.)</p>
+
+
+</li>
+
+<li>
+<p>Find the local extrema of <m>f</m>.  (Extrema just means either a maximum or a minimum.)  For each extremum calculate three things: the location of the extremum (i.e., value of <m>x</m>), the value of the extremum (i.e., value of <m>f(x)</m>), and whether it is a local maximum or a local minimum.</p>
+
+<p>Locations of the local extrema: 
+<answer>
+<mathinput name="miLE" />
+
+<award matchPartial='true'>
+  <when>$miLE = $extrema_locations</when>
+</award>
+<award credit='0.7' name='award6' unorderedCompare>
+  <when>$miLE = $extrema_locations</when>
+</award>
+</answer>
+ (If multiple answers, enter in increasing order, separated by commas; if no answers, enter <alert>none</alert>.)</p>
+<feedback condition="$award6">Enter in increasing order</feedback>
+
+<p>Values of the local extrema: 
+<answer matchPartial>
+<award allowedErrorInNumbers='0.001'>$extrema_values </award>
+</answer>
+ (If multiple answers, enter in the same order as above, separated by commas; if no answers, enter <alert>none</alert>.  If rounding, keep at least four digits.)</p>
+
+<p>For each extremum, enter either <alert>maximum</alert> or <alert>minimum</alert> to indicate if the extremum is a local maximum or local minimum, respectively.  (If multiple answers, enter in the same order as above, separated by commas; if no answers, enter <alert>none</alert>.)</p>
+
+<p>Characterization of extrema= 
+<answer type="text">
+<textinput size="15" name="tiExt" />
+<award targetsAreResponses="tiExt">
+  <when>
+    <split splitBy="comma">$tiExt</split>
+    = $extrema_characterizations
+  </when>
+</award>
+</answer>
+</p>
+
+
+
+<hint>
+For example, imagine that there were local extrema at <m>x=-4</m>, <m>x=-1</m>, and <m>x=3</m>.  Imagine moreover, that <m>f(-4)=0</m>, <m>f(-1)=-3</m>, and <m>f(3)=4</m>, and that these extrema were a local maximum, a local minimum, and a local maximum, respectively.  Then, the correct answer would be to enter <c>-4,-1, 3</c> in the locations blank, enter <c>0, -3, 4</c> in the values blank, and <c>maximum, minimum, maximum</c> in the characterization blank.
+</hint>
+
+</li>
+
+<li>
+<p>Find the global maximum and global minimum of the function <m>f(x)</m> on the interval <m>$I1  \le x \le $I2 </m>.  Also indicate the location (the value of <m>x</m>) of the global maximum and global minimum.</p>
+
+<p>Global maximum: 
+<answer name="answer6">
+<award allowedErrorInNumbers='0.001'>$global_maximum </award>
+</answer>
+ (If rounding, keep at least four digits.)</p>
+
+<p>Location of global maximum: <m>x =</m> 
+<answer>
+<award symbolicEquality='true'>$global_maximum_location </award>
+</answer>
+</p>
+
+<p>Global minimum: 
+<answer name="answer8">
+<award allowedErrorInNumbers='0.001'>$global_minimum </award>
+</answer>
+ (If rounding, keep at least four digits.)</p>
+
+<p>Location of global minimum: <m>x=</m> 
+<answer>
+<award>$global_minimum_location </award>
+</answer>
+</p>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<m>f'(x) = <copy prop="formula" tname="fun_prime" /></m>
+</li>
+
+<li>
+<p>The derivative always exists, so the critical points are where <m>f'(x)=0</m>.</p>
+
+<p>To solve <me><copy prop="formula" tname="fun_prime" />=0,</me>
+we observe that the exponential can never be zero.  The only way for the <m>f'(x)</m> to be zero is if
+<me><copy prop="formula" tname="fun_prime_quadratic" />=0.</me>
+We can solve this condition using the quadratic formula.  The results are the critical points <m>$cp1 </m> and <m>$cp2 </m>.</p>
+</li>
+
+<li>
+<p>The candidates for the local extrema are the critical points <m>x=$cp1 </m> and <m>x=$cp2 </m>.  To determine if the critical points are local extrema, we check to see if <m>f</m> switches from increasing to decreasing or vice versa at the critical point.</p>
+
+<p>Since <m>f'(x)</m> cannot change sign away from the critical points, i.e., in the intervals <m>(-\infty, $cp1 )</m>, <m>($cp1 ,$cp2 )</m>, or <m>($cp2 ,\infty)</m>, we check the sign of <m>f'(x)</m> in each of those intervals.</p>
+
+<p>To test the sign of <m>f'(x)</m> in the interval <m>(-\infty,$cp1 )</m>, we could pick the point <m>x=$auxpoint1 </m>.  <m>f'($auxpoint1 ) = $fun_prime_a1  
+<conditionalcontent>
+<case condition='$fun_prime_a1 > 0'>
+\gt 
+</case>
+<else>
+\lt 
+</else>
+</conditionalcontent>
+ 0</m>.  <m>f(x)</m> is 
+<conditionalcontent>
+<case condition='$fun_prime_a1 > 0'>
+increasing
+</case>
+<else>
+decreasing
+</else>
+</conditionalcontent>
+ on the interval <m>(-\infty,$cp1 )</m>.</p>
+
+<p>To test the sign of <m>f'(x)</m> in the interval <m>($cp1 ,$cp2 )</m>, we could pick the point <m>x=$auxpoint2 </m>.  <m>f'($auxpoint2 ) = $fun_prime_a2  
+<conditionalcontent>
+<case condition='$fun_prime_a2 > 0'>
+\gt 
+</case>
+<else>
+\lt 
+</else>
+</conditionalcontent>
+ 0</m>.  <m>f(x)</m> is 
+<conditionalcontent>
+<case condition='$fun_prime_a2 > 0'>
+increasing
+</case>
+<else>
+decreasing
+</else>
+</conditionalcontent>
+ on the interval <m>($cp1 ,$cp2 )</m>.</p>
+
+<p>To test the sign of <m>f'(x)</m> in the interval <m>($cp2 ,\infty)</m>, we could pick the point <m>x=$auxpoint3 </m>.  <m>f'($auxpoint3 ) = $fun_prime_a3  
+<conditionalcontent>
+<case condition='$fun_prime_a3 > 0'>
+\gt 
+</case>
+<else>
+\lt 
+</else>
+</conditionalcontent>
+ 0</m>.  <m>f(x)</m> is 
+<conditionalcontent>
+<case condition='$fun_prime_a3 > 0'>
+increasing
+</case>
+<else>
+decreasing
+</else>
+</conditionalcontent>
+ on the interval <m>($cp2 ,\infty)</m>.</p>
+
+<p>(Since the exponential is always positive, you can take a shortcut on all the above answers and just calculate the sign of the quadratic <m><copy prop="formula" tname="fun_prime_quadratic" /></m> at each auxiliary point.)</p>
+
+<p>Since <m>f(x)</m> is 
+<conditionalcontent>
+<case condition='$fun_prime_a1 > 0'>
+increasing
+</case>
+<else>
+decreasing
+</else>
+</conditionalcontent>
+ on the interval <m>(-\infty,$cp1 )</m> and <m>f(x)</m> is 
+<conditionalcontent>
+<case condition='$fun_prime_a2 > 0'>
+increasing
+</case>
+<else>
+decreasing
+</else>
+</conditionalcontent>
+ on the interval <m>($cp1 ,$cp2 )</m>, the sign of <m>f'(x)</m> does indeed change at the critical point <m>x=$cp1 .</m>  <m>f</m> has a local $cp1_characterization  at the point <m>x=$cp1 </m>.  The value of the $cp1_characterization  is <m>f($cp1 ) \approx $fun_cp1</m>.</p>
+
+<p>Since <m>f(x)</m> is 
+<conditionalcontent>
+<case condition='$fun_prime_a2 > 0'>
+increasing
+</case>
+<else>
+decreasing
+</else>
+</conditionalcontent>
+ on the interval <m>($cp1 ,$cp2 )</m> and <m>f(x)</m> is 
+<conditionalcontent>
+<case condition='$fun_prime_a3 > 0'>
+increasing
+</case>
+<else>
+decreasing
+</else>
+</conditionalcontent>
+ on the interval <m>($cp2 ,\infty)</m>, the sign of <m>f'(x)</m> does indeed change at the critical point <m>x=$cp2 .</m>  <m>f</m> has a local $cp2_characterization  at the point <m>x=$cp2 </m>.  The value of the $cp2_characterization  is <m>f($cp2 ) \approx $fun_cp2</m>.</p>
+
+<p>In summary, the locations of the extrema are: <m>$cp1 </m>, <m>$cp2 </m>.  The values of the extrema are: <m>$fun_cp1 </m>, <m>$fun_cp2 </m>.  The characterization of the extrema are: $cp1_characterization , $cp2_characterization .</p>
+</li>
+
+<li>
+<p>The global extrema must occur at a critical point or an endpoint of the interval.  Therefore, the possibilities for global extremum locations are <m>x=$I1 </m>, <m>x=$cp1 </m>, <m>x=$cp2 </m>, and <m>x=$I2 </m>.  We plug those values into <m>f</m> to determine which location gives the largest and smallest value.</p>
+<md>
+  <mrow>f($I1 )\amp \approx $fun_I1</mrow>
+  <mrow>f($cp1 )\amp \approx $fun_cp1</mrow>
+  <mrow>f($cp2 )\amp \approx $fun_cp2</mrow>
+  <mrow>f($I2 )\amp \approx $fun_I2</mrow>
+</md>
+
+<p>The global maximum occurs when <m>x= $global_maximum_location </m>, and the global maximum is <m>f($global_maximum_location ) \approx $global_maximum</m>.</p>
+
+<p>The global minimum occurs when <m>x= $global_minimum_location </m>, and the global minimum is <m>f($global_minimum_location ) \approx $global_minimum</m>.</p>
+
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

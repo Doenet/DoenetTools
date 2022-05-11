@@ -1,0 +1,98 @@
+<setup>
+  <math name="degree">
+    pi/180
+  </math>
+
+  <selectFromSequence from="20" to="59" name="angleC" />
+  <selectFromSequence from="40" to="95" name="angleA" />
+  <selectFromSequence from="4" to="15" name="sidec" />
+
+  <!--
+    Calculate Answers
+  -->
+  <math simplify="full" name="ans1">
+    180-$angleA-$angleC
+  </math>
+  <math simplify="full" name="ans2">
+    $sidec*sin(($angleA)*$degree)/sin(($angleC)*$degree)
+  </math>
+  
+  <math simplify="full" name="ans3">
+    $sideb*sin(($angleC+$angleA)*$degree)/sin(($angleC)*$degree)
+  </math>
+
+
+  
+</setup>
+
+<p>
+  With the triangle defined by
+  <me>
+    \begin{split}
+      C & = $angleC^\circ \\
+      A & = $angleA^\circ \\
+      c & = $sidec^\circ \\
+    \end{split}
+  </me>
+  Find the missing parts of the triangle.  Express angles in degrees rounded to the nearest 0.1.  Do not enter the degree symbol.  Round lengths to the nearest 0.01. 
+</p>
+
+<p>
+   <m>B</m>:
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05">
+      $ans1
+    </award>  
+  </answer>
+</p>
+
+<p>
+   <m>a</m>:
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.005">
+      $ans2
+    </award>
+  </answer>
+</p>
+
+<p>
+   <m>b</m>:
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.005">
+      $ans3
+    </award>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        Angle <m>B</m>:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="1">$ans1</number>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        Side <m>a</m>:
+      </cell>
+      <cell></cell><cell></cell>
+      <cell>
+        <number displayDecimals="2">$ans2</number>
+      </cell>
+   </row>
+    <row bottom="minor">
+      <cell>
+        Side <m>b</m>:
+      </cell>
+      <cell></cell><cell></cell>
+      <cell>
+        <number displayDecimals="2">$ans3</number>
+      </cell>
+   </row>
+  </tabular>
+</solution>

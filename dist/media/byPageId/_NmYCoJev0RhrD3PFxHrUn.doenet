@@ -1,0 +1,27 @@
+<title>Doubling time and half-life problem set</title>
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <copy uri="doenet:contentId=2e2782c62b67abe6527ece4c30b3663bb5cafe86ffee49461f36896ee25f3f4a&doenetId=R0817sLRh309fWjcnFI_q" componentType="problem" />
+
+  <copy uri="doenet:contentId=16ac9059bb6f51aadbcffc7eb0b77af03760ed5b3866a42ea9b4fadab995c06b&doenetId=CKvkVvV_OAsppDH7H5VrK" componentType="problem" />
+
+  <copy uri="doenet:contentId=296a6a01f9f7088519eea6e1ca6e596fbc23bfbb42e5d25bd951cf470f899c86&doenetId=A5R-G8TYt4_1kp4xjGSJf" componentType="problem" />
+    
+  <copy uri="doenet:contentId=15a9db1760dc249787f4ad2548ae89c958801023065717082fe9a3ffea71f8e5&doenetId=rEv-fduurWYBbudbtVE3N" componentType="problem" />
+
+  
+  <copy uri="doenet:contentId=134f8318ab5da722e24f9a48b4afec7b1333faf3dd443f5dd42a7c0ebfa48995&doenetId=o7OUigATYhcwX0zODByx2" componentType="problem" />
+
+
+  
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />
+
+
+

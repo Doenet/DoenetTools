@@ -1,0 +1,18 @@
+<title>Stability of equilibria problem set</title>
+
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <copy uri="doenet:contentId=fdae20401058d9ee654f221e3c7bae1a66a0f09f8449a843a58937735b9fe24c&doenetId=ojDqrchL99BBUbhwrRcE3" componentType="problem" assignNames="problem1" />
+
+  <copy uri="doenet:contentId=eeada3a80c609e60cc30c70125207c4b32478ed9c9ede055d0d3dd536f6baccf&doenetId=MbaWeZ3u6akFXGGR_pyeO" componentType="problem" assignNames="problem2" />
+
+  <copy uri="doenet:contentId=637aa89cc1a70f120f113ae472c2960106e4677447b583147a80d68667e2ce52&doenetId=01mo-0-RANKMXrtX0OLc3" componentType="problem" assignNames="problem3" />
+  
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

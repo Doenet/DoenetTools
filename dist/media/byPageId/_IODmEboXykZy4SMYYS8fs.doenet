@@ -1,0 +1,77 @@
+<title>Beginning of semester survey</title>
+
+
+<p>We are interested in knowing your ideas about mathematics and in helping you learn. Your answers to the questions below will help us to better understand your learning process throughout the semester.</p>
+
+<p>This questionnaire is completely optional. It will not be graded.</p>
+
+
+<p>Please tell us what you really think by selecting the choice that best matches your reaction to these statements.</p>
+
+<ol>
+  <li>The skills I learn in this class will help me in my career.
+    <choiceinput name="skillHelp">
+      <choice>1. Strongly Disagree</choice>
+      <choice>2. Disagree</choice>
+      <choice>3. Undecided</choice>
+      <choice>4. Agree</choice>
+      <choice>5. Strongly Agree</choice>
+    </choiceinput>
+  </li>
+  <li>Mathematics is not important in everyday life.
+    <choiceinput name="mathNotImportant">
+      <choice>1. Strongly Disagree</choice>
+      <choice>2. Disagree</choice>
+      <choice>3. Undecided</choice>
+      <choice>4. Agree</choice>
+      <choice>5. Strongly Agree</choice>
+    </choiceinput>
+  </li>
+  <li>In mathematics you can be creative and discover things by yourself.
+    <choiceinput name="mathCreative">
+      <choice>1. Strongly Disagree</choice>
+      <choice>2. Disagree</choice>
+      <choice>3. Undecided</choice>
+      <choice>4. Agree</choice>
+      <choice>5. Strongly Agree</choice>
+    </choiceinput>
+  </li>
+  <li>Mathematics is enjoyable and stimulating to me.
+    <choiceinput name="mathEnjoy">
+      <choice>1. Strongly Disagree</choice>
+      <choice>2. Disagree</choice>
+      <choice>3. Undecided</choice>
+      <choice>4. Agree</choice>
+      <choice>5. Strongly Agree</choice>
+    </choiceinput>
+  </li>
+  <li>Using a computer is a good way for me to learn mathematics.
+    <choiceinput name="computerMath">
+      <choice>1. Strongly Disagree</choice>
+      <choice>2. Disagree</choice>
+      <choice>3. Undecided</choice>
+      <choice>4. Agree</choice>
+      <choice>5. Strongly Agree</choice>
+    </choiceinput>
+  </li>
+
+  <li><p>Mathematical models can be used to (select which are true):</p>
+    <choiceinput name="modelsUsed" selectMultiple>
+      <choice>test the logical consistency of ideas</choice>
+      <choice>generate predictions</choice>
+      <choice>test hypothetical scenarios</choice>
+      <choice>identify parallels between different natural systems</choice>
+      <choice>motivate experiments</choice>
+      <choice>describe all theoretically possible outcomes</choice>
+      <choice>highlight assumptions in a way of thinking</choice>
+
+    </choiceinput>
+    
+  </li>
+
+  <li><p>Tell us one thing about yourself that you'd like us to know about you.</p>
+    <textinput expanded name="aboutSelf" />
+  </li>
+
+  
+</ol>

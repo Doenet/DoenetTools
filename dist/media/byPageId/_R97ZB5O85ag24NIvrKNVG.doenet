@@ -1,0 +1,58 @@
+<problem>
+<variantControl nVariants="1" />
+<!-- <title>Polymerase chain reaction</title> -->
+
+<setup>
+
+<math name='function_iteration_rhs' >2d_n</math>
+<math name='d_0'>0.000000000001</math>
+<math name='ending_grams'>0.000000000001*2**30</math>
+
+</setup>
+
+<p>
+The polymerase chain reaction is a means of making multiple copies of a DNA segment from only a minute amount of original DNA. The procedure consists of a sequence of multiple cycles. During the course of one cycle, each DNA segment present is duplicated. Suppose you begin with 1 picogram = 0.000000000001 g of DNA. 
+</p>
+
+<p>If <m>d_n</m> is the amount of DNA in grams after <m>n</m> cycles,  write a discrete dynamical system with initial condition from which the amount of DNA present at the end of each cycle can be computed.</p>
+
+<p><m>d_{n+1} =</m> 
+<answer>
+<award symbolicEquality='true'>$function_iteration_rhs </award>
+</answer>
+ <nbsp/><nbsp/> for <m>n=0,1,2,3,\ldots</m>
+</p>
+
+<p>
+<m>d_0 =</m> 
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='1'>$d_0 </award>
+</answer>
+</p>
+
+<p>How many grams of DNA would be present after 30 cycles?  
+<answer name='answer3'>
+<award allowedErrorInNumbers='0.01'>$ending_grams </award>
+<award credit='0.5' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$ending_grams </award>
+</answer>
+ grams.
+</p>
+<copy prop="feedbacks" tname="answer3" />
+
+<p>(Keep at least 3 significant digits in your answer.)</p>
+
+
+<solution>
+Let <m>d_n =</m> the amount of DNA in grams after <m>n</m> cycles.  A dynamical system that describes the DNA doubling is
+<md>
+  <mrow>d_{n+1}\amp = 2d_n</mrow>
+  <mrow>d_0\amp = 0.000000000001,</mrow>
+</md>
+which has solution <m>d_n = 2^n 0.000000000001</m>.   Then 
+<me>p_{30} = 2^{30}(0.000000000001) \approx 0.00107.</me> 
+Approximately 0.00107 g of DNA would be present after 30 cycles.
+
+</solution>
+
+
+</problem>

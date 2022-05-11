@@ -1,0 +1,62 @@
+<problem>
+<variantControl nVariants='1' />
+<title>Linear approximation to log(quadratic)</title>
+
+<setup>
+
+<function name='h' variables='x' symbolic>ln(x^2+1)</function>
+<derivative name='hprime' variables='x' symbolic>$h</derivative>
+<math name='h_n1' simplify='full' >$$h(-1)</math>
+<math name='hprime_n1' simplify='full' >$$hprime(-1)</math>
+<math name='L_n1' simplify='full' >$h_n1 +$hprime_n1 *(x+1)</math>
+<math name='h_0' simplify='full' >$$h(0)</math>
+<math name='hprime_0' simplify='full' >$$hprime(0)</math>
+<math name='L_0' simplify='full' >$h_0 +$hprime_0 *x</math>
+<math name='h_1' simplify='full' >$$h(1)</math>
+<math name='hprime_1' simplify='full' >$$hprime(1)</math>
+<math name='L_1' simplify='full' >$h_1 +$hprime_1 *(x-1)</math>
+<math name='L_n1_round' simplify='full' >$L_n1 </math>
+<math name='L_1_round' simplify='full' >$L_1 </math>
+
+</setup>
+
+
+Let <m>h(x)= $h </m>.  Find linear approximations for <m>h(x)</m> around <m>x=-1</m>, <m>x=0</m>, and <m>x=1</m>.
+
+<p>Around <m>x=-1</m>: <m>L_{-1}(x)=</m> 
+<answer>
+<award >$L_n1 </award>
+<award allowedErrorInNumbers='0.001' credit='0.9' name='award1'>$L_n1_round </award>
+</answer>
+</p>
+<feedback condition="$award1">For full credit, don't round your answer.</feedback>
+
+<p>Around <m>x=0</m>: <m>L_0(x)=</m> 
+<answer>
+<award>$L_0 </award>
+</answer>
+</p>
+
+<p>Around <m>x=1</m>: <m>L_1(x)=</m> 
+<answer>
+<award>$L_1 </award>
+<award allowedErrorInNumbers='0.001' credit='0.9' name='award4'>$L_1_round </award>
+</answer>
+</p>
+<feedback condition="$award4">For full credit, don't round your answer.</feedback>
+
+
+
+<solution>
+<p><m>h'(x)= $hprime </m>.</p>
+
+<p><m>x=-1</m>: <m>h(-1)=$h_n1 </m>, <m>h'(-1)=$hprime_n1 </m>. <m>L(x)=$L_n1  \approx <round numberdigits="4">-1 + ln(2) - x</round></m>.</p>
+
+<p><m>x=0</m>: <m>h(0)=$h_0 </m>, <m>h'(0)=$hprime_0 </m>.  <m>L(x)=$L_0 </m></p>
+
+<p><m>x=1</m>: <m>h(1)=$h_1 </m>, <m>h'(1)=$hprime_1 </m>.  <m>L(x)=$L_1  \approx <round numberdigits="4">$L_1_round</round></m>.</p>
+
+</solution>
+
+
+</problem>

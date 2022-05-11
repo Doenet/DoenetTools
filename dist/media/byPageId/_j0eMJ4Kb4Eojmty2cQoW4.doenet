@@ -1,0 +1,57 @@
+<setup>
+  <math name="degree">
+    pi/180
+  </math>
+
+  <selectFromSequence from="20" to="74" name="angleA" />
+  <selectFromSequence from="8" to="15" name="sideb" />
+  <selectFromSequence from="6" to="12" name="sidec" />
+
+  <!--
+    Calculate Answers
+  -->
+  <math simplify="full" name="ans1">
+    $sideb*$sidec*sin($angleA*$degree)
+  </math>
+  
+
+
+  
+</setup>
+
+<p>
+  With the triangle defined by
+  <me>
+    \begin{split}
+      A & = $angleA^\circ \\
+      b & = $sideb^\circ \\
+      c & = $sidec^\circ \\
+    \end{split}
+  </me>
+  Find the area of the triangle below.  (Note: b is the length of the entire side connecting A to C.)  Round your answer to the nearest 0.01. 
+</p>
+
+<p>
+   <m>area</m>:
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05">
+      $ans1
+    </award>  
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+         <m>area</m>:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="1">$ans1</number>
+      </cell>
+    </row>
+   
+  </tabular>
+</solution>

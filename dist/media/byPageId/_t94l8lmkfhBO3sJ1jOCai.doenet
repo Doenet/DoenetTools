@@ -1,0 +1,47 @@
+<problem>
+
+<setup>
+<selectFromSequence assignNames='a' from="-3" to="3" />
+<selectFromSequence assignNames='b' from="4" to="10" />
+<selectFromSequence assignNames='alpha' from="2" to="7" />
+<selectFromSequence assignNames='beta' from="1" to="5" />
+<math name='l' simplify='full'>$alpha*$a+$beta</math>
+<math name='m' simplify='full'>$alpha*$b+$beta</math>
+</setup>
+
+Let the variable <m>x</m> be in the range 
+<me>$a \lt  x \lt $b.</me>
+If <m>y= $alpha x + $beta</m>, what is the range of the variable <m>y</m>?
+
+<p><mathinput name="input1"/>
+<m>\lt y \lt</m> <mathinput name="input2"/>
+</p>
+
+<p>To ensure credit, either don't round (keeping your numbers as fractions) 
+or include at least 5 significant digits in your answer.</p>
+
+<answer>
+  <award allowedErrorInNumbers='0.0001' targetsAreResponses="input1 input2"><when matchpartial="true">
+    $input1 = $l
+    and
+    $input2 = $m
+  </when></award>
+</answer>
+
+
+<solution>
+Starting with <m>$a\lt  x \lt $b</m>, we want to transform the inequality so that the middle contains <m>y= $alpha x + $beta</m>.  To do this, we multiply all three parts of the inequality by <m>$alpha</m>.  Since <m>$alpha</m> is positive, this does not change the direction of the inequalities.  The result is:
+<md>
+  <mrow>$a \cdot $alpha \lt  $alpha x \lt  $b \cdot $alpha</mrow>
+  <mrow><math simplify="full">$a*$alpha</math> \lt  $alpha x \lt  <math simplify="full">$b*$alpha</math>.</mrow>
+</md>
+Next, we add <m>$beta</m> to all three parts of the inequality.
+<md>
+  <mrow><math simplify="full">$a*$alpha</math> + $beta \lt  $alpha x + $beta  \lt  <math simplify="full">$b*$alpha</math> + $beta</mrow>
+  <mrow>$l \lt  $alpha x + $beta  \lt  $m.</mrow>
+</md>
+Now, the middle of the inequality contains <m>y= $alpha x + $beta</m>.  Replacing <m>$alpha x + $beta</m> with <m>y</m>, our final result is
+<me>$l \lt  y \lt $m.</me>
+</solution>
+
+</problem>

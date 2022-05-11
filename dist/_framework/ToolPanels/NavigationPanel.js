@@ -6,7 +6,7 @@ import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import {suppressMenusAtom} from "../NewToolRoot.js";
 import styled, {keyframes} from "../../_snowpack/pkg/styled-components.js";
-import {authorItemByDoenetId, findFirstPageOfActivity, selectedCourseItems} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, findFirstPageOfActivity, selectedCourseItems} from "../../_reactComponents/Course/CourseActions.js";
 import {useToast, toastType} from "../Toast.js";
 const movingGradient = keyframes`
   0% { background-position: -250px 0; }
@@ -64,7 +64,7 @@ export default function NavigationPanel() {
         setSuppressMenus([]);
         break;
       case "student":
-        setSuppressMenus(["AddDriveItems"]);
+        setSuppressMenus(["AddDriveItems", "CutCopyPasteMenu"]);
         break;
       default:
     }
@@ -72,7 +72,7 @@ export default function NavigationPanel() {
   const updateSelectMenu = useRecoilCallback(({set, snapshot}) => async ({selectedItems}) => {
     if (selectedItems.length == 1) {
       let selectedDoenetId = selectedItems[0];
-      let selectedItem = await snapshot.getPromise(authorItemByDoenetId(selectedDoenetId));
+      let selectedItem = await snapshot.getPromise(itemByDoenetId(selectedDoenetId));
       if (selectedItem.type == "activity") {
         set(selectedMenuPanelAtom, "SelectedActivity");
       } else if (selectedItem.type == "order") {
@@ -91,29 +91,41 @@ export default function NavigationPanel() {
     }
   });
   const doubleClickItem = useRecoilCallback(({set, snapshot}) => async ({doenetId, courseId}) => {
-    let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+    let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
+    let effectiveRole2 = await snapshot.getPromise(effectiveRoleAtom);
     if (clickedItem.type == "page") {
       set(pageToolViewAtom, (prev) => {
         return {
           page: "course",
           tool: "editor",
           view: prev.view,
-          params: {pageId: doenetId, doenetId: clickedItem.containingDoenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId}
+          params: {pageId: doenetId, doenetId: clickedItem.containingDoenetId}
         };
       });
     } else if (clickedItem.type == "activity") {
-      let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
-      if (pageDoenetId == null) {
-        addToast(`ERROR: No page found in activity`, toastType.INFO);
-      } else {
-        set(pageToolViewAtom, (prev) => {
-          return {
-            page: "course",
-            tool: "editor",
-            view: prev.view,
-            params: {pageId: pageDoenetId, doenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId}
-          };
+      if (effectiveRole2 == "student") {
+        set(pageToolViewAtom, {
+          page: "course",
+          tool: "assignment",
+          view: "",
+          params: {
+            doenetId
+          }
         });
+      } else {
+        let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
+        if (pageDoenetId == null) {
+          addToast(`ERROR: No page found in activity`, toastType.INFO);
+        } else {
+          set(pageToolViewAtom, (prev) => {
+            return {
+              page: "course",
+              tool: "editor",
+              view: prev.view,
+              params: {pageId: pageDoenetId, doenetId}
+            };
+          });
+        }
       }
     } else if (clickedItem.type == "section") {
       set(pageToolViewAtom, (prev) => {

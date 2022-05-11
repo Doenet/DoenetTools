@@ -1,0 +1,58 @@
+<title>Copy with link="false"</title>
+
+<p>In general, copies link (or shadow) their targets so the copy or the original change dynamically when the other is modified.</p>
+
+<sideBySide>
+<graph name="g" width="200" height="200">
+  <point>(1,2)</point>
+</graph>
+<copy tname="g"/>
+</sideBySide>
+
+<p>In some case, you may want to reuse a construction but break the link so that the copy can be independent.  To do that, add the attribute <attr>link</attr> = "false" to the <tag>copy</tag> tag.</p>
+
+<sideBySide>
+<graph name="g2" width="200" height="200">
+  <point>(1,2)</point>
+</graph>
+<copy tname="g2" link="false" />
+</sideBySide>
+
+
+<section newNamespace><title>Question</title>
+
+  <p>We start with a graph of two points <c>A</c> and <c>B</c> with line <c>l</c> going through them.</p>
+
+  <pre> &lt;graph name=&quot;g&quot;&gt;
+  &lt;point name=&quot;A&quot;&gt;(1,2)&lt;/point&gt;
+  &lt;point name=&quot;B&quot;&gt;(3,4)&lt;/point&gt;
+  &lt;line through=&quot;&dollar;A &dollar;B&quot; name=&quot;l&quot; /&gt;
+&lt;/graph&gt;
+  </pre>
+  
+    <graph name="g">
+    <point name="A">(1,2)</point>
+    <point name="B">(3,5)</point>
+    <line through="$A $B" name="l" />
+  </graph>
+
+  <p>Given this setup, what you expect from the following DoenetML?</p>
+
+<pre>&lt;graph&gt;
+  &lt;copy tname=&quot;A&quot; link=&quot;false&quot; /&gt;
+  &lt;copy tname=&quot;l&quot; link=&quot;false&quot; /&gt;
+&lt;/graph&gt;
+</pre>
+
+  
+<solution>
+  <graph>
+    <copy tname="A"  />
+    <copy tname="l" link="false" />
+  </graph>
+</solution>
+
+<p>The general question is: if you copy a code block with link="false", what would you expect to result from the copies to external components?</p>
+
+</section>
+

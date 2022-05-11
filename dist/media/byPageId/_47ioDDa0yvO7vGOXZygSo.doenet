@@ -1,0 +1,92 @@
+<problem>
+<title>Cobweb stability, tilted gaussian 2, worksheet</title>
+
+<setup>
+
+<function name='f' variables='x'>2*(exp(1-(x-1)^2/3^2)-1)+x</function>
+<mathlist name='equilibria'>-2 4</mathlist>
+<mathlist name='equilibria_unordered' unordered='true'>-2 4</mathlist>
+<textlist name='equilibria_stability'>unstable stable</textlist>
+
+</setup>
+
+
+The below graph shows the function <m>g</m> for the dynamical system
+<m>q_{t+1} = g(q_t)</m>.
+
+<sideBySide>
+<stack>
+	
+<p>What are the equilibria of the dynamical system?  (They are integers; enter in increasing order.)
+</p>
+
+
+<p>Number of equilibria: <mathinput name="n" /></p>
+
+<p><m>E = </m>
+<map name="m">
+  <template><mathinput /></template>
+  <sources><sequence length="min(10,$n)" /></sources>
+</map>
+</p>
+
+
+<answer>
+  <award matchPartial><when>
+    <mathlist isResponse><collect tname="m" componentTypes="mathinput" prop="value"/></mathlist> = $equilibria
+  </when></award>
+
+    <award matchPartial unorderedCompare credit='0.75' name='award1'><when>
+    <mathlist isResponse><collect tname="m" componentTypes="mathinput" prop="value"/></mathlist> = $equilibria_unordered
+  </when></award>
+
+</answer>
+<feedback condition="$award1">Enter the equilibria in increasing order for full credit.</feedback>
+
+
+<p>For each equilibrium, cobweb starting with initial conditions just above and below the equilibrium to determine if the equilibrium is stable or unstable.  Specify the stability of each equilibrium in the same order as above.</p>
+
+<p>
+Stability of equilibria:
+<map name="m2">
+  <template>
+  <choiceInput inline><choice>unstable</choice><choice>stable</choice></choiceInput>
+  </template>
+  <sources><sequence length="min(10,$n)" /></sources>
+</map>
+
+</p>
+
+<answer>
+  <award matchPartial matchByExactPositions><when>
+    <textlist isResponse><collect tname="m2" componentTypes="choiceinput" prop="selectedValue"/></textlist> = $equilibria_stability
+  </when></award>
+</answer>
+
+
+</stack>
+<stack>
+
+<copy uri='doenet:contentId=89296fb46fafe5a39cb6a539ad0843fca96ac77afd30a8442f8430ae51400119&doenetId=aQbjajWb3k0vED-HBKg6o59' width='300' height='300' xmin='-4.5' xmax='6.5' ymin='-5.5' ymax='5.5' function='$f' initialInitialValue='2' initialValueDx='0' checkInitialCondition='false' showNavigation='false' cobwebbingWeight='0' variable='q' timeVariable="t" grid />
+
+
+
+</stack>
+</sideBySide>
+
+
+<hint>
+You'll want to cobweb four times, above and below each equilibrium.  The applet is there only to help you cobweb, if you like.  You can also just cobweb by hand.  The applet does not affect the number of points awarded for this question.
+</hint>
+
+
+<solution>
+Equilibria: <m>$equilibria </m>
+<p>
+Stability: <c>$equilibria_stability</c>
+</p>
+
+</solution>
+
+
+</problem>

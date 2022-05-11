@@ -1,0 +1,9 @@
+<mathinput name='m' prefill='x^2'/>
+<slider name='x1'/>
+<m>$m</m>
+<graph width='6in' height='6in'>
+  <function formula='$m' />
+<point>(2$(x1),3)</point>
+</graph>
+<p>What is x divided by 10</p>
+<answer>x/10</answer>

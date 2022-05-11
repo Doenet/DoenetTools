@@ -1,0 +1,155 @@
+<module>
+  <setup>
+  </setup>
+  <p>
+    <row><alert>Introduction</alert></row>
+    As we've had several proof-based challenge problems and a few
+    learning targets, I thought it might be useful
+    to give a brief run-down on proof techniques and some writing notes for
+    issues I've seen arising repeatedly.
+    If you had a proof course for 3283W, this will be a brief review.
+    If you've never had a proof-based class, you might want to spend more time
+    with this, look up some examples and read through them, or think about
+    the proofs we've done in class and how we've used some of these techniques.
+  </p>
+  <p>
+    This is not a complete list, but it covers the most common methods of
+    proof, and they are listed (mostly) in order of preference.
+    You will notice that Proof by Contradiction is at the bottom of this list.
+    This should always be the LAST method you consider, not your go-to
+    method of proof.
+  </p>
+  <p>
+    The most common type of statement we want to prove is an implication.
+    An implication is a statement of the form
+    "If p then q."
+    That is, if the statement p is true, then the statement true must
+    also be true. Often p is a set of conditions, and q is something
+    we want to say about some mathematical object when those conditions
+    hold.
+    <row><alert>Example</alert></row>
+    If <m>a</m> and <m>b</m> are both positive integers or both negative integers, then <m>a\cdot b</m> is a positive integer.
+    <row />
+    We won't prove this statement, but we will use it as an example in some of the methods below.
+    Here p is the statement
+    "<m>a</m> and <m>b</m> are both positive integers or both negative integers"
+    and q is the statement
+    "<m>a\cdot b</m> is a positive integer."
+  </p>
+  <p>
+    <aside><title>Direct Proofs</title>
+      A direct proof starts with the conditions in p, and builds a series of smaller implications that
+      eventually imply the statement q. That is, if <m>s_1, s_2, \ldots, s_n</m> are a series of statements,
+      we construct the string of implications
+      <me>
+        p \implies s_1 \implies s_2 \implies \ldots \implies s_n \implies q.
+      </me>
+      Then if p is true, and each implication in the string is true,
+      q must also be true. Most proofs we've written this term have been direct proofs.
+      <row><alert>Note:</alert></row>
+      Your direct proof should <em>always</em> begin by listing the assumptions you are making.
+      That is, you should clearly define the statement p for the start of your string of implications.
+      <alert>Do not</alert> re-use the notations and objects from the problem statement.
+      This is a bad habit, and will get confusing with more complicated proofs, and sometimes
+      leads to logical errors like assuming some portion of the result in your assumptions implicitly.
+      Make all your assumptions explicit!!
+    </aside>
+  </p>
+  <p>
+    <aside><title>Proof by Contrapositive</title>
+      This is an indirect proof.
+      Sometimes proving <m>p\implies q</m> is extremely difficult to do directly.
+      However, it turns out that anytime <m>p\imples q</m> is true, the statement
+      <m>\sim q \implies \sim p</m> (here <m>\sim p</m> is the negation of <m>p</m>, which is the statement which always takes the opposite truth value)
+      is also true (so we say the statements are logically equivalent).
+      So rather than giving a direct proof of the implication in question,
+      we can give a direct proof of the logically equivalent contrapositive statement.
+    </aside>
+  </p>
+  <p>
+    <aside><title>Proof by Construction</title>
+      This is a method of direct proof. we used this method in the proof of the Chinese remainder theorem.
+      We had the statement that there existed a unique solution to the system of linear
+      congruences. We constructed a solution, verified it was a solution, and then
+      proved that the solution was unique.
+      <p>
+        I like to think of this as "Proof by Magic." It's essentially doing a bunch of work
+        off to the side that the reader does not see (and should not see in formal proof-writing)
+        in order to determine the answer. This is like a Magician constructing and designing their
+        magic trick. Then we present the result (the magic trick) and the proof is simply
+        verifying that this is the correct construction, but appears out of thin air like magic.
+      </p>
+    </aside>
+  </p>
+  <p>
+    <aside><title>Proof by Exhaustion</title>
+      This is also a method of direct proof.
+      This is a method of proof where there are possibly many cases in our statements, and we simply give a direct proof
+      for each case separately. For example, in our original statement we could just give direct proofs
+      of both the statement when <m>a</m> and <m>b</m> are both positive, and then give a second
+      proof when they are both negative. Sometimes you might give a proof for every case when a number
+      is of the form <m>8k, 8k+1, 8k+2, 8k+3, 8k+4, 8k+5, 8k+6, 8k+7</m>.
+      If we could verify a statement for every case, then we would establish the result for
+      every integer (following from the definitions of the division algorithm/modular arithmetic).
+      These types of arguments are very common in number theory.
+    </aside>
+  </p>
+  <p>
+    <aside><title>Proof by Induction</title>
+      This is a method of direct proof.
+      We have a challenge problem specifically addressing proof by induction.
+      This is again a very common method of proving statements in number theory.
+      The general idea is simple enough. If I can prove one instance of a statement for
+      an integer, and then prove that if the statement is true for one integer,
+      it must be true for the next integer, we can walk up from our particular instance
+      proof to any other integer.
+      <row/>
+      <alert>Note</alert>:
+      This is logically equivalent to the well-ordering principle for natural numbers,
+      as discussed in the challenge problem for the Euclidean Algorithm.
+    </aside>
+  </p>
+  <p>
+    <aside><title>Combinatorial Proof</title>
+      This is a method of direct proof.
+      Also known as Bijective proofs, these proofs rely on showing that some equation (usually a mathematical identity)
+      is true because both sides really count the elements of some set in different ways.
+      This is equivalent to building a bijection between two different sets, which is often another way that
+      these proofs are phrased. They often seem hand-wavy, but the underlying mathematics are
+      actually quite rigorous when you look at the set-theoretic methods hiding just under the surface of these proofs.
+    </aside>
+  </p>
+  <p>
+    <aside><title>Probabalistic Proof</title>
+      This is a non-constructive method of direct proof.
+      We haven't (and will not) do any of these this semester, but we've seen examples that could have been phrased this way.
+      One way of proving that there exist substitution ciphers which map no letter to themselves would be to
+      show that the probability of selecting such a cipher from all substitution ciphers is non-zero.
+      If the odds of selecting such an object is stricly greater than 0, then such an object must exist in our set.
+      These are often non-constructive, and simply establish that an object with the desired properties exists.
+      It also gives more analytic information about the density of such objects in the set, but
+      that's well beyond the scope of our discussion here.
+    </aside>
+  </p>
+  <p>
+    <aside><title>Proof by Contradiction</title>
+      This is an indirect proof.
+      When all else fails, we might try a proof by contradiction. Here, we assume our theorem or statement is false,
+      and show that this leads to some statement which is complete nonsense.
+      Students love this method, but it should be reserved as a last-ditch effort when
+      the more direct methods fail.
+      Often a correct proof by contradiction contains a correct direct proof or
+      proof by contrapositive, and all the language of contradiction can simply be removed
+      while still leaving a correct proof.
+      <row><alert>Note</alert>:</row>
+      No. Seriously. Don't overuse this method.
+    </aside>
+  </p>
+  <p>
+    These are not particularly detailed, but are meant to help you find resources
+    and examples for each proof technique when working through things, or to
+    provide context on the proofs we've written throughout the semester.
+    They also will help you with more language when asking questions during
+    office hours, etc.
+  </p>
+</module>

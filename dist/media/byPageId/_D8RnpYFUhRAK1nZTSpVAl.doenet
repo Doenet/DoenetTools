@@ -1,0 +1,178 @@
+<problem>
+<!-- <title>Pure time sketch solution - quadratic</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a' from='-2' to=' 3' exclude='0' />
+<selectFromSequence assignNames='b' from='max($a +2,1)' to='5'/>
+<selectFromSequence assignNames='c' from='-1' to=' 1' step=' 0.1' exclude='0'/>
+
+<function name='ff' variables='t' symbolic domain="(0,10)">
+  <math simplify='numbers'>$c *(t-$a )*(t-$b )</math>
+</function>
+<function name='int_ff' variables='t' symbolic>
+  <math simplify='numbers'>$c * (t^3/3-($a+$b)t^2/2+$a$b*t)</math>
+</function>
+
+<selectFromSequence assignNames='x0' from='-5' to=' 5' />
+<function name='solution' variables='t' domain="(0,10)">$$int_ff(t)+$x0 </function>
+<math name='xmax'>6</math>
+<math name='xmin' simplify='numbers' >-0.1*$xmax </math>
+<math name='x_vertex' simplify='numbers' >($a +$b )/2</math>
+<math name='ff_vertex' simplify='numbers' >$$ff($x_vertex )</math>
+<math name='ff_begin' simplify='numbers' >$$ff(0)</math>
+<math name='ff_end' simplify='numbers' >$$ff($xmax )</math>
+<math name='ymin_sub' simplify>min($ff_vertex , $ff_end , -1, $ff_begin )*1.1</math>
+<math name='ymax_sub' simplify>max($ff_vertex , $ff_end , 1, $ff_begin )*1.1</math>
+<math name='ymax' simplify>max($ymax_sub , -0.1*$ymin_sub )</math>
+<math name='ymin' simplify>min($ymin_sub , -0.1*$ymax_sub )</math>
+<select assignNames='var' >x y z s</select>
+
+<select assignNames="f">f g h</select>
+
+<math name='dvar_dt' >d$var/dt</math>
+<math name='f_t' targetsAreFunctionSymbols="f" >$f (t)</math>
+
+<math name='ymax2_sub' simplify>max($x0 , $$solution($a ), $$solution($b ), $$solution($xmax ))*1.1</math>
+<math name='ymin2_sub' simplify>min($x0 , $$solution($a ), $$solution($b ), $$solution($xmax ))*1.1</math>
+<math name='ymax2' simplify>max($ymax2_sub , -0.3*$ymin2_sub )</math>
+<math name='ymin2' simplify>min($ymin2_sub , -0.2*$ymax2_sub )</math>
+<math name='P10' simplify='numbers' >($xmax /3,0)</math>
+<math name='P20' simplify='numbers' >(2*$xmax /3,0)</math>
+
+<conditionalContent assignNames="(ncriticalpoints ((maximumLocations minimumLocations)))">
+  <case condition="$a>0">
+    <number>2</number>
+    <conditionalContent>
+      <case condition="$$ff(0) >0">
+        <mathlist>$a</mathlist><mathlist>$b</mathlist>
+      </case>
+      <else>
+        <mathlist>$b</mathlist><mathlist>$a</mathlist>
+      </else>
+    </conditionalContent>
+  </case>
+  <else>
+    <number>1</number>
+    <conditionalContent>
+      <case condition="$$ff(0) >0">
+        <mathlist>$b</mathlist><mathlist></mathlist>
+      </case>
+      <else>
+        <mathlist></mathlist><mathlist>$b</mathlist>
+      </else>
+    </conditionalContent>
+  </else>
+</conditionalContent>
+  
+<math name='criticalpoint1'>$b </math>
+<math name='criticalpoint2'>$a </math>
+
+<math name="zeroFixed" fixed>0</math>
+
+
+</setup>
+
+
+
+<p>Sketch the solution of the pure-time differential equation
+<md>
+  <mrow>$dvar_dt \amp = $f_t </mrow>
+  <mrow>$var (0)\amp = $x0 ,</mrow>
+</md>
+where <m>$f </m> is graphed below.  (All values of <m>t</m> where <m>$f (t)=0</m> are integers.)
+</p>
+
+
+<graph width='400' height='300' xmin='$xmin' xmax='$xmax' ymin='$ymin' ymax='$ymax' xlabel='t' ylabel="$f" fixAxes grid>
+  $ff
+</graph>
+
+<p>Use the below applet to graph the <m>$var (t)</m>.  If you wish, you can add or remove points used to specify the function.</p>
+
+
+
+<setup>
+  <number name="nPoints">3</number>
+</setup>
+
+<updateValue name="addPoint" label="Add point" disabled="$nPoints > 5" tname="nPoints" newValue="$nPoints+1" />
+<updateValue name="removePoint" label="Remove point" disabled="$nPoints < 1" tname="nPoints" newValue="$nPoints-1" />
+
+<graph width='400' height='300' xmin='$xmin' xmax='$xmax' ymin='$ymin2' ymax='$ymax2' xlabel='t' ylabel="$var" fixAxes grid>
+
+  <line name="l1" hide equation="x=1" />
+  <line name="l2" hide equation="x=2" />
+  <line name="l3" hide equation="x=3" />
+  <line name="l4" hide equation="x=4" />
+  <line name="l5" hide equation="x=5" />
+
+  <point name="A" x='$zeroFixed' y="0">
+    <constraints>
+      <attractTo threshold="0.02" thresholdRelativeToGraph><point>(0, $x0)</point></attractTo>
+    </constraints>
+  </point>
+
+  <map name="Ps">
+    <template>
+      <point x="$(v{prop='value' link='false'})" y="0">
+        <constraints>
+          <attractTo threshold="0.1">$l1$l2$l3$l4$l5</attractTo>
+          <constrainToGraph />
+        </constraints>
+      </point>
+    </template>
+    <sources alias="v"><sequence length="$nPoints" /></sources>
+  </map>
+  
+  <function domain="(0,10)" through="$A $Ps" name="g" />
+
+</graph>
+
+<p>The applet will grade your graph based on the initial condition and intervals where <m>$var (t)</m> is increasing and decreasing.  Getting the precise shape of the graph of <m>$var (t)</m> is not important.</p>
+
+  <answer matchPartial nAwardsCredited='3' name="ans">
+    <award credit="1/3" targetsAreResponses="A" name="awardIC">
+      <when>
+        $(A{prop='y'}) = $x0
+      </when>
+    </award>
+    <award credit="1/3" targetsAreResponses="g" name="awardMin">
+      <when>
+        <mathlist><copy prop="minimumLocations" tname="g" /></mathlist> = $minimumLocations
+      </when>
+    </award>
+    <award credit="1/3" targetsAreResponses="g" name="awardMax">
+      <when>
+        <mathlist><copy prop="maximumLocations" tname="g" /></mathlist> = $maximumLocations
+      </when>
+    </award>
+  </answer>
+
+  <feedback condition="$(ans{prop='responseHasBeenSubmitted'}) and not $awardIC">
+    The graph does not the given initial condition.
+  </feedback>
+  <feedback condition="$(ans{prop='responseHasBeenSubmitted'}) and $(awardMin{prop='fractionSatisfied'}) != 1" updateWithTname="ans">
+    The number of minima or their locations (values of <m>t</m>) are not correct.
+  </feedback>
+  <feedback condition="$(ans{prop='responseHasBeenSubmitted'}) and $(awardMax{prop='fractionSatisfied'}) != 1" updateWithTname="ans">
+    The number of maxima or their locations (values of <m>t</m>) are not correct.
+  </feedback>
+  
+  
+<solution>
+
+<p>A graph of the solution is below.  The most important features to get correct are the initial condition and intervals where <m>$var (t)</m> is increasing and decreasing.</p>
+
+
+<graph width='400' height='300' xmin='$xmin' xmax='$xmax' ymin='$ymin2' ymax='$ymax2' xlabel='t' ylabel="$var" fixAxes grid>
+  
+  $solution
+  
+</graph>
+
+
+</solution>
+
+
+</problem>

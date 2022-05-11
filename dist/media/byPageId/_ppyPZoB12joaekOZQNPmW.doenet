@@ -1,0 +1,86 @@
+<problem>
+<!-- <title>Pure time DiffEq - exponential - nonzero initial time</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a aa' from='-10' to=' 10' exclude="0" numberToSelect="2" withReplacement />
+<selectFromSequence assignNames='b lb' from='-2' to='2' exclude="0" numberToSelect="2" withReplacement />
+
+
+<function name='f' variables='t'><math simplify="numbers">$a *e^($b *t)</math></function>
+<function name='intfeval' variables='t' symbolic><math simplify>$a/$b e^($b*t)</math></function>
+<function name='antiderivf' variables='t' symbolic><math simplify>1/$b e^($b*t)</math></function>
+
+<select assignNames='f_name' >g h p q r y z</select>
+<math name='dxdt'>d$f_name/dt</math>
+
+<math name='finalans'>$$intfeval(t)+$C_value </math>
+<math name='intfeval_C'>$$intfeval(t)+C </math>
+<math name='x_t' targetsAreFunctionSymbols="f_name">$f_name (t)</math>
+<math name='x_lb' targetsAreFunctionSymbols="f_name">$f_name ($lb)</math>
+<math name='intfeval_lb'>$$intfeval($lb)</math>
+<math name='C_value' simplify>$aa -$intfeval_lb </math>
+
+
+</setup>
+
+
+<p>
+  Solve the pure-time differential equation <m>$dxdt  = <copy prop="formula" tname="f" /></m> with initial condition <m>$x_lb  = $aa </m>.
+</p>
+
+<p>
+<m>$x_t =</m> 
+<answer>
+<award>$finalans </award>
+<award credit="0" name="noConstant">$intfeval </award>
+<award credit="0" name="withC">$intfeval_C</award>
+</answer>
+</p>
+
+<feedback condition="$noConstant">The solution $x_t must match the initial condition <m>$x_0  = $aa </m>.</feedback>
+<feedback condition="$withC">Since we have an initial condition <m>$x_0  = $aa </m>, don't add an arbitrary constant <m>C</m>.  Instead, find the value of the constant so that the solution $x_t matches the initial condition.</feedback>
+
+<p>Do not round your answer to a decimal.</p>
+
+
+
+<solution>
+
+<p>
+We use the indefinite integral <m>\displaystyle \int $f \, dt </m> to solve the differential equation.  To evaluate the integral, we first use the constant product rule for integration: 
+</p>
+<p>
+<m>\displaystyle \int $f \, dt  =  $a \int <math simplify="numbers">e^($b *t)</math> \, dt</m>
+</p>
+<p>
+We then find the antiderivative and add the arbitrary constant:
+</p>
+<p>
+<m>\displaystyle $a  \left( <copy prop="formula" tname="antiderivf" /> \right)+C</m>
+</p>
+  
+
+<p>
+We next plug in the initial condition <m>$x_lb  = $aa </m> and solve for <m>C</m>:
+</p>
+
+<p>
+<m>\displaystyle $aa  = $intfeval_lb +C =  <math simplify>$intfeval_lb +C</math></m>
+</p>
+
+<p>
+<m>\displaystyle C = $C_value </m>
+</p>
+
+<p>
+Finally, we have:
+</p>
+<p>
+<m>\displaystyle $x_t  = $finalans </m>
+</p>
+
+</solution>
+
+
+</problem>

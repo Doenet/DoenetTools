@@ -1,0 +1,165 @@
+<title>Gateway practice exam</title>
+
+<paginatorControls paginatorTname="pgn" />
+<paginator name="pgn">
+
+  <section weight="0">
+  <title>Overview of practice exam</title>
+
+    <p>The gateway practice exam is identical to the actual Gateway Exam except that you get immediate feedback and solutions.  (The actual Gateway Exam won't tell you if you get the answer right.)</p>
+      
+  <p>Just like for the Gateway Exam, the practice exam consists of 10 problems.  Each problem is on its own page.  You can switch pages with the Previous and Next buttons.</p>
+
+  <p>The problems are randomly generated.  To create a new practice exam with 10 new problem, click the New Attempt button.</p>
+ 
+</section>
+
+
+<select numberToSelect="10" assignNames="((problem1)) ((problem2)) ((problem3)) ((problem4)) ((problem5)) ((problem6)) ((problem7)) ((problem8)) ((problem9)) ((problem10))">
+
+<option>
+  <select assignNamesSkip="2">
+    <option>
+      <copy uri="doenet:contentId=d9791759d57639591d8b55894b4ac4ed44b4c7bee6893d1df6fd886c040c50c9&doenetId=V6HSgXBInF3T6rknKZgBZ" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=3d3509cbdf7955793b32ed2b3288dea6864ef5941998aec43acdfe912927575f&doenetId=HzSTma_uPBF82UuEBfczL" componentType="problem" />
+    </option>
+  </select>
+</option>
+
+<option>
+  <select assignNamesSkip="2">
+    <option>
+      <copy uri="doenet:contentId=ff379dc600ed07e0ee6030bad8f10224e6356eaf91c70ded4e7a189aca1d6632&doenetId=CF9RMkF19aSWceR6jY1aq" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=6756be9937f1731ded0b79252905543f5d2705a8531790d3bfae3fb4c2315b59&doenetId=kj-0cZ7eSSsEsInMdafEh" componentType="problem" />
+    </option>
+  </select>
+</option>
+
+<option>
+  <select assignNamesSkip="2">
+    <option>
+      <copy uri="doenet:contentId=484d7c39ac12ab0745fb45869cff59a3135d1aa0877a2a85d9c2e4d63e25393a&doenetId=1rgzT2uftk9_fRYtlWRk9" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=baf419791427ad94fbefc0497417961498d3f0fea8028205126c39236213f651&doenetId=6z4fFqqpluz856Yop7L5i" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=775db3134c7b175d6eefc54f4b7c82a62e7fbd4d6a5416f61a97f00f8413bc66&doenetId=AXmSbiZzWeTUaA5-8YSxt" componentType="problem" />
+    </option>
+  </select>
+</option>
+
+<option>
+  <select assignNamesSkip="2">
+    <option>
+      <copy uri="doenet:contentId=6e4ec0946bdd7fd996f54d4a197e4381f67e06365825add826e4d7a14b30f1bd&doenetId=abcTOKfk9Y7k8inqmEf8c" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=24fd3f84695d666cba1767f27e256eafef1d5258a3cece731d74b5182818e094&doenetId=DuwVIlSwFsCWCTmigH1Fh" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=6fcc2e6c627e73e2858b399d02d38412da4d7f68ae35723138d9198f92a3ee9c&doenetId=vk6cTbWUvkyOE2Is1X5bB" componentType="problem" />
+    </option>
+<!--     <option selectWeight="0.5">
+      <copy uri="doenet:contentId=58cec5242bbfa6f2434af6932074d1f17902168ce2b04d5c9df5c71b1bbc6945&doenetId=h4M8uXadtuywAI7nnKfQA" componentType="problem" />
+    </option>
+    <option selectWeight="0.5">
+      <copy uri="doenet:contentId=2b600aa38a2402ddbc5a9212eceb3a06a844e4136be066172999cc18dc41d0d2&doenetId=-z6_RH4r-SdRxabfeW49q" componentType="problem" />
+    </option> -->
+  </select>
+</option>
+
+<option>
+  <select assignNamesSkip="2">
+    <option>
+      <copy uri="doenet:contentId=ac0e7b52d99908b5c71cae2f9a5b179985e19977e5dd1b12002812cf68d8f790&doenetId=_H-MMrkkoDw29bI0xk2j0" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=69f3081f66fa88b001734df5bba3f12cb66ffe2ca2471c3cba4f69bae7a90de2&doenetId=pPHMM7g_maPqocHOlQopL" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=bbb3bd54b602e175a8b8e08d4ce657a199ef8125015b1fc82383be8e646d70d6&doenetId=DY344cdVul02ySZkJtf7o" componentType="problem" />
+    </option>
+  </select>
+</option>
+  
+
+<option>
+  <select assignNamesSkip="2">
+    <option>
+      <copy uri="doenet:contentId=700e3fea3e99f0f1c56764bc71d0cd1726fc512705ead507bd2524aaca2da8a2&doenetId=bUgAgThbx0_FjrvU_TLbp" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=c1d80c4be6ea84c2f998206c2a0f3f48f2621e2bca1d96e908338cd5db02d858&doenetId=vFc6GKWi10n3Zw-BJZMlj" componentType="problem" />
+    </option>
+  </select>
+</option>
+
+
+<option>
+  <select assignNamesSkip="2">
+    <option>
+      <copy uri="doenet:contentId=3cb960c832b2717325f66b39e5d856458f526c46a54656a3e24c545b3eff6063&doenetId=7B24ehFFgkwYFDR7kSm7F" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=0b3fbea818df66305cc2e9774e51805c9a2621e07135c844498db49652ada56a&doenetId=Vf9nSroxPDya6YxrnUP9C" componentType="problem" />
+    </option>
+  </select>
+</option>
+
+
+<option>
+  <select assignNamesSkip="2">
+    <option>
+      <copy uri="doenet:contentId=d6aa0c458595523e7492eb6c1abbabfc7ecb57440347dce2793532298f2e3bbe&doenetId=rjPTqSqKVohxJnhWPDdRH" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=afcca2b3bf4bfca44e370c5eff360847daa27ffdf3828ab0be0122e7b7375c19&doenetId=maCqowmwAYAY9ozAYuraA" componentType="problem" />
+    </option>
+  </select>
+</option>
+
+<option>
+  <copy uri="doenet:contentId=b2361f53c9692fb2139f909f7945852168e824d8c0b5c2e353dfda1c1d6fbf7c&doenetId=eU1Utxk2JB1U4g9Qc8Rac" componentType="problem" />
+</option>
+
+
+<option>
+  <select assignNamesSkip="2">
+    <option>
+      <copy uri="doenet:contentId=3cc50601d71d60eb42fa6364254ccd9f09588a7004c9a72ba5673355e5311e3a&doenetId=MkUJekarofYmDvw7vKtN9" componentType="problem" />
+    </option>
+    <option>
+      <copy uri="doenet:contentId=89e89d6bedd84ede98e0d1f442cf6fec502f9089c5cf9d4020172810891ce387&doenetId=yWIIj63tr3rsSOfwpa9x8" componentType="problem" />
+    </option>
+  </select>
+</option>
+  
+</select>
+
+  
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />
+
+<boolean hide name="showQuitDialog" />
+<updateValue type="boolean" name="finishExam" label="Finish Exam" tName="showQuitDialog" newValue="true" disabled="$showQuitDialog" />
+
+<conditionalContent condition="$showQuitDialog">
+
+<section>
+  <title>Are you sure you want to finish the exam?</title>
+
+  <p>
+    <updateValue type="boolean" name="cancelFinishExam" label="Cancel" tName="showQuitDialog" newValue="false" />
+
+    <callAction label="Yes, Finish Exam.  (This button doesn't do anything for the practice exam.)" />
+  </p>
+  
+</section>
+
+</conditionalContent>

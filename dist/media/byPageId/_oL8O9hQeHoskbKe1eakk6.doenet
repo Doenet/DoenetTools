@@ -1,0 +1,17 @@
+<title>Exponential growth and decay problem set</title>
+
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <copy uri="doenet:contentId=ba02f2f769e8aeb70c73823bac2e0d5a80513f5ee7c73289831c39a2de4b5416&doenetId=1g454ekPDo0eBm11ykClv" componentType="problem" assignNames="problem1" />
+
+  <copy uri="doenet:contentId=53b9a71e8a883b12281a41783e11fc9e4937b5545f56b0e6f4c5f310903a8c72&doenetId=MO9swUDYNy39WHWLQ84lM" componentType="problem" assignNames="problem2" />
+  
+  
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

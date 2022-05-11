@@ -1,0 +1,185 @@
+<section><title>Example 1:  Construct a line using the "through" attribute</title>
+  <subsection><title>DoenetML</title>
+    <pre>
+<tag>setup</tag>
+    <tag>point name="A" label="A"</tag>(1,1)<tag>/point</tag>
+    <tag>point name="B" label="B"</tag>(-2,5)<tag>/point</tag>
+    &lt;line name="AB" through="$ A $ B" label="Line AB"/&gt;
+<tag>/setup</tag>
+
+<tag>graph</tag>
+    $ A
+    $ B
+    $ AB
+<tag>/graph</tag>
+<tag>p</tag>The equation of the line through points A and B is:  $ AB<tag>/p</tag>
+</pre>
+  <em>Note, when writing your code, do not include a space between the "$ symbol" and the name of your points and lines.  This was necessary only for illustrative purposes to prevent Doenet rendering the name incorrectly.</em>
+  </subsection>
+  
+<subsection><title>Rendered</title>  
+  <setup>
+    <point name="A" label="A">(1,1)</point>
+    <point name="B" label="B">(-2,5)</point>
+    <line name="AB" through="$A $B" label="Line AB"/>
+  </setup>
+
+  <graph width="300px" height="300px">
+    $A
+    $B
+    $AB
+  </graph>
+  <p>The equation of the line through points A and B is:  $AB</p>
+</subsection>
+</section>
+
+<aside newNameSpace><title>Edge case: More than two points</title>
+  <p>DoenetML will always draw a line through the first 2 points listed. Three or more points may be named, but this command will not perform a linear regression</p>
+<title>Rendered</title>  
+  <setup>
+    <point name="A" label="A">(1,1)</point>
+    <point name="B" label="B">(-1,5)</point>
+    <point name="C" label="C">(4,-3)</point>
+    <line name="ABC" through="$A $B $C" label="Line ABC"/>
+  </setup>
+
+  <graph>
+    $A
+    $B
+    $C
+    $ABC
+  </graph>
+</aside>
+
+<aside newNameSpace><title>Edge case: Collinear Lines</title>
+  <p>DoenetML will always draw a line through the first 2 points listed. Three or more points may be named, but this command will not perform a linear regression</p>
+<title>Rendered</title>  
+  <setup>
+    <point name="A" label="A">(1,1)</point>
+    <point name="B" label="B">(-1,5)</point>
+    <point name="C" label="C">(4,-3)</point>
+    <line name="ABC" through="$A $B $C" label="Line ABC"/>
+  </setup>
+
+  <graph>
+    $A
+    $B
+    $C
+    $ABC
+  </graph>
+</aside>
+
+<aside newNameSpace><title>Edge case: Parallel lines</title>
+  <p>DoenetML will always draw a line through the first 2 points listed. Three or more points may be named, but this command will not perform a linear regression</p>
+<title>Rendered</title>  
+  <setup>
+    <point name="A" label="A">(1,1)</point>
+    <point name="B" label="B">(-1,5)</point>
+    <point name="C" label="C">(4,-3)</point>
+    <line name="ABC" through="$A $B $C" label="Line ABC"/>
+  </setup>
+
+  <graph>
+    $A
+    $B
+    $C
+    $ABC
+  </graph>
+</aside>
+
+<section><title>Example 2:  Construct a line using the "slope" and "through" attributes</title>
+  <subsection><title>DoenetML</title>
+    <pre>
+<tag>setup</tag>
+    <tag>point name="A" label="A"</tag>(1,1)<tag>/point</tag>
+    <tag>point name="B" label="B"</tag>(-2,5)<tag>/point</tag>
+    &lt;line name="AB" through="$ A $ B" label="Line AB"/&gt;
+<tag>/setup</tag>
+
+<tag>graph</tag>
+    $ A
+    $ B
+    $ AB
+<tag>/graph</tag>
+<tag>p</tag>The equation of the line through points A and B is:  $ AB<tag>/p</tag>
+</pre>
+  <em>Note, when writing your code, do not include a space between the "$ symbol" and the name of your points and lines.  This was necessary only for illustrative purposes to prevent Doenet rendering the name incorrectly.</em>
+  </subsection>
+
+
+
+</section>
+
+<section><title>Example 3:  Construct a line using the  "equation" attribute</title>
+
+</section>
+
+
+
+<section><title>Example 4:  Construct a line using the  "draggable" attribute</title>
+
+</section>
+
+
+
+
+
+
+<!--<title>Line</title>
+
+<section>
+  <title>Line through points</title>
+
+  <p>Create a line through 0 - 2 points</p>
+
+
+<graph>
+ <point name="A" label="A">(1,2)</point>
+ <point name="B" label="B">(3,4)</point>
+ <line name="l" through="$A $B" />
+</graph>
+ 
+  <p>Code description: creates a graph with a line running through  two points:
+    Point A: $A, point B: $B.  Rounded version:
+<copy prop="coords" tname="A" displayDigits="3" />,
+    <copy prop="coords" tname="B" displayDigits="3" />.
+Should we decrease the default number of digits?
+
+</p>
+</section>
+
+
+<section>
+  <title>Line from equation</title>
+  
+  <graph>
+    <line name="lineByEquation">y=2x+3</line>
+  </graph>
+  
+<p>Equation for line is <copy tname="lineByEquation" prop="equation"/>.</p>
+
+</section>
+
+
+<section>
+  <title>Line from slope</title>
+
+  <p>Line through the point $(C{displayDigits="3"}) with slope <m>m = </m>
+<mathinput name="m" prefill="Infinity" displayDigits="3" /></p>
+
+<graph>
+  <point name="C" label="C">(5,-7)</point>
+  <line name="lineFromSlope" through="$C" slope="$m" />
+  <copy prop="point2" tname="lineFromSlope" hide="not $showP2" styleNumber="2" />
+</graph>
+
+<p>Check the box to reveal a second point on the line; you can drag the point to change the slope. <booleanInput name="showP2" /></p>
+
+</section>
+
+
+
+
+
+
+-->

@@ -1,0 +1,152 @@
+<problem>
+<!-- <title>Discrete equilibria, compute iterations, difference form</title> -->
+
+<setup>
+
+<math name='one' simplify='full' >1</math>
+<function name='f' variables='x'>3*(x-1)*(x+5)+x</function>
+<math name='f_of_2' simplify='full' >$$f(2)</math>
+<math name='f_of_neg5' simplify='full' >$$f(-5)</math>
+
+</setup>
+
+
+An equilibrium point of a dynamical system is a constant solution.  If the initial condition <m>x_0</m> of a discrete dynamical system is set to be the equilibrium value, then <m>x_1</m>, <m>x_2</m>, <m>x_3</m>, etc., will all be identical to that initial condition.  (Of course, we could use a different variable, like <m>z</m>, instead of <m>x</m>.)
+
+<p>Consider the dynamical system:</p>
+<md>
+  <mrow>z_{t+1} - z_{t}\amp = 3(z_t-1)(z_t+5)</mrow>
+  <mrow>z_0\amp = a</mrow>
+</md>
+
+
+<ol>
+
+<li>
+<p>Let the initial condition be <m>a=1</m>.  With this initial condition calculate:
+</p>
+
+<m>z_1 =</m> 
+<answer>
+<award symbolicEquality='true'>$one </award>
+</answer>
+, <m>z_2 =</m> 
+<answer>
+<award symbolicEquality='true'>$one </award>
+</answer>
+, <m>z_3 =</m> 
+<answer>
+<award symbolicEquality='true'>$one </award>
+</answer>
+, <m>z_4 =</m> 
+<answer>
+<award symbolicEquality='true'>$one </award>
+</answer>
+, <m>z_5 =</m> 
+<answer>
+<award symbolicEquality='true'>$one </award>
+</answer>
+
+
+<p>Given these calculations, we can conclude that <m>z_t=1</m> 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>is</choice>
+<choice>is not</choice>
+</choiceinput>
+</answer>
+ an equilibrium.</p>
+
+
+
+
+<hint>
+If the value stays at 1, we have a solution <m>z_t=1</m> for all <m>t</m>, which is an equilibrium solution.  If we start at 1, and the value changes to anything else, then we do not have a constant solution <m>z_t=1</m> for all <m>t</m>, so <m>z_t=1</m> cannot be an equilibrium.
+
+</hint>
+
+</li>
+
+<li>
+<p>Let the initial condition be <m>a=2</m>.  With this initial condition calculate:
+</p>
+
+<m>z_1 =</m> 
+<answer>
+<award symbolicEquality='true'>$f_of_2 </award>
+</answer>
+
+
+<p>Given this calculation, we can conclude that <m>z_t=2</m>
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>is not</choice>
+<choice>is</choice>
+</choiceinput>
+</answer>
+ an equilibrium.</p>
+
+
+
+<hint>
+If we start with <m>z_0=2</m> and find that after one time step, <m>z_1 \ne 2</m>, then can <m>z_t=2</m> be an equilibrium solution, given that we need <m>z_t</m> to be 2 for all time <m>t</m>?
+</hint>
+
+</li>
+
+<li>
+<p>Let the initial condition be <m>a=-5</m>.  With this initial condition calculate:
+</p>
+
+<m>z_1 =</m> 
+<answer>
+<award>$f_of_neg5 </award>
+</answer>
+
+
+<p>Given this calculation, we can conclude that <m>z_t=-5</m> 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>is</choice>
+<choice>is not</choice>
+</choiceinput>
+</answer>
+ an equilibrium.</p>
+
+
+
+<hint>
+If we start with <m>z_0=-5</m> and find that after one time step <m>z_1 = -5</m>, is that enough to conclude we have an equilibrium solution <m>z_t=-5</m> for all time <m>t</m>?  To calculate the next time step, you would plug <m>z_1=-5</m> into the formula again, should perform the exact same calculation again, and should get the same result.
+
+</hint>
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<m>z_1=z_2=z_3=z_4=z_5=1</m>.  Therefore, we can conclude that <m>z_t=1</m> is an equilibrium.
+</li>
+
+<li>
+<m>z_1= $f_of_2 </m>.  Since <m>z_1 \ne 2</m>, we can conclude that <m>z_t=2</m> is not an equilibrium.
+</li>
+
+<li>
+<m>z_1 = $f_of_neg5</m>.  This is enough to conclude that <m>z_t=-5</m> for all <m>t</m>, i.e., that <m>z_t</m> is an equilibrium.
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

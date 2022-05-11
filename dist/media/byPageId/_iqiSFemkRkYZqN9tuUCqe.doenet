@@ -1,0 +1,58 @@
+<title>The derivative of the natural logarithm</title>
+
+<description>
+Determining the derivative of the natural logarithm from the fact that it is the inverse of the exponential function.
+</description>
+
+<figure>
+<video youtube="ufWb2XBOVeI" width="640px" height="360px"/>
+<caption>The derivative of the natural logarithm</caption>
+</figure>
+
+<p>The 
+<ref uri='doenet:doenetId=zMyrMjeHs_OYGVLQ2r3CO'>derivative of the exponential function</ref>
+ <m>f(x)=e^x</m> is the function itself: <m>f'(x)=e^x</m>.  The natural logarithm <m>\ln(y)</m> is the 
+<ref uri='doenet:inverse_function|page_type=definition'>inverse</ref>
+ of the exponential function.  Can we exploit this fact to determine the derivative of the natural logarithm?  Here we present a version of the 
+<ref uri='doenet:derivative_inverse_function'>derivative of an inverse function page</ref>
+ that is specialized to the natural logarithm.</p>
+
+<p>To determine how to compute the derivative of the inverse of <m>f</m>, let's think about the derivative of <m>f</m> in terms of the 
+<ref uri='doenet:function_machine'>function machine metaphor</ref>
+.</p>
+
+<image source="http://mathinsight.org/media/image/image/function_machine_f.png" description="Function machine representation of a function f" />
+
+<p>We have denoted the input of <m>f</m> (the tetrahedron) by the variable <m>x</m>.  Let's denote the output of <m>f</m> (the sphere) by the variable <m>y</m> so that
+<me>y=f(x) = e^x.</me>
+Since the derivative of <m>f</m> is the ratio of the change in its output to the change in its input, we can write the derivative as
+<md>
+  <mrow>\frac{ df }{ dx }\amp =\frac{\text{change in output of $ f $ }}{\text{change in input to $ f $ }}</mrow>
+  <mrow>\amp = \frac{\text{change in $ y $ }}{\text{change in $ x $ }}</mrow>
+  <mrow>\amp =e^x.</mrow>
+</md>
+</p>
+
+<p>Can we do the same thing for the inverse of <m>f</m>?  Let's use a 
+<ref uri='doenet:function_machine_inverse'>function machine to represent the inverse</ref>
+ of <m>f</m>.</p>
+
+<image source="http://mathinsight.org/media/image/image/function_machine_finv.png" description="The inverse of a function $f$ is represented by running the function machine for $f$ backwards." />
+
+<p>We denote the inverse of <m>f</m> by <m>f^{-1}</m> (pronounced <q>f inverse</q>).  The input to <m>f^{-1}</m> is the output of <m>f</m> (the sphere), which we have labeled as <m>y</m>. The output of <m>f^{-1}</m> is the input to <m>f</m> (the tetrahedron), which we have labeled as <m>x</m>.  Since the natural logarithm is the inverse of the exponential function, we can write <m>f^{-1}</m> as
+<me>x=f^{-1}(y) = \ln(y).</me>
+</p>
+
+<p>We can represent the derivative of <m>f^{-1}</m> in the same way as we did for <m>f</m>.  Using that the derivative of <m>f^{-1}</m> is the ratio of the change in its output to the change in its input, we can conclude that 
+
+<md>
+  <mrow>\frac{ df^{-1} }{ dy }\amp =\frac{\text{change in output of $ f^{-1} $ }}{\text{change in input to $ f^{-1} $ } }</mrow>
+  <mrow>\amp =\frac{\text{change in input to $ f $ } }{\text{change in output of $ f $ } }</mrow>
+  <mrow>\amp = \frac{\text{change in $ x $ }}{\text{change in $ y $ }}.</mrow>
+</md>
+In other words, the derivative of <m>f^{-1}</m> is the reciprocal of the derivative of <m>f</m>.  Since <m>f'(x)=e^x</m>, the derivative of <m>f^{-1}(y)</m> must be <m>1/e^{x}</m>.  However, since <m>f^{-1}(y)</m> is a function of <m>y</m> (the sphere) not of <m>x</m> (the tetrahedron), we need to rewrite the derivative of <m>f^{-1}</m> in terms of <m>y</m>.  Since <m>y=e^{x}</m>, the derivative of <m>f^{-1}</m> is <m>1/e^{x}=1/y</m>, i.e.,
+<md>
+  <mrow>\frac{ df^{-1} } {y }\amp = \frac{ d }{ dy } \ln(y)</mrow>
+  <mrow>\amp = \frac{1}{y}.</mrow>
+</md>
+ </p>

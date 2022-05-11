@@ -1,0 +1,487 @@
+<problem>
+<!-- <title>Riemann Sum introduction</title> -->
+
+<setup>
+
+<function name='rate_func' variables='t'>t^2/2500-t/20+2</function>
+<evaluate name="rate0" function="$rate_func" input="0" />
+<evaluate name="rate20" function="$rate_func" input="20" />
+<evaluate name="rate40" function="$rate_func" input="40" />
+<evaluate name="rate60" function="$rate_func" input="60" />
+<evaluate name="rate10" function="$rate_func" input="10" />
+<evaluate name="rate30" function="$rate_func" input="30" />
+<evaluate name="rate50" function="$rate_func" input="50" />
+<math name='lh_three' simplify='numbers' >($rate0 +$rate20 +$rate40 )*20</math>
+<math name='rh_three' simplify='numbers' >($rate60 +$rate20 +$rate40 )*20</math>
+<math name='lh_six' simplify='numbers' >($rate0 +$rate10 +$rate20 +$rate30 +$rate40 +$rate50 )*10</math>
+<math name='rh_six' simplify='numbers' >($rate60 +$rate10 +$rate20 +$rate30 +$rate40 +$rate50 )*10</math>
+<math name='x_0'>1</math>
+<math name='x_1'>4</math>
+<math name='x_2'>2</math>
+<math name='x_3'>5</math>
+
+
+<evaluate name="rate5" function="$rate_func" input="5" />
+<evaluate name="rate15" function="$rate_func" input="15" />
+<evaluate name="rate25" function="$rate_func" input="25" />
+<evaluate name="rate35" function="$rate_func" input="35" />
+<evaluate name="rate45" function="$rate_func" input="45" />
+<evaluate name="rate55" function="$rate_func" input="55" />
+  
+<math name='lh_twelve' simplify='numbers' >($rate0 +$rate5 +$rate10 +$rate15 +$rate20 +$rate25 +$rate30 +$rate35 +$rate40 +$rate45 +$rate50 +$rate55 )*5</math>
+<math name='rh_twelve' simplify='numbers' >($rate60 +$rate5 +$rate10 +$rate15 +$rate20 +$rate25 +$rate30 +$rate35 +$rate40 +$rate45 +$rate50 +$rate55 )*5</math>
+<math name='allh_twelve' simplify='numbers' >($rate0 +$rate5 +$rate10 +$rate15 +$rate20 +$rate25 +$rate30 +$rate35 +$rate40 +$rate45 +$rate50 +$rate55 +$rate60 )*5</math>
+<math name='allh_six' simplify='numbers' >($rate0 +$rate10 +$rate20 +$rate30 +$rate40 +$rate50 +$rate60 )*10</math>
+<math name='allh_three' simplify='numbers' >($rate0 +$rate20 +$rate40 +$rate60 )*20</math>
+
+</setup>
+
+<p>
+Suppose we want to know how much water flows through a channel in an hour.  We could, theoretically, find a container to hold that water so that we can measure it, but chances are we don't want to interrupt the flow downstream for the hour.  Instead, we can measure the rate of flow every few minutes during the hour and use that to estimate the total flow.  Let's look at this in a little more detail.</p>
+
+
+<ol>
+
+<li>
+<p>Let's say we measure the rate of flow every twenty minutes, and find that the flow is the following:</p>
+
+<tabular width="300px" halign="center">
+  <row header><cell>Time (min)</cell><cell>Rate (<m>m^3</m>/min)</cell></row>
+  <row><cell>0</cell><cell>$rate0</cell></row>
+  <row><cell>20</cell><cell>$rate20</cell></row>
+  <row><cell>40</cell><cell>$rate40</cell></row>
+  <row><cell>60</cell><cell>$rate60</cell></row>
+</tabular>
+
+<p>
+We don't know what the flow is between those measurements, but, for simplicity, let's assume that the rate is constant between measurements.</p>
+
+<p>If we assume that rate is constant at $rate0 <m>m^3</m>/min for the first interval (from 0 to 20 minutes), how much water would flow through the channel during that first interval?
+<answer symbolicEquality><award><number>$rate0*20</number></award></answer> <m>m^3</m>
+</p>
+
+<p>If we assume that rate is constant at $rate20 <m>m^3</m>/min for the second interval (from 20 to 40 minutes), how much water would flow through the channel during that second interval?
+<answer symbolicEquality><award><number>$rate20*20</number></award></answer> <m>m^3</m>
+</p>
+
+<p>If we assume that rate is constant at $rate40 <m>m^3</m>/min for the second interval (from 40 to 60 minutes), how much water would flow through the channel during that second interval?
+<answer symbolicEquality><award><number>$rate40*20</number></award></answer> <m>m^3</m>
+</p>
+
+<p>Therefore, an estimate for the total amount of water flowing through the channel during the hour is the sum of these estimates:
+<answer name="uLH3">
+<award symbolicEquality='true' allowedErrorInNumbers='0.0001'>$lh_three </award>
+</answer>
+<m>m^3</m>.</p>
+
+<p>You estimated the total water by assuming flow rate didn't change during each interval and that the rate was equal to the measured rate at the <em>beginning</em> of each interval.  The sum forming this estimate is called a <em>left-hand Riemann sum</em>, where the <q>left-hand</q> means you used the beginning value (which is on the left on a number line).  In this case, we never used the measurement at 60 minutes.</p>
+
+<p>We have another way we could estimate the total water that flowed during the hour.  We could still imagine that the flow rate is constant during each interval, but instead of using the measurement at the beginning of each interval, we could imagine that the rate is equal to the measurement at the <answer type="text" size="4" name="aEnd">end</answer> of each interval.</p>
+<feedback condition="$(aEnd{prop='nSubmissions'})>2 and $(aEnd{prop='creditAchieved'}) < 1">
+  We could use the rate at the end of each interval.
+</feedback>
+
+<p>This second estimate is called a <em>right-hand Riemann sum</em>. Calculate a right-hand Riemann sum as follows.</p>
+
+<p>If we assume that rate is constant at $rate20 <m>m^3</m>/min for the first interval (from 0 to 20 minutes), how much water would flow through the channel during that first interval?
+<answer symbolicEquality><award><number>$rate20*20</number></award></answer> <m>m^3</m>
+</p>
+
+<p>If we assume that rate is constant at $rate40 <m>m^3</m>/min for the second interval (from 20 to 40 minutes), how much water would flow through the channel during that second interval?
+<answer symbolicEquality><award><number>$rate40*20</number></award></answer> <m>m^3</m>
+</p>
+
+<p>If we assume that rate is constant at $rate60 <m>m^3</m>/min for the second interval (from 40 to 60 minutes), how much water would flow through the channel during that second interval?
+<answer symbolicEquality><award><number>$rate60*20</number></award></answer> <m>m^3</m>
+</p>
+
+<p>Therefore, the right-hand Riemann sum estimate for the total amount of water flowing through the channel during the hour is 
+<answer name="uRH3">
+<award symbolicEquality='true' allowedErrorInNumbers='0.0001'>$rh_three </award>
+</answer>
+<m>m^3</m>.</p>
+
+<p>For the right-hand Riemann sum, you never used the measurement at time <answer>0</answer> minutes.</p>
+
+</li>
+
+<li>
+<p>We came up with two fairly different estimates in part 1.  The left-hand Riemann sum you calculated was <copy prop="submittedResponse" tname="uLH3" componentType="math" /> <m>m^3</m> and the right-hand Riemann sum was <copy prop="submittedResponse" tname="uRH3" componentType="math" /> <m>m^3</m>.</p>
+
+<p>We don't have a way to tell which one is better. How could we improve our estimates? 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>We could take measurements at smaller time intervals.</choice>
+<choice name='choice13'>We could try to improve the accuracy of our measurements.</choice>
+</choiceinput>
+</answer>
+</p>
+<feedback condition="$choice13" >While this might help, the biggest problem is that the rate of flow might change between our measurements.</feedback>
+
+<p>Suppose we took measurements every <m>10</m> minutes instead of every <m>20</m> minutes.</p>
+
+
+<tabular width="300px" halign="center">
+  <row header><cell>Time (min)</cell><cell>Rate (<m>m^3</m>/min)</cell></row>
+  <row><cell>0</cell><cell>$rate0</cell></row>
+  <row><cell>10</cell><cell>$rate10</cell></row>
+  <row><cell>20</cell><cell>$rate20</cell></row>
+  <row><cell>30</cell><cell>$rate30</cell></row>
+  <row><cell>40</cell><cell>$rate40</cell></row>
+  <row><cell>50</cell><cell>$rate50</cell></row>
+  <row><cell>60</cell><cell>$rate60</cell></row>
+</tabular>
+
+
+<p>
+We can come up with new estimates using these measurements.  Now, we have 
+<answer>
+<award symbolicEquality='true'>6</award>
+</answer>
+ time intervals instead of 
+<answer>
+<award symbolicEquality='true'>3 </award>
+</answer>
+, and instead of multiplying by 
+<answer>
+<award symbolicEquality='true'>20 </award>
+</answer>
+, we need to multiply by 
+<answer>
+<award symbolicEquality='true'>10 </award>
+</answer>
+.</p>
+
+<p> Compute the left-hand and the right-hand estimates using the new data. 
+</p>
+
+<p>
+Left-hand estimate: 
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='0.0001'>$lh_six </award>
+<award symbolicEquality='true' credit='0' name='award17'>$allh_six </award>
+</answer>
+ <m>{\rm m}^3</m>
+</p>
+<feedback condition="$award17">Don't forget to leave out the right endpoint.</feedback>
+
+<p>
+Right-hand estimate: 
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='0.0001'>$rh_six </award>
+<award symbolicEquality='true' credit='0' name='award19'>$allh_six </award>
+</answer>
+ <m>{\rm m}^3</m></p>
+<feedback condition="$award19">Don't forget to leave out the left endpoint.</feedback>
+
+
+<p>The left-hand and right-hand sums still aren't that close together, indicating the new estimates aren't great, but they are closer to each other than those in part 1.  If we took progressively more measurements at smaller time intervals, the left- and right-hand estimates would 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>approach each other and the actual value</choice>
+<choice>approach each other at a random value</choice>
+<choice>approach two different values</choice>
+</choiceinput>
+</answer>
+.</p>
+
+</li>
+
+<li><p>Before we go on to the general case, let's take a brief digression into <em>summation notation</em>.  Summation notation is a way to represent a sum, where we have a formula for each term.</p>
+
+  
+
+<p>Imagine that we had the three numbers  <m>x_1=$x_1 </m>, <m>x_2=$x_2 </m>, and <m>x_3=$x_3 </m>.  We could use summation notation to represent the sum of these three numbers as
+<m>\displaystyle \sum_{i=1}^{3} x_i</m>.  This notation is shorthand for saying take the expression <m>x_i</m>, substitute in <m>i=1</m>, then <m>i=2</m>, then <m>i=3</m> and add them up.  (The 3 at the top means stop at <m>i=3</m>.)  In mathematics: 
+<me>\sum_{i=1}^{3} x_i = x_1 + x_2 +x_3.</me></p>
+
+<p>We substitute the values of the <m>x_i</m> given above to calculate that
+
+<me>\sum_{i=1}^{3} x_i = x_1 + x_2 +x_3 = $x_1 + $x_2 +$x_3 = 11.</me></p>
+
+
+<p>In summary, the expression <me> \sum_{i=1}^{3} x_i,</me> which we read as <q>the sum from <m>i</m> equals <m>1</m> to <m>3</m> of <m>x</m> sub <m>i</m></q>, indicates that we will let <m>i</m> be each of the integers from <m>1</m> to <m>3</m> and add together the corresponding values of <m>x_i</m>.</p> 
+
+
+<p>Now, it's your turn.  Let <m>g(x)=x^2</m> be the squaring function.  What does <m>\displaystyle \sum_{i=1}^2 g(x_i)</m> mean?  First, write your answer in terms of (two of) the expressions <m>x_1</m>, <m>x_2</m>, and <m>x_3</m>.</p>
+
+<p><m>\displaystyle \sum_{i=1}^2 g(x_i) =</m> <answer name="x12x22Sym">
+  <award>x_1^2+x_2^2</award>
+  <award credit="0.8" name="subG12">g(x_1)+g(x_2)</award>
+  <award credit="0" name="tooManyXs">x_1^2+x_2^2+x_3^2</award>
+  <award credit="0" name="tooManyGXs">g(x_1)+g(x_2) +g(x_3)</award>
+  <award credit="0" name="numXsTooEarly">$x_1^2+$x_2^2</award>
+  <award credit="0" name="tooManyXsTooEarly">$x_1^2+$x_2^2+$x_3^2</award>
+</answer>.</p>
+
+<feedback condition="$subG12">
+  <p>Yes, that's the right expression.  For full credit, substitute in the definition of the function <m>g(x)=x^2</m> to write the answer without <m>g</m>.</p>
+</feedback>
+
+<feedback condition="$tooManyXs">
+  <p>That would be the right answer if it asked for <m>\displaystyle \sum_{i=1}^3 g(x_i)</m>, but it is asking for <m>\displaystyle \sum_{i=1}^2 g(x_i)</m>, where the sum only goes up to <m>i=2</m>.</p>
+</feedback>
+<feedback condition="$tooManyGXs">
+  <p>That would be the right answer if it asked for <m>\displaystyle \sum_{i=1}^3 g(x_i)</m>, but it is asking for <m>\displaystyle \sum_{i=1}^2 g(x_i)</m>, where the sum only goes up to <m>i=2</m>. Also,  substitute in the definition of the function <m>g(x)=x^2</m> to write the answer without <m>g</m>.</p>
+</feedback>
+<feedback condition="$numXsTooEarly">
+  <p>The is the correct final answer, but you are going faster than we are asking for right now. Just enter the expression <m>x_1^2+x_2^2</m> for now without putting in values for <m>x_1</m> and <m>x_2</m>. </p>
+</feedback>
+<feedback condition="$tooManyXsTooEarly">
+  <p>That would be the close to the right answer if it asked for <m>\displaystyle \sum_{i=1}^3 g(x_i)</m>, but it is asking for <m>\displaystyle \sum_{i=1}^2 g(x_i)</m>, where the sum only goes up to <m>i=2</m>.  Also, it isn't asking you to put in the numbers for <m>x_1</m> and <m>x_2</m> yet.</p>
+</feedback>
+
+
+<p>To turn this sum into a number, substitute the values for <m>x_1</m> and <m>x_2</m> and add the squares.</p>
+
+<p><m>\displaystyle \sum_{i=1}^2 g(x_i) =  
+<conditionalContent condition="$(x12x22Sym{prop='creditAchieved'})=1">
+  x_1^2+x_2^2=
+</conditionalContent>
+</m> <answer name="x12x22Num">
+  <award>$x_1^2+$x_2^2</award>
+  <award credit="0" name="symXsTooLate">x_1^2+x_2^2</award>
+  <award credit="0" name="tooManyXsTooLate">x_1^2+x_2^2+x_3^2</award>
+  <award credit="0" name="tooManyXsNums">$x_1^2+$x_2^2+$x_3^2</award>
+</answer>.</p>
+
+<feedback condition="$symXsTooLate">
+  <p>For this second answer, substitute the values in for <m>x_1</m> and <m>x_2</m> so your answer is a number.</p>
+</feedback>
+<feedback condition="$tooManyXsNums">
+  <p>That would be the right answer if it asked for <m>\displaystyle \sum_{i=1}^3 g(x_i)</m>, but it is asking for <m>\displaystyle \sum_{i=1}^2 g(x_i)</m>, where the sum only goes up to <m>i=2</m>.</p>
+</feedback>
+<feedback condition="$tooManyXsTooLate">
+  <p>That would be the close to the right answer if it asked for <m>\displaystyle \sum_{i=1}^3 g(x_i)</m>, but it is asking for <m>\displaystyle \sum_{i=1}^2 g(x_i)</m>, where the sum only goes up to <m>i=2</m>.  You also need to substitute the values in for <m>x_1</m> and <m>x_2</m> so your answer is a number.</p>
+</feedback>
+
+
+<p>One more trick.  As before, we let <m>x_1=$x_1 </m>, <m>x_2=$x_2 </m>, and <m>x_3=$x_3 </m>, but now, we also define <m>x_0 = $x_0</m>.  Calculate:</p>
+
+<p><m>\displaystyle \sum_{i=1}^2 g(x_{i-1}) =</m> <answer name="x02x12Sym">
+  <award>$x_0^2+$x_1^2</award>
+  <award credit="0.8" name="needNumbers01">x_0^2+x_1^2</award>
+  <award credit="0.8" name="needNumbers01b">g(x_0)+g(x_1)</award>
+</answer>.</p>
+
+<feedback condition="$needNumbers01">
+  <p>That is the correct expansion of the sum. Now substitute the values of <m>x_0</m> and <m>x_1</m> and compute the sum to get a number.</p>
+</feedback>
+<feedback condition="$needNumbers01b">
+  <p>That is the correct expansion of the sum. Now substitute the definition <m>g(x)=x^2</m> and the values of <m>x_0</m> and <m>x_1</m>.  Compute the sum to get a number.</p>
+</feedback>
+
+<hint>
+  <p>The sum involves <m>i=1</m> and <m>i=2</m>.  The subscript of <m>x</m> is now <m>i-1</m>.  Therefore, the sum must involve <m>x_0</m> and <m>x_1</m>.</p>
+</hint>
+
+
+</li>
+
+<li><p>Let's go back to the water flow through the channel.  It turns out that the flow rate at any given time, given in <m>{\rm m}^3 / {\rm min}</m>, is <m>f (t)=<copy prop="formula" tname="rate_func" /></m>. In part 1, we had the measurements <m>f(0) = $rate0</m>, <m>f(20) = $rate20</m>, <m>f(40) = $rate40</m>, and <m>f(60) = $rate60</m>.  Now, we know that a measurement at any time <m>t</m> is <m>f(t)</m>.</p>
+
+<p>Let's rewrite the left- and right-hand Riemann sum estimates using summation notation and the function <m>f(t)</m>.</p>
+
+<p>In part 1, the interval width was <m>\Delta t = 20</m> minutes.  The times of the measurements were <m>t_0=0</m>, <m>t_1=20</m>, <m>t_2=40</m>, and <m>t_3=60</m>.  In this notation, the left-hand Riemann sum is
+<me>\sum_{i=1}^3 f(t_{i-1}) \Delta t.</me>
+(The fact that is was left-hand Riemann sum was that we use the measurement at time <m>t_{i-1}</m>, which is the time at the <em>beginning</em> of interval <m>i</m>.)
+</p>
+
+<p>For a right-hand Riemann sum, we use the measurement at the <em>end</em> of interval <m>i</m>, meaning we use the measurement at time <m>t_i</m>.  Therefore, the sum for the right-hand Riemann sum is</p>
+
+<p><m>\displaystyle \sum_{i=1}^3 f(</m> <mathinput name="miti" /> <m>) \Delta t</m>.  
+<answer>
+  <award targetsAreResponses="miti">
+    <when>$miti = t_i</when>
+  </award>
+</answer>
+</p>
+
+
+<p>For the general left- and right-hand Riemann sums, we leave the number of intervals as a generic number <m>n</m>.  Other than that, the formulas are same as above, where the left-hand Riemann sum is 
+<m>\displaystyle \sum_{i=1}^{n} f(t_{i-1}) \Delta t</m> and the right-hand Riemann sum is <m>\displaystyle \sum_{i=1}^{n} f(t_i) \Delta t</m>.</p>
+
+<p>We do have to calculate <m>\Delta t</m> based on dividing the whole time of length 60 minutes into <m>n</m> intervals, so each interval is of length <m>\Delta t = 60/n</m>.</p>
+</li>
+
+<li>
+<p>As the number of intervals <m>n</m> goes to infinity, the values of the left-hand and right-hand Riemann sums approach each other.  The value they approach is the actual volume of water that flows through the channel.  We define the <em>definite integral</em>
+<me>\int_0^{60} <copy prop="formula" tname="rate_func" /> \, dt</me>
+to be the limit of the Riemann sums as <m>n</m> goes to infinity.</p>
+
+<p>More generally, if the function <m>f(t)</m> represents the rate of change of some quanity,  the total change from time <m>a</m> to time <m>b</m> is given by the definite integral
+<me>\int_a^b f (t) \, dt</me>
+which is the limit as <m>n</m> goes to infinity of both the left-hand Riemann sum
+<me>\displaystyle \sum_{i=1}^{n} f(t_{i-1}) \Delta t</me>
+and the right-hand Riemann sum
+<me> \sum_{i=1}^{n} f(t_i) \Delta t </me>
+where <m>\Delta t= \frac{b-a}{n}</m> and <m>t_i</m> are the right end-points of the intervals of size <m>\Delta t</m>.</p>
+
+<p>We read <m>\displaystyle \int_a^b f (t) \, dt</m> as <q>the integral from a to b of f(t) dt</q>.  The values <m>a</m> and <m>b</m> are called the <em>limits of integration</em>.  Don't worry about how to evaluate a definite integral yet.  We'll come back to that later.</p>
+
+<p>Note that the <em>definite</em> integral is a 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>number</choice>
+<choice>function</choice>
+<choice>class of functions</choice>
+</choiceinput>
+</answer>
+, while the <em>indefinite</em> integral is a 
+<answer inline='true'>
+<choiceinput>
+<choice>number</choice>
+<choice>function</choice>
+<choice credit='1'>class of functions</choice>
+</choiceinput>
+</answer>
+.</p>
+</li>
+
+<li>
+<p>Compute the left-hand and the right-hand Riemann sums with intervals of size <m>5</m> minutes to estimate the total flow of water through the channel.  Recall that the function describing the flow rate is <m>f (t)=<copy prop="formula" tname="rate_func" /></m> <m>{\rm m}^3 / {\rm min}</m>. Use the following table to record the values at the endpoints, accurate to <m>5</m> significant figures.</p>
+
+
+<sideBySide>
+<tabular halign="center" width="80%">
+  <row><cell>Time</cell><cell>Rate</cell></row>
+  <row><cell>0</cell><cell><answer>$rate0</answer></cell></row>
+  <row><cell>5</cell><cell><answer>$rate5</answer></cell></row>
+  <row><cell>10</cell><cell><answer>$rate10</answer></cell></row>
+  <row><cell>15</cell><cell><answer>$rate15</answer></cell></row>
+</tabular>
+<tabular halign="center" width="80%">
+  <row><cell>Time</cell><cell>Rate</cell></row>
+  <row><cell>20</cell><cell><answer>$rate20</answer></cell></row>
+  <row><cell>25</cell><cell><answer>$rate25</answer></cell></row>
+  <row><cell>30</cell><cell><answer>$rate30</answer></cell></row>
+  <row><cell>35</cell><cell><answer>$rate35</answer></cell></row>
+</tabular>
+<tabular halign="center" width="80%">
+  <row><cell>Time</cell><cell>Rate</cell></row>
+  <row><cell>40</cell><cell><answer>$rate40</answer></cell></row>
+  <row><cell>45</cell><cell><answer>$rate45</answer></cell></row>
+  <row><cell>50</cell><cell><answer>$rate50</answer></cell></row>
+  <row><cell>55</cell><cell><answer>$rate55</answer></cell></row>
+  <row><cell>60</cell><cell><answer>$rate60</answer></cell></row>
+</tabular>
+</sideBySide>
+
+
+
+<p>The left-hand Riemann sum is 
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='0.0001'>$lh_twelve </award>
+<award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$lh_twelve </award>
+<award credit='0.25' symbolicEquality='true' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$lh_twelve </award>
+<award symbolicEquality='true' credit='0' name='award44'>$allh_twelve </award>
+</answer>
+</p>
+<feedback condition="$award44">Don't forget to leave out the right endpoint.</feedback>
+<copy prop="feedbacks" tname="answer30" />
+
+
+<p>The right-hand Riemann sum is 
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='0.0001'>$rh_twelve </award>
+<award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$rh_twelve </award>
+<award credit='0.25' symbolicEquality='true' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$rh_twelve </award>
+<award symbolicEquality='true' credit='0' name='award46'>$allh_twelve </award>
+</answer>
+</p>
+<feedback condition="$award46">Don't forget to leave out the left endpoint.</feedback>
+<copy prop="feedbacks" tname="answer31" />
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<p>There are two reasonable assumptions for what the flow is between two measurements: either it is constant at the value of the first measurement, or it is constant at the value of the second measurement. There are a few other reasonable assumptions (such as the average of the two values), but we are only interested in these two.</p>
+
+<p>The total flow is the sum of the flow in each time interval, which, when we're assuming the rate is constant, is the length of time times the flow rate.  For the left-hand estimate, that means taking the rate at <m>0</m>, <m>20</m>, and <m>60</m>, multiplying each by <m>20</m>, and adding them together:
+</p>
+
+<p><m>$rate0  \cdot 20 + <round numberdecimals="5">$rate20 </round> \cdot 20 + <round numberdecimals="5">$rate40 </round> \cdot 20  = <round numberdecimals="5">$lh_three </round></m></p>
+
+<p>For the right-hand estimate, that means taking the rate at <m>20</m>, <m>40</m>,and <m>60</m>, multiplying each by <m>20</m>, and adding them together:
+</p>
+
+<p><m><round numberdecimals="5">$rate20 </round> \cdot 20 + <round numberdecimals="5">$rate40 </round> \cdot 20 + <round numberdecimals="5">$rate60 </round> \cdot 20 = <round numberdecimals="5">$rh_three </round></m></p>
+</li>
+
+<li>
+<p>The problem with the estimates is the fact that the rate is not constant between measurements.  If we took measurements more frequently, the estimate would be closer to the actual value. If we measure every <m>10</m> minutes instead of every <m>20</m>, we have six time intervals instead of three.  Since each interval is now ten minutes long, we multiply our measurements by <m>10</m> instead of <m>20</m>.</p>
+
+<p>The left-hand estimate is given by 
+</p>
+
+<p><m>$rate0  \cdot 10 + <round numberdecimals="5">$rate10 </round> \cdot 10 + <round numberdecimals="5">$rate20 </round> \cdot 12 + <round numberdecimals="5">$rate30 </round> \cdot 10 + <round numberdecimals="5">$rate40 </round> \cdot 10 + <round numberdecimals="5">$rate50 </round> \cdot 10= <round numberdecimals="5">$lh_six </round></m></p>
+
+
+<p>The right-hand estimate is given by 
+</p>
+
+<p><m><round numberdecimals="5">$rate10 </round> \cdot 10 + <round numberdecimals="5">$rate20 </round> \cdot 10 + <round numberdecimals="5">$rate30 </round> \cdot 10 + <round numberdecimals="5">$rate40 </round> \cdot 10 + <round numberdecimals="5">$rate50 </round> \cdot 10 +$rate60  \cdot 10= <round numberdecimals="5">$rh_six </round></m></p>
+</li>
+
+<li>
+<p>As we take more and more measurements, the left- and right-hand estimates will both approach the actual value (and therefore each other).  If we had a function describing the flow rate, we could get a "measurement" whenever we wanted.</p>
+
+<p>Summation notation allows us to generalize this idea.  First, we need to understand summation notation.  \[ \sum_{i=1}^{3} -x_i + {x_i}^3 = x_1 ^3- x_1  +  x_2 ^3 - x_2  + x_3 ^3 - x_3  = 186 \] illustrates the expansion of the summation expression. </p> 
+  
+</li>
+
+<li><p>
+Since the definite integral represents the total change from one time to another, it is a number.  The indefinite integral is a class of functions which all have the same derivative.</p>
+</li>
+
+<li>
+<p>To compute the left-hand and the right-hand Riemann sums with intervals of size <m>5</m> minutes, we need to calculate the flow at each three-minute interval.  Plugging multiples of <m>5</m> into <m>f (t)=<copy prop="formula" tname="rate_func" /></m> <m>{\rm m}^3 / {\rm min}</m> gives us the following table:</p>
+
+<sideBySide>
+<tabular>
+  <row><cell>Time</cell><cell>Rate</cell></row>
+  <row><cell>0</cell><cell>$rate0</cell></row>
+  <row><cell>5</cell><cell>$rate5</cell></row>
+  <row><cell>10</cell><cell>$rate10</cell></row>
+  <row><cell>15</cell><cell>$rate15</cell></row>
+</tabular>
+<tabular>
+  <row><cell>Time</cell><cell>Rate</cell></row>
+  <row><cell>20</cell><cell>$rate20</cell></row>
+  <row><cell>25</cell><cell>$rate25</cell></row>
+  <row><cell>30</cell><cell>$rate30</cell></row>
+  <row><cell>35</cell><cell>$rate35</cell></row>
+</tabular>
+<tabular>
+  <row><cell>Time</cell><cell>Rate</cell></row>
+  <row><cell>40</cell><cell>$rate40</cell></row>
+  <row><cell>45</cell><cell>$rate45</cell></row>
+  <row><cell>50</cell><cell>$rate50</cell></row>
+  <row><cell>55</cell><cell>$rate55</cell></row>
+  <row><cell>60</cell><cell>$rate60</cell></row>
+</tabular>
+</sideBySide>
+
+<p>The left-hand Riemann sum is <m><round numberdecimals="5">$lh_twelve </round></m>.
+</p>
+
+<p>The right-hand Riemann sum is <m><round numberdecimals="5">$rh_twelve </round></m>.</p>
+
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

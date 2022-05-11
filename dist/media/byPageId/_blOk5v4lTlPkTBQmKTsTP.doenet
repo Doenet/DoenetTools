@@ -1,0 +1,214 @@
+<title>Introduction to data</title>
+
+<p>Some define statistics as the field that focuses on turning information into knowledge. The first step in that process is to summarize and describe the raw information – the data. In this lab we explore flights, specifically a random sample of domestic flights that departed from the three major New York City airports in 2013. We will generate simple graphical and numerical summaries of data on these flights and explore delay times. Since this is a large data set, along the way you’ll also learn the indispensable skills of data processing and subsetting.</p>
+
+<section>
+  <title>Getting started</title>
+
+</section>
+
+<subsection>
+  <title>The data</title>
+
+<p>The Bureau of Transportation Statistics (BTS) is a statistical agency that is a part of the Research and Innovative Technology Administration (RITA). As its name implies, BTS collects and makes transportation data available, such as the flights data we will be working with in this lab.</p>
+
+<p>First, we’ll load the the nycflights dataset. Download the data here, and load it into jamovi.</p>
+
+<p>The data set nycflights that shows up in your workspace is a data matrix, with each row representing an observation and each column representing a variable.</p>
+
+<p>We will refer to this data format a data frame, which is a term that will be used throughout the labs. For this data set, each observation is a single flight.</p>
+
+<p>The codebook (description of the variables) can be accessed by loading this page.</p>
+
+<p>One of the variables refers to the carrier (i.e. airline) of the flight, which is coded according to the following system.</p>
+
+<p>carrier: Two letter carrier abbreviation.</p>
+
+<ul>
+<li>9E: Endeavor Air Inc.</li>
+<li>AA: American Airlines Inc.</li>
+<li>AS: Alaska Airlines Inc.</li>
+<li>B6: JetBlue Airways</li>
+<li>DL: Delta Air Lines Inc.</li>
+<li>EV: ExpressJet Airlines Inc.</li>
+<li>F9: Frontier Airlines Inc.</li>
+<li>FL: AirTran Airways Corporation</li>
+<li>HA: Hawaiian Airlines Inc.</li>
+<li>MQ: Envoy Air</li>
+<li>OO: SkyWest Airlines Inc.</li>
+<li>UA: United Air Lines Inc.</li>
+<li>US: US Airways Inc.</li>
+<li>VX: Virgin America</li>
+<li>WN: Southwest Airlines Co.</li>
+<li>YV: Mesa Airlines Inc.</li>
+</ul>
+
+<p>The nycflights data frame is a massive trove of information. Let’s think about some questions we might want to answer with these data:
+
+<ul>
+  <li>How delayed were flights that were headed to Los Angeles?</li>
+<li>How do departure delays vary by month?</li>
+<li>Which of the three major NYC airports has the best on time percentage for departing flights?</li>
+</ul>
+
+</p>
+</subsection>
+
+<section>
+<title>Analysis</title>
+</section>
+
+<subsection>
+<title>Departure delays</title>
+<p>Let’s start by examining the distribution of departure delays of all flights with a histogram. Select Exploration, then Description, then move the variable dep_delay to the Variables box. Click Plots, then check the Histograms box.</p>
+
+<p>Histograms are generally a very good way to see the shape of a single distribution of numerical data, but that shape can change depending on how the data is split between the different bins. jamovi attempts to choose a reasonable number of bins. (They are working to allow the user to change the number of bins, though this feature is not available yet.)</p>
+
+<p>If you want to visualize only delays of flights headed to Los Angeles, you need to first filter the data for flights with that destination. To do this, click the data tab at the top of the window, where you will see an icon that looks like a funnel in the top bar. This brings up the filter menu, where we can apply conditions.</p>
+
+<p>We want to only use arrivals where the destination is Los Angeles, so our condition is dest=="LAX". The two equal signs is a "test" which determines whether the variable dest is equal to the value "LAX", and anything other than that condition will be filtered out. You will then see parts of your data greyed out, leaving only the requested data.</p>
+
+<p>Go back to the Analysis tab to create a new histogram of dep_delay and you will see that your histogram only uses the flights where the destination is Los Angeles.</p>
+
+<p>You can also obtain numerical summaries for these flights in the Descriptives table, created by default when you select the dep_delay variable in the Descriptives menu.</p>
+
+<p>You can also filter based on multiple criteria. Suppose you are interested in flights headed to San Francisco (SFO) in February. Bring up the filter menu. We want the use only data that satisfies the conditions dest=="SFO and month==2, which we can do by using a filter dest=="SFO" and month==2.</p>
+
+<p>At the bottom of this view, you can see informtion about the dataset. There were originally <answer>32735</answer> rows, and the filter has filtered out <answer>32667</answer> of them. This means that there are <answer>68</answer> rows left after the filter has been applied.</p>
+
+<p>You can create more complicated filters as well. If you are interested in either flights headed to SFO or in February, you can use the "or" operator. A formula of dest=="SFO" or month==2 will give this.</p>
+
+<p>Filter the data to include only flights headed to LAX in March.
+There are <answer>32607</answer> flights filtered out of the original dataset, leaving <answer>128</answer> flights satisfying the conditions.</p>
+
+<hint>
+You can do this by subtracting the values in "Row count" and "Filtered" at the bottom of the window, or by making a descriptives summary table and finding the count (N).
+</hint>
+
+<p>Create a histogram and summary statistics of the arrival delays of these flights.
+
+  The distribution is
+  <answer>
+    <choiceinput inline>
+      <choice>symmetric</choice>
+      <choice credit="1">not symmetric</choice>
+  </choiceinput>
+  </answer>
+
+so the better measure of center would be the
+
+<answer>
+  <choiceinput inline>
+    <choice>mean</choice>
+    <choice credit="1">median</choice>
+</choiceinput>
+</answer>.
+
+The value of the mean is <answer>-5.7</answer> and the median is <answer>-11</answer>.
+
+</p>
+
+<p>Another useful technique is quickly calculating summary statistics for various groups in your data frame. We’ll go back to including all of our data, so you can either delete the filter or click the active switch on the created filter to make it inactive.</p>
+
+<p>Go back to the Descriptives menu. To get the summary stats departure delays for each origin airport, we can use dep_delay as our variable, and put origin in the Split by box.</p>
+
+<p>Note that we could also add a histogram here, and jamovi will create a histogram for each origin airport.</p>
+
+<p>Click the Statistics menu above the Plots menu within Descriptives. Check the IQR option in Dispersion to add these values to our table. Which carrier has the most variable arrival delays?
+
+  <answer>
+    <choiceinput>
+      <choice credit="1">AA</choice>
+      <choice>B6</choice>
+      <choice>DL</choice>
+      <choice>UA</choice>
+      <choice>VX</choice>
+  </choiceinput>
+  </answer>
+</p>
+</subsection>
+
+<subsection>
+<title>Departure delays by month</title>
+
+<p>Which month would you expect to have the highest average delay departing from an NYC airport?</p>
+
+<p>Let’s think about how you could answer this question. You could get descriptive statistics for the departure delays using month as your split variable.</p>
+
+
+<p>Suppose you really dislike departure delays and you want to schedule your travel in a month that minimizes your potential departure delay leaving NYC. One option is to choose the month with the lowest mean departure delay. Another option is to choose the month with the lowest median departure delay. What are the pros and cons of these two choices?</p>
+</subsection>
+
+<subsection>
+  <title>On time departure rate for NYC airports</title>
+<p>Suppose you will be flying out of NYC and want to know which of the three major NYC airports has the best on time departure rate of departing flights. Also supposed that for you, a flight that is delayed for less than 5 minutes is basically "on time." You consider any flight delayed for 5 minutes of more to be "delayed".</p>
+
+<p>In order to determine which airport has the best on time departure rate, you can first classify each flight as “on time” or “delayed”, then calculate the percentage of flights that are on time for each origin airport.</p>
+
+<p>We’ll begin by making a new variable. Because this new variable is based on an existing one, select NEW TRANSFORMED VARIABLE.</p>
+
+<p>Label this variable dep_type. For Source variable, select dep_delay. In using transform, click Create new transform. This would, in general, let you create transformation rules which you could use more than once. You’ll see <m>f_x= $ </m>source initially. This is just making the new column exactly the same as the old one. We’re going to use the IF function to make the new column based on a condition in the source column (dep_delay).</p>
+
+<p>After the equal sign, replace $source with IF(). (You could also find IF by scrolling down the menu after clicking 𝑓𝑥.) To do this transformation, we need to tell the IF function three things:
+
+<ul>
+  <li>The condition we want to use,</li>
+    <li>What to do when the condition is satisfied, and</li>
+      <li> - What to do when the condition is not satisfied.</li>
+    </ul>
+      </p>
+
+<p>Our condition is the original variable being less than three, or $source<5, so we can put that first inside the parentheses after IF(). Next, when the variable is less than 5, we want to call that on-time, so type a comma, then "on time". Otherwise we want to call it delayed, so type a comma, then "delayed". Note: Be sure to include the quotation marks.</p>
+
+<p>Hit enter, and the column will turn into a sequence of "delayed" and "on time"s. If you look at the icon next to dep_type, you will see that jamovi is treating the variable as ordinal. This is fine, or you can force it to treat the variable as nominal by changing the value in Measure type.</p>
+
+<p>Next, open the Descriptives, and create a table using the newly created variable dep_type and split by origin. Check the box Frequency tables and you will see a count of how many flights were delayed or on time from each airport.</p>
+
+<p>If you were selecting an airport simply based on on time departure percentage, which NYC airport would you choose to fly out of?</p>
+
+<answer>
+  <choiceinput randomizeOrder>
+    <choice credit="1">EWR</choice>
+    <choice>LGA</choice>
+    <choice>JFK</choice>
+</choiceinput>
+</answer>
+
+</subsection>
+
+<section>
+  <title>More Practice</title>
+<p>Create a new variable that contains the average speed, avg_speed traveled by the plane for each flight (in mph). Hint: Average speed can be calculated as distance divided by number of hours of travel, and note that air_time is given in minutes.</p>
+
+<p>Make a scatterplot of avg_speed vs. distance. Describe the relationship between average speed and distance.</p>
+
+<p>The relationship is
+
+<answer>
+  <choiceinput inline>
+    <choice>linear</choice>
+    <choice credit="1">nonlinear</choice>
+  </choiceinput>
+</answer>
+
+and, on average, as distance increases, average speed
+
+<answer>
+  <choiceinput inline>
+    <choice credit="1">increases</choice>
+    <choice>decreases</choice>
+    <choice>stays constant</choice>
+  </choiceinput>
+</answer>
+.</p>
+
+<p>Replicate the following plot.</p>
+
+<p>Hint: The data frame plotted only contains flights from American Airlines, Delta Airlines, and United Airlines. You can create a filter, and use “or” to select only flights that are from those airlines (you can string together multiple “or”s).</p>
+
+<p>Once you replicate the plot, determine (roughly) what the cutoff point is for departure delays where you can still expect to get to your destination on time.</p>
+
+</section>
+
+Creative Commons License
+This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.

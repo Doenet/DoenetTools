@@ -1,0 +1,74 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>setup</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none</li>
+<!--    <aside><title><alert>Inherited from parent component/  TypeParentComponentHere:<ref></ref><footnote></footnote></alert></title>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+    </aside>-->
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>setup</tag><idx><tag>setup</tag></idx> component defines a portion of the document or a block of code wherein predefined math components, variables, sequences and functions to be used later in the document may be defined. (See also, <tag><ref uri="doenet:doenetId=Jwl0ys4sdoUIkguMBx0he">function</ref></tag>, <tag><ref uri="doenet:doenetId=BYXQro7P7NJrtKyTCxJcX">math</ref></tag> , <tag><ref uri="doenet:doenetId=kz06PES_OaP4HB677J1ey">variable</ref></tag>, <tag><ref uri="doenet:doenetId=__VgxVIdpE3sN4POU0EKT">sequence</ref></tag>).  Anything defined within the <tag>setup</tag> portion will not be rendered in the viewer, but will be accessible for computations.  It is possible to have one <tag>setup</tag> block at the beginning of the document, as well as multiple <tag>setup</tag> blocks scattered throughout the file.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tag>setup</tag> to define <tag>math</tag> components</title>
+<p>In the code sample below, the <tag>setup</tag> block is used to define the <tag>math</tag> components which will later be called on in the example that follows.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;setup&gt;
+  &lt;math name="a"&gt;3&lt;/math&gt;
+  &lt;math name="b"&gt;4&lt;/math&gt;
+  &lt;math name="c_formula"&gt;sqrt(&dollar;a^2+&dollar;b^2)&lt;/math&gt;
+  &lt;math name="c" simplify="full"&gt;sqrt(&dollar;a^2+&dollar;b^2)&lt;/math&gt;
+&lt;/setup&gt;
+  
+&lt;p&gt;Given a triangle with side lengths &dollar;a and &dollar;b,
+the length of the hypotenuse is given by &lt;me&gt;&dollar;c_formula = &dollar;c.&lt;/me&gt;
+&lt;/p&gt;
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<setup>
+  <math name="a">3</math>
+  <math name="b">4</math>
+  <math name="c_formula">sqrt($a^2+$b^2)</math>
+  <math name="c" simplify="full">sqrt($a^2+$b^2)</math>
+</setup>
+<p>Given a triangle with side lengths $a and $b, the length of the hypotenuse is given by <me>$c_formula = $c.</me>
+</p>
+</example>
+    
+
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

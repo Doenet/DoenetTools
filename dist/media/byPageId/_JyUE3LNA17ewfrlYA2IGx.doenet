@@ -1,0 +1,68 @@
+<math>x3s</math>  -> x3s
+<math>3s</math>  -> 3*s
+<math>s3</math>  -> s3
+<math>sb</math>  -> s*b
+
+
+<answer>
+  <award symbolicEquality simplifyOnCompare><math>dne</math></award>
+</answer>
+
+<math simplify name="xx">x*x</math>
+
+
+<answer>
+  <award symbolicEquality>$xx</award>
+</answer>
+
+
+<p> simplifyoncompare
+<answer>
+  <award symbolicEquality simplifyOnCompare><math>x^2</math></award>
+</answer>
+</p>
+
+<p>default
+<answer>
+  <award symbolicEquality><math>x^2</math></award>
+</answer>
+</p>
+
+
+<p>default default
+<answer>
+  <award><math>x^2</math></award>
+</answer>
+</p>
+
+
+<answer>
+  <award><math unordered>(1,2,3)</math></award>
+</answer>
+
+<answer>
+  <award><math>(1,2,3)</math></award>
+</answer>
+
+
+<answer>
+  <award unorderedCompare><math>(1,2,3)</math></award>
+</answer>
+
+
+
+<answer>
+  <mathinput name="ans" />
+  <award unorderedCompare><when>$ans = (1,2,3)</when></award>
+</answer>
+
+
+<p>new
+<answer>
+  <mathinput name="ans2" />
+  <award><when>$ans2 = <math unordered>(1,2,3)</math> or $ans2 = (3,5,1)</when></award>
+</answer>
+</p>
+
+
+

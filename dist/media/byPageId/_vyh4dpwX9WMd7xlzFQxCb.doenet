@@ -1,0 +1,58 @@
+<title>Practice Example: <tag>pre</tag><tag>/pre</tag>component</title>
+<ref createButton="true" uri="https://docs.google.com/document/d/1fTKsjcsFD2exa-FBdMZsPbh-CB7RWCRGK3BJuGB0abs/edit?usp=sharing">Get Text File</ref>
+
+<!--***********************************************************
+*  Example 1:  Using a <pre></pre> tag to preserve formatting
+*  of irregular indentations in text.
+************************************************************-->
+
+<section>
+  <p>
+    <em><lorem generateWords="50" /></em>
+  </p>
+<!--note, the previous component is used simply to auto-generate
+  some example text that can be copy-pasted-->
+
+  <p><pre>labore deserunt 
+        proident amet anim esse 
+    voluptate Lorem aliqua consectetur 
+        occaecat nisi esse pariatur
+            sint eiusmod Lorem
+                  tempor fugiat proident id tempor.</pre>
+  </p>
+
+
+<!--Delete this comment and make your own paragraph of 
+  irregularly indented text.-->
+
+
+
+</section>
+<!--***********************************************************
+*  Example 2:  Note how using the <pre></pre> tag overwrites
+*  the default font that DoenetML renders.  Here the <pre></pre> *  tag does not enclose text but is simply used to create  
+*  additional space within the document.
+************************************************************-->
+<section>
+<p>labore deserunt proident amet anim esse voluptate</p><pre>
+    
+</pre>Lorem aliqua consectetur occaecat nisi esse pariatur sint eiusmod Lorem tempor fugiat.<pre>
+          
+</pre>Proident id tempor commodo aute consectetur anim duis et ipsum occaecat eiusmod.
+       
+
+   
+
+<!--Delete this comment and use the <pre></pre> tag to create additional space within a document-->
+
+
+  
+</section>
+
+
+  
+
+
+
+
+

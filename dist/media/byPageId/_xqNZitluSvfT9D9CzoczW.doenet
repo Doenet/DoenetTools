@@ -1,0 +1,160 @@
+<title>Multiple linear regression</title>
+
+<section>
+  <title>Grading the professor</title>
+
+  <p>Many college courses conclude by giving students the opportunity to evaluate the course and the instructor anonymously.
+    However, the use of these student evaluations as an indicator of course quality and teaching effectiveness is often criticized because these measures may reflect the influence of non-teaching related characteristics, such as the physical appearance of the instructor.
+    The article titled, "Beauty in the classroom: instructors' pulchritude and putative pedagogical productivity" by Hamermesh and Parker found that instructors who are viewed to be better looking receive higher instructional ratings.</p>
+
+  <p>Here, you will analyze the data from this study in order to learn what goes into a positive professor evaluation.</p>
+
+</section>
+
+<section>
+  <title>Getting Started</title>
+</section>
+
+<subsection>
+  <title>The data</title>
+
+  <p>The data were gathered from end of semester student evaluations for a large sample of professors from the University of Texas at Austin.
+    In addition, six students rated the professors' physical appearance.
+    The result is a data frame where each row contains a different course and columns represent variables about the courses and professors.
+    It's called `evals`, and can be found [here](/more/evals.csv) . We have observations on 21 different variables, some categorical and some numerical. The meaning of each variable can be found <ref uri="https://www.openintro.org/data/index.php?data=evals">here</ref>.</p>
+
+</subsection>
+
+<section>
+  <title>Exploring the data</title>
+
+  <p>1. Is this an observational study or an experiment?
+    The original research question posed in the paper is whether beauty leads directly to the differences in course evaluations.
+    Given the study design, is it possible to answer this question as it is phrased?
+    If not, rephrase the question.</p>
+
+  <p>2. Describe the distribution of `score`.
+    Is the distribution skewed?
+    What does that tell you about how students rate courses?
+    Is this what you expected to see?
+    Why, or why not?</p>
+
+  <p>3. Excluding `score`, select two other variables and describe their relationship with each other using an appropriate visualization.</p>
+
+</section>
+
+<section>
+  <title>Simple linear regression</title>
+
+  <p>The fundamental phenomenon suggested by the study is that better looking teachers are evaluated more favourably.
+    Let's create a scatterplot to see if this appears to be the case, using `score` as the y-variable and `bty_avg` as the x-variable.</p>
+
+  <p>Before you draw conclusions about the trend, compare the number of observations in the data frame with the approximate number of points on the scatterplot.
+    Is anything awry?</p>
+
+  <p>4. What was misleading about the initial scatterplot?</p>
+
+  <p>The line is the model.</p>
+
+  <p>5. Let's see if the apparent trend in the plot is something more than natural variation. Fit a linear regression model to predict average professor score by average beauty rating. Write out the equation for the linear model and interpret the slope. Is average beauty score a statistically significant predictor? Does it appear to be a practically significant predictor?</p>
+
+  <p>6. Use residual plots to evaluate whether the conditions of least squares regression are reasonable. Provide plots and comments for each one (see the Simple Regression Lab for a reminder of how to make these).</p>
+
+</section>
+
+<section>
+  <title>Multiple linear regression</title>
+
+  <p>The data set contains several variables on the beauty score of the professor: individual ratings from each of the six students who were asked to score the physical appearance of the professors and the average of these six scores.
+    Let's take a look at the relationship between one of these scores and the average beauty score.</p>
+
+  <p>Create a scatterplot using `bty_f1lower` as your x-variable and `bty_avg` as your y-variable. Also determine the correlation coefficient for these two variables.</p>
+
+  <p>As expected, the relationship is quite strong---after all, the average score is calculated using the individual scores.</p>
+
+  <p>You can look at the relationships between other beauty variables by creating a scatterplot for various pairs of the beauty variables (the ones that start with "bty"). Pick a few pairs to look at how they are related.</p>
+
+  <p>These variables are collinear (correlated), and adding more than one of these variables to the model would not add much value to the model.
+    In this application and with these highly-correlated predictors, it is reasonable to use the average beauty score as the single representative of these variables.</p>
+
+  <p>In order to see if beauty is still a significant predictor of professor score after you've accounted for the professor's gender, you can add the gender term into the model.</p>
+
+  <p>jamovi will only accept scale variables in the covariate box. (You can tell this by looking at the bottom corner of the box to see the scale icon.) We can, however, include categorical variables in the model by putting them in the Factors box.</p>
+
+  <p>7. p-values and parameter estimates should only be trusted if the conditions for the regression are reasonable.
+    Verify that the conditions for this model are reasonable using diagnostic plots.</p>
+
+  <p>8. Is `bty_avg` still a significant predictor of `score`?
+    Has the addition of `gender` to the model changed the parameter estimate for `gender`?</p>
+
+  <p>In the model coefficients table, we can see a note by intercept that the values represents the reference level. This means that this is the value for the reference level (female), and the value next to `male-female` is the change in the intercept comparing males to females.</p>
+
+  <p>Another way to think of this is to think of the coefficient for `male-female` for female professors is multiplied by zero, leaving the intercept and slope form familiar from simple regression:</p>
+
+  <m>
+    \begin{aligned}
+    \widehat{score} &= \hat{\beta}_0 + \hat{\beta}_1 \times bty\_avg + \hat{\beta}_2 \times (0) \\
+    &= \hat{\beta}_0 + \hat{\beta}_1 \times bty\_avg\end{aligned}
+  </m>
+
+  <p>9. What is the equation of the line corresponding to male professors?
+
+    <hint>
+      For male professors, the parameter estimate is multiplied by 1, or includes the term for `male-female`.
+    </hint>
+
+    For two professors who received the same beauty rating, which gender tends to have the higher course evaluation score?
+  </p>
+
+  <p>The decision to use female as the reference level has no deeper meaning. Often software will indicate these types of variables by coding a <m>0</m> to whichever category comes first alphabetically, so we are matching that convention. We could reorder the levels of the gender variable in the `Reference Levels` menu, and we would come to the same final conclusions.</p>
+
+  <p>10. We'll next create a new model with `gender` removed and `rank` added in. How does jamovi appear to handle categorical variables that have more than two levels? Note that the rank variable has three levels: `teaching`, `tenure track`, `tenured`.</p>
+
+  <p>The interpretation of the coefficients in multiple regression is slightly different from that of simple regression.
+    The estimate for `bty_avg` reflects how much higher a group of professors is expected to score if they have a beauty rating that is one point higher <em>while holding all other variables constant</em>.
+    In this case, that translates into considering only professors of the same rank with `bty_avg` scores that are one point apart.</p>
+
+</section>
+
+<section>
+  <title>The search for the best model</title>
+
+  <p>We will start with a full model that predicts professor score based on rank, gender, ethnicity, language of the university where they got their degree, age, proportion of students that filled out evaluations, class size, course level, number of professors, number of credits, and average beauty rating.</p>
+
+  <p>11. Which variable would you expect to have the highest p-value in this model? Why?
+    <hint>
+      Think about which variable would you expect to not have any association with the professor score.
+    </hint>
+  </p>
+
+  <p>Let's create the model using a linear regression analysis.</p>
+
+  <p>12. Check your suspicions from the previous exercise.
+    Include the model output in your response.</p>
+
+  <p>13. Interpret the coefficient associated with the ethnicity variable.</p>
+
+  <p>14. Drop one variable at a time and peek at the adjusted <m>R^2</m>.
+    Removing which variable increases adjusted <m>R^2</m> the most?
+    Drop the variable with the highest p-value and re-fit the model.
+    Did the coefficients and significance of the other explanatory variables change with this variable removed?
+    (One of the things that makes multiple regression interesting is that coefficient estimates depend on the other variables that are included in the model.) If not, what does this say about whether or not the dropped variable was collinear with the other explanatory variables?</p>
+
+  <p>15. Using this method (called backward-selection) and adjusted <m>R^2</m> as the selection criterion, determine the best model.
+    You do not need to show all steps in your answer, just the output for the final model.
+    Also, write out the linear model for predicting score based on the final model you settle on.</p>
+
+  <p>16. Verify that the conditions for this model are reasonable using diagnostic plots.</p>
+
+  <p>17. The original paper describes how these data were gathered by taking a sample of professors from the University of Texas at Austin and including all courses that they have taught.
+    Considering that each row represents a course, could this new information have an impact on any of the conditions of linear regression?</p>
+
+  <p>18. Based on your final model, describe the characteristics of a professor and course at University of Texas at Austin that would be associated with a high evaluation score.</p>
+
+  <p>19. Would you be comfortable generalizing your conclusions to apply to professors generally (at any university)?
+    Why or why not?</p>
+
+</section>
+
+<image source="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" />
+This work is licensed under a <ref uri=" http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons License</ref>

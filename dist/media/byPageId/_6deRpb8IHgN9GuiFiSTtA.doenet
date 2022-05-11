@@ -1,0 +1,58 @@
+<!--***********************************************************
+*Dear Aspiring Poet, 
+*please do not alter the source file for the course, but instead 
+*use CMD+A (or CNTRL+A) to select all the text, then copy and 
+*paste into a separate DoenetML for practice. 
+*
+*
+*Your devoted fan,
+*the DoenetML scribe
+************************************************************-->
+<title>Practice Example: <tag>q</tag><tag>/q</tag>component</title>
+<ref createButton="true" uri="https://docs.google.com/document/d/1ZIrWSvL6L6p57ussjPfLVzm8v3kVpmVRogX5eTZUePk/edit?usp=sharing">Get Text File</ref>
+
+<!--***********************************************************
+*  Example 1:  Using a <q></q> to create a quotation within a
+*  paragraph (paragraph auto-generated using lorem component)
+*                                  
+************************************************************-->
+
+<section>
+<p><em><lorem generateWords="50" /></em></p>
+<!--Note, the above was used to generate 50 words of lorem ipsum, or dummy text.  A portion of this text was then copied from the auto-generated rendered text to use in the following quotation example.-->
+
+<p>Deserunt proident amet <q>anim esse voluptate Lorem</q>, aliqua consectetur occaecat. <q>Nisi esse pariatur sint eiusmod Lorem tempor fugiat proident</q>, id tempor commodo aute consectetur.
+</p>
+  
+<!--Delete this comment and create your own quoted text within
+a paragraph using the <q></q> tag-->
+
+
+
+</section>
+<!--***********************************************************
+*  Example 2:  Using the <q></q> tag around a named textInput, 
+*  then outputting it back to the user in bold type using the 
+*  <alert></alert> tag and referencing the object name using 
+*  $name.
+*  
+************************************************************-->
+<section>
+<p>
+  What is your favorite quotation?
+  <p>
+    <q> <textInput size="20" name="userFavQuote" prefill="type your quote here" /> </q>
+  </p>
+  <p>Your favorite quote is: <alert><q>$userFavQuote</q></alert>.  Nice one!
+  </p>
+</p>
+   
+
+<!--Delete this comment and create your own question for the user enclosed inside quotation marks using the <q></q> tag-->
+
+
+
+</section>
+
+
+

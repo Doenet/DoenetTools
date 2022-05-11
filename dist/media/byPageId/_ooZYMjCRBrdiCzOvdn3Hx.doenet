@@ -1,0 +1,132 @@
+<document><title><tag>wrapNumberPeriodic</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>lowerValue <em>(number)</em></li>
+  <li>upperValue <em>(number)</em></li>
+  <ul><aside><title>Attributes inherited from parent component<tag><ref>math</ref></tag> </title>
+    <li>simplify  <em>(text)</em></li>
+    <li>format  <em>(text)</em></li>
+    <li>expand  <em>(boolean)</em></li>
+    <li>displayDigits  <em>(integer)</em></li>
+    <li>displayDecimals  <em>(integer)</em></li>
+    <li>displaySmallAsZero  <em>(number)</em></li>
+    <li>renderMode  <em>(text)</em></li>
+    <li>unordered  <em>(boolean)</em></li>
+    <li>createVectors  <em>(boolean)</em></li>
+    <li>createIntervals  <em>(boolean)</em></li>
+    <li>functionSymbols  <em>(textList)</em></li>
+    <li>targetsAreFunctionSymbols  <em>(textList)</em></li>
+    <li>splitSymbols <em>(boolean)</em></li>
+    <li>groupCompositeReplacements <em>(boolean)</em></li></aside>
+  </ul>
+</ul>
+
+</section>
+tests
+<wrapNumberPeriodic>5.15151515151515</wrapNumberPeriodic>
+<wrapNumberPeriodic>2.3+7.4</wrapNumberPeriodic>
+<wrapNumberPeriodic>(1/2)+(1/4)</wrapNumberPeriodic>
+<wrapNumberPeriodic displayDigits="3">1+(1/3)</wrapNumberPeriodic>
+<wrapNumberPeriodic displayDigits="3" upperValue="3">3+(1/3)</wrapNumberPeriodic>
+  <!--so what does upperValue do with this component then?-->
+  
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>wrapNumberPeriodic</tag><idx><tag>wrapNumberPeriodic</tag></idx> component renders the fractional part of a rational number or of an expression resulting in a rational number in default decimal format.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

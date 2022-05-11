@@ -1,0 +1,293 @@
+
+<title>Exponential growth and decay modeled by discrete dynamical systems</title>
+
+<description>
+Overview of exponential growth and decay in discrete time.  Exploration of their qualitative properties as well as solutions to the dynamical system.
+</description>
+
+<p>The 
+<ref uri='doenet:doenetId=nzSdVA_gPhe5W-oM4IN5z'>solution to a linear discrete dynamical system</ref>
+ is an exponential.  If we choose conditions so that the 
+<ref uri='doenet:state_variable|page_type=definition'>state variable</ref>
+ stays positive, this exponential solution will exhibit either exponential growth or exponential decay.  We can determine whether we get growth or decay from the parameters of the system.</p>
+
+
+
+
+<section><title>Growth versus decay</title>
+
+
+
+
+<subsection><title>Video</title>
+
+<figure>
+<video youtube="rbvTlXW_4-g" width="640px" height="360px"/>
+<caption>Exponential growth and decay in discrete dynamical systems</caption>
+</figure>
+
+</subsection>
+
+<subsection><title>Video review questions</title>
+
+
+<problem newNamespace>
+<title>Parameter regime for exponential growth/decay, function iteration form</title>
+
+<setup>
+
+<selectFromSequence assignNames='x0' from='0.1' to=' 10' step=' 0.1'/>
+<select assignNames='x' >x y z s u v w </select>
+<select assignNames='n' >n t </select>
+<select assignNames='a' >a b c alpha beta gamma </select>
+<math name='base' simplify='full'>$a</math>
+<math name='base_to_the_n' simplify='full' >$base ^$n </math>
+</setup>
+
+<p>For the discrete dynamical system
+<md>
+  <mrow>$x _{ $n  +1}\amp = $a  $x _{ $n  }</mrow>
+  <mrow>$x _{0}\amp = $x0 </mrow>
+</md>
+for what range of values of the parameter <m>$a </m> does the system exhibit exponential decay?</p>
+
+<p>
+<answer symbolicEquality>0</answer>
+ <m>\lt $a  \lt</m> 
+<answer symbolicEquality>1</answer>
+</p>
+
+<p>For what range of values of the parameter <m>$a </m> does the system exhibit exponential growth?</p>
+
+<p><m>$a  \gt</m> 
+<answer symbolicEquality>1</answer>
+</p>
+
+
+<solution>
+<p>We can answer this question by solving the system. The equation is already in function iteration form.
+To go from <m>$x _{ $n  }</m> to <m>$x _{ $n +1}</m>, we must multiply by <m>$base </m>.  Since the initial condition is <m>$x _0 = $x0 </m>, and we must multiply by <m>$base </m> for a total of <m>$n </m> times to get to <m>$x _{ $n  }</m>,  the solution is
+<me>$x _{ $n  } = $base_to_the_n $x0 .</me></p>
+
+<p>For exponential decay we need
+<me>0 \lt $base  \lt 1.</me>
+
+</p>
+
+<p>For exponential growth, we need
+<me>$base  \gt 1.</me>
+</p>
+
+</solution>
+
+
+</problem>
+
+
+
+
+<problem newNamespace>
+<title>Parameter regime for exponential growth/decay, difference form</title>
+
+<setup>
+
+<selectFromSequence assignNames='x0' from='0.1' to=' 10' step=' 0.1'/>
+<select assignNames='x' >x y z s u v w </select>
+<select assignNames='n' >n t </select>
+<select assignNames='a' >a b c alpha beta gamma </select>
+<math name='base' simplify='full'>$a +1</math>
+<math name='base_to_the_n' simplify='full' >$base ^$n </math>
+</setup>
+
+
+<p>For the discrete dynamical system
+<md>
+  <mrow>
+$x _{ $n  +1} - $x _{ $n  }\amp = $a  $x _{ $n  }  
+</mrow>
+  <mrow>$x _{0}\amp = $x0 </mrow>
+</md>
+for what range of values of the parameter <m>$a </m> does the system exhibit exponential decay?</p>
+
+<p>
+<answer symbolicEquality>-1</answer>
+ <m>\lt $a  \lt</m> 
+<answer symbolicEquality>0</answer>
+</p>
+
+<p>For what range of values of the parameter <m>$a </m> does the system exhibit exponential growth?</p>
+
+<p><m>$a  \gt</m> 
+<answer symbolicEquality>0</answer>
+</p>
+
+
+<solution>
+<p>We can answer this question by solving the system. 
+Since the equation is in difference form, we add <m>$x _{ $n  }</m> to both sides, rewriting the equation in function iteration form as <me>$x _{ $n  +1} = ($a +1)$x _$n .</me>
+
+To go from <m>$x _{ $n  }</m> to <m>$x _{ $n +1}</m>, we must multiply by <m>$base </m>.  Since the initial condition is <m>$x _0 = $x0 </m>, and we must multiply by <m>$base </m> for a total of <m>$n </m> times to get to <m>$x _{ $n  }</m>,  the solution is
+<me>$x _{ $n  } = $base_to_the_n $x0 .</me></p>
+
+<p>For exponential decay we need
+<me>0 \lt $base  \lt 1.</me>
+This condition is the same as <me>-1 \lt $a  \lt 0.</me>
+</p>
+
+<p>For exponential growth, we need
+<me>$base  \gt 1.</me>
+This condition is the same as <me>$a > 0.</me>
+</p>
+
+
+
+</solution>
+
+</problem>
+
+
+
+
+</subsection>
+
+<subsection><title>Video summary</title>
+
+
+<p>If we have a linear discrete dynamical system in 
+<ref uri='doenet:function_iteration_form|page_type=definition'>function iteration form</ref>
+, 
+<mdn>
+  <mrow>x_{t+1}\amp =R x_t
+<!-- django tag equation_tag, function_iteration_form, , , , "1" -->
+
+</mrow>
+  <mrow>x_{0}\amp = \text{a known positive value},\notag</mrow>
+</mdn>
+then the 
+<ref uri='doenet:doenetId=nzSdVA_gPhe5W-oM4IN5z'>solution is the exponential</ref>
+
+<me>x_t = R^tx_0.</me>
+Given that <m>x_0 \gt  0</m>, the solution will be positive as long as <m>R \gt  0</m>.  The value of <m>R</m> determines whether we get exponential growth or decay.</p>
+<ul>
+<li>If <m>R \gt  1</m>, then at each time step, the value of the state variable increases.  The solution exhibits exponential growth.  The growth makes sense because in each time step, we are multiplying by a number greater than 1.</li>
+<li>If <m>0 \lt  R \lt 1</m>, then at each time step, the value of the state variable decreases.  The solution exhibits exponential decay.  The decay makes sense because in each time step, we are multiplying by a positive number less than 1.</li>
+<li>If <m>R=1</m>, then the solution is a constant.  The constant solution makes sense because in each time step, we are multiplying by 1.</li>
+</ul>
+
+<p>On the other hand, if we have a linear dynamical system in 
+<ref uri='doenet:difference_form|page_type=definition'>difference form</ref>
+,
+<mdn>
+  <mrow>x_{t+1} - x_t\amp =r x_t
+<!-- django tag equation_tag, difference_form, , , , "2" -->
+
+</mrow>
+  <mrow>x_{0}\amp = \text{a known positive value},\notag</mrow>
+</mdn>
+then, to  
+<ref uri='doenet:doenetId=nzSdVA_gPhe5W-oM4IN5z'>solve the system</ref>
+, we first must add <m>x_t</m> to both sides of the evolution rule, converting it into the equivalent system in function iteration form:
+<md>
+  <mrow>x_{t+1}\amp =(r +1)x_t</mrow>
+  <mrow>x_{0}\amp = \text{a known positive value}.</mrow>
+</md>
+Its solution is the exponential
+<me>x_t = (r+1)^tx_0.</me>
+Given that <m>x_0 \gt  0</m>, the solution will be positive as long as <m>r \gt  -1</m>.  The value of <m>r</m> determines whether we get exponential growth or decay.</p>
+<ul>
+<li>If <m>r \gt  0</m>, then at each time step, the value of the state variable increases.  The solution exhibits exponential growth.  The growth makes sense because in each time step, we are adding a positive quantity.</li>
+<li>If <m>-1 \lt  r \lt  0</m>, then at each time step, the value of the state variable decreases.  The solution exhibits exponential decay.  The decay makes sense because in each time step, we are subtracting a positive quantity, but we aren't subtracting off any more than the value of <m>x_t</m> in the previous time step.</li>
+<li>If <m>r = 0</m>, then the solution is a constant.  The constant solution makes sense because in each time step, we are adding zero.</li>
+</ul>
+
+
+
+
+
+
+
+</subsection>
+
+</section>
+
+<section><title>Examples</title>
+
+
+
+
+<subsection><title>Human population growth</title>
+
+
+<p>Suppose a human population is growing at 1% per year and initially has
+1,000,000 individuals.  Let <m>P_t</m> denote the populations size <m>t</m> years after the initial population of <m>P_0 = 1,000,000</m> individuals. If one asks what the population will be in 50 years there are two options.</p>
+
+<p><alert>Option 1.</alert>  At 1% per year growth, the dynamic equation would
+be 
+<me>P_{t+1} - P_t    = 0.01 \, P_t</me>
+and the corresponding iteration
+equation is
+<me>P_{t+1} = 1.01 \, P_t</me>
+Starting with the initial condition, <m>P_0 = 1,000,000</m>, we could calculate <m>P_1 = 1.01 \times 1,000,000 = 1,010,000</m>,
+<m>P_2 = 1.01 \times 1,010,000 = 1,020,100</m> and so on for 50 iterations.
+</p>
+
+<p><alert>Option 2.</alert>  Alternatively, one may write the solution
+<me>P_t = 1.01^t \left( 1,000,000 \right)</me>
+so that we immediately have a formula for the population after 50 years:
+<me>P_{50} = 1.01^{50} \left( 1,000,000 \right) = 1,644,631.</me>
+</p>
+
+
+
+
+
+</subsection>
+
+<subsection><title>Bacteria growth</title>
+
+
+<p>When nutrients are plentiful and the population size isn't too large, a bacteria can exhibit exponential growth.  See 
+<ref uri='doenet:doenetId=-41H1AhSxP_Nz7HHe-JTy'>this page</ref>
+ for details on developing an exponential growth model from data and solving it.</p>
+
+
+
+
+</subsection>
+
+<subsection><title>Penicillin clearance</title>
+
+
+<p>If penicillin is given as a 
+<ref uri="http://en.wikipedia.org/wiki/Bolus_%28medicine%29">bolus</ref>
+ injection (a one-time injection) and the kidneys remove a fixed fraction of the penicillin every 5 minutes, the amount of penicillin in the blood exhibits exponential decay.  See 
+<ref uri='doenet:doenetId=YjtL3KaS4gQmvQ41IsYa6'>this page</ref>
+ for the steps to develop such an exponential decay model from data.</p>
+
+
+
+
+</subsection>
+
+<subsection><title>Chocolate decay</title>
+
+
+<p>I start with 2 chocolate bars.  Every day, I eat 10% of the chocolate that I started the day with.  Write down a dynamical system describing the chocolate I have left after each day and determine how much chocolate I have left after two weeks.</p>
+
+<p><alert>Solution</alert>: Let <m>c_t</m> be the amount of chocolate (in units of a chocolate bar) that I have after <m>t</m> days.  The dynamical system that <m>c_t</m> follows is
+<md>
+  <mrow>c_{t+1} - c_t\amp = -0.1 c_t</mrow>
+  <mrow>c_0\amp = 2.</mrow>
+</md>
+In function iteration form, the system is <m>c_{t+1}= 0.9c_t</m>, and its solution is
+<me>c_t = 0.9^t c_0 = 0.9^t 2.</me>
+</p>
+
+<p>After two weeks, the chocolate I have left is
+<me>c_{14} = 0.9^{14}2 \approx 0.46 \text{ chocolate bars}.</me>
+</p>
+</subsection>
+
+</section>
+
+

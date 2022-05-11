@@ -1,0 +1,612 @@
+<!--Creating Sections, Subsections, Problems & Exercises
+*
+*
+*
+*-->
+<sideBySide>
+  <ref createButton="true" uri="doenet:doenetId=DQYti10l_EOXUAHZtDggc">Previous</ref>
+   <ref createButton="true"  uri="doenet:doenetId=3bg-Px4nAJ64L06G9Hr2H">Next</ref>
+</sideBySide>
+
+<title>Creating Sections, Subsections, Problems and Exercises</title>
+
+<aside><title>How to use this tutorial</title>
+  <p>
+  <ul>
+    <p><li><em>Preview</em> the sample code using the links at the top of the page.</li></p>
+    <p><li><em>Learn</em> by watching the video and reading the examples</li></p>
+    <p><li><em>Practice</em> with built-in tutorial exercises or by editing the sample code</li></p>
+    <p><li><em>Check your understanding</em> using the 4-question quiz at the end of the page</li></p>
+    </ul>
+</p>
+</aside>
+
+
+<section><title>Preview</title>(note:  clicking the links below will open a sample DoenetML file)
+  <tabular>
+    <row>
+      <cell><ref createButton = "true" uri="doenet:doenetId=EI8qVxTzW3tPXtzUD6mIl"><tag>section</tag><tag>/section</tag></ref>
+      </cell>
+      <cell><em>creates an auto-numbered section of the main document with default styling</em>
+      </cell>
+    </row>
+    <row>
+      <cell><ref createButton = "true" uri="doenet:doenetId=5jyBjjIO2yFu3dPE46kQ4"><tag>subsection</tag><tag>/subsection</tag></ref>
+      </cell>
+      <cell><em>creates an auto-numbered subsection of the main document with default styling</em>
+      </cell>
+    </row>
+    <row>
+      <cell><ref createButton = "true" uri="doenet:doenetId=Qyon7xjA1cPStfKRahoo-"><tag>problem</tag><tag>/problem</tag><tag>exercise</tag><tag>/exercise</tag></ref>
+      </cell>
+      <cell><em>creates an auto-numbered problem within the document</em>
+      </cell>
+    </row>
+  </tabular>
+</section>
+
+<section><title>Learn</title>
+  
+<p><alert>Summary:</alert>  The components introduced in this tutorial are sectional components designed to provide default structure to your doenetML document.  The <alert><tag>section</tag></alert> component is the largest hierarchical sectional component and serves as a container element for other components such as figures, paragraphs, and problems.  The <alert><tag>subsection</tag></alert> component functions in a similar manner to the <alert><tag>section</tag></alert> component, on a lower hierarchical level.  The <alert><tag>problem</tag></alert> and <alert><tag>exercise</tag></alert> components serve as containers for multiple choice questions, user-input questions, or other document asssessment tools.  For more details, click the banner below, refer to the example code illustrated below, or see <ref uri="doenet:doenetId=HgLUOtFwSOWnE-wD_wIiT">Section 3.1.2 through 3.1.4</ref> in the DoenetML Guide</p>
+
+<aside><title>More Detail</title>
+<p>In this video, we learn four new components that will allow you to create sectioning and structure within a DoenetML article or problem set.  They are the 'section', 'subsection', 'problem', and 'exercise'.</p>  
+<p>The DoenetML 'section' component adds some structure to your document. If no title is nested within the section component, DoenetML provides an automatic numbering. Within the section, if you want to provide some finer mesh to the structure, you can add subsections, and these will adopt the numbering convention as shown here.  Finally, you can create multiple subsections nested within your document and they will continue on with this hierarchical numbering pattern.</p>
+<p> Notice how the default heading linestyles reflect this hierarchy as well.  If you want the structure and the hierarchy, which can be useful when grouping sets of questions together as we'll see in a moment, but don't want to use the default numbering system, then simply add a 'title' component directly after the section or subsection tag.</p>
+<p>The 'problem' tag can be placed within a section or a subsection, and it creates a grouped sequence of questions whose numbering system correlates with it's parent section.  Similarly, the 'exercise' component is a way of further dividing up a 'problem' section into lesser hierarchical  groups. Many different formats could be constructed with these four sectioning components:  section, subsection, problem, and exercise.  Here is an example of two possible hierarchies you could design.</p>
+<p>One of the most useful aspects of grouping content into sections is the ability to evaluate groups of questions as a whole rather than individually.  We'll get into more specifics regarding the question-making process and DoenetML formatting in those specific tutorials, but for we focus on the attributes associated with the sectioning components.</p>
+<p>Here I have a set of problems associated with a section 3, problem 3.1.  However, each question automatically has a checkwork button displayed with the way it is currently coded.  If you want the user to answer all four questions, and then check their answers as a whole set, we can include the sectionWideCheckWork attribute within the section, the subsection, or the problem tag.  This attribute works in tandem with the aggregateScores attribute, so we'll include both in the tag to achieve the desired effect.</p>
+<p>Another useful attribute that you can use in combination with the 'section', 'subsection', and 'problem' components is the 'newNameSpace' attribute.  As the name suggests, if you include the 'newNameSpace' attribute within the tag, you can reuse names that have been used already within the document in a separate section without having to reinvent them.  So, if section 1, problem 1 in my document has a textInput named "answer1", an if you create a newNameSpace within section 2, then problem 2.1 can have a mathInput named "answer1" as well.  This can be more convenient than inventing many different names for similarly designated items that occur in the same document.</p>
+<p>To recap, we learned the sectioning components 'section', 'subsection', 'problem', and 'exercise' which add a default numbering system and a hierarchical linetype structure into the document.  The attributes 'sectionWideCheckWork' in combination with 'aggregateScores' allows for grouping of problems under a single checkwork button.  Finally, the attribute 'newNameSpace' can be used within a sectioning component to create a clean slate for reusing existing variable names within the same document.</p>
+</aside>
+
+
+
+
+
+<video youtube = ""></video>
+<p><caption>Video:  How to use the <alert><tag>section</tag></alert><alert><tag>/section</tag></alert>, the <alert><tag>subsection</tag><tag>/subsection</tag></alert>, the <alert><tag>problem</tag></alert><alert><tag>/problem</tag></alert> and the <alert><tag>exercise</tag><tag>/exercise</tag></alert> components</caption></p>
+
+</section>
+
+
+<!--********************************************************************
+Warning - do not change anything in the table.  Preserved formatting
+********************************************************************-->
+
+<subsection><title>Examples</title>  
+  <tabular>
+    
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    
+    <row bottom="minor">
+      <cell><em>Using the 'section' component:</em>
+        <pre><alert><tag>section</tag></alert>Birds of North America<alert><tag>/section</tag></alert>
+        </pre>
+      </cell>
+      <cell>
+      <section><alert>Birds of North America</alert></section>
+      </cell>
+    </row>
+<!--********************************************************************-->
+    <row bottom="minor">
+      <cell><em>Using the 'title' component nested within a 'section':</em>
+        <pre><alert><tag>section</tag><tag>title</tag></alert>Birds of South America<alert><tag>/title</tag><tag>/section</tag></alert>
+        </pre>
+      </cell>
+      <cell>
+      <section><title>Birds of South America</title></section>
+      </cell>
+    </row>
+<!--********************************************************************--> 
+    <row bottom="minor">
+      <cell><em>Using the 'subsection' component nested within a 'section':</em>
+        <pre><alert><tag>section</tag></alert>Countries of Europe
+            <alert><tag>subsection</tag></alert>France
+                            .
+                            .
+                            .
+            <alert><tag>/subsection</tag></alert>
+            <alert><tag>subsection</tag></alert>Italy
+                            .
+                            .
+                            .
+            <alert><tag>/subsection</tag></alert> 
+    <alert><tag>/section</tag></alert> 
+        </pre>
+      </cell>
+      <cell><section>Countries of Europe
+            <subsection><pre>France
+                            .
+                            .
+                            .
+            </pre></subsection>
+            <subsection><pre>Italy
+                            .
+                            .
+                            .
+            </pre></subsection>
+      </section>
+      </cell>
+    </row>
+
+<!--*************************************************************************-->
+    <row bottom="minor">
+      <cell><em>Using the 'problem' component nested within a 'section':</em>
+      <pre><alert><tag>section</tag></alert>Flags of the World Game
+      <alert><tag>problem</tag></alert>Whose flag am I:  🇯🇵?
+        <alert><tag>answer</tag></alert>
+          <alert><tag>choiceInput</tag></alert>
+              <alert><tag>choice credit="1"</tag></alert>Japan<alert><tag>/choice</tag></alert>
+              <alert><tag>choice</tag></alert>Jamaica<alert><tag>/choice</tag></alert>
+              <alert><tag>choice</tag></alert>the United States<alert><tag>/choice</tag></alert>
+          <alert><tag>/choiceInput</tag></alert>
+        <alert><tag>/answer</tag></alert>
+      <alert><tag>/problem</tag></alert>
+
+      <alert><tag>problem</tag></alert>Whose flag am I:  🇧🇷?
+        <alert><tag>answer</tag></alert>
+          <alert><tag>choiceInput</tag></alert>
+              <alert><tag>choice</tag></alert>the United Kingdom<alert><tag>/choice</tag></alert>
+              <alert><tag>choice</tag></alert>Thailand<alert><tag>/choice</tag></alert>
+              <alert><tag>choice credit="1"</tag></alert>Brazil<alert><tag>/choice</tag></alert>
+          <alert><tag>/choiceInput</tag></alert>
+        <alert><tag>/answer</tag></alert>
+      <alert><tag>/problem</tag></alert>
+
+      <alert><tag>problem</tag></alert>Whose flag am I:  🏴󠁧󠁢󠁷󠁬󠁳󠁿?
+        <alert><tag>answer</tag></alert>
+          <alert><tag>choiceInput</tag></alert>
+              <alert><tag>choice credit="1"</tag></alert>Wales<alert><tag>/choice</tag></alert>
+              <alert><tag>choice</tag></alert>Australia<alert><tag>/choice</tag></alert>
+              <alert><tag>choice</tag></alert>Norway<alert><tag>/choice</tag></alert>
+          <alert><tag>/choiceInput</tag></alert>
+        <alert><tag>/answer</tag></alert>
+      <alert><tag>/problem</tag></alert>
+        
+<alert><tag>/section</tag></alert> 
+        </pre>
+      </cell>
+
+
+      <cell>
+        <section>Flags of the World Game
+          <problem>Whose flag am I:  🇯🇵?
+            <answer>
+              <choiceInput>
+                <choice credit = "1">Japan</choice>
+                <choice>Jamaica</choice>
+                <choice>the United States</choice>
+              </choiceInput>
+            </answer>
+          </problem>
+
+          <problem>Whose flag am I:  🇧🇷?
+            <answer>
+              <choiceInput>
+                <choice>the United Kingdom</choice>
+                <choice>Thailand</choice>
+                <choice credit="1">Brazil</choice>
+              </choiceInput>
+            </answer>
+          </problem>
+
+          <problem>Whose flag am I:  🏴󠁧󠁢󠁷󠁬󠁳󠁿?
+            <answer>
+              <choiceInput>
+                <choice credit="1">Wales</choice>
+                <choice>Australia</choice>
+                <choice>Norway</choice>
+              </choiceInput>
+            </answer>
+        </problem>
+        </section> 
+      </cell>
+    </row>
+
+
+
+<!--*************************************************************************-->
+    <row bottom="minor">
+      <cell><em>Using the 'exercise' component nested within a 'problem':</em>
+      <pre><alert><tag>problem</tag></alert>Type the correct continent 
+        for each country in the box provided.
+        <alert><tag>exercise</tag></alert>Ireland
+          <alert><tag>answer</tag></alert>
+            <alert><tag>textInput name="answer1"</tag></alert><alert><tag>/textInput</tag></alert>
+              <alert><tag>award</tag></alert>
+                <alert><tag>when</tag></alert>＄answer1=Europe
+                <alert><tag>/when</tag></alert>
+              <alert><tag>/award</tag></alert>
+          <alert><tag>/answer</tag></alert>
+        <alert><tag>/exercise</tag></alert>
+
+        <alert><tag>exercise</tag></alert>Mexico
+          <alert><tag>answer</tag></alert>
+            <alert><tag>textInput name="answer2"</tag></alert><alert><tag>/textInput</tag></alert>
+              <alert><tag>award</tag></alert>
+                <alert><tag>when</tag></alert>＄answer2=North America
+                <alert><tag>/when</tag></alert>
+              <alert><tag>/award</tag></alert>
+          <alert><tag>/answer</tag></alert>
+        <alert><tag>/exercise</tag></alert>
+
+        <alert><tag>exercise</tag></alert>Singapore
+          <alert><tag>answer</tag></alert>
+            <alert><tag>textInput name="answer3"</tag></alert><alert><tag>/textInput</tag></alert>
+              <alert><tag>award</tag></alert>
+                <alert><tag>when</tag></alert>＄answer3=Asia
+                <alert><tag>/when</tag></alert>
+              <alert><tag>/award</tag></alert>
+          <alert><tag>/answer</tag></alert>
+        <alert><tag>/exercise</tag></alert>
+  <alert><tag>/problem</tag></alert>
+      </pre></cell>
+        
+      <cell>
+      <problem>Type the correct continent for each country in the box provided.
+        <exercise>Ireland
+          <answer>
+            <textInput name="answer1"></textInput>
+              <award>
+                <when>$answer1=Europe
+                </when>
+              </award>
+          </answer>
+        </exercise>
+
+        <exercise>Mexico
+          <answer>
+            <textInput name="answer2"></textInput>
+              <award>
+                <when>$answer2=North America
+                </when>
+              </award>
+          </answer>
+        </exercise>
+
+        <exercise>Singapore
+          <answer>
+            <textInput name="answer3"></textInput>
+              <award>
+                <when>$answer3=Asia
+                </when>
+              </award>
+          </answer>
+        </exercise>
+      </problem>
+      </cell>
+    </row>
+
+
+    
+    
+<!--*************************************************************************-->
+    <row bottom="minor">
+      <cell><em>Using the 'sectionWideCheckWork' and 'aggregateScores' attributes
+        within a sectioning component (works for 'section', 'subsection', 'problem' and 'exercise'):</em>
+      <pre><alert><tag>section sectionWideCheckWork aggregateScores</tag></alert>Landmarks of the World Game
+      <alert><tag>p</tag></alert>1. Home of the Eiffel tower?<alert><tag>/p</tag></alert>
+        <alert><tag>answer</tag></alert>
+          <alert><tag>choiceInput</tag></alert>
+              <alert><tag>choice credit="1"</tag></alert>France<alert><tag>/choice</tag></alert>
+              <alert><tag>choice</tag></alert>Greece<alert><tag>/choice</tag></alert>
+              <alert><tag>choice</tag></alert>Canada<alert><tag>/choice</tag></alert>
+          <alert><tag>/choiceInput</tag></alert>
+        <alert><tag>/answer</tag></alert>
+
+      <alert><tag>p</tag></alert>2. Home of Stonehenge?<alert><tag>/p</tag></alert>
+        <alert><tag>answer</tag></alert>
+          <alert><tag>choiceInput</tag></alert>
+              <alert><tag>choice</tag></alert>Germany<alert><tag>/choice</tag></alert>
+              <alert><tag>choice</tag></alert>Italy<alert><tag>/choice</tag></alert>
+              <alert><tag>choice credit="1"</tag></alert>England<alert><tag>/choice</tag></alert>
+          <alert><tag>/choiceInput</tag></alert>
+        <alert><tag>/answer</tag></alert>  
+
+      <alert><tag>p</tag></alert>3. Home of the Taj Mahal?<alert><tag>/p</tag></alert>
+        <alert><tag>answer</tag></alert>
+          <alert><tag>choiceInput</tag></alert>
+              <alert><tag>choice</tag></alert>the United States<alert><tag>/choice</tag></alert>
+              <alert><tag>choice credit="1"</tag></alert>India<alert><tag>/choice</tag></alert>
+              <alert><tag>choice</tag></alert>Japan<alert><tag>/choice</tag></alert>
+          <alert><tag>/choiceInput</tag></alert>
+        <alert><tag>/answer</tag></alert>  
+<alert><tag>/section</tag></alert> 
+        </pre>
+      </cell>
+
+      <cell>
+        <section sectionWideCheckWork aggregateScores>Landmarks of the World Game
+          <p>1. Home of the Eiffel tower?</p>
+            <answer>
+              <choiceInput>
+                <choice credit = "1">France</choice>
+                <choice>Greece</choice>
+                <choice>Canada</choice>
+              </choiceInput>
+            </answer>
+
+          <p>2. Home of Stonehenge?</p>
+            <answer>
+              <choiceInput>
+                <choice>Germany</choice>
+                <choice>Italy</choice>
+                <choice credit="1">England</choice>
+              </choiceInput>
+            </answer>
+
+          <p>3. Home of the Taj Mahal?</p>
+            <answer>
+              <choiceInput>
+                <choice>the United States</choice>
+                <choice credit="1">India</choice>
+                <choice>Japan</choice>
+              </choiceInput>
+            </answer>  
+        </section> 
+      </cell>
+    </row>
+
+    
+<!--**************************************************************************-->
+    <row bottom="minor">
+      <cell><em>Using the 'newNameSpace' attribute within a sectioning component (works for 'section', 'subsection', 'problem' and 'exercise'):</em>
+        <pre><alert><tag>section</tag></alert>
+      <alert><tag>p</tag></alert>Fill in the blanks to describe 
+        your dream vacation which will be a tour of three 
+        countries you most want to visit!<alert><tag>/p</tag></alert>
+      
+        <alert><tag>p</tag></alert>What country would you 
+        like to travel to first?<alert><tag>/p</tag></alert>
+          <alert><tag>textInput name="country"</tag></alert><alert><tag>/textInput</tag></alert>
+          
+        <alert><tag>p</tag></alert>Second, what landmark would you 
+        like to visit when we go there?<alert><tag>/p</tag></alert>
+          <alert><tag>textInput name="landmark"</tag></alert><alert><tag>/textInput</tag></alert>
+
+        <alert><tag>p</tag></alert>Finally, what food are you excited 
+        about trying there?<alert><tag>/p</tag></alert>
+          <alert><tag>textInput name="food"</tag></alert><alert><tag>/textInput</tag></alert>
+
+        <alert><tag>p</tag></alert>Awesome!  I can't wait to visit 
+        the <alert>＄landmark</alert> in <alert>＄country</alert> with you 
+        and taste the excellent <alert>＄food</alert>!<alert><tag>/p</tag></alert>
+<alert><tag>/section</tag></alert>
+
+<alert><tag>section newNameSpace</tag></alert>
+        <alert><tag>p</tag></alert>What is the second country you would 
+        like to travel to?<alert><tag>/p</tag></alert>
+          <alert><tag>textInput name="country"</tag></alert><alert><tag>/textInput</tag></alert>
+          
+        <alert><tag>p</tag></alert>What is the next landmark we should visit 
+          when we go there?<alert><tag>/p</tag></alert>
+          <alert><tag>textInput name="landmark"</tag></alert><alert><tag>/textInput</tag></alert>
+
+        <alert><tag>p</tag></alert>Finally, what food are you excited 
+        about trying there?<alert><tag>/p</tag></alert>
+          <alert><tag>textInput name="food"</tag></alert><alert><tag>/textInput</tag></alert>
+
+        <alert><tag>p</tag></alert>Good plan, for the second part of our tour,
+        let's visit the <alert>＄landmark</alert> in <alert>＄country</alert> 
+        and taste the excellent <alert>＄food</alert>!<alert><tag>/p</tag></alert>
+<alert><tag>/section</tag></alert>
+
+<alert><tag>section newNameSpace</tag></alert>
+        <alert><tag>p</tag></alert>What country you would like to travel to 
+          for the final leg of our tour?<alert><tag>/p</tag></alert>
+          <alert><tag>textInput name="country"</tag></alert><alert><tag>/textInput</tag></alert>
+          
+        <alert><tag>p</tag></alert>What is the last landmark we should visit 
+          when we go there?<alert><tag>/p</tag></alert>
+          <alert><tag>textInput name="landmark"</tag></alert><alert><tag>/textInput</tag></alert>
+
+        <alert><tag>p</tag></alert>Finally, what food are you excited 
+        about trying there?<alert><tag>/p</tag></alert>
+          <alert><tag>textInput name="food"</tag></alert><alert><tag>/textInput</tag></alert>
+
+        <alert><tag>p</tag></alert>I love this plan!  Visiting the <alert>＄landmark</alert> in
+        <alert>＄country</alert> and tasting the delicious <alert>＄food</alert> is 
+        a great way to end the trip with a bang!<alert><tag>/p</tag></alert>
+<alert><tag>/section</tag></alert>    
+      </pre></cell>
+
+     
+      <cell><section>
+        <p>Fill in the blanks to describe 
+        your dream vacation which will be a tour of three 
+        countries you most want to visit!</p>
+      
+        <p>What country would you like to travel to first?</p>
+          <textInput name="country"></textInput>
+          
+        <p>Second, what landmark would you like to visit when we go there?</p>
+          <textInput name="landmark"></textInput>
+
+        <p>Finally, what food are you excited about trying there?</p>
+          <textInput name="food"></textInput>
+
+        <p>Awesome!  I can't wait to visit the $landmark in $country with you and taste the excellent $food!</p>
+        </section>
+
+    <section newNameSpace>
+        <p>What is the second country you would like to travel to  </p>
+          <textInput name="country"></textInput>
+          
+        <p>What is the next landmark we should visit when we go there?</p>
+          <textInput name="landmark"></textInput>
+
+        <p>Finally, what food are you excited about trying there?</p>
+          <textInput name="food"></textInput>
+
+        <p>Good plan, for the second part of our tour, let's visit the $landmark in $country and taste the excellent $food!</p>
+    </section>
+
+    <section newNameSpace>
+        <p>What country would you like to travel to for the 
+          final leg of our tour?</p>
+          <textInput name="country"></textInput>
+          
+        <p>What is the last landmark we should visit when 
+          we go there?</p>
+          <textInput name="landmark"></textInput>
+
+        <p>Finally, what food are you excited about trying there?</p>
+          <textInput name="food"></textInput>
+
+        <p>I love this plan!  Visiting the $landmark in $country 
+          and tasting the delicious $food is a great way to 
+          end the trip with a bang!</p>
+  </section>
+
+      
+        </cell></row>
+          
+    
+  </tabular>  
+</subsection>
+
+<!--***********************************************************-->
+
+
+<section sectionWideCheckWork aggregateScores><title>Practice</title>
+    <ol>
+      <li><alert>Fill in the blanks to create a default-numbering system and add structure to your document:</alert>
+      <p><answer>
+        <textInput name="tI_1a" prefill="<>"></textInput>
+          <award credit="1.0">
+            <when>$tI_1a= <text>&lt;section&gt;</text> or $tI_1a= <text>&lt;subsection&gt;</text></when>
+          </award>
+      </answer><p><tag>p</tag>My travel journal, Day 1<tag>/p</tag></p>
+        <p><tag>p</tag>Rendered her for put improved concerns his. Ladies bed wisdom theirs mrs men months set. Everything so dispatched as it increasing pianoforte. Hearing now saw perhaps minutes herself his. Of instantly excellent therefore difficult he northward. Joy green but least marry rapid quiet but. Way devonshire introduced expression saw travelling affronting. Her and effects affixed pretend account ten natural. Need eat week even yet that. Incommode delighted he resolving sportsmen do in listening.<tag>/p</tag></p>
+      <answer>
+        <textInput name="tI_1b" prefill="<>"></textInput>
+          <award credit="1.0">
+            <when>$tI_1b= <text>&lt;/section&gt;</text> or $tI_1b= <text>&lt;/subsection&gt;</text></when>
+        </award>
+      </answer></p>  
+      </li>
+
+      <li><alert>Fill in the blanks to create a new problem nested inside a section:</alert>
+        <p></p><p><tag>section</tag>
+        <answer>
+          <textInput name="tI_2a" prefill="<>"></textInput>
+          <award credit="1.0">
+            <when>$tI_2a= <text>&lt;problem&gt;</text></when>
+          </award>
+        </answer>What is the answer to this terribly difficult query?</p>
+        <p>
+        <answer>
+          <textInput name="tI_2b" prefill="<>"></textInput>
+          <award credit="1.0">
+            <when>$tI_2b= <text>&lt;/problem&gt;</text></when>
+          </award>
+        </answer></p>
+      <p><tag>/section</tag></p>
+      </li>
+
+      <li><alert>Finish the code to create a set of problems that gets checked as a group.</alert>
+    <pre>&lt;section
+      <answer>
+          <textInput name="tI_3a" prefill="type 1st attribute here" size="18"></textInput>
+          <award credit="1.0">
+            <when>$tI_3a= <text>sectionWideCheckWork</text> or $tI_3a= <text>aggregateScores</text></when>
+          </award>
+        </answer> 
+        <answer>
+          <textInput name="tI_3b" prefill="type 2nd attribute here" size="18"></textInput>
+          <award credit="1.0">
+            <when>$tI_3b= <text>sectionWideCheckWork</text> or $tI_3b= <text>aggregateScores</text></when>
+          </award>
+        </answer>
+      &gt;
+        
+      Landmarks of the World Game
+      <tag>p</tag>1. Home of the Great Pyramids of Giza?<tag>/p</tag>
+        <tag>answer</tag>
+          <tag>choiceInput</tag>
+              <tag>choice credit="1"</tag>Egypt<tag>/choice</tag>
+              <tag>choice</tag>Antartica<tag>/choice</tag>
+              <tag>choice</tag>Peru<tag>/choice</tag>
+          <tag>/choiceInput</tag>
+        <tag>/answer</tag>
+      <pre>
+        
+        ...more problems follow...
+      </pre>  
+  <tag>/section</tag></pre>
+      </li>
+   </ol>
+
+<solution>
+  <ol> 
+    <li><tag>section</tag>My travel journal...<tag>/section</tag> or <tag>subsection</tag>My travel journal...<tag>/subsection</tag></li>
+    <li><tag>problem</tag>What is the answer....?<tag>/problem</tag></li>
+    <li>first attribute:  sectionWideCheckWork, second attribute:  aggregateScores (in either order)</li>
+   </ol>  
+</solution>
+
+</section>
+
+
+<!--***********************************************************-->
+
+
+<section sectionWideCheckWork aggregateScores><title>Check Your Understanding</title>
+  <aside><title>Take the quiz</title>
+    <ol>
+      <li>Which component distinguishes the highest hierarchical level of an auto-numbered document structure?               
+        <answer><choiceinput inline randomizeOrder="true">
+          <choice credit = "1">the <tag>section</tag><tag>/section</tag> component</choice>
+          <choice>the <tag>p</tag><tag>/p</tag> component</choice>
+          <choice>the <tag>ref</tag><tag>/ref</tag> component</choice>
+        </choiceinput></answer>
+      </li>
+      <p></p>
+  
+      <li>What two attributes are used with the problem component to group problems together for solution checking?<answer><choiceinput inline randomizeOrder="true">
+          <choice>the considerTargetsAsResponses and forceNumeric attributes</choice>
+          <choice>the 'newNameSpace' and 'simplifyOnCompare' attributes</choice>
+          <choice credit = "1">the sectionWideCheckWork and aggregateScores attributes</choice>
+        </choiceinput></answer>
+      </li>
+      <p></p>
+      <li>Which component do you use to create a hierarchical grouping below the level of a problem (a sub-problem)?<answer><choiceinput inline randomizeOrder="true">
+          <choice>the <tag>subProblem</tag><tag>/subProblem</tag> component</choice>
+          <choice>the <tag>smallerProblem</tag><tag>/smallerProblem</tag> component</choice>
+          <choice credit = "1">the <tag>exercise</tag><tag>/exercise</tag> component</choice>
+        </choiceinput></answer>
+      </li>
+      <p></p>
+      <li>Which attribute would you use within a sectional component (section, subsection, problem, or exercise) to avoid having to create all new variable names for inputs in similarly formatted problems?<answer><choiceinput inline name = "q4">
+          <choice>the useSameVariables attribute</choice>
+          <choice>the lazyNamer attribute</choice>
+          <choice credit = "1">the newNameSpace attribute</choice>
+        </choiceinput></answer>
+      </li>  
+    </ol>
+
+  <solution>
+  <ol>
+    <li>Use the <tag>section</tag><tag>/section</tag> component to denote the highest hierarchical level.</li>
+    <li>Use the sectionWideCheckWork and aggregateScores attributes to group problems together for solution checking within a section.</li>
+    <li>Use the <tag>exercise</tag><tag>/exercise</tag> component to create sub-problems.</li>
+    <li>Use the newNameSpace attribute to reuse existing variable names from section to section within the same document.</li>
+  </ol>
+  </solution>
+
+</aside>
+</section>
+
+<section><title>References</title>
+  <ref createButton = "true" uri= "">ComponentList</ref>
+  <ref createButton = "true" uri= ""><tag>answer</tag><tag>/answer</tag></ref>
+  <ref createButton = "true" uri= ""><tag>choiceInput</tag><tag>/choiceInput</tag></ref>
+  <ref createButton = "true" uri= ""><tag>textInput</tag><tag>/textInput</tag></ref>
+  <ref createButton = "true" uri= "">
+<tag>award</tag><tag>/award</tag></ref>
+</section>
+   

@@ -1,0 +1,63 @@
+<!--***********************************************************
+*Dear user, 
+*please do not alter the source file for the course, but *instead use CMD+A (or CNTRL+A) to select all the text, then *copy and paste into a separate DoenetML for practice.  Please 
+*don't make us have to pause our anime binge and get up off of *the couch to redo this.
+*
+*Peace,
+*the DoenetML couch potatoes
+************************************************************-->
+
+<title>Practice Example: The <tag>ol</tag><tag>/ol</tag> and the <tag>ul</tag><tag>/ul</tag> components</title>
+<ref createButton="true" uri="https://docs.google.com/document/d/1EeHm1z_rlgxjhXzKnC9OBHVtPbrMHn1DVwUwQ5QLgjg/edit?usp=sharing">Get Text File</ref>
+<!--***********************************************************
+*  Example 1:  Creating an ordered list with <ol></ol> and 
+*<li></li>
+************************************************************-->
+<section><title>Example 1</title>
+<ol>Bucket List
+  <li>see the aurora borealis</li>
+  <li>eat a lobster po'boy in New England</li>
+  <li>watch a boxing match live at Madison Square Garden</li>
+</ol>
+
+
+<!--Delete or comment out the list above and create your own 
+ordered list-->
+
+
+</section>
+<!--***********************************************************
+*  Example 2:  Creating an unordered list with <ul></ul> and 
+*<li></li>
+************************************************************-->
+<section><title>Example 2</title>
+
+<ul>Qualities in the perfect imaginary friend:
+  <li>furry, preferably in a crayola color</li>
+  <li>intellectually stimulating conversationalist</li>
+  <li>gives excellent hugs</li>
+</ul>
+
+
+<!--Delete or comment out the list above and create your own unordered list-->
+
+</section>
+<!--***********************************************************
+*  Example 3:  Creating an ordered list with additional *linespace using nested <p></p> tags.               
+************************************************************-->
+<section><title>Example 3</title>
+
+
+
+<ol>Ways to relieve stress during finals:
+  <li><p>toss a tennis ball up and down while pacing your dorm</p></li>
+  <li><p>experiment with what foods can be successfully added to ramen</p></li>
+  <li><p>recite your notes backwards while doing handstands against your closet</p></li>
+</ol>
+
+<!--Delete this comment and make your ordered list with nested <p></p> tags-->
+
+
+
+
+</section>

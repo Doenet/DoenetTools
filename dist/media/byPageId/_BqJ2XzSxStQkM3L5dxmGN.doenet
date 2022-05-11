@@ -1,0 +1,144 @@
+<problem>
+<!-- <title>Area under curve - polynomial</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='aaa bbb' from='-5' to='5' exclude="0" numberToSelect="2" withReplacement />
+
+<selectFromSequence assignNames='lb' from='-4' to='2' />
+<selectFromSequence assignNames='ub' from='$lb+1' to='4' />
+
+
+<number name="vx">-$bbb/(2*$aaa)</number>
+<number name="vy">$aaa*$vx^2+$bbb*$vx</number>
+<number name="lby">$aaa*$lb^2+$bbb*$lb</number>
+<number name="uby">$aaa*$ub^2+$bbb*$ub</number>
+
+<math simplify name="toMakeAboveAxis">ceil(-min($vy, $lby,$uby))</math>
+  
+<selectFromSequence assignNames='ccc' from='$toMakeAboveAxis' to='$toMakeAboveAxis+10' />
+
+<math simplify name="xmin">min($lb-1, -1)</math>
+<math simplify name="xmax">max($ub+1, 1)</math>
+<math simplify name="ymax">($ccc + max($vy, $lby, $uby))*1.1</math>
+<math simplify name="ymin">-0.1*$ymax</math>
+
+<!-- <math name='above_axis' simplify='full' >$aaa *$lb ^2+$bbb *$lb +$ccc  >= 0 and $aaa *$ub ^2+$bbb *$ub +$ccc  >= 0</math> -->
+<!-- Required Condition $aaa *$lb ^2+$bbb *$lb +$ccc  >= 0 and $aaa *$ub ^2+$bbb *$ub +$ccc  >= 0 -->
+
+<function name='f' variables='x' symbolic simplify="numbers">
+  <math simplify="numbers">$aaa*x^2+$bbb*x+$ccc</math>
+</function>
+<function name='antideriv_f' variables='x' symbolic simplify="numbers">
+  <math simplify="numbers">$aaa*x^3/3+$bbb*x^2/2+$ccc*x</math>
+</function>
+
+<math name='intfeval' simplify='numbers' >$$antideriv_f($ub)-$$antideriv_f($lb)</math>
+
+
+<select assignNames="f_name">g h p q r</select>
+<math name='f_x' targetsAreFunctionSymbols="f_name" >$f_name (x)</math>
+
+<function symbolic simplify="numbers" name='indefinta'>$aaa*x^3/3</function>
+<function symbolic simplify="numbers" name='indefintb'>$bbb*x^2/2</function>
+<function symbolic simplify="numbers" name='indefintc'>$ccc*x</function>
+<math name="intaEval" simplify="numbers">$$indefinta($ub)-$$indefinta($lb)</math>
+<math name="intbEval" simplify="numbers">$$indefintb($ub)-$$indefintb($lb)</math>
+<math name="intcEval" simplify="numbers">$$indefintc($ub)-$$indefintc($lb)</math>
+<math name="intaEvalSignError" simplify="numbers">$$indefinta($ub)+$$indefinta($lb)</math>
+<math name="intbEvalSignError" simplify="numbers">$$indefintb($ub)+$$indefintb($lb)</math>
+<math name="intcEvalSignError" simplify="numbers">$$indefintc($ub)+$$indefintc($lb)</math>
+
+<math name='intf_signerror1a' simplify='numbers' >
+  $intaEvalSignError+$intbEval+$intcEval
+</math>
+<math name='intf_signerror1b' simplify='numbers' >
+  $intaEval+$intbEvalSignError+$intcEval
+</math>
+<math name='intf_signerror1c' simplify='numbers' >
+  $intaEval+$intbEval+$intcEvalSignError
+</math>
+<math name='intf_signerror2a' simplify='numbers' >
+  $intaEval+$intbEvalSignError+$intcEvalSignError
+</math>
+<math name='intf_signerror2b' simplify='numbers' >
+  $intaEvalSignError+$intbEval+$intcEvalSignError
+</math>
+<math name='intf_signerror2c' simplify='numbers' >
+  $intaEvalSignError+$intbEvalSignError+$intcEval
+</math>
+<math name='intf_signerror3' simplify='numbers' >
+  $intaEvalSignError+$intbEvalSignError+$intcEvalSignError
+</math>
+
+</setup>
+
+
+
+<p>Find the area bounded by the <m>x</m>-axis and the graph of <m>$f_x =<copy prop="formula" tname="f" /></m> between <m>x=$lb </m> and <m>x=$ub </m>, i.e., the area of the shaded region on the below graph.
+</p>
+
+<graph grid xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="x" ylabel="$f_name" fixAxes>
+  $f
+  <areaBetweenCurveXAxis function="$f" boundaryValues="$lb $ub" />
+</graph>
+  
+<p>Area = 
+<answer forceFullCheckworkButton symbolicEquality simplifyOnCompare>
+<award>$intfeval </award>
+<award allowedErrorInNumbers='0.0001' credit='0.9' name='award1'>$intfeval </award>
+<award credit='0.9' name='award2'>$intf_signerror1a </award>
+<award allowedErrorInNumbers='0.0001' credit='0.81' name='award3'>$intf_signerror1a </award>
+<award credit='0.9' name='award4'>$intf_signerror1b </award>
+<award allowedErrorInNumbers='0.0001' credit='0.81' name='award5'>$intf_signerror1b </award>
+<award credit='0.9' name='award6'>$intf_signerror1c </award>
+<award allowedErrorInNumbers='0.0001' credit='0.81' name='award7'>$intf_signerror1c </award>
+<award credit='0.81' name='award8'>$intf_signerror2a </award>
+<award allowedErrorInNumbers='0.0001' credit='0.73' name='award9'>$intf_signerror2a </award>
+<award credit='0.81' name='award10'>$intf_signerror2b </award>
+<award allowedErrorInNumbers='0.0001' credit='0.73' name='award11'>$intf_signerror2b </award>
+<award credit='0.81' name='award12'>$intf_signerror2c </award>
+<award allowedErrorInNumbers='0.0001' credit='0.73' name='award13'>$intf_signerror2c </award>
+<award credit='0.73' name='award14'>$intf_signerror3 </award>
+<award allowedErrorInNumbers='0.0001' credit='0.66' name='award15'>$intf_signerror3 </award>
+</answer>
+</p>
+
+<feedback condition="$award1">Enter your answer using fractions.</feedback>
+<feedback condition="$award2 or $award4 or $award6">It seems you may have added rather than subtracted one term of the integrand at the bounds.</feedback>
+<feedback condition="$award3 or $award5 or $award7">It seems you may have added rather than subtracted one term of the integrand at the bounds. Enter your answer using fractions.</feedback>
+<feedback condition="$award8 or $award10 or $award12">It seems you may have added rather than subtracted two terms of the integrand at the bounds.</feedback>
+<feedback condition="$award9 or $award11 or $award13">It seems you may have added rather than subtracted two terms of the integrand at the bounds.   Enter your answer using fractions.</feedback>
+<feedback condition="$award14">It seems you may have added rather than subtracted three terms of the integrand at the bounds.</feedback>
+<feedback condition="$award15">It seems you may have added rather than subtracted three terms of the integrand at the bounds. Enter your answer using fractions.</feedback>
+
+<p>
+
+For full credit, do not round your answer to a decimal.  (Maximum of 90% credit will be awarded for rounded answers that include at least 5 correct significant digits.)
+</p>
+
+<solution>
+
+<p>Observe that <m><copy prop="formula" tname="f" /></m> is above the <m>x</m>=axis for all <m>x</m> between <m>$lb </m> and <m>$ub </m>. The area is given by the definite integral <m>\displaystyle \int_{$lb}^{$ub} $f\,dx </m>.  To solve it, we first use the sum and constant product rules for integration: 
+</p>
+<p>
+<m>\displaystyle \int_{$lb}^{$ub} $f\,dx  = $aaa\int_{$lb}^{$ub} x^2\,dx+$bbb\int_{$lb}^{$ub} x\,dx+$ccc\int_{$lb}^{$ub} 1\,dx </m>
+</p>
+<p>
+We then evaluate each of these integrals using the power rule for integration:
+</p>
+<p>
+<m>\displaystyle $aaa \biggl[\frac{x^3}{3} \biggr]_{$lb}^{$ub} + $bbb \biggl[\frac{x^2}{2}\biggr]_{$lb}^{$ub} + $ccc  \biggl[x \biggr]_{$lb}^{$ub}</m>
+</p>
+<p>
+Finally, we substitute in the bounds and simplify:
+</p>
+<p>
+<m>\displaystyle <math>$intaEval + $intbEval + $intcEval</math>  = $intfeval </m>
+</p>
+
+
+</solution>
+
+
+</problem>

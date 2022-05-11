@@ -1,0 +1,349 @@
+<problem>
+<!-- <title>Forward Euler - pure time examples</title> -->
+
+<setup>
+
+
+
+<math name='dydt'>dy/dt</math>
+<function name='f' variables='t'>e^(sqrt(t))</function>
+<number name='y0'>2</number>
+<number name='deltat1'>.2</number>
+<number name='end1'>1</number>
+<math name='numsteps1' simplify='numbers' >$end1 /$deltat1 </math>
+<evaluate name="f0" function="$f" input="0" />
+<evaluate name="f1" function="$f" input="$deltat1" />
+<evaluate name="f2" function="$f" input="2*$deltat1" />
+<evaluate name="f3" function="$f" input="3*$deltat1" />
+<evaluate name="f4" function="$f" input="4*$deltat1" />
+<evaluate name="f5" function="$f" input="5*$deltat1" />
+<evaluate name="f6" function="$f" input="6*$deltat1" />
+<evaluate name="f7" function="$f" input="7*$deltat1" />
+<evaluate name="f8" function="$f" input="8*$deltat1" />
+<evaluate name="f9" function="$f" input="9*$deltat1" />
+  
+<number name='y1'>$y0 +$f0 *$deltat1 </number>
+<number name='y2'>$y1 +$f1 *$deltat1 </number>
+<number name='y3'>$y2 +$f2 *$deltat1 </number>
+<number name='y4'>$y3 +$f3 *$deltat1 </number>
+<number name='y5'>$y4 +$f4 *$deltat1 </number>
+<number name='y6'>$y5 +$f5 *$deltat1 </number>
+<number name='y7'>$y6 +$f6 *$deltat1 </number>
+<number name='y8'>$y7 +$f7 *$deltat1 </number>
+<number name='y9'>$y8 +$f8 *$deltat1 </number>
+<number name='y10'>$y9 +$f9 *$deltat1 </number>
+
+
+<math name='dzdt'>dz/dt</math>
+<function name='g' variables='t'>t+sqrt(t)</function>
+<number name='start'>0</number>
+<number name='zstart'>-1</number>
+<number name='deltat2'>.5</number>
+<number name='end2'>$start +2</number>
+<number name='numsteps2'>($end2 -$start )/$deltat2 </number>
+
+<evaluate name="g0" function="$g" input="$start" />
+<evaluate name="g1" function="$g" input="$start+$deltat2" />
+<evaluate name="g2" function="$g" input="$start+2*$deltat2" />
+<evaluate name="g3" function="$g" input="$start+3*$deltat2" />
+<evaluate name="g4" function="$g" input="$start+4*$deltat2" />
+<evaluate name="g5" function="$g" input="$start+5$deltat2" />
+<evaluate name="g6" function="$g" input="$start+6*$deltat2" />
+<evaluate name="g7" function="$g" input="$start+7*$deltat2" />
+<evaluate name="g8" function="$g" input="$start+8*$deltat2" />
+<evaluate name="g9" function="$g" input="$start+9*$deltat2" />
+  
+<number name='z1'>$zstart +$g0 *$deltat2 </number>
+<number name='z2'>$z1 +$g1 *$deltat2 </number>
+<number name='z3'>$z2 +$g2 *$deltat2 </number>
+<number name='z4'>$z3 +$g3 *$deltat2 </number>
+<number name='z5'>$z4 +$g4 *$deltat2 </number>
+<number name='z6'>$z5 +$g5 *$deltat2 </number>
+<number name='z7'>$z6 +$g6 *$deltat2 </number>
+<number name='z8'>$z7 +$g7 *$deltat2 </number>
+<number name='z9'>$z8 +$g8 *$deltat2 </number>
+<number name='z10'>$z9 +$g9 *$deltat2 </number>
+
+</setup>
+
+
+
+
+
+<ol>
+
+<li>
+<p>Consider the differential equation
+
+<md>
+  <mrow>$dydt \amp = f(t)</mrow>
+  <mrow>y(0)\amp = $y0 </mrow>
+</md>
+
+where <m>f(t) = <copy prop="formula" tname="f" /></m>.</p>
+
+<p>Use the Forward Euler method with step size <m>$deltat1 </m> to approximate <m>y ($end1 )</m>.  Note: Answers must be accurate to at least 4 significant digits.  To prevent round-off error, though, make sure you use more than that in your computations.</p>
+
+
+<p>How many steps do you need to take? 
+<answer>
+<award symbolicEquality='true'>$numsteps1 </award>
+</answer>
+</p>
+
+<p>
+<m>\hat{ y  }(0.2) =</m> 
+<mathinput name="yh1a" />
+ <m>+</m> 
+<mathinput name="yh1b" />
+ <m>(</m> 
+<mathinput name="yh1c" />
+ <m>)=</m> 
+<mathinput name="yh1d" />
+<answer>
+  <award targetsAreResponses="yh1a yh1b yh1c yh1d" matchPartial>
+    <when>$yh1a=$y0 and $yh1b=$f0 and $yh1c=$deltat1 and $yh1d=$y1</when>
+  </award>
+</answer>
+</p>
+
+
+<p>
+<m>\hat{ y  }(0.4) =</m> 
+<mathinput name="yh2a" />
+ <m>+</m> 
+<mathinput name="yh2b" />
+ <m>(</m> 
+<mathinput name="yh2c" />
+ <m>)=</m> 
+<mathinput name="yh2d" />
+<answer name="ans_yh2">
+  <award targetsAreResponses="yh2a yh2b yh2c yh2d" matchPartial allowedErrorInNumbers='0.001'>
+    <when>$yh2a=$y1 and $yh2b=$f1 and $yh2c=$deltat1 and $yh2d=$y2</when>
+  </award>
+  <award credit="0.8" targetsAreResponses="yh2a yh2b yh2c yh2d" matchPartial allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>
+    <when>$yh2a=$y1 and $yh2b=$f1 and $yh2c=$deltat1 and $yh2d=$y2</when>
+  </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="ans_yh2" />
+
+
+<p>
+<m>\hat{ y  }(0.6) =</m> 
+<mathinput name="yh3a" />
+ <m>+</m> 
+<mathinput name="yh3b" />
+ <m>(</m> 
+<mathinput name="yh3c" />
+ <m>)=</m> 
+<mathinput name="yh3d" />
+<answer name="ans_yh3">
+  <award targetsAreResponses="yh3a yh3b yh3c yh3d" matchPartial allowedErrorInNumbers='0.001'>
+    <when>$yh3a=$y2 and $yh3b=$f2 and $yh3c=$deltat1 and $yh3d=$y3</when>
+  </award>
+  <award credit="0.8" targetsAreResponses="yh3a yh3b yh3c yh3d" matchPartial allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>
+    <when>$yh3a=$y2 and $yh3b=$f2 and $yh3c=$deltat1 and $yh3d=$y3</when>
+  </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="ans_yh3" />
+
+
+<p>
+<m>\hat{ y  }(0.8) =</m> 
+<mathinput name="yh4a" />
+ <m>+</m> 
+<mathinput name="yh4b" />
+ <m>(</m> 
+<mathinput name="yh4c" />
+ <m>)=</m> 
+<mathinput name="yh4d" />
+<answer name="ans_yh4">
+  <award targetsAreResponses="yh4a yh4b yh4c yh4d" matchPartial allowedErrorInNumbers='0.001'>
+    <when>$yh4a=$y3 and $yh4b=$f3 and $yh4c=$deltat1 and $yh4d=$y4</when>
+  </award>
+  <award credit="0.8" targetsAreResponses="yh4a yh4b yh4c yh4d" matchPartial allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>
+    <when>$yh4a=$y3 and $yh4b=$f3 and $yh4c=$deltat1 and $yh4d=$y4</when>
+  </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="ans_yh4" />
+
+
+<p>
+<m>\hat{ y  }(1) =</m> 
+<mathinput name="yh5a" />
+ <m>+</m> 
+<mathinput name="yh5b" />
+ <m>(</m> 
+<mathinput name="yh5c" />
+ <m>)=</m> 
+<mathinput name="yh5d" />
+<answer name="ans_yh5">
+  <award targetsAreResponses="yh5a yh5b yh5c yh5d" matchPartial allowedErrorInNumbers='0.001'>
+    <when>$yh5a=$y4 and $yh5b=$f4 and $yh5c=$deltat1 and $yh5d=$y5</when>
+  </award>
+  <award credit="0.8" targetsAreResponses="yh5a yh5b yh5c yh5d" matchPartial allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>
+    <when>$yh5a=$y4 and $yh5b=$f4 and $yh5c=$deltat1 and $yh5d=$y5</when>
+  </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="ans_yh5" />
+
+
+
+</li>
+
+
+<li>
+<p>Consider the differential equation
+
+<md>
+  <mrow>$dzdt \amp = g(t)</mrow>
+  <mrow>z ($start )\amp = $zstart </mrow>
+</md>
+
+where <m>g(t) = <copy prop="formula" tname="g" /></m>.</p>
+
+<p>Use the Forward Euler method with step size <m>$deltat2 </m> to approximate <m>z ($end2 )</m>.  Note: Answers must be accurate to at least 4 significant digits.  To prevent round-off error, though, make sure you use more than that in your computations.</p>
+
+
+<p>How many steps do you need to take? 
+<answer>
+<award symbolicEquality='true'>$numsteps2 </award>
+</answer>
+</p>
+
+
+<p>
+<m>\hat{ z  }(0.5) =</m> 
+<mathinput name="zh1a" />
+ <m>+</m> 
+<mathinput name="zh1b" />
+ <m>(</m> 
+<mathinput name="zh1c" />
+ <m>)=</m> 
+<mathinput name="zh1d" />
+<answer>
+  <award targetsAreResponses="zh1a zh1b zh1c zh1d" matchPartial>
+    <when>$zh1a=$zstart and $zh1b=$g0 and $zh1c=$deltat2 and $zh1d=$z1</when>
+  </award>
+</answer>
+</p>
+
+
+<p>
+<m>\hat{ z  }(1) =</m> 
+<mathinput name="zh2a" />
+ <m>+</m> 
+<mathinput name="zh2b" />
+ <m>(</m> 
+<mathinput name="zh2c" />
+ <m>)=</m> 
+<mathinput name="zh2d" />
+<answer name="ans_zh2">
+  <award targetsAreResponses="zh2a zh2b zh2c zh2d" matchPartial allowedErrorInNumbers='0.001'>
+    <when>$zh2a=$z1 and $zh2b=$g1 and $zh2c=$deltat2 and $zh2d=$z2</when>
+  </award>
+  <award credit="0.8" targetsAreResponses="zh2a zh2b zh2c zh2d" matchPartial allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>
+    <when>$zh2a=$z1 and $zh2b=$g1 and $zh2c=$deltat2 and $zh2d=$z2</when>
+  </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="ans_zh2" />
+
+
+<p>
+<m>\hat{ z  }(1.5) =</m> 
+<mathinput name="zh3a" />
+ <m>+</m> 
+<mathinput name="zh3b" />
+ <m>(</m> 
+<mathinput name="zh3c" />
+ <m>)=</m> 
+<mathinput name="zh3d" />
+<answer name="ans_zh3">
+  <award targetsAreResponses="zh3a zh3b zh3c zh3d" matchPartial allowedErrorInNumbers='0.001'>
+    <when>$zh3a=$z2 and $zh3b=$g2 and $zh3c=$deltat2 and $zh3d=$z3</when>
+  </award>
+  <award credit="0.8" targetsAreResponses="zh3a zh3b zh3c zh3d" matchPartial allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>
+    <when>$zh3a=$z2 and $zh3b=$g2 and $zh3c=$deltat2 and $zh3d=$z3</when>
+  </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="ans_zh3" />
+
+
+
+<p>
+<m>\hat{ z  }(2) =</m> 
+<mathinput name="zh4a" />
+ <m>+</m> 
+<mathinput name="zh4b" />
+ <m>(</m> 
+<mathinput name="zh4c" />
+ <m>)=</m> 
+<mathinput name="zh4d" />
+<answer name="ans_zh4">
+  <award targetsAreResponses="zh4a zh4b zh4c zh4d" matchPartial allowedErrorInNumbers='0.001'>
+    <when>$zh4a=$z3 and $zh4b=$g3 and $zh4c=$deltat2 and $zh4d=$z4</when>
+  </award>
+  <award credit="0.8" targetsAreResponses="zh4a zh4b zh4c zh4d" matchPartial allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>
+    <when>$zh4a=$z3 and $zh4b=$g3 and $zh4c=$deltat2 and $zh4d=$z4</when>
+  </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="ans_zh4" />
+
+
+
+</li>
+</ol>
+
+
+
+<solution>
+
+
+<ol>
+<li>
+<p>Since we are trying to go from <m>t=0</m> to <m>t=1</m> with steps of size <m>$deltat1 </m>, we need to take <m>\frac{1-0}{ $deltat1  } = $numsteps1 </m> steps.  The results are 
+</p>
+
+
+<p><m>\hat{ y  }(0.2) = $y0  + $f0  ($deltat1 ) = <round numberdigits="6">$y1 </round></m></p>
+
+<p><m>\hat{ y  }(0.4) = <round numberdigits="6">$y1 </round> + <round numberdigits="6">$f1 </round> ($deltat1 ) = <round numberdigits="6">$y2 </round></m></p>
+
+<p><m>\hat{ y  }(0.6) = <round numberdigits="6">$y2 </round> + <round numberdigits="6">$f2 </round> ($deltat1 ) = <round numberdigits="6">$y3 </round></m></p>
+
+<p><m>\hat{ y  }(0.8) = <round numberdigits="6">$y3 </round> + <round numberdigits="6">$f3 </round> ($deltat1 ) = <round numberdigits="6">$y4 </round></m></p>
+
+<p><m>\hat{ y  }(1) = <round numberdigits="6">$y4 </round> + <round numberdigits="6">$f4 </round> ($deltat1 ) = <round numberdigits="6">$y5 </round></m></p>
+
+</li>
+
+<li>
+<p>Since we are trying to go from <m>t=$start </m> to <m>t=$end2 </m> with steps of size <m>$deltat2 </m>, we need to take <m>\frac{ $end2  - $start  }{ $deltat2  } =$numsteps2 </m> steps.  The results are</p>
+  
+<p><m>\hat{ z  }(0.5) = $zstart  + $g0  ($deltat2 ) = <round numberdigits="6">$z1 </round></m></p> 
+
+<p>
+<m>\hat{ z  }(1) = <round numberdigits="6">$z1 </round> + <round numberdigits="6">$g1 </round> ($deltat2 ) = <round numberdigits="6">$z2 </round></m></p>
+
+  
+<p>
+<m>\hat{ z  }(1.5) = <round numberdigits="6">$z2 </round> + <round numberdigits="6">$g2 </round> ($deltat2 ) = <round numberdigits="6">$z3 </round></m>
+</p>
+
+<p><m>\hat{ z  }(2) = <round numberdigits="6">$z3 </round> + <round numberdigits="6">$g3 </round> ($deltat2 ) = <round numberdigits="6">$z4 </round></m></p>
+
+</li>
+
+</ol>
+
+</solution>
+
+
+</problem>

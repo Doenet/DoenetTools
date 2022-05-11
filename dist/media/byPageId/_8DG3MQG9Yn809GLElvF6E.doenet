@@ -1,0 +1,182 @@
+<module name="initialCobwebTutorial">
+  <setup>
+    <customAttribute componentType="function" attribute="function" defaultValue="x(4-x)" assignNames="f" />
+    <customAttribute componentType="number" attribute="x0" defaultValue="0.5" assignNames="x0" />
+
+    <customAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
+    <customAttribute componentType="_componentSize" attribute="height" defaultValue="300px" assignNames="height" />
+    <customAttribute componentType="number" attribute="xmin" defaultValue="-1" assignNames="xmin" />
+    <customAttribute componentType="number" attribute="xmax" defaultValue="5" assignNames="xmax" />
+    <customAttribute componentType="number" attribute="ymin" defaultValue="-1" assignNames="ymin" />
+    <customAttribute componentType="number" attribute="ymax" defaultValue="5" assignNames="ymax" />
+    <customAttribute componentType="boolean" attribute="showNavigation" defaultValue="true" assignNames="showNavigation" />
+    <customAttribute componentType="variable" attribute="variable" defaultValue="x" assignNames="variable" />
+    <customAttribute componentType="number" attribute="answerWeight" defaultValue="1" assignNames="answerWeight" />
+
+
+    <number name="step">0</number>
+    <number name="nPoints">0</number>
+    <number name="nVlines">0</number>
+    <number name="nHlines">0</number>
+
+    <math name="x1" displayDecimals="2">$$f($x0)</math>
+    <math name="x2" displayDecimals="2">$$f($x1)</math>
+
+    <boolean name="previewShortcut">false</boolean>
+
+    <updateValue triggerWhen="$step=1" tname="nPoints" newValue="1" />
+    <updateValue triggerWhen="$step=2" tname="nVlines" newValue="1" />
+    <triggerSet triggerWhen="$step=3">
+      <updateValue tname="nHlines" newValue="1" />
+      <updateValue tname="nPoints" newValue="2" />
+    </triggerSet>
+    <updateValue triggerWhen="$step=4" tname="nPoints" newValue="3" />
+    <updateValue triggerWhen="$step=5" tname="nVlines" newValue="2" />
+    <triggerSet triggerWhen="$step=6">
+      <updateValue tname="nHlines" newValue="2" />
+      <updateValue tname="nPoints" newValue="4" />
+    </triggerSet>
+
+    <triggerSet triggerWhen="$step=7">
+      <updateValue tName="flashShortcut" newValue="true" type="boolean" />
+      <updateValue tname="previewShortcut" newValue="true" type="boolean" /> 
+    </triggerSet>
+
+    <number name="pflash">1</number>
+    <boolean name="flashShortcut">false</boolean>
+    <animateFromSequence name="animatePflash" animationMode='increase once' animationOn='$flashShortcut' tName='pflash' animationInterval='500' from="1" to="21" />
+
+  </setup>
+
+  <sideBySide widths="75% 25%">
+
+  <graph width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="$(variable)_n" ylabel="$(variable)_{n+1}" showNavigation="$showNavigation" identicalAxisScales >
+
+    <curve styleNumber="3" fixed><copy tname="f" /></curve>
+    <line styleNumber="4" equation="y=x" fixed />
+  
+    <point label="($(variable)_0,0)" name="P1" hide="$nPoints < 1" x="$x0" y="0" fixed styleNumber='2'/>
+
+    <line name="v1" through="($x0,0) ($x0, 1)" hide="$nVlines < 1" fixed="true" styleNumber="2" />
+
+    <line name="h1" through="(0, $x1) (1, $x1)" hide="$nHlines < 1" fixed="true" styleNumber="2" />
+
+    <point label="(0, $(variable)_1)" name="P2" hide="$nPoints < 2" x="0" y="$x1" fixed styleNumber='2'/>
+
+    <point label="($(variable)_1,0)" name="P3" hide="$nPoints < 3" x="$x1" y="0" fixed styleNumber='2'/>
+
+    <line name="v2" through="($x1,0) ($x1, 1)" hide="$nVlines < 2" fixed styleNumber="2" />
+
+    <line name="h2" through="(0, $x2) (1,$x2)" hide="$nHlines < 2" fixed styleNumber="2" />
+
+    <point label="(0, $(variable)_2)" name="P4" hide="$nPoints < 4" x="-" y="$x2" fixed styleNumber='2' />
+
+    <polyline styleNumber="1" vertices="($x0,0) ($x0, $x1) ($x1, $x1) ($x1, $x2)" hide="mod($pflash, 2) = 0 or not $previewShortcut" fixed />
+
+  </graph>
+
+  <subsection>
+    <title>Results</title>
+
+    <md>
+      <mrow hide="$nPoints < 1">
+        $(variable)_0 \amp = $(x0{displayDecimals="2"})
+      </mrow>
+      <mrow hide="$nPoints < 2">
+        $(variable)_1 \amp = $x1
+      </mrow>
+      <mrow hide="$nPoints < 4">
+        $(variable)_2 \amp = $(x2{displayDecimals="2"})
+      </mrow>
+    </md>
+
+  </subsection>
+  </sideBySide>
+
+  <aside boxed collapsible="false">
+    <title>Description</title>
+
+    <conditionalContent>
+      <case condition="$step = 0">
+        <p>This tutorial will give step-by-step instructions for using the graph of the function <m>f($variable) = <evaluate forceSymbolic function="$f" input="$variable" /></m> to iterate the dynamical system
+        <md>
+          <mrow>$(variable)_{n+1} \amp = <evaluate forceSymbolic function="$f" input="$(variable)_n" /></mrow>
+          <mrow>$(variable)_0 \amp = $x0.</mrow>
+        </md>
+        </p>
+        <p>Click Next to continue.</p>
+      </case>
+      <case condition="$step = 1">
+        <p>First, we create a point for the initial condition <m>$(variable)_0 = $x0</m>.</p>
+
+        <p>We'll use the Results panel to keep track of the values of <m>$(variable)_n</m>.  It now shows that <m>$(variable)_0=$x0</m>.</p>
+
+        <p>Click Next to continue.</p>
+      </case>
+      <case condition="$step = 2">
+        <p>We want to graphically apply the function to the initial condition <m>$(variable)_0 = $x0</m> to determine the value of <m>f($(variable)_0).</m> </p>
+        
+        <p>For this step, we draw a vertical line through the initial condition which will intersect the graph of the function at <m>f($(variable)_0)</m>. </p>
+      
+        <p>Click Next to continue.</p>
+      </case>
+      <case condition="$step = 3"> 
+        <p>The value of <m>$(variable)_1 = f($(variable)_0)</m> is where the vertical line intersects the graph of the function.  We draw a horizontal line at that height and place a point where it hits the <m>y</m>-axis to read the value of <m>$(variable)_1</m> off the <m>y</m>-axis.</p>
+
+        <p>The coordinates of that point are <m>(0, $(variable)_1) = (0,$x1)</m>. The value <m>$(variable)_1=$x1</m> now appears in the results.</p>
+      
+        <p>Click Next to continue.</p>
+      </case>
+      <case condition="$step = 4">
+        <p>Now that we know that <m>$(variable)_1 = $x1</m>, we can repeat the previous steps to calculate <m>$(variable)_2 = f($(variable)_1)</m>.</p>
+
+        <p>We translate the point <m>(0, $(variable)_1) = (0,$x1)</m> on the <m>y</m>-axis into the point <m>($(variable)_1, 0) = ($x1,0)</m> on the <m>x</m>-axis.</p>
+        
+        <p>Click Next to continue.</p>
+        
+      </case>
+      <case condition="$step = 5">
+        <p>To estimate the value of <m>$(variable)_2 = f($(variable)_1)</m>, we draw a vertical line through the point <m>($x1,0)</m> to see where it intersects the graph of the function.</p>
+        
+        <p>Click Next to continue.</p>
+      </case>
+      <case condition="$step=6">
+        <p>We need to determine the height of the function where the vertical line through <m>($x1,0)</m> hits the graph of the function.  This height will be the value of <m>$(variable)_2</m>.</p>
+        
+        <p>We draw a horizontal line and a point along the <m>y</m>-axis to determine this height.</p>
+
+        <p>The coordinates of that point are <m>(0, $(variable)_2) = (0,$x2)</m>. We added <m>$(variable)_2=$x2</m> to the results.</p>
+        
+        <p>Click Next to continue.</p>
+
+      </case>
+      <case condition="$step=7">
+
+        <p>The graph is getting a bit busy, so we won't keep going to <m>$(variable)_3</m> or beyond with drawing all these lines.</p>
+
+        <p>We superimposed a simpler set of lines on top of the demonstration to give you a gimpse of the simpler strategy we'll use to iterate the system more efficiently. </p>
+
+        <p>The end of the introductory tutorial on cobwebbing.</p>
+      </case>
+    </conditionalContent>
+
+    <triggerSet label="Reset tutorial" name="resetTutorial" disabled="$step = 0">
+      <updateValue tname="step" newValue="0" />
+      <updateValue tname="nPoints" newValue="0" />
+      <updateValue tname="nHlines" newValue="0" />
+      <updateValue tname="nVlines" newValue="0" />
+      <updateValue tName="previewShortcut" newValue="false" type="boolean" />
+    </triggerSet>
+    <callAction triggerWithTNames="resetTutorial" tName="ans" actionName="submitAnswer" />
+    
+    <updateValue label="Next" name="next" disabled="$step = 7" tname="step" newValue="$step+1" />
+    <callAction triggerWithTNames="next" tName="ans" actionName="submitAnswer" />
+
+    <answer name="ans" hide weight="$answerWeight">
+      <award credit="$step/6"><when>true</when></award>
+    </answer>
+
+  </aside>
+
+
+</module>

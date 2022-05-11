@@ -19,7 +19,7 @@ import axios from "../../_snowpack/pkg/axios.js";
 import {retrieveTextFileForCid} from "../../core/utils/retrieveTextFile.js";
 import {prng_alea} from "../../_snowpack/pkg/esm-seedrandom.js";
 import {determineNumberOfActivityVariants, parseActivityDefinition} from "../../_utils/activityUtils.js";
-import {authorItemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId} from "../../_reactComponents/Course/CourseActions.js";
 export const currentAttemptNumber = atom({
   key: "currentAttemptNumber",
   default: null
@@ -96,7 +96,7 @@ export default function AssignmentViewer() {
   let individualize = useRef(null);
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
-  let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
+  let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
   useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);
   }, [itemObj, recoilDoenetId]);

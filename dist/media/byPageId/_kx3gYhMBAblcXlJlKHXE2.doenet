@@ -1,0 +1,102 @@
+<problem>
+<!-- <title>Solve simple linear differential equations, general solutions</title> -->
+
+<setup>
+
+
+<function name='y' variables='t' symbolic>y</function>
+<function name='ysol' variables='t' symbolic>C*e^(2t)</function>
+<function name='x' variables='t' symbolic>x</function>
+<function name='xsol' variables='t' symbolic>C*e^(-3t)</function>
+<function name='m' variables='t' symbolic>m</function>
+<function name='msol' variables='t' symbolic >C*e^(11t)</function>
+<function name='v' variables='t' symbolic >v</function>
+<function name='vsol' variables='t' >C*e^t</function>
+
+</setup>
+
+
+If we aren't given the initial conditions, we cannot determine the exact solution of the differential equation.  For the following differential equations, give the general solution, which will be a function with an undetermined constant <m>C</m>.
+
+
+<ol>
+
+<li>
+<m>\displaystyle \frac{ dy }{ dt }=2$y</m>
+
+<p><m>y(t)=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$ysol </award>
+</answer>
+</p>
+
+</li>
+
+<li>
+<m>x'(t)=-3$x (t) </m>
+
+<p><m>x(t)=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$xsol </award>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+<m>\displaystyle \frac{ dm }{ dt }=11$m (t)</m>.
+
+<p><m>m(t)=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$msol </award>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+<m>v'(t)=$v </m>.
+
+<p><m>v(t)=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$vsol </award>
+</answer>
+</p>
+
+
+</li>
+
+
+</ol>
+<hint>Recall, sometimes we write <m>y</m> to represent the function <em><m>$y (t)</m></em> as a shorthand notation.</hint>
+
+<solution>
+
+
+<ol>
+
+<li><p>
+<m>y(t)=$ysol </m></p>
+</li>
+
+<li><p>
+<m>x(t)=$xsol </m></p>
+</li>
+
+<li><p>
+<m>m(t)=$msol </m></p>
+</li>
+
+<li><p>
+<m>v(t)=$vsol </m></p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

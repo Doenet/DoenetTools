@@ -1,0 +1,94 @@
+<problem>
+<!-- <title>general ideas of graphical solutions for pure-time diffeq</title> -->
+<variantControl nVariants="1" />
+  
+<setup>
+
+
+</setup>
+
+
+Our goal is to understand what a pure-time differential equation can tell us about the graph of the unknown function.
+
+
+<ol>
+
+<li>
+Recall using the slope of the tangent line to find the derivative of a function at a point.  If a function is decreasing, the slope is negative, so the derivative is negative.  Likewise, if the derivative is negative at a point, the function is 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>decreasing</choice>
+<choice>increasing</choice>
+<choice>neither increasing or decreasing</choice>
+</choiceinput>
+</answer>
+ there.
+
+
+</li>
+
+<li>
+If a function is increasing, the slope is positive, so the derivative is positive.  Likewise, if the derivative is positive at a point, the function is 
+<answer inline='true'>
+<choiceinput>
+<choice>neither increasing or decreasing</choice>
+<choice>decreasing</choice>
+<choice credit='1'>increasing</choice>
+</choiceinput>
+</answer>
+ there.
+
+
+</li>
+
+<li>
+If the function is flat, or has a horizontal tangent line, the slope and derivative are zero.  Then if the derivative is zero at a point, the function is 
+<answer inline='true'>
+<choiceinput>
+<choice>increasing</choice>
+<choice credit='1'>neither increasing or decreasing</choice>
+<choice>decreasing</choice>
+</choiceinput>
+</answer>
+ there. In other words, the graph is 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>horizontal</choice>
+<choice>vertical</choice>
+<choice>angled up</choice>
+<choice>angled down</choice>
+</choiceinput>
+</answer>
+.
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+This works both ways. A function is decreasing at a point if and only if the derivative is negative at that point.
+</li>
+
+<li>
+This works both ways. A function is increasing at a point if and only if the derivative is positive at that point.
+</li>
+
+<li>
+If the derivative is zero, the function is neither increasing nor decreasing, and the graph is therefore horizontal (or flat) wherever the derivative is zero.
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

@@ -1,0 +1,75 @@
+<title>Equilibria in discrete dynamical systems</title>
+
+<description>
+An introduction to the concept of equilibria in discrete dynamical systems and how to calculate them.
+</description>
+
+<section><title>Overview</title>
+
+
+<p>An 
+<ref uri='doenet:equilibrium_dynamical_systems|page_type=definition'>equilibrium</ref>
+ is the simplest possible solution to a 
+<ref uri='doenet:dynamical_system_idea'>dynamical system</ref>. It is a solution where the 
+<ref uri='doenet:state_variable|page_type=definition'>state variable</ref>
+ is a constant; the variable doesn't change with time at all.  For example, if a population of moose was staying steady at 3240 moose, the constant population size of 3240 moose would be an equilibrium.  Although an equilibrium is so simple, it is a fundamental concept in dynamical systems and will form a basis for analyzing more complicated behavior.</p>
+
+<p>In 
+<ref uri='doenet:discrete_dynamical_system_introduction'>discrete dynamical systems</ref>, there is a simple way to find equilibria.  Just plug a solution that does not depend on time into the evolution rule.  The result is an algebraic equation that you can solve to determine what the equilibrium solutions are.</p>
+
+
+
+
+</section>
+
+<section><title>Initial examples</title>
+
+
+<p>For example, to find the equilibria for the discrete dynamical system
+<md>
+  <mrow>x_{t+1}\amp = 4 + 0.6 x_t</mrow>
+  <mrow>x_0\amp = x_0,</mrow>
+</md>
+we need to find a solution <m>x_t</m> that doesn't depend on time <m>t</m>. Let's denote this constant value of <m>x_t</m> by <m>E</m>.  When we say <m>x_t = E</m> is an equilibrium solution, we mean that <m>x_t=E</m> for all values of <m>t</m>.  We must insist that <m>x_1=E</m> and <m>x_{11}=E</m>, but also insist than even <m>x_{t+1}=E</m>.  If we plug in <m>x_t=E</m> and <m>x_{t+1}=E</m> into the evolution rule <m>x_{t+1}=4+0.6 x_t</m>, we obtain the following equation that the number <m>E</m> must satisfy:
+<me>E = 4+0.6 E.</me>
+We can easily solve this for <m>E</m>.  Just subtract <m>0.6 E</m> from both sides of the equation to get
+<me>0.4E = 4</me>
+and divide by <m>0.4</m> to determine that the equilibrium is
+<me>E=10.</me>
+Remember, the equilibrium is a solution <m>x_t=10</m> to the dynamical system.  You can verify that it is a solution by plugging in <m>x_t=10</m> into the evolution rule to check that indeed <m>x_{t+1}=4+0.6x_t = 4+0.6(10) = 10</m>.  Therefore, if we started with the initial condition <m>x_0=10</m>, then we'd find that <m>x_1=10</m>, <m>x_2=10</m>, <m>x_3=10</m>, etc.  The value of the solution doesn't change with time; the solution is an equilibrium.</p>
+
+<p>This first example had a single equilibrium.  It's also possible for a dynamical system to have zero equilibria or to have multiple equilibria.  Let's try another example.  
+<md>
+  <mrow>q_{n+1}-q_n\amp = q_n^2-q_n</mrow>
+  <mrow>q_0\amp = q_0.</mrow>
+</md>
+In this case, the dynamical system is written in 
+<ref uri='doenet:difference_form|page_type=definition'>difference form</ref>
+, but we find equilibria in the same way.  We set all the values of the state variable to the same number.  We set <m>q_n=E</m> and <m>q_{n+1}=E</m>.  Substituting these values into the evolution rule, we calculate
+<md>
+  <mrow>E - E\amp = E^2-E</mrow>
+  <mrow>0\amp = E^2 -E.</mrow>
+</md>
+As always happens for the difference form, the left hand side is zero.  To solve <m>0=E^2-E</m>, we factor, obtaining
+<me>0 = E(E-1),</me>
+so the solutions are <m>E=0</m> and <m>E-1=0</m>.  In other words, the equilibria are <m>E=0</m> and <m>E=1</m>.  You can check that if you started with the initial conditions <m>q_0=0</m> or the initial conditions <m>q_0 = 1</m>, the value of the state variable would not change.  The solutions are equilibria.</p>
+
+
+
+
+</section>
+
+<section><title>Equilibria with parameters</title>
+
+
+<p>Finding equilibria when the dynamical system has unspecified parameters can lead to new subtleties.  As shown in this video, the number of equilibria could depend on the value of the parameters.</p>
+
+<figure>
+<video youtube="QvXyeHCHt5w" width="640px" height="360px"/>
+<caption>Equilibria of discrete dynamical systems</caption>
+</figure>
+
+<p>For a graphical approach to finding the equilibria see 
+<ref uri='doenet:graphical_approach_equilibria_discrete_dynamical_systems'>a graphical approach to finding equilibria of discrete dynamical systems</ref>
+.</p>
+</section>

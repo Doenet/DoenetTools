@@ -1,0 +1,64 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>ul</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>ul</tag><idx><tag>ul</tag></idx> component defines an unordered (bulleted) list.  List items are nested within using a <tag><ref>li</ref></tag> tag.  See examples below</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: Unordered list with nested <tag>title</tag> </title>
+<p>In the code below, the <tag>ul</tag> component is used with 
+  a nested <tag><ref>title</ref></tag>.  The <tag><ref>alert</ref></tag> component makes the title appear in bold.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;ul&gt;&lt;title&gt;&lt;alert&gt;Cookie Ingredients&lt;/alert&gt;&lt;/title&gt;
+  &lt;li&gt;Sugar&lt;/li&gt;
+  &lt;li&gt;Flour&lt;/li&gt;
+  &lt;li&gt;Eggs&lt;/li&gt;
+  &lt;li&gt;Butter&lt;/li&gt;
+&lt;/ul&gt;
+</pre> 
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<ul><title><alert>Cookie Ingredients</alert></title>
+  <li>Sugar</li>
+  <li>Flour</li>
+  <li>Eggs</li>
+  <li>Butter</li>
+</ul>
+</example>
+
+
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

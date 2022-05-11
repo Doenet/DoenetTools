@@ -1,0 +1,44 @@
+<problem>
+<!-- <title>discrete equilibria 2</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='r1' from='1' to=' 7' />
+<selectFromSequence assignNames='b' from='1' to=' 20' />
+<selectFromSequence assignNames='r2' from='8' to=' 15' />
+<select assignNames='x' > x y z u v w p X Y Z </select>
+
+<math name='answer' unordered='true'>$r1 ,-$r1 ,$r2 ,-$r2 </math>
+<math name='R1' simplify='full' >$r1 **2</math>
+<math name='R2' simplify='full' >$r2 **2</math>
+
+</setup>
+
+
+<p>Find all equilibria to the discrete dynamical system below.  If there are multiple equilibria, separate your answers by commas.  
+<md>
+  <mrow>$x _{n+1} - $x _n\amp = ( $x _n^2 - $R1  )( $x _n^2 - $R2  )</mrow>
+  <mrow>$x _0\amp = $b</mrow>
+</md>
+</p>
+
+<p><m>E =</m> 
+<answer>
+<award matchPartial unorderedCompare>$answer </award>
+</answer>
+</p>
+
+
+<solution>
+<p>To find the equilibria, we set <m>$x _{n+1} = E</m> and <m>$x _n = E</m> in the evolution rule, obtaining
+<md>
+  <mrow>E-E\amp =  ( E^2 - $R1  )( E^2- $R2  )</mrow>
+  <mrow>0\amp = ( E^2 - $R1  )( E^2 - $R2  )</mrow>
+</md>
+Therefore, either <m>E^2 = $R1 </m> or <m>E^2 = $R2 </m>.  The equilibria are <m>E=$r1 </m>, <m>E=-$r1 </m>, <m>E=$r2 </m>, and <m>E=-$r2 </m>.</p>
+
+
+</solution>
+
+
+</problem>

@@ -1,0 +1,142 @@
+<document><title><tag>curve</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>draggable</attr>  <em>(boolean)</em></li>
+      <li><attr>labelPosition</attr>  <em>(text)</em></li>
+      <li><attr>flipFunction</attr>  <em>(boolean)</em></li>
+      <li><attr>nDiscretizationPoints</attr>  <em>(number)</em></li>
+      <li><attr>periodic</attr>  <em>(boolean)</em></li>
+      <li><attr>splineTension</attr>  <em>(number)</em></li>
+      <li><attr>extrapolateBackward</attr>  <em>(boolean)</em></li>
+      <li><attr>extrapolateForward</attr>  <em>(boolean)</em></li>
+      <li><attr>splineForm</attr>  <em>(text)</em></li>
+      <li><attr>variable</attr>   <em>(variable)</em></li>
+      <li><attr>through</attr>   <em>(_pointListComponent)</em></li>
+      <li><attr>parMin</attr>   <em>(math)</em></li>
+      <li><attr>parMax</attr>   <em>(math)</em></li>            
+  <aside><title>Attributes inherited from parent component <tag>GraphicalComponent<footnote>not a rendered component</footnote></tag> </title>
+    <li><attr>label</attr>
+      <em>(text)</em></li>
+    <li><attr>showLabel</attr>  <em>(boolean)</em></li>
+    <li><attr>layer</attr>  <em>(number)</em></li>
+  </aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>curve</tag><idx><tag>curve</tag></idx> component renders a curve on a <tag><ref>graph</ref></tag>.  The type of curve can be specified in numerous ways through the application of different attributes.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+&lt;graph&gt;
+  &lt;curve&gt;x+2&lt;/curve&gt;
+&lt;/graph&gt;
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<graph>
+  <curve>x+2</curve>
+</graph>
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<!--add styleDefinitions into this example to change linetypes-->
+  
+<setup>
+  <function name="f" variables="x">x^2</function>
+  <function name="g" variables="x">x/2</function>
+  <function name="h" variables="x">x</function>
+</setup>
+<graph ymin="-3" ymax="20" xmin="-5" xmax="5">
+  <curve label="A">$f+$g+$h</curve>
+  <curve label="B" labelPosition="upperleft">$f-$g+$h</curve>
+</graph>
+  
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

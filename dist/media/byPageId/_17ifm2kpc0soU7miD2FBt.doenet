@@ -1,0 +1,31 @@
+<title>Quiz 9</title>
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <select numberToSelect="2" assignNames="((problem1)) ((problem2)) ((problem3)) ((problem4)) ((problem5))">
+    <option>
+      <select assignNamesSkip="2">
+        <option>
+          <copy uri="doenet:contentId=08c997fb6c8d538a3798f094dfd43c89f2f387345926cb99b2e727f07e5f5013&doenetId=11Ezc1nG5iUz7d0ORj1A7" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=17b1489d7dc03cc9c2cfdcbf31320136b2d6984a84adfa260734407ef0384bda&doenetId=GfiPSDtK_jGACkODdXzfr" componentType="problem" />
+        </option>
+        <option>
+          <copy uri="doenet:contentId=ad4f64bcfda2a159cad89104f6bbc436b948efc63e35de26d1d292f14b3f9597&doenetId=drIhGf0Zma_PypiB92wiA" componentType="problem" />
+        </option>
+      </select>
+    </option>
+    <option>
+      <copy uri="doenet:contentId=4ed6a16f7f1a05f9ce62388c8278882f671fda6634d65d0a428cbaf1f87d1c0d&doenetId=llKPg0gTurdWyyhLiWGhZ" componentType="problem" />
+    </option>
+  </select>
+  
+</paginator>
+
+
+
+<paginatorControls paginatorTname="pgn" />
+  

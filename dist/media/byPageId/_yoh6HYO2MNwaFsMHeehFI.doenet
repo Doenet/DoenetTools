@@ -1,0 +1,6 @@
+
+<copy assignNames="problem1" uri="doenet:contentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d&doenetId=asdflkasdfbc" />
+    
+<copy assignNames="problem2" uri="doenet:contentId=65f4ac8413ad0152fba04ed4df73c2f2ec20f503a8830e01d85d9941353c55a2" />
+
+<p>Answer from animal prob: $(problem1/ans)</p>

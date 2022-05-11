@@ -1,0 +1,118 @@
+<document><title><tag>mean</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+    <aside><title>Attributes inherited from parent component <tag><ref>math</ref></tag> </title>
+    <li><attr>simplify</attr>
+      <em>(text)</em></li>
+    <li><attr>format</attr>  <em>(text)</em></li>
+    <li><attr>expand</attr>  <em>(boolean)</em></li>
+    <li><attr>displayDigits</attr>  <em>(integer)</em></li>
+    <li><attr>displayDecimals</attr>  <em>(integer)</em></li>
+    <li><attr>displaySmallAsZero</attr>  <em>(number)</em></li>
+    <li><attr>renderMode</attr>  <em>(text)</em></li>
+    <li><attr>unordered</attr>  <em>(boolean)</em></li>
+    <li><attr>createVectors</attr>  <em>(boolean)</em></li>
+    <li><attr>createIntervals</attr>  <em>(boolean)</em></li>
+    <li><attr>functionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>targetsAreFunctionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>splitSymbols</attr> <em>(boolean)</em></li>
+    <li><attr>groupCompositeReplacements</attr> <em>(boolean)</em></li></aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>mean</tag><idx><tag>mean</tag></idx> component renders the mean value of a list of input values. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+&lt;p&gt;The mean of the set 
+  &lt;m&gt;\mathbb{A} = \{1, 2, 3, -1\} = &lt;mean&gt;1 2 3 -1&lt;/mean&gt;&lt;/m&gt;
+&lt;/p&gt;
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<p>The mean of the set 
+  <m>\mathbb{A} = \{1, 2, 3, -1\} = <mean>1 2 3 -1</mean></m>
+</p>
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+&lt;p&gt;Choose three numbers: &lt;/p&gt;
+&lt;p&gt;&lt;m&gt;x = &lt;/m&gt;&lt;mathInput name="x"/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;m&gt;y = &lt;/m&gt;&lt;mathInput name="y"/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;m&gt;z = &lt;/m&gt;&lt;mathInput name="z"/&gt;&lt;/p&gt;
+
+&lt;p&gt;  
+The mean of your three numbers &lt;m&gt;\{&dollar;x, &dollar;y, &dollar;z\}&lt;/m&gt; is:  &lt;number&gt;&lt;mean&gt;&dollar;x &dollar;y &dollar;z&lt;/mean&gt;&lt;/number&gt;
+&lt;/p&gt;
+</pre>
+
+<p><em>Note, at this time <tag>mean</tag> does not evaluate expressions, only single numbers.</em></p>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+<p>Choose three numbers: </p>
+<p><m>x = </m><mathInput name="x"/></p>
+<p><m>y = </m><mathInput name="y"/></p> 
+<p><m>z = </m><mathInput name="z"/></p>
+
+<p>  
+The mean of your three numbers <m>\{$x, $y, $z\}</m> is:  <number><mean>$x $y $z</mean></number>
+</p>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

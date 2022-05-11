@@ -1,0 +1,228 @@
+<problem>
+<variantControl nVariants="1" />
+<!-- <title>Derivative of logarithm, worksheet</title> -->
+
+<setup>
+
+<math name='dlogx' >1/x</math>
+<math name='dlogx_5'>1/5</math>
+<math name='dlog_y_cubed' >3/y</math>
+<math name='dlog_y_cubed_3' >3/3</math>
+<math name='log_poly' >5 ln(x) + 3</math>
+<math name='d_log_poly' >5/x</math>
+<math name='three_log_y' >3*ln(y)</math>
+<math name='dlog_t_c' >c/t</math>
+<math name='six_plus_log_x' >log(6)+log(x)</math>
+<math name='expression1'>5+6ln(x)+4ln(x^2)</math>
+<math name='d_expression1'>14/x</math>
+<math name='expression2'>ln(5t)-ln(t^3)</math>
+<math name='d_expression2' >-2/t</math>
+
+</setup>
+
+
+The natural log function <m>\ln(x)</m> is the inverse of the exponential function <m>e^x</m>, meaning that <m>\ln(e^x)=x</m> and <m>e^{\ln(x)}=x</m>.
+
+<ol>
+
+<li>
+If <m>f(x)=\ln(x)</m>, then <m>f'(x)=</m> 
+<answer>
+<award>$dlogx </award>
+</answer>
+ and <m>f'(5) =</m> 
+<answer>
+<award>$dlogx_5 </award>
+</answer>
+. 
+
+
+
+</li>
+
+<li>
+Calculate <m>\frac{ d }{ dx } \left($log_poly \right)=</m> 
+<answer>
+<award>$d_log_poly </award>
+</answer>
+
+
+
+<hint>
+<m>\frac{ d}{dx} \left($log_poly \right)</m> means differentiate the function <m>f(x)=$log_poly </m> with respect to <m>x</m>, i.e., calculate <m>\frac{ df }{ dx }</m>.
+</hint>
+
+</li>
+
+<li>
+<p>We can use the 
+<ref uri='doenet:logarithm_basics' tname='rules'>logarithm rules</ref>
+ to differentiate <m>g(y)=\ln(y^3)</m>.  First of all, according to the rules, you can bring down the exponent to rewrite
+</p>
+<p>
+
+<m>g(y)=\ln(y^3) =</m> 
+<answer>
+<award>$three_log_y </award>
+</answer>
+.
+</p>
+<p>
+
+In that new form, <m>g</m> can be differentiated just as above.</p>
+
+<p>Calculate <m>g'(y)=</m> 
+<answer>
+<award>$dlog_y_cubed </award>
+</answer>
+ and <m>g'(3) =</m> 
+<answer>
+<award>$dlog_y_cubed_3 </award>
+</answer>
+.</p>
+
+<p>If <m>h(t)=\ln(t^c)</m> for a constant <m>c</m>, calculate <m>h'(t)=</m> 
+<answer>
+<award>$dlog_t_c </award>
+</answer>
+.</p>
+
+
+</li>
+
+<li>
+<p>We can use the 
+<ref uri='doenet:logarithm_basics' tname='rules'>logarithm rules</ref>
+ to differentiate <m>p(x)=\ln(6x)</m>.  First of all, according to the rules, write the logarithm of a product as the sum of the logarithms:
+</p>
+<p>
+
+<m>p(x)=\ln(6x) =</m> 
+<answer name="p_x_simp">
+<award allowedErrorInNumbers='0.0001'>$six_plus_log_x </award>
+<award credit='0.5' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$six_plus_log_x </award>
+<award credit='0.25' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$six_plus_log_x </award>.
+</answer>
+</p>
+<copy prop="feedbacks" tname="p_x_simp" />
+
+<p>
+
+In that new form, <m>p</m> can be differentiated just as above.</p>
+
+<p>Calculate <m>p'(x)=</m> 
+<answer>
+<award>$dlogx </award>
+</answer>
+ and <m>p'(5) =</m> 
+<answer>
+<award>$dlogx_5 </award>
+</answer>
+.</p>
+
+<p>If <m>q(x)=\ln(cx)</m> for a constant <m>c</m>, calculate <m>q'(x)=</m> 
+<answer>
+<award>$dlogx </award>
+</answer>
+.</p>
+
+
+</li>
+
+<li>
+<p>
+
+<m>\frac{ d }{ dx }\left($expression1 \right) =</m> 
+<answer>
+<award>$d_expression1 </award>
+</answer>
+ <m>=</m> 
+<answer>
+<award symbolicEquality='true'>$d_expression1</award>
+</answer>
+
+</p>
+<p>
+
+(In the first blank, you can write any expression that simplifies to the correct answer.  In the second blank, be sure to simplify your answer all the way.)</p>
+
+
+<hint>
+<m>\frac{ d }{ dx }\left($expression1 \right)</m> means the derivative <m>f'(x)</m> of <m>f(x)=$expression1 </m>.  
+
+<p>Use the rules derived to differentiate each term.</p>
+</hint>
+
+</li>
+
+<li>
+<p>
+<m>\frac{ d }{ dt }\left($expression2 \right) =</m>  
+<answer>
+<award>$d_expression2 </award>
+</answer>
+ <m>=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare="numbers">$d_expression2</award>
+</answer>
+
+
+</p>
+<p>
+
+(In the first blank, you can write any expression that simplifies to the correct answer.  In the second blank, be sure to simplify your answer all the way.)</p>
+
+
+<hint>
+<m>\frac{ d}{dt}\left($expression2 \right)</m> means the derivative <m>\frac{ dg }{ dt }</m> of <m>g(t)=$expression2 </m>.  
+
+</hint>
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<m>f'(x)=1/x</m>, <m>f'(5)=1/5</m>.
+</li>
+
+<li>
+<m>\frac{ d }{ dx } \left($log_poly \right)=$d_log_poly </m>
+</li>
+
+<li>
+Since <m>g(y)=\ln(y^3)=3\ln(y)</m>, <m>g'(y) = 3/y</m> and <m>g'(3)=3/3=1</m>.
+
+<p><m>h'(t)=c/t</m>.</p>
+</li>
+
+<li>
+<m>p(x)=\ln(6x) =\ln(x)+\ln(6)</m>
+
+<p><m>p'(x)=$dlogx </m>, <m>p'(5)=$dlogx_5 </m>.</p>
+
+<p><m>q'(x)=$dlogx </m></p>
+</li>
+
+<li>
+<m>\frac{ d }{ dx }\left($expression1 \right) = $d_expression1 </m>
+</li>
+
+<li>
+<m>\frac{ d }{ dt }\left($expression2 \right) = $d_expression2 </m>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

@@ -1,0 +1,65 @@
+
+<document documentWideCheckwork="$dwcw" name="theDocument">
+  <title>Section and document-wide checkwork buttons</title>
+
+  <p>Document wide checkwork: <booleaninput name="dwcw" /></p>
+  
+  <p>Total credit achieved: <copy prop="creditAchieved" tname="theDocument" /></p>
+  
+  <p>Some questions outside a section</p>
+  <p>2x: <answer name="twox">2x</answer></p>
+
+  <p>hello: <answer type="text" name="hello">hello</answer></p>
+
+  <problem sectionWideCheckwork="$s1wcw" name="problem1">
+    <title>Problem 1</title>
+    
+    <p>Section-wide checkwork: <booleaninput name="s1wcw" /></p>
+    
+    <p>banana: 
+    <answer name="fruit">
+      <choiceinput randomizeOrder name="fruitInput">
+        <choice credit="1">banana</choice>
+        <choice>apple</choice>
+        <choice>orange</choice>
+      </choiceinput>
+    </answer>
+    </p>
+
+    <p>Numbers that add to 3: <mathinput name="n1" /> <mathinput name="n2" />
+    <answer name="sum3">
+      <award targetsAreResponses="n1 n2">
+        <when>$n1+$n2=3</when>
+      </award>
+    </answer></p>
+  </problem>
+
+  
+  <problem sectionWideCheckwork="$s2wcw" name="problem2">
+    <title>Problem 2</title>
+    
+    <p>Section-wide checkwork: <booleaninput name="s2wcw" /></p>
+    
+    
+    <p>What is the derivative of <math name="x2">x^2</math>?
+      <answer><award><derivative>$x2</derivative></award></answer>
+    </p>
+    
+    <select assignNames="(animal)" hide>
+      <option><text>cat</text></option>
+      <option><text>dog</text></option>
+      <option><text>mouse</text></option>
+      <option><text>fish</text></option>
+    </select>
+
+    <p>What does the $animal say?
+      <answer name="ans" type="text">
+        <award credit="$animal=cat" ><text>meow</text></award>
+        <award credit="$animal=dog" ><text>woof</text></award>
+        <award credit="$animal=mouse" ><text>squeak</text></award>
+        <award credit="$animal=fish" ><text>blub</text></award>
+      </answer>
+    </p>
+    
+  </problem>
+</document>

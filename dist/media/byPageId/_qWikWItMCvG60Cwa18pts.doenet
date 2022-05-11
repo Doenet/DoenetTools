@@ -1,0 +1,50 @@
+<p><alert>Function defined within &lt; graph &gt; </alert></p>
+<graph xmin="-5" xmax="5" ymin="-5" ymax="5" >
+  <function variables='x'> x^2</function>
+</graph>
+
+<setup>
+  <math name='a'>2</math>
+  <function name='f' variables='x'>x^2-$a</function>
+</setup>  
+<p><alert>Function defined within &lt; setup &gt; and referenced in &lt; graph &gt; </alert></p>
+<graph xmin="-5" xmax="5" ymin="-5" ymax="5" >
+  $f
+</graph>
+
+<setup>
+  <math name='b'>2</math>
+  <function name='g' variables='x'>x^(1/2)-$b</function>
+  <function name='h' variables='x'>-1*(x^(1/2))-$b</function>
+</setup>  
+<p><alert>Peice-wise defined Square Root Function defined within &lt; setup &gt; and referenced in &lt; graph &gt; </alert></p>
+<graph xmin="-5" xmax="5" ymin="-5" ymax="5" >
+  $g
+  $h
+</graph>
+
+<setup>
+  <math name='c'>2</math>
+  <styleDefinitions>
+    <styleDefinition styleNumber="2" lineColor="magenta" lineStyle="solid" />
+  </styleDefinitions>
+  <function name='p' variables='x' domain="(1,5)" styleNumber="2" >x^(1/2)-$c</function>
+  <function name='q' variables='x'>-1*(x^(1/2))-$c</function>
+</setup>  
+<p><alert>Peice-wise defined Square Root Function defined within &lt; setup &gt; and referenced in &lt; graph &gt; , with different linetypes </alert></p>
+<graph xmin="-5" xmax="5" ymin="-5" ymax="5" >
+  $p[2,4]
+  $q
+</graph>
+
+
+<p><alert>Function defined by specifying locations of maxima and minima</alert></p>
+<graph width='500' xmin='-1' xmax='11' ymin='-6' ymax='16' xlabel='t' ylabel="$x" fixAxes>
+  <function domain="(0,20)" through="(0,5)" minima="(2,-1)" maxima="(7,7)" />
+</graph>
+
+<function domain="(0,40)" styleNumber="1">
+        exp(x/5)+$IC1-1
+      </function>
+
+

@@ -73,7 +73,7 @@ if ($success) {
         $cid = cidFromSHA($SHA);
         $filename = $cid;
     } else {
-        $filename = "bydoenetid/$pageId";
+        $filename = "byPageId/$pageId";
     }
 
     //TODO: Config file needed for server

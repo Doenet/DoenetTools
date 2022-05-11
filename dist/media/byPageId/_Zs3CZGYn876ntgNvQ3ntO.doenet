@@ -1,0 +1,69 @@
+
+<odesystem name="pendulum" hideInitialCondition variables="theta omega" initialConditions="$(IC{prop='x'}) $(IC{prop='y'})" >
+  <righthandside>omega</righthandside>
+  <righthandside>-$g/$l sin(theta)</righthandside>
+</odesystem>
+<p><m>\theta(0)=</m> <mathinput name="icx" displayDecimals="5" bindValueTo="$(IC{prop='x'})"/></p>
+<p><m>\omega(0)=</m> <mathinput name="icy" displayDecimals="5" bindValueTo="$(IC{prop='y'})"/></p>
+
+<p hide>g = <math name="g">3</math></p>
+<p hide>l = <math name="l">1</math></p>
+<copy prop="numericalsolution1" tname="pendulum" assignNames="f1" hide />
+<copy prop="numericalsolution2" tname="pendulum" assignNames="f2" hide />
+<math name="zeroFixed" fixed hide>0</math>
+
+<p>tmax = <mathinput name="tmax" prefill="10"/></p>
+<p>t = <mathinput name="t" prefill="0" /></p>
+
+<p>animation on: <booleaninput name="aon" prefill="false"/></p>
+
+<animatefromsequence hide tname="t" from="0" step="0.1" to="$tmax" animationInterval="10" animationOn="$aon" />
+
+<p><m>\theta(<copy displaydigits="3" tname="t" prop="value" />) = 
+<wrapnumberperiodic name="theta" lowervalue="-pi" uppervalue="pi" displaydigits="3">
+  <evaluate function="$f1" input="$t" />
+</wrapnumberperiodic>
+</m>
+</p>
+
+<p><m>\omega(<copy displaydigits="3" tname="t" prop="value" />) = 
+  <evaluate displaydigits="3" function="$f2" input="$t" />
+</m>
+</p>
+
+<sideBySide widths="48%">
+<graph xmax="pi" xmin="-pi" ymin="-6" ymax="6">
+  <point name="IC" layer="1" x="1" y="1" />
+  <curve parmax="$tmax">
+    <wrapfunctionperiodic lowervalue="-pi" uppervalue="pi">
+      $f1
+    </wrapfunctionperiodic>
+    $f2
+  </curve>
+  <point x="$theta" y="$$f2($t)"/>
+</graph>
+
+<stack>
+<graph width="200px" height="200px" displayXaxis="false" displayYaxis="false" xmin="-1.5$l" xmax="1.5$l" ymin="-1.5$l" ymax="1.5$l">
+  <point name="mid" fixed="true">(0,0)</point>
+  <point name="end" fixed x="$l sin($theta)" y="-$l cos($theta)" />
+  <linesegment endpoints="$mid $end"/>
+  <angle renderAsAcuteAngle radius="0.5$l" through="$end $mid (0,-1)" />
+</graph>
+
+<copy assignNames="icvstFixed" fixed hide tname="icvst" />
+
+<graph xmin="-1" xmax="$tmax" ymin="-pi" ymax="pi" height="130px">
+  <curve>
+    <wrapfunctionperiodic lowervalue="-pi" uppervalue="pi">
+      $f1
+    </wrapfunctionperiodic>
+  </curve>
+  <point name="icvst" layer="1" x="$zeroFixed" y="$(IC{prop='x'})" />
+
+  <vector tail="$icvst" head="($(icvst{prop='x' fixed})+1, $(icvst{prop='y' fixed})+1+$(IC{prop='y'}))" />
+
+  <point x="$t" y="$theta" />
+</graph>
+</stack>
+</sideBySide>

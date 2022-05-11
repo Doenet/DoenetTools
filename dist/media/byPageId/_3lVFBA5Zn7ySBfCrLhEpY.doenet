@@ -1,0 +1,521 @@
+<title>Linking with the <tag>ref</tag> component</title>
+
+<aside><title>How to use this tutorial</title>
+  <p>
+  <ul>
+    <p><li><em>Preview</em> the sample code using the links at the top of the page.</li></p>
+    <p><li><em>Learn</em> by watching the video and reading the examples</li></p>
+    <p><li><em>Practice</em> with built-in tutorial exercises or by editing the sample code</li></p>
+    <p><li><em>Check your understanding</em> using the 4-question quiz at the end of the page</li></p>
+    </ul>
+</p>
+</aside>
+
+
+
+
+<section><title>Preview</title>(note:  clicking the links below will open a sample DoenetML file)
+  <tabular>
+    <row>
+      <cell><ref createButton = "true" uri= ""><tag>ref</tag><tag>/ref</tag></ref>
+      </cell>
+      <cell><em>links to a doenet page or other website</em>
+      </cell>
+    </row>
+  </tabular>
+</section>
+
+<section><title>Learn</title>
+
+<p>
+<figure>
+<video youtube = ""></video>
+<caption>How to use the <alert><tag>ref</tag></alert>component</caption>
+</figure>
+</p>
+
+  
+<aside>
+  <title>Video Transcript</title>
+<p>coming soon!  
+</p></aside>
+
+</section>
+
+<!--********************************************************************
+Warning - do not change anything in the table.  Preserved formatting
+********************************************************************-->
+
+<subsection><title>Examples</title>  
+  <tabular>
+    
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    
+    <row bottom="minor">
+      <cell><em>Linking to an external website using the  <alert><tag>ref</tag></alert> component:</em>
+<pre><alert><tag>p</tag></alert>Play John Conway's Game of Life 
+    <alert><tag>ref uri="https://playgameoflife.com/"</tag></alert>here<alert><tag>/ref</tag></alert>!
+<alert><tag>/p</tag></alert></pre>
+      </cell>
+      <cell><p>Play John Conway's Game of Life <ref uri="https://playgameoflife.com/">here</ref>!</p>
+      </cell>
+    </row>
+
+    <row bottom="minor">
+      <cell><em>Linking to another doenet file using the  <alert><tag>ref</tag></alert> component:</em>
+<pre><alert>Step 1:</alert>  
+        type &lt;ref uri="doenet:  "&gt;, and
+        paste the link from the address bar of the doenet page inside the
+        quotations after the semicolon. (You have to manually type the starting text
+        for the link 'doenet:')  Note that the full link in the sample code below has
+        been copied, and eventually (after step 3) everything that is 
+        <em>not</em> shown bold will get deleted.</pre>
+        <pre>
+<alert>Code for Step 1:</alert>
+        <tag>ref uri="<alert>doenet:</alert>https://www.doenet.org/#/course?
+        tool=editor&<alert>doenetId=EI8qVxTzW3tPXtzUD6mIl</alert>
+        &path=sylbRj3AA0e4ovl1kLGXE%3A6WjmmNokJckzbeWaF504B%3AT5onS
+        Rxo3vxR42xhVWvtM%3ADoenetML"</tag></pre>
+        <pre>
+<alert>Step 2:</alert>  
+        delete the first portion of the link up
+        until the first ampersand, right before the text 
+        "doenetID=..."</pre>
+        <pre>
+<alert>Code for Step 2:</alert>
+        <tag>ref uri="<alert>doenet:doenetId=EI8qVxTzW3tPXtzUD6mIl
+        </alert>&path=sylbRj3AA0e4ovl1kLGXE%3A6WjmmNokJckzbe
+        WaF504B%3AT5onSRxo3vxR42xhVWvtM%3ADoenetML"</tag></pre>
+        <pre>
+<alert>Step 3:</alert>  
+        delete the last portion of the link
+        consisting of all of the text following the second ampersand,
+        starting from right before the text "&path=..."</pre>
+        <pre>
+<alert>Code for Step 3:</alert>
+        <tag>ref uri="<alert>doenet:doenetId=EI8qVxTzW3tPXtzUD6mIl</alert>"</tag></pre>
+        <pre>
+<alert>Step 4:</alert>  
+        insert the display text for the link
+        in between the the opening <alert><tag>ref</tag></alert> and
+        closing<alert><tag>/ref</tag></alert>.  Note in the example
+        code below that the only text from the original copied link that 
+        remains is the text that was originally between the two ampersands.</pre>
+        <pre>
+        <tag>p</tag>Find out more about the 
+        <alert><tag>ref uri="doenet:doenetId=EI8qVxTzW3tPXtzUD6mIl"</tag>
+        </alert>section component<alert><tag>/ref</tag><tag>/p</tag></alert></pre>
+      </cell>
+      
+      <cell><p>Find out more about the <ref uri="doenet:doenetId=EI8qVxTzW3tPXtzUD6mIl">section component</ref></p>
+      </cell>
+    </row>
+
+    <row bottom="minor">
+      <cell><em>Using the <alert><tag>ref</tag></alert> tag without linking text specified:</em>
+<pre><alert><tag>p</tag></alert>You can play John Conway's Game of Life here: 
+      <alert><tag>ref uri="https://playgameoflife.com/"/</tag>
+<tag>/p</tag></alert></pre>
+      </cell>
+                
+      <cell>You can play John Conway's Game of life here:  <ref uri="https://playgameoflife.com/"/>
+      </cell>
+    </row>
+
+<row bottom="minor">
+      <cell><em>Using the <alert><tag>ref</tag></alert> component with an <alert><tag>image</tag></alert> component:</em>
+        <pre>
+<alert><tag>figure suppressFigureNameInCaption</tag>
+    <tag>ref uri="https://playgameoflife.com/"</tag>
+      <tag>image width="200" source="https://lh3.googleusercontent.com/s..."/</tag>
+    <tag>/ref</tag>
+      <tag>caption</tag></alert>Click to Play!<alert><tag>/caption</tag>
+<tag>/figure</tag></alert></pre>   
+      </cell>
+                
+      
+      <cell><figure suppressFigureNameInCaption><ref uri="https://playgameoflife.com/"><image width="200" source="https://lh3.googleusercontent.com/s3tznXpMDhXUTffAM-jMeMXglo0vHqO8GT3k1CXB4GBqllPhtJ34S_UhB0x2zUTujclFNY1Athr0Yr445PukIfr_Obo5r8FR5PQmknaPPySdCjeyJCMCIvvCHMK4h89dvghCboJ5_TpEfB3ne9QyLR0Z8FnmFUUE2v6YGpXdv3KYx1HQ_Y5xmhOrJWoeHI1dWYPcWJY_96Pyf_iS0lQiuGZWa9g8XAJC8vct5R44BxD0AG7XuEnGI0JHARRNNIzGWuV9ah8hI0oI59aMBqjA6LgevgTzD5jU1JxIAOtiyIF_HKJEtieEzgNB_fJgtZRwX0aVlMUGHAvnnT14gRFCQkjivr9_LP6hQqsgGLm4GT9UrLdoGrkgIAph8VTLiHaFd5nVHupiUXoj9QWwOZqCY7NJnbaCdT1wzySnf0BxiwXmbkmzkzdR5DQONyQO0ylWXcO_azNdwIAfukdW1aOEGJwme_ogepHwSZJKTbC_oBPvRC-ecrSZHTM37a29_zI5mCgnUYe7aiFWJOVC8ixcyutlqwz6u6zRb_854tk7alu1M-QmwgR1LSAQ94vBu7G9NxmChNv1R92Sh4Pvo-1mkc3CqW3vCkqgKdZjSHL9RkTWFKnOzP_IWfKvq77Mc3YjlnLvkPINV6Hq4rkRo9YFSU1GhQZLtdQfpKMvzkIzWucts3DQ6u9cIRvCeEtWt7qOZBOKGRKLNGA29rFAEFSGkA=w240-h260-no?authuser=0"/></ref><caption>Click to Play!</caption>
+      </figure>
+      </cell>
+          </row>
+        
+
+        
+    <row bottom="minor">
+      <cell><em>Using the <alert><tag>ref</tag></alert> component nested inside an <alert><tag>ol</tag></alert> to create a Table of Contents :</em>
+      <pre>
+<alert><tag>subsection</tag><tag>title</tag></alert>Table of Contents<alert><tag>/title</tag>
+  <tag>ol</tag>
+    <tag>li</tag>
+      <tag>ref uri="doenet:doenetId=EI8qVxTzW3tPXtzUD6mIl"</tag></alert>The 'section' component<alert><tag>/ref</tag>
+    <tag>/li</tag>
+    <tag>li</tag>
+        <tag>ref uri="doenet:doenetId=t9widg3Cxi4anEn2GOTzt"</tag></alert>The 'p' component<alert><tag>/ref</tag>
+    <tag>/li</tag>
+    <tag>li</tag>
+        <tag>ref uri="doenet:doenetId=lP_BhuhmGqnC7-mJwicom"</tag></alert>The 'ol' component<alert><tag>/ref</tag>
+    <tag>/li</tag>
+  <tag>/ol</tag>
+<tag>/subsection</tag></alert></pre>
+      </cell>
+                
+      <cell>
+        <subsection><title>Table of Contents</title>
+          <ol>
+            <li><ref uri="doenet:doenetId=EI8qVxTzW3tPXtzUD6mIl">The 'section' component</ref></li>
+            <li><ref uri="doenet:doenetId=t9widg3Cxi4anEn2GOTzt">The 'p' component</ref></li>
+            <li><ref uri="doenet:doenetId=lP_BhuhmGqnC7-mJwicom">The 'ol' component</ref></li>
+          </ol>
+        </subsection>
+      </cell>
+    </row>
+      
+    <row bottom="minor">
+      <cell><em>Using the <alert><tag>ref</tag></alert> component with the <alert>  createButton</alert> attribute:</em>
+      <pre>
+<alert><tag>ref createButton="true" uri="https://playgameoflife.com/"</tag></alert>Create Life!<alert><tag>/ref</tag></alert></pre>
+      </cell>
+      <cell><ref createButton="true" uri="https://playgameoflife.com/">Create Life!</ref>
+      </cell>
+    </row>
+      
+  </tabular>
+
+  
+</subsection>
+
+<!--Practice Section problem 1************************************-->
+
+<section><title>Practice</title>
+<problem sectionWideCheckWork aggregateScores><title>Problem 1</title>
+      <alert>Finish the code required to create a link to the address "https://www.marblerun.at" when the word "here" is clicked:</alert>
+      <p>Example:  Click <ref uri="https://www.marblerun.at">here</ref> to build a custom marble run!</p>
+      <p>Click <answer>
+        <textInput name="tI_1a" prefill="<"></textInput>
+            <award credit="1.0">
+              <when>$tI_1a=<text>&lt;ref</text></when>
+            </award>
+        </answer> uri="
+        <answer>
+          <textInput name="tI_1b" size="20"></textInput>
+            <award credit="1.0">
+              <when>$tI_1b=<text>https://www.marblerun.at</text></when>
+            </award>
+        </answer>"<alert>&gt;</alert>here<alert><tag>/ref</tag></alert> to build a custom marble run!
+      </p>
+</problem>
+
+<!--  
+  https://www.marblerun.at/
+  https://learningcontent.cisco.com/games/binary/index.html
+    -->
+<!--Practice Section problem 2***********************************-->
+  
+<problem sectionWideCheckWork aggregateScores><title>Problem 2</title><alert>Finish the code required to link to the doenet page located at</alert> "https://www.doenet.org/#/course?tool=editor<alert>&</alert>doenetId=yX1XdnrDpGClwJmEi6_ta<alert>&</alert>path=sylbRj3AA0e4ovl1kLGXE%3AdlLhRUOcrOdH8F0c129ft%3Au1q7LFmKRECRJzDpucCgN%3ADoenetML".<alert>  Recall, the only portion of this address that remains following the text 'doenet:' in the uri attribute is the portion <em>between</em> the two ampersands:</alert>
+      <p>Example:  Click <ref uri="doenet:doenetId=yX1XdnrDpGClwJmEi6_ta">here</ref> to learn about basic text formatting.</p>
+      
+        <alert><tag>p</tag></alert>Click <alert>&lt;ref uri="doenet:</alert>
+        <answer>
+          <textInput size="25" name="tI_2a"></textInput>
+            <award credit="1.0">
+              <when>$tI_2a=<text>doenetId=yX1XdnrDpGClwJmEi6_ta</text>
+              </when>
+            </award>
+        </answer>"<alert>&gt;</alert>here
+        <answer>
+          <textInput name="tI_2b" prefill="<>"></textInput>
+          <award credit="1.0">
+            <when>$tI_2b= <text>&lt;/ref&gt;</text></when>
+          </award>
+        </answer>to learn about basic text formatting.<alert><tag>/p</tag></alert>
+      
+</problem>
+
+<!--Practice Section problem 3***********************************--> 
+  
+<problem sectionWideCheckWork aggregateScores><title>Problem 3</title><alert>Create a link that displays the web address using a self-closing <tag>ref/</tag> tag, (i.e. without any alternate linking text specified).  The address is "https://marblerun.at" For full credit, provide one space between component name and attribute specification, and no other additional spaces:</alert>
+      <p>Example:  Build your own marble run here: <ref uri="https://www.marblerun.at"/></p>
+      <alert><tag>p</tag></alert>Build your own marble run here:
+        <answer>
+          <textInput size="24" name="tI_3a" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3a=<text>&lt;ref uri="https://www.marblerun.at"/&gt;</text></when>
+            </award>
+        </answer><alert><tag>/p</tag></alert>
+</problem>
+        
+<!--Practice Section problem 4***********************************-->        
+
+<problem sectionWideCheckWork aggregateScores><title>Problem 4</title><alert>Complete the code below using the <tag>figure</tag>, <tag>ref</tag>, <tag>image/</tag>, and <tag>caption</tag> components to create an image that functions as a link.</alert>
+    <p>Example: 
+      <figure suppressFigureNameInCaption>
+        <ref uri="https://www.marblerun.at">
+          <image width="100" source="https://lh3.googleusercontent.com/nUk4iTSopATagCBlUoZT0pRx4A55SKfDN5kFqe1PKGfuMMeP-gWoCOuskbBN6RDfnlYNZC363RsCYTzU2rdE1UaKNyJkWwZvakIwf73SFncA_JORBkvkfkGbreBPVMFIfUEhf3SXE_P1jjEbfIqY-nAzK0zoj7kD5XF7RHEbHN80mTUNVdSUFMHTH_aVIUyyAYraJBOoYeG6TPOiwuxemn_XK7STKhoDwbxaHnMcINvKYTx_HT7aGNpQbD2LN03xcqYkiwggp7pkK-13GStADWt3V1YHwbtjgIQgke2hJlhQplj3MY8XcoVJP7a2PvspZ15KzHr_zNTGfg-9FRTAitMD6TdBRtX8EwVMg5e_1JKQj7Ae12_H3NduvVMnjowiYcINWb8TjZxjEa2EsHJ1hZRfhXsChEkt4GfUkYI31KJaw0EQkmhK3xozSaT7B43KGwbnmRu9s59qp5vVdmQ1pR-3D7eyJnRvfjEszlj308A9wCFSo6SI9jL5VUpeRoaADzV1HjTBh4IzgNNEgm51ScfaTkZqf0aDiJo6g-Hpdr_9N1NQLSbxhz7v_bH_Y8oWHMm0KYyEcrZulY6pVYYFiZgrLu4EwQxN5FvRxUt_5367vZDdQGtJYLmiC73ColZ9ZfO_QbBuoOJgjY1h6x-m4cAbBcyX8BfK2U5GxWl3m9bDbHtQpUqOm27hxsxMB4Ui3nOqF4E4_3ZeAbQ_HYn4KQ=w608-h1044-no?authuser=0"/>
+        </ref>
+        <caption>Click the picture above to make your own marble run!</caption>
+      </figure>
+    </p>
+
+<pre>
+<answer>
+    <textInput name="tI_4a" prefill="<"></textInput>
+      <award credit="1.0">
+        <when>$tI_4a=<text>&lt;figure</text></when>
+      </award>
+</answer> suppressFigureNameInCaption&gt;
+  <answer>
+    <textInput name="tI_4b" prefill="<"></textInput>
+      <award credit="1.0">
+        <when>$tI_4b=<text>&lt;ref</text></when>
+      </award>
+  </answer> uri="https:www.//marblerun.at"&gt;
+      <answer>
+        <textInput name="tI_4c" prefill="<"></textInput>
+          <award credit="1.0">
+            <when>$tI_4c=<text>&lt;image</text></when>
+          </award>
+        </answer> size="100" source="https://lh3.googleusercontent.com..."/&gt;
+  <answer>
+    <textInput name="tI_4d" prefill="<>"></textInput>
+      <award credit="1.0">
+        <when>$tI_4d=<text>&lt;/ref&gt;</text></when>
+      </award>
+  </answer>
+      <answer>
+        <textInput name="tI_4e" prefill="<>"></textInput>
+          <award credit="1.0">
+            <when>$tI_4e=<text>&lt;caption&gt;</text></when>
+          </award>
+      </answer>Click the picture above to make your own marble run!<alert><tag>/caption</tag></alert>
+  <alert><tag>/figure</tag></alert>
+        
+</pre>
+    
+</problem>
+
+<!--Practice Section problem 5***********************************--> 
+
+  
+<problem sectionWideCheckWork aggregateScores><title>Problem 5</title><alert>Finish the code to create a Table of Contents using the <tag>ref</tag> component:</alert>
+        <p>Example: 
+            <subsection><title>Table of Contents</title>
+              <ol>
+                <li><ref uri="https://www.bettycrocker.com/recipes/ultimate-chocolate-chip-cookies/77c14e03-d8b0-4844-846d-f19304f61c57">Cookie Recipe</ref></li>
+                <li><ref uri="https://www.foodnetwork.com/recipes/food-network-kitchen/basic-vanilla-cake-recipe-2043654">Cake Recipe</ref></li>
+                <li><ref uri="https://cooking.nytimes.com/recipes/4735-old-fashioned-beef-stew">Beef Stew Recipe</ref></li>
+              </ol>
+            </subsection>
+        </p>
+<pre>
+<alert><tag>subsection</tag><tag>title</tag></alert>Table of Contents<alert><tag>/title</tag></alert>
+<answer>
+<textInput name="tI_5a" prefill="<>"></textInput>
+        <award credit="1.0">
+          <when>$tI_5a=<text>&lt;ol&gt;</text></when>
+        </award>
+</answer>
+  <answer>
+  <textInput name="tI_5b" prefill="<>"></textInput>
+        <award credit="1.0">
+          <when>$tI_5b=<text>&lt;li&gt;</text></when>
+        </award>
+  </answer>
+      <answer>
+      <textInput name="tI_5c" prefill="<"></textInput>
+            <award credit="1.0">
+            <when>$tI_5c=<text>&lt;ref</text></when>
+            </award>
+      </answer> uri="https://www.bettycrocker.com/recipes/ultimate-chocolate-chip-cookies..."&gt;
+            Cookie Recipe<alert><tag>/ref</tag></alert>
+  <alert><tag>/li</tag></alert>
+  <answer>
+  <textInput name="tI_5d" prefill="<>"></textInput>
+        <award credit="1.0">
+          <when>$tI_5b=<text>&lt;li&gt;</text></when>
+        </award>
+  </answer>
+      <answer>
+  <textInput name="tI_5e" prefill="<"></textInput>
+        <award credit="1.0">
+          <when>$tI_5e=<text>&lt;ref</text></when>
+        </award>
+      </answer> uri="https://www.foodnetwork.com/recipes/food-network-kitchen/basic-vanilla-cake-recipe-2043654"&gt;
+            Cake Recipe<alert><tag>/ref</tag></alert>
+  <alert><tag>/li</tag></alert>
+
+  <answer>
+  <textInput name="tI_5f" prefill="<>"></textInput>
+        <award credit="1.0">
+          <when>$tI_5f=<text>&lt;li&gt;</text></when>
+        </award>
+  </answer>
+      <answer>
+      <textInput name="tI_5g" prefill="<"></textInput>
+            <award credit="1.0">
+            <when>$tI_5g=<text>&lt;ref</text></when>
+            </award>
+      </answer> uri="https://cooking.nytimes.com/recipes/4735-old-fashioned-beef-stew"&gt;
+            Beef Stew Recipe<alert><tag>/ref</tag></alert>
+  <alert><tag>/li</tag></alert>
+ <alert><tag>/ol</tag></alert>
+<alert><tag>/subsection</tag></alert>
+</pre>
+        
+</problem>
+
+<problem sectionWideCheckWork aggregateScores><title>Problem 6</title><alert>Finish the code to create a button link using the <tag>ref</tag> component with the 'createButton' attribute:</alert>
+<p>Example:
+  <ref createButton="true" uri="https://www.bettycrocker.com/recipes/ultimate-chocolate-chip-cookies/77c14e03-d8b0-4844-846d-f19304f61c57">🍪🍪🍪</ref></p>
+<pre>
+  <alert>&lt;ref  <answer><textInput name="tI_6a"></textInput>
+      <award credit="1.0">
+        <when>$tI_6a=<text>createButton</text></when>
+      </award>
+    </answer>="true" uri="https://www.bettycrocker.com/..."&gt;🍪🍪🍪<tag>/ref</tag></alert>
+</pre>
+</problem>
+  
+<!--Solution to the Practice Section*****************************-->
+
+  
+<solution>
+  <ol> 
+    <li><pre>
+Click <tag>ref uri="https://www.marblerun.at"</tag>here<tag>/ref</tag> to build a custom marble run!
+    </pre>
+    </li>
+    
+    <li><pre>
+<tag>p</tag>Click <tag>ref uri="doenet:doenetId=yX1XdnrDpGClwJmEi6_ta"</tag>here<tag>/ref</tag>
+      to learn about basic text formatting.<tag>/p</tag>
+        </pre>
+    </li>
+    <li><pre>
+<tag>p</tag>Build your own marble run here: <tag>ref uri="https://www.marblerun.at"/</tag><tag>/p</tag>
+        </pre>
+    </li>
+    
+    <li><pre>
+<tag>figure suppressFigureNameInCaption</tag>
+  <tag>ref uri="https://www.marblerun.at"</tag>
+    <tag>image width="100" source="https://lh3.googleusercontent.com..."/</tag>
+  <tag>/ref</tag>
+    <tag>caption</tag>Click the picture above to make your own marble run!<tag>/caption</tag>
+<tag>/figure</tag>
+      </pre>
+      </li>
+    
+      <li><pre>
+<tag>subsection</tag><tag>title</tag>Table of Contents<tag>/title</tag>
+    <tag>ol</tag>
+        <tag>li</tag>
+          <tag>ref uri="https://www.bettycrocker.com/recipes/..."</tag>
+        Cookie Recipe<tag>/ref</tag>
+        <tag>/li</tag>
+        <tag>li</tag>
+          <tag>ref uri="https://www.foodnetwork.com/recipes/..."</tag>
+        Cake Recipe<tag>/ref</tag>
+        <tag>/li</tag>
+        <tag>li</tag>
+          <tag>ref uri="https://cooking.nytimes.com/recipes/..."</tag>
+        Beef Stew Recipe<tag>/ref</tag>
+        <tag>/li</tag>
+    <tag>/ol</tag>
+<tag>/subsection</tag>
+      </pre>
+      </li>  
+
+    <li><pre>
+<tag>ref createButton="true" uri="https://www.bettycrocker.com/recipes/..."</tag>🍪🍪🍪<tag>/ref</tag>
+
+      </pre>
+      </li>
+   </ol>  
+</solution>  
+</section>
+
+<!--The Quiz Section***********************************************-->
+
+
+<section sectionWideCheckWork aggregateScores><title>Check Your Understanding</title>
+  <aside><title>Take the quiz</title>
+    <ol>
+      <p><li>Which component creates a link to an external website or to another doenet file?                
+        <answer><choiceinput inline randomizeOrder="true">
+          <choice credit = "1">the <tag>ref</tag> component</choice>
+          <choice>the <tag>uri</tag> component</choice>
+          <choice>the <tag>link</tag>component</choice>
+        </choiceinput></answer>
+      </li></p>
+
+      <li><p>Which of the following choices would be the correct way to specify a link to a doenet file with the following address:</p>
+      <p>(https://www.doenet.org/#/course?tool=editor&<alert>doenetId=wRby4Z8fHMhV-Yg9F-gOk</alert>&path=sylbRj3AA0e4ovl1kLGXE%3A6WjmmNokJckzbeWaF504B%3A96DpO6L-CicGAdEQG5YJl%3ADoenetML)?</p> 
+<pre>
+<answer>
+  <choiceinput randomizeOrder="true">
+      <choice><tag>ref uri="https://www.doenet.org/#/course?tool=editor&
+        <alert>doenetId=wRby4Z8fHMhVYg9FgOk</alert>&path=sylbR
+        j3AA0e4ovl1kLGXE%3A6WjmmNokJckzbeWaF504B%3A96DpO6L-Cic
+        GAdEQG5YJl%3ADoenetML"</tag></choice>
+
+    
+        
+      <choice><tag>ref uri="doenet:<alert>doenetId=wRby4Z8fHMhV-Yg9F-
+            gOk</alert>&path=sylbRj3AA0e4ovl1kLGXE%3A6WjmmNok
+            JckzbeWaF504B%3A96DpO6L-CicGAdEQG5YJl%3ADoenetML"</tag></choice>
+
+    
+        
+      <choice credit = "1"><tag>ref uri="doenet:<alert>doenetId=wRby4Z8fHMhV-Yg9F-gOk</alert>"</tag></choice>
+    </choiceinput>
+  </answer>
+</pre>
+    </li>
+      
+      <p><li>Which attribute can be used within the <tag>ref</tag> component to display a button link?
+      <answer>
+        <choiceInput inline randomizeOrder="true">
+          <choice>the buttonLink="true" attribute</choice>
+          <choice>the isButton="true" attribute</choice>
+          <choice credit = "1">the createButton="true" attribute</choice>
+        </choiceinput></answer>
+      </li></p>
+      
+      <p><li>True or False:  An image can serve as a link when nested inside a <tag>ref</tag> component.
+        <answer><choiceinput>
+          <choice credit = "1">True</choice>
+          <choice>False</choice>
+        </choiceinput></answer>
+      </li></p>
+    </ol>
+
+<!--The Quiz Section Solution*********************************-->
+    
+  <solution>
+  <ol>
+    <li>Use the <tag>ref</tag> component to create a link to an external website or to another doenet file.</li>
+    <li>The correct way to specify the doenet link is:  <tag>ref uri="doenet:doenetId=wRby4Z8fHMhV-Yg9F-gOk"</tag>.</li>
+    <li>The correct attribute to specify a button link is the 'createButton' attribute.</li>
+    <li>It is true that an <tag>image</tag> can be nested inside a <tag>ref</tag> in order to create an image that functions as a link.</li>
+  </ol>
+  </solution>
+
+</aside>
+</section>
+
+
+<section><title>References</title>
+  <ref createButton = "true" uri= "https://docs.google.com/spreadsheets/d/1TKjAJxFC7Lzz8YiMWUf7k2gL5omod_RJsk1gQ_RONQw/edit?usp=sharing">ComponentList</ref>
+  <ref createButton = "true" uri= ""><tag>figure</tag><tag>/figure</tag></ref>
+  <ref createButton = "true" uri="doenet:doenetId=PBCTtJf7hbrpPmku8DUDG"><tag>image/</tag></ref>
+  <ref createButton = "true" uri= "doenet:doenetId=lP_BhuhmGqnC7-mJwicom"><tag>ol</tag><tag>/ol</tag> and <tag>ul</tag><tag>/ul</tag></ref>
+</section>
+
+<!--
+<aside>
+    <title>Citations</title>
+</aside>-->
+    

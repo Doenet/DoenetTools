@@ -1,0 +1,114 @@
+<document><title><tag>module</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component
+    <aside><title><alert>Inherited from parent component/  <tag><ref>template</ref></tag>:</alert></title>
+      <li><attr>rendered</attr>  <em>(boolean)</em></li>
+      <li><attr>isResponse</attr>  <em></em></li>
+    </aside>
+    </li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>module</tag><idx><tag>module</tag></idx> component renders...</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

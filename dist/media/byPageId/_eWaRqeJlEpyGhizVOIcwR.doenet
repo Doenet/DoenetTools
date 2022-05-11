@@ -1,0 +1,14 @@
+<sideBySide>
+<tabular>
+  <row><cell>1</cell><cell><answer>1</answer></cell></row>
+  <row><cell>2</cell><cell><answer>2</answer></cell></row>
+  <row><cell>3</cell><cell><answer>3</answer></cell></row>
+  <row><cell>4</cell><cell><answer>4</answer></cell></row>
+</tabular>
+<tabular>
+  <row><cell>5</cell><cell><answer>5</answer></cell></row>
+  <row><cell>6</cell><cell><answer>6</answer></cell></row>
+  <row><cell>7</cell><cell><answer>7</answer></cell></row>
+  <row><cell>8</cell><cell><answer>8</answer></cell></row>
+</tabular>
+</sideBySide>

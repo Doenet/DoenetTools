@@ -1,0 +1,49 @@
+
+<p>Suppose we have a 1D dynamical system where <m>\frac{dx}{dt} = ax + b</m>. Let's try  to solve this system. The equilibrium of this system occurs when <m>\frac{dx}{dt} = 0</m>, so <m>x_{eq} = -b/a</m>. We will make a substitution to help solve the system. Let <m>u = x - x_{eq}</m>, so <m>\frac{du}{dt} = a(u-b/a) + b = au</m>. We know that <m>u(t) = ce^{at}</m> for some <m>c</m>. Therefore, <m>x = ce^{at} - b/a</m>. The value of <m>c</m> will be determined by the initial condition.</p>
+
+<p>Now consider the more general dyanimcal system <m>\frac{dx}{dt} = f(x)</m>. We approximate the behavior of <m>x</m> around equilibriums. Let <m>x_{eq}</m> be an equilibirum, meaning <m>f(x_{eq}) = 0</m>. We can approximate <m>f</m> around <m>x_{eq}</m> using a Taylor series: <m>f(x) = f(x_{eq}) + (x-x_{eq})f'(x) + ... = (x-x_{eq})f'(x_{eq})</m>. Let <m>u = x-x_{eq}</m>, then using the linear approximation, we know <m>\frac{du}{dt} = f(u+x_{eq}) = u f'(x_{eq})</m>. Thus <m>u = ce^{f'(x_{eq})t}</m> and <m>x = x_{eq} + ce^{f'(x_{eq})t}</m>. This approximation is valid when <m>x</m> is near <m>x_{eq}</m>, so the Taylor series closely approximates <m>f(x)</m>.</p>
+
+<p>We can plot the equilibriums on a number line. For every stable equilibrium, we draw a filled point, and for every unstable equilibrium, a hollow point. This is called a phase line and it shows where there are stable or unstable equilibriums. Draw the phase line for the dynamical system <m>\frac{dx}{dt}=f(x)</m> where f is plotted below.</p>
+
+<setup><number name="zeroFixed" fixed>0</number><number name="eq1">-4</number><number name="eq2">1</number><number name="eq3">5</number></setup>
+<graph>
+  <function through="($eq1,0) ($eq2,0) ($eq3,0)" throughSlopes="1 -2 3"/>
+</graph>
+<graph name="PhaseLineGraph" displayYaxis="false" height="$(PhaseLineGraph{prop='width'})*0.3" showNavigation="false">
+<!-- <line name="PhaseLine" equation="y=0" fixed styleNumber="3"/> -->
+</graph>
+<callAction label="Add Point" tname="PhaseLineGraph" actionName="addChildren">
+  <point name="eqPoint" label="$(eqPoint{prop='x'})" x="0" y="$zeroFixed">
+    <constraints>
+      <constrainToGrid/>
+    </constraints>
+  </point>
+</callAction>
+<callAction label="Delete Point" tname="PhaseLineGraph" actionName="deleteChildren" number="1"></callAction>
+<answer>
+  <award matchPartial>
+    <when>
+      <mathlist>
+        <collect tname="PhaseLineGraph" componentTypes="point" prop="x"/
+      </mathlist>
+      =
+      <mathList unordered>
+        $eq1 $eq2 $eq3
+      </mathList>
+    </when>
+  </award>
+</answer>
+
+<p>Sometimes a dynamical system can have parameters that do not depend on <m>t</m>. Consider the system <m>\frac{dx}{dt} = f(x,a)</m>. The behavior of equilibriums can change when a changes, as does the phase line. We can communicate these changes in a bifurcation diagram. Imagine drawing a phase line vertically for each value of <m>a</m>, and plotting the result.</p>
+
+<slider name="a" label="a"></slider>
+<graph>
+  <!-- <line equation="y=0" styleNumber="3"/> -->
+  <function formula="x^3+(5-$a)*x"/>
+</graph>
+<graph xmin="0" xmax="10">
+  <line equation="x=$a" styleNumber="3"/>
+  <curve flipfunction><function formula="x^2+5"/></curve>
+  <function formula="0"/>
+</graph>
+

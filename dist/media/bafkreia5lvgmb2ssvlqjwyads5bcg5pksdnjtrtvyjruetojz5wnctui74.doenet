@@ -1,0 +1,237 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>template</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>rendered</attr>  <em>(boolean)</em></li>
+  <li><attr>isResponse</attr>  <em>(boolean)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>template</tag><idx><tag>template</tag></idx> component performs an operation on each of the <ref uri="doenet:doenetId=7DHdSFMGgXO23YarWCeYj"><tag>sources</tag></ref> within a <ref uri="doenet:doenetId=6xVfXS5mHvlZ1La6IyVmP"><tag>map</tag></ref>.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Example 1: <tag>template</tag> without attributes</title>
+<p>In the sample code below, the <tag>template</tag> is used to generate a repeated <ref><tag>p</tag></ref> component (paragraph) with distinct <ref><tag>sources</tag></ref> within a <ref><tag>map</tag></ref>.  Since there are two independent aliases to which the <tag>template</tag> must be applied, and since they must be used simultaneously without combination, the <attr>behavior</attr> attribute within the <tag>map</tag> component has been set to <c>"parallel"</c>.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;Where is Spot?
+  
+  &lt;map behavior="parallel"&gt;
+  
+    &lt;template&gt;
+      &lt;p&gt;Is he &dollar;whereIsSpot?  No, a &dollar;whatIsThere is &dollar;whereIsSpot.&lt;/p&gt;
+    &lt;/template&gt;
+  
+    &lt;sources alias="whereIsSpot"&gt;
+      &lt;text&gt;behind the door&lt;/text&gt;
+      &lt;text&gt;inside the clock&lt;/text&gt;
+      &lt;text&gt;under the stairs&lt;/text&gt;
+    &lt;/sources&gt;
+  
+    &lt;sources alias="whatIsThere"&gt;
+      &lt;text&gt;big brown bear&lt;/text&gt;
+      &lt;text&gt;yellow and green snake&lt;/text&gt;
+      &lt;text&gt;big lion&lt;/text&gt;
+    &lt;/sources&gt;
+  
+  &lt;/map&gt;
+&lt;/p&gt;
+</pre>
+ 
+        </example>  
+      </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<example><title>What Doenet Renders (Example 1)</title>
+<p>Where is Spot?
+  <map behavior="parallel">
+    <template>
+      <p>Is he $whereIsSpot?  No, a $whatIsThere is $whereIsSpot.</p>  
+    </template>
+    <sources alias="whereIsSpot">
+      <text>behind the door</text>
+      <text>inside the clock</text>
+      <text>under the stairs</text>
+    </sources>
+    <sources alias="whatIsThere">
+      <text>big brown bear</text>
+      <text>yellow and green snake</text>
+      <text>big lion</text>
+    </sources>
+  </map>
+</p>
+</example>
+    </cell>
+  </row>
+ 
+
+<!--******************************************************-->  
+<!--Revise below to a more interesting sequence, one that makes use of the map functionality better
+  
+  <row bottom="minor">
+    <cell>
+<subsection><title>Example 2:  Using <tag>template</tag> with a user-defined <tage>sequence</tage></title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+<p>Choose a step size to calculate the sum of a sequence of 10 evenly-spaced numbers: <mathInput name="n"/></p>
+
+<setup>
+<map name="userSequence" assignNames="s1 s2 s3 s4 s5 s6 s7 s8 s9 s10">
+  <template><math>$summand</math></template>
+  <sources alias="summand">
+    <sequence from="0" step="$n" length="10"/>
+  </sources>
+</map>
+</setup>
+  
+<p>The sequence terms are <m>\{</m><asList>$userSequence</asList><m>\}</m>.</p>
+<p>The sixth term in the sequence is $s6 and the sum of the sequence is: <sum>$userSequence</sum>.</p>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+    </cell>
+  </row>-->
+<!--*******************************************************-->
+<!--Revise below to a more interesting sequence, one that makes use of the map functionality better
+  <row bottom="medium">
+    <cell>
+<example><title>What Doenet Renders (Example 2)</title>
+<p>Choose a step size to calculate the sum of a sequence of 10 evenly-spaced numbers: <mathInput name="n"/></p>
+
+<setup>
+<map name="userSequence" assignNames="s1 s2 s3 s4 s5 s6 s7 s8 s9 s10">
+  <template><math>$summand</math></template>
+  <sources alias="summand">
+    <sequence from="0" step="$n" length="10"/>
+  </sources>
+</map>
+</setup>
+  
+<p>The sequence terms are <m>\{</m><asList>$userSequence</asList><m>\}</m>.</p>
+<p>The sixth term in the sequence is $s6 and the sum of the sequence is: <sum>$userSequence</sum>.</p>
+</example>
+    </cell>
+  </row>-->
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Example 3: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<example><title>What Doenet Renders (Example 3)</title>
+
+</example>
+    </cell>
+  </row>
+
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Example 4: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<example><title>What Doenet Renders (Example 4)</title>
+
+</example>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

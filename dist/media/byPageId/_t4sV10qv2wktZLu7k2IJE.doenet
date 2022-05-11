@@ -1,0 +1,110 @@
+<problem>
+<!-- <title>Review derivative of exponential to introduce differential equations</title> -->
+
+<setup>
+
+<function name='f'  variables='t' symbolic >e^(2t)</function>
+<math name='d_f' simplify='full' ><derivative>$f</derivative></math>
+<function name='g' variables='t' symbolic >e^(-5t)</function>
+<math name='d_g' simplify='full' ><derivative>$g</derivative></math>
+<function name='h' variables='t' symbolic>e^(a*t)</function>
+<math name='d_h' simplify='full' ><derivative>$h</derivative></math>
+</setup>
+
+<!--<p>debug: f = <m>$f</m></p>
+<p>debug: d_f= <m>$d_f</m></p>
+<p>debug: g = <m>$g</m></p>
+<p>debug: d_g= <m>$d_g</m></p>
+<p>debug: h = <m>$h</m></p>
+<p>debug: d_h= <m>$d_h</m></p>-->
+
+To begin, let's review the derivative of the exponential function.
+
+
+
+<ol>
+
+<!--Problem #1********************************************-->  
+<li>
+If <m>f(t)=$f </m>, what is <m>\displaystyle \frac{ df }{ dt }</m>?  
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$d_f </award>
+</answer>
+ If <m>g(t)=$g </m>, what is <m>\displaystyle \frac{ dg }{ dt }</m>?  
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$d_g </award>
+</answer>
+ If <m>h(t) = $h </m> for a constant <m>a</m>, what is <m>\displaystyle \frac{ dh }{ dt }</m>? 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$d_h </award>
+</answer>
+
+</li>
+
+<!--Problem#2*********************************************-->
+<li><p>
+Let's say that the function <m>u(t)</m> is one of those three functions.  It is either <m>u(t)=$f </m>, <m>u(t)=$g </m> or <m>u(t)=$h </m>.   To determine the identity of <m>u(t)</m>, you are given the information that the derivative <m>\displaystyle \frac{ du }{ dt }</m> is the same thing as two times the function itself, i.e., that <m>\displaystyle \frac{ du }{ dt } = 2 u(t)</m>.   What is <m>u(t)</m>?</p>
+<p><m>u(t)=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$f </award>
+</answer>
+</p>
+
+</li>
+
+<!--Problem#3*********************************************-->
+<li><p>
+Let's say that the function <m>s(t)</m> is also one of those three functions.  You are given the additional information that the derivative <m>\displaystyle \frac{ ds }{ dt }</m> is the same thing as <m>-5</m> times the function itself, i.e., that <m>\displaystyle \frac{ ds }{ dt } = -5 s(t)</m>.  What is <m>s(t)</m>?</p>  
+<p><m>s(t) =</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$g </award>
+</answer></p>
+
+</li>
+
+<!--Problem#4**********************************************-->
+<li>
+Equations like <m>\displaystyle \frac{ du }{ dt } = 2u(t)</m> are called <em>differential equations</em>.  We say that <m>u(t)</m> is a solution to that differential equation.   The above function <m>h(t)=$h </m> is a solution to a similar differential equation.  What is the differential equation that <m>h(t)</m> solves?
+
+<p><m>\displaystyle \frac{ dh }{ dt } =</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>a*h(t) </award>
+<award symbolicEquality='true' simplifyOnCompare>a*h</award>
+</answer>
+</p>
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li><p>
+<me>\displaystyle \frac{ df }{ dt } = $d_f </me><me>\displaystyle \frac{ dg }{ dt }=$d_g </me><me>\displaystyle \frac{ dh }{ dt } = $d_h </me></p>
+</li>
+
+<li><p>
+Of those three options, the function <m>u(t)</m> must be <m>u(t)=$f </m>.</p>
+</li>
+
+<li><p>
+Of those three options, the function <m>s(t)</m> must be <m>s(t)=$g </m>.</p>
+</li>
+
+<li><p>
+<m>\displaystyle \frac{ dh }{ dt } = a h(t)</m>.</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

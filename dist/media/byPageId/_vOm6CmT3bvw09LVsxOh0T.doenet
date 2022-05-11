@@ -1,0 +1,82 @@
+<!--
+#DESCRIPTION
+##  Calculus: Limit laws
+##ENDDESCRIPTION
+
+
+## DBsubject(Calculus - single variable)
+## DBchapter(Limits and continuity)
+## DBsection(Squeeze theorem)
+## Date(08/30/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(limits_squeeze_linear_and_quadratic)
+## Level(3)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('2.3')
+## Problem1('30')
+## KEYWORDS('calculus', 'limit laws', 'limit', 'squeeze theorem')
+## MO(1)-TF-12/18/2014
+-->
+
+<setup>
+  <selectFromSequence from="1" to="4" name="a" />
+  <math name="ans" simplify>
+    50*$a - 35*$a^2
+  </math>
+</setup>
+
+<p>
+  If
+  <m>
+    50 x - 35 x^2 \le g(x) \le 24 - 10 x^3 + x^4
+  </m>
+  for all <m>x</m>, evaluate 
+  <m>\displaystyle \lim_{x \to $a} g(x).</m>
+</p>
+
+<p>
+  Limit:
+  <answer>
+    <award>
+      $ans
+    </award>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        Limit
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans
+      </cell>
+    </row>
+  </tabular>
+</solution>
+
+<!--
+
+###############################################################
+Context()->texStrings;
+
+BEGIN_TEXT
+If 50x−35x2≤g(x)≤24−10x3+x450x−35x2≤g(x)≤24−10x3+x450 x - 35 x^2 \le g(x) \le 24 - 10 x^3 + x^4 for all x,x,x, evaluate limx→$ag(x).limx→$ag(x). \displaystyle \lim_{x \to $a} g(x).$PAR
+Limit: \{ans_rule(20)\}$BR
+END_TEXT
+
+Context()->normalStrings;
+
+#####################################################################
+
+ANS( $ans->cmp );
+
+
+ENDDOCUMENT();        # This should be the last executable line in the problem.

@@ -1,0 +1,15 @@
+<title>Pure-time DE intro problem set</title>
+
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <copy uri="doenet:contentId=82e588a37dca3dc190fdc9123a229570fe15713bb1c8866bc9af5c408d5b6b9d&doenetId=024a3kxjOgNEfeGKeFkws" componentType="problem" assignNames="problem1" />
+  <copy uri="doenet:contentId=bb9838c763db0ff103472de3bc57ced5fbbfbd2569a04a11d63d56b9f371bc57&doenetId=xgpTKJJsqWv_WwkE4OLMJ" componentType="problem" assignNames="problem2" />
+
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

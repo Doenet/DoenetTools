@@ -1,0 +1,63 @@
+<title>The stability of equilibria for discrete dynamical systems</title>
+
+<description>
+Identifying stable and unstable equilibria though the derivative of the updating function.
+</description>
+
+
+
+
+<section><title>Overview</title>
+
+
+<p>
+<ref uri='doenet:equilibria_discrete_dynamical_systems'>Equilibria</ref>
+ of 
+<ref uri='doenet:discrete_dynamical_system_introduction'>discrete dynamical systems</ref>
+ can be 
+<ref uri='doenet:equilibria_discrete_dynamical_systems_stability_idea'>stable or unstable</ref>
+, depending on whether or not trajectories that start near the equilibria move away from the equilibria.  Here we show how to determine this stability using the derivative of the updating function. </p>
+
+<figure>
+<video youtube="7B0IXsc1hQ8" width="640px" height="360px"/>
+<caption>Stability of equilibria of discrete dynamical systems, revisited</caption>
+</figure>
+<!--Video transcript -->
+
+<!-- End video transcript -->
+<!-- boxedvideo equilibria_discrete_dynamical_systems_stability_revisited -->
+
+
+
+
+<!-- django tag index_entry, stability theorem, , , , "discrete dynamical systems" "stability_theorem_1" -->
+
+
+<!-- django tag index_entry, discrete dynamical system, , , , "stability theorem" "stability_theorem_2" -->
+
+
+
+</section>
+
+<section><title>Stability theorem</title>
+
+
+<p>We can summarize the results for the stability of discrete dynamical systems with the following stability theorem.</p>
+
+<p>Consider the discrete dynamical system
+<md>
+  <mrow>x_{n+1}\amp = f(x_n)</mrow>
+  <mrow>x_0\amp = a,</mrow>
+</md>
+with an 
+<ref uri='doenet:equilibria_discrete_dynamical_systems'>equilibrium</ref><footnote>Recall that the fact that <m>E</m> is an equilibrium simply means that <m>E = f(E)</m>.
+</footnote>
+  <m>x_n = E</m>. Then, we can determine the stability of the equilibrium by calculating the derivative of <m>f</m> evaluated at the equilbrium as follows.</p>
+<ul>
+<li>If <m>|f'(E)| \lt  1</m>, then the equilibrium <m>x_n=E</m> is stable.</li>
+<li>If <m>|f'(E)| \gt  1</m>, then the equilibrium <m>x_n = E</m> is unstable.</li>
+<li>If <m>|f'(E)|=1</m>, then we can't figure out the stability of the equilibrium from just the derivative <m>f'(E)</m>.</li>
+</ul>
+
+  
+</section>

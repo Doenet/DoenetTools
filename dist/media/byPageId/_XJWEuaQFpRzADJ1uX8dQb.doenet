@@ -1,0 +1,632 @@
+<title>Derivatives</title>
+
+<section>
+  <title>Derivatives of functions</title>
+
+  <p>The <tag>derivative</tag> component can be applied to a function.</p>
+
+  <subsection><title>Setup</title>
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+Let &lt;m&gt;f(x,y) = 
+&lt;function name=&quot;f&quot; nInputs=&quot;2&quot;&gt;
+  x^2y^3
+&lt;/function&gt;&lt;/m&gt;.
+        </pre>
+      </cell>
+      <cell>
+        Let <m>f(x,y) = <function name="f" nInputs="2">x^2y^3</function></m>.
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+Let &lt;m&gt;g(s,t) = 
+&lt;function name=&quot;g&quot; variables=&quot;s t&quot;&gt;
+  sin(st)
+&lt;/function&gt;&lt;/m&gt;.
+        </pre>
+      </cell>
+      <cell>
+        Let <m>g(s,t) = <function name="g" variables="s t">sin(st)</function></m>.
+      </cell>
+    </row>
+    </tabular>
+  </subsection>
+  
+  <subsection><title>No arguments</title>
+  
+  <p>Specifying the <tag>derivative</tag> without attributes will take the derivative with respect to the function's first variable.</p>
+
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial f}{\partial x} = 
+&lt;derivative&gt;
+  &dollar;f
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial f}{\partial x} = <derivative>$f</derivative></m>
+      </cell>
+    </row>
+    <row>
+      <cell>
+      <pre>
+&lt;m&gt;\frac{\partial g}{\partial s} = 
+&lt;derivative&gt;
+  &dollar;g
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial g}{\partial s} = <derivative>$g</derivative></m>
+      </cell>
+    </row>
+  </tabular>
+
+  </subsection>
+
+  <subsection><title>The <attr>derivVariables</attr> attribute</title>
+  <p>To differentiate with respect to another variable, use the <attr>derivVariables</attr> attribute.</p>
+    
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial f}{\partial y} = 
+&lt;derivative derivVariables=&quot;y&quot;&gt;
+  &dollar;f
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial f}{\partial y} = 
+          <derivative derivVariables="y">$f</derivative></m>
+      </cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial g}{\partial t} = 
+&lt;derivative derivVariables=&quot;t&quot;&gt;
+  &dollar;g
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial g}{\partial t} = 
+          <derivative derivVariables="t">$g</derivative></m>
+      </cell>
+    </row>
+  </tabular>
+
+    
+  <p>Higher order derivatives can be created by including multiple variables in the <attr>derivVariables</attr> attribute.</p>
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial^2 f}{\partial x^2} = 
+&lt;derivative derivVariables=&quot;x x&quot;&gt;
+  &dollar;f
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial^2 f}{\partial x^2} = <derivative derivVariables="x x">$f</derivative></m>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial^2 f}{\partial y \partial x} = 
+&lt;derivative derivVariables=&quot;x y&quot;&gt;
+  &dollar;f
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial^2 f}{\partial y \partial x} = <derivative derivVariables="x y">$f</derivative></m>
+      </cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial^2 g}{\partial s \partial t} =
+&lt;derivative derivVariables=&quot;t s&quot;&gt;
+  &dollar;g
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial^2 g}{\partial s \partial t} = <derivative derivVariables="t s">$g</derivative></m>
+      </cell>
+    </row>
+
+  </tabular>
+
+  <p>The same higher order derivatives could also be created by calling <tag>derivative</tag> multiple times</p>
+
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial^2 f}{\partial x^2} = 
+&lt;derivative&gt;
+  &lt;derivative&gt;
+    &dollar;f
+  &lt;/derivative&gt;
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial^2 f}{\partial x^2} = <derivative><derivative>$f</derivative></derivative></m>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial^2 f}{\partial y \partial x} = 
+&lt;derivative derivVariables=&quot;y&quot;&gt;
+  &lt;derivative derivVariables=&quot;x&quot;&gt;
+    &dollar;f
+  &lt;/derivative&gt;
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial^2 f}{\partial y \partial x} = <derivative derivVariables="y"><derivative derivVariables="x">$f</derivative></derivative></m>
+      </cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial^2 g}{\partial s \partial t} = 
+&lt;derivative derivVariables=&quot;s&quot;&gt;
+  &lt;derivative derivVariables=&quot;t&quot;&gt;
+    &dollar;g
+  &lt;/derivative&gt;
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial^2 g}{\partial s \partial t} = <derivative derivVariables="s"><derivative derivVariables="t">$g</derivative></derivative></m>
+      </cell>
+    </row>
+  </tabular>
+    
+  </subsection>
+
+  <subsection><title>The <attr>variables</attr> attribute</title>
+
+    <p>The <tag>derivative</tag> always returns a function.  When taking a derivative of a function, the derivative function will be, by default, a function of the same variables as the original function.  One can override the variables with the <attr>variables</attr>, as one can do with any function.  If the <attr>derivVariables</attr> is not specified, the derivative is taken with respect to the first newly prescribed variable.</p>
+
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+Let &lt;m&gt;f_x(x,y) =
+&lt;derivative name=&quot;fx&quot;&gt;
+  &dollar;f
+&lt;/derivative&gt;&lt;/m&gt;.
+Then, &lt;m&gt;f_x(1,2) = &dollar;&dollar;fx(1,2)&lt;/m&gt;.
+        </pre>
+      </cell>
+      <cell>
+        Let <m>f_x(x,y) = <derivative name="fx">$f</derivative></m>.  Then, <m>f_x(1,2) = $$fx(1,2)</m>.
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+Let &lt;m&gt;\tilde{f}_y(y,x) = 
+&lt;derivative name=&quot;tildefy&quot; variables=&quot;y x&quot;&gt;
+  &dollar;f
+&lt;/derivative&gt;&lt;/m&gt;.
+Then, &lt;m&gt;\tilde{f}_y(2,1) = &dollar;&dollar;tildefy(2,1)&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        Let <m>\tilde{f}_y(y,x) = <derivative name="tildefy" variables="y x">$f</derivative></m>.  Then, <m>\tilde{f}_y(2,1) = $$tildefy(2,1)</m>
+      </cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+Let &lt;m&gt;\tilde{f}_x(y,x) = 
+&lt;derivative name=&quot;tildefx&quot; variables=&quot;y x&quot; 
+  derivVariables=&quot;x&quot;&gt;
+  &dollar;f
+&lt;/derivative&gt;&lt;/m&gt;.
+Then, &lt;m&gt;\tilde{f}_x(2,1) = &dollar;&dollar;tildefx(2,1)&lt;/m&gt;.
+        </pre>
+      </cell>
+      <cell>
+        Let <m>\tilde{f}_x(y,x) = <derivative name="tildefx" variables="y x" derivVariables="x">$f</derivative></m>.  Then, <m>\tilde{f}_x(2,1) = $$tildefx(2,1)</m>.
+      </cell>
+    </row>
+  </tabular>
+    
+
+  
+  </subsection>
+
+  <subsection><title>Differentiating with respect to an extra variable</title>
+
+    <p>If we define the function <m>h(x,y) = <function variables="x y">xyz</function></m> where <m>z</m> is not declared as a variable of <m>h</m>, then we could view <m>z</m> as a parameter of the function.  Regardless, one can still differentiate with respect to <m>z</m>.</p>
+
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+&lt;m&gt;h(x,y) = 
+&lt;function name=&quot;h&quot; variables=&quot;
+  x y&quot;&gt;xyz
+&lt;/function&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>h(x,y) = <function name="h" variables="x y">xyz</function></m>
+      </cell>
+    </row>
+
+    <row>
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial h}{\partial z} = 
+&lt;derivative derivVariables=&quot;z&quot;&gt;
+  &dollar;h
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial h}{\partial z} = <derivative derivVariables="z">$h</derivative></m>
+      </cell>
+    </row>
+ 
+  </tabular>
+    
+
+    
+    
+  </subsection>
+  
+</section>
+
+<section><title>Derivatives of expressions</title>
+
+  <p>The <tag>derivative</tag> component also can be applied to directly to expressions.</p>
+
+  <subsection><title>Setup</title>
+
+    
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+&lt;p&gt;Let &lt;m&gt;a = &lt;math name=&quot;a&quot;&gt;3&lt;/math&gt;&lt;/m&gt;,
+&lt;m&gt;u = &lt;math name=&quot;u&quot;&gt;x^2&lt;/math&gt;&lt;/m&gt;,
+and &lt;m&gt;v = &lt;math name=&quot;v&quot;&gt;y^4&lt;/math&gt;&lt;/m&gt;.
+        </pre>
+      </cell>
+      <cell>
+        Let <m>a = <math name="a">3</math></m>, <m>u = <math name="u">x^2</math></m>, and <m>v = <math name="v">y^4</math></m>.
+      </cell>
+    </row>
+ 
+  </tabular>
+    
+
+  </subsection>
+
+  <subsection><title>No arguments</title>
+
+    <p>The <tag>derivative</tag> tag with no arguments applied to an expression will take the derivative with respect to <m>x</m>.</p>
+      
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial}{\partial x} 
+\left(&dollar;a&dollar;u&dollar;v\right) = 
+&lt;derivative&gt;&dollar;a&dollar;u&dollar;v&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial}{\partial x} \left($a$u$v\right) = <derivative>$a$u$v</derivative></m>
+      </cell>
+    </row>
+ 
+  </tabular>
+    
+  </subsection>
+
+  <subsection><title>The <attr>derivVariables</attr> attribute</title>
+
+  <p>To differentiate with respect to another variable, use the <attr>derivVariables</attr> attribute.</p>
+
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial}{\partial y} 
+\left(&dollar;a&dollar;u&dollar;v\right) = 
+&lt;derivative derivVariables=&quot;y&quot;&gt;
+  &dollar;a&dollar;u&dollar;v
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial}{\partial y} \left($a$u$v\right) = <derivative derivVariables="y">$a$u$v</derivative></m>
+      </cell>
+    </row>
+ 
+  </tabular>
+    
+    <p>Higher order derivatives can be created by including multiple variables in the <attr>derivVariables</attr> attribute.</p>
+
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial^2}{\partial x^2} 
+\left(&dollar;a&dollar;u&dollar;v\right) = 
+&lt;derivative derivVariables=&quot;x x&quot;&gt;
+  &dollar;a&dollar;u&dollar;v
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial^2}{\partial x^2} \left($a$u$v\right) = <derivative derivVariables="x x">$a$u$v</derivative></m>
+      </cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial^2}{\partial y \partial x} 
+\left(&dollar;a&dollar;u&dollar;v\right) = 
+&lt;derivative derivVariables=&quot;x y&quot;&gt;
+  &dollar;a&dollar;u&dollar;v
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial^2}{\partial y \partial x} \left($a$u$v\right) = <derivative derivVariables="x y">$a$u$v</derivative></m>
+      </cell>
+    </row>
+ 
+  </tabular>
+
+
+  <p>The same higher order derivatives could also be created by calling <tag>derivative</tag> multiple times.</p>
+    
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial^2}{\partial x^2} 
+\left(&dollar;a&dollar;u&dollar;v\right) =
+&lt;derivative&gt;
+  &lt;derivative&gt;
+    &dollar;a&dollar;u&dollar;v
+  &lt;/derivative&gt;
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial^2}{\partial x^2} \left($a$u$v\right) = <derivative><derivative>$a$u$v</derivative></derivative></m>
+      </cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial^2}{\partial y \partial x} 
+\left(&dollar;a&dollar;u&dollar;v\right) = 
+&lt;derivative derivVariables=&quot;y&quot;&gt;
+  &lt;derivative derivVariables=&quot;x&quot;&gt;
+    &dollar;a&dollar;u&dollar;v
+  &lt;/derivative&gt;
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial^2}{\partial y \partial x} \left($a$u$v\right) = <derivative derivVariables="y"><derivative derivVariables="x">$a$u$v</derivative></derivative></m>
+      </cell>
+    </row>
+ 
+  </tabular>
+  
+
+  </subsection>
+
+
+  <subsection><title>The <attr>variables</attr> attribute</title>
+
+    <p>The <tag>derivative</tag> always creates a function.  When differentiating an expression without specifying the <attr>variables</attr>, the variables specified by <attr>derivVariables</attr> (deduplicated) are used.</p>
+
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+Let &lt;m&gt;d_1(y) = \frac{\partial^2}{\partial y^2}
+\left(&dollar;a&dollar;u&dollar;v\right) = 
+&lt;derivative name=&quot;d1y&quot; derivVariables=&quot;y y&quot; 
+  symbolic&gt;
+  &dollar;a&dollar;u&dollar;v
+&lt;/derivative&gt;&lt;/m&gt;.
+Then &lt;m&gt;d_1(r) = &dollar;&dollar;d1y(r)&lt;/m&gt;.
+        </pre>
+      </cell>
+      <cell>
+        Let <m>d_1(y) = \frac{\partial^2}{\partial y^2}\left($a$u$v\right) = <derivative name="d1y" derivVariables="y y" symbolic>$a$u$v</derivative></m>.
+        Then <m>d_1(r) = $$d1y(r)</m>.
+      </cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+Let &lt;m&gt;d_2(y,x) = 
+\frac{\partial^3}{\partial x \partial y^2} 
+\left(&dollar;a&dollar;u&dollar;v\right) = 
+&lt;derivative name=&quot;d2yx&quot; derivVariables=&quot;y y x&quot; 
+  symbolic&gt;
+  &dollar;a&dollar;u&dollar;v
+&lt;/derivative&gt;&lt;/m&gt;. 
+Then &lt;m&gt;d_2(p,q) = &dollar;&dollar;d2yx(p,q)&lt;/m&gt;.
+        </pre>
+      </cell>
+      <cell>
+        Let <m>d_2(y,x) = \frac{\partial^3}{\partial x \partial y^2} \left($a$u$v\right) = <derivative name="d2yx" derivVariables="y y x" symbolic>$a$u$v</derivative></m>. 
+        Then <m>d_2(p,q) = $$d2yx(p,q)</m>.
+      </cell>
+    </row>
+ 
+  </tabular>
+
+
+    <p>One can use the <attr>variables</attr> to specify different variables from those inferred from <attr>derivVariables</attr>.</p>
+
+
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <pre>
+Let &lt;m&gt;\tilde{d}_1(x,y) = 
+\frac{\partial^2}{\partial y^2}
+\left(&dollar;a&dollar;u&dollar;v\right) = 
+&lt;derivative name=&quot;tilded1xy&quot; derivVariables=&quot;y y&quot;
+variables=&quot;x y&quot; symbolic&gt;
+  &dollar;a&dollar;u&dollar;v
+&lt;/derivative&gt;&lt;/m&gt;.
+Then &lt;m&gt;\tilde{d}_1(r,s) = &dollar;&dollar;tilded1xy(r,s)&lt;/m&gt;.
+        </pre>
+      </cell>
+      <cell>
+        Let <m>\tilde{d}_1(x,y) = \frac{\partial^2}{\partial y^2}\left($a$u$v\right) = <derivative name="tilded1xy" derivVariables="y y" variables="x y" symbolic>$a$u$v</derivative></m>.
+        Then <m>\tilde{d}_1(r,s) = $$tilded1xy(r,s)</m>.
+      </cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+Let &lt;m&gt;\tilde{d}_2(x,y) = 
+\frac{\partial^3}{\partial x \partial y^2} 
+\left(&dollar;a&dollar;u&dollar;v\right) = 
+&lt;derivative name=&quot;tilded2xy&quot; derivVariables=&quot;y y x&quot;
+variables=&quot;x y&quot; symbolic&gt;
+  &dollar;a&dollar;u&dollar;v
+&lt;/derivative&gt;&lt;/m&gt;.
+Then &lt;m&gt;\tilde{d}_2(p,q) = &dollar;&dollar;tilded2xy(p,q)&lt;/m&gt;.
+        </pre>
+      </cell>
+      <cell>
+        Let <m>\tilde{d}_2(x,y) = \frac{\partial^3}{\partial x \partial y^2} \left($a$u$v\right) = <derivative name="tilded2xy" derivVariables="y y x" variables="x y" symbolic>$a$u$v</derivative></m>.
+        Then <m>\tilde{d}_2(p,q) = $$tilded2xy(p,q)</m>.
+      </cell>
+    </row>
+ 
+  </tabular>
+    
+  </subsection>
+
+
+  <subsection><title>Differentiating with respect to an extra variable</title>
+
+    <p>When differentiating an expression without specifying <attr>variables</attr>, the result is a function of just the specified variables.  However, since one can differentiate with respect to additional variables, subsequently differentiating with respect to another variable behaves as expected.</p>
+
+
+
+  <tabular>
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    <row>
+      <cell>
+        <pre>
+&lt;m&gt;\frac{\partial}{\partial y}
+\left(\frac{\partial}{\partial x}
+  \left(&dollar;a&dollar;u&dollar;v\right)
+\right) = 
+&lt;derivative derivVariables=&quot;y&quot;&gt;
+  &lt;derivative derivVariables=&quot;x&quot;&gt;
+    &dollar;a&dollar;u&dollar;v
+  &lt;/derivative&gt;
+&lt;/derivative&gt;&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <m>\frac{\partial}{\partial y}\left(\frac{\partial}{\partial x}\left($a$u$v\right) \right) = <derivative derivVariables="y"><derivative derivVariables="x">$a$u$v</derivative></derivative></m>
+      </cell>
+    </row>
+ 
+  </tabular>
+    
+    
+    <p>(The result, however, will be a function of just the <attr>derivVariables</attr> of the first <tag>derivative</tag>, which is <m>x</m> in the above example.)</p>
+
+  </subsection>
+  
+</section>
+

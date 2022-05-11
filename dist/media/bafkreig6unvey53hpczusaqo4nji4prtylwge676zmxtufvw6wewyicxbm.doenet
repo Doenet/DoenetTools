@@ -1,0 +1,17 @@
+<title>Approximating nonlinear problem set</title>
+
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <copy uri="doenet:contentId=b5997850a8fbb354921fb05abc39a2f8049df8b29f3de63e0dbd27624f4d4e27&doenetId=ljd5MHeRseveybL1P2fPB" componentType='problem' assignNames="problem1" />
+  <copy uri="doenet:contentId=2ebf65c5de398a1a41398f744986e96b6455c3ab17721b23aa2fa3c537297643&doenetId=Jkd4dZRFFmEXQNu03M4Rw" componentType='problem' assignNames="problem2" />
+  <copy uri="doenet:contentId=f5a18e8cfd288848efb097eeb1cd6ac3d783bdc7549daf111ab6c4f4df81357a&doenetId=2yATouuOTFtJAs9j_dzU3" componentType='problem' assignNames="problem3" />
+  <copy uri="doenet:contentId=9ccae7a4113fba2b62190ff89c40c58ffec96a77803ebb3fec0e06a5c769bfbf&doenetId=VtlitYEYlqLGIB4Rs0KPF" componentType='problem' assignNames="problem4" />
+    
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

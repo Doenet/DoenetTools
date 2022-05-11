@@ -17,7 +17,7 @@ import {
 } from "../ToolHandlers/CourseToolHandler.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {returnNumberOfActivityVariantsForCid} from "../../_utils/activityUtils.js";
-import {authorItemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId} from "../../_reactComponents/Course/CourseActions.js";
 export default function DraftAssignmentViewer() {
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const courseId = useRecoilValue(courseIdAtom);
@@ -40,7 +40,7 @@ export default function DraftAssignmentViewer() {
   let allPossibleVariants = useRef([]);
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
-  let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
+  let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
   useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);
   }, [itemObj, recoilDoenetId]);

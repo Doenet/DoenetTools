@@ -1,0 +1,139 @@
+<sideBySide>
+  <ref createButton="true" uri="doenet:doenetId=Hik1aDasXULBSYKRM6Ntg">Previous</ref>
+   <ref createButton="true"  uri="doenet:doenetId=QrRWJMOBUnzfkG0BwRfsJ">Next</ref>
+</sideBySide>
+
+<document>  
+<title>Chapter 3:  Structure</title>
+<section><title>3.1 Sectional Components</title>
+<subsection><title>Sectional Components Overview</title>
+<p> Similar to the PreTeXt markup language on which it is based, DoenetML code is organized into several structural divisions.  These divisions correspond to the types of hierarchical structure that you might find in a textbook or an online tutorial sequence.  Many of the structural divisions have an automatic numbering system and/or a default layout and formatting convention built-in.</p>
+<p>The primary structural division is the <alert><tag>document</tag></alert> container, which allows the user to specify attributes for the <idx></idx>document as a whole.<idx></idx> Following this are the <alert><tag>section</tag></alert>, the <alert><tag>subsection</tag></alert> and the <alert><tag>subsubsection</tag></alert> components. The most basic of the text divisions is the paragraph, or <alert><tag>p</tag></alert> sectional component. 
+</p> 
+<table><title>List of Current DoenetML sectional components and their usage</title>
+  <tabular bottom="minor" top="minor" left="minor" right="minor">
+    <row header>
+      <cell>Sectional Component</cell><cell>AutoNumbered?</cell><cell>This component is a container for...</cell>
+    </row>
+    <row>
+      <cell><tag><ref uri="">document</ref></tag></cell><cell>N</cell><cell>the document as a whole; no text displayed</cell>
+    </row>
+    <row>
+      <cell><tag><ref uri="doenet:doenetId=HgLUOtFwSOWnE-wD_wIiT">section</ref></tag></cell><cell>Y</cell><cell>the largest subdivision of the document</cell>
+    </row>
+    <row>
+      <cell><tag><ref uri="">subsection</ref></tag></cell><cell>Y</cell><cell>the second largest subdivision of the document</cell>
+    </row>
+    <row>
+      <cell><tag><ref uri="">subsubsection</ref></tag></cell><cell>Y</cell><cell>the smallest subdivision of the document</cell>
+    </row>
+    <row>
+      <cell><tag><ref uri="doenet:doenetId=QrRWJMOBUnzfkG0BwRfsJ">p</ref></tag></cell><cell>N</cell><cell>paragraphs</cell>
+    </row>
+    <row>
+      <cell><tag><ref uri="">aside</ref></tag></cell><cell>Y</cell><cell>supplemental text that defaults to hidden; expandable on-click</cell>
+    </row>
+    <row>
+      <cell><tag><ref uri="">problem</ref></tag></cell><cell>Y</cell><cell>a problem container or an individual problem</cell>
+    </row>
+    <row>
+      <cell><tag><ref uri="">exercise</ref></tag></cell><cell>Y</cell><cell>a subdivision within a larger problem</cell>
+    </row>
+    <row>
+      <cell><tag><ref uri="">example</ref></tag></cell><cell>Y</cell><cell>an example</cell>
+    </row>
+  </tabular>      
+</table>
+</subsection>     
+</section>
+
+<section><title>3.2 Block Components</title>  
+<subsection><title>Block Components Overview</title>
+<p>Apart from residing within a sectional component, content in DoenetML may also be given structure through block components.  Block components are elements of content that are visually distinguished in some manner from the remainder of the content, and frequently have a similar default auto-numbering system to that of the sectional components. These structures are similar to what is known in LaTex as "environments".  Block components may or may not occur within a higher-order sectional component.</p>
+<subsection><title>Hierarchical Model</title>
+<p>The figure below shows just a few of the hierarchical arrangements possible with the built-in DoenetML structural system. Many other arrangements than what is shown are possible; for example, it is acceptable to have a <alert><tag>p</tag></alert> or a <alert><tag>figure</tag></alert> within an <alert><tag>aside</tag></alert>, or an <alert><tag>image</tag></alert> within an <alert><tag>example</tag></alert>.
+</p>
+<figure>
+  <image width="600" source="https://lh3.googleusercontent.com/fnahziGu5hn3nmIhZTvqSRIzJQ1OV9bPCuivvWYo6EwAw7fmtCf3n2rgDJ82BvQAgjyZBnwytcAEebeg8lCmUX-MDwd6MZ4_a43_KnC7Uq5FKPwhclr0YNctlRHzISqLheD7C_MNp-nngU-ZIvfY4i7UBQKqSRQcbPt3ClAJmz4NR_BT_mtzOKJemhg5Jt3u5pQuv8ADT4JNdu4eJBWCTEtAqrB5i2R4oMVSkELcVEWBo6tBhGi9hCohWQ-n6ev8gvlU9497KaygNUSmCIq4Qrb589r8jyIhU9Kz1QfG6qUgSDxOMztXguwJ5XIqjUN5b4mfWibwdR0cE7m3PAv2rC7iX839b52sJPOvBrmyjLboFHcLyt7krLTWhKRo2IC02C864nLA9NBQJnS-QGpclQViF0ADNHH3nUESAvBXJwbe8UXOu2yfAfPr5tdik21cf1d6fMpbAZVTv1EOQrdADMKUy1eAXypF6FYuzizzS34mYcyvXnA2FA0uKFRIGAPfWDqebFcWTlJ864AKKTH-x5XSnJvsR54oUZHO72HT4tzE8AVYeMpt_ZJ9LEtJxVMdoRAYlx2e-A0sQDsAYKOQ2RZ9524BbGTSxIaTeb0fj5-AswKWrRYp--QdEBcI3gfXFusc4fccZxHjeJ5KYQkJpLyTEeJE_NPCfjH8C613GbPMWu38GVf5jhI4U0PZ3duZbJfLTLhj2g6g6lnBikxQ0hY=w721-h641-no?authuser=0"/>
+  <caption>Example Sectional and Block Component Hierarchy within DoenetML</caption>
+</figure>
+</subsection>
+<subsection><title>Block Component Tables</title>
+<p>The following tables lists block components currently available in DoenetML:
+</p>
+  <table><title>List of Common DoenetML block components and their usage</title>
+  <tabular bottom="minor" top="minor" left="minor" right="minor">
+    <row header><cell>Common Block Components</cell><cell>AutoNumbered?</cell><cell>Text Displayed?</cell><cell>Graphics Displayed?</cell><cell>Usage</cell>
+    </row>
+    <row><cell><tag><ref uri="">figure</ref></tag></cell><cell>Y</cell><cell>Y</cell><cell>N</cell><cell>a container element for images, graphs, videos, and other illustrative components</cell>  
+    </row>
+    <row><cell><tag><ref uri="">image</ref></tag></cell><cell>N</cell><cell>N</cell><cell>Y</cell><cell>renders an image file; usually contained inside a <tag>figure</tag></cell>  
+    </row>
+    <row><cell><tag><ref uri="">video</ref></tag></cell><cell>N</cell><cell>N</cell><cell>Y</cell><cell>renders a playable video (i.e. not a link) inside a window; usually contained inside a <tag>figure</tag></cell>  
+    </row>
+    <row><cell><tag><ref uri="">graph</ref></tag></cell><cell>N</cell><cell>N</cell><cell>Y</cell><cell>renders a Cartesian graph; may be contained inside a <tag>figure</tag></cell>  
+    </row>
+    <row><cell><tag><ref uri="">embed</ref></tag></cell><cell>N</cell><cell>N</cell><cell>Y</cell><cell>renders media content embedded from an external source, such as geogebra; may be contained inside a <tag>figure</tag></cell>  
+    </row>
+    <row><cell><tag><ref uri="">spreadsheet</ref></tag></cell><cell>N</cell><cell>N</cell><cell>Y</cell><cell>inserts an embedded spreadsheet;  may be contained inside a <tag>figure</tag></cell>  
+    </row>
+    <row><cell><tag><ref uri="">caption</ref></tag></cell><cell>N</cell><cell>Y</cell><cell>N</cell><cell>descriptive text element used in combination with the <tag>figure</tag> component</cell>  
+    </row>
+    <row><cell><tag><ref uri="">table</ref></tag></cell><cell>Y</cell><cell>Y</cell><cell>N</cell><cell>a container element for a tabular component</cell>  
+    </row>
+    <row><cell><tag><ref uri="">tabular</ref></tag></cell><cell>N</cell><cell>Y</cell><cell>Y</cell><cell>a container element for individual <tag>row</tag> and <tag>cell</tag> data within a <tag>table</tag></cell>  
+    </row>
+    <row header><cell>Common Block Components</cell><cell>AutoNumbered?</cell><cell>Text Displayed?</cell><cell>Graphics Displayed?</cell><cell>Usage</cell>
+    </row>
+    <row><cell><tag><ref uri="">ol</ref></tag></cell><cell>N</cell><cell>Y</cell><cell>N</cell><cell>a container for list <tag>li</tag> components; the list items are auto-numbered</cell>  
+    </row>
+    <row><cell><tag><ref uri="">ul</ref></tag></cell><cell>N</cell><cell>Y</cell><cell>N</cell><cell>a container for list <tag>li</tag> components; the list items are bulleted</cell>  
+    </row>
+    <row><cell><tag><ref uri="">sideBySide</ref></tag></cell><cell>N</cell><cell>N</cell><cell>N</cell><cell>a container element for content arranged in a columnar format; the auto-numbering of the children persists</cell>  
+    </row>
+    <row><cell><tag><ref uri="">pre</ref></tag></cell><cell>N</cell><cell>Y</cell><cell>N</cell><cell>a container element for content that exactly preserves the formatting that is entered in the editor, including spacing, font, and indentation</cell>  
+    </row>
+    <row><cell><tag><ref uri="">div</ref></tag></cell><cell>N</cell><cell>N</cell><cell>N</cell><cell>a container element for content arranged in a user-specified format</cell>  
+    </row>
+    <row><cell><tag><ref uri="">feedback</ref></tag></cell><cell>N</cell><cell>Y</cell><cell>N</cell><cell>a container element for hidden feedback that is closed by default and expandable on-click; visibility may be dependent on user-responses</cell>  
+    </row>
+    <row><cell><tag><ref uri="">hint</ref></tag></cell><cell>N</cell><cell>Y</cell><cell>N</cell><cell>a container element for hints that is closed by default and expandable on-click; visibility may be dependent on user-responses</cell>  
+    </row>
+    <row><cell><tag><ref uri="">solution</ref></tag></cell><cell>N</cell><cell>Y</cell><cell>N</cell><cell>a container element for problem solutions that is closed by default and expandable on-click; visibility criteria may be specified by author</cell>  
+    </row>
+  </tabular>
+  </table>
+
+<aside><title>Less-common Block Components</title>
+  <table>
+    <tabular top="minor" bottom="minor" left="minor" right="minor">
+    <row header><cell>Less-common Block Components</cell><cell>AutoNumbered?</cell><cell>Text Displayed?</cell><cell>Graphics Displayed?</cell><cell>Usage</cell>
+    </row>
+    <row><cell><tag><ref uri="">codeEditor</ref></tag></cell><cell>N</cell><cell>N</cell><cell>Y</cell><cell>a block element that renders a window for entering DoenetML by user or student</cell>  
+    </row><row><cell><tag><ref uri="">codeViewer</ref></tag></cell><cell>N</cell><cell>N</cell><cell>Y</cell><cell>a block element that processes and displays the results of the DoenetML from <tag>codeEditor</tag></cell>  
+    </row>
+    <row><cell><tag><ref uri="">considerAsResponses</ref></tag></cell><cell>N</cell><cell>N</cell><cell>N</cell><cell>a block element that specifies which user inputs are to be used as responses</cell>  
+    </row>
+    <row><cell><tag><ref uri="">discreteSimulationResultList</ref></tag></cell><cell>N</cell><cell>N</cell><cell>N</cell><cell></cell>  
+    </row>
+    <row><cell><tag><ref uri="">subsetOfRealsInput</ref></tag></cell><cell>N</cell><cell>N</cell><cell>N</cell><cell></cell>  
+    </row>
+    </tabular>      
+  </table>
+</aside>
+</subsection>
+
+
+
+<p>Finally, although it is possible to create content in DoenetML without the use of any structural divisions, it is highly recommended to do so. An entire section of a document can be easily named and then linked to, referenced or indexed later by name.  Furthermore, DoenetML is designed with the philosophy that the author should not be required to spend an inordinate amount of time on formatting or layout, but rather simply focus on creating content, and utilizing the structural divisions is an excellent way to take advantage of this aspect of the markup language.</p>
+
+</subsection>
+</section>
+
+<setup>
+  <!--stand-in for future attribute/component-->
+  <ref uri="doenet:doenetId=QrRWJMOBUnzfkG0BwRfsJ">nextPage</ref>
+</setup>
+</document>
+
+

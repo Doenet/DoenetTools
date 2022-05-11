@@ -1,0 +1,180 @@
+<problem>
+<variantControl nVariants="1" />
+
+<!-- <title>Discrete equilibria with parameters, worksheet</title> -->
+
+<setup>
+
+<math name='rhs_ex_1'>y_n+5</math>
+<math name='ic_ex_1' >3</math>
+<math name='one'>1</math>
+<math name='E_ex_1'>-5</math>
+<math name='E_general_b'>-b</math>
+<math name='rhs_ex_1_close'>y+5</math>
+
+</setup>
+
+<p>
+If a dynamical system has parameters, then the equilibria could depend on those parameters.
+Consider the dynamical system
+<md>
+  <mrow>y_{n+1} - y_n\amp = y_n + b</mrow>
+  <mrow>y_0\amp = c</mrow>
+</md>
+with two parameters <m>b</m> and <m>c</m>.</p>
+
+
+
+<ol>
+
+<li>
+
+<p>
+If you set <m>b=5</m> and <m>c=3</m>, the dynamical system becomes:
+
+<m>y_{n+1} - y_n =</m> 
+<answer>
+<award symbolicEquality='true'>$rhs_ex_1 </award>
+<award symbolicEquality='true' credit='0' name='award1'>$rhs_ex_1_close </award>
+</answer>
+<feedback condition="$award1">Close, but your answer needs to be in terms of <m>y_n</m>, not <m>y</m>.  Enter <m>y_n</m> as <c>y_n</c>.</feedback>
+
+</p>
+<p>
+
+<m>y_0 =</m> 
+<answer>
+<award symbolicEquality='true'>$ic_ex_1 </award>
+</answer>.
+</p>
+
+<p>In this case, how many equilibria are there? 
+<answer>
+<award symbolicEquality='true'>$one </award>
+</answer>
+
+</p>
+<p>
+
+What are the equilibria? <m>E =</m> 
+<answer>
+<award symbolicEquality='true'>$E_ex_1 </award>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+If you leave <m>b</m> and <m>c</m> as parameters, then the number of equilibria and their values might depend on <m>b</m> and/or <m>c</m>.
+
+<p>In this case, how many equilibria are there? 
+<answer>
+<award>$one </award>
+</answer>
+
+</p>
+<p>
+
+What are the equilibria? <m>E =</m> 
+<answer>
+<award symbolicEquality='true'>$E_general_b </award>
+</answer>
+</p>
+
+
+
+<hint>
+The equilibria should depend on <m>b</m> but not on <m>c</m> (as <m>c</m> is just the initial condition).
+
+<p>The procedure is the same as before, just plug in <m>y_n= y_{n+1}=E</m> to get <m>E-E=E+b</m>.  Solve the equation for <m>E</m>.</p>
+</hint>
+
+</li>
+
+<li>
+
+<p>
+Does the number of equilibria depend on <m>b</m>? 
+<answer inline='true'>
+<choiceinput>
+<choice>yes</choice>
+<choice credit='1'>no</choice>
+</choiceinput>
+</answer>
+
+</p>
+<p>
+
+Does the number of equilibria depend on <m>c</m>? 
+<answer inline='true'>
+<choiceinput>
+<choice>yes</choice>
+<choice credit='1'>no</choice>
+</choiceinput>
+</answer>
+
+</p>
+<p>
+
+Do the values of the equilibria depend on <m>b</m>? 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>yes</choice>
+<choice>no</choice>
+</choiceinput>
+</answer>
+
+</p>
+<p>
+
+Do the values of the equilibria depend on <m>c</m>? 
+<answer inline='true'>
+<choiceinput>
+<choice>yes</choice>
+<choice credit='1'>no</choice>
+</choiceinput>
+</answer>
+
+</p>
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+The equilibria satisfy
+<md>
+  <mrow>E - E\amp = E +5</mrow>
+  <mrow>0\amp = E+5,</mrow>
+</md>
+or <m>E=-5</m>.  There is just one equilibrium.
+</li>
+
+<li>
+The equilibria satisfy
+<md>
+  <mrow>E - E\amp = E +b</mrow>
+  <mrow>0\amp = E+b,</mrow>
+</md>
+or <m>E=-b</m>.  There is just one equilibrium.
+</li>
+
+<li>
+<p>The number of equilibria does not depend on <m>b</m> or <m>c</m>.  There is always exactly one equilibrium.  The value of the equilibrium depends on <m>b</m> but not on <m>c</m>.</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

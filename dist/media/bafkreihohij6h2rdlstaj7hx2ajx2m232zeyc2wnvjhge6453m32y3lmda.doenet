@@ -1,0 +1,67 @@
+<title>Riemann sums and the definite integral</title>
+
+<description>
+
+</description>
+
+<figure>
+<video youtube="DU0wn8NCfA8" width="640px" height="360px"/>
+<caption>Riemann sums and the definite integral</caption>
+</figure>
+<!--Video transcript -->
+<p>In this lecture, we discuss how to compute the total amount of change of a function during a period of time.  We'll calculate this change using a definite integral, which is defined as a limit of something called a Riemann sum.</p>
+
+<p>Imagine that you took a two hour walk.  At the beginning, you were walking slowly, at 1 km/h.  If <m>x(t)</m> is you position in kilometers, then, at first, your position was changing at the rate <m>dx/dt = 1</m>.   But, you didn't stay at the speed, instead, you accelerated, increasing your speed by 3 km/h every hour.  Hence, your position was changing at the rate <m>dx/dt = 1 + 3t</m>.  By the end of the two hour walk, you increased your speed by 6 km/h so that you were walking at a rapid clip of 7 km/h.  The question we want to answer is: how far did you walk during those two hours.</p>
+
+<p>Let's examine a plot of your speed, which we'll call your rate, as a function of time.  Here we see how you steadily increased your rate of walking from 1 km/h to 7 km/h.  To estimate how far you walked, let's do the following.  Let's break the two hour walk into two intervals of 1 hour each.  We'll call the length of these intervals <m>\Delta t</m>, so right now, <m>\Delta t=1</m>.  What makes it hard to figure out the distance is that you continuously changed your velocity.  If you had just walked at a constant rate, it would have been much easier.  So, let's pretend that, during each period of length <m>\Delta t=1</m> hour, you didn't change your speed.  During the first interval, from hour 0 to hour 1, let's imagine you kept walking at your initial rate of 1 km/h.  In this imaginary exercise, we don't have you change speed until the second interval, beginning at hour 1.  During this second interval, you will again walk at a constant speed, but you'll walk at the constant speed from the beginning of this interval, which in this case is 4 km/h.  For this calculation, we are approximating the green curve by the two blue horizontal line segments.</p>
+
+<p>Calculating the distance traveled in each interval is simple.  From hours 0 to 1, we assume you walked steadily at 1 km/h. Multiplying the rate 1 by the time interval <m>\Delta t</m>, which is 1, we get a distance of 1 km for the first interval.  The total distance up this point is 1 km.  From hours 1 to 2, we assume you walk at 4 km/h.  Multiplying this rate by <m>\Delta t</m>, which is 1, we get a distance of 4 km for the second interval.  The total distance walked during the whole two hour walk is <m>1 + 4 = 5</m> km.</p>
+
+<p>Obviously, this is a poor approximation of the distance you walked.  You actually walked faster than we assumed.  You should get credit for more distance!  You argue that it is unfair to use the slow initial rate and that we should instead use the rate at the end of each interval.  Fair enough, let's try it that way, too.  The first method was called a left-handed estimate, as we used the left point in each interval.  Let's switch to a right-handed estimate, using the right point in each interval to give the approximate rate during that interval.  With the right-handed estimate, we assume that you walked at 4 km/h during the first interval, since that was your ending rate at hour 1.  During the second interval, we use the rate 7 km/h, as that is the rate at which you ended the walk.  We get a pretty different result.  Now, we calculate that you walked 4 km in the first hour and 7 km in the second hour, for a total of 11 km during the two hour walk.  There is quite a difference between the two calculations: 5 km for the left-handed estimate and 11 km for the right-handed estimate.</p>
+
+<p>I think we can agree that assuming your rate was constant during the 1 hour intervals was too gross of an approximation.  To improve accuracy, let's double the number of intervals to 4, with an interval length, <m>\Delta t</m>, of one-half an hour.  If we use a left-handed estimate, we'll still be underestimating your walking distance, but not by as much.  Now, we have to do four calculations, using the rates of 1, 2.5, 4, and 5.5 km/h in each of the four intervals.  We multiply those four numbers by <m>\Delta t</m>, which is now 1/2, to get the distances walked in those four intervals: 0.5, 1.25, 2, and 2.75 km.  Adding up those four numbers, we get the total walking distance of 6.5 km.</p>
+
+<p>That's an improved estimate, though it is still underestimating the distance.  You also insist we try the right-handed estimate, approximating the rates in the four intervals by your final walking speed in each interval, i.e., we should use the rates 2.5, 4, 5.5, and 7.  Multiplying those numbers by one-half and summing them up, gives us an estimate of 9.5 km.  With four intervals, our left-handed estimate of 6.5 km and right-handed estimate of 9.5 km are closer together, but still not too close.  We expect the actual distance you walked to be somewhere in between.</p>
+
+<p>Let's refine our estimate further by increasing the number of intervals all the way up to 10, which bring the <m>\Delta t</m> down to 0.2.  Now we have 10 different rates, each of which we must multiply by 0.2, and then add them up.  When we do this for the left-handed estimate, we get 7.4 km for your walking distance.  When we repeat the work for the right-handed estimate, we get 8.6 km.  It's seems clear that, as we increase the number of intervals, we get a better estimate of your walking distance.</p>
+
+<p>It's time to derive a formula for the calculations we've been doing.  Let's decrease the number of interval back down to 4 and move everything up a little to give us some space to figure out the formula.</p>
+
+<p>Let's begin with the left-handed estimate, which we'll call <m>I_l</m>.  The <m>I</m> is supposed to warn you that we are working toward the integral we mentioned at the beginning, and <q>l</q> is for left.  The formula for <m>I_l</m> shows that we took the rates 1, 2.5, 4, and 5.5, multiplied them by the current <m>\Delta t</m> of 1/2, and added them all up to get the result of 6.5.</p>
+
+<p>To write a more general formula, we need some notation.  Let <m>f(t)</m> be the function that gives your velocity at hour <m>t</m>: <m>f(t)=1+3t</m>.  We also define the time points <m>t_0</m>, <m>t_1</m>, etc., shown at the bottom of the graph.  In this case, they are just multiples of the time interval <m>\Delta t</m>.</p>
+
+<p>For the left-handed estimate, we need to use the rate at the beginning of each time interval.  For interval 1, we used <m>t_0</m>; for interval 2, we used <m>t_1</m>, etc.  In general, for interval <m>i</m>, we should use <m>t_{i-1}</m>.  The rate at this time is <m>f(t_{i-1})</m>.  To get the distance traveled in this interval, we multiply the rate by the interval length <m>\Delta t</m>.</p>
+
+<p>We rewrite the formula for <m>I_l</m> using this notation.  The rates at the beginning of each interval are <m>f(t_0)</m>, <m>f(t_1)</m>, <m>f(t_2)</m>, and <m>f(t_3)</m>.  We multiply these by <m>\Delta t</m> and add them up.</p>
+
+<p>If we had 100 intervals, writing this out would take a lot of space.  To save space, we will use summation notation, denoted by this capital Greek letter Sigma.  This summation notation means that we are going to take all the intervals <m>i</m> from 1 to 4, i.e., we will let <m>i</m> be 1, 2, 3, and 4.  For each value of <m>i</m>, we calculate <m>f(t_{i-1})\Delta t</m>, in other words, we calculate the four terms we have above.  The first is for <m>i=1</m>, which means <m>t_{i-1}</m> is <m>t_0</m>.  The second is for <m>i=2</m>, etc. </p>
+
+<p>With this summation notation, we can compactly write the left-handed estimate for any number of intervals <m>n</m>.  The total distance estimated is the sum for <m>i</m> equals 1 to <m>n</m> of <m>f(t_{i-1})\Delta t</m>.</p>
+
+<p>We can repeat all these calculations for the right-handed estimate.  The only difference is that for interval <m>i</m>, we now use the right time point, <m>t_i</m>, and calculate the rate as <m>f(t_i)</m>.  When <m>n=4</m>, we use the rates <m>f(t_1)</m>, <m>f(t_2)</m>, <m>f(t_3)</m> and <m>f(t_4)</m>.  The summation notation is exactly the same, except that we use <m>t_i</m> rather than <m>t_{i-1}</m>.</p>
+
+<p>Since these sums are so important, we give them a special name: Riemann sums.  We have derived two different Riemann sums, the left Riemann sum and the right Riemann sum, which use the left endpoint or the right endpoint of each interval to compute the estimate.</p>
+
+<p>How large an <m>n</m> should we use to estimate the distance you walked.  Is <m>n=10</m> enough?  Should we use <m>n=50</m>?  When <m>n=50</m>, the left Riemann sum gives 7.88 km and the right Riemann sum gives 8.12 km.  They are getting quite close to each other.  How about <m>n=100</m>?  It seems our estimates are getting close to the value of 8 km, though even at <m>n=100</m>, the Riemann sums are still 0.06 km away from that number.</p>
+
+<p>I think we shouldn't stop at <m>n=100</m>.  We should let <m>n</m> get even larger.  Why hold back?  Why not let <m>n</m> go all the way to infinity?</p>
+
+<p>When we let <m>n</m> go all the way to infinity, or, more precisely, we take the limit as <m>n</m> goes to infinity, we arrive at the definite integral.  The definite integral, or Riemann integral, is defined as the limit of the Riemann sums as <m>n</m> approaches infinity.  The correct answer for the amount that you walked is the integral from 0 to 2 of <m>f(t)dt</m>.  Notice that this integral can be defined from the left Riemann sum or the right Riemann sum.  It doesn't which you choose, you'll get to the same integral.  (More precisely, we say the integral exists when both limits arrive at the same number.)  The definite integral is a single number.  Here, we expect that the definite integral should be 8, though we won't show that here.  For this example, we are integrating from 0 to 2; you walked for a total of 2 hours.  The entire interval of integration has length two and, the length of each subinterval, <m>\Delta t</m>, is <m>2/n</m>, as we chopped up those two hours into <m>n</m> pieces.</p>
+
+<p>In general, we might take the integral of a function over an interval of <m>t</m> from <m>a</m> to <m>b</m>.  In this case, the length of the interval is <m>b-a</m>, so when we chop it up into <m>n</m> subintervals, the length of each of these subinterval, <m>\Delta t</m> is <m>(b-a)/n</m>.  To determine the endpoints <m>t_i</m> we have to add the endpoint <m>a</m>, so <m>t_i = a + i \Delta t</m>.  Let's see what this means with an example.</p>
+
+<p>Let's estimate the integral from -4 to -1 of <m>x^2 dx</m> using Riemann sums of 6 intervals.  Notice I switched letters on you here.  We're now using <m>x</m> rather than <m>t</m>.  But, it is all the same.</p>
+
+<p>What is the length of each interval <m>\Delta x</m>?  The lower endpoint <m>a</m> is <m>-4</m>.  The upper endpoint <m>b</m> is <m>-1</m>.  The length of each interval, <m>\Delta x</m>, must be <m>(b-a)/6</m>.  Since <m>-1</m> minus <m>-4</m> is 3 (you get that, right?), <m>\Delta x</m> is 3/6 or 1/2.  To calculate the endpoints <m>x_i</m>, we start with <m>a=-4</m> and add multiples of 1/2.  We determine that <m>x_0</m> is -4, <m>x_1</m> is <m>-3.5</m>, etc.  We are chopping up the integral into the intervals <m>[-4, -3.5]</m>, <m>[-3.5, -3]</m>, etc.</p>
+
+<p>We start with the formula for the left Riemann sum.  We need to take the sum from i equals 1 to 6 of <m>f(x_{i-1})</m>.  The function we are integrating is just the squaring function, so we must add up <m>(x_{i-1})^2</m>, multiplied by <m>\Delta x</m>.  In other words, we take <m>x_0^2</m>, <m>x_1^2</m>, all the way to <m>x_5^2</m>, and multiply these by <m>\Delta x</m> before adding.  Let's plug in the numbers.  <m>\Delta x=0.5</m>, and the values of <m>x_0</m> through <m>x_5</m> are -4 through -1.5.  When we carry out the calculation (a calculator is your friend), we get 24.875.</p>
+
+<p>If we redo the calculation for the right Riemann sum, the only difference is that we use <m>x_{i}</m> rather than <m>x_{i-1}</m>, i.e., we use the endpoints <m>x_1</m> through <m>x_6</m>.  Everything else remains the same.  When we add these up, we get 17.375.</p>
+
+<p>It's clear our left and right Riemann sums aren't too close together, so we should take more than 6 intervals to get a better estimate of the definite integral.  But the value of the definite integral is probably somewhere between 17 and 25.</p>
+
+<p>In summary, we define a definite integral as the limit of a Riemann sum.  The definite integral is just a single number.  This is in stark contrast to the indefinite integral, which is a function plus a constant.  I wonder why, if they are so different, we call them both integrals and use a similar notation for both of them.  We'll have to save that question for another time.</p>
+
+<!-- End video transcript -->
+<!-- boxedvideo riemann_sums_definite_integral -->

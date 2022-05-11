@@ -1,0 +1,162 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>sources</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>alias</attr>  <em>(string)</em></li>
+  <li><attr>indexAlias</attr>  <em>(string)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>sources</tag><idx><tag>sources</tag></idx> component is used within a <ref uri="doenet:doenetId=6xVfXS5mHvlZ1La6IyVmP"><tag>map</tag></ref> block to define the values to which the <ref uri="doenet:doenetId=RwwwA15KDsX6ZvjlkZmCm"><tag>template</tag></ref> will be applied.  The <tag>sources</tag> component may enclose a <ref><tag>sequence</tag></ref>, a <ref><tag>mathList</tag></ref>, a series of user-inputs, or other numerical or text values. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: Using <tag>sources</tag> with the <attr>alias</attr> attribute</title>
+<p>In the sample code below, the <tag>sources</tag> component is used with a list of arbitrary <ref><tag>number</tag></ref> components. The <ref uri="doenet:doenetId=6xVfXS5mHvlZ1La6IyVmP"><tag>map</tag></ref> will apply the <ref uri="doenet:doenetId=RwwwA15KDsX6ZvjlkZmCm"><tag>template</tag></ref> to each instance of the data contained within the <tag>sources</tag> component in turn.</p>  
+<p>The <attr>alias</attr> attribute functions as an identifier that can be applied to each of the individual <tag>sources</tag> as the mapping is performed. Since it functions similarly to a <c>name</c>, it is referenced by the <tag>template</tag> using the <c>&dollar;name</c> notation.  Note, however, that you should always use distinct names and aliases within the same document as DoenetML cannot differentiate between the two if a <c>name</c> and an <attr>alias</attr> are identical.</p>
+<p>The <attr>alias</attr> attribute is a required attribute for the <tag>map</tag> to function as intended. (See also <ref uri="doenet:doenetId=CHfbDoJ7WA37EqgBROYWW"><tag>asList</tag></ref>, <ref uri="doenet:doenetId=BYXQro7P7NJrtKyTCxJcX"><tag>math</tag></ref>.)</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;asList&gt;
+  &lt;map&gt;
+    &lt;template&gt;&lt;math simplify&gt;&dollar;num*2&lt;/math&gt;&lt;/template&gt;
+    &lt;sources alias="num"&gt;
+      &lt;number&gt;1&lt;/number&gt;
+      &lt;number&gt;12&lt;/number&gt;
+      &lt;number&gt;576&lt;/number&gt;
+    &lt;/sources&gt;
+  &lt;/map&gt;
+&lt;/asList&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+ 
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<asList>
+  <map>
+    <template><math simplify>$num*2</math></template>
+    <sources alias="num">
+      <number>1</number>
+      <number>12</number>
+      <number>576</number>
+    </sources>
+  </map>
+</asList>
+</example>
+ 
+
+<!--******************************************************-->
+    
+<subsection><title>Example 2: Using <tag>sources</tag> with the <attr>indexAlias</attr> attribute to refer to individual mapped values</title>
+<p>In the sample code below, the <tag>sources</tag> component has its <attr>alias</attr> attribute set equal to the string <c>"plant"</c> and its <attr>indexAlias</attr> attribute set equal to the string <c>"i"</c>. Both aliases are referenced by the <ref uri="doenet:doenetId=RwwwA15KDsX6ZvjlkZmCm"><tag>template</tag></ref> component using the <c>&dollar;name</c> notation.</p>
+<p>Furthermore, since the <ref><tag>map</tag></ref> component is not placed within a <ref><tag>setup</tag></ref> block, this result is rendered in the viewer for all available index values, with each value listed sequentially. The rendered formatting is acheived with a space that has been included within the <tag>template</tag> following the period for legibility.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;p&gt;
+  &lt;map&gt;
+    &lt;template&gt;Plant &dollar;i is a &dollar;plant. &lt;/template&gt;
+    &lt;sources alias="plant" indexAlias="i"&gt;
+      &lt;text&gt;tree&lt;/text&gt;
+      &lt;text&gt;flower&lt;/text&gt;
+      &lt;text&gt;cactus&lt;/text&gt;
+    &lt;/sources&gt;
+  &lt;/map&gt;
+&lt;/p&gt;
+
+</pre>
+ 
+  </example>  
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 2)</title>
+<p>
+  <map>
+    <template>Plant $i is a $plant. </template>
+    <sources alias="plant" indexAlias="i">
+      <text>tree</text>
+      <text>flower</text>
+      <text>cactus</text>
+    </sources>
+  </map>
+</p>
+</example>
+ 
+
+<!--******************************************************-->
+    
+<!-- 
+<subsection><title>Example 3: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+   -->
+<!--*******************************************************-->
+ 
+<!--  
+<example><title>What Doenet Renders (Example 3)</title>
+
+</example>
+   -->
+
+
+<!--******************************************************-->
+    
+<!--  
+<subsection><title>Example 4: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+   -->
+<!--*******************************************************-->
+ 
+<!--  
+<example><title>What Doenet Renders (Example 4)</title>
+
+</example>
+   -->
+
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

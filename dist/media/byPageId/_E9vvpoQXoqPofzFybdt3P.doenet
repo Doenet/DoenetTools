@@ -1,0 +1,14 @@
+<title>Extrapolate curves</title>
+
+<p>The <attr>extrapolateBackward</attr> and <attr>extrapolateForward</attr> of the <tag>curve</tag> components will add quadratic extrapolations onto cubic splines.  The extrapolation is based on the curvature of the adjacent spline segment.  The extrapolated parabola will open either vertically or horizontally.</p>
+
+<p>Extrapolate backward: <booleanInput name="extBack" /></p>
+<p>Extrapolate foward: <booleanInput name="extFor" /></p>
+
+<graph>
+  <curve through='(-3,-5) (-1, 4) (2,-3) (5,3)' extrapolateBackward="$extBack" extrapolateForward="$extFor">
+  <bezierControls>
+    (-2,-3) (-2,0) (-2,0) (-0.3,-2)
+  </bezierControls>
+  </curve>
+</graph>

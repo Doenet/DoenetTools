@@ -1,0 +1,68 @@
+<problem>
+<!-- <title>linear approximation, lin*e^(lin)</title> -->
+
+<setup>
+
+<select assignNames='x' >c d x y z t s</select>
+<select assignNames='f' >f g h u v w p q r</select>
+
+<selectFromSequence assignNames='a' from='1' to=' 7' />
+<selectFromSequence assignNames='b' from='1' to=' 7' exclude='$a + 1'/>
+
+<math name='answer' simplify='full' expand='true'>($a +1-$b )*($x -$b ) + ($b -$a )</math>
+<math name='F' simplify='full' >($x -$a )e^($b -$x )</math>
+
+</setup>
+
+<p>
+Find the linear approximation to the function
+<me>$f ( $x  ) =   $F </me>
+around <m>$x = $b </m>.
+
+</p>
+<p>
+
+<m>L_{$b}( $x  ) =</m>
+<answer>
+<award symbolicEquality='true' simplifyOnCompare='numbers'>$answer </award>
+<award credit="0.8" name="simplifyMore">$answer </award>
+</answer>
+</p>
+<feedback condition="$simplifyMore">
+  <p>For full credit, simplify your answer.</p>
+</feedback>
+
+
+<solution>
+  <setup>
+    <math name='c' simplify='full' >$b -$a </math>
+    <math name='F_exp' simplify='full' >e^($b -$x )</math>
+    <math name='F_lin' simplify='full' >$x -$a </math>
+    <math name='dF' simplify='full' >(1 +$a  -$x  )e^($b -$x )</math>
+    <math name='a_plus_one' simplify='full' >1+$a </math>
+    
+    <math name='dF_b' simplify='full' >$a +1-$b </math>
+    <math name='F_b' simplify='full' >$b -$a </math>
+  </setup>
+
+  
+<p>The linear approximation is the same thing as the tangent line.  The equation for the linear approximation around <m>$x =$b </m> is
+<me>L_{$b}($x ) = $f '($b )($x -$b ) + $f ($b ).</me>
+</p>
+
+<p>To calculate the derivative of <m>$f </m>, we need to use the product rule.  The derivative is
+<md>
+  <mrow>$f '($x )\amp = 1 $F_exp  + ($F_lin )\left(-$F_exp  \right)</mrow>
+  <mrow>\amp = ($a_plus_one -$x ) $F_exp .</mrow>
+</md>
+Therefore <m>$f '($b ) = ($a_plus_one  - $b ) e^0 = $dF_b </m> and <m>$f ($b ) = ($b -$a )e^0 = $F_b </m>, and the linear approximation is
+<md>
+  <mrow>L_{$b}( $x  )\amp = <math expand='false' simplify='numbersPreserveOrder' >$dF_b ($x -$b )  + $F_b</math></mrow>
+  <mrow>\amp =$answer .</mrow>
+</md>
+</p>
+
+</solution>
+
+
+</problem>

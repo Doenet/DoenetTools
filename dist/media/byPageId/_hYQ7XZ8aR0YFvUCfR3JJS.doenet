@@ -1,0 +1,147 @@
+<document><title><tag>pluralize</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>pluralForm</attr>  <em>(text)</em></li>
+  <li><attr>basedOnNumber</attr>  <em>(number)</em></li>
+    <!--<aside><title><alert>Inherited from parent component/  TypeParentComponentHere:<ref></ref><footnote></footnote></alert></title>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+    </aside>
+    <aside><title>Attributes inherited from parent component <tag>-->
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>pluralize</tag><idx><tag>pluralize</tag></idx> component renders the enclosed text in plural form.  If the plural form of the text component is irregular, the unique spelling can be specified with the <attr>pluralForm</attr> attribute.  If the text is designed to alter based on a varying numerical value, the <attr>basedOnNumber</attr> should be used. 
+ See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+<!--the compoenent encloses a string, but the string does not need
+  to be in quotes:-->
+<p>
+  <pluralize>dog</pluralize>
+</p>
+  
+<p>
+<!--Here is a use-case for basedOnNumber with a mathInput:-->
+<text name="cat">cat</text>
+  The number of cats I have is: <mathInput name="catNumber"/>
+  $catNumber
+  <pluralize basedOnNumber="$catNumber">"cat"</pluralize>
+</p>
+
+
+<!--Here is a use-case for pluralForm-->
+<p>My favorite <pluralize pluralForm="hobbies">
+  <!--<when>number of user inputs > 1 </when>-->
+  hobby </pluralize> are $hobby1, $hobby2, and $hobby3.
+  <!--<pluralize pluralForm="are">
+  <!--<when>number of user inputs > 1 </when> is </pluralize>-->
+</p>
+<p><alert>Your Hobbies:</alert></p>
+<p><textInput name="hobby1"/></p> 
+<p><textInput name="hobby2"/></p>
+<p><textInput name="hobby3"/>
+</p>
+
+<p><pluralize pluralForm="are">is</pluralize></p>
+    
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

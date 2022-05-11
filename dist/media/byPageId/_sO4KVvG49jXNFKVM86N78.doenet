@@ -1,0 +1,133 @@
+<!-- To comment use these tags -->
+
+  
+<!-- Section 1 -->
+<p> Another important feature of many functions is where the function crosses the x-axis (the x-intercepts). Note that x-intercepts are also called roots of the function and also called zeroes of
+the function since they are solutions to the equation f(x) = 0. This activity makes connections
+between the roots and the other forms of a parabola (the graph, the standard form and the general
+form).</p>
+<section><m>a = 1</m>
+Suppose <m>y = (x − r)(x − s)</m>; r and s are called roots of the equation.
+</section>
+<p></p>
+<ol>
+<li>
+. Verify that if <m>x = r</m>, then <m>y = 0</m> and that if <m>x = s</m>, then <m>y = 0</m>. This verifies that r and s are
+x-intercepts.
+
+<p><textinput expanded="true"/></p>
+</li>
+
+<li>Expand the root form <m>y = (x−r)(x−s)</m> to arrive at the general form <m>y = x^2 +bx+c</m>. Express
+b and c in terms of r and s.
+
+<p> <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>−(r + s)</award>
+    </answer></p></li>
+
+
+<li>Knowing a formula for h in terms of b, namely <m>h = −b/(2a)</m>, which in this case becomes <m>h = −b/2</m>
+since a = 1, express h in terms of r and s. Why does this make sense as a result of the
+symmetry of the graph of the parabola?
+
+
+<p> <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>(r+s)/2</award>
+    </answer></p></li>
+
+
+<graph>
+  <point name="A" x="1" y="0" label="(r,0)" labelposition="lowerleft" />
+  <parabola vertex="2,-3" through="(1,0)(-1,1)"/>
+
+</graph>
+  
+<li>Let d be the distance from the axis of symmetry to the roots. Explain why the x-intercepts
+are a vertical distance of <m>d^2</m> higher than the vertex. 
+
+
+  <p> In terms of d, what is the value of k?</p>
+<p> <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>−d^2</award>
+    </answer></p>
+  <p> express k as a function of r and s</p>
+  <p> <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>−((s-r)^2)/4</award>
+    </answer></p></li>
+</ol>
+
+
+
+
+<!-- Section 2 -->
+<section> Arbitrary values of a
+Suppose y = a(x − r)(x − s)
+</section><ol>
+  <li>Expand the root form <m>y = a(x − r)(x − s)</m> to arrive at the general form <m>y = ax2 + bx + c</m>.
+Express a, b and c in terms of a, r and s.
+
+<p> a=  <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>a</award>
+    </answer></p>
+  
+  <p> b=  <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>−a(r+s)</award>
+    </answer></p>
+  <p> c=  <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>ars</award>
+    </answer></p>
+  
+  
+  </li>
+
+
+  <li>Knowing a formula for h in terms of a and b, namely <m>h=−b/2a</m>, express h in terms of a, r and s
+
+<p> h=   <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>(r+s)/2</award>
+    </answer></p></li>
+
+    <li>Let d be the distance from the axis of symmetry to the roots. How far above the vertex are
+the x-intercepts? This is similar to question 4 of Part I, except this graph is stretched by a
+factor of a. Express k as a function of a and d.
+
+
+<p> k=   <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>-ad^2</award>
+    </answer></p></li>
+
+
+<li>Express d as a function of a and k.
+<m>\pm</m>
+<p> d=   <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>sqrt(-(k/a))</award>
+    </answer></p></li>
+
+
+
+
+<li>From the picture, it should be clear that the two roots r and s are h ± d. Express the roots
+in terms of a, h and k.
+
+<p> r=   <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>h-sqrt(-(k/a))</award>
+    </answer></p>
+
+  <p> s=   <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>h+sqrt(-(k/a))</award>
+    </answer></p>
+
+
+
+</li>
+
+
+<li>Knowing formulas for h and k in terms of a, b, and c, express the roots in terms of a, b and c
+
+<p>  <answer>
+      <award symbolicEquality='true' unorderedCompare='true'>-(b/2a)+ sqrt(-(b^2-4ac/4a^2))</award>
+    </answer></p></li>
+
+</ol>
+
+  

@@ -1,0 +1,413 @@
+
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tage>circle</tage> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>through</attr>  <em>(_pointListComponent)</em></li>
+  <li><attr>center</attr>  <em>(point)</em></li>
+  <li><attr>radius</attr>  <em>(math)</em></li>
+  <aside startOpen="true"><title><alert>Inherited from parent component/  <c>GraphicalComponent</c>:</alert></title>
+  <li><attr>label</attr> <em>(text)</em></li>
+  <li><attr>showLabel</attr> <em>(boolean)</em></li>
+  <li><attr>layer</attr> <em>(number)</em></li>
+  </aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tage>circle</tage><idx><tage>circle</tage></idx> component renders a circle when nested inside a <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref>.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+
+<subsection><title>Example 1:  <tage>circle</tage> without attributes.</title>
+<p>In the sample code below, the <tage>circle</tage> component is specified without any attributes.  The <c>center</c> defaults to the origin and the <c>radius</c> defaults to 1. Note that circles are draggable by default.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;graph xmin="-4" xmax="4" ymin="-4" ymax="4"&gt;
+  &lt;circle/&gt;
+&lt;/graph&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+   
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 1)</title>
+<graph xmin="-4" xmax="4" ymin="-4" ymax="4">
+  <circle/>
+</graph>
+  
+</example>
+
+<!--******************************************************-->
+    
+
+<subsection><title>Example 2: <tage>circle</tage> with <attr>center</attr> and <attr>radius</attr> attributes</title>
+<p>In the sample code below,  the geometry of the <tage>circle</tage> is constrained with the <attr>center</attr> and <attr>radius</attr> attributes. 
+ The <attr>center</attr> and <attr>radius</attr> are rendered below the graph with the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component. Note how the center updates when the circle is dragged by the user.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;graph&gt;
+  &lt;circle center="(3,3)" radius="5" name="myCircle"/&gt;
+&lt;/graph&gt;
+
+&lt;p&gt;The center of the circle is 
+  &lt;copy prop="center" tname="myCircle" displayDecimals="3"/&gt; 
+  and it has a radius of 
+  &lt;copy prop="radius" tname="myCircle"/&gt; units.
+&lt;/p&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+ 
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 2)</title>
+<graph>
+  <circle center="(3,3)" radius="5" name="myCircle"/>
+</graph>
+
+<p>The center of the circle is <copy prop="center" tname="myCircle" displayDecimals="3"/> and it has a radius of <copy prop="radius" tname="myCircle"/> units.</p>
+</example>
+ 
+ 
+
+<!--******************************************************-->
+    
+
+<subsection><title>Example 3: <tage>circle</tage> with one point constrained and user input for <c>radius</c></title>
+<p>In the sample code below, only a single point is specified in the <attr>through</attr> attribute of the <tage>circle</tage> component.  Since the default radius is 1 unit, this drives the geometry of the circle. The single point specified occurs by default at the topmost point of the circle.  The user is then prompted to change the value of the radius with a <ref uri="doenet:doenetId=p_qPrnY-jhcqqrG2LcodH"><tage>mathInput</tage></ref>. When the user enters a value in the <tage>mathInput</tage>, the <c>radius</c> of the circle is updated with that value using the <attr>bindValueTo</attr> attribute. The input for this attribute references the <c>radius</c> property of the <tage>circle</tage> named <c>myCircle</c>.</p> 
+
+<p>Within the <tag>graph</tag>, both the point and the circle are rendered separately.  The point is rendered using the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component as follows: the target of the <tage>copy</tage> is the circle named <c>myCircle</c> which is specified with the attribute <c>tname='myCircle'</c>.  In addition, the  <attr>prop</attr> attribute of the <tage>copy</tage> references the first point (<c>throughPoint1</c>) in the <c>_pointList</c> input of the <attr>through</attr> attribute belonging to the target.  Since the <attr>through</attr> attribute of the circle accepts any list of 1 to 3 points (see Examples 4 and 5 below), these points can be called by their DoenetML assigned names, "<c>throughPoint1</c>", "<c>throughPoint2</c>", and "<c>throughPoint3</c>". (In our current example, only one point is supplied to the list.)</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;p&gt;Change radius: &lt;mathinput bindValueTo="&dollar;(myCircle{prop='radius'})" /&gt;&lt;/p&gt;
+  
+&lt;graph xmin="-4" xmax="4" ymin="-4" ymax="4"&gt;
+  &lt;circle through="(0,3)" name="myCircle"/&gt;
+  &lt;copy prop="throughPoint1" tname="myCircle" /&gt;
+&lt;/graph&gt;
+  
+&lt;p&gt;Circle of radius &lt;copy prop="radius" tname="myCircle"/&gt; centered at
+&lt;copy prop="center" tname="myCircle" /&gt;&lt;/p&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+  
+<!--*******************************************************-->
+ 
+
+<example newNameSpace><title>What Doenet Renders (Example 3)</title>
+
+<p>Change radius: <mathinput bindValueTo="$(myCircle{prop='radius'})" /></p>
+  
+<graph xmin="-4" xmax="4" ymin="-4" ymax="4">
+  <circle through="(0,3)" name="myCircle"/>
+  <copy prop="throughPoint1" tname="myCircle" />
+</graph>
+  
+<p>Circle of radius <copy prop="radius" tname="myCircle"/> centered at
+<copy prop="center" tname="myCircle" /></p>
+
+</example>
+   
+
+<!--******************************************************-->
+    
+ 
+<subsection><title>Example 4: <tage>circle</tage> with 2 points constrained</title>
+<p>In the sample code below, two points are listed within the <attr>through</attr> attribute of the <tage>circle</tage> component. The user is prompted to change the radius with a <ref uri="doenet:doenetId=p_qPrnY-jhcqqrG2LcodH"><tage>mathInput</tage></ref>.  See Example 3 for additional comments.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+&lt;p&gt;Change radius: &lt;mathinput bindValueTo="&dollar;(myCircle{prop='radius'})" /&gt;&lt;/p&gt;
+  
+&lt;graph&gt;
+  &lt;circle name="myCircle" through="(4,5) (1,2)"/&gt;
+  &lt;copy prop="throughPoint1" tname="myCircle"/&gt;
+  &lt;copy prop="throughPoint2" tname="myCircle"/&gt;
+&lt;/graph&gt;
+
+&lt;p&gt;Circle of radius &lt;copy prop="radius" tname="myCircle"/&gt; centered at
+&lt;copy prop="center" tname="myCircle" /&gt;&lt;/p&gt;
+</pre>
+ 
+        </example>  
+      </subsection>
+  
+<!--*******************************************************-->
+ 
+ 
+<example newNameSpace><title>What Doenet Renders (Example 4)</title>
+<p>Change radius: <mathinput bindValueTo="$(myCircle{prop='radius'})" /></p>
+  
+<graph>
+  <circle name="myCircle" through="(4,5) (1,2)"/>
+  <copy prop="throughPoint1" tname="myCircle"/>
+  <copy prop="throughPoint2" tname="myCircle"/>
+</graph>
+
+<p>Circle of radius <copy prop="radius" tname="myCircle"/> centered at
+<copy prop="center" tname="myCircle" /></p>
+
+<aside newNameSpace><title>Alternate point specification using <attr>throughPoints</attr></title>
+<p>Rather than specifying both <c>throughPoint1</c> and <c>throughPoint2</c>, the <c>throughPoints</c> input may be used one time to capture the entire list of points specified in the <attr>through</attr> attribute of the <tage>circle</tage>.</p>
+<pre>
+&lt;p&gt;Change radius: &lt;mathinput bindValueTo="&dollar;(myCircle{prop='radius'})" /&gt;&lt;/p&gt;
+  
+&lt;graph&gt;
+  &lt;circle name="myCircle" through="(4,5) (1,2)"/&gt;
+  &lt;copy prop="throughPoints" tname="myCircle" /&gt;
+&lt;/graph&gt;
+
+&lt;p&gt;Circle of radius &lt;copy prop="radius" tname="myCircle"/&gt; centered at
+&lt;copy prop="center" tname="myCircle" /&gt;&lt;/p&gt;
+</pre>
+  
+<subsubsection><title>What Doenet Renders (Alternate point specification)</title>
+<p>Change radius: <mathinput bindValueTo="$(myCircle{prop='radius'})" /></p>
+  
+<graph>
+  <circle name="myCircle" through="(4,5) (1,2)"/>
+  <copy prop="throughPoints" tname="myCircle" />
+</graph>
+
+<p>Circle of radius <copy prop="radius" tname="myCircle"/> centered at
+<copy prop="center" tname="myCircle" /></p>
+</subsubsection>
+</aside>
+</example>
+
+<!--*******************************************************-->
+  
+<subsection ><title>Example 5: <tage>circle</tage> with 2 points constrained</title>
+<p>In the sample code below, two points are listed within the <attr>through</attr> attribute of the <tage>circle</tage> component (similar to Example 4).  In this example, a <attr>radius</attr> attribute is also specified which can be modified by the user in a <ref uri="doenet:doenetId=p_qPrnY-jhcqqrG2LcodH"><tage>mathInput</tage></ref>. The second <tage>mathInput</tage> below the graph uses the <attr>bindValueTo</attr> attribute to ensure that all of the changes to the <attr>radius</attr> property of the circle named <c>myCircle</c> stay consistent throughout the activity. The current <attr>radius</attr>, <attr>center</attr>, and <attr>throughPoints</attr> attributes of the circle are rendered using the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component as the user changes the geometry of the graph.
+</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 5)</title>
+
+<pre>
+&lt;p&gt;Defining radius: &lt;mathinput name='r' prefill='4' /&gt;&lt;/p&gt;
+
+&lt;graph&gt;
+  &lt;circle name='myCircle' through='(4,5) (1,2)' radius='&dollar;r' /&gt;
+  &lt;copy prop='throughPoints' tname='myCircle' /&gt;
+&lt;/graph&gt;
+    
+&lt;p&gt;Circle of radius &lt;copy prop='radius' tname='myCircle'/&gt; 
+  centered at &lt;copy prop='center' tname='myCircle' /&gt;
+  with throughPoints &lt;copy prop='throughPoint1' tname='myCircle' /&gt;
+  and &lt;copy prop='throughPoint1' tname='myCircle' /&gt;.&lt;/p&gt;
+
+&lt;p&gt;Change radius: &lt;mathinput bindValueTo="&dollar;(myCircle{prop='radius'})" /&gt;&lt;/p&gt;
+</pre>
+</example>
+</subsection>
+
+<!--******************************************************-->
+
+<example newNameSpace><title>What Doenet Renders (Example 5)</title>
+<p>Defining radius: <mathinput name='r' prefill='4' /></p>
+
+    <graph>
+      <circle name='myCircle' through='(4,5) (1,2)' radius='$r' />
+	  <copy prop='throughPoints' tname='myCircle' />
+    </graph>
+    <p>Circle of radius <copy prop='radius' tname='myCircle'/> centered at
+<copy prop='center' tname='myCircle' /> with throughPoints <copy prop='throughPoint1' tname='myCircle' /> and <copy prop='throughPoint1' tname='myCircle' />.</p>
+
+<p>Change radius: <mathinput bindValueTo="$(myCircle{prop='radius'})" /></p>
+</example>
+
+<!--******************************************************-->
+    
+
+<subsection><title>Example 6: <tage>circle</tage> through 3 randomly-generated points</title>
+<p>In the sample code below, three throughPoints for the <tage>circle</tage> are randomly generated using <ref uri="doenet:doenetId=HtetAL1AhP13dJyv4sP2H"><tag>selectFromSequence</tag></ref> and <ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref> components within a <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> block. These points are then referenced in the <attr>through</attr> attribute of the <tage>circle</tage> within the <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref> using the <c>&dollar;name</c> notation. The user is prompted to select the correct throughPoints of the circle within an <ref uri="doenet:doenetId=oqsskIj4WFljMigaogOCM"><tag>answer</tag></ref> that contains a <ref uri="doenet:doenetId=2H6BxwETaoUOdWj4iovYo"><tag>choiceInput</tag></ref> block.  Each <ref uri="doenet:doenetId=twzcSdfjCk9gd6TbzwX_z"><tag>choice</tag></ref>within the <tag>choiceInput</tag> block references either the <c>throughPoints</c> of the <tage>circle</tage> or the "incorrect" points named <c>point4</c> and <c>point5</c> defined in the <tag>setup</tag> block.  (See also, <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref>.)</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 6)</title>
+<pre>
+&lt;setup&gt;
+  &lt;selectFromSequence numberToSelect="5" assignNames="x1 x2 x3 x4 x5" from="-5" to = "5" step="1"/&gt;
+  &lt;selectFromSequence numberToSelect="5" assignNames="y1 y2 y3 y4 y5" from="-5" to = "5" step="1"/&gt;
+  &lt;point name="point1"&gt;(&dollar;x1, &dollar;y1)&lt;/point&gt;
+  &lt;point name="point2"&gt;(&dollar;x2, &dollar;y2)&lt;/point&gt;
+  &lt;point name="point3"&gt;(&dollar;x3, &dollar;y3)&lt;/point&gt;
+  &lt;point name="point4"&gt;(&dollar;x4, &dollar;y4)&lt;/point&gt;
+  &lt;point name="point5"&gt;(&dollar;x5, &dollar;y5)&lt;/point&gt;
+&lt;/setup&gt;
+  
+&lt;p&gt;Which three points does the circle pass through?
+&lt;answer&gt;
+&lt;choiceInput randomizeOrder="true" matchPartial="true" selectMultiple="true"&gt;
+  &lt;choice credit="1"&gt;&lt;copy prop="throughPoint1" tname="myCircle"/&gt;&lt;/choice&gt;
+  &lt;choice credit="1"&gt;&lt;copy prop="throughPoint2" tname="myCircle"/&gt;&lt;/choice&gt;
+  &lt;choice credit="1"&gt;&lt;copy prop="throughPoint3" tname="myCircle"/&gt;&lt;/choice&gt;
+  &lt;choice&gt;&dollar;point4&lt;/choice&gt;
+  &lt;choice&gt;&dollar;point5&lt;/choice&gt;
+&lt;/choiceInput&gt;
+&lt;/answer&gt;
+&lt;/p&gt;
+    
+&lt;graph grid="dense"&gt;
+  &lt;circle name='myCircle' through='&dollar;point1 &dollar;point2 &dollar;point3'/&gt;
+  &lt;copy prop='throughPoints' tname='myCircle' /&gt;
+&lt;/graph&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+ 
+<!--*******************************************************-->
+ 
+
+<example newNameSpace><title>What Doenet Renders (Example 6)</title>
+<setup>
+  <selectFromSequence numberToSelect="5" assignNames="x1 x2 x3 x4 x5" from="-5" to = "5" step="1"/>
+  <selectFromSequence numberToSelect="5" assignNames="y1 y2 y3 y4 y5" from="-5" to = "5" step="1"/>
+  <point name="point1">($x1, $y1)</point>
+  <point name="point2">($x2, $y2)</point>
+  <point name="point3">($x3, $y3)</point>
+  <point name="point4">($x4, $y4)</point>
+  <point name="point5">($x5, $y5)</point>
+</setup>
+  
+<p>Which three points does the circle pass through?
+<answer>
+<choiceInput randomizeOrder="true" matchPartial="true" selectMultiple="true">
+  <choice credit="1"><copy prop="throughPoint1" tname="myCircle"/></choice>
+  <choice credit="1"><copy prop="throughPoint2" tname="myCircle"/></choice>
+  <choice credit="1"><copy prop="throughPoint3" tname="myCircle"/></choice>
+  <choice>$point4</choice>
+  <choice>$point5</choice>
+</choiceInput>
+</answer>
+</p>
+    
+<graph grid="dense">
+  <circle name='myCircle' through='$point1 $point2 $point3'/>
+  <copy prop='throughPoints' tname='myCircle' />
+</graph>
+
+</example>
+
+<!--******************************************************-->
+    
+
+<subsection><title>Example 7: <tage>circle</tage> with user-supplied center and throughPoint</title>
+<p>In the sample code below the user is prompted to supply a center and a through-point of a circle with a <ref uri="doenet:doenetId=p_qPrnY-jhcqqrG2LcodH"><tage>mathInput</tage></ref>.  Since the <tage>mathInput</tage> component accepts a <c>math</c> input and not a <c>point</c>, the user's data is then converted into a <ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref> within the graph itself, referencing the <tage>mathInput</tage> by name with the <c>&dollar;name</c> notation. The points thus defined are now able to be used as inputs in the <attr>center</attr> and <attr>through</attr> attributes of the <tage>circle</tage> itself.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 7)</title>
+<pre>
+&lt;p&gt;Choose a center point for the circle:&lt;/p&gt;
+&lt;p&gt;Center point: &lt;mathInput name="userCenter" prefill="(0,0)"/&gt;&lt;/p&gt;
+  
+&lt;p&gt;Choose a point for the circle to pass through:&lt;/p&gt;
+&lt;p&gt;Through-point: &lt;mathInput name="userPoint" prefill="(0,0)"/&gt;&lt;/p&gt;
+ 
+&lt;graph&gt;
+  &lt;point name="graphingThroughPoint"&gt;&dollar;userPoint&lt;/point&gt;
+  &lt;point name="graphingCenter"&gt;&dollar;userCenter&lt;/point&gt;
+  &lt;circle name="myCircle" through="&dollar;graphingThroughPoint" center="&dollar;graphingCenter"/&gt;
+&lt;/graph&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+ 
+<!--*******************************************************-->
+ 
+
+<example newNameSpace><title>What Doenet Renders (Example 7)</title>
+<p>Choose a center point for the circle:</p>
+<p>Center point: <mathInput name="userCenter" prefill="(0,0)"/></p>
+  
+<p>Choose a point for the circle to pass through:</p>
+<p>Through-point: <mathInput name="userPoint" prefill="(0,0)"/></p>
+ 
+<graph>
+  <point name="graphingThroughPoint">$userPoint</point>
+  <point name="graphingCenter">$userCenter</point>
+  <circle name="myCircle" through="$graphingThroughPoint" center="$graphingCenter"/>
+</graph>
+</example> 
+
+
+<!--******************************************************-->
+  
+</section>
+</document>
+
+
+<!--
+  
+    <subsection name="diameter" newNamespace>
+      <p>Should we allow one to specify diameter rather than radius?</p>
+      <p>&lt;circle diameter='2' &gt;</p>
+
+  </subsection>
+
+
+  
+</section>
+
+
+<section>
+  <title>Other combinations</title>
+  
+  <subsection name='constrain' newNamespace>
+    <title>Constrain point to circle</title>
+    
+    <graph>
+      <circle name='c' center="(1,2)" radius='2'/>
+      <point x='1' y='2'>
+        <constraints>
+          <constrainTo>$c</constrainTo>
+        </constraints>
+      </point>
+
+    </graph>
+
+
+  </subsection>
+
+ <subsection name='triangleInscribed' newNamespace>
+   <title>Triangle inscribed in circle</title>
+
+   <graph>
+     <triangle name="t" vertices="(1,2) (3,5) (-5,2)" />
+     <circle name="c" through="$(t{prop='vertices'})" />
+   </graph>
+
+  </subsection>
+
+
+</section>-->
+
+
+
+
+
+
+
+
+
+
+
+

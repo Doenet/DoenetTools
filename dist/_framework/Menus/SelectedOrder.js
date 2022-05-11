@@ -8,7 +8,7 @@ import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import Increment from "../../_reactComponents/PanelHeaderComponents/IncrementMenu.js";
 import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {authorItemByDoenetId, selectedCourseItems, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, selectedCourseItems, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import DropdownMenu from "../../_reactComponents/PanelHeaderComponents/DropdownMenu.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
@@ -18,8 +18,8 @@ const CheckboxLabelText = styled.span`
 `;
 export default function SelectedOrder() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
-  const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
-  const parentItemObj = useRecoilValue(authorItemByDoenetId(itemObj.parentDoenetId));
+  const itemObj = useRecoilValue(itemByDoenetId(doenetId));
+  const parentItemObj = useRecoilValue(itemByDoenetId(itemObj.parentDoenetId));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const [behavior, setBehavior] = useState(itemObj.behavior);
   const [numberToSelect, setNumberToSelect] = useState(itemObj.numberToSelect);

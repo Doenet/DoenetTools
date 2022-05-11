@@ -1,0 +1,414 @@
+<problem>
+<!-- <title>Forward Euler, error with too large time step</title> -->
+
+<setup>
+
+<function name='fun' variables='u'>(1-u)e^u</function>
+<number name='u0'>0.5</number>
+<number name='dt1'>0.8</number>
+<number name='twodt1'>0.8*2</number>
+<evaluate name="fun_u0" function="$fun" input="$u0" />
+<number name='fedt1_dt1'>$u0 +$fun_u0 *$dt1 </number>
+<evaluate name='fun_fedt1_dt1' function='$fun' input='$fedt1_dt1' />
+<number name='fedt1_2dt1'>$fedt1_dt1 +$fun_fedt1_dt1 *$dt1 </number>
+<number name='umin'>-0.4</number>
+<number name='umax'>2</number>
+<number name='tmax'>2.5*$dt1 </number>
+<number name='dt2'>0.4</number>
+<number name='twodt2'>2*$dt2 </number>
+<number name='threedt2'>3*$dt2 </number>
+<number name='fourdt2'>4*$dt2 </number>
+<number displayDigits="4" name='fedt2_dt2'>$u0 +$fun_u0 *$dt2 </number>
+<number displayDigits="4" name='fedt2_2dt2'>$fedt2_dt2 +$$fun($fedt2_dt2 )*$dt2</number>
+<number displayDigits="4" name='fedt2_3dt2'>$fedt2_2dt2 +$$fun($fedt2_2dt2 )*$dt2</number>
+<number displayDigits="4" name='fedt2_4dt2'>$fedt2_3dt2 +$$fun($fedt2_3dt2 )*$dt2</number>
+
+<evaluate displayDigits="4" name='fun_fedt2_dt2' function='$fun' input='$fedt2_dt2' />
+<evaluate displayDigits="4" name='fun_fedt2_2dt2' function='$fun' input='$fedt2_2dt2' />
+<evaluate displayDigits="4" name='fun_fedt2_3dt2' function='$fun' input='$fedt2_3dt2' />
+
+</setup>
+
+
+Our goal is to use Forward Euler to approximate the solution of the differential equation
+<md>
+  <mrow>\frac{ du }{ dt }\amp = <copy prop="formula" tname="fun" /></mrow>
+  <mrow>u(0)\amp = $u0 .</mrow>
+</md>
+
+
+
+<ol>
+
+<li>
+Calculate <m>u($dt1 )</m> and <m>u($twodt1 )</m> using the Forward Euler algorithm with time step <m>\Delta t = $dt1 </m>.  Plot the solution (i.e., a graph of <m>u</m> versus time with line segments between the three points).
+
+<p><m>u($dt1 ) \approx</m> 
+<answer name="answer1">
+<award allowedErrorInNumbers='0.001'>$fedt1_dt1 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$fedt1_dt1 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer1" />
+
+<p>
+<m>u($twodt1 ) \approx</m> 
+<answer name="answer2">
+<award allowedErrorInNumbers='0.001'>$fedt1_2dt1 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$fedt1_2dt1 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer2" />
+
+
+
+<hint>
+Calculate your answers to at least 4 significant digits.  This means that you should keep your intermediate answers to 6 or more significant digits to be safe.
+</hint>
+
+
+
+<graph width='500' height='250' ymin='$umin' ymax='$umax' xmin="-0.2" xmax="2" ylabel='u'  fixAxes grid>
+
+  <point name="P1_0" x="0" y="0" styleNumber="1">
+    <constraints>
+      <constrainToGrid dx="10" dy="0.25" yoffset="$u0" />
+    </constraints>
+  </point>
+  <point name="P1_1" x="1" y="0" styleNumber="1">
+    <constraints>
+      <constrainToGrid dx="10" dy="0.25" xoffset="$dt1" yoffset="$fedt1_dt1" />
+    </constraints>
+  </point>
+  <point name="P1_2" x="2" y="0" styleNumber="1">
+    <constraints>
+      <constrainToGrid dx="10" dy="0.25" xoffset="2*$dt1" yoffset="$fedt1_2dt1" />
+    </constraints>
+  </point>
+  <polyline stylenumber="1" vertices="$P1_0 $P1_1 $P1_2" fixed />
+
+</graph>
+
+<p>Check plot:
+  <answer matchPartial>
+    <award targetsAreResponses="P1_0 P1_1 P1_2">
+      <when>
+        $(P1_0{prop='y'}) = $u0
+        and
+        $(P1_1{prop='y'}) = $fedt1_dt1
+        and
+        $(P1_2{prop='y'}) = $fedt1_2dt1
+      </when>
+    </award>
+  </answer>
+</p>
+
+</li>
+
+<li>
+There should be something wrong with the plot you just drew.  To find the problems, sketch the solution using a graphical approach.  To do so, you'll need to calculate the equilibria, their stability, and determine how the speed of <m>u</m> evolves with time.
+
+<p>How many equilibria are there? <answer>1</answer></p>
+
+<p>What is the equilibrium?
+<m>u = </m> <answer>1</answer></p>
+
+<p>What its stability?
+  <answer>
+    <choiceinput inline>
+      <choice credit="1">stable</choice><choice>unstable</choice>
+    </choiceinput>
+  </answer>
+</p>
+
+  <math hide name="ICexpr" functionSymbols="u">u(0)</math>
+  <copy uri="doenet:contentId=21a34190e2ee3914bac6b04aea3c94d06944a6e9fc31219ef36763d0414a2537&doenetId=hMRCBB72QUn89g054358W" width="500" height='250' vmin="$umin" vmax="$umax" var="u" ICexpr="$ICexpr" nPoints="1" IC1="$u0" final1="1" assignNames="solPlot" dv="0.1" minHandleRadius="0.5" />
+
+
+</li>
+
+<li>
+Is it possible for a solution to a single autonomous differential equation (i.e., an equation like the dynamical system for <m>u</m>) to cross through an equilibrium?  (Remember what a vector field sketch looks like.)  
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>No!</choice>
+<choice credit='1'>Never!</choice>
+<choice credit='1'>Not on your life!</choice>
+<choice credit='1'>No way!</choice>
+<choice credit='1'>Clearly not!</choice>
+</choiceinput>
+</answer>
+  Does your Forward Euler solution cross through an equilibrium?  
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>Uh, it looks like it.</choice>
+<choice credit='1'>It just might.</choice>
+<choice credit='1'>Ah, yeah.</choice>
+<choice credit='1'>Yes.</choice>
+</choiceinput>
+</answer>
+.  If so, that is one problem.
+
+
+
+</li>
+
+<li>
+Is it possible for the solution to a single autonomous differential equation to turn around?   (Remember what a vector field sketch looks like.)  
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>No!</choice>
+<choice credit='1'>Of course not!</choice>
+<choice credit='1'>Ummm.... no.</choice>
+<choice credit='1'>Not!</choice>
+<choice credit='1'>Impossible!</choice>
+</choiceinput>
+</answer>
+  Does your Forward Euler solution turn around?  
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>Yes.</choice>
+<choice credit='1'>Uh huh.</choice>
+<choice credit='1'>I guess so.</choice>
+<choice credit='1'>It would seem that way.</choice>
+<choice credit='1'>Now that you mention it....</choice>
+</choiceinput>
+</answer>
+ If so, that is another problem.
+
+
+</li>
+
+<li>
+<p>The problem with the Forward Euler solution is that we took too large of a time step.  When <m>\Delta t = 0.8</m>, we keep going along the same slope for too long.  We end up sailing past an equilibrium.  Then, since we crossed the equilibrium, the next estimate of our direction is in the opposite direction, and it looks like the solution turns around.  To avoid this problem, we must decrease the time step.</p>
+
+<p>Redo the Forward Euler approximation, but this time halve the time step to <m>\Delta t=$dt2 </m>.  Now, take four steps of the Forward Euler algorithm.</p>
+
+<p><m>u($dt2 ) \approx</m> 
+<answer name="answer9">
+<award allowedErrorInNumbers='0.001'>$fedt2_dt2 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$fedt2_dt2 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer9" />
+
+<p>
+
+<m>u($twodt2 ) \approx</m> 
+<answer name="answer10">
+<award allowedErrorInNumbers='0.001'>$fedt2_2dt2 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$fedt2_2dt2 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer10" />
+
+<p>
+
+<m>u($threedt2 ) \approx</m> 
+<answer name="answer11">
+<award allowedErrorInNumbers='0.001'>$fedt2_3dt2 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$fedt2_3dt2 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer11" />
+
+<p>
+
+<m>u($fourdt2 ) \approx</m> 
+<answer name="answer12">
+<award allowedErrorInNumbers='0.001'>$fedt2_4dt2 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$fedt2_4dt2 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer12" />
+
+<hint>
+Your answers should be correct to within 4 significant digits, so be sure to keep 6 or more digits on all your intermediate answers.  (It's OK to enter more than 4 significant digits in your answers as long as your answer is correct to 4 significant digits.)
+</hint>
+
+  
+<p>Plot your solution.</p>
+
+
+<graph width='500' height='250' ymin='$umin' ymax='$umax' xmin="-0.2" xmax="2" ylabel='u'  fixAxes grid>
+
+  <point name="P2_0" x="0" y="0" styleNumber="1">
+    <constraints>
+      <constrainToGrid dx="10" dy="0.25" yoffset="$u0" />
+    </constraints>
+  </point>
+  <point name="P2_1" x="$dt2" y="0" styleNumber="1">
+    <constraints>
+      <constrainToGrid dx="10" dy="0.25" xoffset="$dt2" yoffset="$fedt2_dt2" />
+    </constraints>
+  </point>
+  <point name="P2_2" x="2$dt2" y="0" styleNumber="1">
+    <constraints>
+      <constrainToGrid dx="10" dy="0.25" xoffset="2*$dt2" yoffset="$fedt2_2dt2" />
+    </constraints>
+  </point>
+  <point name="P2_3" x="3$dt2" y="0" styleNumber="1">
+    <constraints>
+      <constrainToGrid dx="10" dy="0.25" xoffset="3*$dt2" yoffset="$fedt2_3dt2" />
+    </constraints>
+  </point>
+  <point name="P2_4" x="4$dt2" y="0" styleNumber="1">
+    <constraints>
+      <constrainToGrid dx="10" dy="0.25" xoffset="4*$dt2" yoffset="$fedt2_4dt2" />
+    </constraints>
+  </point>
+  <polyline stylenumber="1" vertices="$P2_0 $P2_1 $P2_2 $P2_3 $P2_4" fixed />
+
+</graph>
+
+<p>Check plot:
+  <answer matchPartial>
+    <award targetsAreResponses="P2_0 P2_1 P2_2 P2_3 P2_4">
+      <when>
+        $(P2_0{prop='y'}) = $u0
+        and
+        $(P2_1{prop='y'}) = $fedt2_dt2
+        and
+        $(P2_2{prop='y'}) = $fedt2_2dt2
+        and
+        $(P2_3{prop='y'}) = $fedt2_3dt2
+        and
+        $(P2_4{prop='y'}) = $fedt2_4dt2
+      </when>
+    </award>
+  </answer>
+</p>
+
+<p>This time, the solution shouldn't cross the solution or turn around.  (Well, OK, maybe it did a tiny bit.  We'd have to make the time step even a little smaller to eliminate this error.  But, you are probably glad we didn't take 16 steps with <m>\Delta t=0.1</m>. If you are bored some day, you could try it.  At least the problems are not obvious from the graph.)</p>
+
+<p>The important take-home message is that the Forward Euler algorithm could give you bogus results if you take time steps <m>\Delta t</m> that are too big.  It's always good to check if Forward Euler (or any other computer program) is lying to you.</p>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+<setup>
+  <styleDefinitions>
+  <styleDefinition styleNumber="2" lineWidth="3" />
+  <styleDefinition styleNumber="9" lineColor="red" lineWidth='3' markerColor='red' markerStyle="circle" markerSize="4" />
+</styleDefinitions>
+
+
+</setup>
+
+<ol>
+
+<li>
+Let <m>f(u)=<copy prop="formula" tname="fun" /></m>.  The first Forward Euler step is
+<md>
+  <mrow>u($dt1 )\amp = u(0) + f(u(0))$dt1 </mrow>
+  <mrow>\amp = $u0 + f($u0 )$dt1 </mrow>
+  <mrow>\amp = $u0  + $fun_u0 ($dt1 ) = $fedt1_dt1</mrow>
+</md>
+The second Forward Euler step is
+<md>
+<mrow>u($twodt1 )\amp = u($dt1 ) + f(u($dt1 ))$dt1 </mrow>
+<mrow>\amp = $fedt1_dt1 + f($fedt1_dt1)$dt1 </mrow>
+  <mrow>\amp = $fedt1_dt1 + $fun_fedt1_dt1  ($dt1 ) = $fedt1_2dt1</mrow>
+</md>
+
+
+The plot of this solution:
+
+  
+<graph width='500' height='250' ymin='$umin' ymax='$umax' xmin="-0.2" xmax="2" ylabel='u'  fixAxes grid>
+
+  <point name="P1s_0" x="0" y="0.5" styleNumber="1" fixed />
+  <point name="P1s_1" x="$dt1" y="$fedt1_dt1" styleNumber="1" fixed />
+  <point name="P1s_2" x="2$dt1" y="$fedt1_2dt1" styleNumber="1" />
+  <polyline stylenumber="1" vertices="$P1s_0 $P1s_1 $P1s_2" fixed />
+
+</graph>
+
+</li>
+
+<li>
+The equilibria satisfy <m>f(u)=0</m>, or <m>(1-u)e^u=0</m>.  Since the exponential cannot be zero, the one equilibrium is <m>u=1</m>.  To determine stability, calculate <m>f'(u) = (1-u)e^u + (-1)e^u = -ue^u</m>.  Plugging in the equilibrium, <m>f'(1) = (-1)e^1 = -e \lt  0</m>.  Since the derivative is negative, the equilibrium <m>u=1</m> is stable.  The phase line is:
+
+
+  <graph width='500' height='150' xmin='$umin' xmax='$umax' ymin='-3' ymax='3' xlabel="z" fixAxes name="zLineSol" newNamespace displayYaxis="false">
+
+  <equilibriumPoint styleNumber="9" fixed stable="true">(1,0)</equilibriumPoint>
+
+
+  <vector name="v1" head="(0.9,0)" tail="(-2,0)" styleNumber="2" />
+  <vector name="v2" head="(1.1,0)" tail="(2,0)" styleNumber="2" />
+  
+
+</graph>
+
+Starting at <m>u=0.5</m>, the solution should increase steadily to the stable equilibrium <m>u=1</m>.  A graph of the qualitative form of the solution:
+
+
+  <graph width="500" height='400' ymin="$umin" ymax="$umax" xmin="-.2" xmax="2" fixAxes xlabel="t" ylabel="u">
+
+  <function domain="(0,30)" styleNumber="1">1  -0.5 e^(-x/.2) </function>
+
+</graph>
+
+</li>
+
+<li>
+No, yes.
+</li>
+
+<li>
+No, yes.
+</li>
+
+<li>
+The four Forward Euler step are
+<md>
+  <mrow>u($dt2 )\amp = u(0) + f(u(0))$dt2 </mrow>
+  <mrow>\amp = $u0  + f($u0 )$dt2 </mrow>
+  <mrow>\amp = $u0  + $fun_u0 ($dt2 ) =$fedt2_dt2</mrow>
+</md>
+<md>
+  <mrow>u($twodt2 )\amp = u($dt2 ) + f(u($dt2 ))$dt2 </mrow>
+  <mrow>\amp = $fedt2_dt2 + f($fedt2_dt2)$dt2 </mrow>
+  <mrow>\amp =  $fedt2_dt2 + $fun_fedt2_dt2 ($dt2 ) = $fedt2_2dt2</mrow>
+</md>
+<md>
+  <mrow>u($threedt2 )\amp = u($twodt2 ) + f(u($twodt2 ))$dt2 </mrow>
+  <mrow>\amp = $fedt2_2dt2 + f($fedt2_2dt2)$dt2 </mrow>
+  <mrow>\amp = $fedt2_2dt2 + $fun_fedt2_2dt2 ($dt2 ) =$fedt2_3dt2</mrow>
+</md>
+<md>
+  <mrow>u($fourdt2 )\amp = u($threedt2 ) + f(u($threedt2 ))$dt2 </mrow>
+  <mrow>\amp = $fedt2_3dt2 + f($fedt2_3dt2)$dt2 </mrow>
+  <mrow>\amp = $fedt2_3dt2 + $fun_fedt2_3dt2 ($dt2 ) =$fedt2_4dt2</mrow>
+</md>
+
+The plot of this solution:
+
+<graph width='500' height='250' ymin='$umin' ymax='$umax' xmin="-0.2" xmax="2" ylabel='u'  fixAxes grid>
+
+  <point name="P2s_0" x="0" y="$u0" styleNumber="1"/>
+  <point name="P2s_1" x="$dt2" y="$fedt2_dt2" styleNumber="1"/>
+  <point name="P2s_2" x="2$dt2" y="$fedt2_2dt2" styleNumber="1"/>
+  <point name="P2s_3" x="3$dt2" y="$fedt2_3dt2" styleNumber="1" />
+  <point name="P2s_4" x="4$dt2" y="$fedt2_4dt2" styleNumber="1" />
+  <polyline stylenumber="1" vertices="$P2s_0 $P2s_1 $P2s_2 $P2s_3 $P2s_4" fixed />
+
+</graph>
+
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

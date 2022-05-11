@@ -1,0 +1,173 @@
+<document><title><tag>mod</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+    <aside><title>Attributes inherited from parent component <tag><ref>math</ref></tag> </title>
+    <li><attr>simplify</attr>
+      <em>(text)</em></li>
+    <li><attr>format</attr>  <em>(text)</em></li>
+    <li><attr>expand</attr>  <em>(boolean)</em></li>
+    <li><attr>displayDigits</attr>  <em>(integer)</em></li>
+    <li><attr>displayDecimals</attr>  <em>(integer)</em></li>
+    <li><attr>displaySmallAsZero</attr>  <em>(number)</em></li>
+    <li><attr>renderMode</attr>  <em>(text)</em></li>
+    <li><attr>unordered</attr>  <em>(boolean)</em></li>
+    <li><attr>createVectors</attr>  <em>(boolean)</em></li>
+    <li><attr>createIntervals</attr>  <em>(boolean)</em></li>
+    <li><attr>functionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>targetsAreFunctionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>splitSymbols</attr> <em>(boolean)</em></li>
+    <li><attr>groupCompositeReplacements</attr> <em>(boolean)</em></li></aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>mod</tag><idx><tag>mod</tag></idx> component accepts a list of two numerical inputs <m>a</m> and <m>b</m> (separated by a space) and returns the value of <m>a \bmod b</m>. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+&lt;p&gt; 
+  &lt;m&gt;61 \bmod 12 = &lt;mod&gt;61 12&lt;/mod&gt;&lt;/m&gt;
+&lt;/p&gt;
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<p><m>61\ \bmod 12 = <mod>61 12</mod></m></p>
+</subsection>
+    </cell>
+  </row>
+  
+  
+<!--*******************************************************-->  
+  
+  
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+&lt;p&gt;
+&lt;problem&gt;What is &lt;m&gt;7 \bmod 5&lt;/m&gt;?
+  &lt;answer&gt;&lt;mathInput name="ans1"/&gt;
+    &lt;award&gt;
+      &lt;when&gt;
+        &dollar;ans1 = &lt;mod&gt;7 5&lt;/mod&gt;
+      &lt;/when&gt;
+    &lt;/award&gt;
+  &lt;/answer&gt;
+&lt;/problem&gt;
+&lt;/p&gt;
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<p>
+<problem>What is <m>7 \bmod 5</m>?
+  <answer><mathInput name="ans1"/>
+    <award>
+      <when>$ans1 = <mod>7 5</mod></when>
+    </award>
+  </answer>
+</problem>
+</p>
+
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+<!--    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>-->
+<!--*******************************************************-->
+<!-- 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>-->
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<!--
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>-->
+<!--*******************************************************-->
+<!-- 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>-->
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

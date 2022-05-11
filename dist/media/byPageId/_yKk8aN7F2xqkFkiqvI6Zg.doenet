@@ -1,0 +1,278 @@
+<problem>
+<!-- <title>SIS model, bifurcation diagram</title> -->
+
+<setup>
+
+<number name='alphaval'>0.5</number>
+<function name='E0' variables='x'>0</function>
+<function name='E1' variables='x'>1-2x</function>
+<number name='mu'>mu</number>
+<number name='pmin'>-0.15</number>
+<number name='pmax'>2.1</number>
+<number name='Imin'>-0.15</number>
+<number name='Imax'>1.1</number>
+<number name='dp'>0.1</number>
+<number name='dI'>0.1</number>
+
+<math name='mu_bif' simplify='full' >$alphaval </math>
+<styleDefinitions>
+  <styledefinition styleNumber="3" markerColor="red" markerSize="3" markerStyle="circle" lineColor="red" lineWidth="3" />
+</styleDefinitions>
+</setup>
+
+
+<p>Fix <m>\alpha=$alphaval </m>.  We will summarize the behavior of the infectious disease model for that value of <m>\alpha</m> by drawing a bifurcation diagram to represent how the values the equilibria and their stability change with the parameter <m>\mu</m>.</p>
+  
+<p>When <m>\alpha=$alphaval</m>, there is a bifurcation point at a value of <m>\mu</m> that we'll label <m>\mu^*</m>.  The bifurcation point is <m>\mu^*=</m> <answer>$mu_bif</answer>. 
+  (Recall that a bifurcation point is where the the number or stability of equilibria change.)</p>
+
+<p>Let <m>I^*</m> be the value of <m>I</m> at the bifurcation point.  <m>I^*=</m> <answer>0</answer>.</p>
+
+<p>On the below bifurcation diagram, indicate stable equilibria with a solid line and unstable equilibria with a dashed line.  Include just biologically plausible values of <m>I</m>.</p>
+
+<graph width='600' height='300' xmin='$pmin' xmax='$pmax' ymin="$Imin" ymax="$Imax" xlabel='μ' ylabel="I" fixAxes grid>
+
+
+  <point name="BP" x="0.3" y="0.5" styleNumber="3" label="(μ^*, I^*)">
+    <constraints>
+      <attractTo threshold='0.05'><point>($mu_bif, 0)</point></attractTo>
+    </constraints>
+  </point>
+  <point name="A1" x="0.4" y="0.6" styleNumber="3">
+    <constraints>
+      <attractTo threshold="0.05">
+        <line>y=0</line>
+        <line>y = 1-x/0.5</line>
+      </attractTo>
+    </constraints>
+  </point>
+  <point name="A2" x="0.4" y="0.4" styleNumber="3">
+    <constraints>
+      <attractTo threshold="0.05">
+        <line>y=0</line>
+        <line>y = 1-x/0.5</line>
+      </attractTo>
+    </constraints>
+  </point>
+  <point name="A3" x="1.2" y="0.6" styleNumber="3">
+    <constraints>
+      <attractTo threshold="0.05">
+        <line>y=0</line>
+        <line>y = 1-x/0.5</line>
+      </attractTo>
+    </constraints>
+  </point>
+
+  <equilibriumCurve name="C1" through="$BP $A1" extrapolateForward switchable styleNumber="3" />
+  <equilibriumCurve name="C2" through="$BP $A2" extrapolateForward switchable styleNumber="3" />
+  <equilibriumCurve name="C3" through="$BP $A3" extrapolateForward switchable styleNumber="3" />
+    
+  
+</graph>
+
+<p>Bifurcation point: 
+  <answer>
+    <award>
+      <when name="bifCorrect">$BP = ($mu_bif, 0)</when>
+    </award>
+  </answer>
+</p>
+
+<setup>
+  <conditionalContent assignNames="(branchLeftBottom)">
+    <case condition="$bifCorrect and $(A1{prop='x'}) < $mu_bif and $(A1{prop='y'}) = 0">
+      <number>1</number>
+    </case>
+    <case condition="$bifCorrect and $(A2{prop='x'}) < $mu_bif and $(A2{prop='y'}) = 0">
+      <number>2</number>
+    </case>
+    <case condition="$bifCorrect and $(A3{prop='x'}) < $mu_bif and $(A3{prop='y'}) = 0">
+      <number>3</number>
+    </case>
+  </conditionalContent>
+
+  <conditionalContent assignNames="(branchLeftTop)">
+    <case condition="$bifCorrect and $(A1{prop='x'}) < $mu_bif and $(A1{prop='y'}) = $$E1($(A1{prop='x'}))">
+      <number>1</number>
+    </case>
+    <case condition="$bifCorrect and $(A2{prop='x'}) < $mu_bif and $(A2{prop='y'}) = $$E1($(A2{prop='x'}))">
+      <number>2</number>
+    </case>
+    <case condition="$bifCorrect and $(A3{prop='x'}) < $mu_bif and $(A3{prop='y'}) = $$E1($(A3{prop='x'}))">
+      <number>3</number>
+    </case>
+  </conditionalContent>
+  
+  <conditionalContent assignNames="(branchRight)">
+    <case condition="$bifCorrect and $(A1{prop='x'}) > $mu_bif and $(A1{prop='y'}) = 0">
+      <number>1</number>
+    </case>
+    <case condition="$bifCorrect and $(A2{prop='x'}) > $mu_bif and $(A2{prop='y'}) = 0">
+      <number>2</number>
+    </case>
+    <case condition="$bifCorrect and $(A3{prop='x'}) > $mu_bif and $(A3{prop='y'}) = 0">
+      <number>3</number>
+    </case>
+  </conditionalContent>
+
+</setup>
+
+
+<p>Equilibrium locations for <m>\mu < \mu^*</m>
+  <answer nAwardsCredited="2" matchPartial name="ansLeft">
+    <award credit="0.8">
+      <when name="whenLeft">
+        (
+          <boolean name="leftBot1">
+            $bifCorrect and $(A1{prop='x'}) < $mu_bif and $(A1{prop='y'}) = 0
+          </boolean>
+          or
+          <boolean name="leftBot2">
+            $bifCorrect and $(A2{prop='x'}) < $mu_bif and $(A2{prop='y'}) = 0
+          </boolean>
+          or
+          <boolean name="leftBot3">
+            $bifCorrect and $(A3{prop='x'}) < $mu_bif and $(A3{prop='y'}) = 0
+          </boolean>
+        ) and (
+          <boolean name="leftTop1">
+            $bifCorrect and $(A1{prop='x'}) < $mu_bif and $(A1{prop='y'}) = $$E1($(A1{prop='x'}))
+          </boolean>
+          or
+          <boolean name="leftTop2">
+            $bifCorrect and $(A2{prop='x'}) < $mu_bif and $(A2{prop='y'}) = $$E1($(A2{prop='x'}))
+          </boolean>
+          or
+          <boolean name="leftTop3">
+            $bifCorrect and $(A3{prop='x'}) < $mu_bif and $(A3{prop='y'}) = $$E1($(A3{prop='x'}))
+          </boolean>
+        )
+      </when>
+    </award>
+    <award credit="0.2">
+      <when name="whenStabLeft">
+        <boolean name="stabLeftBot">
+          <conditionalContent>
+            <case condition="$leftBot1">
+              <copy prop="stable" tname="C1" /> = false
+            </case>
+            <case condition="$leftBot2">
+              <copy prop="stable" tname="C2" /> = false
+            </case>
+            <case condition="$leftBot3">
+              <copy prop="stable" tname="C3" /> = false
+            </case>
+            <else>
+              false
+            </else>
+          </conditionalContent>
+        </boolean>
+        and
+        <boolean name="stabLeftTop">
+          <conditionalContent>
+            <case condition="$leftTop1">
+              <copy prop="stable" tname="C1" /> = true
+            </case>
+            <case condition="$leftTop2">
+              <copy prop="stable" tname="C2" /> = true
+            </case>
+            <case condition="$leftTop3">
+              <copy prop="stable" tname="C3" /> = true
+            </case>
+            <else>
+              false
+            </else>
+          </conditionalContent>
+        </boolean>
+      </when>
+    </award>
+  </answer>
+</p>
+<feedback updateWithTname="ansLeft" condition="$(whenLeft{prop='fractionSatisfied'}) > $(whenStabLeft{prop='fractionSatisfied'})">
+  Some equilibria have incorrect stability.  Click a line to toggle between stable (solid line) to unstable (dashed line).
+</feedback>
+
+<p>Equilibrium locations for <m>\mu > \mu^*</m>
+  <answer nAwardsCredited="2">
+    <award credit="0.8" name="awardRight">
+      <when>
+        <boolean name="right1">
+          $bifCorrect and $(A1{prop='x'}) > $mu_bif and $(A1{prop='y'}) = 0
+        </boolean>
+        or
+        <boolean name="right2">
+          $bifCorrect and $(A2{prop='x'}) > $mu_bif and $(A2{prop='y'}) = 0
+        </boolean>
+        or
+        <boolean name="right3">
+          $bifCorrect and $(A3{prop='x'}) > $mu_bif and $(A3{prop='y'}) = 0
+        </boolean>
+      </when>
+    </award>
+    <award credit="0.2" name="awardStabRight">
+      <when>
+        <conditionalContent>
+          <case condition="$right1">
+            <copy prop="stable" tname="C1" /> = true
+          </case>
+          <case condition="$right2">
+            <copy prop="stable" tname="C2" /> = true
+          </case>
+          <case condition="$right3">
+            <copy prop="stable" tname="C3" /> = true
+          </case>
+          <else>
+            false
+          </else>
+        </conditionalContent>
+      </when>
+    </award>
+  </answer>
+</p> 
+<feedback condition="$awardRight and not $awardStabRight">
+  Some equilibria have incorrect stability.  Click a line to toggle between stable (solid line) to unstable (dashed line).
+</feedback>
+
+<hint>
+
+<p>The bifurcation diagram is a representation of the equilibria.  Given that <m>\alpha = $alphaval</m>, what are the equilibria? <m>I_e=</m> <answer weight="0" matchPartial><award><math unordered='true'>0,1-mu/0.5</math></award></answer>.  (They should depend just on the parameter <m>\mu</m>.  Separate multiple answers by commas.)
+</p>
+
+<p>What is the value of the parameter <m>\mu</m> where one of these equilibria ceases to be biologically plausible?  <m>\mu = </m> <answer weight="0">$mu_bif</answer>.  Since this value is where the number of (biologically plausible) equilibria changes and where the stability of equilibria changes, this value is the bifurcation point <m>\mu^*</m>.  The value <m>I</m> of the one equilibrium at the bifurcation point is <m>I^*=</m> <answer weight="0">0</answer>.</p>
+
+<p>Move the bifurcation point, labled by <m>(\mu^*, I^*)</m> on the graph, to that location.</p>
+
+
+<p>If <m>\mu < \mu^*</m>, how many (biologically plausible) equilibria are there?  <answer weight="0">2</answer>  You entered the formulas for those equilibria <m>I_e</m>, above.  Move some of the lines emanating from the bifurcation point to match those functions of <m>\mu</m>.</p>
+
+ 
+<p>If <m>\mu > \mu^*</m>, how many (biologically plausible) equilibria are there?  <answer weight="0">1</answer> Move some of the lines emanating from the bifurcation point to match those functions of <m>\mu</m>.</p>
+
+<p>Lastly, given that you determined the conditions under which the equilibria are stable, you can click each line to toggle its stability so that it matches.</p>
+</hint>
+
+
+<solution>
+
+<p>The bifurcation occurs at <m>\mu^*=$mu_bif</m> with <m>I^*=0</m>.</p>
+
+  
+<p>The bifurcation diagram is shown below.</p>
+
+
+<graph width='600' height='300' xmin='$pmin' xmax='$pmax' ymin="$Imin" ymax="$Imax" xlabel='μ' ylabel="I" fixAxes grid>
+
+
+  <point name="sBP" x="$mu_bif" y="0" styleNumber="3" label="(μ^*, I^*)" fixed />
+  <equilibriumCurve through="$sBP (0,0)" extrapolateForward stable="false" fixed styleNumber="3" />
+  <equilibriumCurve through="$sBP (0,1)" extrapolateForward stable fixed styleNumber="3" />
+  <equilibriumCurve through="$sBP (2,0)" extrapolateForward stable fixed styleNumber="3" />
+    
+  
+</graph>
+
+
+</solution>
+
+
+</problem>

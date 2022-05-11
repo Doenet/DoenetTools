@@ -1,0 +1,185 @@
+<!-- 
+## Library/Utah/Quantitative_Analysis/set1_Preview/q2.pg
+
+##DESCRIPTION
+##   A simple matching problem testing knowledge of
+##   notation of intervals
+##ENDDESCRIPTION
+## DBsubject(Algebra)
+## DBchapter(Algebra of real numbers and simplifying expressions)
+## DBsection(Inequalities and intervals)
+## Institution(Univeristy of Utah)
+## Author(Utah ww group)
+## MLT(IntervalInequal)
+## MLTleader(1)
+## Level(2)
+## TitleText1('Mathematical Applications')
+## AuthorText1('Ronald J. Harshbarger and James J. Reynolds')
+## EditionText1('8')
+## Section1('.')
+## Problem1('')
+## TitleText2('College Algebra')
+## AuthorText2('Stewart, Redlin, Watson')
+## EditionText2('3')
+## Section2('1.2')
+## Problem2('33 34 32 31')
+## KEYWORDS('algebra')
+-->
+<problem>
+<setup>
+  <!--
+    # Define 8 question/answer pairs.  Then do 8 choose 5,
+    # and then shuffle the order.  (This was an old style problem,
+    # not using some of the WW macros that were available later.)
+  
+    $c =random(1,5,1);
+    $d =random(6,10,1);
+  
+    $questStr1 =EV2( " x∈($c,$d)x∈($c,$d)x \in ($c,$d) ");
+    $ansStr1 = EV2(" $c<x<$d$c<x<$d$c \lt x \lt $d ");
+    $questStr2 = EV2(" x∈[$c,$d)x∈[$c,$d) x \in [$c,$d)  ");
+    $ansStr2 =EV2(" $c≤x<$d$c≤x<$d $c \leq x \lt $d ");
+    $questStr3 = EV2(" x∈($c,$d]x∈($c,$d]x \in ($c,$d]  ");
+    $ansStr3 = EV2(" $c<x≤$d$c<x≤$d $c \lt x \leq $d ");
+    $questStr4 =EV2(" x∈[$c,$d]x∈[$c,$d] x \in [$c,$d] ");
+    $ansStr4 = EV2(" $c≤x≤$d$c≤x≤$d$c \leq x \leq $d ");
+    $questStr5 = EV2(" x∈($c,∞)x∈($c,∞) x \in ($c,\infty) ");
+    $ansStr5 = EV2(" x>$cx>$cx \gt $c  ");
+    $questStr6 = EV2(" x∈[$c,∞)x∈[$c,∞) x \in [$c,\infty) ");
+    $ansStr6 = EV2(" $c≤x$c≤x$c \leq x  ");
+    $questStr7 = EV2(" x∈(−∞,$c)x∈(−∞,$c) x \in (-\infty, $c) ");
+    $ansStr7 = EV2(" x<$cx<$c x \lt $c ");
+    $questStr8 = EV2(" x∈(−∞,$c]x∈(−∞,$c] x \in (-\infty, $c]  ");
+    $ansStr8 = EV2(" x≤$cx≤$cx \leq $c  ");
+  -->
+
+
+  <selectFromSequence from="1" to="5"  step="1" name="c" />  
+  <selectFromSequence from="6" to="10"  step="1" name="d" />  
+
+  <!-- Silly problem: how to enumerate the five randomly chosen Q's?
+       1-5 will be used as problem labels, so q1, ans1 (1-5) would be bad.
+       A-E will be used as MC answers, to qA, ansA (A-E) would be bad.
+       So I'm left with... Roman numerals?!?  Really?!
+  -->
+
+  <!-- First, randomly choose 5 pairs of (interval notation, inequality notation) from 8 choices -->
+  <select numberToSelect="5" 
+    assignNames="(intI ineqI) (intII ineqII) (intIII ineqIII) (intIV ineqIV) (intV ineqV)" 
+    withReplacement = "false">
+    <option>
+      <m>x \in ($c,$d)</m>
+      <m>$c < x < $d</m>
+    </option>
+    <option>
+      <m>x \in [$c,$d)  </m>
+      <m>$c \le x \lt $d </m>
+    </option>
+    <option>
+      <m>x \in ($c,$d]</m>
+      <m>$c < x \leq $d</m>
+    </option>
+    <option>
+      <m>x \in [$c,$d]</m>
+      <m>$c \leq x \leq $d</m>
+    </option>
+    <option>
+      <m>x \in ($c,\infty)</m>
+      <m>x > $c</m>
+    </option>
+    <option>
+      <m>x \in [$c,\infty)</m>
+      <m>$c \leq x</m>
+    </option>
+    <option>
+      <m>x \in (-\infty,$c)</m>
+      <m>x \le $c</m>
+    </option>
+    <option>
+      <m>x \in (-\infty,$c]</m>
+      <m>x \leq $c</m>
+    </option>   
+  </select>
+
+  <!-- Now randomly re-order those 5, while assigning answers.  We'll call
+    the interval notation the "questions", inequalities the "answers", mc the MC answer
+  -->
+  <select numberToSelect="5"
+    assignNames="(q1 ans1 mc1) (q2 ans2 mc2) (q3 ans3 mc3) (q4 ans4 mc4) (q5 ans5 mc5)"
+    withReplacement = "false">
+    <option>$intI   $ineqI   <text>A</text></option>      
+    <option>$intII  $ineqII  <text>B</text></option>      
+    <option>$intIII $ineqIII <text>C</text></option>      
+    <option>$intIV  $ineqIV  <text>D</text></option>      
+    <option>$intV   $ineqV   <text>E</text></option>      
+  </select>
+</setup>
+  
+<p>Match the following inequalities to their corresponding statements in interval notation.</p>
+
+<tabular>
+  <row bottom="medium"><cell></cell><cell></cell></row>
+  <row><cell>A.</cell><cell>$ineqI</cell></row>
+  <row><cell>B.</cell><cell>$ineqII</cell></row>
+  <row><cell>C.</cell><cell>$ineqIII</cell></row>
+  <row><cell>D.</cell><cell>$ineqIV</cell></row>
+  <row bottom="medium"><cell>E.</cell><cell>$ineqV</cell></row>
+</tabular>
+  
+<p>1. $q1 matches  <answer>
+    <choiceinput inline>
+      <choice credit="$mc1=A">A</choice>
+      <choice credit="$mc1=B">B</choice>
+      <choice credit="$mc1=C">C</choice>
+      <choice credit="$mc1=D">D</choice>
+      <choice credit="$mc1=E">E</choice>
+    </choiceinput>
+  </answer>
+</p>
+
+  <p>2. $q2 matches  <answer>
+    <choiceinput inline>
+      <choice credit="$mc2=A">A</choice>
+      <choice credit="$mc2=B">B</choice>
+      <choice credit="$mc2=C">C</choice>
+      <choice credit="$mc2=D">D</choice>
+      <choice credit="$mc2=E">E</choice>
+    </choiceinput>
+  </answer>
+</p>
+
+  <p>3. $q3 matches  <answer>
+    <choiceinput inline>
+      <choice credit="$mc3=A">A</choice>
+      <choice credit="$mc3=B">B</choice>
+      <choice credit="$mc3=C">C</choice>
+      <choice credit="$mc3=D">D</choice>
+      <choice credit="$mc3=E">E</choice>
+    </choiceinput>
+  </answer>
+</p>
+
+  <p>4. $q4 matches  <answer>
+    <choiceinput inline>
+      <choice credit="$mc4=A">A</choice>
+      <choice credit="$mc4=B">B</choice>
+      <choice credit="$mc4=C">C</choice>
+      <choice credit="$mc4=D">D</choice>
+      <choice credit="$mc4=E">E</choice>
+    </choiceinput>
+  </answer>
+</p>
+
+  <p>5. $q5 matches  <answer>
+    <choiceinput inline>
+      <choice credit="$mc5=A">A</choice>
+      <choice credit="$mc5=B">B</choice>
+      <choice credit="$mc5=C">C</choice>
+      <choice credit="$mc5=D">D</choice>
+      <choice credit="$mc5=E">E</choice>
+    </choiceinput>
+  </answer>
+</p>
+
+
+</problem>

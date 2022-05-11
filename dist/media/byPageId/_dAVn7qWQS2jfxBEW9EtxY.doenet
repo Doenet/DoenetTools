@@ -1,0 +1,225 @@
+
+<module>
+  <setup>
+  </setup>
+  <p>
+    <alert>Definition 3</alert>
+    The <em>greatest common divisor</em> (gcd) of two numbers <m>a</m> and <m>b</m>
+    is the <alert>largest</alert> number <m>d</m> such that <m>d|a</m> <alert>and</alert>
+    <m>d|b</m>.
+  </p>
+  <p>
+    That is, <m>\gcd(a,b)</m> is the largest number dividing both <m>a</m> and <m>b</m>.
+    If we look at our examples from before, we know that
+    the factors of 24 are
+    <me>\{1,2,3,4,6,8,12,24\}</me>
+    and the factors of 60 are given by
+    <me>\{1,2,3,4,5,6,10,12,15,20,30,60\}.</me>
+    <aside><title>Math Fun Fact</title>
+    <p>
+      One of the reasons we use 60 for minutes/hours is that it has so many
+      possible divisors, so it can be proportioned in many different ways!
+      We can talk about 1/2, 1/3, 1/4, 1/5, 1/6, 1/10, 1/12, 1/15, 1/20, 1/30 or an hour,
+      and still always be talking about a natural number of minutes without having to worry
+      about fractions!
+      In fact, 60 is something called a <ref uri="https://en.wikipedia.org/wiki/Highly_composite_number">highly composite number</ref>.
+    </p>
+    </aside>
+    Comparing the lists of factors, we can easily see that the <m>\gcd(24,60)=12</m>, as the largest
+    number which appears in both list of factors. But, we can also determine this quickly
+    by looking at the two sets of prime factorizations:
+    <me>24=2^3\cdot 3 \qquad \text{ and } 60=2^2\cdot 3 \cdot 5.</me>
+    How you might ask? By comparing the two sets of prime factors, and taking the largest
+    power common to both. So in this case, both numbers have both <m>2^2</m> and <m>3</m> in common.
+    But <m>2\cdot 2 \cdot 3 = 12</m>, which is the GCD!
+
+    <row>So by factoring the two numbers into their prime factors, we can simply list which factors are in common
+    to determine the greatest common divisor of the pair.</row>
+  </p>
+
+  <p>
+    We next turn to a related, but slightly different concept.
+  </p>
+
+  <p>
+    <alert>Definition 4</alert>
+    The <em>least common multiple</em> (lcm) of two numbers <m>a</m> and <m>b</m>
+    is the <alert>smallest</alert> number <m>M</m> such that <m>a|M</m> <alert>and</alert>
+    <m>b|M</m>.
+  </p>
+
+  <p>
+    Clearly <m>\text{lcm}(a,b)\leq a\cdot b</m>. But again, by looking at prime factorizations,
+    can we quickly determine it's exact value? Yes, we can! This time, instead of looking at those in common,
+    we want to take the LARGEST power of each prime appearing in either prime factorization.
+  </p>
+
+  <p>
+    Once more revisiting our two examples, we have
+    <me>24=2^3\cdot 3 \qquad \text{ and } 60=2^2\cdot 3 \cdot 5.</me>
+    If we want to find the <m>\text{lcm}</m>, then we can rewrite this by using the fact that <m>x^0=1</m> for every non-zero value of <m>x</m>.
+    So the prime factorizations can be written as
+    <me>24=2^3\cdot 3^1\cdot 5^0 \qquad \text{ and } 60=2^2\cdot 3^1 \cdot 5^1.</me>
+    so that they have all the prime factors in common. For GCD we always took the lowest power occuring for each prime factor.
+    We'll do the opposite to compute the least common multiple, and take the largest prime factor present in either number.
+    In this case, we would find
+    <me> M = 2^3\cdot 3^1 \cdot 5^1 = 120.</me>
+    <row>
+      Sure enough, <m>60\cdot 2=120</m> and <m>24\cdot 5=120</m>, and in this example it is not hard to see that no smaller number is an integer multiple of both.
+    </row>
+  </p>
+
+  <p>In class, we'll prove the
+    <ref uri="https://en.wikipedia.org/wiki/Fundamental_theorem_of_arithmetic">Fundamental Theorem of Arithmetic</ref>,
+    which will explain these connections. Until then though, let's do some brief practice with the computations.
+  </p>
+
+  <setup>
+  <select numberToSelect="3" assignNames="(n1 f1) (n2 f2) (n3 f3)">
+      <option>
+        <math>16</math>
+        <mathList>
+          <math>4</math> <!-- 2s -->
+          <math>0</math> <!-- 3s -->
+          <math>0</math> <!-- 5s -->
+          <math>0</math> <!-- 7s -->
+        </mathList>
+      </option>
+      <option>
+        <math>24</math>
+        <mathList>
+          <math>3</math> <!-- 2s -->
+          <math>1</math> <!-- 3s -->
+          <math>0</math> <!-- 5s -->
+          <math>0</math> <!-- 7s -->
+        </mathList>
+      </option>
+      <option>
+        <math>60</math>
+        <mathList>
+          <math>2</math> <!-- 2s -->
+          <math>1</math> <!-- 3s -->
+          <math>1</math> <!-- 5s -->
+          <math>0</math> <!-- 7s -->
+        </mathList>
+      </option>
+      <option>
+        <math>84</math>
+        <mathList>
+          <math>2</math> <!-- 2s -->
+          <math>1</math> <!-- 3s -->
+          <math>0</math> <!-- 5s -->
+          <math>1</math> <!-- 7s -->
+        </mathList>
+      </option>
+      <option>
+        <math>90</math>
+        <mathList>
+          <math>1</math> <!-- 2s -->
+          <math>2</math> <!-- 3s -->
+          <math>1</math> <!-- 5s -->
+          <math>0</math> <!-- 7s -->
+        </mathList>
+      </option>
+      <option>
+        <math>100</math>
+        <mathList>
+          <math>2</math> <!-- 2s -->
+          <math>0</math> <!-- 3s -->
+          <math>2</math> <!-- 5s -->
+          <math>0</math> <!-- 7s -->
+        </mathList>
+      </option>
+      <option>
+        <math>45</math>
+        <mathList>
+          <math>0</math> <!-- 2s -->
+          <math>2</math> <!-- 3s -->
+          <math>1</math> <!-- 5s -->
+          <math>0</math> <!-- 7s -->
+        </mathList>
+      </option>
+      <option>
+        <math>75</math>
+        <mathList>
+          <math>0</math> <!-- 2s -->
+          <math>1</math> <!-- 3s -->
+          <math>2</math> <!-- 5s -->
+          <math>0</math> <!-- 7s -->
+        </mathList>
+      </option>
+    </select>
+  </setup>
+
+  <p>
+    <m>\gcd($n1,$n2) = </m>
+    <answer><award>
+    <math simplify name="gcd12">
+      2^min(<copy prop="math1" tname="f1" />,<copy prop="math1" tname="f2" />)
+      3^min(<copy prop="math2" tname="f1" />,<copy prop="math2" tname="f2" />)
+      5^min(<copy prop="math3" tname="f1" />,<copy prop="math3" tname="f2" />)
+      7^min(<copy prop="math4" tname="f1" />,<copy prop="math4" tname="f2" />)
+    </math>
+    </award></answer>
+  </p>
+  <p>
+    <m>\text{lcm}($n1,$n2) = </m>
+    <answer><award>
+    <math simplify name="lcm12">
+      2^max(<copy prop="math1" tname="f1" />,<copy prop="math1" tname="f2" />)
+      3^max(<copy prop="math2" tname="f1" />,<copy prop="math2" tname="f2" />)
+      5^max(<copy prop="math3" tname="f1" />,<copy prop="math3" tname="f2" />)
+      7^max(<copy prop="math4" tname="f1" />,<copy prop="math4" tname="f2" />)
+    </math>
+    </award></answer>
+  </p>
+  <p>
+    <m>\gcd($n1,$n3) = </m>
+    <answer><award>
+    <math simplify name="gcd13">
+      2^min(<copy prop="math1" tname="f1" />,<copy prop="math1" tname="f3" />)
+      3^min(<copy prop="math2" tname="f1" />,<copy prop="math2" tname="f3" />)
+      5^min(<copy prop="math3" tname="f1" />,<copy prop="math3" tname="f3" />)
+      7^min(<copy prop="math4" tname="f1" />,<copy prop="math4" tname="f3" />)
+    </math>
+    </award></answer>
+  </p>
+  <p>
+    <m>\text{lcm}($n1,$n3) = </m>
+    <answer><award>
+    <math simplify name="lcm13">
+      2^max(<copy prop="math1" tname="f1" />,<copy prop="math1" tname="f3" />)
+      3^max(<copy prop="math2" tname="f1" />,<copy prop="math2" tname="f3" />)
+      5^max(<copy prop="math3" tname="f1" />,<copy prop="math3" tname="f3" />)
+      7^max(<copy prop="math4" tname="f1" />,<copy prop="math4" tname="f3" />)
+    </math>
+    </award></answer>
+  </p>
+  <p>
+    <m>\gcd($n2,$n3) = </m>
+    <answer><award>
+    <math simplify name="gcd23">
+      2^min(<copy prop="math1" tname="f2" />,<copy prop="math1" tname="f3" />)
+      3^min(<copy prop="math2" tname="f2" />,<copy prop="math2" tname="f3" />)
+      5^min(<copy prop="math3" tname="f2" />,<copy prop="math3" tname="f3" />)
+      7^min(<copy prop="math4" tname="f2" />,<copy prop="math4" tname="f3" />)
+    </math>
+    </award></answer>
+  </p>
+  <p>
+    <m>\text{lcm}($n2,$n3) = </m>
+    <answer><award>
+    <math simplify name="lcm23">
+      2^max(<copy prop="math1" tname="f2" />,<copy prop="math1" tname="f3" />)
+      3^max(<copy prop="math2" tname="f2" />,<copy prop="math2" tname="f3" />)
+      5^max(<copy prop="math3" tname="f2" />,<copy prop="math3" tname="f3" />)
+      7^max(<copy prop="math4" tname="f2" />,<copy prop="math4" tname="f3" />)
+    </math>
+    </award></answer>
+  </p>
+  <aside>
+    <title>Class Note</title>
+    Being able to compute GCD will be quite useful in this class.
+    It's unlikely that we'll see LCM again for purposes of crypto.
+  </aside>
+</module>

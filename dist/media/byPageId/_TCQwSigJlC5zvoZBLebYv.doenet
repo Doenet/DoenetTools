@@ -1,0 +1,63 @@
+<module>
+  <setup>
+    <selectFromSequence from="10" to="95" name="a" step="5" />
+    <selectFromSequence from="8" to="50" step="3" name="b" />
+    <selectFromSequence from="111" to="200" step="3" name="c" />
+  </setup>
+  <p>
+  <alert>Definition 1</alert>
+    An integer <m>b</m> is said to divide the integer <m>a</m> if you can write
+    <me>a=bq, \qquad \text{for some integer } q.</me>
+    That is, when the remainder is zero in the statement of the division algorithm (although remember we had restrictions on <m>a</m> and <m>b</m> in the division algorithm, so it is not a perfect correspondence!).
+    In this case, we write <m>b\;|\;a</m>, which we read as <m>b</m> divides <m>a</m>.
+  </p>
+  <p>
+    Other than the notation, there isn't much to learn here, but you will want to memorize this definition. Below is a few (quick) practice problems, try and determine if the statement is true or false.
+  </p>
+  <p>
+    <alert>Statement 1:</alert>
+    <m>\quad 5 \;|\; $a\quad</m>
+    <answer>
+      <choiceInput inline>
+        <choice credit>True</choice>
+        <choice>False</choice>
+      </choiceInput>
+    </answer>
+  </p>
+  <p>
+  <alert>Statement 2:</alert>
+    <m>\quad $a \;|\; 5\quad</m>
+    <answer>
+      <choiceInput inline>
+        <choice>True</choice>
+        <choice credit>False</choice>
+      </choiceInput>
+    </answer>
+  </p>
+  <p>
+  <alert>Statement 3:</alert>
+    <m>\quad 3 \;|\; $b\quad</m>
+    <answer>
+      <choiceInput inline>
+        <choice>True</choice>
+        <choice credit>False</choice>
+      </choiceInput>
+    </answer>
+  </p>
+  <p>
+  <alert>Statement 4:</alert>
+    <m>\quad 3 \;|\; $c\quad</m>
+    <answer>
+      <choiceInput inline>
+        <choice credit>True</choice>
+        <choice>False</choice>
+      </choiceInput>
+    </answer>
+  </p>
+
+  <p>
+    <alert>Question to think about:</alert>
+    At the end, you will be asked to answer a question: is the statement <m>0 \,|\, 0</m> true or false?
+    Go ahead and think about it and you'll enter your answer (with justification) on the Google Form at the end.
+  </p>
+</module>

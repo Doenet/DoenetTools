@@ -1,0 +1,45 @@
+<!-- To comment use these tags -->
+<ol>
+  <p>This activity finds the formulas from linear algebra and Cramer’s rule, though linear algebra is not discussed here. It is assumed that students have learned processes for finding the intersection of two lines in the xy-plane, most commonly the substitution method and the elimination method.
+This activity then focuses on the processes used and applies them to a general setting.
+.</p>
+<li>Expand 
+
+</li>
+<ul>
+<li><m>(x+1)(x+1)</m></li>
+<li><m>(x+1)^2</m> How does an exponent relate to multiplication  </li>
+<li><m>(x − 4)^2 </m></li>
+<li><m>(x − 3)^2</m>  </li>
+<li> Thinking of these expressions as parabolas in general form, what pattern do you see
+between the coefficients b and c?</li>
+
+</ul>
+  
+
+<li>Factor 
+
+</li>
+<ul>
+<li><m>x^2 + 6x + 9</m></li>
+<li><m>x^2 − 10x + 25</m>  </li>
+<li><m>x^2 + 4x + 4 </m></li>
+
+<li> Thinking of these expressions as parabolas in general form, what pattern do you see
+between the coefficients b and c?</li>
+
+</ul>
+
+<li>Supply the missing constant so that f(x) is a perfect square, then factor the expression.
+
+</li>
+<ul>
+<li><m>f(x) = x^2 − 8x+</m></li>
+<li><m>f(x) = x^2 + 2x+</m>  </li>
+<li><m>f(x) = x^2 − 12x+ </m></li>
+<li><m>f(x) = x^2 − 3x+ </m></li>
+
+
+</ul>
+  
+</ol>

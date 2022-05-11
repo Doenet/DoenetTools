@@ -1,0 +1,174 @@
+<title>Information about the Final Exam</title>
+
+
+<p>The final exam for Math 1241 is a cumulative exam, meaning it covers all the materials from the previous four modules, plus the new material on autonomous differential equations.</p>
+
+
+<section><title>Material for the exam</title>
+
+<ol>
+<li><p>Discrete-time dynamical systems</p>
+
+    <p>See <ref uri="doenet:doenetId=NnZjqfLxEBe_l1nWqR_t6">Information about Exam 1</ref> for a description of material and study aids for this section.</p>
+</li>
+
+<li><p>Differentiation</p>
+
+<p>See <ref uri="doenet:doenetId=JwvY9hgSZ4fS3fALZMLAJ">Information about the Differentiation Exam</ref> for a description of material and study aids for this section.</p>
+</li>
+
+
+<li><p>Applications of differentiation</p>
+
+<p>See <ref uri="doenet:doenetId=btk_EUdw9JQy93AIn8AzD">Information about Applications of Differentiation Exam</ref> for a description of material and study aids for this section.</p>
+</li>
+
+<li><p>Pure-time differential equations</p>
+
+<p>See <ref uri="doenet:doenetId=UxbZEmDjZoNM3NETMnXa2">Information about the Integration Exam</ref> for a description of material and study aids for this section.</p>
+</li>
+
+<li><p>Autonomous differential equations</p>
+<ol><li><p>Solving linear equations</p>
+<ol>
+<li>We can solve a linear autonomous differential equation such <m>\frac{dx}{dt}=ax</m>.  The general solution is an exponential: <m>x(t)=Ce^{at}</m>.</li>
+<li>If <m>a \lt 0</m>, we have exponential decay.  If <m>a \gt 0</m>, we have exponential growth.</li>
+<li>Given an initial condition <m>x(0)=x_0</m>, we can calculate <m>C</m> and determine the specific solution <m>x(t)=x_0e^{at}</m>.</li>
+</ol>
+</li>
+
+<li><p>Solving a differential equation graphically</p>
+
+  <ol>
+  <li>For the autonomous equation <m>\frac{du}{dt} = g(u)</m>, determine where <m>u(t)</m> is increasing, decreasing, or constant from a plot of <m>g(u)</m>. Use this information to sketch the solution <m>u(t)</m>.  (Here we use <m>u</m> for the state variable, but of course, the actual letter will be different for different problems.)
+</li>
+
+  <li>One can summarize where <m>u(t)</m> is increasing, decreasing, or constant
+  using a phase-line diagram, with points for equilibria and arrows (a vector field) showing the
+  direction of movement.</li>
+
+  <li>Be able to go between a plot of <m>g</m> versus <m>u</m> (where <m>u</m> is the horizontal axis) and plot of <m>u</m> versus <m>t</m> (where <m>u</m> is the vertical axis).  In the phase line, <m>u</m> is also the horizontal axis.</li>
+
+  </ol>
+</li>
+
+  <li><p>Stability of equilibria</p>
+  <ol>
+
+    <li>For the autonomous equation <m>\frac{du}{dt} = g(u)</m>, the equilibria are the points where the rate of change is zero, i.e., the values of <m>u</m> where <m>g(u)=0</m>. </li>
+
+    <li>One can determine the equilibria analytically (solve <m>g(u)=0</m>) or graphically (find points where plot of <m>g(u)</m> crosses the <m>u</m>-axis).</li>
+
+    <li>From the graph of <m>g(u)</m>, or the vector field on the phase-line, determine the stability of equilibria.</li>
+
+    <li>Use the stability theorem to determine stability of the equilibria without looking at the graph of <m>g(u)</m>.  The stability theorem says for an equilibrium <m>u_e</m> (with <m>g(u_e)=0</m>), the equilibrium is stable if <m>g'(u_e) \lt 0</m> and unstable if <m>g'(u_e) \gt 0</m>.</li>
+    
+  </ol>
+</li>
+
+
+  <li><p>Numerical solution</p>
+  <ol>
+    <li>We can approximate the solution to an autonomous differential equation <m>\frac{dv}{dt} = f(v)</m> using the Forward Euler algorithm.</li>
+    <li>To use Forward Euler, divide time into interval of length <m>\Delta t</m>.</li>
+    <li>If we know the value of the state variable <m>v</m> at time <m>t = a</m>, we can take one Forward Euler step to estimate the value of <m>v</m> at time <m>t=a+\Delta t</m>.
+    <ol>
+      <li>Plug in the known value <m>v(a)</m> into the right hand side of the differential equation, getting the number <m>f(v(a))</m>, which is the slope <m>\frac{dv}{dt}</m> at time <m>t=a</m>.</li>
+      <li>Assume that from <m>t=a</m> to <m>t=a+\Delta t</m>, the slope doesn't change.  In other words, approximate <m>v(t)</m> by its linear approximation at <m>a</m>: <m>v(t) \approx L_a(t) = v(a) + f(v(a))(t-a)</m>.</li>
+      <li>Calculate the value of <m>v</m> at <m>t=a+\Delta t</m> using the linear approximation.</li>
+      <li>The resulting formula is that <m>v(a+\Delta t) \approx L_a(a+\Delta t) = v(a)+f(v(a))\Delta t.</m></li>
+      </ol>
+    </li>
+    <li>Repeatedly apply Forward Euler steps to march forward in time.  At each time step, calculate a new slope, march forward for a time step of <m>\Delta t</m> with that slope (i.e., add <m>\Delta t</m> times that slope to your previous value), and obtain an estimate for <m>v</m> at the next time step.</li>
+  </ol>
+</li>    
+  <li><p>Bifurcations</p>
+  <ol>
+    <li>If a dynamical system depends on a parameter <m>\beta</m>, which we might write as <m>\frac{dw}{dt} = f(w,\beta)</m>, we can look for qualitative changes in the behavior of the dynamical system as we change <m>\beta</m>.</li>
+    <li>If the stability or number of equilibria changes as we change <m>\beta</m>, we say we have a bifurcation.</li>
+    <li>A bifurcation point is the value of <m>\beta</m> where such a change occurs.</li>
+    <li>Given a sequence of graphs of <m>f(w,\beta)</m> or a sequence of phase lines of the dynamical system for different values of <m>\beta</m>, sketch a bifurcation diagram, which is a graph of equilibria on a plot of <m>w</m> versus <m>\beta</m>.</li>
+    <li>To draw a bifurcation diagram, draw the equilibria as curves, showing how the value of the equilibrium changes with <m>\beta</m>.  Indicate which equilibria are stable and which are unstable.  (Usually, we draw stable equilibria with solid lines and unstable equilibria with dashed lines.)</li>
+    <li>Be able to interpret a bifurcation diagram.  Given a bifurcation diagram, determine the phase line for different parameter values.</li>
+  </ol>
+</li>
+</ol>
+
+</li>
+
+</ol>
+</section>
+
+
+<section>
+  <title>Study aids</title>
+
+<ol>
+<li><p>Sample problems</p>
+
+<p>The majority of the questions that may appear in the final exam are available so that you can practice them.  In both these problems and on the actual exam, the set of problems as well as values of numbers, variables, parameters, and other quantities are selected randomly.  You will want to generate multiple versions of the problems to see the larger array of problems.  Given the random nature, we cannot guarantee that you will actually see all the problems that will appear on the exam.  But the more problems you work on, the greater the chance you will work on problems that will show up on the test.</p>
+
+<p>The format of the exam questions may differ from the practice problems in that the exam problems may have been modified to remove any answer blanks and the instructions specific to entering answers in the right format for computer grading.</p>
+
+<p>For all problems on this exam, you will be expected to <alert>show your work</alert>, and the grading will be based on the work that you show.</p>
+
+
+<p>See the problems listed in the first four exams (<ref uri="doenet:doenetId=NnZjqfLxEBe_l1nWqR_t6">1</ref> <ref uri="doenet:doenetId=JwvY9hgSZ4fS3fALZMLAJ">2</ref>  <ref uri="doenet:doenetId=btk_EUdw9JQy93AIn8AzD">3</ref>  <ref uri="doenet:doenetId=UxbZEmDjZoNM3NETMnXa2">4</ref>). 
+</p>
+
+<p>For practice on the new material (autonomous differential equations), see  <ref uri="https://mathinsight.org/assess/math1241/single_autonomous_differential_equation_problems">Single autonomous differential equation problems</ref>, <ref uri="https://mathinsight.org/assess/math1241/simple_linear_differential_equations_practice">
+Simple linear differential equations practice</ref>, and
+ <ref uri="https://mathinsight.org/assess/math1241/bifurcation_single_differential_equation_practice/overview">
+Bifurcation of single differential equation practice</ref>.
+
+</p></li>
+
+<li><p>Quizzes</p>
+
+<p>In addition to the Quizzes listed for the earlier exams, see <ref uri="doenet:doenetId=EnWvJfuMgOZTGdGUakReB">Quiz 9</ref>, <ref uri="doenet:doenetId=5UnUg8gHqYRcfmNmfx9QM">Quiz 10</ref>, and <ref uri="doenet:doenetId=Bv6yyrul_E0IMqxng26Ow">Quiz 11</ref> for material that will be on the exam.  Even after the due date of quizzes, you can still generate more attempts and check out how well you can answer those questions.</p>
+</li>
+
+
+<li><p>Problem sets</p>
+<p>
+The problem sets from the Math 1241 thread are also good review.</p></li>
+</ol>
+
+</section>
+
+<section>
+  <title>Review session</title>
+
+
+<p>We will hold a review session on the last day of class, Wednesday, December 15.
+</p>
+
+</section>
+
+<section>
+  <title>Final Exam rules</title>
+
+<ol>
+<li>You must bring your University ID card.</li>
+<li>You are allowed 180 minutes to take the exam.</li>
+<li>You are allowed to have one letter (8.5in <m>\times</m> 11in) sized sheet of paper of handwritten notes.  Double-sided is OK.</li>
+<li>You are allowed to have a calculator in the exam.  A graphing calculator is OK.</li>
+<li>No textbook or electronic equipment (other than calculator) allowed.</li>
+</ol>
+    
+</section>
+<section>
+  <title>Final exam logistics</title>
+
+
+<p>Date: Thursday, December 16</p>
+<p>Time: noon - 3:00 PM</p>
+<p>Location: Anderson Hall 310
+</p>
+
+
+<p>Provisions are available for students who have two Math common final exams at the same time.  See instructor if you have any conflict with the final exam time.</p>
+
+</section>
+
+

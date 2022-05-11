@@ -1,0 +1,382 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>boolean</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>symbolicEquality</attr>  <em>(boolean)</em></li>
+  <li><attr>expandOnCompare</attr>  <em>(boolean)</em></li>
+  <li><attr>simplifyOnCompare</attr>  <em>(text)</em></li>
+  <li><attr>unorderedCompare</attr>  <em>(boolean)</em></li>
+  <li><attr>matchByExactPositions</attr>  <em>(boolean)</em></li>
+  <li><attr>allowedErrorInNumbers</attr>  <em>(boolean)</em></li>
+  <li><attr>includeErrorInNumbersExponents</attr>  <em>(boolean)</em></li>
+  <li><attr>allowedErrorIsAbsolute</attr>  <em>(boolean)</em></li>
+  <li><attr>nSignErrorsMatched</attr>  <em>(number)</em></li>
+  <li><attr>nPeriodicSetMatchesRequired</attr>  <em>(integer)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>boolean</tag><idx><tag>boolean</tag></idx> component renders or stores the boolean value of <c>true</c> or <c>false</c> of the enclosed expression.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+
+<subsection><title>Example 1: Using a <tag>boolean</tag> to compare numerical values</title>
+<p>In the sample code below, the <tag>boolean</tag> component is used to compare a <ref uri="doenet:doenetId=p_qPrnY-jhcqqrG2LcodH"><tage>mathInput</tage></ref> and a named <ref uri="doenet:doenetId=Jwi35-iUB_BaSCNWFGNbh"><tag>number</tag></ref>.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;Copy the number shown below:
+  &lt;mathInput name="userNumber"/&gt;
+&lt;/p&gt;
+
+&lt;number name="numToCopy"&gt;1.61803&lt;/number&gt;
+
+&lt;p&gt;It is &lt;boolean&gt;&dollar;numToCopy = &dollar;userNumber&lt;/boolean&gt; that you copied the number correctly!&lt;/p&gt;
+</pre>
+ 
+        </example>  
+      </subsection>
+   
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>Copy the number shown below:
+  <mathInput name="userNumber"/>
+</p>
+
+<number name="numToCopy">1.61803</number>
+
+<p>It is <boolean>$numToCopy = $userNumber</boolean> that you copied the number correctly!</p>
+</example>
+
+<!--******************************************************-->
+
+<subsection><title>Example 2: Using a <tag>boolean</tag> to compare strings</title>
+<p>In the sample code below, the <tag>boolean</tag> component is used to compare to string components, a <ref><tag>text</tag></ref> and a <ref><tag>textInput</tag></ref>.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;p&gt;I wonder if we both like the same animal?  
+  What is your favorite animal? &lt;textInput name="userAnimal"/&gt;&lt;/p&gt;
+
+&lt;text name="bestAnimal" hide&gt;monkey&lt;/text&gt;
+
+&lt;p&gt;It is &lt;boolean&gt;&dollar;userAnimal = &dollar;bestAnimal&lt;/boolean&gt; 
+  that we both have the same favorite animal!&lt;/p&gt;
+</pre>
+ 
+        </example>  
+      </subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<p>I wonder if we both like the same animal?  
+  What is your favorite animal? <textInput name="userAnimal"/></p>
+
+<text name="bestAnimal" hide>monkey</text>
+
+<p>It is <boolean>$userAnimal = $bestAnimal</boolean> that we both
+  have the same favorite animal!</p>
+  
+</example>
+
+<!--******************************************************-->
+
+<subsection><title>Example 3: Hiding a <tag>boolean</tag></title>
+<p>In the sample code below, two different ways of hiding a <tag>boolean</tag> are illustrated.  The first method occurs with the <tag>boolean</tag> named <c>"bothChecked"</c>, where the <attr>hide</attr> attribute is invoked within the component itself.  The second method illustrated is to enclose the <tag>boolean</tag> within a <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> block. (See also, <ref uri="doenet:doenetId=1GOagmW0_QHN4m_zmuE-I"><tage>booleanInput</tage></ref>, <ref><tag>slider</tag></ref>, <ref><tag>conditionalContent</tag></ref>, <ref><tag>case</tag></ref>.)</p>
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;booleanInput name="isFarenheit" label="Farenheit"/&gt;
+&lt;booleanInput name="isCelsius" label="Celsius"/&gt;
+&lt;boolean name="bothChecked" hide&gt;&dollar;isFarenheit & &dollar;isCelsius&lt;/boolean&gt;
+  
+&lt;setup&gt;
+  &lt;number name="freezingPointFarenheit"&gt;32&lt;/number&gt;
+  &lt;number name="freezingPointCelsius"&gt;0&lt;/number&gt;
+  &lt;boolean name="isFreezingFarenheit"&gt;
+    &dollar;currentTemp &lt;= &dollar;freezingPointFarenheit&lt;/boolean&gt;
+  &lt;boolean name="isFreezingCelsius"&gt;
+    &dollar;currentTemp &lt;= &dollar;freezingPointCelsius&lt;/boolean&gt;
+&lt;/setup&gt;
+
+&lt;slider from="-10" to="100" name="currentTemp"/&gt;
+
+&lt;p&gt;It's &dollar;currentTemp&lt;m&gt;^{\circ}&lt;/m&gt;
+&lt;conditionalContent&gt;
+  &lt;case condition="&dollar;isFarenheit & !&dollar;isCelsius"&gt;
+    &lt;conditionalContent&gt;
+      &lt;case condition="&dollar;isFreezingFarenheit"&gt;Farenheit outside.  It's freezing!&lt;/case&gt;
+      &lt;case condition="!&dollar;isFreezingFarenheit"&gt;Farenheit outside. Let's go swimming!&lt;/case&gt;
+    &lt;/conditionalContent&gt;
+  &lt;/case&gt;
+  &lt;case condition="&dollar;isCelsius & !&dollar;isFarenheit"&gt;
+    &lt;conditionalContent&gt;
+      &lt;case condition="&dollar;isFreezingCelsius"&gt;Celsius. It's freezing!&lt;/case&gt;
+      &lt;case condition="!&dollar;isFreezingCelsius"&gt;Celsius. Let's go sunbathing!&lt;/case&gt;
+    &lt;/conditionalContent&gt;
+  &lt;/case&gt;
+  &lt;case condition="&dollar;bothChecked"&gt;Please choose one temperature scale.&lt;/case&gt;
+&lt;/conditionalContent&gt;
+&lt;/p&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+  
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 3)</title>
+<booleanInput name="isFarenheit" label="Farenheit"/>
+<booleanInput name="isCelsius" label="Celsius"/>
+<boolean name="bothChecked" hide>$isFarenheit & $isCelsius</boolean>
+  
+<setup>
+  <number name="freezingPointFarenheit">32</number>
+  <number name="freezingPointCelsius">0</number>
+  <boolean name="isFreezingFarenheit">
+    $currentTemp <= $freezingPointFarenheit</boolean>
+  <boolean name="isFreezingCelsius">
+    $currentTemp <= $freezingPointCelsius</boolean>
+</setup>
+
+<slider from="-10" to="100" name="currentTemp"/>
+
+<p>It's $currentTemp<m>^{\circ}</m>
+<conditionalContent>
+  <case condition="$isFarenheit & !$isCelsius">
+    <conditionalContent>
+      <case condition="$isFreezingFarenheit">Farenheit outside.  It's freezing!</case>
+      <case condition="!$isFreezingFarenheit">Farenheit outside. Let's go swimming!</case>
+    </conditionalContent>
+  </case>
+  <case condition="$isCelsius & !$isFarenheit">
+    <conditionalContent>
+      <case condition="$isFreezingCelsius">Celsius. It's freezing!</case>
+      <case condition="!$isFreezingCelsius">Celsius. Let's go sunbathing!</case>
+    </conditionalContent>
+  </case>
+  <case condition="$bothChecked">Please choose one temperature scale.</case>
+</conditionalContent>
+</p>
+
+</example>
+  
+<!--******************************************************-->
+  
+<subsection><title>Example 4: <tag>boolean</tag> without attributes </title>
+<p>In the sample code below, the <tag>boolean</tag> component is used to compare several mathematical expressions to illustrate the default simplification ability that are possible with <tag>boolean</tag> without any additional attributes specified. (See also, <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref>, <ref uri="doenet:doenetId=Jwi35-iUB_BaSCNWFGNbh"><tag>number</tag></ref>.)</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+&lt;setup&gt;
+  &lt;number name="num1"&gt;2&lt;/number&gt;
+  &lt;number name="num2"&gt;8/4&lt;/number&gt;
+&lt;/setup&gt;
+
+&lt;p&gt;&lt;boolean&gt;&dollar;num1 = &dollar;num2&lt;/boolean&gt;&lt;/p&gt;
+&lt;p&gt;&lt;boolean&gt;(x + x) = (&dollar;num1 * x)&lt;/boolean&gt;&lt;/p&gt;
+&lt;p&gt;&lt;boolean&gt;(x^2+2x+1) = (x+1)^2&lt;/boolean&gt;&lt;/p&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 4)</title>
+<setup>
+  <number name="num1">2</number>
+  <number name="num2">8/4</number>
+</setup>
+
+<p><boolean>$num1 = $num2</boolean></p>
+<p><boolean>(x + x) = ($num1 * x)</boolean></p>
+<p><boolean>(x^2+2x+1) = (x+1)^2</boolean></p>
+</example>
+  
+
+<!--******************************************************-->
+
+<subsection><title>Example 5: compound <tag>boolean</tag> to compare two strings</title>
+<p>In the sample code below, a compound <tag>boolean</tag> is used to compare two strings for four separate cases using the <c>or</c> operator. (See Chapter 4,<ref uri="doenet:doenetId=-gKVK4jPcnL5BMPizZYY-">General Content</ref> for a table of boolean operators). The two strings consist of a named <ref uri="doenet:doenetId=oqsskIj4WFljMigaogOCM"><tag>answer</tag></ref> and a series of four named <tag>text</tag> variables defined in the <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> block. A <ref><tag>conditionalContent</tag></ref> block is used to relay comments back to the user based on the value of the <tag>boolean</tag>. (Note, a similar behavior could also be achieved using multiple <ref uri="doenet:doenetId=WwagbtTRGpBV7WYO1upAN"><tag>feedback</tag></ref> components.) (See also, <ref uri="doenet:doenetId=fB4XolOYgmYs6HQXwY-F4"><tag>award</tag></ref> <ref><tag>conditionalContent</tag></ref>, <ref><tag>case</tag></ref>.)</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 5)</title>
+<pre>
+&lt;setup&gt;
+  &lt;text name="correctAnswer"&gt;Zeus&lt;/text&gt;
+  &lt;text name="correctAnswer2"&gt;zeus&lt;/text&gt;
+  &lt;text name="mostlyCorrect"&gt;Zues&lt;/text&gt;
+  &lt;text name="mostlyCorrect2"&gt;zues&lt;/text&gt;
+&lt;/setup&gt;
+&lt;p&gt;What is the name of the ancient Greek god of lightning and thunder?&lt;/p&gt;
+  
+&lt;answer name="userAnswer" type="text"&gt;
+  &lt;award&gt;&dollar;correctAnswer&lt;/award&gt;
+  &lt;award&gt;&dollar;correctAnswer2&lt;/award&gt;
+  &lt;award&gt;&dollar;mostlyCorrect&lt;/award&gt;
+  &lt;award&gt;&dollar;mostlyCorrect2&lt;/award&gt;
+&lt;/answer&gt;
+  
+&lt;boolean name="answerGood"&gt;(&dollar;userAnswer = &dollar;correctAnswer) or
+  (&dollar;userAnswer = &dollar;correctAnswer2) or
+  (&dollar;userAnswer = &dollar;mostlyCorrect) or
+  (&dollar;userAnswer = &dollar;mostlyCorrect2)&lt;/boolean&gt;
+
+&lt;boolean name="respondedTo"&gt;&dollar;(userAnswer{prop='responseHasBeenSubmitted'})&lt;/boolean&gt;
+
+&lt;conditionalContent&gt;
+  &lt;case condition="&dollar;answerGood & &dollar;respondedTo"&gt;&lt;p&gt;Awesome, that is correct! 
+    &lt;alert&gt;&dollar;correctAnswer&lt;/alert&gt; is the ancient Greek god of 
+    lightning and thunder.&lt;/p&gt;&lt;/case&gt;
+  &lt;case condition="!&dollar;answerGood & &dollar;respondedTo"&gt;&lt;p&gt;Hmmm, not quite.  Big guy, 
+    throws lightning bolts, often transforms into an animal to seduce mortals...
+    Does that ring a bell?&lt;/p&gt;&lt;/case&gt;
+&lt;/conditionalContent&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 5)</title>
+<setup>
+  <text name="correctAnswer">Zeus</text>
+  <text name="correctAnswer2">zeus</text>
+  <text name="mostlyCorrect">Zues</text>
+  <text name="mostlyCorrect2">zues</text>
+</setup>
+<p>What is the name of the ancient Greek god of lightning and thunder?</p>
+  <answer name="userAnswer" type="text">
+    <award>$correctAnswer</award>
+    <award>$correctAnswer2</award>
+    <award>$mostlyCorrect</award>
+    <award>$mostlyCorrect2</award>
+  </answer>
+  <boolean name="answerGood">($userAnswer = $correctAnswer) or ($userAnswer = $correctAnswer2) or ($userAnswer = $mostlyCorrect) or ($userAnswer = $mostlyCorrect2)</boolean>
+
+  <boolean name="respondedTo">$(userAnswer{prop='responseHasBeenSubmitted'})</boolean>
+
+  <conditionalContent>
+    <case condition="$answerGood & $respondedTo"><p>Awesome, that is correct! 
+      <alert>$correctAnswer</alert> is the ancient Greek god of lightning and thunder.</p></case>
+    <case condition="!$answerGood & $respondedTo"><p>Hmmm, not quite.  Big guy, 
+      throws lightning bolts, often transforms into an animal to seduce mortals...
+      Does that ring a bell?</p></case>
+  </conditionalContent>
+</example>
+ 
+
+<!--*******************************************************-->  
+<!--
+<subsection><title>Example 6: <tag>boolean</tag> with <attr>allowedErrorInNumbers</attr></title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 6)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+    -->
+<!--*******************************************************-->
+<!-- 
+  
+<example><title>What Doenet Renders (Example 6)</title>
+<setup>
+  <number name="x1">6</number>
+  <number name="y1">2</number>
+  <boolean name="isPointThere" allowedErrorInNumbers="0.5">($x1,$y1)=(6,2)</boolean>
+</setup>
+<p>The precise location of the point is <m>(6,2)</m>. Drag the point around the nearby regions to see which locations are "close enough".</p>
+  <graph width="600" height="300" grid="true" xmin="-2" xmax="13" ymin="-2" ymax="6" identicalAxisScales>
+    <point label="($x1,$y1)">($x1, $y1)</point>
+    <line>x=3</line>
+    <line>x=9</line>
+    <line>y=1</line>
+    <line>y=3</line>
+    <circle center="(6,2)" radius="2"/>
+  </graph>
+  
+<p>The point is located within tolerance: $isPointThere</p>
+  
+</example>
+  -->
+ 
+
+<!--******************************************************-->
+<!--    
+ 
+<subsection><title>Example 7: <tag>boolean</tag> with <attr>matchByExactPosition</attr></title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+ -->
+<!--*******************************************************-->
+<!-- 
+  
+<example><title>What Doenet Renders (Example 7)</title>
+<setup><math name="testFormula">x+y+z</math></setup>
+<p><mathInput name="userInput"/></p>
+<p><boolean matchByExactPositions="true">$userInput = $testFormula</boolean></p>
+</example>
+  -->
+
+
+<!--******************************************************-->
+<!--    
+  
+<subsection><title>Example 8: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+  -->
+<!--*******************************************************-->
+<!-- 
+ 
+<example><title>What Doenet Renders (Example 8)</title>
+
+</example>
+-->
+ 
+
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

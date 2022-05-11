@@ -1,0 +1,216 @@
+<setup>
+  <math name="degree">
+    pi/180
+  </math>
+
+  <selectFromSequence from="20" to="59" name="angleA" />
+  <selectFromSequence from="40" to="95" name="angleC" />
+  <selectFromSequence from="4" to="15" name="sidea" />
+  
+  <!--
+    Calculate Answers
+  -->
+  <math simplify="full" name="ans1">
+    180-$angleA-$angleC
+  </math>
+  <math simplify="full" name="ans2">
+    $sidea*sin(($angleA+$angleC)*$degree)/sin($angleA*$degree)
+  </math>
+  <math simplify="full" name="ans3">
+    $sidea*sin($angleC*$degree)/sin($angleA*$degree)
+  </math>
+</setup>
+
+
+
+<p>
+  Trigonometry Activity 3b - Angle Sum Formulas - Part I
+</p>
+
+Find the following distances:
+
+
+<ol>
+  <li>
+  <ol> 
+<li>
+  Find the distance between 
+<m>
+  (4,0)
+</m> 
+  
+and 
+  
+<m>
+  (-2,0)
+</m>
+
+ 
+ 
+  <answer>
+    <award>
+     <math>6</math>
+    </award>  
+  </answer>
+
+  
+</li>
+
+<li>
+Find the distance between 
+<m>
+  (4,3)
+</m> 
+  
+and 
+  
+<m>
+  (-2,3)
+</m>
+
+   <answer>
+    <award>
+     <math>6</math>
+    </award>  
+  </answer>
+
+</li>
+
+  <li>
+Find the distance between 
+<m>
+  (4,3)
+</m> 
+  
+and 
+  
+<m>
+  (4,6)
+</m>
+
+   <answer>
+    <award>
+     <math>3</math>
+    </award>  
+  </answer>
+
+</li>
+
+    <li>
+Find the distance between 
+<m>
+  (-2,3)
+</m> 
+  
+and 
+  
+<m>
+  (4,6)
+</m>
+
+   <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.005">
+     <math>sqrt(45)</math>
+    </award>  
+  </answer>
+
+</li>
+
+<li>  
+  Find the distance between 
+<m>
+  (-2,3)
+</m> 
+  
+and 
+  
+<m>
+  (h,k)
+</m>
+
+   <answer>
+    <award >
+     <math>sqrt((h+2)^2+(k-3)^2)</math>
+    </award>  
+  </answer>
+</li>
+
+  <li>  
+  Find the distance between 
+<m>
+  (x,y)
+</m> 
+  
+and 
+  
+<m>
+  (h,k)
+</m>
+
+   <answer>
+    <award >
+     <math>sqrt((x-h)^2+(y-k)^2)</math>
+    </award>  
+  </answer>
+</li>
+    </ol>
+</li>
+
+<li>
+Let <m>C = -B</m>
+
+<p>
+  That is, let <m>C</m> be the point on the unit circle in the fourth quadrant which has the same <m>x</m>-coordinate as <m>B</m>, but the opposite <m>y</m>-coordinate so that <m>C=-B</m>. The angle <m>A-C</m> will be used in the formulas, but it is somewhat difficult to visualize.
+</p>
+
+<ol>
+  <li>
+  How does <m>cos (C)</m> relate to <m>cos (B)</m>? How does <m>sin (C)</m> relate to <m>sin (B)</m>?
+
+    <answer>
+ 
+    </answer>
+  </li>
+  <li>
+Using your answer to 2e) write the formula for <m>cos(A-C)</m>.
+
+    <p>
+<m>cos(A-C) = </m>
+    <answer>
+    <award >
+     <math>cos(A)cos(C)+sin(A)sin(C)</math>
+    </award>  
+  </answer>
+    </p>
+  </li>
+  
+  <li>
+In 3b) replace <m>C</m> with <m>-B</m>.
+    <p>
+<m>cos(A-C) = cos(A-(-B)) = cos(A+B) = </m>
+   
+<answer>
+    <award >
+     <math>cos(A)cos(-B)+sin(A)sin(-B)</math>
+    </award>  
+  </answer>
+      </p> 
+  </li>
+  
+  <li>
+Using 3b), simplify the equation in 3c). Your result should be a formula for <m>cos(A+B)</m>.
+
+    <p>
+ <m>cos(A+B)=</m>
+<answer>
+    <award >
+     <math>cos(A)cos(B)-sin(A)sin(B)</math>
+    </award>  
+  </answer>
+    </p>
+     </li>
+</ol>
+  
+</li>
+</ol>
+

@@ -1,0 +1,41 @@
+<problem name="prob">
+  <variantControl variantNames="cat dog mouse" />
+This is inside
+
+
+
+<p>relative: <copy tname="h" /></p>
+<p>absolute: <copy tname="/h" /></p>
+<p>below: <copy tname="../h" />
+</p>
+<p>bad: <copy tname="bad" /></p>
+
+<math name="h">h</math>
+
+
+<p>Options for "/h"</p>
+
+<ol>
+  <li>Goes the base namespace as defined in the inner document</li>
+  <li>Moves to go the base namespace of the outer document</li>
+  <li>Is just not allowed</li>
+</ol>
+
+<p>Options for "../h" when in base namespace of current document</p>
+
+<ol>
+  <li>Appears as an [??] when viewing inner document, grabs content from outer document when enclosed</li>
+  <li>Return nothing when viewing inner document and when enclosed in outer document (in which case we need another method to pass in values from an enclosing document)</li>
+  <li>Always resolves to the "/h" of the inner document (again, with another method to pass in values)</li>
+</ol>
+  
+</problem>
+
+
+
+
+<math simplify name="x2">x+x</math>  <copy tname="x2" simplify="false" />
+
+
+<!-- <copy tname="prob" variantName="cat"/>
+<copy tname="prob" a="4"/> -->

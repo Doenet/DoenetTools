@@ -1,0 +1,7 @@
+<title>m</title>
+
+<p>The &lt;m&gt; is used to display inline mathematics.  The text inside &lt;m&gt; must be Latex that MathJax can interpret.  The mathematical expressions are not processed or interpreted, but only displayed.</p>
+
+<p>The quadratic formula is <m>x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}</m>.</p>
+
+<p>An &lt;m&gt; component can contain other components that produce mathematics.  The results are simply concatenated into a Latex string without regard any mathematical rules.  For example, juxtaposition of polynomials will not appear as multipication: <m><math>a+b</math><math>c+d</math></m>.  (This behavior is in contrast to the &lt;math&gt; component, where juxtaposition is generally multiplication: <math><math>a+b</math><math>c+d</math></math>.)  </p>

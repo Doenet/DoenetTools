@@ -1,0 +1,251 @@
+<module>
+  <setup>
+  </setup>
+  <p>
+    We will now construct tables of all the congruences of both addition and multiplication of the elements in the standard transversal for a few different values of <m>n</m>.
+    For example, the <em>Cayley table</em> for addition and multiplcation operations <m>\mod 3</m> are:
+  </p>
+
+  <sideBySide>
+    <tabular>
+      <row bottom="minor">
+        <cell right="minor"><m>+</m></cell>
+        <cell><m>0</m></cell>
+        <cell><m>1</m></cell>
+        <cell><m>2</m></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>0</m></cell>
+        <cell><m>0</m></cell>
+        <cell><m>1</m></cell>
+        <cell><m>2</m></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>1</m></cell>
+        <cell><m>1</m></cell>
+        <cell><m>2</m></cell>
+        <cell><m>0</m></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>2</m></cell>
+        <cell><m>2</m></cell>
+        <cell><m>0</m></cell>
+        <cell><m>1</m></cell>
+      </row>
+    </tabular>
+    <tabular>
+      <row/>
+    </tabular>
+    <tabular>
+      <row bottom="minor">
+        <cell right="minor"><m>\times</m></cell>
+        <cell><m>0</m></cell>
+        <cell><m>1</m></cell>
+        <cell><m>2</m></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>0</m></cell>
+        <cell><m>0</m></cell>
+        <cell><m>0</m></cell>
+        <cell><m>0</m></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>1</m></cell>
+        <cell><m>0</m></cell>
+        <cell><m>1</m></cell>
+        <cell><m>2</m></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>2</m></cell>
+        <cell><m>0</m></cell>
+        <cell><m>2</m></cell>
+        <cell><m>1</m></cell>
+      </row>
+    </tabular>
+  </sideBySide>
+  <p>
+    <alert>Practice:</alert>
+    For practice, complete the same tables <m>\mod 5</m>.
+  </p>
+  <p>
+    Addition modulo 5:
+    <tabular>
+      <row bottom="minor">
+        <cell right="minor"><m>+</m></cell>
+        <cell><m>0</m></cell>
+        <cell><m>1</m></cell>
+        <cell><m>2</m></cell>
+        <cell><m>3</m></cell>
+        <cell><m>4</m></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>0</m></cell>
+        <cell><mathInput name="a00" /></cell>
+        <cell><mathInput name="a01" /></cell>
+        <cell><mathInput name="a02" /></cell>
+        <cell><mathInput name="a03" /></cell>
+        <cell><mathInput name="a04" /></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>1</m></cell>
+        <cell><mathInput name="a10" /></cell>
+        <cell><mathInput name="a11" /></cell>
+        <cell><mathInput name="a12" /></cell>
+        <cell><mathInput name="a13" /></cell>
+        <cell><mathInput name="a14" /></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>2</m></cell>
+        <cell><mathInput name="a20" /></cell>
+        <cell><mathInput name="a21" /></cell>
+        <cell><mathInput name="a22" /></cell>
+        <cell><mathInput name="a23" /></cell>
+        <cell><mathInput name="a24" /></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>3</m></cell>
+        <cell><mathInput name="a30" /></cell>
+        <cell><mathInput name="a31" /></cell>
+        <cell><mathInput name="a32" /></cell>
+        <cell><mathInput name="a33" /></cell>
+        <cell><mathInput name="a34" /></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>4</m></cell>
+        <cell><mathInput name="a40" /></cell>
+        <cell><mathInput name="a41" /></cell>
+        <cell><mathInput name="a42" /></cell>
+        <cell><mathInput name="a43" /></cell>
+        <cell><mathInput name="a44" /></cell>
+      </row>
+    </tabular>
+    <answer matchPartial><award targetsAreResponses="a00 a01 a02 a03 a04 a10 a11 a12 a13 a14 a20 a21 a22 a23 a24 a30 a31 a32 a33 a34 a40 a41 a42 a43 a44">
+      <when>
+        $a00=0 and $a01=1 and $a02=2 and $a03=3 and $a04=4 and
+        $a10=1 and $a11=2 and $a12=3 and $a13=4 and $a14=0 and
+        $a20=2 and $a21=3 and $a22=4 and $a23=0 and $a24=1 and
+        $a30=3 and $a31=4 and $a32=0 and $a33=1 and $a34=2 and
+        $a40=4 and $a41=0 and $a42=1 and $a43=2 and $a44=3
+      </when>
+    </award></answer>
+  </p>
+  <p>
+    Multiplication modulo 5:
+    <tabular>
+      <row bottom="minor">
+        <cell right="minor"><m>\times</m></cell>
+        <cell><m>0</m></cell>
+        <cell><m>1</m></cell>
+        <cell><m>2</m></cell>
+        <cell><m>3</m></cell>
+        <cell><m>4</m></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>0</m></cell>
+        <cell><mathInput name="p00" /></cell>
+        <cell><mathInput name="p01" /></cell>
+        <cell><mathInput name="p02" /></cell>
+        <cell><mathInput name="p03" /></cell>
+        <cell><mathInput name="p04" /></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>1</m></cell>
+        <cell><mathInput name="p10" /></cell>
+        <cell><mathInput name="p11" /></cell>
+        <cell><mathInput name="p12" /></cell>
+        <cell><mathInput name="p13" /></cell>
+        <cell><mathInput name="p14" /></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>2</m></cell>
+        <cell><mathInput name="p20" /></cell>
+        <cell><mathInput name="p21" /></cell>
+        <cell><mathInput name="p22" /></cell>
+        <cell><mathInput name="p23" /></cell>
+        <cell><mathInput name="p24" /></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>3</m></cell>
+        <cell><mathInput name="p30" /></cell>
+        <cell><mathInput name="p31" /></cell>
+        <cell><mathInput name="p32" /></cell>
+        <cell><mathInput name="p33" /></cell>
+        <cell><mathInput name="p34" /></cell>
+      </row>
+      <row>
+        <cell right="minor"><m>4</m></cell>
+        <cell><mathInput name="p40" /></cell>
+        <cell><mathInput name="p41" /></cell>
+        <cell><mathInput name="p42" /></cell>
+        <cell><mathInput name="p43" /></cell>
+        <cell><mathInput name="p44" /></cell>
+      </row>
+    </tabular>
+    <answer matchPartial><award targetsAreResponses="p00 p01 p02 p03 p04 p10 p11 p12 p13 p14 p20 p21 p22 p23 p24 p30 p31 p32 p33 p34 p40 p41 p42 p43 p44">
+      <when>
+        $p00=0 and $p01=0 and $p02=0 and $p03=0 and $p04=0 and
+        $p10=0 and $p11=1 and $p12=2 and $p13=3 and $p14=4 and
+        $p20=0 and $p21=2 and $p22=4 and $p23=1 and $p24=3 and
+        $p30=0 and $p31=3 and $p32=1 and $p33=4 and $p34=2 and
+        $p40=0 and $p41=4 and $p42=3 and $p43=2 and $p44=1
+      </when>
+    </award></answer>
+  </p>
+  <p>
+    <alert>Important Application:</alert>
+    <selectFromSequence from="2" to="4" name="y" hide/>
+    One reason for constructing the Cayley table for these sets is that it allows us to solve <em>linear congruence equations</em> of the form
+    <men>2x\equiv $y \mod 5.</men>
+  </p>
+  <p>
+    <row><alert>Theorem 1:</alert> If <m>x\equiv y \mod n</m> then <m>cx\equiv cy \mod n</m>.</row>
+    <alert>Remark:</alert> For now, I'm just going to ask you to trust me on this.
+    I may ask you to prove it in the future, but we're going to use this fact to solve the (1) above.
+    If you believe me though, then we see that <m>2\cdot 3\equiv 1 \mod 5</m>, thus we can multiply both sides of the equation to obtain
+    <me>3\cdot 2\cdot x \equiv 3\cdot $y \mod 5</me>
+    where we can simplify <m>3\cdot 2\cdot x \equiv (1)\cdot x \equiv x \mod 5</m>!
+    So we know that if we want to solve for <m>x</m>, we proceed as normal and find
+    <me>x\equiv 3\cdot $y \equiv <math simplify>3*$y</math> \equiv <math simplify>mod(3*$y,5)</math>\mod 5.</me>
+    Remember, we always want our answer to be one of the elements of our selected <em>transversal</em>, so we would simplify to <m>1</m> in this case. However, on the next page, we will practice using two different transversals and completing the same Cayley table above.
+  </p>
+  <p>
+    <alert>You try!</alert> Solve the following linear congruence equations using the table you constructed for modulus 5 operations.
+  </p>
+  <setup>
+    <selectFromSequence numberToSelect="2" withReplacement="false" from="3" to="4" step="1" assignNames="t1 t2" />
+    <selectFromSequence numberToSelect="2" withReplacement="false" from="1" to="4" step="1" assignNames="s1 s2" />
+  </setup>
+  <p>
+    <alert>Problem 1:</alert>
+    <m>\quad $t1\cdot x \equiv $s1\mod 5</m>, then <m>x=</m> <mathInput name="ans1" />
+    <answer><award targetsAreResponses="ans1">
+      <when>$ans1=<math simplify>mod($t1^3*$s1,5)</math></when>
+    </award></answer>
+  </p>
+  <p>
+    <alert>Problem 2:</alert>
+    <m>\quad $t1\cdot x \equiv $s2\mod 5</m>, then <m>x=</m> <mathInput name="ans2" />
+    <answer><award targetsAreResponses="ans2">
+      <when>$ans2=<math simplify>mod($t1^3*$s2,5)</math></when>
+    </award></answer>
+  </p>
+  <p>
+    <alert>Problem 3:</alert>
+    <m>\quad $t2\cdot x \equiv $s1\mod 5</m>, then <m>x=</m> <mathInput name="ans3" />
+    <answer><award targetsAreResponses="ans3">
+      <when>$ans3=<math simplify>mod($t2^3*$s1,5)</math></when>
+    </award></answer>
+  </p>
+  <p>
+    <alert>Problem 4:</alert>
+    <m>\quad $t2\cdot x \equiv $s2\mod 5</m>, then <m>x=</m> <mathInput name="ans4" />
+    <answer><award targetsAreResponses="ans4">
+      <when>$ans4=<math simplify>mod($t2^3*$s2,5)</math></when>
+    </award></answer>
+  </p>
+  <p>
+    <alert>Follow-up Question:</alert>
+    Looking at the tables for both Modulus 3 and Modulus 5, what do you notice? What patterns stand out to you? Jot down a few notes, as you'll be asked to answer this question on the Google form at the end of the assignment.
+  </p>
+</module>
+

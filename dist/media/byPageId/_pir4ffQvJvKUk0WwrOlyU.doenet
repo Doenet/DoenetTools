@@ -1,0 +1,3 @@
+By default, we have 100 variants, so only 100 options of this <tag>selectFromSequence</tag> will be available.
+
+<p>A number: <selectFromSequence from="1" to="1000000" /></p>

@@ -1,0 +1,78 @@
+<!-- To comment use these tags -->
+<ol>
+  <p> This activity uses a graphing utility to demonstrate how graphs are transformed by translations,
+reflections and dilations (magnification). The goal is to give students a visual understanding of how
+a function, such as <m>f(x) = sin x</m> can be transformed so that one only needs to memorize facts about
+one parent function to understand the graphs of an entire class of functions. Some of the functions
+may be unfamiliar to students, which is fine. it is not necessary to know where the parent function
+comes from, only that the original function can be transformed. It is the comparison of the two
+related graphs that is the lesson here.</p>
+
+
+
+
+  
+  <p>In order to do this activity, you will need a device to draw graphs, such as the graphing tool on
+desmos.com
+.</p>
+  
+
+<li>Translations 
+
+</li>
+<ul>
+<li>Group 1: Graph <m>y=x^2</m>
+, <m>y=x^2+4</m>, <m>y = x^2 − 2</m> and <m>y = (x − 1)^2</m></li>
+<li> Group 2: Graph <m>y =√(x)</m>, <m>y =√(x + 3)</m> and <m>y =√(x − 1)</m> </li>
+<li> Group 3: Graph <m>y = ln x</m>, <m>y = ln(x − 4)</m> and <m>y = ln(x + 3)</m> </li>
+
+
+<li>For the function <m>y = (x+C)^2 + D</m>, what affect will adding D to a function value have on
+a graph? What affect will adding C to the input value (x) before applying the function
+have on the graph?</li>
+<li>If you know what the graph of <m>y = sin x</m> looks like, can you describe what the graph of
+<m>y = (sin x) + 4</m> and <m>y = sin(x −(π/4))</m> look like?</li>
+</ul>
+
+<li>Reflection 
+
+</li>
+<ul>
+<li>Group 1: Graph <m>y =√x, y =√(−x), y = −√(x) ,y = −√)−x)</m></li>
+<li> Group 2:Graph y = <m>ln x, y = ln(−x), y = − ln x , y = − ln(−x) </m></li>
+<li> Group 3: Graph <m>y = e^x, y = e^−x, y = −e^x , y = −e^−x</m></li>
+  
+
+<li>
+  What effect will placing a negative sign in front of the function value do to the graph?
+What effect will placing a negative sign on the input value before applying the function
+have on the graph?
+</li>
+
+<li> Why do the graphs of <m>y = x^2</m> and <m>y = (−x)^2</m>
+look the same? Give two reasons, one by
+simplifying the second equation algebraically, the second by interpreting the effect of the
+negative sign on the graph.
+</li>
+
+</ul>
+
+  <p>In order for three points, A, B and C to be on a straight line, the slope from A to B must equal the slope from B to C, must equal the slope from A to C. However, we don’t actually need to check all three. If the slope from A to B equals the slope from B to C, then it must also equal the slope from A to C. Show that this last statement is true by doing the following: </p>
+</ol>
+<ol>  <li>
+    Write a formula for the slope from A to B in the picture above. 
+  </li>
+  <li>Write a formula for the slope from B to C in the picture above. </li>
+  <li>
+    Set the two expressions above equal to each other. Solve this equation for y to arrive at the slope-intercept form of the equation for this line.
+  </li>
+  <li>
+    Write a formula for the slope from A to C in the picture above.
+  </li>
+  <li>
+    Set the expression in (4) equal to the expression in (2). Solve this equation for y to arrive at the slope-intercept form of the equation for this line.
+  </li>
+</ol>
+  
+
+  

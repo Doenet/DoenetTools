@@ -1,0 +1,56 @@
+<math>2/3</math>
+
+<math format="text">2/3</math>
+
+<math format="latex">\frac{2}{3}</math>
+
+<math simplify="numbers">2+3</math>
+
+
+<p>
+
+<mathlist simplify>
+  <math>2+2</math>
+  <mathlist>
+  	<math>3+2</math>
+  </mathlist>
+  2+1
+  </mathlist>
+
+  
+</p>
+
+
+<sequence exclude="2 3 " />
+
+
+<problem symbolicEquality="true">
+  <setOptions forComponentType="answer" symbolicEquality="true">
+	
+  </setOptions>
+</problem>
+
+
+<feedbackDefinitions>
+  <feedbackDefinition code="num" text="You did something bad!" />
+</feedbackDefinitions>
+
+<answer>
+<award feedback="$num" />
+</answer>
+
+
+<module>
+  
+</module>
+
+
+
+
+<answer type="text">hello</answer>
+
+
+
+
+
+
