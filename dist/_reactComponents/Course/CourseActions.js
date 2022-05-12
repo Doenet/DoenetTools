@@ -287,9 +287,42 @@ export const studentCourseItemOrderByCourseId = selectorFamily({
     let allDoenetIdsInOrder = get(authorCourseItemOrderByCourseId(courseId));
     let studentDoenetIds = allDoenetIdsInOrder.filter((doenetId) => {
       let itemObj = get(itemByDoenetId(doenetId));
-      return itemObj.type == "activity" || itemObj.type == "section";
+      return itemObj.isAssigned && (itemObj.type == "activity" || itemObj.type == "section");
     });
     return studentDoenetIds;
+  }
+});
+export const studentCourseItemOrderByCourseIdBySection = selectorFamily({
+  key: "studentCourseItemOrderByCourseId",
+  get: ({courseId, sectionId}) => ({get}) => {
+    let allStudentDoenetIdsInOrder = get(studentCourseItemOrderByCourseId(courseId));
+    console.log("allStudentDoenetIdsInOrder", allStudentDoenetIdsInOrder);
+    let sectionDoenetIds = [];
+    let inSection = false;
+    let sectionDoenetIdsInSection = [sectionId];
+    if (courseId == sectionId || !sectionId) {
+      sectionDoenetIdsInSection = [courseId];
+      inSection = true;
+    }
+    for (let doenetId of allStudentDoenetIdsInOrder) {
+      if (doenetId == sectionId) {
+        inSection = true;
+        continue;
+      }
+      if (inSection) {
+        let itemObj = get(itemByDoenetId(doenetId));
+        console.log("itemObj", itemObj);
+        if (itemObj.isAssigned && sectionDoenetIdsInSection.includes(itemObj.parentDoenetId)) {
+          sectionDoenetIds.push(doenetId);
+          if (itemObj.type == "section") {
+            sectionDoenetIdsInSection.push(doenetId);
+          }
+        } else {
+          break;
+        }
+      }
+    }
+    return sectionDoenetIds;
   }
 });
 export const itemByDoenetId = atomFamily({
