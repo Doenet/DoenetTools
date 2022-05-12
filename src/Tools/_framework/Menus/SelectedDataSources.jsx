@@ -27,6 +27,8 @@ export default function SelectedDataSources() {
           foundDoenetIds = [...newDoenetIds,...foundDoenetIds];
         }
       }
+      //Deduplicate
+      foundDoenetIds = [...new Set(foundDoenetIds)]
     return foundDoenetIds;
   },[courseId])
 
