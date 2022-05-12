@@ -2,12 +2,12 @@ import axios from 'axios';
 import { useRecoilCallback, useRecoilValueLoadable } from 'recoil';
 import { useToast } from '../../Tools/_framework/Toast';
 import { DateToUTCDateString } from '../../_utils/dateUtilityFunction';
-import { authorItemByDoenetId } from '../Course/CourseActions';
+import { itemByDoenetId } from '../Course/CourseActions';
 
 export const useActivity = (courseId, doenetId) => {
   const addToast = useToast();
   const activity = useRecoilValueLoadable(
-    authorItemByDoenetId(doenetId),
+    itemByDoenetId(doenetId),
   ).getValue();
   const updateAssignmentSettings = useRecoilCallback(
     ({ set }) =>
@@ -42,7 +42,7 @@ export const useActivity = (courseId, doenetId) => {
         });
 
         if (resp.data.success) {
-          set(authorItemByDoenetId(doenetId), (prev) => ({
+          set(itemByDoenetId(doenetId), (prev) => ({
             ...prev,
             ...updateObject,
           }));
