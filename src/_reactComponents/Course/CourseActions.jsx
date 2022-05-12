@@ -375,10 +375,49 @@ export const studentCourseItemOrderByCourseId = selectorFamily({
     let studentDoenetIds = allDoenetIdsInOrder.filter((doenetId)=>{
       let itemObj = get(itemByDoenetId(doenetId));
       //If of type for the student then add to the list
-      return itemObj.type == 'activity' || itemObj.type == 'section'
+      return itemObj.isAssigned && (itemObj.type == 'activity' || itemObj.type == 'section')
     })
 
     return studentDoenetIds;
+  }
+})
+
+//TODO: finish this
+export const studentCourseItemOrderByCourseIdBySection = selectorFamily({
+  key: 'studentCourseItemOrderByCourseId',
+  get:({courseId,sectionId})=> ({get})=>{
+    let allStudentDoenetIdsInOrder = get(studentCourseItemOrderByCourseId(courseId));
+    console.log("allStudentDoenetIdsInOrder",allStudentDoenetIdsInOrder)
+    let sectionDoenetIds = [];
+    let inSection = false;
+    let sectionDoenetIdsInSection = [sectionId];
+    if (courseId == sectionId || !sectionId){
+      sectionDoenetIdsInSection = [courseId]
+      inSection = true;
+    }
+    for (let doenetId of allStudentDoenetIdsInOrder){
+      //Found first one so now we are in the section
+      if (doenetId == sectionId){
+        inSection = true;
+        continue;
+      }
+      if (inSection){
+        let itemObj = get(itemByDoenetId(doenetId));
+        console.log("itemObj",itemObj)
+        if (itemObj.isAssigned && sectionDoenetIdsInSection.includes(itemObj.parentDoenetId)){
+          sectionDoenetIds.push(doenetId);
+          //If of type which has children then add to the section list
+          if (itemObj.type == 'section'){
+            sectionDoenetIdsInSection.push(doenetId);
+          }
+
+        }else{
+          break;  //Can stop after we go up a level because there won't be any more
+        }
+
+      }
+    }
+    return sectionDoenetIds;
   }
 })
 

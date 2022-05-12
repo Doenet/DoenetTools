@@ -65,9 +65,8 @@ const Td3Span = styled.span `
 `;
 
 export default function DataPanel() {
-  const addToast = useToast();
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const { findPagesFromDoenetIds } = useCourse(courseId);
+  // const addToast = useToast();
+  // const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
 
 
   const updateSelectMenu = useRecoilCallback(
@@ -92,13 +91,7 @@ export default function DataPanel() {
             params: { sectionId: clickedItem.doenetId, courseId},
           }})
         }else{
-          let pageDoenetIds = await findPagesFromDoenetIds([clickedItem.doenetId]);
-          if (pageDoenetIds.length == 0){
-            addToast(`No pages found`, toastType.INFO);
-          }else{
-            console.log("Open Link to data for Pages",pageDoenetIds)
-          }
-
+            console.log("Open Link to data for Pages",doenetId)
         }
 
         // if (clickedItem.type == 'page'){
@@ -156,6 +149,7 @@ export default function DataPanel() {
       <CourseNavigator
         updateSelectMenu={updateSelectMenu}
         doubleClickItem={doubleClickItem}
+        displayRole="student"
       />
     </Container>
   </Suspense>

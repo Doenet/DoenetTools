@@ -53,7 +53,8 @@ import {
   selectedCourseItems,
   authorCourseItemOrderByCourseIdBySection,
   // findFirstPageOfActivity,
-  studentCourseItemOrderByCourseId
+  studentCourseItemOrderByCourseId,
+  studentCourseItemOrderByCourseIdBySection
 } from '../../_reactComponents/Course/CourseActions';
 
 /**
@@ -72,9 +73,6 @@ export default function CourseNavigator(props) {
   const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
 
-  // console.log("courseId",courseId)
-  // console.log("sectionId",sectionId)
-  // console.log("-----\n")
   let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
@@ -107,10 +105,10 @@ export default function CourseNavigator(props) {
     return null;
   }
 
-  if (coursePermissionsAndSettings.canEditContent == '0' || effectiveRole == 'student'){
+  if (coursePermissionsAndSettings.canEditContent == '0' || effectiveRole == 'student' || props.displayRole == 'student'){
     return <StudentCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
-  if (coursePermissionsAndSettings.canEditContent == '1' || effectiveRole == 'instructor'){
+  if (coursePermissionsAndSettings.canEditContent == '1' || effectiveRole == 'instructor' || props.displayRole == 'instructor'){
     return <AuthorCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
   return null;
@@ -118,14 +116,20 @@ export default function CourseNavigator(props) {
 
 }
 
-function StudentCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
-  // let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseId(courseId));
-  let studentItemOrder = useRecoilValue(studentCourseItemOrderByCourseId(courseId));
-  //TODO: use student information here?
+function StudentCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
+  let studentItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId,sectionId}));
   console.log("studentItemOrder",studentItemOrder)
+  let previousSections = useRef([]);
+  let definedForSectionId = useRef("");
+  //If sectionId changes clear out previousSections
+  if (definedForSectionId.current != sectionId){
+    previousSections.current = []
+    definedForSectionId.current = sectionId;
+  }
+  //TODO: use student information here?
   let items = [];
   studentItemOrder.map((doenetId)=>
-    items.push(<StudentItem key={`itemcomponent${doenetId}`} doenetId={doenetId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} />)
+    items.push(<StudentItem key={`itemcomponent${doenetId}`} courseId={courseId} doenetId={doenetId}  indentLevel={0} previousSections={previousSections} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} />)
   )
     
   return <>
@@ -145,7 +149,7 @@ function StudentItem({courseId,doenetId,numberOfVisibleColumns,indentLevel,previ
     return null;
   }
   if (itemInfo.type == 'section'){
-  return <Section key={`Item${doenetId}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
+  return <StudentSection key={`Item${doenetId}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }else if (itemInfo.type == 'activity'){
     return <StudentActivity key={`Item${doenetId}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }
@@ -153,13 +157,28 @@ function StudentItem({courseId,doenetId,numberOfVisibleColumns,indentLevel,previ
   return null;
 }
 
-function StudentActivity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
-  // console.log("Activity itemInfo",itemInfo)
+function StudentSection({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
+  let studentSectionItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId,sectionId:itemInfo.doenetId}));
+  let previousSections = useRef([]);
 
+  if (itemInfo.isOpen){
+    let sectionItems = studentSectionItemOrder.map((doenetId)=>
+    <Item key={`itemcomponent${doenetId}`} courseNavigatorProps={courseNavigatorProps} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel+1} />)
+    
+    return <>
+    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+    {sectionItems}
+    </>
+
+  }else{
+    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+  }
+}
+
+function StudentActivity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
     return <>
     <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} isBeingCut={itemInfo.isBeingCut}/>
      </>
-  
 }
 
 function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
@@ -238,7 +257,6 @@ function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,cou
 }
 
 function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
-  // console.log("Activity itemInfo",itemInfo)
   if (itemInfo.isSinglePage){
     return <>
     <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} isBeingCut={itemInfo.isBeingCut}/>
@@ -302,7 +320,6 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
 
 function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentLevel,number=null,courseNavigatorProps}){
   let recoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
-  // console.log("Page recoilPageInfo",recoilPageInfo,"doenetId",doenetId)
   //TODO: numbered
   return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
 }
