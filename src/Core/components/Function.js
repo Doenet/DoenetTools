@@ -1980,7 +1980,6 @@ export default class Function extends InlineComponent {
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
-        console.log('get array keys from varname', { arrayEntryPrefix, varEnding, arraySize })
         if (["minimum", "minimumLocation", "minimumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
           if (Number.isInteger(pointInd) && pointInd >= 0) {
