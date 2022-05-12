@@ -382,6 +382,45 @@ export const studentCourseItemOrderByCourseId = selectorFamily({
   }
 })
 
+//TODO: finish this
+export const studentCourseItemOrderByCourseIdBySection = selectorFamily({
+  key: 'studentCourseItemOrderByCourseId',
+  get:({courseId,sectionId})=> ({get})=>{
+    let allStudentDoenetIdsInOrder = get(studentCourseItemOrderByCourseId(courseId));
+    console.log("allStudentDoenetIdsInOrder",allStudentDoenetIdsInOrder)
+    let sectionDoenetIds = [];
+    let inSection = false;
+    let sectionDoenetIdsInSection = [sectionId];
+    if (courseId == sectionId || !sectionId){
+      sectionDoenetIdsInSection = [courseId]
+      inSection = true;
+    }
+    for (let doenetId of allStudentDoenetIdsInOrder){
+      //Found first one so now we are in the section
+      if (doenetId == sectionId){
+        inSection = true;
+        continue;
+      }
+      if (inSection){
+        let itemObj = get(itemByDoenetId(doenetId));
+        console.log("itemObj",itemObj)
+        if (itemObj.isAssigned && sectionDoenetIdsInSection.includes(itemObj.parentDoenetId)){
+          sectionDoenetIds.push(doenetId);
+          //If of type which has children then add to the section list
+          if (itemObj.type == 'section'){
+            sectionDoenetIdsInSection.push(doenetId);
+          }
+
+        }else{
+          break;  //Can stop after we go up a level because there won't be any more
+        }
+
+      }
+    }
+    return sectionDoenetIds;
+  }
+})
+
 //Start at top find the section we are filtering to based on searchparams AtomFamily sectionId
 //If empty sectionId then return everything in authorCourseItemOrderByCourseId
 //Start collecting parentNames and doenetIds to include for the section
