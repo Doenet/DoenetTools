@@ -162,7 +162,7 @@ export default class Vector extends GraphicalComponent {
           lineDescription += "dotted ";
         }
 
-        lineDescription += dependencyValues.selectedStyle.lineColor;
+        lineDescription += dependencyValues.selectedStyle.lineColorWord;
 
         return { setValue: { styleDescription: lineDescription } };
 

@@ -168,6 +168,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
   let menusArray = [];
   const LazyMenuPanelCapObj = useRef({
     DriveInfoCap: lazy(() => import("../MenuPanelCaps/DriveInfoCap.js")),
+    DataCap: lazy(() => import("../MenuPanelCaps/DataCap.js")),
     EditorInfoCap: lazy(() => import("../MenuPanelCaps/EditorInfoCap.js")),
     AssignmentInfoCap: lazy(() => import("../MenuPanelCaps/AssignmentInfoCap.js")),
     DraftActivityCap: lazy(() => import("../MenuPanelCaps/DraftActivityCap.js"))

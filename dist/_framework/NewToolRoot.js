@@ -424,7 +424,7 @@ let navigationObj = {
     },
     data: {
       pageName: "data",
-      menuPanelCap: "DriveInfoCap",
+      menuPanelCap: "DataCap",
       currentMainPanel: "DataPanel",
       headerControls: ["DataBreadCrumb"]
     }

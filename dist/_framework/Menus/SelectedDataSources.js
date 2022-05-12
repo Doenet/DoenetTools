@@ -1,21 +1,39 @@
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
-import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {selectedCourseItems, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {useRecoilCallback, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
+import {
+  itemByDoenetId,
+  selectedCourseItems,
+  studentCourseItemOrderByCourseIdBySection
+} from "../../_reactComponents/Course/CourseActions.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {useToast, toastType} from "../Toast.js";
 export default function SelectedDataSources() {
-  const [pageDoenetIds, setPageDoenetIds] = useState([]);
+  const [assignedSelectedDoenetIds, setAssignedSelectedDoenetIds] = useState([]);
   const selectedDoenetIds = useRecoilValue(selectedCourseItems);
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
-  const {findPagesFromDoenetIds} = useCourse(courseId);
+  const findAssignedDoenetIds = useRecoilCallback(({snapshot}) => async (selectedDoenetIds2) => {
+    let foundDoenetIds = [];
+    for (let doenetId of selectedDoenetIds2) {
+      let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId));
+      if (itemObj.type == "activity" && itemObj.isAssigned) {
+        foundDoenetIds.push(doenetId);
+      } else if (itemObj.type == "section" && itemObj.isAssigned) {
+        let sectionDoenetIds = await snapshot.getPromise(studentCourseItemOrderByCourseIdBySection({courseId, sectionId: doenetId}));
+        let newDoenetIds = await findAssignedDoenetIds(sectionDoenetIds);
+        foundDoenetIds = [...newDoenetIds, ...foundDoenetIds];
+      }
+    }
+    foundDoenetIds = [...new Set(foundDoenetIds)];
+    return foundDoenetIds;
+  }, [courseId]);
   useEffect(() => {
     if (selectedDoenetIds.length > 0) {
-      findPagesFromDoenetIds(selectedDoenetIds).then((pages) => {
-        setPageDoenetIds(pages);
+      findAssignedDoenetIds(selectedDoenetIds).then((doenetIds) => {
+        setAssignedSelectedDoenetIds(doenetIds);
       });
     } else {
-      setPageDoenetIds([]);
+      setAssignedSelectedDoenetIds([]);
     }
   }, [selectedDoenetIds]);
   const addToast = useToast();
@@ -23,15 +41,15 @@ export default function SelectedDataSources() {
     "data-cy": "selectedDataSourcesHeading",
     style: {margin: "16px 5px"}
   }, "Event Data");
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement("div", null, pageDoenetIds.length, " Page", pageDoenetIds.length == 1 ? "" : "s"), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ActionButton, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement("div", null, assignedSelectedDoenetIds.length, " ", assignedSelectedDoenetIds.length == 1 ? "Activity" : "Activities"), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "View on Shiny",
-    disabled: pageDoenetIds.length == 0,
+    disabled: assignedSelectedDoenetIds.length == 0,
     onClick: () => {
-      if (pageDoenetIds.length == 0) {
-        addToast(`No pages found`, toastType.INFO);
+      if (assignedSelectedDoenetIds.length == 0) {
+        addToast(`No activities found`, toastType.INFO);
       } else {
-        console.log("Open Link to data for Pages", pageDoenetIds);
+        console.log("Open Link to data for activities", assignedSelectedDoenetIds);
       }
     }
   }));

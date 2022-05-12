@@ -15,7 +15,8 @@ import {
   enrollmentByCourseId,
   findFirstPageOfActivity,
   selectedCourseItems,
-  useCourse
+  useCourse,
+  courseIdAtom
 } from "../../_reactComponents/Course/CourseActions.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
@@ -102,7 +103,6 @@ export default function SelectedActivity() {
       renameItem(doenetId, effectiveItemLabel);
     }
   };
-  useDebounce(handelLabelModfication, 500, [itemTextFieldLabel]);
   if (doenetId == void 0) {
     return null;
   }
@@ -268,7 +268,7 @@ function AssignTo({updateAssignment}) {
   const {
     isGloballyAssigned
   } = useRecoilValue(itemByDoenetId(doenetId));
-  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const courseId = useRecoilValue(courseIdAtom);
   const {value: enrolledStudents} = useRecoilValue(enrollmentByCourseId(courseId));
   const [restrictedTo, setRestrictedTo] = useState([]);
   async function getAndSetRestrictedTo({courseId: courseId2, doenetId: doenetId2}) {
