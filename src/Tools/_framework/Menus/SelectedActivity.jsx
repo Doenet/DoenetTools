@@ -117,7 +117,7 @@ export default function SelectedActivity() {
     }
   };
 
-  useDebounce(handelLabelModfication, 500, [itemTextFieldLabel]);
+  // useDebounce(handelLabelModfication, 500, [itemTextFieldLabel]);
 
   if (doenetId == undefined) {
     return null;
