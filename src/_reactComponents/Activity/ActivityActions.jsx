@@ -1,14 +1,18 @@
 import axios from 'axios';
 import { useRecoilCallback, useRecoilValueLoadable } from 'recoil';
 import { useToast } from '../../Tools/_framework/Toast';
-import { DateToUTCDateString } from '../../_utils/dateUtilityFunction';
 import { itemByDoenetId } from '../Course/CourseActions';
+
+const dateFormatKeys = [
+  'assignedDate',
+  'dueDate',
+  'pinnedUntilDate',
+  'pinnedAfterDate',
+];
 
 export const useActivity = (courseId, doenetId) => {
   const addToast = useToast();
-  const activity = useRecoilValueLoadable(
-    itemByDoenetId(doenetId),
-  ).getValue();
+  const activity = useRecoilValueLoadable(itemByDoenetId(doenetId)).getValue();
   const updateAssignmentSettings = useRecoilCallback(
     ({ set }) =>
       async (...valuesWithDescriptionsToUpdateByKey) => {
@@ -19,21 +23,6 @@ export const useActivity = (courseId, doenetId) => {
           },
           {},
         );
-
-        const dateFormatKeys = [
-          'assignedDate',
-          'dueDate',
-          'pinnedUntilDate',
-          'pinnedAfterDate',
-        ];
-
-        for (let key of dateFormatKeys) {
-          if (updateObject[key] && updateObject[key] !== null) {
-            updateObject[key] = DateToUTCDateString(
-              new Date(updateObject[key]),
-            );
-          }
-        }
 
         const resp = await axios.post('/api/updateAssignmentSettings.php', {
           ...updateObject,
@@ -66,7 +55,7 @@ export const useActivity = (courseId, doenetId) => {
           }
         }
       },
-    [courseId, doenetId],
+    [addToast, courseId, doenetId],
   );
 
   return { value: activity, updateAssignmentSettings };

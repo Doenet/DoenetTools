@@ -12,6 +12,10 @@ import { useActivity } from './ActivityActions';
 import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox';
 import Increment from '../PanelHeaderComponents/IncrementMenu';
 import DropdownMenu from '../PanelHeaderComponents/DropdownMenu';
+import { useRecoilValue } from 'recoil';
+import { enrollmentByCourseId } from '../Course/CourseActions';
+import axios from 'axios';
+import RelatedItems from '../PanelHeaderComponents/RelatedItems';
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
@@ -67,7 +71,6 @@ export const AssignedDate = ({ doenetId, courseId }) => {
             }
 
             setAssignedDate(value);
-
             updateAssignmentSettings({
               keyToUpdate: 'assignedDate',
               value,
@@ -565,6 +568,61 @@ export const ShowSolutionInGradebook = ({ courseId, doenetId }) => {
   );
 };
 
+export const ShowFeedback = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="showFeedback"
+      description="Show Feedback"
+    />
+  );
+};
+
+export const ShowHints = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="showHints"
+      description="Show Hints"
+    />
+  );
+};
+
+export const ShowCorrectness = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="showCorrectness"
+      description="Show Correctness"
+    />
+  );
+};
+
+export const ShowCreditAchieved = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="showCreditAchievedMenu"
+      description="Show Credit Achieved Menu"
+    />
+  );
+};
+
+export const ProctorMakesAvailable = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="proctorMakesAvailable"
+      description="Proctor Makes Available"
+    />
+  );
+};
+
 export const PinAssignment = ({ courseId, doenetId }) => {
   const addToast = useToast();
   const {
@@ -743,3 +801,100 @@ export const PinAssignment = ({ courseId, doenetId }) => {
     </InputWrapper>
   );
 };
+
+export function AssignTo({ courseId, doenetId }) {
+  const {
+    value: { isGloballyAssigned },
+    updateAssignmentSettings,
+  } = useActivity(courseId, doenetId);
+
+  const { value: enrolledStudents } = useRecoilValue(
+    enrollmentByCourseId(courseId),
+  );
+
+  //email addresses of only those who assignment is restricted to
+  const [restrictedTo, setRestrictedTo] = useState([]);
+
+  async function getAndSetRestrictedTo({ courseId, doenetId }) {
+    let resp = await axios.get('/api/getRestrictedTo.php', {
+      params: { courseId, doenetId },
+    });
+    // console.log("resp",resp.data)
+    setRestrictedTo(resp.data.restrictedTo);
+  }
+
+  async function updateRestrictedTo({ courseId, doenetId, emailAddresses }) {
+    let resp = await axios.post('/api/updateRestrictedTo.php', {
+      courseId,
+      doenetId,
+      emailAddresses,
+    });
+    if (resp.data.success) {
+      setRestrictedTo(emailAddresses);
+    }
+  }
+
+  useEffect(() => {
+    if (!isGloballyAssigned) {
+      getAndSetRestrictedTo({ courseId, doenetId });
+    }
+  }, [courseId, doenetId, isGloballyAssigned]);
+
+  //Only those enrolled who didn't withdraw
+  let enrolledJSX = enrolledStudents.reduce((allrows, row) => {
+    if (row.withdrew == '0') {
+      if (!isGloballyAssigned && restrictedTo.includes(row.email)) {
+        return [
+          ...allrows,
+          <option selected key={`enrolledOpt${row.email}`} value={row.email}>
+            {row.firstName} {row.lastName}
+          </option>,
+        ];
+      } else {
+        return [
+          ...allrows,
+          <option key={`enrolledOpt${row.email}`} value={row.email}>
+            {row.firstName} {row.lastName}
+          </option>,
+        ];
+      }
+    } else {
+      return allrows;
+    }
+  }, []);
+
+  return (
+    <>
+      <br />
+      <InputWrapper>
+        <Checkbox
+          style={{ marginRight: '5px' }}
+          checked={!isGloballyAssigned}
+          onClick={() => {
+            updateAssignmentSettings({
+              keyToUpdate: 'isGloballyAssigned',
+              value: !isGloballyAssigned,
+              description: 'Restrict Assignment ',
+              valueDescription: isGloballyAssigned ? 'true' : 'false',
+            });
+          }}
+        />
+        <LabelText>Restrict Assignment To</LabelText>
+      </InputWrapper>
+      <RelatedItems
+        width="menu"
+        options={enrolledJSX}
+        disabled={isGloballyAssigned}
+        onChange={(e) => {
+          //TODO: Clara please build this in to RelatedItems
+          let emailAddresses = Array.from(
+            e.target.selectedOptions,
+            (option) => option.value,
+          );
+          updateRestrictedTo({ courseId, doenetId, emailAddresses });
+        }}
+        multiple
+      />
+    </>
+  );
+}
