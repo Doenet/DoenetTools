@@ -169,7 +169,7 @@ export default function HomePage(props) {
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <a href="/public?tool=editor&doenetId=_qyPDhmvsuwjwNGM9OPy3Q" style={{textDecoration: "none"}}><DoenetDriveCard image="RandomlyGeneratedGraph.jpg" label="Randomly-Generated Graphs" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="/public?tool=editor&doenetId=_i7KDJsUQeSToEv4DGmLKq" style={{textDecoration: "none"}}><DoenetDriveCard image="Cobwebbing.jpg" label="Hands-On Activities" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a href="/public?tool=editor&doenetId=_T-cgqOlqTxAJbicaXqtKg" style={{textDecoration: "none"}}><DoenetDriveCard image="Cobwebbing.jpg" label="Hands-On Activities" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
             <a href="/public?tool=editor&doenetId=_JXTxrd8XXjfEy9GuFPcy6" style={{textDecoration: "none"}}><DoenetDriveCard image="DynamicContentInteractions.jpg" label="Dynamic Content Interactions" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
