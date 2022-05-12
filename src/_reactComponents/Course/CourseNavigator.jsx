@@ -124,6 +124,12 @@ function StudentCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setN
   // let studentItemOrder = useRecoilValue(studentCourseItemOrderByCourseId(courseId));
   let studentItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId,sectionId}));
   let previousSections = useRef([]);
+  let definedForSectionId = useRef("");
+  //If sectionId changes clear out previousSections
+  if (definedForSectionId.current != sectionId){
+    previousSections.current = []
+    definedForSectionId.current = sectionId;
+  }
   //TODO: use student information here?
   console.log("studentItemOrder",studentItemOrder)
   let items = [];
@@ -140,7 +146,7 @@ function StudentCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setN
 function StudentItem({courseId,doenetId,numberOfVisibleColumns,indentLevel,previousSections,courseNavigatorProps}){
   //TODO: Investigate if type should be a selector and these three would subscribe to item info
   let itemInfo = useRecoilValue(itemByDoenetId(doenetId));
-
+  console.log("StudentItem itemInfo:",itemInfo)
   if (itemInfo.type == 'section' && previousSections?.current){
     previousSections.current.push(itemInfo.doenetId);
   }
