@@ -240,7 +240,6 @@ function localizeDates(obj, keys) {
 
 let dateKeys = ["assignedDate", "dueDate", "pinnedAfterDate", "pinnedUntilDate"];
 
-
 export function useInitCourseItems(courseId) {
   const getDataAndSetRecoil = useRecoilCallback(
      ({ snapshot,set }) =>
