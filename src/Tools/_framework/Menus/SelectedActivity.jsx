@@ -16,6 +16,7 @@ import {
   findFirstPageOfActivity,
   selectedCourseItems,
   useCourse,
+  courseIdAtom,
 } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
@@ -318,7 +319,7 @@ function AssignTo({updateAssignment}){
   const {
     isGloballyAssigned
   } = useRecoilValue(itemByDoenetId(doenetId));
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const courseId = useRecoilValue(courseIdAtom);
 
   const {value:enrolledStudents} = useRecoilValue(enrollmentByCourseId(courseId))
 
