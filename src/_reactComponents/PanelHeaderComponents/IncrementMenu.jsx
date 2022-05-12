@@ -117,7 +117,7 @@ export default function Increment(props) {
   };
 
   const [index, setIndex] = useState(0);
-  const [value, setValue] = useState(props.value);
+  const [value, setValue] = useState(props.value ?? '');
   const [menuToggle, setMenuToggle] = useState(false);
   const [values, setValues] = useState(props.values);
   const [numericValue, setNumericValues] = useState(false);
