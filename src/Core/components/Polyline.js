@@ -56,7 +56,7 @@ export default class Polyline extends GraphicalComponent {
           styleDescription += "dotted ";
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColor;
+        styleDescription += dependencyValues.selectedStyle.lineColorWord;
 
         return { setValue: { styleDescription } };
       }
