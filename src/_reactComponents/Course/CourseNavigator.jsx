@@ -107,10 +107,10 @@ export default function CourseNavigator(props) {
     return null;
   }
 
-  if (coursePermissionsAndSettings.canEditContent == '0' || effectiveRole == 'student'){
+  if (coursePermissionsAndSettings.canEditContent == '0' || effectiveRole == 'student' || props.displayRole == 'student'){
     return <StudentCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
-  if (coursePermissionsAndSettings.canEditContent == '1' || effectiveRole == 'instructor'){
+  if (coursePermissionsAndSettings.canEditContent == '1' || effectiveRole == 'instructor' || props.displayRole == 'instructor'){
     return <AuthorCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
   return null;

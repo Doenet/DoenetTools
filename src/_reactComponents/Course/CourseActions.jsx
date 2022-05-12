@@ -375,7 +375,7 @@ export const studentCourseItemOrderByCourseId = selectorFamily({
     let studentDoenetIds = allDoenetIdsInOrder.filter((doenetId)=>{
       let itemObj = get(itemByDoenetId(doenetId));
       //If of type for the student then add to the list
-      return itemObj.type == 'activity' || itemObj.type == 'section'
+      return itemObj.isAssigned && (itemObj.type == 'activity' || itemObj.type == 'section')
     })
 
     return studentDoenetIds;

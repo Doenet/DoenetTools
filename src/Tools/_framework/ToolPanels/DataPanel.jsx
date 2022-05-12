@@ -156,6 +156,7 @@ export default function DataPanel() {
       <CourseNavigator
         updateSelectMenu={updateSelectMenu}
         doubleClickItem={doubleClickItem}
+        displayRole="student"
       />
     </Container>
   </Suspense>
