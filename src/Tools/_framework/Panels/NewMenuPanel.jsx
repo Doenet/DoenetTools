@@ -249,7 +249,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     CreditAchieved:lazy(() => import('../Menus/CreditAchieved')),
     ClassTimes:lazy(() => import('../Menus/ClassTimes')),
     CurrentContent:lazy(() => import('../Menus/CurrentContent')),
-    DoenetMLOptions:lazy(() => import('../Menus/DoenetMLOptions'))
+    
   }).current;
 
   let selectionPanel = null;
@@ -331,6 +331,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
 
       {selectionPanel}
       <div>{menusArray}</div>
+
     </MenuPanelsWrapper>
   );
 }
