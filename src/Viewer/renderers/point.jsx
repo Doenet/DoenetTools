@@ -133,6 +133,7 @@ export default function Point(props) {
     let shadowPointAttributes = {...jsxPointAttributes};
     shadowPointAttributes.layer--;
     shadowPointAttributes.fixed = !SVs.draggable || SVs.fixed;
+    shadowPointAttributes.showInfoBox = false;
 
     let newShadowPointJXG = board.create('point', coords, shadowPointAttributes);
     
