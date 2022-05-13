@@ -747,15 +747,10 @@ export const useCourse = (courseId) => {
 
   const create = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({ itemType, placeInFolderFlag, previousDoenetId, previousContainingDoenetId }) => {
+      async ({ itemType, parentDoenetId, previousDoenetId, previousContainingDoenetId }) => {
 
         let authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
         let newAuthorItemDoenetIds = [...authorItemDoenetIds];
-
-        //TODO: define these by selection if not defined from socket
-        if (placeInFolderFlag === undefined){
-          placeInFolderFlag = false;
-        }
 
         let sectionId = await snapshot.getPromise(searchParamAtomFamily('sectionId'));
         if (sectionId == ''){
@@ -768,33 +763,39 @@ export const useCourse = (courseId) => {
           // previousDoenetId = singleSelectedDoenetId; //When in insert mode
           let selectedObj = await snapshot.getPromise(itemByDoenetId(singleSelectedDoenetId))
           if (selectedObj.type == 'section' ){
-            placeInFolderFlag = true;
-            sectionId = singleSelectedDoenetId;
+            parentDoenetId = singleSelectedDoenetId;
+          }else if (selectedObj.type == 'activity' ||  selectedObj.type == 'bank'){
+            console.log("HERE selectedObj!!!!",selectedObj)
+          }else if (selectedObj.type == 'page' ||  selectedObj.type == 'order'){
+            console.log("HERE page order selectedObj",selectedObj)
           }
         }
 
         if (previousDoenetId == undefined){
           //Find last item in section
           let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
-          let lastItemDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
+          let lastItemInSectionDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
 
           //Place at the end unless there are no items, then place after the parent
-          if (lastItemDoenetId == undefined){
+          if (lastItemInSectionDoenetId == undefined){
             //No items in this section
             previousDoenetId = sectionId;
-            previousContainingDoenetId = sectionId;
-            placeInFolderFlag = true;
           }else{
-            previousDoenetId = lastItemDoenetId; 
-            previousContainingDoenetId = lastItemDoenetId;
-            let lastItemObj = await snapshot.getPromise(itemByDoenetId(lastItemDoenetId));
-            if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
-              previousContainingDoenetId = lastItemObj.containingDoenetId;
-            }
+            previousDoenetId = lastItemInSectionDoenetId; 
+            // previousContainingDoenetId = lastItemInSectionDoenetId;
+            // let lastItemObj = await snapshot.getPromise(itemByDoenetId(lastItemInSectionDoenetId));
+            // if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
+            //   previousContainingDoenetId = lastItemObj.containingDoenetId;
+            // }
          
 
           }
         }
+
+        console.log("WHERE IS IT GOING?")
+        console.log("parentDoenetId",parentDoenetId)
+        console.log("previousContainingDoenetId",previousContainingDoenetId)
+
 
         let newDoenetId;
         let coursePermissionsAndSettings = await snapshot.getPromise(
@@ -811,7 +812,7 @@ export const useCourse = (courseId) => {
               previousContainingDoenetId,
               courseId,
               itemType,
-              placeInFolderFlag,
+              parentDoenetId,
           });
           // console.log('activityData', data);
           let createdActivityDoenentId = data.doenetId;
@@ -859,7 +860,7 @@ export const useCourse = (courseId) => {
               previousContainingDoenetId,
               courseId,
               itemType,
-              placeInFolderFlag,
+              parentDoenetId,
           });
           // console.log('bankData', data);
           newDoenetId = data.doenetId;
@@ -879,7 +880,7 @@ export const useCourse = (courseId) => {
               previousContainingDoenetId,
               courseId,
               itemType,
-              placeInFolderFlag
+              parentDoenetId
           });
           // console.log("sectionData",data)
           newDoenetId = data.doenetId;
@@ -1972,11 +1973,12 @@ const updateAssignItem = useRecoilCallback(
         }
 
         if (copiedObjs.length > 0){
+          //TODO: DEFINE parentDoenetId
+          let parentDoenetId = null;
           //Duplicate the copied items using the server for new doenetIds
           // console.log("Duplicate these",copiedObjs)
           //Assume it's an empty section
           let previousContainingDoenetId = sectionId;
-          let placeInFolderFlag = true;
           //If it's not get the latest containing doenetId
           let doenetIdsInTheSection = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
           if (doenetIdsInTheSection.length > 0){
@@ -1986,7 +1988,6 @@ const updateAssignItem = useRecoilCallback(
             if (lastInSectionObj.type == 'page' || lastInSectionObj.type == 'order'){
               previousContainingDoenetId = lastInSectionObj.containingDoenetId;
             }
-            placeInFolderFlag = false;
           }
           for(let copiedObj of copiedObjs){
             let pageDoenetIds = [];
@@ -2020,7 +2021,7 @@ const updateAssignItem = useRecoilCallback(
               let resp = await axios.post('/api/createCourseItem.php', {
                 courseId,
                 previousContainingDoenetId,
-                placeInFolderFlag,
+                parentDoenetId,
                 itemType:copiedObj.type,
                 cloneMode:'1',
                 pageDoenetIds,
