@@ -8,14 +8,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toastType, useToast } from '@Toast';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilCallback, useRecoilValue, useSetRecoilState, atom } from 'recoil';
 import styled from 'styled-components';
 import {
-  authorItemByDoenetId,
+  itemByDoenetId,
   enrollmentByCourseId,
   findFirstPageOfActivity,
   selectedCourseItems,
   useCourse,
+  courseIdAtom,
 } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
@@ -79,20 +80,20 @@ export default function SelectedActivity() {
     label: recoilLabel,
     order,
     assignedCid,
+    isAssigned,
     parentDoenetId
-  } = useRecoilValue(authorItemByDoenetId(doenetId));
+  } = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const {
     renameItem,
     create,
     compileActivity,
     deleteItem,
+    updateAssignItem
   } = useCourse(courseId);
 
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(recoilLabel);
   const addToast = useToast();
-
-
 
   useEffect(() => {
     setItemTextFieldLabel(recoilLabel);
@@ -117,7 +118,7 @@ export default function SelectedActivity() {
     }
   };
 
-  useDebounce(handelLabelModfication, 500, [itemTextFieldLabel]);
+  // useDebounce(handelLabelModfication, 500, [itemTextFieldLabel]);
 
   if (doenetId == undefined) {
     return null;
@@ -135,7 +136,7 @@ export default function SelectedActivity() {
         {heading}
         <ActionButton
           width="menu"
-          value="Take Assignment"
+          value="View Activity"
           onClick={() => {
             setPageToolView({
               page: 'course',
@@ -153,7 +154,8 @@ export default function SelectedActivity() {
   }
 
   let assignActivityText = 'Assign Activity';
-  if (assignedCid != null) {
+  if (isAssigned) {
+    // if (assignedCid != null) {
     assignActivityText = 'Update Assigned Activity';
   }
 
@@ -221,6 +223,7 @@ export default function SelectedActivity() {
         />
       </ActionButtonGroup>
       <br />
+      <ActionButtonGroup vertical>
 
       <ActionButton
         width="menu"
@@ -230,12 +233,37 @@ export default function SelectedActivity() {
             activityDoenetId: doenetId,
             isAssigned: true,
             courseId,
-            successCallback: () => {
-              addToast('Activity Assigned.', toastType.INFO);
-            },
+            // successCallback: () => {
+            //   addToast('Activity Assigned.', toastType.INFO);
+            // },
           });
+          updateAssignItem({
+            doenetId,
+            isAssigned:true,
+            successCallback: () => {
+              addToast("Activity Assigned", toastType.INFO);
+            },
+          })
         }}
       />
+      {isAssigned ? 
+      <ActionButton
+        width="menu"
+        value="Unassign Activity"
+        alert
+        onClick={() => {
+          updateAssignItem({
+            doenetId,
+            isAssigned:false,
+            successCallback: () => {
+              addToast("Activity Unassigned", toastType.INFO);
+            },
+          })
+        
+        }}
+      />
+      : null}
+      </ActionButtonGroup>
      
   
       <Textfield
@@ -280,19 +308,52 @@ export default function SelectedActivity() {
   );
 }
 
+//TODO: Emilio
+const temporaryRestrictToAtom = atom({
+  key:"temporaryRestrictToAtom",
+  default:[]
+})
+
 function AssignTo({updateAssignment}){
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const {
     isGloballyAssigned
-  } = useRecoilValue(authorItemByDoenetId(doenetId));
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  } = useRecoilValue(itemByDoenetId(doenetId));
+  const courseId = useRecoilValue(courseIdAtom);
 
   const {value:enrolledStudents} = useRecoilValue(enrollmentByCourseId(courseId))
+
+  //email addresses of only those who assignment is restricted to
+  const [restrictedTo,setRestrictedTo] = useState([]);
+
+  async function getAndSetRestrictedTo({courseId,doenetId}){
+    let resp = await axios.get('/api/getRestrictedTo.php',{params:{courseId,doenetId}})
+    // console.log("resp",resp.data)
+    setRestrictedTo(resp.data.restrictedTo)
+  }
+
+  async function updateRestrictedTo({courseId,doenetId,emailAddresses}){
+
+    let resp = await axios.post('/api/updateRestrictedTo.php',{courseId,doenetId,emailAddresses})
+    // console.log("resp",resp.data)
+    setRestrictedTo(emailAddresses)
+  }
+
+  useEffect(()=>{
+    if (!isGloballyAssigned){
+      getAndSetRestrictedTo({courseId,doenetId})
+    }
+  },[doenetId,isGloballyAssigned])
+
 
   //Only those enrolled who didn't withdraw
   let enrolledJSX = enrolledStudents.reduce((allrows,row)=>{
     if (row.withdrew == '0'){
-      return [...allrows,<option key={`enrolledOpt${row.email}`} value={row.email}>{row.firstName} {row.lastName}</option>]
+      if (!isGloballyAssigned && restrictedTo.includes(row.email)){
+        return [...allrows,<option selected key={`enrolledOpt${row.email}`} value={row.email}>{row.firstName} {row.lastName}</option>]
+      }else{
+        return [...allrows,<option key={`enrolledOpt${row.email}`} value={row.email}>{row.firstName} {row.lastName}</option>]
+      }
     }else{
       return allrows
     }
@@ -324,9 +385,11 @@ function AssignTo({updateAssignment}){
             options={enrolledJSX}
             disabled={isGloballyAssigned}
             onChange={(e)=>{
-              //TODO: Clara please build this in
-              let values = Array.from(e.target.selectedOptions, option => option.value);
-              console.log("values",values)
+              //TODO: Clara please build this in to RelatedItems
+              let emailAddresses = Array.from(e.target.selectedOptions, option => option.value);
+
+              updateRestrictedTo({courseId,doenetId,emailAddresses})
+              
             }}
             multiple
           />
@@ -372,7 +435,7 @@ export function AssignmentSettings({ role, doenetId, courseId }) {
         secondValue,
       }) => {
         const oldAInfo = await snapshot.getPromise(
-          authorItemByDoenetId(doenetId),
+          itemByDoenetId(doenetId),
         );
         let newAInfo = { ...oldAInfo, courseId, [keyToUpdate]: value };
 
@@ -414,7 +477,7 @@ export function AssignmentSettings({ role, doenetId, courseId }) {
         );
 
         if (resp.data.success) {
-          set(authorItemByDoenetId(doenetId), newAInfo);
+          set(itemByDoenetId(doenetId), newAInfo);
           if (valueDescription) {
             addToast(`Updated ${description} to ${valueDescription}`);
           } else {
@@ -443,7 +506,7 @@ export function AssignmentSettings({ role, doenetId, courseId }) {
     ({ snapshot }) =>
       async (doenetId) => {
         const aLoadable = await snapshot.getPromise(
-          authorItemByDoenetId(doenetId),
+          itemByDoenetId(doenetId),
         );
 
         aInfoRef.current = { ...aLoadable };

@@ -1,0 +1,235 @@
+<problem>
+<!-- <title>critical points of Gaussian</title> -->
+
+<setup>
+
+<function name='f' variables='x'>e ^ (-1/2 * (x-2)^2)</function>
+<derivative name='fprime' variables='x'>$f</derivative>
+
+<math name='f_poly'>-x + 2</math>
+
+<math name='cp'>2</math>
+<subsetOfReals name='left_interval'>(-infinity,$cp )</subsetOfReals>
+<subsetOfReals name='right_interval'>($cp, infinity)</subsetOfReals>
+<number name='left_point'>$cp -8</number>
+<number name='right_point'>$cp +8</number>
+<math name='f_cp'>$$f($cp )</math>
+<math name='f_right_point'>$$f($right_point )</math>
+<math name='f_left_point'>$$f($left_point )</math>
+<math name='f_left_point_analytic'>$f_left_point </math>
+
+</setup>
+
+
+Let <m>f(x) = $f</m>. 
+
+
+<ol>
+
+<li>
+Calculate <m>f'(x)=</m> 
+<answer>
+<award>$fprime </award>
+<!-- <award credit='0.8' nSignErrorsMatched="1" feedbackCodes='onesignerror'>$fprime </award> -->
+<!-- <award credit='0.6400000000000001' nSignErrorsMatched="2" feedbackCodes='twosignerrors'>$fprime </award> -->
+</answer>
+<!-- <copy prop="feedbacks" tname="answer1" /> -->
+
+
+
+</li>
+
+<li>
+Find the critical points of <m>f</m>.
+
+<p>Critical points: <m>x=</m> 
+<answer>
+<award>$cp </award>
+</answer>
+</p>
+  
+<p>
+Enter in increasing order, separated by commas.</p>
+
+<p>Calculate the values of <m>f</m> at the critical points: 
+<answer>
+<award>$f_cp </award>
+</answer>
+</p>
+  
+<p>
+Enter in same order as the critical points, separated by commas.</p>
+
+
+</li>
+
+<li>
+<p>Determine the intervals over which <m>f</m> is increasing and decreasing.</p>
+
+<p>Left interval: <m>f</m> is 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>increasing</choice>
+<choice>decreasing</choice>
+</choiceinput>
+</answer>
+ on the interval 
+<answer name="answer4">
+  <mathinput name="mi4" />
+  <award targetsAreResponses="mi4">
+    <when><subsetOfReals>$mi4</subsetOfReals> = $left_interval</when>
+  </award>
+</answer>
+</p>
+<p>
+
+Right interval: <m>f</m> is 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>decreasing</choice>
+<choice>increasing</choice>
+</choiceinput>
+</answer>
+ on the interval 
+<answer name="answer6">
+  <mathinput name="mi6" />
+  <award targetsAreResponses="mi6">
+    <when><subsetOfReals>$mi6</subsetOfReals> = $right_interval</when>
+  </award>
+</answer>
+</p>
+
+
+<hint>
+You can write the intervals as <m>(a,b)</m> or as <m>a < x < b</m>.  Or if an interval extends to infinity, you can write it, for example, as <m>(-\infty, b)</m> or <m>x < b</m>.
+</hint>
+  
+</li>
+
+<li>
+<p>Using this information and the values of  <m>f($right_point )</m> and <m>f($left_point )</m>, sketch the graph of the function.</p>
+
+<p><m>f($right_point ) =</m> 
+<answer name='answer8'>
+<award allowedErrorInNumbers='0.01'>$f_right_point </award>
+<award credit='0.5' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$f_right_point </award>
+</answer>
+
+, <m>f($left_point )=</m> 
+
+<answer name='answer9'>
+<award allowedErrorInNumbers='0.01'>$f_left_point </award>
+<award credit='0.5' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$f_left_point </award>
+</answer>
+.</p>
+
+<copy prop="feedbacks" tname="answer8" />
+<copy prop="feedbacks" tname="answer9" />
+
+
+
+
+<graph width='400' height='400' xmin='-6.5' xmax='10.5' ymin='-0.1' ymax='1.2'  showNavigation='false' grid>
+
+<setup>
+<number fixed name='leftEdge'>-6</number>
+<number fixed name='rightEdge'>10</number>
+</setup>
+
+
+<point name='p1' stylenumber='2' x='$leftEdge' y='0.7'>
+<constraints><constrainToGrid dx='1' dy='0.1'/></constraints>
+</point>
+
+<point name='p2' x='-2' y='0.3'>
+<constraints><constrainToGrid dx='1' dy='0.1'/></constraints>
+</point>
+
+<point name='p3' stylenumber='2' x='$rightEdge' y='0.8'>
+<constraints><constrainToGrid dx='1' dy='0.1'/></constraints>
+</point>
+
+
+<curve through='$p1 $p2 $p3'>
+<bezierControls>
+
+<controlVectors pointnumber='1' hide>(-4,0)</controlVectors>
+<controlVectors pointnumber='3' hide>(-4,0)</controlVectors>
+
+<controlVectors pointnumber='2'><vector><point name='control' x='-3' y='0.3'>
+<constraints><attractTo threshold='0.1'>
+<line>y=0</line>
+<!-- <line>x=0</line> -->
+<!-- <line>y=  0.1 x</line> -->
+<!-- <line>y= -0.1 x</line> -->
+</attractTo></constraints>
+</point></vector></controlVectors>
+
+
+</bezierControls>
+</curve>
+
+</graph>
+
+
+<p><answer>
+<award><when matchPartial>
+<boolean>$p1 = ($leftEdge, 0)</boolean> and 
+<boolean>$p3 = ($rightEdge, 0)</boolean> and 
+<boolean>$p2 = ($cp, $f_cp)</boolean> and
+<boolean>$(control{prop='y'}) = 0 and $(control{prop='x'}) < 0</boolean>
+</when></award>
+</answer>
+</p>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<m>f'(x) = $fprime</m>
+</li>
+
+<li>
+<m>f'(x)</m> can be zero only if <m>$f_poly =0</m>, so the one critical point is <m>x=$cp </m>.  <m>f($cp ) = $f_cp </m>.
+</li>
+
+<li>
+<p>The critical point divides the number line into the intervals  <m>(-\infty, 2)</m> and <m>(2,\infty)</m>.</p>
+
+Since the exponential is always positive, the sign of the derivative is determined by  the sign of <m>-(x-2)</m>.
+
+<p>For the interval <m>(-\infty,2)</m>, we could pick the point <m>x=0</m>.  Since <m>-(0-2) =2 \gt 0</m>, <m>f(x)</m> is increasing on the interval <m>(-\infty,2)</m>.</p>
+
+<p>For the interval <m>(2,\infty)</m>, we could pick the point <m>x=3</m>.  <m>-(3-2)=-1 \lt  0</m>, <m>f(x)</m> is decreasing on the interval <m>(2,\infty)</m>.</p>
+</li>
+
+<li>
+<p><m>f($right_point )=f($left_point ) = $f_left_point_analytic  \approx <round numberdigits="3"><number>$f_left_point </number></round></m></p>
+
+
+<graph width='400' height='400' xmin='-6.5' xmax='10.5' ymin='-0.1' ymax='1.2'  showNavigation='false' grid>
+
+<copy fixed tname='f' />
+
+</graph>
+
+
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

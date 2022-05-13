@@ -47,7 +47,7 @@ if ($success) {
     if ($permissions["canEditContent"] != "1") {
         $success = false;
         $message = "You need edit permission to edit a page";
-        http_response_code(403);
+        // http_response_code(403);
     }
 }
 
@@ -73,7 +73,7 @@ if ($success) {
         $cid = cidFromSHA($SHA);
         $filename = $cid;
     } else {
-        $filename = "bydoenetid/$pageId";
+        $filename = "byPageId/$pageId";
     }
 
     //TODO: Config file needed for server
@@ -81,13 +81,13 @@ if ($success) {
     if ($newfile === false) {
         $success = false;
         $message = "Unable to open file!";
-        http_response_code(500);
+        // http_response_code(500);
     } else {
         $status = fwrite($newfile, $dangerousDoenetML);
         if ($status === false) {
             $success = false;
             $message = "Didn't save to file";
-            http_response_code(500);
+            // http_response_code(500);
         } else {
             fclose($newfile);
         }

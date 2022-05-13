@@ -1,0 +1,44 @@
+<setup>
+ <Select name="a"> 1/3 2/3 1/4 3/4 1/5 2/5 3/5 4/5 1/6 5/6 1/7 2/7 3/7 4/7 5/7 6/7 1/8 3/8 5/8 7/8 1/9 2/9 4/9 5/9 7/9 8/9 1/10 9/10 7/10 9/10 </Select>
+
+
+  <!--
+    Calculate Answers
+  -->
+ <math simplify="none" name="ans1">sqrt(1-($a)^2)</math>
+  
+</setup>
+
+<p>
+If <m>sin(\Theta) = $a</m>  and <m>\Theta</m> is in Quadrant I,
+find <m>cos(\Theta)</m>. Enter your answer as an exact value using square roots when necessary. Do not use a calculator to give a decimal approximation.
+  
+ 
+</p>
+
+<p>
+
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05" >
+      $ans1
+    </award>  
+  </answer>
+</p>
+
+
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+       <m>cos(\Theta)</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="1">$ans1</number>
+      </cell>
+    </row>
+   
+  </tabular>
+</solution>

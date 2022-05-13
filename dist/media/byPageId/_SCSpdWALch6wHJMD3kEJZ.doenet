@@ -1,0 +1,6 @@
+<section name="linktome">
+  <p><lorem generateParagraphs="20"/></p>
+</section>
+<section>
+  <ref tname="linktome" />
+</section>

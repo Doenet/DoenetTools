@@ -2,7 +2,7 @@ import {faCode} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
-import {authorItemByDoenetId, selectedCourseItems, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, selectedCourseItems, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 import {pageToolViewAtom, searchParamAtomFamily} from "../NewToolRoot.js";
 import {useToast, toastType} from "../Toast.js";
@@ -13,8 +13,8 @@ import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/Acti
 export default function SelectedPage() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const pageId = useRecoilValue(selectedCourseItems)[0];
-  const pageObj = useRecoilValue(authorItemByDoenetId(pageId));
-  const containingObj = useRecoilValue(authorItemByDoenetId(pageObj.containingDoenetId));
+  const pageObj = useRecoilValue(itemByDoenetId(pageId));
+  const containingObj = useRecoilValue(itemByDoenetId(pageObj.containingDoenetId));
   const sectionId = containingObj.parentDoenetId;
   const doenetId = containingObj.doenetId;
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
@@ -57,10 +57,8 @@ export default function SelectedPage() {
         tool: "editor",
         view: "",
         params: {
-          courseId,
           pageId,
-          doenetId,
-          sectionId
+          doenetId
         }
       });
     }

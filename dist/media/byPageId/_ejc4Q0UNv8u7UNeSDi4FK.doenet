@@ -1,0 +1,73 @@
+<problem>
+<!-- <title>Time to fraction</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a' from='.3' to=' .8' step=' .1'/>
+<selectFromSequence assignNames='b' from='3' to=' 60' step=' 7'/>
+<selectFromSequence assignNames='p' from='10' to=' 70' step=' 5'/>
+
+<select assignNames='absolute' type="boolean">true false</select>
+
+<select assignNames='n' >n t </select>
+<select assignNames='x' >alpha  beta  gamma  delta  epsilon  mu  nu  tau  sigma  omega  zeta </select>
+<math name='P' simplify='full' >.01*$p </math>
+<math name='num' simplify='full' >log(.01*$p )</math>
+<math name='den' simplify='full' >log($a )</math>
+<math name='ans' simplify='full' >$num /$den </math>
+<math name='absolute_goal' simplify='full' >$b *0.01*$p </math>
+
+</setup>
+
+
+Consider the dynamical system below:
+<md>
+<mrow>$x _{ $n +1 } \amp = $a $x _$n</mrow>
+<mrow>$x _0 \amp = $b</mrow>
+</md>
+
+<p>
+Calculate the time at which the state variable reaches
+
+<conditionalcontent>
+<case condition="$absolute">$absolute_goal.</case>
+
+<else><m>$p </m>% of the initial condition.</else>
+
+</conditionalcontent>
+
+  Enter your solution in the box below, accurate to at least four significant digits.
+</p>
+ 
+<answer name='answer1'>
+<award allowedErrorInNumbers='0.001'>$ans </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$ans </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$ans </award>
+</answer>
+<copy prop="feedbacks" tname="answer1" />
+
+
+
+
+
+<solution>
+
+<p>
+
+<conditionalcontent>
+<case condition="$absolute">
+The goal of $absolute_goal  is equal to <m>\frac{ $absolute_goal  }{ $b  } = $P </m> of the initial condition.  The time to this fraction is <m>\frac{\log$P  }{\log$a  } \approx <round numberdigits="4"><number>$ans </number></round></m>
+</case>
+
+<else>
+The time to <m>$p </m>% is <m>\frac{  \log \frac{ $p  }{100} }{ \log $a  } \approx <round numberdigits="4"><number>$ans </number></round></m>.
+
+</else>
+</conditionalcontent>
+
+</p>
+
+</solution>
+
+
+</problem>

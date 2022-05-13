@@ -1,0 +1,178 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>selectFromSequence</tag> component</title>
+  
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>assignNames</attr>  <em>(_textList)</em></li>
+  <li><attr>from</attr>   <em>(number)</em></li>
+  <li><attr>to</attr>   <em>(number)</em></li>
+  <li><attr>step</attr>   <em>(number)</em></li>
+  <li><attr>assignNamesSkip</attr>  <em>(number)</em></li>
+  <li><attr>numberToSelect</attr>  <em>(integer)</em></li>
+  <li><attr>withReplacement</attr>  <em>(boolean)</em></li>
+  <li><attr>sortResults</attr>  <em>(boolean)</em></li>
+  <li><attr>excludeCombinations</attr>  <em>(_componentListOfListsWithSelectableType)</em></li>
+    <aside><title><alert>Inherited from parent component/ <tag><ref>select</ref></tag>:</alert></title>
+      <li><attr>type</attr>  <em>(string)</em></li>
+      <li><attr>skipOptionsInAssignNames</attr>  <em>(boolean)</em></li>
+    </aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>selectFromSequence</tag><idx><tag>selectFromSequence</tag></idx> component creates random named variables from a user-defined range of numerical values.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tag>selectFromSequence</tag> to generate random variables with <attr>step</attr> attribute</title>
+  
+<p>In the sample code below, three random numbers
+between -5 and 5 (stepping in increments of 0.5) are 
+assigned to the named variables <c>x1</c>, <c>x2</c>,
+and <c>x3</c>.  Check the variant tab on the left side
+under a different lettered name and you will see that
+each variant has different values assigned.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>  
+<pre>
+&lt;setup&gt;
+  &lt;selectFromSequence assignNames="x1 x2 x3" from="-5" to="5" step="0.5" numberToSelect="3"/&gt;
+&lt;/setup&gt;
+  
+&lt;me&gt;x_1 = &dollar;x1&lt;/me&gt;
+&lt;me&gt;x_2 = &dollar;x2&lt;/me&gt;
+&lt;me&gt;x_3 = &dollar;x3&lt;/me&gt;  
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<setup>
+  <selectFromSequence assignNames="x1 x2 x3" from="-5" to="5" step="0.5" numberToSelect="3"/>
+</setup>
+  
+<me>x_1 = $x1</me>
+<me>x_2 = $x2</me>
+<me>x_3 = $x3</me>  
+</example>
+
+
+<!--******************************************************-->
+
+<subsection><title>Example 2:  <tag>selectFromSequence</tag> with <attr>sortResults</attr> attribute</title>
+<p>In the sample code below, 5 random numerical values have been randomly
+  selected using the <tag>selectFromSequence</tag> component, and then 
+  assigned to the specified names in a sorted format using the
+  <attr>sortResults</attr> attribute.  Note that when a <attr>step</attr> is 
+  not specified the interval defaults to 1.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;setup&gt;
+  &lt;selectFromSequence assignNames="y1 y2 y3 y4 y5" from="0" to="100"  numberToSelect="5" sortResults="true"/&gt;
+&lt;/setup&gt;
+  
+&lt;p&gt;The &lt;m&gt;y&lt;/m&gt;-values that have been selected are &dollar;y1, &dollar;y2, &dollar;y3, &dollar;y4, and &dollar;y5.&lt;/p&gt;
+</pre>
+  </example>
+</subsection>
+ 
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<setup>
+  <selectFromSequence assignNames="y1 y2 y3 y4 y5" from="0" to="100"  numberToSelect="5" sortResults="true"/>
+</setup>
+  
+<p>The <m>y</m>-values that have been selected are $y1, $y2, $y3, $y4, and $y5.</p>
+ 
+</example>
+
+<!--******************************************************-->
+
+<subsection><title>Example 3:  <tag>selectFromSequence</tag> with and without replacement</title>
+<p>In the sample code below, 5 random numerical values have been selected in two separate instances.  In the first instance, numbers are selected without replacement, which is the default case. Note, the length of the sequence you are selecting from must be at least as long or longer than the number of selections, in the default case.  In the second instance, numbers are selected with replacement, and there is no restriction on the length of the selection sequence.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;setup&gt;
+  &lt;selectFromSequence assignNames="a b c d e" from="1" to="5"  numberToSelect="5"/&gt;
+  &lt;selectFromSequence assignNames="f g h i j" from="1"
+  to="2" withReplacement="true" numberToSelect="5"/&gt;
+&lt;/setup&gt;
+  
+&lt;sideBySide&gt;
+  &lt;ul&gt;Numbers selected without Replacement
+    &lt;li&gt;a = &dollar;a&lt;/li&gt;
+    &lt;li&gt;b = &dollar;b&lt;/li&gt;
+    &lt;li&gt;c = &dollar;c&lt;/li&gt;
+    &lt;li&gt;d = &dollar;d&lt;/li&gt;
+    &lt;li&gt;e = &dollar;e&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;ul&gt;Numbers selected with Replacement
+    &lt;li&gt;f = &dollar;f&lt;/li&gt;
+    &lt;li&gt;g = &dollar;g&lt;/li&gt;
+    &lt;li&gt;h = &dollar;h&lt;/li&gt;
+    &lt;li&gt;j = &dollar;j&lt;/li&gt;
+    &lt;li&gt;i = &dollar;i&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/sideBySide&gt;
+</pre>
+        </example>
+      </subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 3)</title>
+<setup>
+  <selectFromSequence assignNames="a b c d e" from="1" to="5"  numberToSelect="5"/>
+  <selectFromSequence assignNames="f g h i j" from="1" to="2"
+    withReplacement="true" numberToSelect="5"/>
+</setup>
+  
+<sideBySide>
+  <ul>Numbers selected without Replacement
+    <li>a = $a</li>
+    <li>b = $b</li>
+    <li>c = $c</li>
+    <li>d = $d</li>
+    <li>e = $e</li>
+  </ul>
+
+  <ul>Numbers selected with Replacement
+    <li>f = $f</li>
+    <li>g = $g</li>
+    <li>h = $h</li>
+    <li>j = $j</li>
+    <li>i = $i</li>
+  </ul>
+</sideBySide>
+ 
+</example>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

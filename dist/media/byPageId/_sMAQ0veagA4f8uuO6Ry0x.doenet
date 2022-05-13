@@ -1,0 +1,6 @@
+assignNames	
+assignNamesSkip	number
+numberToSelect	integer
+withReplacement	boolean
+type	string
+skipOptionsInAssignNames	boolean

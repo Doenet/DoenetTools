@@ -1,0 +1,94 @@
+<!--
+## DESCRIPTION
+## Calculus
+## ENDDESCRIPTION
+
+## Tagged by tda2d
+
+## DBsubject(Calculus - single variable)
+## DBchapter(Integrals)
+## DBsection(Conceptual understanding of integration)
+## Date(02/08/2010)
+## Institution(Univeristy of Utah)
+## Author(Utah ww group)
+## MLT(integral_concept_areainterp)
+## Level(2)
+## MO(1)
+## TitleText1('Calculus: Early Transcendentals')
+## AuthorText1('Rogawski')
+## EditionText1('1')
+## Section1('5.2')
+## Problem1('7')
+## TitleText2('Calculus: Early Transcendentals')
+## AuthorText2('Stewart')
+## EditionText2('6')
+## Section2('5.2')
+## Problem2('32')
+## TitleText3('Calculus: Concepts and Contexts')
+## AuthorText3('Stewart')
+## EditionText3('4 Custom UMTYMP Ed.')
+## Section3('5.2')
+## Problem3('34')
+## TitleText4('Calculus: Early Transcendentals')
+## AuthorText4('Stewart')
+## EditionText4('5')
+## Section4('5.2')
+## Problem4('36')
+## TitleText5('Calculus I')
+## AuthorText5('Jerrold Marsden and Alan Weinstein')
+## EditionText5('2')
+## Section5('.')
+## Problem5('')
+## TitleText6('Calculus')
+## AuthorText6('Dale Varberg, Edwin J. Purcell, and Steven E. Rigdon')
+## EditionText6('9')
+## Section6('.')
+## Problem6('')
+## TitleText7('Calculus')
+## AuthorText7('Dale Varberg, Edwin J. Purcell, and Steve E. Rigdon')
+## EditionText7('9')
+## Section7('.')
+## Problem7('')
+## KEYWORDS('integral' 'summation' 'area','integrals' 'theory','integrals', 'theory','Definite Integral', 'Area','calculus', 'integration', 'circle','Definite', 'Integral','integration')
+-->
+
+<setup>
+  <selectFromSequence from="1" to="7" name="a" />
+
+  <math name="ans" simplify>
+    (1/2)*pi*$a^2
+  </math>
+</setup>
+
+<p>
+  Evaluate the integral below by interpreting it in terms of areas.
+  In other words, draw a picture of the region the integral represents,
+  and find the area using high school geometry.
+  <me>
+    \int_{-$a}^{$a} \sqrt{<math simplify>$a^2</math> - x^2 }\; dx
+  </me>
+</p>
+
+<p>
+  Answer:
+  <answer>
+    <award>
+      $ans
+    </award>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        Answer:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans
+      </cell>
+    </row>
+  </tabular>
+</solution>

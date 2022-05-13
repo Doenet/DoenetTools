@@ -1,0 +1,195 @@
+<document>
+  <title>Introductory problems</title>
+
+  <p>A set of introductory problems to introduce doenetML.</p>
+
+  <section>
+    <title>Illustrating the answer tag</title>
+    
+    <problem>
+      <title>A numerical answer</title>
+  
+      <p>The <tag>answer</tag> tag will create an answer blank with the given correct answer.</p>
+      <p>What is <m>1+1</m>?  <answer>2</answer></p>
+
+      <p>Anything that can be evaluated to be equivalent to 2 is accecpted as a correct answer, including repeating the question <m>1+1</m>.</p>
+    </problem>
+
+    <problem>
+      <title>Symbolic equality</title>
+
+      <p>Adding the symbolicEquality will restrict the answer to be exactly as it was entered.</p>
+    
+      <p>What is <m>1+1</m>, where you can't simply answer <c>1+1</c>? 
+        <answer symbolicEquality>2</answer>
+      </p>
+
+    </problem>
+
+    <problem>
+      <title>Answer with the derivative</title>
+
+      <p>An answer can also be based on a calculation, in this case the derivative of a function.  To allow an answer to be based on other doenetML tags, you must place it inside an <tag>award</tag> within the <tag>answer</tag> tag.</p>
+      
+      
+      <p>What is the derivative of <function name="x2">x^2</function>?
+      <answer>
+        <award><derivative>$x2</derivative></award>
+      </answer>
+      </p>
+
+      <!-- Note:  the $x2 inside the award is a reference to the function named x2. -->
+      
+    </problem>
+
+  </section>
+
+  <section>
+    <title>Selecting randomly generated values</title>
+
+    <p>One can use <tag>select</tag> or <tag>selectFromSequence</tag> tags to randomly select values from a list or from a sequence, respectively.</p>
+  
+  <problem newNamespace>
+    <title>Solve linear equation with randomly selected variable and coefficients</title>
+
+    <setup>
+      <selectFromSequence from="-4" to="4" exclude="0" assignNames="a" />
+      <selectFromSequence from="-4" to="4" exclude="0" assignNames="b" />
+      <select assignNames="v">x y z</select>
+
+      <!-- the assignNames attributes give the resulting values those names
+      which can then be referenced with $a, $b, and $v. -->
+      
+    </setup>
+
+    <p>Solve <m><math simplify>$a$v + $b</math>=0</m> for $v.</p>
+
+    <p><m>$v =</m> <answer>-$b/$a</answer></p>
+
+    <p>Reloading the page should give you the same selected values.  From an editor, the <em>Variant</em> menu at the left panel allows one to select from the available variants, each of which corresponds to a different combination of values.</p>
+
+  </problem>
+
+    
+
+  </section>
+
+  <problem newNamespace>
+    <title>Extrema of a randomly generated function</title>
+
+    <setup>
+      <selectFromSequence assignNames="x1 x2" from="-8" to="8" step="2" numberToSelect="2" />
+      <selectFromSequence assignNames="y1 y2" from="-8" to="8" numberToSelect="2" withReplacement />
+      
+      <function name="f" maxima="($x1, $y1) ($x2, $y2)" yscale="2" />
+        
+    </setup>
+
+    <p>We end with a complex example with a randomly generated functions and points that are attracted to the function's extrema.  The example illustrates some of the advanced options fo the <tag>answer</tag> tag, including using formulas that compare the points of the graph to the extrema of the function.  Three <tag>feedback</tag> tags demonstrate how messages can be triggered by the response to an answer.</p>
+
+
+    <graph grid>
+      $f
+
+      <point name="A1" x="1.5" y="2.5" styleNumber="2" >
+        <constraints>
+          <attractTo>
+            <copy prop="extrema" tname="f" />
+          </attractTo>
+        </constraints>
+      </point>
+
+      <point name="A2" x="-1.5" y="2.5" styleNumber="2" >
+        <constraints>
+          <attractTo>
+            <copy prop="extrema" tname="f" />
+          </attractTo>
+        </constraints>
+      </point>
+
+      <point name="B" x="-0.5" y="2.5" styleNumber="3" >
+        <constraints>
+          <attractTo>
+            <copy prop="extrema" tname="f" />
+          </attractTo>
+        </constraints>
+      </point>
+
+    </graph>
+
+    <p>The graph of the function <m>f</m> is plotted below.  Move the <copy prop="styleDescriptionWithNoun" tname="A1" />s to the locations of the maxima of <m>f</m> and the <copy prop="styleDescriptionWithNoun" tname="B" /> to the location of the minimum of <m>f</m>.
+
+    <!-- 
+    answer with two awards, where both can be credited simultaneously
+    in order to achieve full credit.
+    The first award will be credited when points A1 and A2 are at the maxima in either order.
+    The second award will be credited when point B is at the minimum.
+    -->
+      
+    <answer nAwardsCredited="2" name="ans">
+      <award credit="2/3" name="gotMax" matchPartial>
+        <when><mathlist unordered>$A1 $A2</mathlist>
+          =
+          <mathlist><copy prop="maxima" tname="f" /></mathlist>
+        </when>
+      </award>
+      <award credit="1/3" name="gotMin">
+        <when>$B = <copy prop="minimum1" tname="f" /></when>
+      </award>
+
+      <!--
+      <considerAsResponses> is strictly for data collection.
+      Since the <answer> can't determine which quantities in the formulas should
+      be regarded as the user's response, we indicate the 3 points are the responses.
+      -->
+      <considerAsResponses>
+        $A1$A2$B
+      </considerAsResponses>
+    </answer></p>
+
+
+    <!--
+    The <feedback> tags include some advanced features to get them to appear
+    at under just the right conditions.
+    The expressions $gotMin and $gotMax refer to the above two awards
+    and the expression $ans refers to the answer itself
+    -->
+    
+    <feedback condition="$(ans{prop='responseHasBeenSubmitted'}) and not $gotMin">
+      <p>The minimum is incorrect.</p>
+    </feedback>
+
+    <feedback condition="$(ans{prop='responseHasBeenSubmitted'}) and not $gotMax">
+      <p>The maxima are incorrect.</p>
+    </feedback>
+
+    <feedback condition="$(gotMax{prop='fractionSatisfied'}) = 0.5" updateWithTname="ans">
+      <p>One of the maxima is incorrect.</p>
+    </feedback>
+  </problem>
+
+
+<!--   <problem>
+    <title>Multiple choice</title>
+
+    <p>What is your favorite color?</p>
+    <answer>
+      <choiceinput>
+        <choice>red</choice>
+        <choice credit="1">blue</choice>
+      </choiceinput>
+    </answer>
+    
+
+    <p>If <m>f'(3) >0</m> then <m>f(x)</m> is
+      <answer>
+        <choiceinput randomizeOrder inline>
+          <choice credit="1">increasing</choice>
+          <choice>decreasing</choice>
+          <choice>constant</choice>
+        </choiceinput>
+      </answer>
+      at <m>x=3</m>.</p>
+  </problem> -->
+  
+</document>

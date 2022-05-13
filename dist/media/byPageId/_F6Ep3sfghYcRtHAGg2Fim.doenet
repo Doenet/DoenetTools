@@ -1,0 +1,146 @@
+<problem>
+<!-- <title>Pure time Forward Euler - logarithm</title> -->
+
+<setup>
+
+
+<select assignNames='var' >g h v w x y z</select>
+<selectFromSequence assignNames='startval' from='-10' to='10' />
+
+<selectFromSequence assignNames='lb' from='0' to='1' />
+<select assignNames="boundsdiff">1 2 4 8</select>
+<math name='ub' simplify="numbers">$lb +$boundsdiff </math>
+<math name='var_lb' targetsAreFunctionSymbols="var" >$var($lb )</math>
+
+<math name='n'>4</math>
+<math name='deltat' simplify>($ub -$lb )/$n </math>
+<function name='ldeltat' variables='l' simplify="numbers" symbolic>$lb +$deltat *l</function>
+
+  
+<selectFromSequence assignNames='aa' from='-10' to='10' exclude="0" />
+<selectFromSequence assignNames='bb' from='1' to='3' />
+<selectFromSequence assignNames='the_exp' from='2' to='4' step='2'/>
+<selectFromSequence assignNames='cc' from='1' to='4' />
+<function name='ff' variables='t' symbolic><math simplify="numbers">$aa *ln($bb *t^$the_exp +$cc )</math></function>
+
+
+<function name='ff_x' variables='x' symbolic simplify="numbers">$$ff($$ldeltat(x))</function>
+
+<math name='diffeq' >d$var/dt=$ff</math>
+
+<math name='ff_lb' >$$ff_x(0)</math>
+<math name='ff_1' >$$ff_x(1)</math>
+<math name='ff_2' >$$ff_x(2)</math>
+<math name='ff_3' >$$ff_x(3)</math>
+<math name='approx1' simplify='numbersPreserveOrder' >$startval +$ff_lb *$deltat </math>
+<math name='approx2' simplify='numbersPreserveOrder' >$approx1 +$ff_1 *$deltat </math>
+<math name='approx3' simplify='numbersPreserveOrder' >$approx2 +$ff_2 *$deltat </math>
+<math name='approx4' simplify='numbersPreserveOrder' >$approx3 +$ff_3 *$deltat </math>
+
+
+</setup>
+
+<p>
+Use Forward Euler with time steps of size <m>\Delta t = $deltat </m> to approximate the solution of the differential equation <m>$diffeq </m> at time <m>t=$ub </m>, given that <m>$var_lb =$startval </m>. If rounding, be sure to include at least <m>5</m> significant digits.  (To be safe, include even more digits.)
+</p>
+
+
+<p><m>$var_lb =$startval </m></p>
+
+<p><m>$var($$ldeltat(1)) \approx </m>
+<answer name="answer1" forceFullCheckworkButton>
+<award allowedErrorInNumbers='0.0001'>$approx1 </award>
+<award credit='0.8' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$approx1 </award>
+<award credit='0.64' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$approx1 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer1" />
+
+<p><m>$var($$ldeltat(2)) \approx </m>
+<answer name="answer2" forceFullCheckworkButton>
+<award allowedErrorInNumbers='0.0001'>$approx2 </award>
+<award credit='0.8' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$approx2 </award>
+<award credit='0.64' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$approx2 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer2" />
+
+
+<p><m>$var($$ldeltat(3)) \approx </m>
+<answer name="answer3" forceFullCheckworkButton>
+<award allowedErrorInNumbers='0.0001'>$approx3 </award>
+<award credit='0.8' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$approx3 </award>
+<award credit='0.64' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$approx3 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer3" />
+
+  
+<p><m>$var($ub) \approx </m>
+<answer name="answer4" forceFullCheckworkButton>
+<award allowedErrorInNumbers='0.0001'>$approx4 </award>
+<award credit='0.8' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$approx4 </award>
+<award credit='0.64' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$approx4 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer4" />
+
+
+
+<solution>
+<setup>
+
+    <function name='var_x' variables='t' symbolic simplify="numbers"><math targetsAreFunctionSymbols="var" simplify="numbers">$var($lb +t*$deltat )</math></function>
+    <math name='var_1' >$$var_x(1)</math>
+    <math name='var_2' >$$var_x(2)</math>
+    <math name='var_3' >$$var_x(3)</math>
+    <math name='var_4' >$$var_x(4)</math>
+
+    <function name='f_x' variables='x' symbolic simplify="numbers"><math>f (<math simplify="numbers">$lb +x*$deltat</math> )</math></function>
+    <math name='f_1' >$$f_x(1)</math>
+    <math name='f_2' >$$f_x(2)</math>
+    <math name='f_3' >$$f_x(3)</math>
+    <math name='f_lb' >$$f_x(0)</math>
+
+      
+    <math name='feq' >d$var/dt = f (t)</math>
+    <math name='feq2' >f (t) = $$ff(t)</math>
+
+</setup>
+
+  
+<p>Since we are asked for 5 significant digits, we will round all our answers to 8 significant digits, just to make sure we still will have 5 accurate digits even due to accumulation of round-off errors.</p>
+
+<p>Recall that the next time step for Forward Euler is computed by starting with the current value and then adding the derivative at the current time multiplied by the step size <m>\Delta t = $deltat </m>.  If we let <m>$feq </m>, the formula for our first approximation is 
+<me>$var_1  \approx $var_lb +$f_lb  \cdot $deltat </me>
+Since  <m>$feq2 </m>,  the derivative at the first time step is <m>$f_lb =$ff_lb  \approx <round numberdigits="8"><number>$ff_lb </number></round></m>.
+Our Forward approximation for the first time step is
+<me>$var_1  \approx $startval +(<round numberdigits="8"><number>$ff_lb </number></round>) \cdot $deltat 
+  \approx <round numberdigits="8"><number>$approx1 </number></round></me>
+</p>
+
+<p>The second Forward Euler step is 
+<me>$var_2  \approx $var_1 +$f_1  \cdot $deltat .</me>
+The derivative is <m>$f_1 =$ff_1  \approx <round numberdigits="8"><number>$ff_1 </number></round></m> so that our new approximate value is
+<me>$var_2  \approx <round numberdigits="8"><number>$approx1 </number></round>+(<round numberdigits="8"><number>$ff_1 </number></round>) \cdot $deltat  \approx <round numberdigits="8"><number>$approx2 </number></round>.</me>
+</p>
+
+
+<p>The third Forward Euler step is 
+<me>$var_3  \approx $var_2 +$f_2  \cdot $deltat .</me>
+The derivative is <m>$f_2 =$ff_2  \approx <round numberdigits="8"><number>$ff_2 </number></round></m> so that our new approximate value is
+<me>$var_3  \approx <round numberdigits="8"><number>$approx2 </number></round>+(<round numberdigits="8"><number>$ff_2 </number></round>) \cdot $deltat  \approx <round numberdigits="8"><number>$approx3 </number></round>.</me>
+</p>
+
+<p>The fourth Forward Euler step is 
+<me>$var_4  \approx $var_3 +$f_3  \cdot $deltat .</me>
+The derivative is <m>$f_3 =$ff_3  \approx <round numberdigits="8"><number>$ff_3 </number></round></m> so that our new approximate value is
+<me>$var_4  \approx <round numberdigits="8"><number>$approx3 </number></round>+(<round numberdigits="8"><number>$ff_3 </number></round>) \cdot $deltat  \approx <round numberdigits="8"><number>$approx4 </number></round>.</me>
+</p>
+
+<p>Since we were looking for <m>$var_4 </m>, we can stop here.  The answer, rounded to 5 significant digits, is <m><round numberdigits="5"><number>$approx4 </number></round></m></p>
+
+</solution>
+
+
+</problem>

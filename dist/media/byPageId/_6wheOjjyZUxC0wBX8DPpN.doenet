@@ -1,0 +1,20 @@
+<title>Infectious disease without immunity problem set</title>
+
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+<copy uri="doenet:contentId=ac18a38f6c75d49b35ef66ad2087004f60e5a1f320fd787cb3fb5728ffd2fd67&doenetId=1IaRYS4X9eICoCtC9QM3E" componentType="problem" assignNames="problem1" />
+
+<copy uri="doenet:contentId=8cb6e5197c4088808ebd340cbf7f2f8e22608d8d11f9dd66f1b311f795b5fc54&doenetId=ELMj6tQi_hkruNUZHbf5q" componentType="problem" assignNames="problem2"  />
+
+<copy uri="doenet:contentId=7029ead4adcf87e24e5ddc1dad71c9992e96ba7f25312ce066a5dc135865d89c&doenetId=FLZiY7XfFgzASzqv4sP2-" componentType="problem" assignNames="problem3"   />
+
+<copy uri="doenet:contentId=6ebde9e32efefcaa95866bc85f414bddbc6cb68e9bb7f2ffeb84c6fb4e5c3e7a&doenetId=tg-8kgmWoRt3eJKSSy21u" componentType="problem" assignNames="problem4"  />
+  
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

@@ -1,0 +1,69 @@
+<!--
+#DESCRIPTION
+##  Calculus: Midpoint rule
+##ENDDESCRIPTION
+
+
+## DBsubject(Calculus - single variable)
+## DBchapter(Techniques of integration)
+## DBsection(Approximation)
+## Date(02/08/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(approx_01)
+## Level(2)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('5.2')
+## Problem1('10')
+## KEYWORDS('calculus', 'integration', 'area', 'estimating area', 'midpoint rule')
+-->
+
+<setup>
+  <selectFromSequence from="2" to="5" name="a" />
+
+  <math name="ans" simplify>
+    (pi/8)*[(cos(pi/16))^($a)+(cos(3*pi/16))^($a)+(cos(5*pi/16))^($a)+(cos(7*pi/16))^($a)]
+  </math>
+</setup>
+
+<p>
+  Use the Midpoint Rule with the value of 
+  <m>
+    n = 4
+  </m>
+  to approximate the integral
+  <m>
+    \displaystyle
+    \int_0^{\pi/2}\! \cos^{$a} x \, dx.
+  </m>
+  /textbf{Round your answer to four decimal places.}
+</p>
+
+<p>
+  Answer:
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers=".00005">
+      $ans
+    </award>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        Answer:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="4">
+          $ans
+        </number>
+      </cell>
+    </row>
+  </tabular>
+</solution>

@@ -1,0 +1,154 @@
+<title>Introduction to linear regression</title>
+
+<p>The Human Freedom Index is a report that attempts to summarize the idea of "freedom" through a bunch of different variables for many countries around the globe.
+  It serves as a rough objective measure for the relationships between the different types of freedom - whether it's political, religious, economical or personal freedom - and other social and economic circumstances.
+  The Human Freedom Index is an annually co-published report by the Cato Institute, the Fraser Institute, and the Liberales Institut at the Friedrich Naumann Foundation for Freedom.</p>
+
+<p>In this lab, you'll be analysing data from the Human Freedom Index reports.
+  Your aim will be to summarize a few of the relationships within the data both graphically and numerically in order to find which variables can help tell a story about freedom.</p>
+
+<section>
+  <title>Getting Started</title>
+</section>
+
+<subsection>
+  <title>The data</title>
+
+  <p>The data we're working with is [here](more/hfi.csv), and it's called `hfi`, short for Human Freedom Index. Information about the variables can be seen <ref uri="https://www.openintro.org/data/index.php?data=hfi">here</ref>.</p>
+
+  <p>1. What are the dimensions of the dataset?
+    What does each row represent?</p>
+
+  <p>2. The dataset spans a lot of years, but we are only interested in data from year 2016.
+    Filter the data `hfi` data frame for year 2016.</p>
+
+  <p>3. What type of plot would you use to display the relationship between the personal freedom score, `pf_score`, and `pf_expression_control`? Plot this relationship using the variable `pf_expression_control` as the predictor. Does the relationship look linear? If you knew a country's `pf_expression_control`, or its score out of 10, with 0 being the most, of political pressures and controls on media content, would you be comfortable using a linear model to predict the personal freedom score?</p>
+
+  <p>If the relationship looks linear, we can quantify the strength of the relationship with the correlation coefficient. Click `Regression`, then `Correlation Matrix`. Add `pf_score`, and `pf_expression_control` as variables. You will see the correlation next to the `Pearson's r` in the table. (There are two rows with Pearson's r, but the second one tells us the correlation between our two variables.)</p>
+
+</subsection>
+
+<section>
+  <title>Sum of squared residuals</title>
+
+  <p>Think back to the way that we described the distribution of a single variable.
+    Recall that we discussed characteristics such as center, spread, and shape.
+    It's also useful to be able to describe the relationship of two numerical variables, such as `pf_expression_control` and `pf_score` above.</p>
+
+  <p>4. Looking at your plot from the previous exercise, describe the relationship between these two variables. Make sure to discuss the form, direction, and strength of the relationship as well as any unusual observations.</p>
+
+  <p>Just as you've used the mean and standard deviation to summarize a single variable, you can summarize the relationship between these two variables by finding the line that best follows their association.</p>
+
+  <p>Recall that the residuals are the difference between the observed values and the values predicted by the line:</p>
+
+  <m>
+    e_i = y_i - \hat{y}_i
+  </m>
+
+  <p>In the scatter plot, the residual for a point is given by the distance between the y-value of a point and the y-value of the line. For example, for one possible regression line, the plot below shows the line in back and the residuals in blue.</p>
+
+  ![](img/ss.png)
+
+  <p>The most common way to do linear regression is to select the line that minimizes the sum of squared residuals.</p>
+
+</section>
+
+<section>
+  <title>The linear model</title>
+
+  <p>It is rather cumbersome to try to get the correct least squares line, i.e. the line that minimizes the sum of squared residuals, through trial and error.</p>
+
+  <p>Instead, you can use jamovi to fit the linear model (a.k.a. regression line). Click `Regression`, then `Linear Regression`. For the dependent variable, select `pf_score` and for covariates, select `pf_expression_control`.</p>
+
+  <p>We're going to focus on the table with the title `Model Coefficients` for this analysis.</p>
+
+  <p>The `Estimate` column gives us the value of the linear model's y-intercept and the coefficient of `pf_expression_control`.
+    With this table, we can write down the least squares regression line for the linear model:</p>
+
+  <m>
+    \hat{y} = 4.284 + 0.542 \times pf\_expression\_control
+  </m>
+
+  <p>This equation tells us two things:</p>
+
+  <ul>
+    <li>
+      For countries with a `pf_expression_control` of 0 (those with the largest amount of political pressure on media content), we expect their mean personal freedom score to be 4.284.
+    </li>
+    <li>
+      For every 1 unit increase in `pf_expression_control`, we expect a country's mean personal freedom score to increase 0.542 units.
+    </li>
+  </ul>
+
+  <p>We can assess model fit using <m>R^2</m>, the proportion of variability in the response variable that is explained by the explanatory variable. We can look in the first table in the Linear Regression analysis, labeled `Model Fit Measures` for this information.</p>
+
+  <p>For this model, 71.4% of the variability in `pf_score` is explained by `pf_expression_control`.</p>
+
+  <p>6. Fit a new model that uses `pf_expression_control` to predict `hf_score`, or the total human freedom score. Using the estimates from the output, write the equation of the regression line. What does the slope tell us in the context of the relationship between human freedom and the amount of political pressure on media content?</p>
+
+</section>
+
+<section>
+  <title>Prediction and prediction errors</title>
+
+  <p>Look at a scatter plot for these variables, and make sure the regression line option is set to `Linear` and not `Smooth` to ensure that jamovi is using a line to estimate the relationship and not a curved line.</p>
+
+  <p>This line can be used to predict <m>y</m> at any value of <m>x</m>.
+    When predictions are made for values of <m>x</m> that are beyond the range of the observed data, it is referred to as <em>extrapolation</em> and is not usually recommended.
+    However, predictions made within the range of the data are more reliable.
+    They're also used to compute the residuals.</p>
+
+  <p>7. If someone saw the least squares regression line and not the actual data, how would they predict a country's personal freedom school for one with a 3 rating for `pf_expression_control`? Is this an overestimate or an underestimate, and by how much? In other words, what is the residual for this prediction?</p>
+
+</section>
+
+<section>
+  <title>Model diagnostics</title>
+
+  <p>To assess whether the linear model is reliable, we need to check for (1) linearity, (2) nearly normal residuals, and (3) constant variability.</p>
+
+  <p><em>Linearity</em>: You already checked if the relationship between `pf_score` and `pf_expression_control` is linear using a scatterplot.</p>
+
+  <p>We should also verify this condition with a plot of the residuals vs. fitted (predicted) values. Go back to the Linear Regression analysis, and open the `Model Fit` submenu. Check the `Residual plots` box and look at the plots that are created. We will focus on the first one, Residuals vs Fitted.</p>
+
+  <p>8. Is there any apparent pattern in the residuals plot? What does this indicate about the linearity of the relationship between the two variables?</p>
+
+  <p><em>Nearly normal residuals</em>: To check this condition, we can look at a Q-Q plot to inspect the normality of the residuals. Check the `Q-Q plot of residuals` box to create this plot.</p>
+
+  <p>9. Based on the Q-Q plot, does the nearly normal residuals condition appear to be violated? Why or why not?</p>
+
+  <em>Constant variability</em>:
+
+  <p>10. Based on the residuals vs. fitted plot, does the constant variability condition appear to be violated? Why or why not?</p>
+
+</section>
+
+<section>
+  <title>More Practice</title>
+
+  <ul>
+    <li>
+      Choose another variable that you think would strongly correlate with `pf_score`.
+      Produce a scatterplot of the two variables and fit a linear model.
+      At a glance, does there seem to be a linear relationship?
+    </li>
+    <li>
+      How does this relationship compare to the relationship between `pf_score` and `pf_expression_control`?
+      Use the $R^2$ values from the two model summaries to compare.
+      Does your independent variable seem to predict `pf_score` better?
+      Why or why not?
+    </li>
+    <li>
+      Check the model diagnostics using appropriate visualisations and evaluate if the model conditions have been met.
+    </li>
+    <li>
+      Pick another pair of variables of interest and visualise the relationship between them.
+      Do you find the relationship surprising or is it what you expected.
+      Discuss why you were interested in these variables and why you were/were not surprised by the relationship you observed.
+    </li>
+  </ul>
+
+</section>
+
+<image source="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" />
+This work is licensed under a <ref uri=" http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons License</ref>

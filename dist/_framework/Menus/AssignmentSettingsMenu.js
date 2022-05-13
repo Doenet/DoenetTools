@@ -4,10 +4,12 @@ import {AssignmentSettings} from "./SelectedActivity.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 export default function AssignmentSettingsMenu() {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   return /* @__PURE__ */ React.createElement("div", {
     style: {paddingTop: "6px", paddingBottom: "6px"}
   }, /* @__PURE__ */ React.createElement(AssignmentSettings, {
-    role: "instructor",
-    doenetId
+    effectiveRole: "instructor",
+    doenetId,
+    courseId
   }));
 }

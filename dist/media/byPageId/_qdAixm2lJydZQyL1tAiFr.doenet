@@ -1,0 +1,240 @@
+<problem>
+<!-- <title>graphical solutions for pure time diffeq - linear</title> -->
+
+<setup>
+
+<math name='x1' simplify='full' >3</math>
+<math name='xmin' simplify='full' >-1</math>
+<math name='xmax' simplify='full' >11</math>
+<function name='q' variables='x'>2*(x-$x1 )</function>
+<select assignNames='x' >x y z u v w</select>
+<math name='y0'>-2</math>
+<math name='one'>1</math>
+<math name='greater_than_x1'>(t > $x1 )</math>
+<math name='less_than_x1'>(t < $x1 )</math>
+<number name="zeroFixed" fixed>0</number>
+</setup>
+
+
+Let's use our understanding of what the derivative tells us about the shape of a graph to sketch the solution to the following pure-time differential equation:
+
+<md>
+  <mrow>\frac{ d$x }{ dt }\amp = f( t)</mrow>
+  <mrow>$x (0)\amp = $y0 </mrow>
+</md>
+
+<p>Here's a graph of <m>f</m>.</p>
+
+<graph width='500' xmin='$xmin' xmax='$xmax' ymin='-10' ymax='20' xlabel='t' ylabel='f' fixAxes>
+  $q
+</graph>
+
+<p>The function <m>$x(t)</m> is the <em>solution</em> to the differential equation.  We don't yet know what the function <m>$x (t)</m> is, but we do know that at each time point <m>t</m>, its derivative must be equal to the value of <m>f</m> at time <m>t</m>, as graphed above.</p>
+
+
+
+
+
+<ol>
+
+<li>
+<p>Given that the above graph represents the derivative <m>\frac{ d$x }{ dt }</m>, there is a single value of <m>t</m> where the graph of <m>$x (t)</m> must be horizontal.  What is this value?  (Write your answer as <c>t=some number</c>.)
+<answer>
+<award>t =$x1 </award>
+<award credit="0.5" name="noEquals">$x1 </award>
+</answer>
+</p>
+  <feedback condition="$noEquals">
+    That's right.  When <m>t</m> is 3, the graph of <m>$x(t)</m> will be horizontal. For full credit, write you answer as <m>t=3</m>.
+  </feedback>
+  <hint>
+  If the graph of <m>$x (t)</m> is horizontal, then what must its derivative be? <answer weight="0">0</answer> (See previous problem.)  Since the derivative of <m>$x (t)</m> is <m>f</m>, you need to find the time <m>t</m> where <m>f(t)</m> is that special value.
+  </hint>
+  
+<p>For what values of <m>t</m> is <m>$x (t)</m> increasing?  (Write your answer as an inequality involving <m>t</m>.)
+<answer>
+<award>$greater_than_x1 </award>
+</answer>
+</p>
+
+
+<hint>
+
+<p>If the graph of <m>$x (t)</m> is increasing, then what must its derivative be? 
+  <answer weight="0">
+    <choiceinput inline>
+      <choice credit="1">positive</choice>
+      <choice>negative</choice>
+      <choice>zero</choice>
+    </choiceinput>
+  </answer>
+  You need to find times <m>t</m> where the derivative of <m>$x (t)</m>, i.e., <m>f(t)</m>, satisfies that condition.</p>
+
+</hint>
+  
+
+<p>For what values of <m>t</m> is <m>$x (t)</m> decreasing? ?  (Write your answer as an inequality involving <m>t</m>.)
+<answer>
+<award>$less_than_x1 </award>
+</answer>
+</p>
+
+
+<hint>
+
+<p>If the graph of <m>$x (t)</m> is decreasing, then what must its derivative be?  
+    <answer weight="0">
+    <choiceinput inline>
+      <choice>positive</choice>
+      <choice credit="1">negative</choice>
+      <choice>zero</choice>
+    </choiceinput>
+  </answer>
+  You need to find times <m>t</m> where the derivative of <m>$x (t)</m>, i.e., <m>f</m>, satisfies this last condition.</p>
+
+</hint>
+
+
+</li>
+
+<li>
+<p>Our next goal is to sketch what the solution <m>$x (t)</m> looks like.</p>
+
+<p>First, identify the initial condition (given at the beginning of this problem):</p>
+<p><m>$x(</m> 
+<mathinput name='miT0' />
+<m>)  =</m> 
+<mathinput name="miIC" />.
+<answer>
+  <award symbolicEquality targetsAreResponses='miT0 miIC'>
+    <when matchPartial>$miT0=0 and $miIC=$y0</when>
+  </award>
+</answer></p>
+  
+<setup>
+  <boolean name="showIC">false</boolean>
+  <boolean name="showCurve">false</boolean>
+  <number name="Ay"><copy prop="y" tname="A" /></number>
+</setup>
+  
+<graph width='500' xmin='$xmin' xmax='$xmax' ymin='-5' ymax='7' xlabel='t'  ylabel='$x' fixAxes>
+
+  <point name="A" x="$zeroFixed" y="0" hide="not $showIC">
+    <constraints>
+      <attractTo><point>(0, $y0)</point></attractTo>
+    </constraints>
+  </point>
+
+  <point name="B" x="8" y="0" hide="not $showCurve">
+    <constraints>
+      <attractTo>
+        <lineSegment endpoints="(3, $Ay+0.5) (3,10)"/>
+        <lineSegment endpoints="(3, $Ay-0.5) (3,-10)"/>
+      </attractTo>
+    </constraints>
+  </point>
+
+  <parabola vertex="$B" through="$A" hide name="p"/>
+
+  <function domain="(0,20)" hide="not $showCurve">
+    $(p{prop='a'})x^2+$(p{prop='b'})x+$(p{prop='c'})
+  </function>
+  
+</graph>
+
+<p>Start your sketch of the solution by plotting a point on the above graph to represent the initial condition.</p>
+
+<p><updateValue label="Show point" type="boolean" tname="showIC" newValue="true" disabled="$showIC" />
+<answer>
+  <award targetsAreResponses="$A">
+    <when>$A=(0,$y0)</when>
+  </award>
+</answer>
+</p>
+  
+</li>
+
+<li>
+<p>Next, use your results from part a to determine whether <m>$x </m> starts off by increasing or by decreasing.  Since when <m>t=0</m>, <m>$x </m> is 
+<answer inline='true'>
+<choiceinput>
+<choice>increasing</choice>
+<choice credit='1'>decreasing</choice>
+<choice>neither increasing nor decreasing</choice>
+</choiceinput>
+</answer>
+, we need the graph the of <m>$x (t)</m> to be 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>below</choice>
+<choice>above</choice>
+<choice>even with</choice>
+</choiceinput>
+</answer>
+ the initial condition for values of <m>t</m> just above <m>0</m>.</p>
+
+<p>However, <m>$x (t)</m> does not keep moving in the same direction.  Instead, it stops and reverses direction at <m>t=</m> 
+<answer>
+<award symbolicEquality='true'>$x1 </award>
+</answer>
+.  Make sure your sketch accurately represents what happens to <m>$x (t)</m> at this value of <m>t</m>.</p>
+
+<p><updateValue label="Show curve" type="boolean" tname="showCurve" newValue="true" disabled="$showCurve" />
+<answer name="ansCurve">
+  <award targetsAreResponses="$B" name="curveCorrect">
+    <when>$(B{prop='x'})=3 and $(B{prop='y'}) < $Ay</when>
+  </award>
+</answer>
+</p>
+
+<feedback updateWithTname="ansCurve" condition="$(B{prop='y'})<$Ay and not $curveCorrect">
+  The curve correct starts off decreasing but it doesn't turn around at the correct time.
+</feedback>
+
+
+<hint>
+
+<p>Since we don't give you a formula for the actual function <m>f</m>, there is not a single correct answer for the solution <m>$x (t)</m>.  Any graph that show the correct qualitative behavior is fine.</p>
+</hint>
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+The graph of <m>$x </m> is horizontal when <m>f</m> is zero, which is at <m>t= $x1 </m>. The function <m>$x </m> is increasing when <m>f</m> is positive, which is when <m>$greater_than_x1 </m>, and decreasing when <m>f</m> is negative, which is when <m>$less_than_x1 </m>.
+</li>
+
+<li>
+The initial condition is <m>$x (0) = $y0 </m>, so we wish to plot the point <m>(0,-2)</m> as our starting point.
+
+</li>
+
+<li>
+We concluded in part a that when <m>$less_than_x1 </m>, <m>$x </m> is decreasing, so at <m>t=0</m>, <m>$x </m> is decreasing, and the graph should be below <m>$y0 </m> for values of <m>t</m> up to <m>$x1 </m>, which is a local minimum.  After that, the graph should go up as <m>$x </m> increases.  The exact shape of the graph isn't important.
+
+<p>Here is an example of a sketch that would qualify for full credit.</p>
+
+
+<graph width='500' xmin='$xmin' xmax='$xmax' ymin='-5' ymax='7' xlabel='t' ylabel='$x' fixAxes>
+
+  <function domain="(0,20)">
+    2/9(x-3)^2 -4
+  </function>
+</graph>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

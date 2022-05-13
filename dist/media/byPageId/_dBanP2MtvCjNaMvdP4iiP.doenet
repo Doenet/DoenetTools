@@ -1,0 +1,38 @@
+<p>Solutions to <m>(x-1)(x+2) = 0</m>:</p>
+    <solveEquations name="quadSol">(x-1)(x+1)=0</solveEquations>
+    <p><m>x=</m> <aslist><copy prop="solutions" tname="quadSol" /></aslist></p>
+<p><m>root1 = <copy prop="solution1" tname="quadSol" /></m></p>
+<p><m>root2 = <copy prop="solution2" tname="quadSol" /></m></p>
+
+<math name="root2" ><copy prop="solution2" tname="quadSol" /></math>
+<p>test naming<m>$root2</m></p>
+    <p>Number of solutions: <copy prop="numberSolutions" tname="quadSol" /></p>
+
+
+
+
+
+<solveEquations name="par2Sol">(x-2.1)(x+2.1)=0</solveEquations>
+
+<mathlist name='testlist' unordered='true'><copy prop="solutions" tname="par2Sol" /></mathlist>
+
+
+
+<ul>
+  <map name="mapEPs2">
+    <template><li><m>$x = </m> <mathinput /></li></template>
+    <sources><sequence length="min(5, 2)" /></sources>
+  </map>
+</ul>
+
+<answer name="ansEPs2">
+  <award targetsAreResponses="mapEPs2" matchPartial allowedErrorInNumbers='0.1'>
+    <when>
+      <mathlist><collect prop="value" componentTypes="mathinput" tname="mapEPs2" /></mathlist>
+      =
+      <mathlist unordered>$testlist</mathlist>
+    </when>
+  </award>
+</answer>
+
+

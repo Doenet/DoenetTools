@@ -1,0 +1,27 @@
+<title>Verbatim text</title>
+
+<section>
+  <subsection>
+    <p>I added a draft of a <tag>pre</tag> tag, but it will change</p>
+
+
+    <text name="a">Jeff</text>
+    <pre>
+      helladsf
+      ads
+      asdf  &dollar;a
+      adsg &lt;text>hello&lt;/text>
+      gg
+           sdfds
+    </pre>
+    
+    
+    <c>
+      
+      sdf 
+      
+      sdf
+    
+    </c>
+  </subsection>
+</section>

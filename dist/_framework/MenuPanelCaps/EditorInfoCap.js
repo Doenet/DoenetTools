@@ -1,19 +1,19 @@
 import React from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {authorItemByDoenetId, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, courseIdAtom, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 export default function EditorInfoCap() {
-  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const courseId = useRecoilValue(courseIdAtom);
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
   const pageId = useRecoilValue(searchParamAtomFamily("pageId"));
   let {color, image, label: course_label} = useCourse(courseId);
-  const pageInfo = useRecoilValue(authorItemByDoenetId(pageId));
-  const activityInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  const pageInfo = useRecoilValue(itemByDoenetId(pageId));
+  const activityInfo = useRecoilValue(itemByDoenetId(doenetId));
   if (!pageInfo) {
     return null;
   }
   if (image != "none") {
-    image = "/media/drive_pictures/" + image;
+    image = "url(/media/drive_pictures/" + image + ")";
   }
   if (color != "none") {
     color = "#" + color;
@@ -37,8 +37,7 @@ export default function EditorInfoCap() {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: {position: "relative", width: "100%", height: "135px", overflow: "hidden"}
   }, /* @__PURE__ */ React.createElement("img", {
-    src: image,
-    style: {position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)"}
+    style: {position: "absolute", width: "100%", height: "100%", backgroundSize: "cover", backgroundPosition: "center", backgroundImage: image, backgroundColor: color}
   })), /* @__PURE__ */ React.createElement("b", null, "Editor"), /* @__PURE__ */ React.createElement("div", {
     style: {marginBottom: "1px", marginTop: "5px"}
   }, "Course"), /* @__PURE__ */ React.createElement("div", {

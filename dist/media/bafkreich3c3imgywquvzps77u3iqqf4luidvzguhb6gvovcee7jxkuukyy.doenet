@@ -1,0 +1,140 @@
+<title>Information about Applications of Differentiation Exam</title>
+
+
+<p>The applications of differentiation module exam for Math 1241 is based on the Applications of Differentiation module.</p>
+
+
+<section><title>Material for the exam</title>
+
+  
+<p>The following highlights what is and what is not good potential material for this exam.</p>
+
+
+<ol>
+<li><p>Linear approximation</p>
+
+<ol>
+<li>Be able to compute linear approximations of a
+  function around a point, or, equivalently, the equation for the tangent line.</li>
+
+<li>The linear approximation should match the function and its
+  derivative at the point.</li>
+
+<li>The linear approximation is the basis behind determining the stability of equilibria (both for discrete dynamical systems from this module and for continuous dynamical systems in the last module).</li>
+</ol>
+</li>
+
+
+<li>
+<p>Stability of equilibria in discrete dynamical systems</p>
+
+<ol>
+<li>To calculate the stability of an equilibrium, put the system in
+  function iteration form: <m>x_{t+1}=f(x_{t})</m>.  Then, an equilibrium
+  <m>x_n =E</m> is stable if <m>|f'(E)| < 1</m> and is unstable if <m>|f'(E)| >1</m>.</li>
+<li>Be able to calculate equilibria and stability of dynamical systems
+  that include parameters.  This is where the derivative method for
+  stability shines, as we cannot determine stability graphically if we
+  don't have numbers for all the parameters.  Be able able to
+  determine the values of a parameter that make an equilibrium stable.</li>
+</ol>
+</li>
+
+<li>
+<p>Logistic growth</p>
+
+<ol>
+<li>The discrete logistic equation captures how growth slows down when a population begins to exhaust its environment.</li>
+<li>It is primarily an example that we can use for determining equilibria and stability.</li>
+<li>We're primarily concerned with the case where the upper positive equilibrium is stable.  In this case, the upper equilibrium is the carry capacity, and small population sizes will grow to this carrying capacity.</li>
+<li>If both equilibria are unstable, the discrete logistic equation can have complicated behavior, but we won't worry about this complicated behavior on the exam.</li>
+</ol>
+</li>
+
+<li>
+<p>The derivative and graphing</p>
+
+<ol>
+<li>Be able to identify critical points.</li>
+
+<li>Determine where the function is increasing and decreasing by checking the sign of the derivative in the intervals determined by the critical points.</li>
+
+<li>Sketch a graph of the function consistent with this information from the derivative.</li>
+</ol>
+</li>
+
+<li>
+<p>Minimization and maximization</p>
+
+<ol>
+<li>Be able to identify global minima and maxima (global extrema) by checking the
+  critical points and the endpoints.</li>
+
+<li>Be able to identify local minima and maxima (local extrema) by checking the sign of the derivative on either side of the critical points.</li>
+
+</ol>
+</li>
+
+</ol>
+
+</section>
+
+<section><title>Study aids</title>
+
+<ol>
+<li><p>Review problems</p>
+
+<p>All questions that may appear in the differentiation exam are available so that you can practice them.  In both these problems and on the actual exam, the set of problems as well as values of numbers, variables, parameters, and other quantities are selected randomly.  You will want to generate multiple versions of the problems to see the larger array of problems.  Given the random nature, we cannot guarantee that you will actually see all the problems that will appear on the exam.  But the more problems you work on, the greater the chance you will work on problems that will show up on the test.</p>
+
+<p>The format of the exam questions may differ from the practice problems in that the exam problems may have been modified to remove any answer blanks and the instructions specific to entering answers in the right format for computer grading.</p>
+
+<p>For all problems on this exam, you will be expected to <alert>show your work</alert>, and the grading will be based on the work that you show.</p>
+
+<ol><li><p>Free form questions</p>
+
+<p><ref uri="https://mathinsight.org/assess/math1241/discrete_dynamical_system_elementary_problems_2">Elementary discrete dynamical systems problems, part 2</ref>,
+<ref uri="https://mathinsight.org/assess/math1241/discrete_dynamical_system_elementary_biology_problems_2">Elementary discrete dynamical system biology problems, part 2</ref>,
+  and <ref uri="https://mathinsight.org/assess/math1241/critical_points_maximization_minimization_problems">Critical points, maximization and minimization problems</ref> contain short answer problems that reflect the format of questions as they would appear on the exam.</p></li>
+
+<li><p>Computer-scored problems</p>
+
+<p><ref uri="https://mathinsight.org/assess/math1241/linear_approximation_practice">Linear approximation practice</ref>, <ref uri="https://mathinsight.org/assess/math1241/critical_points_maximization_minimization_practice">Critical points, maximization, and minimization practice</ref>, <ref uri="https://mathinsight.org/assess/math1241/discrete_dynamical_system_stability_practice">Discrete dynamical system stability practice</ref>,
+<ref uri="doenet:doenetId=3RF59Jj-juk9Mf_yi4t4a" >Quiz 5</ref>, and <ref uri="doenet:doenetId=Ny6O8-OMQCiN1_Qpzxwa0" >Quiz 6</ref> contain problems where the computer will the score your answer for you, so you can see how well you did.  With the exception of the quizzes, these computer generated scores do not count toward your grade.  When these questions appear on the exam, they may be modified to the short answer format.</p></li>
+
+</ol>
+</li>
+
+<li><p>Problem sets</p>
+<p>
+The  from the problem sets Math 1241 thread are also good review.</p></li>
+</ol>
+
+</section>
+
+<section><title>Exam rules</title>
+
+<ol>
+<li>You must bring your University ID card.</li>
+<li>You are allowed 50 minutes to take the exam.</li>
+<li>You are allowed to have one-half of one letter sized sheet of paper of handwritten notes.  Double-sided is OK.</li>
+<li>You are allowed to have a calculator in the exam.  However, graphing calculators are NOT allowed on this exam. </li>
+<li>No textbook or electronic equipment (other than calculator) allowed.</li>
+</ol>
+
+
+</section>
+
+<section><title>Exam times</title>
+
+<p>You can take the exam up to two times. You can take it once on Thursday, November 4, and once on Thursday, November 11. Each day, you can choose one of the following times (even if it is different from the time that you are officially registered):</p>
+<ul>
+<li>11:15 AM - 12:05 PM</li>
+<li>12:20 PM - 1:10 PM</li>
+<li>1:25 PM - 2:15 PM</li>
+</ul>
+
+<p>Exam location: Vincent Hall, room 16</p>
+
+<p>If you take the exam twice, your exam score will be the maximum of your scores from the two attempts.</p>
+
+</section>

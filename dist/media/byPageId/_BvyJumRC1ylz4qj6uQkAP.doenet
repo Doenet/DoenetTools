@@ -1,0 +1,127 @@
+<setup>
+  <math name='d'>(y-x)/4</math>
+</setup>
+
+<!-- To comment use these tags -->
+<ol>
+  <p>In this activity, assume that all patterns are formed by adding the same number to get from one
+term to the next. This list of numbers is called an arithmetic progression or an arithmetic sequence.
+The pattern of growth, when graphed, is a straight line, and is called linear growth.</p>
+  
+ <!--Question 1--> 
+  <li>Find the missing term in the sequence {17, 19, 21, 23, 
+    <answer>
+      <award symbolicEquality='true'>25</award>
+    </answer>
+    
+    , 27, 29, 31, . . .}</li>
+ <!--Question 2--> 
+<li> Find the next term in the sequence {5, 11, 17, 23, <answer>
+      <award symbolicEquality='true'>29</award>
+    </answer> , . . .}
+<hint>Do you need to know what comes after the blank? What is the minimal amount of information
+you need to know in order to answer a question of this type?</hint></li>
+ <!--Question 3--> 
+<li>Find the next term in the sequence {30, 40, <answer>
+      <award symbolicEquality='true'>50</award>
+    </answer> , . . .}
+<hint>Do you need to know what comes after the blank? What is the minimal amount of information
+you need to know in order to answer a question of this type?</hint>
+</li>
+ <!--Question 4--> 
+<li>Find the first term in the sequence { <answer>
+      <award symbolicEquality='true'>2</award>
+    </answer> , <answer>
+      <award symbolicEquality='true'>7</award>
+    </answer> , 12, 17, <answer>
+      <award symbolicEquality='true'>22</award>
+    </answer> , . . .}
+  <hint>Do you need to know what comes after the blank? What is the minimal amount of information
+you need to know in order to answer a question of this type?</hint>
+</li>
+   <!--Question 5--> 
+<li>Fill in the blanks: { <answer>
+      <award symbolicEquality='true'>45</award>
+    </answer> , <answer>
+      <award symbolicEquality='true'>48</award>
+    </answer> , 51, <answer>
+      <award symbolicEquality='true'>54</award></answer>, <answer>
+      <award symbolicEquality='true'>57</award>
+    </answer> , 60, <answer>
+      <award symbolicEquality='true'>63</award>
+    </answer> , . . .}
+</li>
+ <!--Question 6--> 
+<li>Fill in the blanks: { <answer>
+      <award simplifyOnCompare='true'>x-2d</award>
+    </answer> , <answer>
+      <award simplifyOnCompare='true'>x-d</award>
+    </answer> , x, <answer>
+      <award simplifyOnCompare='true'>x+d</award>
+    </answer> , <answer>
+      <award simplifyOnCompare='true'>x+2d</award>
+    </answer> , x + 3d, <answer>
+      <award simplifyOnCompare='true'>x+4d</award>
+    </answer> , . . .}
+
+</li>
+<!--Question 7--> 
+<!--What are the appropriate answers here? Should we tell the students to give the answer in terms of x or y?-->
+  <li>Find the first term in the sequence: { <answer>
+      <award simplifyOnCompare='true'>x-3$d</award>
+    </answer> , <answer>
+      <award simplifyOnCompare='true'>x-2$d</award>
+    </answer> , <answer>
+      <award simplifyOnCompare='true'>x-$d</award>
+    </answer> , x, <answer>
+      <award simplifyOnCompare='true'>x+$d</award>
+    </answer> , <answer>
+      <award simplifyOnCompare='true'>x+2$d</award>
+    </answer> , <answer>
+      <award simplifyOnCompare='true'>x+3$d</award>
+    </answer> , y, <answer>
+      <award simplifyOnCompare='true'>x+5$d</award>
+    </answer> , . . .}
+<!--Add answer blanks-->
+<ul><li>If the <m>k^{th}</m> term in an arithmetic sequence is x and the <m>m^{th}</m> term in an arithmetic sequence is y,
+what is the amount you add to get from one term to the next? What is the first term?</li>
+  <li>What
+term would come one blank before the first term?</li></ul>
+
+</li>
+ <!--Question 8--> 
+  <li>Write a formula for the <m>n^{th}</m> term of the sequence {1, 2, 3, 4, 5, . . .}
+</li>
+ <!--Question 9--> 
+  <li>Write a formula for the <m>n^{th}</m>
+term of the sequence {5, 10, 15, 20, . . .}
+</li>
+ <!--Question 10--> 
+  <li>Write a formula for the <m>n^{th}</m> term of the sequence {4, 9, 14, 19, . . .}
+<hint>All of the terms are one less than the previous sequence. What term would come one
+blank before the first term?</hint>
+</li>
+ <!--Question 11--> 
+  <li>Write a formula for the <m>n^{th}</m> term of the sequence <m>3</m> {7, 11, 15, 19, 23, . . .}
+Note: the first term of the sequence is 7, the second term is 11. The <m>3</m> may remind you of a
+different mathematical topic.
+
+</li>
+ <!--Question 12--> 
+  <li>. Write a formula for the <m>n^{th}</m> term of the sequence <m>b</m> <m>{b + m, b + 2m, b + 3m, . . .}</m>
+
+</li>
+ <!--Question 13--> 
+  <li>The cost of a gallon of gasoline in 1972 was 29.9 cents per gallon and the cost of a gallon of
+gasoline in 2017 was $2.399 per gallon. Assuming linear growth, what was the cost of a gallon
+of gasoline in 1985?
+
+</li>
+
+
+
+
+
+
+  
+</ol>

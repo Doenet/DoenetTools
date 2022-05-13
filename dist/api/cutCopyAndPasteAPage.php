@@ -72,11 +72,12 @@ if ($success){
 if ($success) {
     if ($isCopy){
         $pageInsertedDoenetId = include "randomId.php";
+        $pageInsertedDoenetId = "_" . $pageInsertedDoenetId;
         
 
         //Create a copy of original file for page
-        $sourceFilePath = "../media/bydoenetid/$originalPageDoenetId.doenet";
-        $destFilePath = "../media/bydoenetid/$pageInsertedDoenetId.doenet";
+        $sourceFilePath = "../media/byPageId/$originalPageDoenetId.doenet";
+        $destFilePath = "../media/byPageId/$pageInsertedDoenetId.doenet";
         if (!copy($sourceFilePath, $destFilePath)) {
           $success = false;
           $message = "failed to copy media\n";

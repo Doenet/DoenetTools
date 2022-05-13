@@ -1,0 +1,185 @@
+
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tage>slider</tage> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>type</attr>  <em>(string)</em></li>
+  <li><attr>width</attr>  <em>(_componentSize)</em></li>
+  <li><attr>height</attr>  <em>(_componentSize)</em></li>
+  <li><attr>initialValue</attr>  <em>(_componentWithSelectableType)</em></li>
+  <li><attr>label</attr>  <em>(text)</em></li>
+  <li><attr>showControls</attr>  <em>(boolean)</em></li>
+  <li><attr>showTicks</attr>  <em>(boolean)</em></li>
+  <li><attr>showValue</attr>  <em>(boolean)</em></li>
+  <li><attr>from</attr>  <em>(number)</em></li>
+  <li><attr>to</attr>  <em>(number)</em></li>
+  <li><attr>step</attr>  <em>(number)</em></li>
+  <li><attr>displayDigits</attr>  <em>(integer)</em></li>
+  <li><attr>displayDecimals</attr>  <em>(integer)</em></li>
+  <li><attr>displaySmallAsZero</attr>  <em>(boolean/number)</em></li>
+  <li><attr>bindValueTo</attr>  <em>(_componentWithSelectableType)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tage>slider</tage><idx><tag>slider</tag></idx> component renders a sliding bar for interactively adjusting values.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tage>slider</tage> with <attr>to</attr>, <attr>from</attr>, and <attr>initialValue</attr> attributes</title>
+<p>In the sample code below, the <tage>slider</tage> component is used both without any attributes to illustrate the default behavior (for A) and with the <attr>from</attr>, <attr>to</attr>, and <attr>initialValue</attr> attributes (for B).  Each slider is named and later rendered in the viewer by referencing its current value with the <c>&dollar;name</c> notation.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;Select a value for A: &lt;slider name="A"/&gt;&lt;/p&gt;
+&lt;p&gt;Select a value for B:&lt;slider from="-10" to="10" initialValue="0" name="B"/&gt;&lt;/p&gt;
+&lt;p&gt;A = &dollar;A&lt;/p&gt;
+&lt;p&gt;B = &dollar;B&lt;/p&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+   
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<p>Select a value for A: <slider name="A"/></p>
+<p>Select a value for B:<slider from="-10" to="10" initialValue="0" name="B"/></p>
+<p>A = $A</p>
+<p>B = $B</p>
+</example>
+  
+
+<!--******************************************************-->
+   
+<subsection><title>Example 2: <tage>slider</tage> with <attr>width</attr>, <attr>label</attr>, <attr>showValue</attr>, and <attr>step</attr> attributes</title>
+<p>In the sample code below, the <tage>slider</tage> component is used with several attributes. 
+ The <attr>width</attr> attribute widens the scale of the <tage>slider</tage>, and allows for greater precision in the incremental distance as specified in the <attr>step</attr> attribute. 
+The <attr>label</attr> and <attr>showValue</attr> attributes allow for the display of the current mass value above the <tage>slider</tage> bar.  Finally, the value stored by the slider is referenced by the <ref uri="doenet:doenetId=BYXQro7P7NJrtKyTCxJcX"><tag>math</tag></ref> following the slider with the <c>&dollar;name</c> notation. (See also, <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref>, <ref uri="doenet:doenetId=Jwi35-iUB_BaSCNWFGNbh"><tag>number</tag></ref>, <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref>.)</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;setup&gt;
+  &lt;number name="g"&gt;9.8&lt;/number&gt;
+&lt;/setup&gt;
+  
+&lt;p&gt;Measure the sample and use the slider to record the mass here:&lt;/p&gt;
+&lt;slider width="700" label="Mass (kg)" from="0" to="10" 
+  step="0.1" showValue="true" name="m"/&gt;
+  
+&lt;p&gt;The weight of your sample is &lt;m&gt;W = &lt;math name="sampleW"&gt;&dollar;m*&dollar;g&lt;/math&gt; = 
+  &lt;copy prop="value" tname="sampleW" simplify/&gt; N&lt;/m&gt;
+&lt;/p&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+  
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 2)</title>
+<setup>
+  <number name="g">9.8</number>
+</setup>
+  
+<p>Measure the sample and use the slider to record the mass here:</p>
+<slider width="700" label="Mass (kg)" from="0" to="10" 
+  step="0.1" showValue="true" name="m"/>
+  
+<p>The weight of your sample is <m>W = <math name="sampleW">$m*$g</math> = 
+  <copy prop="value" tname="sampleW" simplify/> N</m>
+</p>
+
+</example>
+ 
+
+<!--******************************************************-->
+    
+<!-- 
+<subsection><title>Example 3: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+   -->
+<!--*******************************************************-->
+ 
+<!--  
+<example><title>What Doenet Renders (Example 3)</title>
+
+</example>
+  -->
+
+
+<!--******************************************************-->
+    
+<!--  
+<subsection><title>Example 4: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+   -->
+<!--*******************************************************-->
+ 
+<!--  
+<example><title>What Doenet Renders (Example 4)</title>
+
+</example>
+  -->
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<!--<aside newNameSpace><title>Edge case:    </title>
+
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+-->
+<!--*******************************************************-->
+ 
+<!--  
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+  
+</aside>-->
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil';
 // import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 // import axios from 'axios';
 // import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
-import { authorItemByDoenetId, courseIdAtom, coursePermissionsAndSettingsByCourseId, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, courseIdAtom, coursePermissionsAndSettingsByCourseId, useCourse } from '../../../_reactComponents/Course/CourseActions';
 
 
 export default function DraftActivityCap(){
@@ -33,7 +33,7 @@ let image = course.image;
   // let [courseId,setCourseId] = useState("");
   // let [contentLabel,setContentLabel] = useState("");
   // const { image, label: courseLabel}  = useCourse(courseId);
-  // const {label: itemLabel} = useRecoilValue(authorItemByDoenetId(doenetId));
+  // const {label: itemLabel} = useRecoilValue(itemByDoenetId(doenetId));
 
   // useEffect(()=>{
   //   axios.get('/api/findCourseIdAndParentDoenetId.php', {

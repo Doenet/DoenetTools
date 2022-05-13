@@ -1,0 +1,213 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tage>rectangle</tage> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>center</attr>   <em>(point)</em></li>
+  <li><attr>width</attr>   <em>(number)</em></li>
+  <li><attr>height</attr>   <em>(number)</em></li>
+  <ul><title><alert>Inherited from parent component/  <tag><ref>polyline</ref></tag>:</alert></title>
+  <li><attr>draggable</attr> <em>(boolean)</em></li>
+  <li><attr>vertices</attr> <em>(_pointListComponent)</em></li>
+  </ul>
+  <aside><title><alert>Inherited from parent component/  <c>GraphicalComponent</c>:</alert></title>
+  <li><attr>label</attr> <em>(text)</em></li>
+  <li><attr>showLabel</attr> <em>(boolean)</em></li>
+  <li><attr>layer</attr> <em>(number)</em></li>
+  </aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+  <p>The <tage>rectangle</tage><idx><tage>rectangle</tage></idx> component renders a rectangle when nested inside a <ref><tag>graph</tag></ref> component. Specifying the geometry of the rectangle is accomplished with its attributes and the <tage>rectangle</tage> tag is self-closing.  Rectangles are by default draggable for interactive activities.  See examples below for details on specific attribute usage. </p>
+</section> 
+  
+<section><title>Usage Examples</title>
+
+
+<subsection newNameSpace><title>Example 1: <tage>rectangle</tage> defined with <attr>vertices</attr></title> 
+<p>In the sample code below, the <tage>rectangle</tage> component is defined directly within the graph using the <attr>vertices</attr> attribute.  In this attribute, two opposite corners are specified as the point list.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre> 
+&lt;graph width="300px" height="300px"&gt;
+    &lt;rectangle vertices="(0,0) (5,5)"/&gt;
+&lt;/graph&gt;
+</pre>
+</example>
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<graph width="300px" height="300px">
+  <rectangle vertices="(0,0) (5,5)"/>
+</graph>
+  
+</example>
+ 
+<!--*******************************************************-->
+
+<subsection newNameSpace><title>Example 2: <tage>rectangle</tage> defined with <attr>center</attr>, <attr>width</attr>, and <attr>height</attr></title> 
+<p>In the sample code below, the <tage>rectangle</tage> component is defined by specifying its geometry with the <attr>center</attr>, <attr>width</attr>, and <attr>height</attr> attributes.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre> 
+&lt;graph width="300px" height="300px"&gt;
+  &lt;rectangle center="(0,0)" width="8" height="4"/&gt; 
+&lt;/graph&gt;
+</pre>
+</example>
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 2)</title>
+<graph width="300px" height="300px">
+  <rectangle center="(0,0)" width="8" height="4"/>
+</graph>
+  
+</example>
+
+<!--*******************************************************-->
+
+<subsection newNameSpace><title>Example 3: <tage>rectangle</tage> defined with user interactions</title> 
+<p>In the sample code below, the geometry of the <tage>rectangle</tage> component is predefined in the <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> block with the <ref uri="doenet:doenetId=Jwi35-iUB_BaSCNWFGNbh"><tag>number</tag></ref> and <ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref> components.  As the user either drags the corner points of the rectangle within the graph, or updates the data in the named <ref uri="doenet:doenetId=p_qPrnY-jhcqqrG2LcodH"><tage>mathInput</tage></ref>, the revised data is rendered to the viewer below the graph using the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component. </p>
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;setup&gt;
+  &lt;number name="centerX"&gt;2&lt;/number&gt;
+  &lt;number name="centerY"&gt;2&lt;/number&gt;
+  &lt;point name="centerPoint"&gt;(&dollar;centerX, &dollar;centerY)&lt;/point&gt;
+  &lt;number name="initialWidth"&gt;8&lt;/number&gt;
+  &lt;number name="initialHeight"&gt;5&lt;/number&gt;
+&lt;/setup&gt;
+  
+&lt;p&gt;Drag the rectangle to your favorite spot!&lt;/p&gt;
+&lt;p&gt;You can click the corner points and drag them to resize &lt;em&gt;or&lt;/em&gt; adjust its width and height here:&lt;/p&gt;
+&lt;p&gt;Width =  
+  &lt;mathInput name="newWidth" prefill="&dollar;initialWidth" displayDecimals="2"/&gt;&lt;/p&gt;
+&lt;p&gt;Height = 
+  &lt;mathInput name="newHeight" prefill="&dollar;initialHeight" displayDecimals="2"/&gt;&lt;/p&gt;
+
+&lt;graph width="300px" height="300px" grid="dense"&gt;
+  &lt;rectangle center="&dollar;centerPoint" width="&dollar;newWidth" 
+    height="&dollar;newHeight" name="userRectangle"/&gt;
+&lt;/graph&gt;
+  
+
+&lt;p&gt;The center of this rectangle is located at 
+  &lt;copy prop="center" tname="userRectangle" displayDecimals="2"/&gt;.&lt;/p&gt;
+&lt;p&gt;The corners of the rectangle are 
+  &lt;asList&gt;
+    &lt;copy prop="vertices" tname="userRectangle" displayDecimals="2"/&gt;
+  &lt;/asList&gt;&lt;/p&gt;
+&lt;p&gt;The width and height of the rectangle are: 
+  &lt;m&gt;&lt;copy prop="width" tname="userRectangle" displayDecimals="2"/&gt;&lt;/m&gt; x 
+  &lt;m&gt;&lt;copy prop="height" tname="userRectangle" displayDecimals="2"/&gt;&lt;/m&gt;&lt;/p&gt;
+</pre>
+</example>
+</subsection>
+ 
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 3)</title>
+<setup>
+  <number name="centerX">2</number>
+  <number name="centerY">2</number>
+  <point name="centerPoint">($centerX, $centerY)
+  </point>
+  <number name="initialWidth">8</number>
+  <number name="initialHeight">5</number>
+</setup>
+  
+<p>Drag the rectangle to your favorite spot!</p>
+<p>You can click the corner points and drag them to resize <em>or</em> adjust its width and height here:</p>
+<p>Width =  
+  <mathInput name="newWidth" prefill="$initialWidth" displayDecimals="2"/></p>
+<p>Height = 
+  <mathInput name="newHeight" prefill="$initialHeight" displayDecimals="2"/></p>
+
+<graph width="300px" height="300px" grid="dense">
+  <rectangle center="$centerPoint" width="$newWidth" 
+    height="$newHeight" name="userRectangle"/>
+</graph>
+  
+
+<p>The center of this rectangle is located at 
+  <copy prop="center" tname="userRectangle" displayDecimals="2"/>.</p>
+<p>The corners of the rectangle are 
+  <asList>
+    <copy prop="vertices" tname="userRectangle" displayDecimals="2"/>
+  </asList></p>
+<p>The width and height of the rectangle are: 
+  <m><copy prop="width" tname="userRectangle" displayDecimals="2"/></m> x 
+  <m><copy prop="height" tname="userRectangle" displayDecimals="2"/></m></p>
+</example>
+
+<!--*******************************************************-->
+
+<subsection newNameSpace><title>Example 4: <tage>rectangle</tage> with user-placed vertices</title> 
+<p>In the sample code below, the two points used in the <attr>vertices</attr> attribute of the <tage>rectangle</tage> component are initialized in a <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> block. The user is prompted to drag the <ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref>s to a specified location, at which point the <tage>rectangle</tage> is revealed.  Within the <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref>, the <tage>rectangle</tage> is hidden with the <attr>hide</attr> attribute based on the <ref uri="doenet:doenetId=NyyVAjdloVrablDyGwaJu"><tag>boolean</tag></ref> named <c>"notAllPlaced"</c>.  Finally, the <attr>draggable</attr> attribute is set to false to force the specific solution desired.(See also, <ref><tag>constraints</tag></ref>, <ref><tag>attractToGrid</tag></ref>.)</p>
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre> 
+&lt;setup&gt;
+  &lt;point name="A" label="A"&gt;(-1,8)&lt;constraints&gt;&lt;attractToGrid/&gt;&lt;/constraints&gt;&lt;/point&gt;
+  &lt;point name="B" label="B"&gt;(-1,6)&lt;constraints&gt;&lt;attractToGrid/&gt;&lt;/constraints&gt;&lt;/point&gt;
+  &lt;point name="finalA"&gt;(1,2)&lt;/point&gt;
+  &lt;point name="finalB"&gt;(9,6)&lt;/point&gt;
+  
+  &lt;boolean name="pointA_Placed"&gt;&dollar;A = &dollar;finalA&lt;/boolean&gt;
+  &lt;boolean name="pointB_Placed"&gt;&dollar;B = &dollar;finalB&lt;/boolean&gt;
+  &lt;boolean name="notAllPlaced"&gt;!&dollar;pointA_Placed or !&dollar;pointB_Placed&lt;/boolean&gt;
+&lt;/setup&gt;
+
+
+&lt;p&gt;&lt;alert&gt;Click and Drag points &lt;m&gt;A&lt;/m&gt; and &lt;m&gt;B&lt;/m&gt; to the locations shown below to make a rectangle:&lt;/alert&gt;&lt;/p&gt;
+&lt;p&gt;Move &lt;m&gt;A&lt;/m&gt; to &dollar;finalA.  Current location: &lt;m&gt;A = &dollar;A&lt;/m&gt;&lt;/p&gt;
+&lt;p&gt;Move &lt;m&gt;B&lt;/m&gt; to &dollar;finalB.  Current location: &lt;m&gt;B = &dollar;B&lt;/m&gt;&lt;/p&gt;
+&lt;p hide="&dollar;notAllPlaced"&gt;&lt;alert&gt;Nice Work!&lt;/alert&gt;&lt;/p&gt;
+
+&lt;graph grid="medium" width="600" height="600" xmin="-2" ymin="-2"&gt;
+  &dollar;A &dollar;B
+  &lt;rectangle hide="&dollar;notAllPlaced" vertices="&dollar;A &dollar;B" draggable="false" label="bingo"/&gt;
+&lt;/graph&gt;
+
+</pre>
+</example>
+</subsection>
+   
+<!--*******************************************************-->
+
+<example newNameSpace><title>What Doenet Renders (Example 4)</title>
+<setup>
+  <point name="A" label="A">(-1,8)<constraints><attractToGrid/></constraints></point>
+  <point name="B" label="B">(-1,6)<constraints><attractToGrid/></constraints></point>
+  <point name="finalA">(1,2)</point>
+  <point name="finalB">(9,6)</point>
+  
+  <boolean name="pointA_Placed">$A = $finalA</boolean>
+  <boolean name="pointB_Placed">$B = $finalB</boolean>
+  <boolean name="notAllPlaced">!$pointA_Placed or !$pointB_Placed</boolean>
+</setup>
+
+
+<p><alert>Click and Drag points <m>A</m> and <m>B</m> to the locations shown below to make a rectangle:</alert></p>
+<p>Move <m>A</m> to $finalA.  Current location: <m>A = $A</m></p>
+<p>Move <m>B</m> to $finalB.  Current location: <m>B = $B</m></p>
+<p hide="$notAllPlaced"><alert>Nice Work!</alert></p>
+
+<graph grid="medium" width="600" height="600" xmin="-2" ymin="-2">
+  $A $B
+  <rectangle hide="$notAllPlaced" vertices="$A $B" draggable="false" label="bingo"/>
+</graph>
+    
+</example>
+
+
+</section>
+</document>
+
+
+ 

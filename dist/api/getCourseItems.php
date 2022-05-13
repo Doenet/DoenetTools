@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
@@ -24,26 +25,16 @@ if ($courseId == "") {
 }
 
 if ($success){
-$sql = "
-SELECT canEditContent
-FROM course_user
-WHERE courseId='$courseId'
-AND userId='$userId'
-";
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
-	$row = $result->fetch_assoc();
-	$canEditContent = $row['canEditContent'];
-}
+	$permissions = permissionsAndSettingsForOneCourseFunction( $conn, $userId, $courseId );
+
+
 $containingDoenetIds = [];
 	//Can the user edit content?
-	//Yes then all items and json
-	//No then no Recipies, no banks and no unused files
-	if ($canEditContent == '1'){
+	if ($permissions["canEditContent"] == '1'){
+		//Yes then all items and json
 		$sql = "
 		SELECT cc.type,
 		cc.doenetId,
-		cc.cid,
 		cc.parentDoenetId,
 		cc.label,
 		cc.creationDate,
@@ -127,8 +118,6 @@ $containingDoenetIds = [];
 				SELECT 
 				doenetId,
 				containingDoenetId,
-				cid,
-				draftCid,
 				label
 				FROM pages
 				WHERE containingDoenetId = '$containingDoenetId'
@@ -152,10 +141,128 @@ $containingDoenetIds = [];
 			}
 		}
 
+	}else if($permissions["canViewCourse"] == '1'){
+		//TODO: check that user can view content
+		$sql = "
+		SELECT cc.type,
+		cc.doenetId,
+		cc.parentDoenetId,
+		cc.label,
+		cc.creationDate,
+		cc.isAssigned,
+		cc.isGloballyAssigned,
+		cc.isPublic,
+		CAST(cc.jsonDefinition as CHAR) AS json,
+		a.assignedDate AS assignedDate,
+		a.dueDate AS dueDate,
+		a.pinnedAfterDate As pinnedAfterDate,
+		a.pinnedUntilDate As pinnedUntilDate,
+		a.timeLimit AS timeLimit,
+		a.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
+		a.attemptAggregation AS attemptAggregation,
+		a.totalPointsOrPercent AS totalPointsOrPercent,
+		a.gradeCategory AS gradeCategory,
+		a.individualize AS individualize,
+		a.showSolution AS showSolution,
+		a.showSolutionInGradebook AS showSolutionInGradebook,
+		a.showFeedback AS showFeedback,
+		a.showHints AS showHints,
+		a.showCorrectness AS showCorrectness,
+		a.showCreditAchievedMenu AS showCreditAchievedMenu,
+		a.proctorMakesAvailable AS proctorMakesAvailable
+		FROM course_content AS cc
+		LEFT JOIN assignment AS a
+		ON a.doenetId = cc.doenetId
+		LEFT JOIN user_assignment AS ua
+		ON a.doenetId = ua.doenetId AND ua.userId = '$userId'
+		WHERE cc.courseId='$courseId'
+		AND cc.isDeleted = '0'
+		AND cc.isAssigned=1
+		AND (cc.type = 'activity' OR cc.type = 'section')
+		AND (ua.isUnassigned = 0 OR cc.isGloballyAssigned = 1)
+		ORDER BY cc.sortOrder
+		";
+
+		$result = $conn->query($sql);
+		$items = [];
+		if ($result->num_rows > 0) {
+			while($row = $result->fetch_assoc()){
+				$item = array(
+					"doenetId"=>$row['doenetId'],
+					"type"=>$row['type'],
+					"parentDoenetId"=>$row['parentDoenetId'],
+					"label"=>$row['label'],
+					"creationDate"=>$row['creationDate'],
+					"isAssigned"=>$row['isAssigned'] == '1' ? true : false,
+					"isGloballyAssigned"=>$row['isGloballyAssigned'] == '1' ? true : false,
+					"isPublic"=>$row['isPublic'] == '1' ? true : false,
+					"assignedDate" => $row['assignedDate'],
+          "pinnedAfterDate" => $row['pinnedAfterDate'],
+          "pinnedUntilDate" => $row['pinnedUntilDate'],
+          "dueDate" => $row['dueDate'],
+          "timeLimit" => $row['timeLimit'],
+          "numberOfAttemptsAllowed" => $row['numberOfAttemptsAllowed'],
+          "attemptAggregation" => $row['attemptAggregation'],
+          "totalPointsOrPercent" => $row['totalPointsOrPercent'],
+          "gradeCategory" => $row['gradeCategory'],
+          "individualize" => $row['individualize'] == '1' ? true : false,
+          "showSolution" => $row['showSolution'] == '1' ? true : false,
+          "showSolutionInGradebook" => $row['showSolutionInGradebook'] == '1' ? true : false,
+          "showFeedback" => $row['showFeedback'] == '1' ? true : false,
+          "showHints" => $row['showHints'] == '1' ? true : false,
+          "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
+          "showCreditAchievedMenu" => $row['showCreditAchievedMenu'] == '1' ? true : false,
+          "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
+				);
+
+				
+				$json = json_decode($row['json'],true);
+				// var_dump($json);
+				$item = array_merge($json,$item);
+				
+				if ($row['type'] == 'activity'){
+					array_push($containingDoenetIds,$row['doenetId']);
+					unset($item['draftCid']);
+				}
+				
+				$item['isOpen'] = false; 
+				$item['isSelected'] = false;
+
+				array_push($items,$item);
+			}
+			// foreach($containingDoenetIds as $containingDoenetId){
+			// 	$sql = "
+			// 	SELECT 
+			// 	doenetId,
+			// 	containingDoenetId,
+			// 	label
+			// 	FROM pages
+			// 	WHERE containingDoenetId = '$containingDoenetId'
+			// 	AND isDeleted = '0'
+			// 	";
+			// 	$result = $conn->query($sql);
+			// 	if ($result->num_rows > 0) {
+			// 		while($row = $result->fetch_assoc()){
+			// 			$item = array(
+			// 				"type"=>"page",
+			// 				"doenetId"=>$row['doenetId'],
+			// 				"containingDoenetId"=>$row['containingDoenetId'],
+			// 				"label"=>$row['label']
+			// 			);
+			// 			$item['isSelected'] = false; //Note: no isOpen
+			// 			array_push($items,$item);
+
+			// 		}
+			// 	}
+
+			// }
+		}
 	}else{
-		//TODO: student can't edit version
+		$success = false;
+		$message = "You need permission to access this course.";
 	}
 }
+
 
 $response_arr = array(
   "success"=>$success,

@@ -1,0 +1,71 @@
+<!--work in progress do not release (VM)-->
+
+<title>Solving pure time differential equations through integration</title>
+
+<description>
+
+</description>
+
+<figure>
+<video youtube="uiLoxumSBrE" width="640px" height="360px"/>
+<caption>Solving pure time differential equations through integration</caption>
+</figure>
+<!--Video transcript -->
+<p>To solve a pure time differential equation
+<me>\frac{ dF }{ dt } = f(t)</me>
+we are given the rate of change little <m>f(t)</m> of some other unknown function capital <m>F(t)</m>, and we want to determine what capital <m>F(t)</m> is.</p>
+
+<p>To be concrete, let's think of the example
+<me>\frac{ dF }{ dt } = 4t</me>
+where the function little <m>f(t)</m> equals <m>4t</m>.</p>
+
+<p>To find capital <m>F(t)</m> from little <m>f(t)</m>, we have to undo the differentiation.  That's why we call capital <m>F(t)</m> the antiderivative of little <m>f(t)</m>.</p>
+
+<p>For our example function, it's pretty easy to undo the differentiation.  The antiderivative of <m>4t</m> is the function <m>F(t)=2t^2</m>.  You can try it yourself.  If you differentiate <m>F(t)</m>, you will get <m>4t</m>.</p>
+
+<p>Here we plot the function little <m>f(t)</m> in blue and its antiderivative capital <m>F(t)</m> in green.</p>
+
+<p>Now a function has exactly one derivative.  What about for the antiderivative?  It turns out that a function has many antiderivatives.  Since the derivative of a constant is zero, we can add any constant to the antiderivative, and its derivative will still be the function little <m>f(t)</m>.  Hence, we really have a set of antiderivatives capital <m>F(t) + C</m>, where <m>C</m> is an arbitrary function.  On our plot, we can move the graph of the antiderivative up or down and it is still the antiderivative of <m>4t</m>. Notice how moving the antiderivative up and down corresponds to adding a different number to the antiderivative <m>2t^2</m>.</p>
+
+<p>We have another name for the antiderivative: the integral of the function <m>f(t)</m>, which we write like this.  The curvy symbol is the integral sign and we read it as the integral of <m>f(t) dt</m>. The integral takes little <m>f(t)</m> as the input and outputs the antiderivative capital <m>F(t) +C</m>.  The <m>dt</m> indicates that <m>t</m> is the variable of integration.</p>
+
+<p>For our example function, we can write that the integral of <m>4t\, dt</m> is <m>2t^2+C</m>.</p>
+
+<p>In order to integrate, or find the antiderivative of, functions, we need rules that tell us how to integrate, similar to how we have rules that tell us how to differentiate.  Unfortunately, undoing a derivative isn't as simple as taking a derivative.  In fact, we can't always find an antiderivative of a function so there is no foolproof method for taking the integral of any function.  Now, we can get quite fancy and figure out tricks to integrate different functions.  But, let's not take that approach here.  Instead, we'll just deal with some simple cases where reversing the derivative rule works out nicely.  Then, we will be able to find antiderivatives, or integrals, for some basic cases.</p>
+
+<p>One of the first rules you learn for differentiation is the power rule so that you can differentiate functions like <m>t^2</m>, <m>t^5</m>, etc.  Here, we write the power rule for differentiation slightly differently, where we have <m>t</m> to the power of <m>n+1</m>.  If we differentiate <m>t</m> to the power of <m>n+1</m>, the exponent <m>n+1</m> comes down in front and the exponent decreases to <m>n</m>.  The result is <m>(n+1)</m> times <m>t^n</m>.  We want our result to be just plain old <m>t^n</m>, so let's divide both sides by <m>n+1</m>.  Now we have a differentiation rule that gives us <m>t^n</m> as the derivative.</p>
+
+<p>We are all set to reverse the rule and obtain the integration rule for <m>t^n</m>.  If we undo the differentiation of <m>t^n</m>, we must have differentiated <m>t^{n+1}</m> divided by <m>n+1</m>.  Thus, the integral of <m>t^n dt</m> is <m>t^{n+1}</m> divided by <m>n+1</m>, plus our ubiquitous constant <m>C</m>.</p>
+
+<p>Now, if <m>n</m> were <m>-1</m>, we'd be in trouble, as we'd be dividing by 0.  So, this rule only works when <m>n</m> is not equal to <m>-1</m>.</p>
+
+
+<p>Let's try an example.  The integral of <m>t^2</m>.  To integrate <m>t^2</m>, we must increase the exponent from 2 to 3, and then divide by the new exponent 3.  Notice, since we are reversing differentiation, the order is the opposite.  To differentiate, you first multiply by the exponent, then decrease the exponent by one.  To integrate, do the reverse steps in the opposite order.  First, increase the exponent by one, then divide by that new exponent.  Here we have obtained our result <m>t^3/3</m>.  Oh yes, don't forget to add that arbitrary constant <m>C</m>.  Of course, we know you are going to forget to put that <m>C</m> down at some point.  Try to get that mistake out of your system early so that you'll remember to write down that <m>C</m> when it counts.</p>
+
+<p>Here's a plot of the function <m>t^2</m> in blue, along with the integral <m>t^3/3</m> plus a constant in green.  The fact that I can move the green curve up and down is supposed to help you remember to add the constant <m>C</m>.</p>
+
+
+<p>Let's go back to the first example, where we want to find the antiderivative of <m>4t</m>.  To integrate <m>4t</m>, the first thing we can do is pull the constant 4 out of the integral and have 4 times the integral of <m>t</m>.  Do you recognize <m>t</m> as a power function.  It is <m>t</m> to the power of 1.  Increase the exponent to 2, divide by 2, and we're done.  Once we remember to add the constant <m>C</m>.  Here's the same plot of the solution, which we can move up and down.</p>
+
+<p>It'd be boring if we always used the same variable <m>t</m>.  Let's take an integral with respect to the variable <m>x</m>.  This time, we have a polynomial with three terms, <m>2x^3-4x+1</m>.  To integrate, we separate the terms into different integral and apply the power rule to all three.  Wait a minute, what do we do about the number 1?  Well, let's think of 1 as <m>x</m> to the power of 0.  Then, we can use the power rule again.  We add 1 to each exponent and divide by the exponent.  When we simplify, we get the result <m>x^4/2 - 2x^2 +x</m> plus our constant <m>C</m>.</p>
+
+<p>The graph of the function <m>f</m> and its antiderivative look a little more complicated here.  But notice that when ever <m>f</m> (in blue) is positive, the antiderivative (in green) is increasing.  When <m>f</m> is negative, the antiderivative is decreasing.  This relationship holds even if I move the graph of the antiderivative up or down.</p>
+
+<p>OK, we are getting good at this.  Let's increase our repertoire of functions by adding the exponential function to the list.  Differentiating the exponential function is easy.  We get the function back again.  Hence, integrating the function is equally easy.  We get the function back again, with the only difference being the constant <m>C</m>.</p>
+
+<p>Do you remember how to differentiate <m>e^{3t}</m>?  The factor <m>3</m> just comes down to multiply the exponential.  Therefore, if we are integrating 3 times <m>e^{3t}</m>, the result is <m>e^{3t}</m> plus a constant.  We can use any constant <m>k</m> instead of 3 and the result holds.  The integral of <m>k</m> times <m>e^{kt}</m> is the function <m>e^{kt}</m> plus a constant.</p>
+
+<p>We can now handle an example where we add a number to an exponential.  Just break it up into two integrals.  OK, we didn't exactly have 5 times <m>e^{5t}</m> in this example, but we can factor out a 2 to give us the form we want.  We end up with 3t plus 2 times our exponential, with a <m>C</m> at the end for completeness.</p>
+
+<p>What about the integral of <m>e^{7x}</m> where we don't have a 7 in front like our rule demands?  Well, just multiply by the 7 to put it where we need it and multiply by 1/7 to undo it.  Now, we have 1/7 times our exponential plus a constant.</p>
+
+<p>Our power rule works just fine as long as the exponent <m>n</m> is not -1.  But we'd also like to be able to integrate 1/t, which is the case when <m>n=-1</m>.  What can we do?  We have to think beyond power functions. We have to remember our derivative rules and realize that 1/t did show up somewhere.  The derivative of the logarithm of t is 1/t.  That was handy, now we can reverse the rule and determine that the integral of 1/t must be the logarithm plus a constant.</p>
+
+<p>That looks good, but we are actually missing something.  To see the problem, let's take a look at the graph of 1/t and its antiderivative.  Notice how 1/t is defined for both positive and negative values of t.   Therefore, its integral should also be defined for positive and negative t.  The logarithm, however, is only defined for positive t.  We can't take the logarithm of a negative number and get a real result.  How do we fix this.  Notice that the integral of 1/t is symmetric for negative t.  We can turn our logarithm into a symmetric function by first taking the absolute value of t before taking the logarithm.  That doesn't change anything for positive <m>t</m> and gives us the result we need for negative <m>t</m>.  The correct rule for the integral of 1/t is the logarithm of the absolute value of t, plus a constant C.</p>
+
+<p>With this rule in hand, you can integrate 1/t plus another function by breaking up the integral.  You can also integrate more complicated functions with t in the denominator, but I think we should take a break now.</p>
+
+<p>Just remember, to differentiate a function with terms that are powers, exponentials, and logarithm, break up the integral into each term separately, and use these rules to find the antiderivative of your function.</p>
+
+<!-- End video transcript -->
+<!-- boxedvideo pure_time_differential_equations_integration -->

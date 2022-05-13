@@ -226,42 +226,6 @@ if ($success) {
         }
     }
 
-    // we insert a row into user_assignment_attempt_item_submission
-    // whether or not it is valid
-
-    //Find submissionNumber
-    $sql = "SELECT submissionNumber
-        FROM user_assignment_attempt_item_submission
-        WHERE userId = '$userId'
-        AND doenetId = '$doenetId'
-        AND attemptNumber = '$attemptNumber'
-        AND itemNumber = '$itemNumber'
-        ORDER BY submissionNumber DESC
-        LIMIT 1
-    ";
-    $result = $conn->query($sql);
-    if ($result->num_rows < 1) {
-        $submissionNumber = 1;
-    } else {
-        $row = $result->fetch_assoc();
-        $submissionNumber = $row['submissionNumber'];
-
-        if ($submissionNumber < 1) {
-            $submissionNumber = 0;
-        }
-        $submissionNumber++;
-    }
-
-    //Insert item submission
-    //Specifically we want to store the credit of that actual submission
-    $sql = "INSERT INTO user_assignment_attempt_item_submission
-        (doenetId,userId,attemptNumber,itemNumber,submissionNumber,componentsSubmitted,credit,submittedDate,valid)
-        VALUES
-        ('$doenetId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$componentsSubmitted','$credit',NOW(),'$valid')
-        ";
-
-    $result = $conn->query($sql);
-
     // we update credit in
     //   - user_assignment
     //   - user_assignment_attempt, and

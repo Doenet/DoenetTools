@@ -1,0 +1,148 @@
+
+  
+<p>We'd like to analyze the continuous dynamical system (or differential equation)
+<me>\frac{dv}{dt} = <function variables="v" name="f">v^3-5v^2-8v+12</function>,</me>
+where the function <m>f(v) = <copy tname="f"/></m> is graphed below.
+</p>
+
+<graph name="vWithf" width="400" height="200" xmin="-4" xmax="8" ymin="-40" ymax="40" xlabel="v" ylabel="v'" newNamespace fixAxes>
+<copy name="f" tname="../f" stylenumber="2" />
+
+</graph>
+
+<p>Answer the following questions on your own.</p>
+
+<p>If <m>v(t)</m> is a solution to the differential equation and you know that at time <m>t=3</m> the value of the solution is <m>v(3)=5</m>, what can you conclude about the solution <m>v(t)</m> at the moment <m>t=3</m>?
+<answer showcorrectness="false">
+  <choiceinput>
+    <choice>The solution <m>v(t)</m> must be increasing at <m>t=3</m>.</choice>
+    <choice credit="1">The solution <m>v(t)</m> must be decreasing at <m>t=3</m>.</choice>
+    <choice>The solution <m>v(t)</m> must be not changing at <m>t=3</m>.</choice>
+    <choice>We don't have enough information to know if <m>v(t)</m> is increasing, decreasing, or not changing at <m>t=3</m>. </choice>
+    <choice>I don't know.</choice>
+  </choiceinput>
+</answer>
+</p>
+<p>If <m>v(t)</m> is a solution to the differential equation and you know that at time <m>t=2</m> the value of the solution is <m>v(2)=0</m>, what can you conclude about the solution <m>v(t)</m> at the moment <m>t=2</m>?
+<answer showcorrectness="false">
+  <choiceinput>
+    <choice credit="1">The solution <m>v(t)</m> must be increasing at <m>t=2</m>.</choice>
+    <choice>The solution <m>v(t)</m> must be decreasing at <m>t=2</m>.</choice>
+    <choice>The solution <m>v(t)</m> must be not changing at <m>t=2</m>.</choice>
+    <choice>We don't have enough information to know if <m>v(t)</m> is increasing, decreasing, or not changing at <m>t=2</m>. </choice>
+    <choice>I don't know.</choice>
+  </choiceinput>
+</answer>
+</p>
+
+<p>If <m>v(t)</m> is a solution to the differential equation and you know that at time <m>t=1</m> the solution <m>v(t)</m> is not changing, what are some possible values of <m>v(1)</m>?  If you are not sure, you can leave one or more answer blanks empty.</p>
+<p><m>v(1)=</m> <mathinput name="zero1" />,  <m>v(1)=</m> <mathinput name="zero2" />, or <m>v(1)=</m> <mathinput name="zero3" />.
+<answer showcorrectness="false">
+  <award unorderedCompare matchPartial targetsAreResponses="zero1 zero2 zero3">
+    <when>
+      ($zero1, $zero2, $zero3)
+      =
+      (-2, 1, 6)
+    </when>
+  </award>
+</answer>
+</p>
+
+
+<p>The following are representations of the <m>v</m> state line that show for what values of <m>v(t)</m> is the solution increasing, decreasing or not changing.  Values of <m>v(t)</m> where <m>v(t)</m> is not changing are shown by <pluralize basedOnNumber="2"><copy prop="styleDescriptionWithNoun" tname="vAxisA/_point1" /></pluralize>.  Rightward arrows indicate values of <m>v(t)</m> where <m>v(t)</m> is increasing; leftward arrows indicate where <m>v(t)</m> is decreasing.  Length of each arrow indicates the speed of <m>v(t)</m>.</p>
+
+<p>Select which phase line best represents the state line for the solution <m>v(t)</m> of the above differential equation. (Click the radio button to make sure the your desired option is selected.)</p>
+
+<answer showcorrectness="false">
+  <choiceinput>
+
+    <choice>
+      A:
+      <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxisA" newNamespace fixAxes>
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-2, 0)</point>
+      <point draggable="false" styleNumber="3">(1, 0)</point>
+      <point draggable="false" styleNumber="3">(6, 0)</point>
+      <vector draggable="false" tail="(-4.0, 0)" displacement="(1,0)" />
+      <vector draggable="false" tail="(-2.7, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(-1.3, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(0, 0)" displacement="(-1,0)" />
+      <vector draggable="false" tail="(0.8, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(1.3, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(2.5, 0)" displacement="(1.5,0)" />
+      <vector draggable="false" tail="(5, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(6.7, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(7.9, 0)" displacement="(-1.0,0)" />
+
+      </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice credit="1">
+      B:
+      <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxisB" newNamespace fixAxes>
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-2, 0)</point>
+      <point draggable="false" styleNumber="3">(1, 0)</point>
+      <point draggable="false" styleNumber="3">(6, 0)</point>
+      <vector draggable="false" tail="(-3.0, 0)" displacement="(-1,0)" />
+      <vector draggable="false" tail="(-2.2, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(-1.8, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(-1, 0)" displacement="(1,0)" />
+      <vector draggable="false" tail="(0.3, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(1.8, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(4, 0)" displacement="(-1.5,0)" />
+      <vector draggable="false" tail="(5.5, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(6.2, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(6.9, 0)" displacement="(1.0,0)" />
+
+      </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice>
+    C:
+    <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxis2" newNamespace fixAxes>
+
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-0.8, 0)</point>
+      <point draggable="false" styleNumber="3">(4, 0)</point>
+      <vector draggable="false" tail="(-3.5, 0)" displacement="(1.5,0)" />
+      <vector draggable="false" tail="(-1.8, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(0, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(2, 0)" displacement="(-1.5,0)" />
+      <vector draggable="false" tail="(3.5, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(4.5, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(6, 0)" displacement="(1.5,0)" />
+
+    </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice>
+    D:
+    <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxis3" newNamespace fixAxes>
+
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-0.8, 0)</point>
+      <point draggable="false" styleNumber="3">(4, 0)</point>
+      <vector draggable="false" tail="(-2, 0)" displacement="(-1.5,0)" />
+      <vector draggable="false" tail="(-1.3, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(-0.5, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(0.5, 0)" displacement="(1.5,0)" />
+      <vector draggable="false" tail="(3, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(5, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(7.5, 0)" displacement="(-1.5,0)" />
+
+    </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice>E: I don't know.</choice>
+  </choiceinput>
+
+</answer>

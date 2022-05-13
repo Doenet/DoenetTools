@@ -1,0 +1,150 @@
+<title>Building on t-tests: ANOVA</title>
+
+<section>
+  <title>Getting Started</title>
+</section>
+
+<subsection>
+  <title>The data</title>
+
+  <p>Every two years, the Centers for Disease Control and Prevention conduct the Youth Risk Behavior Surveillance System (YRBSS) survey, where it takes data from high schoolers (9th through 12th grade), to analyze health patterns. You will work with a selected group of variables from a random sample of observations during one of the years the YRBSS was conducted.</p>
+
+  <p>Load the `yrbss` data set, which can be found <ref uri="http://mthomas7.github.io/jamovi_labs/07_inf_for_numerical_data/more/yrbss.csv">here</ref> into your workspace.</p>
+
+  <p>The meaning of each variable can be found by visiting <ref uri="https://www.openintro.org/data/index.php?data=yrbss">this page</ref>.</p>
+
+  <p>How many variables are in our dataset?
+      <answer>13</answer></p>
+
+  <p>How many cases are there in our sample?
+      <answer>13583</answer></p>
+
+<p>You may notice that some of the variables don't match the type you might think they should. You should work with your group to determine how you should treat each variable. Additionally, you should look at at the texting while driving variable, as it seems to be interpreted as dates instead of ranges of numbers. If you open the menu for the variable (by double clicking the name of the variable), you can change the value of the levels.</p>
+
+<hint>
+The dates are being interpreted using European conventions for how to write dates.
+</hint>
+
+</subsection>
+
+<section>
+  <title>Exploratory data analysis</title>
+
+  <p>You will first start with analyzing the weight of the participants in kilograms: `weight`.</p>
+
+  <p>Using visualization and summary statistics, describe the distribution of weights.</p>
+
+  <p>How many observations are we missing weights from? <answer>1004</answer></p>
+
+  <p>Next, consider the possible relationship between a high schooler's weight and their physical activity.
+    Plotting the data is a useful first step because it helps us quickly visualize trends, identify strong associations, and develop research questions.</p>
+
+  <p>First, let's create a new variable `physical_3plus`, which will be coded as either "yes" if the student is physically active for <em>at least</em> 3 days a week (physically_active_7d>2), and "no" if not. (Make sure the variable is set to be nominal.)</p>
+
+  <p>Make a side-by-side violin plot of "physical_3plus" and "weight". (In the plots pull down in Descriptives.) Is there a relationship between these two variables? What did you expect and why?</p>
+
+  <p>We can also compare the means of the distributions. In a descriptive statistics table, determine the mean value for "weight" for each group in the "physical_3plus" variable.</p>
+
+  <p>There is an observed difference, but is this difference large enough to deem it "statistically significant"? In order to answer this question we will conduct a hypothesis test.</p>
+
+</section>
+
+<section>
+  <title>Inference</title>
+
+<p>First we will consider homogeneity. Does the data seem to satisfy equality of variance?</p>
+
+  <answer>
+        <choiceinput>
+          <choice>Yes</choice>
+          <choice credit="1">No</choice>
+        </choiceinput>
+      </answer>
+
+<p>Consider the normality of the data. Because the dataset is so large, the normality test will not run, but you can use a Q-Q plot to inspect. Do the data appear to be normally distributed?</p>
+
+<answer>
+      <choiceinput>
+        <choice>Yes</choice>
+        <choice credit="1">No</choice>
+      </choiceinput>
+    </answer>
+
+<p>Based on these results, which test do you think we should use?</p>
+
+<answer>
+      <choiceinput>
+        <choice>Student's t-test</choice>
+        <choice>Welch's t-test</choice>
+        <choice credit="1">Mann-Whitney U</choice>
+      </choiceinput>
+    </answer>
+
+<p>Based on this test, do you find a statistically significant difference?</p>
+
+<answer>
+      <choiceinput>
+        <choice credit="1">Yes</choice>
+        <choice>No</choice>
+      </choiceinput>
+    </answer>
+
+</section>
+
+<section>
+  <title>Confidence Intervals (to turn in)</title>
+
+  <p>1. Calculate a 95% confidence interval for the average height in meters ("height") and interpret it in context.</p>
+
+  <p>2. Calculate a new confidence interval for the same parameter at the 90% confidence level.
+    Comment on the width of this interval versus the one obtained in the previous exercise.</p>
+
+  <p>3. Conduct a hypothesis test evaluating whether the average height is different for those who exercise at least three times a week and those who don't. Make sure to test assumptions.</p>
+
+  <p>4. Now, a non-inference task: Determine the number of different options there are in the dataset for the `hours_tv_per_school_day` there are.</p>
+
+</section>
+
+<section>
+<title>Multiple t-tests</title>
+
+<p>Next, we're going to consider whether there is a difference in the number of days physically active depending on how often someone texts when driving. To do this, make sure "physically_active_7d" is set to be a numerical variable and "text_while_driving_30d" is set to be categorical. Why can you not perform a t-test here?</p>
+
+<p>One way that we might think we could test the relationship is by building on our t-tests. Select 2 levels from the categorical variable, then perform a t-test using these two. Select another 2 levels, and perform a t-test. How many t-tests could we perform by picking two at a time?</p>
+
+<answer>
+  28
+</answer>
+
+<p>To discuss: Why is this a problem?</p>
+
+<p>Enter the solution: a new test, the analysis of variance, or the ANOVA. Select one-way ANOVA from the ANOVA menu, then add the two variable we are working with in their appropriate places. You will see some familiar options - we will still need to check homogeneity and normality.</p>
+
+<p>Check the box for the homogeneity test. Does homogeneity seem to be satisfied?</p>
+
+<answer>
+      <choiceinput>
+        <choice>Yes</choice>
+        <choice credit="1">No</choice>
+      </choiceinput>
+    </answer>
+
+<p>Consider a Q-Q plot to assess normality - does this seem to be satisfied?</p>
+
+<answer>
+      <choiceinput>
+        <choice>Yes</choice>
+        <choice credit="1">No</choice>
+      </choiceinput>
+    </answer>
+
+<p>Using the appropriate choice of assumption for equal variance in the Variances section, what value do you get in the column below "F"? (We'll discuss what this means in class.)</p>
+<answer>
+12.490
+</answer>
+
+
+</section>
+
+<image source="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" />
+This work is licensed under a <ref uri=" http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons License</ref>

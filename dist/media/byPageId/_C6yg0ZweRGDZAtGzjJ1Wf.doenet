@@ -1,0 +1,85 @@
+<problem>
+<!-- <title>Average volume - exponential</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='dd' from='-3' to='-1' />
+
+
+<math name='lb'>0</math>
+<selectFromSequence assignNames='ub' from='2' to='7/abs($dd )' />
+<selectFromSequence assignNames='aastart' from='-4' to='4' exclude='0'/>
+
+<math name='aa' simplify='numbers' >$aastart *100</math>
+<selectFromSequence assignNames='bb' from='3' to='7' />
+<math name='cc' simplify='numbers' >100*$bb </math>
+<function name='ff' variables='t' symbolic>
+  <math simplify="numbers">$aa *e^($dd *t)+$cc</math>
+</function>
+  
+<function name='antideriv_ff' variables='t' symbolic>
+  <math simplify="numbersPreserveOrder">$aa *e^($dd *t)/$dd + $cc *t</math>
+</function>
+  
+<math name='intfeval' simplify='numbers' >$$antideriv_ff($ub)-$$antideriv_ff($lb)</math>
+<math name='deltat' simplify='numbers' >$ub -$lb </math>
+<math name='aveval' simplify='numbers' >$intfeval /$deltat </math>
+  
+  
+<math name='intval_sum_int' simplify='numbers' >$$antideriv_ff($ub)+$$antideriv_ff($lb))</math>
+<math name='aveval_sum_int' simplify='numbers' >$intval_sum_int /$deltat </math>
+<math name='aveval_divide_by_sum' simplify='numbers' >$intfeval /($ub +$lb )</math>
+
+</setup>
+
+
+<p>The volume of a cell is given by the function <m>$p_t =<copy prop="formula" tname="ff" /></m> <m>\mu {\rm m}^3</m> from <m>t=$lb </m> to <m>t=$ub </m> seconds. What is the average volume of the cell during this time frame? If rounding, be sure to include at least <m>5</m> significant digits.
+</p>
+
+<p> 
+Average volume = <mathinput name="mi" />  <m>\mu {\rm m}^3</m> 
+<answer symbolicEquality simplifyOnCompare>
+<award targetsAreResponses="mi"><when>$mi = $aveval </when></award>
+<award allowedErrorInNumbers='0.0001' credit='0.9' name='award1'><when>$mi = $aveval </when></award>
+<award credit='0.8' name='award2'><when>$mi = $intfeval </when></award>
+<award  allowedErrorInNumbers='0.0001' credit='0.8*0.9' name='award3'><when>$mi = $intfeval </when></award>
+<award credit='0.90' name='award4'><when>$mi = $aveval_sum_int </when></award>
+<award  allowedErrorInNumbers='0.0001' credit='0.81' name='award5'><when>$mi = $aveval_sum_int </when></award>
+<award credit='0.8' name='award8'><when>$mi = $aveval_divide_by_sum </when></award>
+<award allowedErrorInNumbers='0.0001' credit='0.8*0.9' name='award9'><when>$mi = $aveval_divide_by_sum </when></award>
+<award credit='0.8*0.8' name='award6'><when>$mi = $intval_sum_int</when></award>
+<award allowedErrorInNumbers='0.0001' credit='0.8*0.8*0.9' name='award6a'><when>$mi = $intval_sum_int</when></award>
+</answer>
+ </p>
+
+<feedback condition="$award1">Leave fractions as fractions.</feedback>
+<feedback condition="$award2">It seems you forgot to divide by the total length of time.</feedback>
+<feedback condition="$award3">It seems you forgot to divide by the total length of time.  Leave fractions as fractions.</feedback>
+<feedback condition="$award4">It seems that you added rather than subtracted the values of the integrand at the bounds.</feedback>
+<feedback condition="$award5">It seems that you added rather than subtracted the values of the integrand at the bounds.  Leave fractions as fractions.</feedback>
+<feedback condition="$award6">It seems that you added rather than subtracted the values of the integrand at the bounds.  It seems that you forgot to divide by the total length of time.</feedback>
+<feedback condition="$award6a">It seems that you added rather than subtracted the values of the integrand at the bounds.  It seems that you forgot to divide by the total length of time. Leave fractions as fractions.</feedback>
+<feedback condition="$award7">It seems that you added rather than subtracted the values of the integrand at the bounds.  It seems that you forgot to divide by the total length of time.  Leave fractions as fractions.</feedback>
+<feedback condition="$award8">It seems you divided by the sum of the endpoints rather than the difference.</feedback>
+<feedback condition="$award9">It seems you divided by the sum of the endpoints rather than the difference. Leave fractions as fractions.</feedback>
+
+
+<p>For full credit, do not round your answer to a decimal.  (Maximum of 90% credit will be awarded for rounded answers that include at least 5 correct significant digits.)</p>
+
+
+<solution>
+
+<p>
+To solve this, we need to evaluate the integral <m>\displaystyle \int_{$lb}^{$ub} ($ff) dt </m> and divide by <m>\Delta t = $ub - $lb =$deltat</m> seconds.
+</p>
+
+<p><me>\frac{1}{$deltat} \int_{$lb}^{$ub} ($ff) dt  =  \frac{1}{$deltat} \left($antideriv_ff \right) \Bigg|_{$lb}^{$ub}  = \frac{$intfeval}{$deltat} </me>
+</p>
+
+
+<p>The average volume is <m>\displaystyle $aveval </m>  <m>\mu {\rm m}^3</m>.</p>
+
+</solution>
+
+
+</problem>

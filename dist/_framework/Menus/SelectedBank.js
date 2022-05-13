@@ -2,7 +2,7 @@ import {faLayerGroup} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icon
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
-import {authorItemByDoenetId, selectedCourseItems, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, selectedCourseItems, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
@@ -14,7 +14,7 @@ export default function SelectedBank() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
-  const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  const itemObj = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const {renameItem} = useCourse(courseId);
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(itemObj.label);
@@ -46,20 +46,7 @@ export default function SelectedBank() {
     icon: faLayerGroup
   }), " ", itemObj.label);
   if (effectiveRole === "student") {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement(ActionButton, {
-      width: "menu",
-      value: "Take Assignment",
-      onClick: () => {
-        setPageToolView({
-          page: "course",
-          tool: "assignment",
-          view: "",
-          params: {
-            doenetId
-          }
-        });
-      }
-    }));
+    return null;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement(Textfield, {
     label: "Label",

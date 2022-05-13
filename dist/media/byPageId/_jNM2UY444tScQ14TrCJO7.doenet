@@ -1,0 +1,42 @@
+<module name="cobwebAppletSolution">
+  <setup>
+    <customAttribute componentType="function" attribute="function" defaultValue="x(4-x)" assignNames="f" />
+    <customAttribute componentType="number" attribute="x0" defaultValue="1" assignNames="x0" />
+    <customAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
+    <customAttribute componentType="_componentSize" attribute="height" defaultValue="300px" assignNames="height" />
+    <customAttribute componentType="number" attribute="xmin" defaultValue="-10" assignNames="xmin" />
+    <customAttribute componentType="number" attribute="xmax" defaultValue="10" assignNames="xmax" />
+    <customAttribute componentType="number" attribute="ymin" defaultValue="-10" assignNames="ymin" />
+    <customAttribute componentType="number" attribute="ymax" defaultValue="10" assignNames="ymax" />
+    <customAttribute componentType="boolean" attribute="showNavigation" defaultValue="true" assignNames="showNavigation" />
+    <customAttribute componentType="variable" attribute="variable" defaultValue="x" assignNames="variable" />
+    <customAttribute componentType="variable" attribute="timeVariable" defaultValue="n" assignNames="timeVariable" />
+    <customAttribute componentType="boolean" attribute="showCalculatedValues" defaultValue="true" assignNames="showCalculatedValues" />
+    <customAttribute componentType="number" attribute="nPoints" defaultValue="4" assignNames="nPoints" />
+    <customAttribute componentType="text" attribute="grid" defaultValue="none" assignNames="grid" />
+  </setup>
+
+
+  <graph width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="$(variable)_$timeVariable" ylabel="$(variable)_{$timeVariable+1}" showNavigation="$showNavigation" identicalAxisScales grid >
+    <cobwebpolyline function="$f" nPoints="$nPoints" name="cobwebPolyline" initialPoint="($x0,0)" variable="$variable" lockToSolution="true" draggable="false" />
+  </graph>
+
+  <aside hide="not $showCalculatedValues" name="calculatedValue">
+    <title>Calculated values</title>
+
+    <md>
+    <map>
+      <template>
+        <mrow>
+          $(variable)_{<number>$i-1</number>} \amp = $(x{displayDigits="5"})
+        </mrow>
+      </template>
+      <sources alias="x" indexAlias="i">
+        <copy prop="iterateValues" tname="cobwebPolyline" />
+      </sources>
+    </map>
+    </md>
+
+  </aside>
+
+</module>

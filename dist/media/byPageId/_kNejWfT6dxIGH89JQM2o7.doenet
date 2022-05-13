@@ -1,0 +1,81 @@
+<problem>
+<!-- <title>Pure time DiffEq - quadratic - nonzero initial time</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='aaa bbb ccc a' from='-10' to='10' exclude='0' numberToSelect="4" withReplacement />
+
+<function name='f' variables='t' symbolic><math simplify="numbersPreserveOrder">$aaa *t^2+$bbb *t+$ccc</math></function>
+<function name='intfeval' variables='t' symbolic><math simplify>$aaa/3 *t^3+$bbb /2*t^2+$ccc*t</math></function>
+
+
+<selectFromSequence assignNames='lb' from='-5' to='5' exclude="0" />
+
+<select assignNames='f_name' >g h p q r y z</select>
+<math name='dxdt'>d$f_name/dt</math>
+<math name='x_lb' targetsAreFunctionSymbols="f_name">$f_name ($lb)</math>
+
+<math name='finalans' simplify>$$intfeval(t)+$C_value </math>
+<math name='intfeval_C'>$$intfeval(t)+C </math>
+<math name='x_t' targetsAreFunctionSymbols="f_name">$f_name (t)</math>
+<math name='intfeval_lb'>$$intfeval($lb)</math>
+<math name='C_value' simplify>$a -$intfeval_lb </math>
+
+
+</setup>
+
+
+<p>
+Solve the pure-time differential equation <m>$dxdt  = <copy prop="formula" tname="f" /></m> with initial condition <m>$x_lb  = $a </m>.
+</p>
+
+<p>
+<m>$x_t =</m> 
+<answer>
+<award>$finalans </award>
+<award credit="0" name="noConstant">$intfeval </award>
+<award credit="0" name="withC">$intfeval_C</award>
+</answer>
+</p>
+
+<feedback condition="$noConstant">The solution $x_t must match the initial condition <m>$x_0  = $a </m>.</feedback>
+<feedback condition="$withC">Since we have an initial condition <m>$x_0  = $a </m>, don't add an arbitrary constant <m>C</m>.  Instead, find the value of the constant so that the solution $x_t matches the initial condition.</feedback>
+
+<p>
+Do not round your answer to a decimal.
+</p>
+
+<solution>
+<p>
+The solution can be found using the indefinite integral <m>\displaystyle \int $f \, dt </m> and the initial condition  <m>$x_lb  = $a </m>.  To evaluate the integral, we first use the sum and constant product rules for integration: 
+</p>
+<p>
+<m>\displaystyle \int $f \, dt  = $aaa  \int t^2\,dt + $bbb \int t\,dt + \int $ccc\,dt</m>
+</p>
+<p>
+We then evaluate each of these integrals using the power rule for integration and add the arbitrary constant:
+</p>
+<p>
+<m>\displaystyle <copy prop="formula" tname="intfeval" />+C</m>
+</p>
+<p>
+Next, we substitute in the initial condition <m>$x_lb  = $a </m> and solve for <m>C</m>:
+</p>
+<p>
+<m>\displaystyle $a  = $intfeval_lb +C = <math simplify>$intfeval_lb+C</math></m>
+</p>
+<p><m>\displaystyle C = $C_value </m>
+</p>
+<p>
+Finally, we have:
+</p>
+
+<p>
+<m>\displaystyle $x_t  = $finalans </m>
+</p>
+
+
+</solution>
+
+
+</problem>

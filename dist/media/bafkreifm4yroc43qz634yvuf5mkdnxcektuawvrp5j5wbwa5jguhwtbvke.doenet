@@ -1,0 +1,178 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>cell</tag> component</title>
+
+  
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>rowNum</attr>  <em>(text)</em></li>
+  <li><attr>colNum</attr>  <em>(text)</em></li>
+  <li><attr>colSpan</attr>  <em>(integer)</em></li>
+  <li><attr>halign</attr>  <em>(text)</em></li>
+  <li><attr>bottom</attr>  <em>(text)</em></li>
+  <li><attr>right</attr>  <em>(text)</em></li>
+  <li><attr>prefill</attr>  <em>(text)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>cell</tag><idx><tag>cell</tag></idx> component is the smallest element of a <ref uri="doenet:doenetId=Bm5kSKo8GvPyl85lokH8_"><tag>tabular</tag></ref> block of text or data. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tag>cell</tag> without additional attributes</title>
+<p>In the code below, the <tag>cell</tag> component is used in the standard manner, nested inside a <tag>row</tag> component. (See also <ref uri="doenet:doenetId=zRuXlzQ0_iNqNqZHHQMxG"><tag>table</tag></ref>, <ref uri="doenet:doenetId=Bm5kSKo8GvPyl85lokH8_"><tag>tabular</tag></ref>, <ref uri="doenet:doenetId=5HERf7liZuJ_-NnhzeTaU"><tag>title</tag></ref>.) </p> 
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>  
+&lt;table&gt;&lt;title&gt;Fake Weather Statistics&lt;/title&gt;
+  &lt;tabular&gt;
+    &lt;row header&gt;
+      &lt;cell&gt;Time&lt;/cell&gt;
+      &lt;cell&gt;Mon&lt;/cell&gt;
+      &lt;cell&gt;Tue&lt;/cell&gt;
+      &lt;cell&gt;Wed&lt;/cell&gt;
+    &lt;/row&gt;
+          
+    &lt;row&gt;
+      &lt;cell&gt;&lt;/cell&gt;
+      &lt;cell&gt;🌧&lt;/cell&gt;
+      &lt;cell&gt;❄️&lt;/cell&gt;
+      &lt;cell&gt;☀️&lt;/cell&gt;
+    &lt;/row&gt;
+        
+    &lt;row&gt;
+      &lt;cell&gt;AM&lt;/cell&gt;
+      &lt;cell&gt;rain&lt;/cell&gt;
+      &lt;cell&gt;snow&lt;/cell&gt;
+      &lt;cell&gt;sunny&lt;/cell&gt;
+    &lt;/row&gt;
+          
+    &lt;row&gt;
+      &lt;cell&gt;&lt;/cell&gt;
+      &lt;cell&gt;50&lt;m&gt;^{\circ}&lt;/m&gt;&lt;/cell&gt;
+      &lt;cell&gt;15&lt;m&gt;^{\circ}&lt;/m&gt;&lt;/cell&gt;
+      &lt;cell&gt;-10&lt;m&gt;^{\circ}&lt;/m&gt;&lt;/cell&gt;
+    &lt;/row&gt;
+  &lt;/tabular&gt;
+&lt;/table&gt;
+
+</pre>
+        </example>
+      </subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+
+  <table><title>Fake Weather Statistics</title>
+        <tabular>
+          <row header>
+            <cell>Time</cell>
+            <cell>Mon</cell>
+            <cell>Tue</cell>
+            <cell>Wed</cell>
+          </row>
+          <row>
+            <cell></cell>
+            <cell>🌧</cell>
+            <cell>❄️</cell>
+            <cell>☀️</cell>
+          </row>
+        
+          <row>
+            <cell>AM</cell>
+            <cell>rain</cell>
+            <cell>snow</cell>
+            <cell>sunny</cell>
+          </row>
+          <row>
+            <cell></cell>
+            <cell>50<m>^{\circ}</m></cell>
+            <cell>15<m>^{\circ}</m></cell>
+            <cell>-10<m>^{\circ}</m></cell>
+          </row>
+        </tabular>
+      </table>
+
+</example>
+
+
+<!--******************************************************-->
+
+<subsection><title>Example 2: Using <tag>cell</tag> with border and alignment attributes </title>
+<p>In the code below, the <attr>right</attr>, <attr>bottom</attr>,  and <attr>halign</attr> attributes are used with the <tag>cell</tag> component.  Valid values for the <attr>halign</attr> attribute are: <c>"left", "center", "justify",</c> and <c>"right"</c> and the default value is <c>"left"</c>.  If an attribute is specified in both a parent and a child component, the styling specified by the child component governs. (See also <ref uri="doenet:doenetId=zRuXlzQ0_iNqNqZHHQMxG"><tag>table</tag></ref>, <ref uri="doenet:doenetId=Bm5kSKo8GvPyl85lokH8_"><tag>tabular</tag></ref>, <ref uri="doenet:doenetId=5HERf7liZuJ_-NnhzeTaU"><tag>title</tag></ref>.)</p>
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>  
+<pre>
+&lt;table&gt;&lt;title&gt;Nonsense emoji shuffle&lt;/title&gt;
+  &lt;tabular width="500" height="300" bottom="medium" top="medium" left="medium" right="medium"&gt;
+    &lt;row&gt;
+      &lt;cell right="major"&gt;🔴&lt;/cell&gt;
+      &lt;cell halign="center"&gt;🔵&lt;/cell&gt;
+      &lt;cell bottom="minor"&gt;🟢&lt;/cell&gt;
+    &lt;/row&gt;
+    
+    &lt;row&gt;
+      &lt;cell right="major"&gt;🟢&lt;/cell&gt;
+      &lt;cell halign="right"&gt;🟣&lt;/cell&gt;
+      &lt;cell bottom="minor"&gt;🔵&lt;/cell&gt;
+    &lt;/row&gt;
+    
+    &lt;row&gt;
+      &lt;cell right="major"&gt;🟠&lt;/cell&gt;
+      &lt;cell&gt;🔴&lt;/cell&gt;
+      &lt;cell bottom="minor"&gt;🟣&lt;/cell&gt;
+    &lt;/row&gt;
+  &lt;/tabular&gt;
+&lt;/table&gt;
+</pre>
+        </example>
+      </subsection>
+ 
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 2)</title>
+<table><title>Nonsense emoji shuffle</title>
+  <tabular width="500" height="300" bottom="medium" top="medium" left="medium" right="medium">
+    <row>
+      <cell right="major">🔴</cell>
+      <cell halign="center">🔵</cell>
+      <cell bottom="minor">🟢</cell>
+    </row>
+    
+    <row>
+      <cell right="major">🟢</cell>
+      <cell halign="right">🟣</cell>
+      <cell bottom="minor">🔵</cell>
+    </row>
+    
+    <row>
+      <cell right="major">🟠</cell>
+      <cell>🔴</cell>
+      <cell bottom="minor">🟣</cell>
+    </row>
+  </tabular>
+</table>
+</example>  
+
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,204 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>choice</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>credit</attr>  <em>(number)</em></li>
+<!--  <li><attr>feedbackCodes</attr>  <em>(textList)</em></li>-->
+  <li><attr>feedbackText</attr>  <em>(text)</em></li>
+  <li><attr>preSelect</attr>  <em>(boolean)</em></li>
+<!--    <aside><title><alert>Inherited from parent component/  TypeParentComponentHere:<ref></ref><footnote></footnote></alert></title>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+    </aside>-->
+    
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>choice</tag><idx><tag>choice</tag></idx> component defines an individual choice when nested within a <tag><ref uri="doenet:doenetId=2H6BxwETaoUOdWj4iovYo">choiceInput</ref></tag> block for multiple choice questions. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tag>choice</tag> with <attr>credit</attr> attribute </title>
+<p>In the sample code below, the <tag>choice</tag> component is used to define individual multiple choice answers which are nested within an <tag>choiceInput</tag> block.  The <attr>credit</attr> attribute is set to "1" to indicate the correct answer.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;Which of the following animals is a marsupial?&lt;/p&gt;
+  &lt;answer&gt;
+    &lt;choiceInput&gt;
+      &lt;choice&gt;squirrel&lt;/choice&gt;
+      &lt;choice&gt;chicken&lt;/choice&gt;
+      &lt;choice credit="1"&gt;koala&lt;/choice&gt;
+    &lt;/choiceInput&gt;
+  &lt;/answer&gt;
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders: (Example 1)</title>
+<p>Which of the following animals is a marsupial?</p>
+  <answer>
+    <choiceInput>
+      <choice>squirrel</choice>
+      <choice>chicken</choice>
+      <choice credit="1">koala</choice>
+    </choiceInput>
+  </answer>
+</example>
+
+
+<!--******************************************************-->
+    
+<subsection><title>Example 2:  Named <tag>choice</tag> for <tag>feedback</tag></title>
+<p>In the sample code below, the <tag>choice</tag> components that are incorrect have been named for follow-up reference by <tag><ref uri="doenet:doenetId=WwagbtTRGpBV7WYO1upAN">feedback</ref></tag> components with the <attr>condition</attr> attribute.</p>
+
+<example boxed="true"><title>Sample DoenetML code(Example 2)</title>
+<pre>
+&lt;p&gt;Which two animals are native to Australia?&lt;/p&gt
+  &lt;answer&gt;
+    &lt;choiceInput matchPartial="true" selectMultiple="true"&gt;
+      &lt;choice credit="1"&gt;kangaroo&lt;/choice&gt;
+      &lt;choice name="hippo"&gt;hippo&lt;/choice&gt;
+      &lt;choice name="baboon"&gt;baboon&lt;/choice&gt;
+      &lt;choice credit="1"&gt;platypus&lt;/choice&gt;
+      &lt;choice name="tiger"&gt;tiger&lt;/choice&gt;
+    &lt;/choiceInput&gt;
+  &lt;/answer&gt;
+
+&lt;feedback condition="&dollar;hippo"&gt;Nope, hippos are native to Africa!&lt;/feedback&gt;
+  
+&lt;feedback condition="&dollar;baboon"&gt;Try again! Baboons are native to Africa or Arabia&lt;/feedback&gt;
+
+&lt;feedback condition="&dollar;tiger"&gt;Although some people have claimed to have sighted tigers in Australia, they are native to Asia.&lt;/feedback&gt;
+
+</pre>
+  </example>
+</subsection>
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 2)</title>
+<p>Which two animals are native to Australia?</p>
+  <answer>
+    <choiceInput matchPartial="true" selectMultiple="true">
+      <choice credit="1">kangaroo</choice>
+      <choice name="hippo">hippo</choice>
+      <choice name="baboon">baboon</choice>
+      <choice credit="1">platypus</choice>
+      <choice name="tiger">tiger</choice>
+    </choiceInput>
+  </answer>
+<feedback condition="$hippo">Nope, hippos are native to Africa!</feedback>
+<feedback condition="$baboon">Try again! Baboons are native to Africa or Arabia</feedback>
+<feedback condition="$tiger">Although some people have claimed to have sighted tigers in Australia, they are native to Asia.</feedback>
+</example>
+
+
+<!--******************************************************-->
+
+<subsection><title>Example 3: <tag>choice</tag> with the <attr>preSelect</attr> attribute </title>
+<p>In the sample code below, the <tag>choice</tag> component is used with the <attr>preSelect</attr> attribute.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;p&gt;The Great Pyramids are found in which country?
+  &lt;answer&gt;
+    &lt;choiceInput&gt;
+      &lt;choice&gt;Brazil&lt;/choice&gt;
+      &lt;choice preSelect="true"&gt;India&lt;/choice&gt;
+      &lt;choice credit="1"&gt;Egypt&lt;/choice&gt;
+    &lt;/choiceInput&gt;
+  &lt;/answer&gt;
+&lt;/p&gt;
+
+</pre>
+        </example>
+      </subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 3)</title>
+<p>The Great Pyramids are found in which country?<answer>
+  <choiceInput>
+    <choice>Brazil</choice>
+    <choice preSelect="true">India</choice>
+    <choice credit="1">Egypt</choice>
+  </choiceInput>
+</answer>
+</p>
+</example>
+ 
+<!--******************************************************-->
+
+<subsection><title>Example 4: <tag>choice</tag> with <attr>feedbackText</attr> attribute</title>
+<p>In the sample code below, the <tag>choice</tag> component is used with the <attr>feedbackText</attr> attribute.  Below the <ref><tag>answer</tag></ref> block, the feedback is rendered to the viewer with the <ref><tag>copy</tag></ref> component.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+&lt;p&gt;Which ancient Mesopotamian Empire came first?&lt;answer name="ans"&gt;
+  &lt;choiceInput&gt;
+    &lt;choice feedbackText="Incorrect. The Persian Empire was dominant
+      from around 539-330 B.C.E."&gt;
+          the Persian Empire
+    &lt;/choice&gt;
+  
+    &lt;choice credit="1" feedbackText="Correct! The Akkadian Empire is
+      considered to be the first true empire, and was dominant from
+      around 2350-2150 B.C.E."&gt;
+          the Akkadian Empire
+    &lt;/choice&gt;
+  
+    &lt;choice feedbackText="Incorrect. The Assyrian Empire was 
+      dominant from around 900-612 B.C.E."&gt;
+          the Assyrian Empire
+    &lt;/choice&gt;
+  &lt;/choiceInput&gt;
+&lt;/answer&gt;
+&lt;/p&gt;
+
+&lt;copy prop="feedbacks" tname="ans"/&gt;
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 4)</title>
+<p>Which ancient Mesopotamian Empire came first?<answer name="ans">
+  <choiceInput>
+    <choice feedbackText="Incorrect. The Persian Empire was dominant from around 539-330 B.C.E.">the Persian Empire</choice>
+    <choice credit="1" feedbackText="Correct! The Akkadian Empire is considered to be the first true world empire, and was dominant from around 2350-2150 B.C.E.">the Akkadian Empire</choice>
+    <choice feedbackText="Incorrect. The Assyrian Empire was dominant from around 900-612 B.C.E.">the Assyrian Empire</choice>
+  </choiceInput>
+</answer>
+</p>
+
+<copy prop="feedbacks" tname="ans"/>
+</example>
+    
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

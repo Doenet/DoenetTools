@@ -1,0 +1,44 @@
+<problem>
+<variantControl nVariants="1" />
+<!-- <title>Human embryo doubling, time to adult number of cells</title> -->
+
+<setup>
+
+<math name='log1014' simplify='full' >log(10.0^(14))</math>
+<math name='log2' simplify='full' >log(2.0)</math>
+<math name='n_days' simplify='full' >$log1014 /$log2 </math>
+<math name='n_weeks' simplify='full' >$n_days /7</math>
+
+</setup>
+
+<p>
+In the first days of life, the cells in a human embryo divide into two cells approximately every day.  After fertilization, the new life consists of a single cell.  If the number of cells continued to double every day, how many weeks would it take the embryo to grow to the size of a human adult, containing approximately 100 trillion (<m>10^{14}</m>) cells?
+
+<answer name='answer1'>
+<award allowedErrorInNumbers='0.001'>$n_weeks </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$n_weeks </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$n_weeks </award>
+<award allowedErrorInNumbers='0.001' credit='0' name='award1'>$n_days </award>
+</answer>
+ weeks
+</p>
+
+<feedback condition="$award1">Check your units.  It is asking for number of weeks.</feedback>
+<copy prop="feedbacks" tname="answer1" />
+
+<p>(Keep at least four significant digits in your response.)
+</p>
+
+<solution>
+<p>If the number of cells doubled every day, then the embryo would reach the size of a human adult after <m>n</m> days, where <m>n</m> satisfies
+<me>2^n = 10^{14}.</me>
+The number of days is
+<me>n = \frac{\log(10^{14})}{\log 2} \approx \frac{ <round numberdigits="4"><number>$log1014 </number></round> }{ <round numberdigits="4"><number>$log2 </number></round> } \approx <round numberdigits="4"><number>$n_days </number></round>.</me>
+The embryo would grow to the size of an adult after <round numberdigits="4">$n_weeks</round> weeks.</p>
+
+<p>Clearly the embryo growth must slow down.</p>
+
+</solution>
+
+
+</problem>

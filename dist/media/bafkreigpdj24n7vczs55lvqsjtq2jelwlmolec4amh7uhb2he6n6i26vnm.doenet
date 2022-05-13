@@ -1,0 +1,125 @@
+<title>Examples of solving linear ordinary differential equations using an integrating factor</title>
+
+<description>
+Examples of finding an integrating factor and integrating first order linear ordinary differential equations.
+</description>
+
+
+<section><title>Example 1</title>
+
+
+<p>Solve the ODE
+<men name="example1">\frac{ dx }{ dt } -\cos(t)x(t)=\cos(t)</men>
+for the initial conditions <m>x(0)=0</m>.</p>
+
+<p><alert>Solution</alert>: Since this is a first order linear ODE, we can 
+<ref uri="doenet:doenetId=E1l8yR6KIUJx67e_XbRcN">
+solve it
+by finding an integrating factor</ref>
+
+ <m>\mu(t)</m>.  If we choose <m>\mu(t)</m> to be
+<me>\mu(t) = e^{-\int \cos(t)} = e^{-\sin(t)},</me>
+and multiply both sides of the ODE by <m>\mu</m>, we can rewrite the ODE as
+<me>\frac{ d }{ dt }(e^{-\sin(t)}x(t)) =  e^{-\sin(t)}\cos(t).</me>
+Integrating with respect to <m>t</m>, we obtain
+<md>
+  <mrow>e^{-\sin(t)}x(t)\amp =  \int e^{-\sin(t)}\cos(t) dt +C</mrow>
+  <mrow>\amp = -e^{-\sin(t)} + C,</mrow>
+</md>
+where we used the <m>u</m>-subtitution <m>u=\sin(t)</m> to compute the integral.
+Dividing through by <m>e^{-\sin(t)}</m>, we calculate that the the general form of the solution to equation <ref tname='example1' />
+is
+<me>x(t) =  -1 + Ce^{\sin(t)}.</me>
+</p>
+
+<p>We verify that we have a solution to equation <ref tname='example1' />.  Since
+<me>\frac{ dx }{ dt } =  Ce^{\sin(t)}\cos(t)</me>
+we calculate that
+<me>\frac{ dx }{ dt } - \cos(t)x(t) = Ce^{\sin(t)}\cos(t)-\cos(t)(-1 + Ce^{\sin(t)})
+  = \cos(t),</me>
+demonstrating that we have found the general solution to the ODE.</p>
+
+<p>We determine the integration constant <m>C</m> by the condition
+<m>0=x(0)=-1+Ce^0 = -1+C</m>, so that <m>C=1</m>.  Our specific solution to the ODE of
+<ref tname='example1' /> is
+<me>x(t) =  -1 + e^{\sin(t)}.</me>
+</p>
+
+
+</section>
+
+<section><title>Example 2</title>
+
+
+<p>Solve the ODE
+<men name="example2">\frac{ dx }{ dt } = \frac{1}{\tau}(-x + I(t))</men>
+with initial condition <m>x(t_0)=x_0</m>.</p>
+
+<p><alert>Solution</alert>: Rewrite the equation in the form
+<me>\frac{ dx }{ dt } + \frac{x}{\tau}= \frac{I(t)}{\tau}.</me>
+In this case, our integrating factor is <m>\mu(t) = e^{\int (1/\tau) dt} = e^{t/\tau}</m>.  Multiplying through by <m>\mu(t)</m>, we can rewrite our ODE as
+<me>\frac{ d }{ dt }\left(e^{t/\tau}x(t)\right)= \frac{I(t)}{\tau}e^{t/\tau}.</me>
+</p>
+
+<p>For this example, let's integrate from <m>t_0</m> to <m>t</m>, rather than calculate
+the indefinite integral as in previous examples.
+<md>
+  <mrow>\int_{t_0}^t \frac{d}{dt'}\left(e^{t'/\tau}x(t')\right)dt'\amp = \int_{t_0}^t \frac{I(t')}{\tau}e^{t'/\tau}dt'</mrow>
+  <mrow>e^{t/\tau}x(t) - e^{t_0/\tau}x(t_0)\amp = \frac{1}{\tau}\int_{t_0}^t e^{t'/\tau}I(t')dt'</mrow>
+</md>
+Dividing through by <m>e^{t/\tau}</m> and using the initial conditions <m>x(t_0)=x_0</m>,
+the solution to the ODE of <ref tname='example2' /> is
+<men name="example2sol">x(t) = e^{-(t-t_0)/\tau}x_0
+  + \frac{1}{\tau}\int_{t_0}^t e^{-(t-t')/\tau}I(t')dt'.</men>
+</p>
+
+<p>To verify this solution, we differentiate equation <ref tname='example2sol' /> 
+with respect to <m>t</m>,
+obtaining three terms (two from the exponentials and one from the upper
+integration limit),
+<md>
+  <mrow>\frac{ dx }{ dt }\amp = -\frac{1}{\tau} e^{-(t-t_0)/\tau}x_0
+  -\frac{1}{\tau} \frac{1}{\tau}\int_{t_0}^t e^{-(t-t')/\tau}I(t')dt'
+  + \frac{1}{\tau} e^{-0/\tau}I(t)</mrow>
+  <mrow>\amp = -\frac{1}{\tau} \left(e^{-(t-t_0)/\tau}x_0
+  +\frac{1}{\tau}\int_{t_0}^t e^{-(t-t')/\tau}I(t')dt'\right)
+  + \frac{1}{\tau} I(t)</mrow>
+  <mrow>\amp =-\frac{1}{\tau}x(t) + \frac{1}{\tau}I(t).</mrow>
+</md>
+Indeed <m>x(t)</m> satisfies equation <ref tname='example2' />.  If we plug <m>t=t_0</m> into
+equation <ref tname='example2sol' />, the integral is from <m>t_0</m> to <m>t_0</m>, so is zero. 
+The exponential of the first term is <m>e^0=1</m>, and we confirm that <m>x(t_0)=x_0</m>.
+</p>
+
+
+</section>
+
+<section><title>Example 3</title>
+
+
+<p>Solve the ODE
+<men name='example3' >\frac{ dx }{ dt } + e^{t}x(t) = t^2 \cos(t)</men>
+with the initial condition <m>x(0)=5</m>.</p>
+
+<p><alert>Solution</alert>: The first step is to find the integrating factor
+<me>\mu(t) = e^{\int e^t dt} = e^{e^t} = \exp(e^t),</me>
+where <m>\exp(x)</m> is another way of writing <m>e^x</m>.  Multiplying 
+equation <ref tname='example3' /> by <m>\mu(t)</m>, then the left hand side is the derivative
+of <m>\mu(t)x(t)</m>. We can write it as
+<me>\frac{ d }{ dt }\left( \exp(e^t) x(t)\right) = t^2 \cos(t) \exp(e^t).</me>
+</p>
+
+<p>To solve the ODE in terms of the initial conditions <m>x(0)</m>, we integrate from <m>0</m> to <m>t</m>, obtaining
+<md>
+  <mrow>\int_0^t \frac{ d }{ ds }\left( \exp(e^{s}) x(s)\right)ds\amp = \int_0^t {s}^2 \cos(s) \exp(e^{s})ds</mrow>
+  <mrow>\exp(e^{t}) x(t) - \exp(e^{0}) x(0)\amp = \int_0^t {s}^2 \cos(s) \exp(e^{s})ds.</mrow>
+</md>
+Even though we cannot compute the integral analytically, we 
+still consider the ODE solved.  Plugging in the initial conditions <m>x(0)=5</m>, we can write the solution of the ODE 
+<ref tname='example3' /> as
+<me>x(t) = 5\exp(1-e^t)+
+  \int_0^t {s}^2 \cos(s) \exp(e^{s}-e^{t})ds.</me>
+</p>
+
+<p>You can easily check that <m>x(t)</m> satisfies the ODE <ref tname='example3' /> and the initial conditions <m>x(0)=5</m>.</p>
+</section>

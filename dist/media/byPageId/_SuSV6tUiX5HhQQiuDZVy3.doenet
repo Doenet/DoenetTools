@@ -1,0 +1,46 @@
+<title>Call action</title>
+
+<p>You can use the <tag>callAction</tag> component to call an action that has been defined on another component.  Here are some examples.</p>
+
+
+<section>
+  <title>Adding and deleting components on a graph</title>
+  
+  <p>The <tag>graph</tag> has two actions defined: <c>addChildren</c> and <c>deleteChildren</c>.  At present, <c>deleteChildren</c> can only delete children that have been added vis <c>addChildren</c> and the last added children, but more features can be added.</p>
+  
+  
+ 
+  
+  <graph name="g">
+  </graph>
+  
+  <callAction name="addPoint" tName="g" actionName="addChildren" label="Add point">
+    <point>(3,4)</point>
+  </callAction>
+ <callAction name="addCircle" tName="g" actionName="addChildren" label="Add circle">
+   <point name="A">(1,2)</point>
+   <point name="B">(4,3)</point>
+   <point name="C">(6,1)</point>
+   <circle through="$A $B $C" /> 
+  </callAction>
+  <callAction name="deleteLast" tName="g" actionName="deleteChildren" label="Delete last thing added" number="1" />
+
+  
+  <p>To make these actually useful, we'd need a tool that would let to you click somewhere to specify the location where to add or delete.  But, this is a start.</p>
+
+</section>
+
+<section hide>
+  Workaround while dynamic loading of components isn't smart enough.
+  Include components so that their renderers are loaded
+  <point />
+  <circle />
+</section>
+
+<section>
+  <title>Resampling random numbers</title>
+  
+  <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+  <p><callAction tName="s" actionName="resample" label="roll dice" name="rs" /></p>
+
+</section>

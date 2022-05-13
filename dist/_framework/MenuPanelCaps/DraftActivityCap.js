@@ -1,11 +1,8 @@
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
-import axios from "../../_snowpack/pkg/axios.js";
-import {currentAttemptNumber} from "../ToolPanels/AssignmentViewer.js";
-import {authorItemByDoenetId, coursePermissionsAndSettingsByCourseId, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, courseIdAtom, coursePermissionsAndSettingsByCourseId, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 export default function DraftActivityCap() {
-  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const courseId = useRecoilValue(courseIdAtom);
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   if (!course || Object.keys(course).length == 0) {
     return null;

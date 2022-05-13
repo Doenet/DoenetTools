@@ -1,0 +1,53 @@
+<!--
+## umnLibrary/algebraKaufmannSchwitters/ks_2_2_12.pg
+##DESCRIPTION
+##  Algebra: linear equations 
+##ENDDESCRIPTION
+
+
+## DBsubject(Algebra)
+## DBchapter(Linear equations and functions)
+## DBsection(Linear equations)
+## Date(09/09/2009)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(LinearEquations_02)
+## Level(3)
+## MO(1)
+## TitleText1('Algebra for College Students')
+## AuthorText1('Kaufmann, Schwitters')
+## EditionText1('8')
+## Section1('2.2')
+## Problem1('12')
+## KEYWORDS('algebra', 'linear equations')
+-->
+<problem>
+
+<setup>
+  <!--
+    $a = random(2,4,1);
+    $b = random(5,10,1);
+    $c = non_zero_random(-10,11,1);
+    
+    $ans = Compute("$a*($b+$c)");
+  -->
+
+  <selectFromSequence from="2" to="4"  step="1" name="a" />
+  <selectFromSequence from="5" to="10" step="1" name="b" />
+  <selectFromSequence from="-10" to="11" step="1" exclude="0" name="c" />
+
+  <math name="aInverse">1/$a</math>
+  <math name="f">$aInverse x-$c</math>
+  <math name="g">$b</math>
+  
+  <math name="ans">$a*($b+$c)</math>  
+</setup>
+
+<p>Solve the equation <m>$f = $g</m>.</p>
+
+<p>Answer: <m>x = </m>
+  <answer>
+    <award>$ans</award>
+  </answer>
+</p>
+</problem>

@@ -1,0 +1,105 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+<document><title><tag>p</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+</ul>
+
+  <!--newNameSpace is possible within a <p>, but other sectional component attributes are not.  List newNameSpace?-->
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>p</tag><idx><tag>p</tag></idx> component renders a paragraph or block of text. For optimal clarity and presentation, it is often preferable to nest other components such as mathematical content, lists, tables or figures within a <tag>p</tag>.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: Using <tag>p</tag> to create paragraphs</title>
+<p>In the sample code below, all text enclosed within an opening and closing <tag>p</tag> forms a paragraph.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;Chocolate cake sugar plum chocolate bar brownie 
+  chupa chups chocolate tart. Sweet roll donut biscuit carrot 
+  cake candy canes. Bear claw pastry liquorice jelly beans 
+  shortbread sesame snaps.&lt;/p&gt;
+  
+&lt;p&gt;Shortbread chocolate marshmallow macaroon candy canes. 
+  Shortbread jujubes chocolate apple pie wafer croissant. Jelly-o 
+  jelly pastry tiramisu candy canes topping. Dessert oat cake 
+  marzipan bear claw wafer ice cream ice cream.&lt;/p&gt;
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>Chocolate cake sugar plum chocolate bar brownie chupa chups chocolate tart. Sweet roll donut biscuit carrot cake candy canes. Bear claw pastry liquorice jelly beans shortbread sesame snaps.</p>
+<p>Shortbread chocolate marshmallow macaroon candy canes. Shortbread jujubes chocolate apple pie wafer croissant. Jelly-o jelly pastry tiramisu candy canes topping. Dessert oat cake marzipan bear claw wafer ice cream ice cream.</p>
+</example>
+
+
+<!--******************************************************-->
+
+<subsection><title>Example 2: Lists with and without <tag>p</tag> tags</title>
+<p>In the sample code below, two lists are shown next to each other using the <ref><tag>sideBySide</tag></ref> component.  In the left ordered list (<ref><tag>ol</tag></ref>), list items are defined using only the <ref><tag>li</tag></ref> component.  In the right ordered list, list items are also enclosed within a <tag>p</tag> component.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;sideBySide&gt;
+  &lt;ol&gt;&lt;title&gt;&lt;alert&gt;To Do List:&lt;/alert&gt;&lt;/title&gt;
+    &lt;li&gt;buy a cauldron&lt;/li&gt;
+    &lt;li&gt;learn how to ride a broomstick&lt;/li&gt;
+    &lt;li&gt;find a nice cave to live in&lt;/li&gt;
+  &lt;/ol&gt;
+
+  &lt;ol&gt;&lt;title&gt;&lt;alert&gt;Love Potion:&lt;/alert&gt;&lt;/title&gt;
+    &lt;li&gt;&lt;p&gt;pickled turnips&lt;/p&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;p&gt;eye of toad&lt;/p&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;p&gt;powdered birchtree root&lt;/p&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/sideBySide&gt;
+</pre>
+
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<sideBySide>
+  <ol><title><alert>To Do List:</alert></title>
+    <li>buy a cauldron</li>
+    <li>learn how to ride a broomstick</li>
+    <li>find a nice cave to live in</li>
+  </ol>
+
+  <ol><title><alert>Love Potion:</alert></title>
+    <li><p>pickled turnips</p></li>
+    <li><p>eye of toad</p></li>
+    <li><p>powdered birchtree root</p></li>
+  </ol>
+</sideBySide>  
+</example>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

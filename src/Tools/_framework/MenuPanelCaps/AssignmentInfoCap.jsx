@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 // import axios from 'axios';
 // import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 import { 
-  // authorItemByDoenetId, 
+  // itemByDoenetId, 
   courseIdAtom, 
   coursePermissionsAndSettingsByCourseId, 
   // useCourse 
@@ -39,7 +39,7 @@ let image = course.image;
   // let [courseId,setCourseId] = useState("");
   // let [contentLabel,setContentLabel] = useState("");
   // const { image, label: courseLabel}  = useCourse(courseId);
-  // const {label: itemLabel} = useRecoilValue(authorItemByDoenetId(doenetId));
+  // const {label: itemLabel} = useRecoilValue(itemByDoenetId(doenetId));
 
   // useEffect(()=>{
   //   axios.get('/api/findCourseIdAndParentDoenetId.php', {

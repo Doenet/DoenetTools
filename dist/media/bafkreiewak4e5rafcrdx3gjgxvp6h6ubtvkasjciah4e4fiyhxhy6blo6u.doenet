@@ -1,0 +1,16 @@
+<title>Riemann sums problem set</title>
+
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <copy uri="doenet:contentId=475b88ef955613858443ce56e0d65d1020598f299cec32e1fe9c7470c71818ce&doenetId=RanIC45I5spu5K4Yah455" componentType="problem" assignNames="problem1" />
+  <copy uri="doenet:contentId=a14463395d9cf6af858ea1b0db9dc36020797fd1c452acc31f75f27062b32a16&doenetId=921oftI8ykDsPj3gc6r70" componentType="problem" assignNames="problem2" />
+  <copy uri="doenet:contentId=f0782d84449f2e74858b934fd2caa8d129cd4ed2497fc008d2a14fbec0b02854&doenetId=cbOJJuuBUuzmhE1LcCHe6" componentType="problem" assignNames="problem3" />
+  
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

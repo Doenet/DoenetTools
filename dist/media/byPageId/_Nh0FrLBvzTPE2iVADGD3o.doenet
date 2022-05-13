@@ -1,0 +1,121 @@
+<problem>
+<!-- <title>Solve simple linear differential equations</title> -->
+
+<setup>
+
+
+  
+<math name='u0' simplify='full' >5</math>
+<math name='usol' simplify='full' >$u0 *e^(3t)</math>
+<math name='v0' simplify='full' >7</math>
+<math name='vsol' simplify='full' >$v0 *e^(-4t)</math>
+<math name='s0' simplify='full' >-2</math>
+<math name='ssol' simplify='full' >$s0 *e^(t)</math>
+<math name='z0' simplify='full' >-5</math>
+<math name='zsol' simplify='full' >$z0 *e^(-t)</math>
+<math name='z02' >-5</math>
+<math name='zsol2' >$z02 *e^(-t)</math>
+
+</setup>
+
+<p>
+Solve the following differential equations.
+</p>
+
+<ol>
+<!--Problem#1**********************************************-->
+<li>
+<p><m>\frac{ du }{ dt } = 3u(t) </m>
+</p>
+<p>
+<m>u(0) = $u0 </m>
+</p>
+<p><m>u(t)=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$usol </award>
+</answer>
+</p>
+</li>
+  
+<!--Problem#2**********************************************-->
+<li>
+<p>
+  <m>\frac{ dv }{ dt } = -4v </m>
+</p>
+<p>
+  <m>v(0) = $v0 </m>
+</p>
+<p>
+  <m>v(t)=</m> 
+  <answer>
+  <award symbolicEquality='true' simplifyOnCompare>$vsol </award>
+  </answer>
+</p>
+
+</li>
+
+<!--Problem#3**********************************************-->
+<li>
+<p>
+  <m>s'(t) = s </m>
+</p>
+<p>
+  <m>s(0) = $s0 </m>
+</p>
+<p>
+  <m>s(t)=</m> 
+  <answer>
+  <award symbolicEquality='true' simplifyOnCompare>$ssol </award>
+  </answer>
+</p>
+</li>
+
+<!--Problem#4**********************************************-->
+<li>
+<p>
+  <m>z'(t) = −z(t) </m>
+</p>
+<p>
+  <m>z(0) = $z0 </m>
+</p>
+<p>
+  <m>z(t)=</m> 
+  <answer symbolicEquality='true' simplifyOnCompare>
+  <award>$zsol </award>
+  <award>$zsol2 </award>
+  </answer>
+</p>
+
+</li>
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<m>u(t)=$usol </m>
+</li>
+
+<li>
+<m>v(t)=$vsol </m>
+</li>
+
+<li>
+<m>s(t)=$ssol </m>
+</li>
+
+<li>
+<m>z(t)=$zsol2 </m>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

@@ -2,24 +2,30 @@ import { faFolderTree } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import { useToast } from '../Toast';
+import { toastType, useToast } from '../Toast';
 
 
 
 export default function SelectedSection() {
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  // const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
-  const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  const itemObj = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const { renameItem, deleteItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
+  const { updateAssignItem } = useCourse(courseId);
+
+  let assignSectionText = 'Assign Section';
+  if (itemObj.isAssigned ) {
+    assignSectionText = 'Unassign Section';
+  }
 
   useEffect(()=>{
     if (itemTextFieldLabel !== itemObj.label){
@@ -54,26 +60,32 @@ export default function SelectedSection() {
     return (
       <>
         {heading}
-        <ActionButton
-          width="menu"
-          value="Take Assignment"
-          onClick={() => {
-            setPageToolView({
-              page: 'course',
-              tool: 'assignment',
-              view: '',
-              params: {
-                doenetId,
-              },
-            });
-          }}
-        />
+        
       </>
     );
   }
   
   return <>
   {heading}
+  <ActionButton
+        width="menu"
+        value={assignSectionText}
+        onClick={() => {
+          console.log("itemObj.isAssigned",itemObj.isAssigned)
+          let toastText = 'Section Assigned.'
+          if (itemObj.isAssigned){
+            toastText = 'Section Unassigned.'
+          }
+          updateAssignItem({
+            doenetId,
+            isAssigned:!itemObj.isAssigned,
+            successCallback: () => {
+              addToast(toastText, toastType.INFO);
+            },
+          })
+        
+        }}
+      />
   <Textfield
       label="Label"
       vertical
@@ -86,6 +98,7 @@ export default function SelectedSection() {
       onBlur={handelLabelModfication}
     />
     <br />
+    
     <Button
       width="menu"
       value="Delete Section"

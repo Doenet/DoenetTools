@@ -1,0 +1,16 @@
+<title>Stability from cobwebbing problem set</title>
+
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+  <copy uri="doenet:contentId=17fb717ceaa8dfa96f0b62bb228d099cc4fd5780fb1e5d3c4672fcd4caddf22d&doenetId=UeXbtj4JQI1CoLoZld0sO" componentType="problem" assignNames="problem1" />
+
+  <copy uri="doenet:contentId=a7028f3e3835cefe6e9e29968013418a3c5d0b1a4d6c7698cc70432e433b8351&doenetId=zMVM0IvskeriLsEC0VgNm" componentType="problem" assignNames="problem2" />
+
+  <copy uri="doenet:contentId=7353b2ddc8a90f4430f802ac9558754b64264809bc5bf2e0053287cf0dcf7e86&doenetId=XQWD-2PPdZ2GctklTY6Se" componentType="problem" assignNames="problem3" />
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

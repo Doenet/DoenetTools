@@ -1,0 +1,36 @@
+<problem>
+  <title>Animal sounds</title>
+
+  <variantControl nvariants="4" variants="cat dog mouse fish"/>
+  
+  <select assignNames="(animal sound)" hide>
+    <option selectForVariants="cat">
+      <text>cat</text><text>meow</text>
+    </option>
+    <option selectForVariants="dog">
+      <text>dog</text><text>woof</text>
+    </option>
+    <option selectForVariants="mouse">
+      <text>mouse</text><text>squeak</text>
+    </option>
+    <option selectForVariants="fish">
+      <text>fish</text><text>blub</text>
+    </option>
+  </select>
+  
+  <p>What does the $animal say?</p>
+  <answer name="ans">
+    <choiceinput randomizeOrder>
+    <choice credit="$animal=cat" >meow</choice>
+    <choice credit="$animal=dog" >woof</choice>
+    <choice credit="$animal=mouse" >squeak</choice>
+    <choice credit="$animal=fish" >blub</choice>
+    </choiceinput>
+  </answer>
+  
+  
+  <feedback condition="$ans=$sound"><p>That's right, the $animal goes $sound!</p></feedback>
+  <feedback condition="$ans!=$sound"><p>Try again.</p></feedback>
+  
+
+</problem>

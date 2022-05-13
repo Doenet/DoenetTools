@@ -1,0 +1,69 @@
+<problem>
+<selectFromSequence assignNames='a0' hide='true' from="1" to="100" />
+<selectFromSequence assignNames='t0' hide='true' from="1" to="4" />
+<select assignNames='(recip question-snippet solution-snippet)' hide="true">
+  <option>
+    <number>0</number>
+    <math format="latex" simplify="none">
+      $a0 \cdot $extra_factor $b0^{t - $t0 }
+    </math>
+    <group>
+      <md>
+        <mrow>$f(t)\amp = <math simplify="numbersPreserveOrder" format="latex">$a0 \cdot  $extra_factor $b0^{ t - $t0 }</math></mrow>
+        <mrow>\amp = <math simplify="numbersPreserveOrder" format="latex">$a0 \cdot $extra_factor $b0^{ t}  $b0^{ -$t0 }</math></mrow>
+        <mrow>\amp = \left($a0 \cdot $b0^{ -$t0 }\right) $b0_with_extra^t</mrow>
+        <mrow>\amp = \frac{ $a0 }{ $b0^{ $t0 } }$b0_with_extra^t</mrow>
+      </md>
+      Therefore, <m>a = $a</m> and <m>b=$b</m>.
+    </group>
+  </option>
+  <option>
+    <number>1</number>
+    <math format="latex" simplify="none">
+      \frac{ $a0 }{ $extra_factor $b0^{ t - $t0 } }
+    </math>
+    <group>
+      <md>
+        <mrow>$f(t)\amp = <math simplify="numbersPreserveOrder" format="latex">\frac{ $a0 }{ $extra_factor $b0^{ t - $t0 } }</math></mrow>
+        <mrow>\amp = <math simplify="numbersPreserveOrder" format="latex">$a0 \cdot  $extra_factor_recip$b0^{ -(t-$t0) }</math></mrow>
+        <mrow>\amp = <math simplify="numbersPreserveOrder" format="latex">$a0 \cdot  $extra_factor_recip $b0^{ -t+$t0 }</math></mrow>
+        <mrow>\amp = $a0 \cdot$b0_with_extra^{ -t} \cdot $b0^{ $t0 }</mrow>
+        <mrow>\amp = \left($a0 \cdot $b0^{ $t0 }\right) \left(\frac{1}{$b0_with_extra }\right)^t.</mrow>
+      </md>
+      Therefore <m>a = $a0 \cdot $b0^{ $t0 } = $a</m> and <m>b= \frac{1}{$b0_with_extra }</m>.
+    </group>
+  </option>
+</select>
+
+<selectFromSequence assignNames='b0' hide='true' from="2" to="8"/>
+<selectFromSequence assignNames='twofactors' hide='true' from="0" to="1" />
+<selectFromSequence assignNames='c0' hide='true' from="2" to="5" />
+<select assignNames='f' hide='true'>f g h k y z u v w Q R S U V W</select>
+<math name='recip_exp' hide='true' simplify='full'>1-2*<copy tname="recip" /></math>
+<math name='a' hide='true' simplify='full'><copy tname="a0" />*<copy tname="b0" />^(-<copy tname="recip_exp" />*<copy tname="t0" />)</math>
+<math name='extra_factor' hide='true' simplify='full'>(<copy tname="c0" />^<copy tname="twofactors" />)^t</math>
+<math name='extra_factor_recip' hide='true' simplify='full'>(<copy tname="c0" />^<copy tname="twofactors" />)^(-t)</math>
+<math name='b0_with_extra' hide='true' simplify='full'><copy tname="b0" />*<copy tname="c0" />^<copy tname="twofactors" /></math>
+<math name='b' hide='true' simplify='full'><copy tname="b0_with_extra" />^(<copy tname="recip_exp" />)</math>
+
+
+Rewrite the exponential function
+<me><copy tname="f" />(t) = <math simplify="numbersPreserveOrder" format="latex"> 
+<copy tname="question-snippet" />
+</math></me> 
+in the form <m><copy tname="f" />(t)=ab^t</m>, where we call <m>a</m> the <q>initial value</q> (the value when <m>t=0</m>) and <m>b</m> the <q>growth factor.</q>  In this form:
+<p><m>a =</m> <mathinput name="input1"/></p>
+<p><m>b =</m> <mathinput name="input2"/></p>
+
+<answer>
+  <award matchpartial="true" targetsAreResponses="input1 input2"><when> 
+  <mathlist>$input1 $input2</mathlist>
+  =
+  <mathlist>$a $b</mathlist>
+  </when> </award>
+</answer>
+
+<solution>
+<copy name="sol" tname="solution-snippet" />
+</solution>
+</problem>

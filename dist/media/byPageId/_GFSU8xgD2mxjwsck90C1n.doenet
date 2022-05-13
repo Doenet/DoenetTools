@@ -1,0 +1,372 @@
+<problem>
+<!-- <title>Animal half-life worksheet</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='decline_percent' from='5' to=' 5' />
+<selectFromSequence assignNames='initial' from='100000' to=' 100000' step=' 8000'/>
+<selectFromSequence assignNames='times_halved' from='3' to=' 3' />
+<text name='animal'>sea lion</text>
+<math name='final' simplify='full' >$initial /(2**$times_halved )</math>
+
+<number name='decline'>$decline_percent /100.0</number>
+<number name='netmult'>1-$decline </number>
+<math name='loghalf' >log(0.5)</math>
+<math name='lognetmult' >log($netmult )</math>
+<number name='Thalf_sub' >log(0.5)/log($netmult )</number>
+<math name='Thalf' >$Thalf_sub </math>
+<math name='reduce_factor' >2**$times_halved </math>
+<math name='fraction10' >$netmult ^10</math>
+<math name='logtenth' >log(0.1)</math>
+<number name='Ttenth_sub' >log(0.1)/log($netmult )</number>
+<math name='Ttenth' >$Ttenth_sub </math>
+<math name='log005' >log(0.05)</math>
+<math name='T005' >log(0.05)/log($netmult )</math>
+<math name='fraction_n' >$netmult ^n</math>
+<math name='log_fraction_n' >log($netmult ^n)</math>
+<math name='log_fraction_n_form_2' >n*log($netmult )</math>
+<math name='Thalf_log_ratio' >log(1/2)/log($netmult )</math>
+<math name='Thalf_log_ratio2' >log(0.5)/log($netmult )</math>
+<math name='Thalf_log_ratio3' >-log(2)/log($netmult )</math>
+<math name='Thalf_log_ratio4' >(-log(2))/log($netmult )</math>
+<math name='years' >years</math>
+<math name='Ttenth_log_ratio' >log(0.1)/log($netmult )</math>
+<math name='Ttenth_log_ratio2' >log(1/10)/log($netmult )</math>
+<math name='Ttenth_log_ratio3' >-log(10)/log($netmult )</math>
+<math name='Ttenth_log_ratio4' >(-log(10))/log($netmult )</math>
+s<math name='log_fraction_n_form_2_bad1' >n l o g($netmult )</math>
+<math name='log_fraction_n_form_2_bad2' >n l n($netmult )</math>
+
+</setup>
+
+A population of <pluralize><copy tname="animal" /></pluralize> is decreasing at a rate of 5% per year.
+
+<!-- <hint>
+
+<paragraphs>
+<title>Helpful pages</title>
+<ul>
+<li><ref uri='doenet:doubling_time_half_life_discrete'>Doubling time and half-life of exponential growth and decay</ref></li>
+</ul></paragraphs>
+</hint>
+ -->
+
+<ol>
+
+<li>
+<p>If the population continues to decline at this rate, to what fraction of the original population size will the population decline after 10 years?  
+<answer name="answer1">
+<award allowedErrorInNumbers='0.001'>$fraction10 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$fraction10 </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$fraction10 </award>
+</answer>
+<copy prop="feedbacks" tname="answer1" />
+  (Keep at least 4 significant digits.)</p>
+
+
+
+<hint>
+<p>If the population is decreasing at a rate of $decline_percent % per year, then by what number do we need to multiply the population size each year? <answer weight="0"><award>$netmult</award></answer> </p>
+
+<p>This means, after 1 year, the population declines to what fraction of the original population size? <answer weight="0"><award>$netmult</award></answer> </p>
+
+<p>In the second year, it declines again by the same fraction. Therefore, after 2 years, the population declines to what fraction of the original population size? <answer weight="0"><award><math>$netmult^2</math></award></answer> </p>
+
+
+<p>Note: we didn't tell you how many <pluralize><copy tname="animal" /></pluralize> there were to start out with, so apparently, your answer shouldn't depend on that value.  But, if it is easier, you could define a variable to represent the initial population size (for example <m>p_0</m>), and solve the dynamical system like before.  If you divide the solution by the original population size, you'll get the answer.</p>
+</hint>
+
+</li>
+
+<li>
+<p>To what fraction of the original population size will the population decline after <m>n</m> years?  
+<answer name='answer2'>
+<award allowedErrorInNumbers='0.001'>$fraction_n </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$fraction_n </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$fraction_n </award>
+</answer>
+<copy prop="feedbacks" tname="answer2" />
+
+</p>
+
+
+<hint>
+  <p>You answer should be something to the power of <m>n</m>.</p>
+</hint>
+
+</li>
+
+<li>
+<p>To find how long it will take for the population to decline by one-half, follow these steps.  Set the expression from part (2) equal to one-half.
+</p>
+
+<p><mathinput name="half1a" /> <m>= \frac{1}{2}</m>
+<answer name='answer3'>
+  <award><when>$half1a = $fraction_n</when></award>
+</answer>
+</p>
+
+<p>This equation says that after <m>n</m> years, the population has decline to 50%.  Now, we need to find out what value of <m>n</m> will satisfy this equation.  We need to solve this equation for <m>n</m>.  In case you're rusty on logarithms, we'll take you to the solution step by step.</p>
+
+<p>Take the logarithm of both sides of that equation.  
+</p>
+
+<p><mathinput name="half2a" /> <m>=</m> <mathinput name="half2b" />
+  <answer name='answer4'>
+    <award matchPartial symbolicEquality simplifyOnCompare="numbers" name="rightFormAward" targetsAreResponses="half2a half2b">
+      <when>$half2a = $log_fraction_n and $half2b = $loghalf</when>
+    </award>
+    <award matchPartial credit="0" name="anyFormAward">
+      <when>$half2a = $log_fraction_n and $half2b = $loghalf</when>
+    </award>
+  </answer>
+</p>
+
+<feedback condition="$(anyFormAward{prop='fractionSatisfied'}) = 1 and $(rightFormAward{prop='fractionSatisfied'}) < 1" updateWithTname="answer4">
+  <p>Your answer is mathematically correct, but here we are expecting a particular form for the answer.  Be sure the both expressions are written as logarithms of the values from the previous equation.  We'll simplify more in the next step.</p>
+</feedback>
+
+<hint>
+  You can use either <c>ln</c> or <c>log</c> for the logarithm.  (Both are interpreted as logarithmm base <m>e</m>, though for this calculation, it actually doesn't matter what base logarithm is used.)
+</hint>
+
+
+<p>Using the 
+<ref uri='doenet:logarithm_basics' tname='log_power'>log of power rule</ref>
+, bring down the exponent from the left hand side in front of the logarithm.
+</p>
+
+<p><mathinput name="half3a" /> <m>=</m> <mathinput name="half3b" />
+  <answer name='answer6'>
+    <award matchPartial symbolicEquality simplifyOnCompare="numbers" name="rightFormAward2" targetsAreResponses="half3a half3b">
+      <when>$half3a = $log_fraction_n_form_2 and $half3b = $loghalf</when>
+    </award>
+    <award matchPartial credit="0" name="anyFormAward2">
+      <when>$half3a = $log_fraction_n_form_2 and $half3b = $loghalf</when>
+    </award>
+  </answer>
+</p>
+
+<feedback condition="$(anyFormAward2{prop='fractionSatisfied'}) = 1 and $(rightFormAward2{prop='fractionSatisfied'}) < 1" updateWithTname="answer6">
+  <p>Your answer is mathematically correct, but here we are expecting a particular form for the answer.  Be sure that your first expression is the number <m>n</m> times a logarithm.</p>
+</feedback>
+
+
+<p>Solve for the value of <m>n</m>.  The result is a ratio of logarithms.</p>
+
+<p><m>n=</m> <mathinput name="halfLifeLogRatio" /> <m>\approx</m> <mathinput name="halfLifeDecimal" />
+
+  <answer name='halfLife'>
+    <award matchPartial symbolicEquality allowedErrorInNumbers='0.001' targetsAreResponses="halfLifeLogRatio halfLifeDecimal">
+      <when>($halfLifeLogRatio = $Thalf_log_ratio or $halfLifeLogRatio = $Thalf_log_ratio2 or $halfLifeLogRatio = $Thalf_log_ratio3 or $halfLifeLogRatio = $Thalf_log_ratio4) and $halfLifeDecimal = $Thalf</when>
+    </award>
+  </answer>
+</p>
+
+<p>
+(In the first blank, write the ratio of logarithms.  In the second blank, give a decimal approximation with at least 4 significant digits.)</p>
+
+<p>To repeat, how long will it take for the population to decline by one-half?
+</p>
+
+<p><mathinput name="hlrepeat" /> <textinput name="hlunit" />
+<answer name='answer10'>
+  <award targetsAreResponses="hlrepeat hlunit" symbolicEquality allowedErrorInNumbers='0.001' matchPartial>
+    <when>$hlrepeat = $Thalf and $hlunit = years</when>
+  </award>
+</answer>
+ (The second blank is for a unit.)</p>
+
+<feedback condition="$hlunit != years" updateWithTname="answer10">
+  The only unit that receives credit is the one given in the statement of the problem.
+</feedback>
+
+</li>
+
+<li>
+<p>You can use a similar procedure to find out how long it will take for the population to decline to one-tenth its original size.  Set the expression from part (2) equal to one-tenth. </p>
+
+<p><mathinput name="tenth1a" /> <m>= \frac{1}{10}</m>
+<answer name='answer12'>
+  <award><when>$tenth1a = $fraction_n</when></award>
+</answer>
+</p>
+
+<p>Take the logarithm of both sides of that equation.
+</p>
+
+<p><mathinput name="tenth2a" /> <m>=</m> <mathinput name="tenth2b" />
+  <answer name='answer13'>
+    <award matchPartial symbolicEquality simplifyOnCompare="numbers" name="rightFormAwardTenth" targetsAreResponses="tenth2a tenth2b">
+      <when>$tenth2a = $log_fraction_n and $tenth2b = $logtenth</when>
+    </award>
+    <award matchPartial credit="0" name="anyFormAwardTenth">
+      <when>$tenth2a = $log_fraction_n and $tenth2b = $logtenth</when>
+    </award>
+  </answer>
+</p>
+
+<feedback condition="$(anyFormAwardTenth{prop='fractionSatisfied'}) = 1 and $(rightFormAwardTenth{prop='fractionSatisfied'}) < 1" updateWithTname="answer13">
+  <p>Your answer is mathematically correct, but here we are expecting a particular form for the answer.  Be sure the both expressions are written as logarithms of the values from the previous equation.  We'll simplify more in the next step.</p>
+</feedback>
+
+<hint>
+  You can use either <c>ln</c> or <c>log</c> for the logarithm.  (Both are interpreted as logarithmm base <m>e</m>, though for this calculation, it actually doesn't matter what base logarithm is used.)
+</hint>
+
+
+<p>Using the 
+<ref uri='doenet:logarithm_basics' tname='log_power'>log of power rule</ref>
+, bring down the exponent from the left hand side in front of the logarithm.
+</p>
+
+<p><mathinput name="tenth3a" /> <m>=</m> <mathinput name="tenth3b" />
+  <answer name='answer15'>
+    <award matchPartial symbolicEquality simplifyOnCompare="numbers" name="rightFormAwardTenth2" targetsAreResponses="tenth3a tenth3b">
+      <when>$tenth3a = $log_fraction_n_form_2 and $tenth3b = $logtenth</when>
+    </award>
+    <award matchPartial credit="0" name="anyFormAwardTenth2">
+      <when>$tenth3a = $log_fraction_n_form_2 and $tenth3b = $logtenth</when>
+    </award>
+  </answer>
+</p>
+
+<feedback condition="$(anyFormAwardTenth2{prop='fractionSatisfied'}) = 1 and $(rightFormAwardTenth2{prop='fractionSatisfied'}) < 1" updateWithTname="answer15">
+  <p>Your answer is mathematically correct, but here we are expecting a particular form for the answer.  Be sure that your first expression is the number <m>n</m> times a logarithm.</p>
+</feedback>
+
+
+
+<p>Solve for the value of <m>n</m>.  The result is a ratio of logarithms.
+</p>
+
+<p><m>n=</m> <mathinput name="tenthLifeLogRatio" /> <m>\approx</m> <mathinput name="tenthLifeDecimal" />
+
+  <answer name='tenthLife'>
+    <award matchPartial symbolicEquality allowedErrorInNumbers='0.001' targetsAreResponses="tenthLifeLogRatio tenthLifeDecimal">
+      <when>($tenthLifeLogRatio = $Ttenth_log_ratio or $tenthLifeLogRatio = $Ttenth_log_ratio2 or $tenthLifeLogRatio = $Ttenth_log_ratio3 or $tenthLifeLogRatio = $Ttenth_log_ratio4) and $tenthLifeDecimal = $Ttenth</when>
+    </award>
+  </answer>
+</p>
+
+<p>
+(In the first blank, write the ratio of logarithms.  In the second blank, give a decimal approximation with at least 4 significant digits.)</p>
+
+<p>To repeat, how long will it take for the population to decline to one-tenth of its original size?
+</p>
+
+<p><mathinput name="tlrepeat" /> <textinput name="tlunit" />
+<answer name='answer19'>
+  <award targetsAreResponses="tlrepeat tlunit" symbolicEquality allowedErrorInNumbers='0.001' matchPartial>
+    <when>$tlrepeat = $Ttenth and $tlunit = years</when>
+  </award>
+</answer>
+ (The second blank is for a unit.)</p>
+
+<feedback condition="$tlunit != years" updateWithTname="answer19">
+  The only unit that receives credit is the one given in the statement of the problem.
+</feedback>
+
+
+
+</li>
+
+<li>
+<p>If the current population size is 100,000, how long will it take for the population drop down to 5,000 sea lions?  
+</p>
+
+<p><mathinput name="t5val" /> <textinput name="t5unit" />
+<answer name='answer21'>
+  <award targetsAreResponses="t5val t5unit" allowedErrorInNumbers='0.001' matchPartial>
+    <when>$t5val = $T005 and $t5unit = years</when>
+  </award>
+</answer>
+ (The second blank is for a unit.)</p>
+
+<feedback condition="$t5unit != years" updateWithTname="answer21">
+  The only unit that receives credit is the one given in the statement of the problem.
+</feedback>
+
+<p>
+
+(Keep at least 4 significant digits.  Second blank is for a unit.)</p>
+
+
+<hint>
+To get to 5,000 sea lions, you need to get down to what fraction of the original population?  The rest is the same as the previous problems.
+</hint>
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<p>To capture the $decline_percent % annual decrease in the population of <pluralize><copy tname="animal" /></pluralize>, we need to multiply the population size by <m>1-$decline =$netmult </m> each year.  After <m>t</m> years, we must multiply by <m>$netmult ^t</m>.  If we let <m>p_t</m> be the number of <pluralize><copy tname="animal" /></pluralize> after <m>t</m> years, then
+<me>p_t = $netmult ^t p_0,</me>
+where <m>p_0</m> is the initial population size.  The number of <pluralize><copy tname="animal" /></pluralize> at 10 years is
+<me>p_{10} = $netmult ^{10} p_0 = <round numberdigits="4"><number>$fraction10 </number></round> p_0.</me>
+The question asks for the fraction of the original population, which is <m><round numberdigits="4"><number>$fraction10 </number></round></m>.</p>
+
+</li>
+
+<li>
+<p>After <m>n</m> years, the population would decline by <m><round numberdigits="4">$netmult</round>^n</m>.</p>
+</li>
+
+<li>
+<md>
+  <mrow>$netmult ^n\amp = \frac{1}{2}</mrow>
+  <mrow>\log $netmult ^n\amp = \log \frac{1}{2}</mrow>
+  <mrow>n \log $netmult \amp = \log \frac{1}{2}</mrow>
+  <mrow>n\amp = \frac{\log 1/2}{\log $netmult  }</mrow>
+  <mrow>\amp \approx \frac{ <round numberdigits="4"><number>$loghalf </number></round> }{ <round numberdigits="4"><number>$lognetmult </number></round> } \approx <round numberdigits="4"><number>$Thalf </number></round></mrow>
+</md>
+<p>
+It would take <m><round numberdigits="4"><number>$Thalf </number></round></m> years for the population to decline by one-half.</p>
+
+<p>We used the natural log to calculate the numbers in the fraction, but you would get the same result if you used any other base for the logarithm.</p>
+
+</li>
+
+<li>
+<md>
+  <mrow>$netmult ^n\amp = \frac{1}{10}</mrow>
+  <mrow>\log $netmult ^n\amp = \log \frac{1}{10}</mrow>
+  <mrow>n \log $netmult \amp = \log \frac{1}{10}</mrow>
+  <mrow>n\amp = \frac{\log 1/10}{\log $netmult  }</mrow>
+  <mrow>\amp \approx \frac{ <round numberdigits="4"><number>$logtenth </number></round> }{ <round numberdigits="4"><number>$lognetmult </number></round> } \approx <round numberdigits="4"><number>$Ttenth </number></round></mrow>
+</md>
+<p>It would take <m><round numberdigits="4"><number>$Ttenth </number></round></m> years for the population to decline by one-half.</p>
+
+<p>We used the natural log to calculate the numbers in the fraction, but you would get the same result if you used any other base for the logarithm.</p>
+
+</li>
+
+<li>
+<p>For the population to go from 100,000 to 5,000, it must decrease by a factor of 5,000/100,000 = 0.05.  To find how long that would take, we set <m>$netmult ^n</m> equal to 0.05.
+<md>
+  <mrow>$netmult ^n\amp = 0.05</mrow>
+  <mrow>\log $netmult ^n\amp = \log 0.05</mrow>
+  <mrow>n \log $netmult \amp = \log 0.05</mrow>
+  <mrow>n\amp = \frac{\log 0.05}{\log $netmult  }</mrow>
+  <mrow>\amp \approx \frac{ <round numberdigits="4"><number>$log005 </number></round> }{ <round numberdigits="4"><number>$lognetmult </number></round> } \approx <round numberdigits="4"><number>$T005 </number></round></mrow>
+</md>
+It would take <m><round numberdigits="4"><number>$T005 </number></round></m> years for the population to decline by 5,000 sea lions.</p>
+
+
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

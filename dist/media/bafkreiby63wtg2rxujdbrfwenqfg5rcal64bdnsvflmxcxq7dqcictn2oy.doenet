@@ -1,0 +1,623 @@
+
+
+<sideBySide widths="50% 50%">
+<document>
+<title>The DoenetML Guide</title>
+<section><title>Component Index</title>
+  
+<p>Click any link below to view editable examples of each component.</p>
+
+<!--***************************************************************
+                                A
+****************************************************************-->
+  
+<subsection><title>A</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=s_ZCiYUOEN9fvngxH36qt"><tag>abs</tag></ref></cell>
+      <cell>absolute value</cell>
+    </row>
+    
+    <row>
+      <cell><ref uri="doenet:doenetId=p6ag34ShuMOnmaYw4GJcU"><tag>alert</tag></ref></cell>
+      <cell>bold text</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=JKwt_GXeExk_vo5PInBfq"><tage>angle</tage></ref></cell>
+      <cell>angle graphical component</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=oqsskIj4WFljMigaogOCM"><tag>answer</tag></ref></cell>
+      <cell>defines an answer block for response validation</cell>
+    </row>
+    
+    <row>
+      <cell><ref uri="doenet:doenetId=Jwl0ys4sdoUIkguMBx0he"><tag>aside</tag></ref></cell>
+      <cell>renders a collapsible section of content</cell>
+    </row>
+    
+    <row>
+      <cell><ref uri="doenet:doenetId=CHfbDoJ7WA37EqgBROYWW"><tag>asList</tag></ref></cell>
+      <cell>formatting component for sequences and maps</cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=qdNdPGeGxP-ExmNUEMzj6"><tage>attractToGrid</tage></ref></cell>
+      <cell>defines snapping behavior of <c>GraphicalComponents</c> to gridlines in a <tag>graph</tag></cell>
+    </row>
+    
+    <row>
+      <cell><ref uri="doenet:doenetId=41KSrjTIFZrKsoTU2M6wZ"><tag>attr</tag></ref></cell>
+      <cell>renders default font for an attribute</cell>
+    </row>
+    
+    <row>
+      <cell><tag>attractTo</tag></cell>
+      <cell></cell>
+    </row>
+    
+    <row>
+      <cell><tag>attractToAngles</tag></cell>
+      <cell></cell>
+    </row>
+    
+    <row>
+      <cell><tag>attractToConstraint</tag></cell>
+      <cell></cell>
+    </row>
+    
+    <row>
+      <cell><tag>attractToGrid</tag></cell>
+      <cell></cell>
+    </row>
+    
+    <row>
+      <cell><ref uri="doenet:doenetId=fB4XolOYgmYs6HQXwY-F4"><tag>award</tag></ref></cell>
+      <cell>specifies conditions for awarding credit where multiple user responses are considered</cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                B
+****************************************************************-->
+
+<subsection><title>B</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=UqVPaomlz0b_yDvGM9n1X"><tag>bestFitLine</tag></ref></cell>
+      <cell>computes a linear regression on a set of points, renders a line when nested inside a <tag>graph</tag></cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=NyyVAjdloVrablDyGwaJu"><tag>boolean</tag></ref></cell>
+      <cell>renders the boolean <c>true</c> or <c>false</c> value of the enclosed expression</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=1GOagmW0_QHN4m_zmuE-I"><tage>booleanInput</tage></ref></cell>
+      <cell>renders a checkbox</cell>
+    </row>
+    </tabular>
+</subsection>
+
+<!--***************************************************************
+                                C
+****************************************************************-->
+
+
+<subsection><title>C</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=AtGGf77DIkIt1-XUDYQSs"><tag>c</tag></ref></cell>
+      <cell>renders default font for a code example</cell>
+    </row>
+    <row>
+      <cell><tag>callAction</tag></cell>
+      <cell></cell>
+    </row>
+    <row>
+    <cell><ref uri="doenet:doenetId=j5V1Px_kH7szXxcIK8bRz"><tag>caption</tag></ref></cell>
+      <cell>renders a caption inside a <tag>figure</tag></cell>
+    </row>
+    <row>
+      <cell><tag>case</tag></cell>
+      <cell>defines the condition within a <tag>conditionalContent</tag> block</cell>
+    </row>
+    <row>
+    <cell><ref uri="doenet:doenetId=wkyG0jI9krl3KS6Z5dfPU"><tag>ceil</tag></ref></cell>
+      <cell>ceiling function</cell>
+    </row>
+    <row>
+    <cell><ref uri="doenet:doenetId=jN7vEZ4h2eNuuvNYlBO-Q"><tag>cell</tag></ref></cell>
+      <cell>smallest data element in a <tag>table</tag></cell>
+    </row>
+    <row>
+    <cell><ref uri="doenet:doenetId=twzcSdfjCk9gd6TbzwX_z"><tag>choice</tag></ref></cell>
+      <cell>defines a multiple-choice response</cell>
+    </row>
+    <row>
+    <cell><ref uri="doenet:doenetId=2H6BxwETaoUOdWj4iovYo"><tag>choiceInput</tag></ref></cell>
+      <cell>defines a multiple-choice block</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=arSFuAF_idMUd6JNCpNKn"><tage>circle</tage></ref></cell>
+      <cell>circle <c>Graphical Component</c></cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=Yw3tU4PtUpTxWAxaRg7Ff"><tag>collect</tag></ref></cell>
+      <cell>gathers multiple data instances of a specified type from a graph or a sectional component and stores in a list</cell>
+    </row>
+    <row>
+      <cell><tag>conditionalContent</tag></cell>
+      <cell></cell>
+    </row>
+    <row>
+      <cell><tag>considerAsResponses</tag></cell>
+      <cell></cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=DasOYIo38JZmCquq_mcCd"><tag>**constraints</tag></ref></cell>
+      <cell>containter element for constraint components</cell>
+    </row>
+    <row>
+      <cell><tag>considerAsResponses</tag></cell>
+      <cell></cell>
+    </row>
+
+
+    
+    <row>
+      <cell><tag>coords</tag></cell>
+      <cell></cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>**copy</tage></ref></cell>
+      <cell>renders the property of a specific named component to the viewer</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=JSO_uz97OhG9cwkK6gxy_"><tag>**curve</tag></ref></cell>
+      <cell>spline graphical component</cell>
+    </row>
+    </tabular>
+</subsection>
+
+<!--***************************************************************
+                                D
+****************************************************************-->
+
+<subsection><title>D</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><tag>derivative</tag></cell>
+      <cell>derivative</cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                E
+****************************************************************-->
+
+<subsection><title>E</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><tag>else</tag></cell>
+      <cell></cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=uhp3B9cUPAaDQo_AvLB7T"><tag>em</tag></ref></cell>
+      <cell>renders italicised text</cell>
+    </row>
+    
+    <row>
+      <cell><tag>evaluate</tag></cell>
+      <cell>evaluate a function or <tag>math</tag></cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                F
+****************************************************************-->
+
+<subsection><title>F</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=WwagbtTRGpBV7WYO1upAN"><tag>feedback</tag></ref></cell>
+      <cell>hidden content triggered in response to specific user interactions</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=2KaoB8xx2bDxXab40co9i"><tag>figure</tag></ref></cell>
+      <cell>container element for images, videos, and captions</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=Jwl0ys4sdoUIkguMBx0he"><tag>function</tag></ref></cell>
+      <cell>mathematical functions for computation, <m>f(x,y,z)</m></cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                G
+****************************************************************-->
+
+<subsection><title>G</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref></cell>
+      <cell>renders a 2D cartesian graph</cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                H
+****************************************************************-->
+
+<subsection><title>H</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=WtbK-j4mNjDLvmIBO5OVW"><tag>hint</tag></ref></cell>
+      <cell>hidden content triggered by clicking on a banner or by specific user interactions</cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                I
+****************************************************************-->
+
+<subsection><title>I</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=Y9rAqRFFOPw6BphJ5eErY"><tage>image</tage></ref></cell>
+      <cell>inserts an image</cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=30BB7PzOFepawWqSs43PK"><tag>integer</tag></ref></cell>
+      <cell>defines an integer</cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                L
+****************************************************************-->
+
+<subsection><title>L</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=1RITl0DcbD_QFSE9VK2Jj"><tag>li</tag></ref></cell>
+      <cell>list item</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=JoBPIQwjZ5merftAHL5UF"><tage>line</tage></ref></cell>
+      <cell>renders a line when nested inside a <tag>graph</tag></cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                M
+****************************************************************-->
+
+<subsection><title>M</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=GCM8z3SDsbj9yZSkHW3YB"><tag>m</tag></ref></cell>
+      <cell>inline mathematical display</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=6xVfXS5mHvlZ1La6IyVmP"><tag>map</tag></ref></cell>
+      <cell>takes a list of <tag>sources</tag> and applies a <tag>template</tag> to each source in turn</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=BYXQro7P7NJrtKyTCxJcX"><tag>math</tag></ref></cell>
+      <cell>defines a mathematical expression for computations</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=p_qPrnY-jhcqqrG2LcodH"><tage>mathInput</tage></ref></cell>
+      <cell>renders a user-input field that stores mathematical content</cell>
+    </row>
+    <row>
+      <cell><tag>mathList</tag></cell>
+      <cell>list of numerical values separated by commas</cell>
+    </row>
+    <row>
+      <cell><tag>md</tag></cell>
+      <cell></cell>
+    </row>
+    <row>
+      <cell><tag>mdn</tag></cell>
+      <cell></cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=XzKxDehzI0Qumvj_3cXJe"><tag>me</tag></ref></cell>
+      <cell>centered mathematical display text</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=MBP5nVIrkgzessaoiqdEh"><tag>men</tag></ref></cell>
+      <cell>centered, numbered mathematical display text</cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                N
+****************************************************************-->
+
+<subsection><title>N</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=Jwi35-iUB_BaSCNWFGNbh"><tag>number</tag></ref></cell>
+      <cell>defines numerical content</cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                O
+****************************************************************-->
+
+<subsection><title>O</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=MP-Q8bsNcXgOTRoqD-vFk"><tag>ol</tag></ref></cell>
+      <cell>ordered list</cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                P
+****************************************************************-->
+
+<subsection><title>P</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=ZKtFO1M4oFzd4S8zfJj55"><tag>p</tag></ref></cell>
+      <cell>create a paragraph or drop down a line</cell>
+    </row>
+    
+    <row>
+      <cell><ref uri="doenet:doenetId=7V2odJAgabEKmxaIxqt9-"><tage>parabola</tage></ref></cell>
+      <cell>parabola <c>Graphical Component</c></cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref></cell>
+      <cell>point <c>Graphical Component</c></cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=gHZxIksVZufxA2ozsqqsK"><tage>polygon</tage></ref></cell>
+      <cell>polygon <c>Graphical Component</c></cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=_o-EPRIVmYmgzUQguNDwv"><tage>polyline</tage></ref></cell>
+      <cell>polyline <c>Graphical Component</c></cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=mmZvkXHU-OWGLyy0aYxp_"><tag>pre</tag></ref></cell>
+      <cell>preserves verbatim text; renders text as input into the editor</cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=OSqdvfYm0vKtv3aKnR3V8"><tag>problem</tag></ref></cell>
+      <cell>block component with default numbering that defines a problem</cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                Q
+****************************************************************-->  
+
+<subsection><title>Q</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=PFzz9Ay-SPOHECdsnrz-Z"><tag>q</tag></ref></cell>
+      <cell>quotation</cell>
+    </row>
+  </tabular>
+</subsection>  
+
+<!--***************************************************************
+                                R
+****************************************************************-->
+
+<subsection><title>R</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><tag>ref</tag></cell>
+      <cell>creates a link to another Doenet file or an external site</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=STMxLaf-ic80S9duBU1WK"><tage>rectangle</tage></ref></cell>
+      <cell>rectangle <c>Graphical Component</c></cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=yIPAER1RJVVHMNF1Op_7a"><tag>row</tag></ref></cell>
+      <cell>container element for one or more <tag>cell</tag>s within a <tag>tabular</tag></cell>
+    </row>
+  </tabular>
+</subsection>  
+
+
+<!--***************************************************************
+                                S
+****************************************************************-->
+
+<subsection><title>S</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>  
+      <cell><ref uri="doenet:doenetId=HtetAL1AhP13dJyv4sP2H"><tag>selectFromSequence</tag></ref></cell>
+      <cell>choose random values within a predefined range</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=__VgxVIdpE3sN4POU0EKT"><tage>sequence</tage></ref></cell>
+      <cell>generate a sequence with predefined parameters</cell>
+    </row>  
+    <row>
+      <cell><ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref></cell>
+      <cell>defines a block for defining or initializing named content; does not render to viewer</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=m60eBCbehXNF3VGwAsGO9"><tag>sideBySide</tag></ref></cell>
+      <cell>renders components in a side-by-side horizontal format</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=G0-0FYkeCXVHyRtLxKjMZ"><tage>slider</tage></ref></cell>
+      <cell>renders a sliding bar for interactively adjusting values</cell>
+    </row>
+    <row>
+      <cell><ref uri="doenet:doenetId=_OoOsUCWGwMR_TF1BTZSB"><tag>solution</tag></ref></cell>
+      <cell>expandable block component which displays a problem solution</cell>
+    </row> 
+
+    <row>
+      <cell><ref uri="doenet:doenetId=7DHdSFMGgXO23YarWCeYj"><tag>sources</tag></ref></cell>
+      <cell>used within a <tag>map</tag> to define input values for <tag>template</tag> and <attr>alias</attr></cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=gUo2iz9wRVPmkLj8qPukz"><tage>spreadsheet</tage></ref></cell>
+      <cell>renders a 4x4 basic spreadsheet tool</cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=IXkGW9efgTX59Z1JmnWKG"><tag>sum</tag></ref></cell>
+      <cell>renders the sum of its arguments</cell>
+    </row> 
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                T
+****************************************************************-->
+
+<subsection><title>T</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=zRuXlzQ0_iNqNqZHHQMxG"><tag>table</tag></ref></cell>
+      <cell>container element for a <tag>tabular</tag></cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=Bm5kSKo8GvPyl85lokH8_"><tag>tabular</tag></ref></cell>
+      <cell>define data arranged in a tabular format</cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=RwwwA15KDsX6ZvjlkZmCm"><tag>*template</tag></ref></cell>
+      <cell>defines operations to apply to individual <tag>sources</tag> within a <tag>map</tag></cell>
+    </row>
+    
+    <row>
+      <cell><ref uri="doenet:doenetId=u8kT_40fm1lp7fazGqv3Z"><tag>text</tag></ref></cell>
+      <cell>a stored text value, or string</cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=9Cg4Vwh5-o0wk7kT98bPI"><tage>textInput</tage></ref></cell>
+      <cell>renders an input field for text responses</cell>
+    </row>
+    
+    <row>
+      <cell><ref uri="doenet:doenetId=5HERf7liZuJ_-NnhzeTaU"><tag>title</tag></ref></cell>
+      <cell>creates a title within a document, section, or other block component</cell>
+    </row> 
+
+    <row>
+      <cell><ref uri="doenet:doenetId=RJW2wne2i7D0KsJjrX5bs"><tage>triangle</tage></ref></cell>
+      <cell>triangle <c>Graphical Component</c></cell>
+    </row>
+  </tabular>
+</subsection>
+<!--***************************************************************
+                                U
+****************************************************************-->
+<subsection><title>U</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><ref uri="doenet:doenetId=NscifFtWYTqus6MOefEoH"><tag>ul</tag></ref></cell>
+      <cell>unordered, or bulleted, list</cell>
+    </row>
+
+    <row>
+      <cell><tag>updateValue</tag></cell>
+      <cell></cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                V
+****************************************************************-->
+<subsection><title>U</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><tag>variable</tag></cell>
+      <cell></cell>
+    </row>
+
+    <row>
+      <cell><tag>variables</tag></cell>
+      <cell></cell>
+    </row>
+
+    <row>
+      <cell><tag>variance</tag></cell>
+      <cell></cell>
+    </row>
+
+    <row>
+      <cell><ref uri="doenet:doenetId=zZnE8j9Lz5JcGOrc3CeYi"><tag>vector</tag></ref></cell>
+      <cell>renders a vector inside a <tag>graph</tag></cell>
+    </row>
+
+    <row>
+      <cell><tage>video</tage></cell>
+      <cell></cell>
+    </row>
+  </tabular>
+</subsection>
+
+<!--***************************************************************
+                                W
+****************************************************************-->
+<subsection><title>W</title>
+  <tabular width="800" top="minor" bottom="minor" left="minor" right="minor">
+    <row>
+      <cell><tag>when</tag></cell>
+      <cell></cell>
+    </row>
+
+    <row>
+      <cell><tag>wrapFunctionPeriodic</tag></cell>
+      <cell></cell>
+    </row>
+  </tabular>
+</subsection>
+  
+  
+</section>
+</document>
+
+<document>
+<ol><title>Chapters</title>
+    <li><ref createButton="true" uri="doenet:doenetId=_pXorGnWFwZn2kTil3HHw">Introduction</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=-gKVK4jPcnL5BMPizZYY-">General Content</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=11kv_2knqH_H81PUGeF9F">Mathematical Content</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=QwmPcHU0wV8VxcgqNUNSE">Graphical Content</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=CF2oaf_wwyyqiLodYtQ_g">Interactive Applets</ref></li>
+  </ol>
+</document>
+</sideBySide>
+
+  
+

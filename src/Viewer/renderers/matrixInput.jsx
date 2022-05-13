@@ -1,6 +1,8 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
-import me from 'math-expressions';
+// import me from 'math-expressions';
+import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
+import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
@@ -10,15 +12,14 @@ const Matrix = styled.div`
   margin: 6px;
   display: inline-block;
   vertical-align: middle;
-  width:auto;
-  border-style: none;
+  width: auto;
 
   :before {
     content: "";
     position: absolute;
     left: -6px;
     top: -6px;
-    border: 1px solid #000;
+    border: var(--mainBorder);
     border-right: 0px;
     width: 6px;
     height: 100%;
@@ -31,14 +32,34 @@ const Matrix = styled.div`
     position: absolute;
     right: -6px;
     top: -6px;
-    border: 1px solid #000;
+    border: var(--mainBorder);
     border-left: 0px;
     width: 6px;
     height: 100%;
     padding-top: 6px;
     padding-bottom: 3px;
   }
-`
+`;
+
+  const Button = styled.button `
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    color: white;
+    background-color: var(--mainBlue);
+    /* border: var(--mainBorder); */
+    /* padding: 2px; */
+    border: none;
+    border-radius: var(--mainBorderRadius);
+    margin: 0px 10px 12px 10px;
+
+
+    &:hover {
+      background-color: var(--lightBlue);
+      color: black;
+    };
+  `;
 
 export default function MatrixInput(props) {
   let { name, SVs, actions, children, callAction } = useDoenetRender(props);
@@ -72,35 +93,25 @@ export default function MatrixInput(props) {
 
   // const inputKey = name + '_input';
 
-  let surroundingBorderColor = "#efefef";
+  let surroundingBorderColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
   // if (this.focused) {
   //   surroundingBorderColor = "#82a5ff";
   // }
 
   let checkWorkStyle = {
-    position: "relative",
-    width: "30px",
-    height: "24px",
-    fontSize: "20px",
-    fontWeight: "bold",
-    color: "#ffffff",
-    display: "inline-block",
-    textAlign: "center",
-    top: "3px",
-    padding: "2px",
-    zIndex: "0",
+    cursor: "pointer",
   }
+
   //Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
 
     if (validationState.current === "unvalidated") {
       if (disabled) {
-        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
-      } else {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray")
+        ;
       }
-      checkWorkButton = <button
+      checkWorkButton = <Button
         id={name + '_submit'}
         tabIndex="0"
         disabled={disabled}
@@ -117,17 +128,18 @@ export default function MatrixInput(props) {
         }}
       >
         <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-      </button>
+      </Button>
     } else {
       if (SVs.showCorrectness) {
         if (validationState.current === "correct") {
-          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-          checkWorkButton = <span
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen")
+          ;
+          checkWorkButton = <Button
             id={name + '_correct'}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCheck} />
-          </span>
+          </Button>
         } else if (validationState.current === "partialcorrect") {
           //partial credit
 
@@ -136,26 +148,27 @@ export default function MatrixInput(props) {
           checkWorkStyle.width = "50px";
 
           checkWorkStyle.backgroundColor = "#efab34";
-          checkWorkButton = <span
+          checkWorkButton = <Button
             id={name + '_partial'}
             style={checkWorkStyle}
-          >{partialCreditContents}</span>
+          >{partialCreditContents}</Button>
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
-          checkWorkButton = <span
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed")
+          ;
+          checkWorkButton = <Button
             id={name + '_incorrect'}
             style={checkWorkStyle}
-          ><FontAwesomeIcon icon={faTimes} /></span>
+          ><FontAwesomeIcon icon={faTimes} /></Button>
 
         }
       } else {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-        checkWorkButton = <span
+        checkWorkButton = <Button
           id={name + '_saved'}
           style={checkWorkStyle}
-        ><FontAwesomeIcon icon={faCloud} /></span>
+        ><FontAwesomeIcon icon={faCloud} /></Button>
 
       }
     }
@@ -167,12 +180,20 @@ export default function MatrixInput(props) {
           (no attempts remaining)
         </span>
       </>
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+
+      checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (1 attempt remaining)
+        </span>
+      </>
     } else if (SVs.numberOfAttemptsLeft < Infinity) {
 
       checkWorkButton = <>
         {checkWorkButton}
         <span>
-          (attempts remaining: {SVs.numberOfAttemptsLeft})
+          ({SVs.numberOfAttemptsLeft} attempts remaining)
         </span>
       </>
     }
@@ -187,7 +208,7 @@ export default function MatrixInput(props) {
 
     for (let colInd = 0; colInd < SVs.numColumns; colInd++) {
       mathinputRow.push(
-        <td style={{ margin: "10px" }} key={colInd} id={name + "_component_" + rowInd + "_" + colInd}>
+        <td style={{ margin: "10px"}} key={colInd} id={name + "_component_" + rowInd + "_" + colInd}>
           {children[rowInd * SVs.numColumns + colInd]}
         </td>
       )
@@ -203,50 +224,56 @@ export default function MatrixInput(props) {
 
   let rowNumControls = null;
   if (SVs.showSizeControls) {
-    rowNumControls = <span>
-      <button id={name + "_rowDecrement"} onClick={() => callAction({
+    rowNumControls = <span style={{margin: "0px 10px 12px 10px"}}>
+      <ActionButtonGroup>
+      <ActionButton id={name + "_rowDecrement"} value="r-" onClick={() => callAction({
         action: actions.updateNumRows,
         args: { numRows: SVs.numRows - 1 }
       })} disabled={SVs.numRows < 2}>
         r-
-      </button>
-      <button id={name + "_rowIncrement"} onClick={() => callAction({
+      </ActionButton>
+      <ActionButton id={name + "_rowIncrement"} value="r+" onClick={() => callAction({
         action: actions.updateNumRows,
         args: { numRows: SVs.numRows + 1 }
       })}>
         r+
-      </button>
+      </ActionButton>
+      </ActionButtonGroup>
     </span>
   }
   let colNumControls = null;
   if (SVs.showSizeControls) {
-    colNumControls = <span>
-      <button id={name + "_columnDecrement"} onClick={() => callAction({
+    colNumControls = <span style={{margin: "0px 10px 12px 10px"}}>
+      <ActionButtonGroup>
+      <ActionButton id={name + "_columnDecrement"} value="c-" onClick={() => callAction({
         action: actions.updateNumColumns,
         args: { numColumns: SVs.numColumns - 1 }
       })} disabled={SVs.numColumns < 2}>
         c-
-      </button>
-      <button id={name + "_columnIncrement"} onClick={() => callAction({
+      </ActionButton>
+      <ActionButton id={name + "_columnIncrement"} value="c+" onClick={() => callAction({
         action: actions.updateNumColumns,
         args: { numColumns: SVs.numColumns + 1 }
       })}>
         c+
-      </button>
+      </ActionButton>
+      </ActionButtonGroup>
     </span>
   }
 
 
   return <React.Fragment>
     <a name={name} />
-    <Matrix className="matrixInputSurroundingBox" id={name}>
-      <table><tbody>
-        {matrixInputs}
-      </tbody></table>
-    </Matrix>
-    {rowNumControls}
-    {colNumControls}
-    {checkWorkButton}
+      <div style={{display: "flex", marginBottom: "12px"}}>
+        <Matrix className="matrixInputSurroundingBox" id={name}>
+          <table><tbody>
+            {matrixInputs}
+          </tbody></table>
+        </Matrix>
+        {rowNumControls}
+        {colNumControls}
+        {checkWorkButton}
+      </div>
   </React.Fragment>
 
 }

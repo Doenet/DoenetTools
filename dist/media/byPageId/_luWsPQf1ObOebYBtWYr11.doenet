@@ -1,0 +1,75 @@
+<problem>
+
+<setup>
+  <select assignNames="((a b))">
+    <option selectWeight="2">
+      <selectFromSequence from="-10" to="10" exclude="0" excludecombinations="(1 -1) (-1 1)" numberToSelect='2' withReplacement="false" />
+    </option>
+    <option>
+      <group>
+        $temp $temp
+      </group>
+      <selectFromSequence from="-10" to="10" exclude="-1 0 1" assignNames="temp" />
+    </option>
+  </select>
+
+  <select assignNames='x'>x y z</select>
+
+  <math name='factored_quadratic' simplify='full'>($x+$a)($x+$b)</math>
+  <math name='expanded_quadratic' simplify='full' expand='true'><copy tname="factored_quadratic" /></math>
+  <convertsettolist name='zero_list' simplify="full"><math>{-$a,-$b}</math></convertsettolist>
+  <math name='factor1' simplify='full'>$x+$a</math>
+  <math name='factor2' simplify='full'>$x+$b</math>
+  <math name='minus_a' simplify='full'>-$a</math>
+  <math name='minus_b' simplify='full'>-$b</math>
+
+</setup>
+
+Solve the equation <m><copy tname="expanded_quadratic" /> =0</m>.
+
+<p>How many solutions are there? <mathinput name="user_num_sol" size="3" /></p>
+
+<p>The solutions are:</p>
+
+<map name="xs">
+  <template>
+    <p><m>x =</m> <mathinput /></p>
+  </template>
+  <sources>
+    <sequence length="min(10,$user_num_sol)" />
+  </sources>
+</map>
+
+<answer>
+  <award>
+    <when matchpartial="true">
+      <mathlist>
+        <collect componentTypes="mathinput" tname="xs" prop="value" isResponse />
+      </mathlist>
+      =
+      <copy tname="zero_list" />
+    </when>
+  </award>
+
+</answer>
+
+
+
+<solution>
+Factoring the quadratic <m><copy tname="expanded_quadratic" /></m>, we obtain <m><copy tname="factored_quadratic" /></m>.  Therefore, the solutions to 
+<me><copy tname="expanded_quadratic" /> =0</me>
+are the same as the solutions to
+<me><copy tname="factored_quadratic" />=0.</me>
+
+<conditionalcontent>
+  <case condition="$a=$b">
+  The equation reduces to <m><copy tname="factor1" />=0</m> so that the only solution is <m>$x = <copy tname="minus_a" /></m>.
+  </case>
+  <else>
+  For this factored expression to be zero, one of the factors must be zero.  Either <m><copy tname="factor1" />=0</m> or <m><copy tname="factor2" />=0</m>.  Therefore, there are two solutions <m>$x=<copy tname="minus_a" /></m> and <m>$x=<copy tname="minus_b" /></m>.
+  </else>
+</conditionalcontent>
+
+</solution>
+
+</problem>

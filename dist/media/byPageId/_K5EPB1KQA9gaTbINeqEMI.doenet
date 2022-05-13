@@ -1,0 +1,16 @@
+I create a link from this file to the linked to file...
+It's already open so I copy-paste the path.  This address was copied right before?after? the saved version Save2
+
+<ref createButton="true" uri="doenet:doenetId=ASRLj3Ql25UD8pAKNG7H2">click me!</ref>
+
+<p>When the button is clicked, it goes to a page that says "assignment is not assigned."  From this page I go back to the main Doenet menu and reopen this file to keep working.  The other file has been open the whole time...</p>
+
+<p>just navigated here using the back browser arrows from the linked to file.  Now, I'll go back and forth with the link several times.  When I click the link it tends to freeze for a few minutes I've noticed.  I'll see if waiting works and then close and reload.</p>
+
+<p>nevermind three, using the back arrow from the error page once caused Doenet to crash. Interestingly, when I got the pages unresponsive note it showed two doenet instances but I only had one tab open...So now, I'll try using the breadcrumbs to navigate  back to the linked to file.</p>
+
+<p>bug acheived! when I navigated back to the linked-to file using the breadcrumbs, the "linked to" file was overwritten (and for some reason with an earlier version of) with the "linked from" file.  I took a screen shot and linked it below.  It also made the editor pane act very strange.  I saved the overwritten file as version Save4.  If you click on version Save3 it still has the bunny.</p>
+
+<p>bug found save1 for this file</p>
+
+<image width="600" source="https://lh3.googleusercontent.com/wgKBV-dHywNXWGiazM9mB4bb9b6XGoH3GtgvZSCWcP11AAU7sb5i4UYqznZJByynD6_sTrgvBOYJlbbA35orBTr-4kC_SbSGcGBc1Lifr0Bvc0_t12f_YMm7-KQY7Jl6S57wSM_oobEr5gAdwd2kiLG0QovmYXCMxK6sd9NlNPYaJb-wtNiS2pElWegM4-RGrLMlpJzEt1w00VT-yKnFEbQY8nqe-Mr3xljRNweOuDeWFVBzveFKgbz2g7GDtUscOOPhlInxQMf5GXkqMYAvXd69j5eyDQXfONvHFsijuPtoBWO-uujvh5f2XSPn3tJk8WqjCHMHtEqYuEyP5TAbj4TNg6OIII85l80e78jn-pNNn7itEE6vRxjTOTUyLbYmVSo8_RbPR2Ym4fpwWOSwWQ6sWI3NMMf2yLDmKTVFXAnWAgZRhfoW2-cZqtMMKelwjwPh3-sulfHaxFgp4n7p7FpjDb7hJ-MlqAW0SF6Ndbi5b257rP_NNyaREktOvt2ZYCqsJWiyHuIsJKfnV4zjrHL9n0yBqVA-IlYvnKopSot65AgNX69xHsSebU6z2VBCJZlneflNr9vaUR5N_nXrWCeAjs3AqnDS29v5-_whxzktV3jmVKj9EuoPjAQCkBIql3kcAtr6G69mZ5yLSnBKZb7wXKIsg5U7UnPo7YfxhZfCaZfYU9Whx24yJR3n1pFpLuT0S3uLf3KqEY68DCrBUQ=w2386-h1358-no?authuser=0"/>

@@ -1,0 +1,14 @@
+<graph>
+  <curve name="c"><function formula="sin(x)"/></curve>
+
+  <point name="A" label="A" x="1" y="2">
+    <constraints>
+      <constrainTo>$c</constrainTo>
+    </constraints>
+  </point>
+  <point name="B" label="B" x="3" y="4">
+    <constraints>
+      <attractTo>$c</attractTo>
+    </constraints>
+  </point>
+</graph>

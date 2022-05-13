@@ -1,0 +1,163 @@
+<problem>
+<!-- <title>Cobweb, cubic, worksheet</title> -->
+
+<setup>
+
+<function name='f' variables='x'>3x/2-1/8x^3</function>
+<math name='equilibria' unordered='true'>-2,2,0</math>
+<math name='two' >2</math>
+<math name='minus_two' >-2</math>
+
+</setup>
+
+<p>
+For the dynamical system <m>x_{n+1}=f(x_n)</m>,
+
+where <m>f(x) = \frac{3}{2}x-\frac{1}{8}x^3</m>, the function <m>f</m> along with the diagonal are plotted on a graph of <m>x_{n+1}</m> versus <m>x_n</m>.
+</p>
+
+<copy uri='doenet:contentId=89296fb46fafe5a39cb6a539ad0843fca96ac77afd30a8442f8430ae51400119&doenetId=aQbjajWb3k0vED-HBKg6o59' width='600' height='300' xmin='-5' xmax='5' ymin='-2.5' ymax='2.5' function='$f' initialInitialValue='1' initialValueDx='0.25' checkInitialCondition='false' x0='$x0a' showNavigation='false' cobwebbingWeight="0" attractThreshold="0.2" grid />
+
+
+<ol>
+
+<li>
+Find the equilibria (they are all integers):  
+<answer>
+<award matchPartial='true' unorderedCompare>$equilibria </award>
+</answer>
+
+
+
+</li>
+
+<li>
+<p>
+Cobweb starting at the following initial conditions.  For each initial condition, determine what value <m>x_n</m> approaches as <m>n</m> gets large.
+</p>
+<p>
+
+If <m>x_0=1</m>,  <m>x_n</m>  approaches 
+<answer>
+<award>$two </award>
+</answer>
+. If <m>x_0=-1</m>, <m>x_n</m> approaches 
+<answer>
+<award>$minus_two </award>
+</answer>
+.
+</p>
+<p>
+
+If <m>x_0=3</m>, <m>x_n</m> approaches 
+<answer>
+<award>$two </award>
+</answer>
+.  If <m>x_0=-3</m>, <m>x_n</m> approaches 
+<answer>
+<award>$minus_two </award>
+</answer>
+.
+</p>
+<p>
+
+If <m>x_0=3.75</m>, <m>x_n</m> approaches 
+<answer>
+<award>$minus_two </award>
+</answer>
+.  If <m>x_0=-3.75</m>, <m>x_n</m> approaches 
+<answer>
+<award>$two </award>
+</answer>
+.
+</p>
+
+<hint>
+The applet won't give feedback about the initial condition, but it will give feedback if you cobwebbed correctly for whatever initial condition you start with. 
+</hint>
+
+</li>
+
+<li>
+When learning how to cobweb, folks often get confused when to move vertically and when to move horizontally.  Here's one way to remember.
+
+<p>When you graph a function <m>f(x)</m> and you want to look up the value of, say <m>f(3)</m> from the graph, you start at <m>x=3</m> and move 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>vertically</choice>
+<choice>horizontally</choice>
+</choiceinput>
+</answer>
+ until you hit the graph.  The height of the graph at that point is the value of <m>f(3)</m>.  In other words, moving 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>vertically</choice>
+<choice>horizontally</choice>
+</choiceinput>
+</answer>
+ is the natural thing to do when looking up function values.  When you are cobwebbing and moving vertically, you should always stop when you hit the 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>graph of the function</choice>
+<choice>graph of the diagonal</choice>
+</choiceinput>
+</answer>
+.</p>
+
+<p>On the other hand, moving 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>horizontally</choice>
+<choice>vertically</choice>
+</choiceinput>
+</answer>
+ is the strange part.  And, the new line that we plot with cobwebbing is the 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>graph of the diagonal</choice>
+<choice>graph of the function</choice>
+</choiceinput>
+</answer>
+.  If you associate those two strange additions together, you will remember that, during cobwebbing, when moving horizontally, you should stop when you hit the 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>graph of the diagonal</choice>
+<choice>graph of the function</choice>
+</choiceinput>
+</answer>
+.
+</p>
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+The equilibria are <m>E=-2,0,2</m>.
+</li>
+
+<li>
+<ol>
+<li><m>x_0=1</m>.  <m>x_n</m> approaches 2</li>
+<li><m>x_0=-1</m>.  <m>x_n</m> approaches -2</li>
+<li><m>x_0=3</m>.  <m>x_n</m> approaches 2</li>
+<li><m>x_0=-3</m>.  <m>x_n</m> approaches -2</li>
+<li><m>x_0=3.75</m>.  <m>x_n</m> approaches -2</li>
+<li><m>x_0=-3.75</m>.  <m>x_n</m> approaches 2</li>
+</ol>
+
+</li>
+
+</ol>
+
+</solution>
+
+
+</problem>

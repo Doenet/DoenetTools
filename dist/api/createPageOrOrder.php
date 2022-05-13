@@ -35,6 +35,8 @@ if ($success){
 
 if ($success){
   $doenetId = include "randomId.php";
+  $doenetId = "_" . $doenetId;
+  
   if ($itemType == 'page'){
     $sql = "
     INSERT INTO pages (courseId,containingDoenetId,doenetId) 
@@ -44,7 +46,7 @@ if ($success){
     $pageThatWasCreated = getCourseItemFunction($conn,$itemType,$doenetId);
 
     //Create blank file for page
-    $filename = "../media/bydoenetid/$doenetId.doenet";
+    $filename = "../media/byPageId/$doenetId.doenet";
     $dirname = dirname($filename);
     if (!is_dir($dirname)) {
         mkdir($dirname, 0755, true);

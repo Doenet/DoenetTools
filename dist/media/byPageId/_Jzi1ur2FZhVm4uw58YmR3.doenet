@@ -1,0 +1,105 @@
+<title>Differentiation exam</title>
+
+<paginatorControls paginatorTname="pgn" />
+<paginator name="pgn" submitAllOnPageChange>
+
+<section weight="0">
+  <title>Overview of exam</title>
+  <p>The differentiation exam consists of 6 problems.  Each problem is on its own page.  You can switch pages with the Previous and Next buttons.</p>
+
+  <p>When you are done, click the Finish Exam button.</p>
+ 
+</section>
+
+<select numberToSelect="6" assignNames="((problem1)) ((problem2)) ((problem3)) ((problem4)) ((problem5)) ((problem6))">
+
+  <option>
+    <copy uri="doenet:contentId=a7e9d5f99bb9844c3b39ee95a886520396a06ca153e9aa899617c2386214d4ff&doenetId=gyzgXkr7jDJekdONqbZ2B" componentType="problem" />
+  </option>
+  <option>
+    <select assignNamesSkip="2">
+      <option>
+        <copy uri="doenet:contentId=2529ae84e8f1d5176eabf5ce805eed0d070ed999604524fc36d2f934f8bbc5b3&doenetId=ecNFOOwS3rf0c3pb2RKlT" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=0d9b63e1501bed387a68a096b795672c037bb48c1e6fcf65b6b33036ad5e6319&doenetId=gd82n_ZNfToiJSwbr892q" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=d3f3d8872e3f803cc8a16647df1268a66f8ece1721aa099c4f7f8ec0e5fd634c&doenetId=fQxd3t9VRJnkms_W2Zywo" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=a588fd578c2e886293746f82ddcab4b5ef6b728cec72dcd0543b38f75a0b9072&doenetId=XV0Ky9utn9hwwLro4jmQG" componentType="problem" />
+      </option>
+    </select>
+  </option>
+
+  <option>
+    <select assignNamesSkip="2">
+      <option>
+        <copy uri="doenet:contentId=194928f7799c48f7273133ec32f192b09ae2088831f08e2d4b6ba436361ecfbe&doenetId=y1_KvPj2PiJBKLyFMTsub" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=528a176925c031a70e337f622aa3211ea61d6984721252af3dc4090377a7db74&doenetId=BbX6qS1E1DR2Aay85isOU" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=5cc1fbbb867b2ab53a837b04f142d5c6b12d02f7ab0a755c1895a9e8d4b8e117&doenetId=WG2SYFxdiTN_J0uVyIVTu" componentType="problem" />
+      </option>
+    </select>
+  </option>
+  
+  <option>
+    <select assignNamesSkip="2">
+      <option>
+        <copy uri="doenet:contentId=a50d0b802cff0d37d1c26bf5eaf1c91fcebd5c4ecbebe786564b3d70d236f9be&doenetId=2dYw6qO2Q-3rox98g81VR" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=1010253c765f1d08d6349cc0e34665992f734f1c0dc0b73ab93e5858682e4773&doenetId=Lj6ylmQ7WDVp_QZzFpcAM" componentType="problem" />
+      </option>
+    </select>
+  </option>
+
+  
+  <option>
+    <select assignNamesSkip="2">
+      <option>
+        <copy uri="doenet:contentId=2669f2d59ba429deb8832f140e84c802bbd3ad19834c7b204b041870184adfe1&doenetId=h-wCu50GFOJGVpXZ1buIM" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=88e780b446f10e957d28eb46e349360a2ae3a456798c28496332a69bd0064b65&doenetId=SPWrKeZ5haaiiOBAguXxE" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=5bb6a3cd17c880bbbea82c12674e79ffa3ede308ca68b7de403e5510f09ad3bc&doenetId=WnBir_IkhDyNPVCeRxUWq" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=3fb5502ff343df6a2e47064ca3d09b4f37fdc71b782c97cf2157b6c49430aaf3&doenetId=V1Un6VkpArl_CNfL3NjXV" componentType="problem" />
+      </option>
+    </select>
+  </option>
+
+  <option>
+    <copy uri="doenet:contentId=aeb344672aa26d196f8c794504d1265c207f432ae5309e0e1e13bba3ba9b2550&doenetId=0KwZxue1XxzixdazqMDiS" componentType="problem" />
+  </option>
+  
+</select>
+
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />
+
+<boolean hide name="showQuitDialog" />
+<updateValue type="boolean" name="finishExam" label="Finish Exam" tName="showQuitDialog" newValue="true" disabled="$showQuitDialog" />
+
+<conditionalContent condition="$showQuitDialog">
+
+<section>
+  <title>Are you sure you want to finish the Exam?</title>
+
+  
+  <p>
+    <updateValue type="boolean" name="cancelFinishExam" label="Cancel" tName="showQuitDialog" newValue="false" />
+<ref uri="https://www.doenet.org/#/exam?tool=endExam" name="endExam" createButton>Yes, Finish Exam.</ref>
+  </p>
+  
+</section>
+
+</conditionalContent>

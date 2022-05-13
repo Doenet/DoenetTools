@@ -1,0 +1,151 @@
+
+<sideBySide>
+  <ref createButton="true" uri="doenet:doenetId=-gKVK4jPcnL5BMPizZYY-">Previous Chapter</ref>
+  <ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">ComponentIndex</ref>
+   <ref createButton="true"  uri="doenet:doenetId=QwmPcHU0wV8VxcgqNUNSE">Next Chapter</ref>
+</sideBySide>
+
+
+<sideBySide widths="50% 50%">
+<document>
+<title>The DoenetML Guide</title>
+<section><title>Chapter 3:  Mathematical Content</title>
+  <subsection><title>Introduction</title>
+<p>The DoenetML language is highly suited to the creation of mathematical content. In addition to the standard mathematical operations built into a basic programming language such as JavaScript, DoenetML is constructed upon the <ref>mathexpressions</ref> JavaScript library.  DoenetML also has numerous custom mathematical components available and its functionality in this regard is expanding continuously. 
+
+<p><alert>Click below to view lesson examples.</alert></p>
+<sideBySide>
+  <ref uri="doenet:doenetId=X7yXWE6tWrZtI796mDWfz" createButton="true">Algebra Example</ref>
+  <ref uri="" createButton="true">Calculus Example</ref>
+  <ref uri="" createButton="true">Analytic Geometry Example</ref>
+  <ref uri="" createButton="true">Trigonometry Example</ref>
+  <ref uri="" createButton="true">Differential Equations Example</ref>
+  <ref uri="" createButton="true">Combinatorics Example</ref>
+</sideBySide>
+</p>
+</subsection>
+
+<subsection><title>The Two types of Mathematical Components</title>
+<p>There are two main types of mathematical components that authors will use when constructing lessons or activities in DoenetML - those used simply for display of mathematical text, and those used for computation and evaluation: </p>
+  </subsection>
+<subsection><title>Mathematical Display</title>
+<p>First, there are occasions where the author's intention is simply to display mathematical equations, symbols, or concepts in the viewer as part of a chapter or lesson that is primarily text.  In this case, there is no need for the author or reader to simplify, compute, or store mathematical data or content. These components will be referred to as <term>mathematical display text components</term> and the table in Table 1 gives the relevant components required for this purpose.</p>
+
+  <table><title>Mathematical Display Text Components</title>
+    <tabular top="minor" bottom="minor" right="minor" left="minor">
+      <row header="true">
+        <cell>Component</cell><cell>Function</cell>
+      </row>
+      <row>
+        <cell><ref uri="doenet:doenetId=GCM8z3SDsbj9yZSkHW3YB"><tag>m</tag></ref></cell>
+        <cell>inline mathematical display text</cell>
+      </row>
+      <row>
+        <cell>md</cell>
+        <cell>description</cell>
+      </row>
+      <row>
+        <cell>mdn</cell>
+        <cell>description</cell>
+      </row>
+      <row>
+        <cell>me</cell>
+        <cell>description</cell>
+      </row>
+      <row>
+        <cell>men</cell>
+        <cell>description</cell>
+      </row>
+    </tabular>
+  </table>
+</subsection>
+
+<subsection><title>Mathematical Content</title>
+<p>Second, we have the more common situation where the author wishes to create mathematical content that actually <em>does</em> things. These "things" could be to perform computations, to generate random exercises and problems, to update numerically in reponse to user interactions, or to remain stored in memory for future use in an activity.  In this capacity DoenetML is extremely versatile and powerful. Not only can the author create almost any imaginable type of mathematical activity in DoenetML, but answers can be automatically generated and instantaneous feedback reported to the user, activities can update spontaneously with the user's interactions, specific trouble areas can be designed to provide tailored feedback, and variations on a given problem can be auto-generated with ease. The true power of what is possible is difficult to convey in words, but it is better understood when it is experienced through interaction with example content; for this sample lessons and activities are provided at the top of this page.</p>
+<p>Essentially, any component that is not specifically designed as <term>mathematical display text</term> will be referred to as a <term>mathematical content component</term>.  These components can be applied in computations or for any of the various purposes stated above.  Mathematical content, such as the numerical value of a physics constant or a function in an algebra worksheet, is stored in DoenetML by assigning it a <attr>name</attr> within the component's opening tag (or single tag if it is a self-closing component).  The <attr>name</attr> parameter is accepted by <em>all</em> DoenetML components and hence can be thought of as a kind of universal attribute.  For example, a <ref uri="doenet:doenetId=ZKtFO1M4oFzd4S8zfJj55"><tag>p</tag></ref> tag can have a <attr>name</attr>, and calling this name in the editor will simply render all of its associated content to the viewer.  When working with <term>mathematical content components</term>, the <attr>name</attr> takes on the same behavior as a variable name in general programming. As a result of this behavior, any future computations or content manipulation can call the component's stored data simply by typing a dollar sign in front of the component's name in the editor.  This is referred to in the component examples as the <c>&dollar;name</c> notation.  Here is an simple illustration:</p>
+<sideBySide> 
+<pre>
+  &lt;number name="a" hide&gt;60&lt;/number&gt;
+  &dollar;a  
+</pre>
+<p>
+  <number name="a" hide>60</number>
+  $a
+</p>
+</sideBySide>
+<p>In this example, the <attr>hide</attr> attribute, which is also universal to DoenetML components, is added to the declaration of the <ref uri="doenet:doenetId=Jwi35-iUB_BaSCNWFGNbh"><tag>number</tag></ref> component to supress it from rendering in the viewer.</p>
+<p>Frequently, it will be found desirable to interweave different types of components within an activity, as the following simple example demonstrates. 
+ Here, general components (problem, figure, image, p), mathematical display text components (m, men) and mathematical content components (number, math) are used together in combination.</p>
+
+<!--add better example here with figures-->
+<!--<sideBySide>
+<example boxed="true"><title>Sample DoenetML code</title>  
+<pre>
+  &lt;p&gt;&lt;number name="a"&gt;3&lt;/number&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;number name="b"&gt;4&lt;/number&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;math name="cSquared"&gt;$a^2 + $b^2&lt;/math&gt; = &lt;math simplify&gt;$cSquared&lt;/math&gt;&lt;/p&gt;
+</pre>
+</example>
+
+<example><title>What Doenet Renders</title>
+  <p><m>a = <number name="a">3</number></m></p>
+  <p><m>b = <number name="b">4</number></m></p>
+  <p><m>a^2 + b^2 = <math name="cSquared">$a^2 + $b^2</math> = <math simplify>$cSquared</math></m></p>
+</example>
+</sideBySide>-->
+
+
+
+  
+<p>This type of combination of display components and content components is quite common in DoenetML and will be demonstrated frequently in the example lessons below.  See Table 2 below for a current listing of <term>mathematical content components</term> and their functions.</p> 
+</subsection>
+<subsection><title>Conclusion</title>    
+
+<p>Finally, a word of advice to the user who is new to either programming or DoenetML: due to the overlapping functionality of many of the DoenetML mathematical components, there are frequently multiple ways to generate the same content behavior, which can be both confusing to the beginner and a bit daunting.  Simply focus on your desired end result and experiment freely, the power of the language itself can sometimes lead you to new and unexpected applications!  DoenetML is designed to be flexible, and any method which achieves the desired content behavior is acceptable - there will never be "one right way" to code it.</p>
+<p>
+  <table><title>Mathematical Content Components</title>
+    <tabular top="minor" bottom="minor" right="minor" left="minor">
+      <row header="true">
+        <cell>Component</cell><cell>Function</cell>
+      </row>
+      <row>
+        <cell><ref uri="doenet:doenetId=s_ZCiYUOEN9fvngxH36qt"><tag>abs</tag></ref></cell>
+        <cell>absolute value</cell>
+      </row>
+      <row>
+        <cell><ref uri="doenet:doenetId=oqsskIj4WFljMigaogOCM"><tag>answer</tag></ref></cell>
+        <cell>defines an answer block for response validation</cell>
+      </row>
+      <row>
+        <cell><ref uri="doenet:doenetId=fB4XolOYgmYs6HQXwY-F4"><tag>award</tag></ref></cell>
+        <cell>specifies conditions for awarding credit where multiple user responses are considered</cell>
+      </row>
+      <row>
+        <cell>bestFitLine</cell>
+        <cell>description</cell>
+      </row>
+      <row>
+        <cell>bezierControls</cell>
+        <cell>description</cell>
+      </row>
+    </tabular>
+  </table>
+</p>
+</subsection>
+  
+</section>
+</document>
+
+<document>
+<ol><title>Chapters</title>
+    <li><ref createButton="true" uri="doenet:doenetId=_pXorGnWFwZn2kTil3HHw">Introduction</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=-gKVK4jPcnL5BMPizZYY-">General Content</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=11kv_2knqH_H81PUGeF9F">Mathematical Content</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=QwmPcHU0wV8VxcgqNUNSE">Graphical Content</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=CF2oaf_wwyyqiLodYtQ_g">Interactive Applets</ref></li>
+  </ol>
+</document>
+</sideBySide>
+
+  
+

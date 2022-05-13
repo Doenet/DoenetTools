@@ -1,0 +1,7 @@
+<p>To make a link to another doenet document that has released versions, you can create a <tag>ref</tag> to its doenetId.
+
+<ref uri="doenet:doenetId=gt1wHqthD2Hsf4ijCt_rl">link to animal sounds demo</ref></p>
+
+<p>Not sure if we should allow refs to contentIds, such as <ref uri="doenet:contentId=bb204b3667001dc25db16124e85b0691caa35b7add224f1584180f0bc359724e">link to animal sounds demo with a mistake</ref>.
+  </p>
+

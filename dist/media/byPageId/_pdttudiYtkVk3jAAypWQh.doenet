@@ -1,0 +1,140 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tage>polygon</tage> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+  <ul><title><alert>Inherited from parent component/  <tag><ref>polyline</ref></tag>:</alert></title>
+  <li><attr>draggable</attr> <em>(boolean)</em></li>
+  <li><attr>vertices</attr> <em>(_pointListComponent)</em></li>
+  </ul>
+  <aside startOpen="true"><title><alert>Inherited from parent component/  <c>GraphicalComponent</c>:</alert></title>
+  <li><attr>label</attr> <em>(text)</em></li>
+  <li><attr>showLabel</attr> <em>(boolean)</em></li>
+  <li><attr>layer</attr> <em>(number)</em></li>
+  </aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+  <p>The <tage>polygon</tage><idx><tage>polygon</tage></idx> component renders a polygon when nested inside a <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref> component. The <tage>polygon</tage> tag is self-closing and the <attr>vertices</attr> attribute is required.  Polygons are by default draggable for interactive activities.  See examples below for details on specific attribute usage. </p>
+</section> 
+  
+<section><title>Usage Examples</title>
+
+<subsection newNameSpace><title>Example 1: <tage>polygon</tage> with <attr>vertices</attr> and <attr>draggable</attr> attributes</title> 
+<p>In the sample code below, a <tage>polygon</tage> is defined by specifying a list of four points within the <attr>vertices</attr> attribute. This <tage>polygon</tage> cannot be modified by the user since the <attr>draggable</attr> attribute has been set to <c>false</c>.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre> 
+&lt;graph width="300px" height="300px"&gt;
+    &lt;polygon vertices="(0,0) (2,2) (-1,5) (-5,1)" draggable="false"/&gt;
+&lt;/graph&gt;
+</pre>
+</example>
+</subsection>
+ 
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<graph width="300px" height="300px">
+    <polygon vertices="(0,0) (2,2) (-1,5) (-5,1)" draggable="false"/>
+</graph>  
+</example>
+
+<!--*******************************************************-->
+
+<subsection><title>Example 2:  Construct a <tage>polygon</tage> with constrained points on a graph</title>
+<p>In the sample code below, four <ref uri="doenet:doenetId=gN8NlDY3WLRc7jgAvXKXm"><tag>point</tag></ref>s are defined in a <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> block along with <ref uri="doenet:doenetId=DasOYIo38JZmCquq_mcCd"><tag>constraints</tag></ref>. Next, a <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref> and a paragraph, or <ref uri="doenet:doenetId=ZKtFO1M4oFzd4S8zfJj55"><tag>p</tag></ref> tag are rendered in a <ref uri="doenet:doenetId=m60eBCbehXNF3VGwAsGO9"><tag>sideBySide</tag></ref> format. The <tag>graph</tag> renders the <tage>polygon</tage> using the named points defined in the setup block as inputs in the <attr>vertices</attr> attribute. The points are rendered using the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component, which references the <c>vertex</c> property of the polygon named <c>myPolygon</c>.  Note that vertices are automatically named with the convention: <c>vertex#</c>, where the number at the end of the propery corresponds to the order in which that vertex appears in the <c>_pointList</c> specified in the <attr>vertices</attr> attribute.</p>
+<p>The <ref uri="doenet:doenetId=p_qPrnY-jhcqqrG2LcodH"><tage>mathInput</tage></ref>s are rendered within the <tag>p</tag> portion of the <tag>sideBySide</tag>.  Here the user can modify the coordinates directly.  Values are constrained to the grid of integers by the <attr>bindValueTo</attr> attribute, which ties the <tage>mathInput</tage>s into the vertices of the <tage>polygon</tage> (whose <attr>vertices</attr> in turn reference the constrained <tag>point</tag>s).</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;p&gt;Create a new polygon by dragging the points on the graph, or 
+  changing the coordinates shown.&lt;/p&gt;
+&lt;setup&gt;
+  &lt;point name="a"&gt;(-4,4)
+    &lt;constraints&gt;&lt;constrainToGrid/&gt;&lt;/constraints&gt;
+  &lt;/point&gt;
+  &lt;point name="b"&gt;(-4,2)
+    &lt;constraints&gt;&lt;constrainToGrid/&gt;&lt;/constraints&gt;
+  &lt;/point&gt;
+  &lt;point name="c"&gt;(-4,0)
+    &lt;constraints&gt;&lt;constrainToGrid/&gt;&lt;/constraints&gt;
+  &lt;/point&gt;
+  &lt;point name="d"&gt;(-4,-2)
+    &lt;constraints&gt;&lt;constrainToGrid/&gt;&lt;/constraints&gt;
+  &lt;/point&gt;
+&lt;/setup&gt;
+
+&lt;sideBySide&gt;
+&lt;graph grid="dense"&gt;
+  &lt;polygon name="myPolygon" vertices="&dollar;a &dollar;b &dollar;c &dollar;d"/&gt;
+  &lt;copy prop="vertex1" tname="myPolygon" label="A"/&gt;  
+  &lt;copy prop="vertex2" tname="myPolygon" label="B"/&gt;
+  &lt;copy prop="vertex3" tname="myPolygon" label="C"/&gt;
+  &lt;copy prop="vertex4" tname="myPolygon" label="D"/&gt;
+&lt;/graph&gt;
+  
+&lt;p&gt;Points:
+  &lt;p&gt;&lt;m&gt;A = &lt;/m&gt;
+    &lt;mathInput name="user_a" bindValueTo="&dollar;(myPolygon{prop='vertex1'})"/&gt;
+  &lt;/p&gt;
+  &lt;p&gt;&lt;m&gt;B = &lt;/m&gt;
+    &lt;mathInput name="user_b" bindValueTo="&dollar;(myPolygon{prop='vertex2'})"/&gt;
+  &lt;/p&gt;
+  &lt;p&gt;&lt;m&gt;C = &lt;/m&gt;
+    &lt;mathInput name="user_c" bindValueTo="&dollar;(myPolygon{prop='vertex3'})"/&gt;
+  &lt;/p&gt;
+  &lt;p&gt;&lt;m&gt;D = &lt;/m&gt;
+    &lt;mathInput name="user_d" bindValueTo="&dollar;(myPolygon{prop='vertex4'})"/&gt;
+  &lt;/p&gt;
+&lt;/p&gt;
+&lt;/sideBySide&gt;
+</pre>
+</example> 
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<p>Create a new polygon by dragging the points on the graph, or changing the coordinates shown.</p>
+<setup>
+  <point name="a">(-4,4)
+    <constraints><constrainToGrid/></constraints>
+  </point>
+  <point name="b">(-4,2)
+    <constraints><constrainToGrid/></constraints>
+  </point>
+  <point name="c">(-4,0)
+    <constraints><constrainToGrid/></constraints>
+  </point>
+  <point name="d">(-4,-2)
+    <constraints><constrainToGrid/></constraints>
+  </point>
+</setup>
+
+<sideBySide>
+<graph grid="dense">
+  <polygon name="myPolygon" vertices="$a $b $c $d"/>
+  <copy prop="vertex1" tname="myPolygon" label="A"/>  
+  <copy prop="vertex2" tname="myPolygon" label="B"/>
+  <copy prop="vertex3" tname="myPolygon" label="C"/>
+  <copy prop="vertex4" tname="myPolygon" label="D"/>
+</graph>
+  
+<p>Points:
+<p><m>A = </m><mathInput name="user_a" bindValueTo="$(myPolygon{prop='vertex1'})"/></p>
+<p><m>B = </m><mathInput name="user_b" bindValueTo="$(myPolygon{prop='vertex2'})"/></p>
+<p><m>C = </m><mathInput name="user_c" bindValueTo="$(myPolygon{prop='vertex3'})"/></p>
+<p><m>D = </m><mathInput name="user_d" bindValueTo="$(myPolygon{prop='vertex4'})"/></p>
+</p>
+</sideBySide>
+</example>
+
+
+  
+</section>
+</document>

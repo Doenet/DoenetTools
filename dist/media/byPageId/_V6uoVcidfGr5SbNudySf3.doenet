@@ -1,0 +1,78 @@
+<title>subsetOfRealsInput</title>
+
+<section newNamespace>
+  <title>Basic example</title>
+
+  <paragraphs><title>The graphical input</title>
+  
+    <subsetOfRealsInput name="subset" dx="0.5" bindValueTo="$free" />
+  </paragraphs>
+
+  <paragraphs>
+    <title>Display result from graphical input</title>
+
+    <ul>
+      <li>
+        <p>As intervals: <copy prop="subsetValue" tname="subset" assignNames="asIntervals" /></p>
+      </li>
+      <li>
+        <p>As inequalities: <copy prop="subsetValue" tname="subset" displayMode="inequalities" assignNames="asInequalities" /></p>
+      </li>
+      <li>
+        <p>As inequalities in alternative variable: <copy prop="subsetValue" tname="subset" displayMode="inequalities" assignNames="asInequalities2" variable="q" /></p>
+      </li>
+    </ul>
+  </paragraphs>
+
+  <paragraphs><title>Modifying the results using a mathematical expression</title>
+
+  <p>There are three to modify the results from a <tag>mathinput</tag></p>
+
+  <ol>
+    <li><p>A free <tag>mathinput</tag> to which the <tag>subsetOfRealsInput</tag> is bound.  In this case, the math entered remains n the form the user wrote.  It will be modified to the (simplified) interval notation whenever the <tag>subsetOfRealsInput</tag> is changed via other means (such as user interaction with the number line).</p>
+      <p>Free <tag>mathinput</tag>: <mathinput name="free"  /></p>
+    </li>
+    <li>
+      <p>A <tag>mathinput</tag> bound to the interval notation of the <tag>subsetOfRealsInput</tag>.  After a user enters a value, it will immediately be changed to the (simplified) interval notation.</p>
+      <p><tag>mathinput</tag> bound to interval notation: <mathinput bindValueTo="$asIntervals" /></p>
+    </li>
+    <li>
+      <p>A <tag>mathinput</tag> bound to the inequalities notation of the <tag>subsetOfRealsInput</tag>.  After a user enters a value, it will immediately be changed to the (simplified) inequalities notation.</p>
+    <p><tag>mathinput</tag> bound to inequality notation: <mathinput bindValueTo="$asInequalities" /></p>
+    </li>
+  </ol>
+
+  </paragraphs>
+</section>
+
+<section newNamespace>
+  <title>Illustrating set operations</title>
+
+<paragraphs>
+  <title>Create set A</title>
+  <subsetOfRealsInput name="A" prefill="(-1,0)" />
+</paragraphs>
+
+<paragraphs>
+  <title>Create set B</title>
+  
+  <subsetOfRealsInput name="B" prefill="[0,3)"/>
+</paragraphs>
+
+<paragraphs>
+  <title>Combine sets A and B</title>
+  
+  <p>Enter expression combining sets <m>A</m> and <m>B</m>: <mathinput name="C" prefill="A union B^c" /></p>
+
+  <substitute match="B" replacement="$B" assignNames="Csubbed1" hide>
+    <substitute match="A" replacement="$A">$C</substitute>
+  </substitute>
+
+  <subsetOfRealsInput bindValueTo="$Csubbed1" name="Csubbed" fixed />
+
+  <p>Value of <m>A</m>: $A</p>
+  <p>Value of <m>B</m>: $B</p>
+  <p>Value of $C: $Csubbed</p>
+
+</paragraphs>
+</section>

@@ -1,0 +1,191 @@
+<title>Control answer submissions</title>
+
+<section>
+  <title>Maximum number of attempts for single answer</title>
+
+  <p>The <attr>maximumNumberOfAttempts</attr> attribute of the <tag>answer</tag> tag can be used to limit the number of attempts of allowed for an answer, where an attempt is an answer submission.</p>
+
+  <p>If specified, the number of attempts remaining is displayed and the answer is disabled once the maximum number is reached.</p>
+
+<tabular>
+  <row header bottom="minor">
+    <cell>DoenetML</cell>
+    <cell>Rendered</cell>
+  </row>
+  <row bottom="minor">
+    <cell>
+      <pre>
+&lt;answer maximumNumberOfAttempts=&quot;2&quot; inline&gt;
+  &lt;choiceinput&gt;
+    &lt;choice credit=&quot;1&quot;&gt;Yes&lt;/choice&gt;
+    &lt;choice&gt;No&lt;/choice&gt;
+  &lt;/choiceinput&gt;
+&lt;/answer&gt;
+      </pre>
+    </cell>
+    <cell>
+      <answer maximumNumberOfAttempts="2" inline>
+        <choiceinput>
+          <choice credit="1">Yes</choice>
+          <choice>No</choice>
+        </choiceinput>
+      </answer>
+    </cell>
+    
+  </row>
+
+  <row bottom="minor">
+    <cell>
+      <pre>
+&lt;answer maximumNumberOfAttempts=&quot;2&quot; &gt;
+  &lt;choiceinput&gt;
+    &lt;choice credit=&quot;1&quot;&gt;Yes&lt;/choice&gt;
+    &lt;choice&gt;No&lt;/choice&gt;
+  &lt;/choiceinput&gt;
+&lt;/answer&gt;
+      </pre>
+    </cell>
+    <cell>
+      <answer maximumNumberOfAttempts="2">
+        <choiceinput>
+          <choice credit="1">Yes</choice>
+          <choice>No</choice>
+        </choiceinput>
+      </answer>
+    </cell>
+    
+  </row>
+
+    <row bottom="minor">
+    <cell>
+      <pre>
+What is 1+1?
+&lt;answer maximumNumberOfAttempts=&quot;2&quot; &gt;
+  2
+&lt;/answer&gt;
+      </pre>
+    </cell>
+    <cell>
+      What is 1+1?
+      <answer maximumNumberOfAttempts="2">
+    2
+      </answer>
+    </cell>
+    
+  </row>
+  <row>
+    <cell>
+      <pre>
+Say hello.
+&lt;answer maximumNumberOfAttempts=&quot;2&quot; type=&quot;text&quot; &gt;
+  hello
+&lt;/answer&gt;
+      </pre>
+    </cell>
+    <cell>
+      Say hello.
+      <answer maximumNumberOfAttempts="2" type="text">
+    hello
+      </answer>
+    </cell>
+    
+  </row>
+
+</tabular>
+
+  
+</section>
+
+<section>
+  <title>Disable after correct</title>
+
+  <p>To disable an <tag>answer</tag> once the correct answer has been submitted, you can specify the <attr>disableAfterCorrect</attr> attribute.</p>
+
+<tabular>
+  <row header bottom="minor">
+    <cell>DoenetML</cell>
+    <cell>Rendered</cell>
+  </row>
+  <row bottom="minor">
+    <cell>
+      <pre>
+&lt;answer disableAfterCorrect inline&gt;
+  &lt;choiceinput&gt;
+    &lt;choice credit=&quot;1&quot;&gt;Yes&lt;/choice&gt;
+    &lt;choice&gt;No&lt;/choice&gt;
+  &lt;/choiceinput&gt;
+&lt;/answer&gt;
+      </pre>
+    </cell>
+    <cell>
+      <answer disableAfterCorrect inline>
+        <choiceinput>
+          <choice credit="1">Yes</choice>
+          <choice>No</choice>
+        </choiceinput>
+      </answer>
+    </cell>
+    
+  </row>
+
+  <row bottom="minor">
+    <cell>
+      <pre>
+&lt;answer disableAfterCorrect &gt;
+  &lt;choiceinput&gt;
+    &lt;choice credit=&quot;1&quot;&gt;Yes&lt;/choice&gt;
+    &lt;choice&gt;No&lt;/choice&gt;
+  &lt;/choiceinput&gt;
+&lt;/answer&gt;
+      </pre>
+    </cell>
+    <cell>
+      <answer disableAfterCorrect>
+        <choiceinput>
+          <choice credit="1">Yes</choice>
+          <choice>No</choice>
+        </choiceinput>
+      </answer>
+    </cell>
+    
+  </row>
+
+    <row bottom="minor">
+    <cell>
+      <pre>
+What is 1+1?
+&lt;answer disableAfterCorrect &gt;
+  2
+&lt;/answer&gt;
+      </pre>
+    </cell>
+    <cell>
+      What is 1+1?
+      <answer disableAfterCorrect>
+    2
+      </answer>
+    </cell>
+    
+  </row>
+  <row>
+    <cell>
+      <pre>
+Say hello.
+&lt;answer disableAfterCorrect type=&quot;text&quot; &gt;
+  hello
+&lt;/answer&gt;
+      </pre>
+    </cell>
+    <cell>
+      Say hello.
+      <answer disableAfterCorrect type="text">
+    hello
+      </answer>
+    </cell>
+    
+  </row>
+
+</tabular>
+
+  
+</section>

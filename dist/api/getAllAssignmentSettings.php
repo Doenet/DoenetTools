@@ -52,6 +52,7 @@ $assignment = array();
   $result = $conn->query($sql);
   if ($result->num_rows > 0){
     $row = $result->fetch_assoc();
+
     $assignment = array(
           "assignment_title" => $row['assignment_title'],
           "assignedDate" => $row['assignedDate'],

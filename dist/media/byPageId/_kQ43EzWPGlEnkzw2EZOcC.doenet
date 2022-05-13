@@ -1,0 +1,77 @@
+ <p>Credit achieved: <copy tname="_document1" prop="creditAchieved" /></p>
+<problem name="p1" weight="2">
+
+  <p>Credit achieved: <copy tname="p1" prop="creditAchieved" /></p>
+  <p>Percent credit achieved: <copy tname="p1" prop="percentCreditAchieved" />%</p>
+  
+
+  <p>Differentiate <m>f(x) = <math name='f'>x^2+2</math></m>.
+    <answer weight="1">
+      <award>
+        <math><derivative>$f</derivative></math>
+      </award>
+    </answer>
+  </p>
+
+  <p>Differentiate <m>g(y) = <math name='g'>sin(3y)</math></m>.
+    <answer weight=".5">
+      <award>
+        <math><derivative variables='y'>$g</derivative></math>
+      </award>
+      <award credit=".2">
+        <math>cos(3y)</math>
+      </award>
+
+    </answer>
+  </p>
+
+
+ <p><mathinput name="x"/><mathinput name="y"/> .
+    <answer weight=".5">
+      <award matchpartial>
+        <when> $x=1 and $y=2 </when>
+      </award>
+    </answer>
+  </p>
+
+  
+</problem>
+
+<problem newnamespace name="p2">
+  <p>Credit achieved: <copy tname="p2" prop="creditAchieved" /></p>
+  <p>Percent credit achieved: <copy tname="p2" prop="percentCreditAchieved" />%</p>
+  
+
+  <p>Differentiate <m>f(x) = <math name='f'>x^2+2</math></m>.
+    <answer weight="1">
+      <award>
+        <math><derivative>$f</derivative></math>
+      </award>
+    </answer>
+  </p>
+
+  <p>Differentiate <m>g(y) = <math name='g'>sin(3y)</math></m>.
+    <answer weight=".5">
+      <award>
+        <math><derivative variables='y'>$g</derivative></math>
+      </award>
+      <award credit=".2">
+        <math>cos(3y)</math>
+      </award>
+
+    </answer>
+  </p>
+
+
+ <p><mathinput name="x"/><mathinput name="y"/> .
+    <answer weight=".5">
+      <award matchpartial>
+        <when> $x=1 and $y=2 </when>
+      </award>
+    </answer>
+  </p>
+
+  
+</problem>
+
+<answer>x^2</answer>

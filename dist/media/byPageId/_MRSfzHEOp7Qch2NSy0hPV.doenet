@@ -1,0 +1,96 @@
+<!--
+  Alternate answer format for domain
+  with setminus (setminus not implemented yet)
+-->
+
+<!--
+#DESCRIPTION
+##  Calculus: Functions
+##ENDDESCRIPTION
+
+
+## DBsubject(Algebra)
+## DBchapter(Functions)
+## DBsection(Domain and range)
+## Date(08/26/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(DomainRangeLinearDenominator)
+## Level(2)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('1.1')
+## Problem1('41')
+## KEYWORDS('calculus', 'function', 'domain', 'range')
+-->
+
+<setup>
+  <selectFromSequence from="2" to="12" name="a" />
+</setup>
+
+<p>
+  Find the domain and range for the function:
+  <me>
+      G(x)=\frac{10x+|x|}{x}
+  </me>
+</p>
+<p>
+  Domain  (in interval or set notation):
+  <answer>
+    <award>
+      <math format="latex">(-\infty,0)\cup (0,\infty)</math>
+    </award>
+    <award>
+      <math format="latex">(-\infty,\infty) \setminus \{0\}</math>
+    </award>
+    <award>
+      <math format="latex">\{0\}</math>
+    </award>
+  </answer>
+</p>
+<p>
+  Range  (in interval or set notation):
+  <answer>
+    <award>
+      <math format="latex">(<math simplify>$a-1</math>, <math simplify>$a+1</math>)</math>
+    </award>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        Domain:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <m>(-\infty,0)\cup (0,\infty)</m>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        Domain (not working):
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <m>(-\infty,\infty)\setminus\{0\}</m>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        Range:
+      </cell>
+      <cell></cell><cell></cell>
+      <cell>
+        <m>
+          (<math simplify>$a-1</math>, <math simplify>$a+1</math>)
+        </m>
+      </cell>
+   </row>
+  </tabular>
+</solution>

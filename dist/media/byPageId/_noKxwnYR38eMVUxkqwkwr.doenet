@@ -1,0 +1,238 @@
+<problem name="theProblem">
+<title>Outbreak or extinguish in the discrete SIR model</title>
+
+<setup>
+
+<math name='delta_I' simplify='full' >b*S_t*I_t - a*I_t</math>
+<math name='extinguish_condition' simplify='full' >$delta_I  < 0</math>
+<math name='extinguish_condition_no_spread' simplify='full' >-a*I_t < 0</math>
+<math name='extinguish_simplified' simplify='full' >b*S_t - a < 0</math>
+<math name='a_example_condition' >a > 1</math>
+
+</setup>
+
+
+<paragraphs>
+  <title>Outbreak or extinguish</title>
+
+
+<p>The no-spread condition is a very strong condition.   It means absolutely no more people get sick.  However, just because some people are still getting infected (i.e., the no-spread condition is not met), the disease might still be winding down (or extinguishing).  A weaker condition that still indicates that the disease is subsiding is the condition that the number of infectives is decreasing.</p>
+
+<p>If people are still getting sick, how could the disease be winding down?  The
+<choiceinput inline randomizeOrder name="option1">
+  <choice name="numToSick1">number of individuals getting sick</choice>
+  <choice name="numToRecover1">number of individuals recovering</choice>
+  <choice>number of susceptible individuals</choice>
+  <choice>number of infective individuals</choice>
+  <choice>number of removed individuals</choice>
+</choiceinput>
+must be
+<choiceinput name="comparison" inline>
+  <choice>less than</choice>
+  <choice>equal to</choice>
+  <choice>greater than</choice>
+</choiceinput>
+the
+<choiceinput inline randomizeOrder name="option2">
+  <choice name="numToSick2">number of individuals getting sick.</choice>
+  <choice name="numToRecover2">number of individuals recovering.</choice>
+  <choice>number of susceptible individuals.</choice>
+  <choice>number of infective individuals.</choice>
+  <choice>number of removed individuals.</choice>
+</choiceinput>
+<answer>
+  <award><when>
+    <copy prop="selectedValue" tname="option1" /> =
+    <copy prop="text" tname="numToSick1" />
+    and 
+    <copy prop="selectedValue" tname="comparison" /> = less than
+    and
+    <copy prop="selectedValue" tname="option2" /> =
+    <copy prop="text" tname="numToRecover2" />
+  </when></award>
+  <award><when>
+    <copy prop="selectedValue" tname="option1" /> =
+    <copy prop="text" tname="numToRecover1" />
+    and 
+    <copy prop="selectedValue" tname="comparison" /> = greater than
+    and
+    <copy prop="selectedValue" tname="option2" /> =
+    <copy prop="text" tname="numToSick2" />
+  </when></award>
+</answer>
+</p>
+
+<p>When this condition is satisfied, the number of infectives is decreasing and the outbreak is on its way to being extinguish.  We call this condition the <em>extinguish condition</em>.</p>
+
+<p>Let's derive the equation for the extinguish condition, we start with the equation for the net increase in the number of infectives, which is the second equation in the SIR model.  According to the model equations, the change <m>I_{t+1}-I_{t}</m> in the number of infectives in a day is <answer>
+<award>$delta_I </award>
+</answer>.</p>
+
+<hint>
+  <p>As usual, this expression will involve the state variables and the parameters.The expression involves two terms: a positive term for the number of people who got sick and a negative term for the number of people who recovered.</p>
+</hint>
+
+<p>The extinguish condition is the condition that the number of infectives is decreasing.  Write the extinguish condition as an inequality in terms of the model parameters and state variables.</p>
+<answer>
+<award>$extinguish_condition </award>
+</answer>
+
+
+<hint>
+<p>Do we want the change in the number of infectives to be positive or negative in order for the number of infectives to be decreasing?  Setting this expression to be either less than zero or greater than zero will give you the correct inequality.</p>
+</hint>
+
+</paragraphs>
+
+<paragraphs>
+  <title>Relationship between extinguish and no-spread condition</title>
+
+<p>Which is the stronger condition: the extinguish condition or the no-spread condition?  If the no-spread condition is satisfied, how many people are getting sick?  <answer>0</answer>  In this case, one of the terms in the extinguish condition is drops out (as it is zero), and extinguish condition becomes
+<answer>
+<award>$extinguish_condition_no_spread </award>
+</answer>
+Assuming there is at least some sick people (<m>I_t>0</m>), and given that the recovery rate parameter <m>a</m> is positive, we see that the extinguish condition
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>must be</choice>
+<choice>might be</choice>
+<choice>must not be</choice>
+<choice>might not be</choice>
+</choiceinput>
+</answer>
+ satisfied.</p>
+
+
+<p>On the other hand, if the extinguish condition is satisfied, must the no-spread condition be satisfied?  
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>no</choice>
+<choice>yes</choice>
+</choiceinput>
+</answer>
+  Can you come up with example values of the parameters and state variables where the extinguish condition is satisfied but the no-spread condition is not satisfied?</p>
+
+<p>This is what we mean when we say the extinguish condition is a weaker condition than the no-spread condition.  The no-spread condition implies the extinguish condition (at least if <m>I_t > 0</m>), but not vice-versa.</p>
+
+
+
+</paragraphs>
+
+<paragraphs>
+  <title>Simplifying the extinguish condition</title>
+
+<p>The extinguish condition you derived should have involved two state variables.
+  One of those state variables should be in both terms.  Which state variable?
+  <answer name="ItInBoth">
+    <award><math>I_t</math></award>
+    <award credit='0' name="Iplain"><math>I</math></award>
+  </answer>
+</p>
+<feedback condition="$Iplain">
+  Right, it is the state variable <m>I</m>.  But in the way we've written the extinguish condition, it is written as <m>I_t</m>.
+</feedback>
+
+<p>If we assume that <m><copy tname="ItInBoth" prop="submittedResponse" componentType="math" /> > 0</m>, we can divide both sides of the extinguish condition inequality by <copy tname="ItInBoth" componentType="math" prop="submittedResponse" /> and cancel it from both terms.  In this way, the extinguish condition can be simplified to
+<answer>
+<award>$extinguish_simplified </award>
+</answer>
+</p>
+
+<p>We see that the extinguish condition really depends on just one state variable (and both parameters <m>a</m> and <m>b</m>).
+The extinguish condition does not depend on the number of 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>infective</choice>
+<choice>susceptible</choice>
+<choice>removed</choice>
+</choiceinput>
+</answer>
+ individuals but depends only on the number of 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>susceptible</choice>
+<choice>infective</choice>
+<choice>removed</choice>
+</choiceinput>
+</answer>
+ individuals.</p>
+
+</paragraphs>
+
+<paragraphs>
+<title>Example calculation</title>
+<p>When <m>S_t=20,000</m>, <m>a=0.1</m>, and <m>b=0.00005</m>, then <m>bS_t - a = </m> 
+<answer allowedErrorInNumbers="0.00001">
+<award><math>0.00005*20000-0.1</math></award>
+</answer>.  Therefore, the extinguish condition 
+<answer>
+  <choiceinput inline>
+    <choice>is</choice>
+    <choice credit="1">is not</choice>
+  </choiceinput>
+</answer>
+satisfied.</p>
+
+<p>If you keep <m>S_t</m> and <m>b</m> fixed at those values, what is the condition on the recovery rate parameter <m>a</m> so that the extinguish condition is satisfied? 
+<answer>
+<award>$a_example_condition </award>
+</answer>
+</p>
+<hint>
+  Your answer should be an inequality involving <m>a</m> (as you substituted numbers for <m>b</m> and <m>S_t</m>).
+</hint>
+
+<p>Verify with the 
+<ref uri='doenet:doenetId=HY6mAPU3HK86HUcF-p1qB'>SIR applet</ref>
+ that the initial increase or decrease of the infective population size is predicted by this condition.</p>
+
+
+</paragraphs>
+
+  
+<solution>
+
+<paragraphs>
+  <title>Outbreak or extinguish</title>
+
+
+<p>The net gain in the number of infectives is
+<me>I_{t+1}-I_t = bS_tI_t - aI_t.</me>
+If we want the number of infectives to decrease, then we need
+<me>bS_tI_t - aI_t \lt 0,</me>
+which is the extinguish condition.</p>
+
+</paragraphs>
+
+<paragraphs>
+  <title>Relationship between extinguish and no-spread condition</title>
+
+<p>The extinguish condition is a weaker condition than the no-spread condition. First of all, the no-spread condition implies extinguish condition because if <m>bS_tI_t=0</m> (the no-spread condition), then the extinguish condition becomes <m>-aI_t \lt  0</m>, which must be satisfied since all parameters are positive and we assume <m>I_t</m> to be positive.  Second, it is simple to satisfy the extinguish condition without the no-spread condition.</p>
+
+</paragraphs>
+
+<paragraphs>
+  <title>Simplifying the extinguish condition</title>
+
+The condition
+<me>bS_tI_t - aI_t \lt  0</me>
+involves both <m>S_t</m> and <m>I_t</m>.  If <m>bS_tI_t \gt  0</m>, then necessarily <m>I_t \gt  0</m>.  We can divide both sides of the inequality by <m>I_t</m> to write the condition as
+<me>bS_t - a \lt  0.</me>
+This involves both parameters <m>a</m> and <m>b</m> and one state variable <m>S_t</m>.  One could also add <m>a</m> to both sides then divide by <m>b</m> to write the condition as
+<me>S_t \lt  \frac{a}{b}.</me>
+
+</paragraphs>
+
+<paragraphs>
+<title>Example calculation</title>
+With these values, 
+<me>b S_t -a = 0.00005(20000) - 0.1 = 0.9.</me>
+Since 
+<me>b S_t -a > 0</me>
+the extinguish condition is not satisfied.  The condition on the recovery rate parameter <m>a</m> is that we need $a_example_condition in order for the number of infectives to decrease at the outset.  Indeed, the applet shows, for these values of <m>S_t</m> and <m>b</m>, <m>I_t</m> initially decreases only when <m>$a_example_condition</m>.
+</paragraphs>
+
+</solution>
+
+
+</problem>

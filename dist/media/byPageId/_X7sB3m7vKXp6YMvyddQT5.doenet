@@ -1,0 +1,203 @@
+<problem>
+<!-- <title>Find equilibria of discrete dynamical system graphically, graph only, worksheet</title> -->
+
+<setup>
+
+<function name='f' variables='x'>0.005*(x+2)*(x-1)*(x-3)*(x+5)(x-6)+x</function>
+<math name='EsFound' unordered='true'>1,2,3</math>
+<math name='n_e' >3</math>
+<math name='x0ex2' >-3</math>
+<math name='x1ex2' simplify='full'>$$f($x0ex2)</math>
+<math name='A0found' >1</math>
+<math name='equilibria' unordered='true'>-2,1,3</math>
+<math name='one' >1</math>
+<math name='pointex2' simplify='full' >($x0ex2 ,$x1ex2 )</math>
+<math name='minus_x1ex2' simplify='full' >-$x1ex2 </math>
+
+</setup>
+
+
+<p>For the dynamical system
+<md>
+  <mrow>y_{t+1}\amp =g(y_t)</mrow>
+  <mrow>y_0\amp = y_0,</mrow>
+</md>
+the function <m>g</m> along with the diagonal are plotted on a graph of <m>y_{t+1}</m> versus <m>y_t</m>.
+</p>
+
+<graph name='g1' xmin='-3.5' xmax='4.5' ymin='-2.5' ymax='3.5' width='500' height='280' showNavigation='false'>
+
+<copy tname="f" fixed/>
+<line fixed stylenumber="2">y=x</line>
+
+<point name='equi_1' hide >(-2,-2)</point>
+<point name='equi_2' hide >(1,1)</point>
+<point name='equi_3' hide >(3,3)</point>
+
+<map name="map1">
+<template>
+
+<point name="dragPoint" stylenumber="3" x="$(i{prop='value' link='false'})-1" y='0'
+label="($(dragPoint{prop='x' displayDigits='3'}), $(dragPoint{prop='y' displayDigits='3'}))">
+
+<constraints>
+<attractTo threshold="0.3">$equi_1</attractTo>
+<attractTo threshold="0.3">$equi_2</attractTo>
+<attractTo threshold="0.3">$equi_3</attractTo>
+</constraints>
+
+</point>
+
+</template>
+<sources alias="i"><sequence from="1" to="$n_i" /></sources>
+
+</map>
+
+</graph>
+
+
+<slider name="n_i" label="n_e" from="0" to="5" width="100"/>
+
+<ol>
+
+<li>
+<p>Find the equilibria using the above graph.  Move the <m>n_e</m> slider to indicate how many equilibria you found and drag the resulting points to the locations of the equilibria.
+<answer><award unorderedCompare matchPartial><when>
+<mathlist> $map1 </mathlist> = <mathlist>$equi_1 $equi_2 $equi_3</mathlist>
+</when></award>
+</answer>
+
+</p>
+  
+<p>The equilibria are: <m>E=</m> 
+<answer>
+<award matchPartial='true' symbolicEquality='true'>$equilibria </award>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+Starting with <m>y_0 = 1</m>, calculate <m>y_1 =</m> 
+<answer>
+<award symbolicEquality='true'>$one </award>
+</answer>
+, <m>y_2 =</m> 
+<answer>
+<award symbolicEquality='true'>$one </award>
+</answer>
+, and <m>y_3 =</m> 
+<answer>
+<award symbolicEquality='true'>$one </award>
+</answer>
+
+
+
+</li>
+
+<li>
+
+<p>
+If we start with <m>y_0 = $x0ex2 </m>, use the graph to approximate <m>y_1=g(y_0)</m>.
+</p>
+
+<graph xmin='-3.5' xmax='4.5' ymin='-2.5' ymax='3.5' width='500' height='280' showNavigation='false'>
+
+<copy tname='f' />
+<line fixed stylenumber="2">y=x</line>
+
+<collect componentTypes='point' tname='g1' draggable='false'/>
+
+<point stylenumber='4' name='p1' x='2' y='1'
+label="(y_0, y_1) = ( $(p1{prop='x' displaydecimals='2'}) , $(p1{prop='y' displaydecimals='2'}) )">
+
+<constraints>
+<attractTo>$f</attractTo>
+<attractTo><point hide>($x0ex2, $x1ex2)</point></attractTo>
+</constraints>
+</point>
+
+<point stylenumber="5" fixed x="$(p1{prop='x'})" y="0" label="y_0 = $(p1{prop='x' displayDecimals='2'})" />
+
+<point stylenumber="5" fixed x="0" y="$(p1{prop='y'})" label="y_1 = $(p1{prop='y' displayDecimals='2'})" />
+  
+  
+
+<lineSegment stylenumber='4' fixed endPoints="$p1 (0, $(p1{prop='y'}) )"/>
+<lineSegment stylenumber='4' fixed endPoints="$p1 ( $(p1{prop='x'}) , 0)"/>
+
+</graph>
+
+
+  <p>Move the <copy prop="styleDescriptionWithNoun" tname="p1" /> to estimate the value of <m>y+1 = f(y_0)</m> when <m>y_0=-3</m>.
+<answer>
+<award><when>
+$p1 = ($x0ex2,$x1ex2)
+</when></award>
+</answer>
+  </p>
+
+<p>
+<m>y_1=</m> 
+<answer>
+<award allowedErrorInNumbers='0.1' allowedErrorIsAbsolute="true">$x1ex2 </award>
+<award allowedErrorInNumbers='0.1' allowedErrorIsAbsolute="true" credit='0' name='award6'>$minus_x1ex2 </award>
+</answer>
+<feedback condition="$award6">Did you lose a minus sign?</feedback>
+</p>
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+The following graph shows the equilibria as well as the point from the last part.
+
+<graph xmin='-3.5' xmax='4.5' ymin='-2.5' ymax='3.5' width='500' height='280' showNavigation='false'>
+
+<copy tname='f' />
+<line fixed stylenumber="2">y=x</line>
+
+<point fixed stylenumber="3" label="(-2, -2)">(-2,-2)</point>
+<point fixed stylenumber="3" label="(1, 1)">(1,1)</point>
+<point fixed stylenumber="3" label="(3, 3)">(3,3)</point>
+
+<point stylenumber='4' label="(x_n, x_{n+1}) = ($x0ex2, $x1ex2)">
+($x0ex2, $x1ex2)
+</point>
+
+<lineSegment stylenumber='4' endPoints="($x0ex2, $x1ex2) (0, $x1ex2)"/>
+<lineSegment stylenumber='4' endPoints="($x0ex2, $x1ex2) ($x0ex2, 0)"/>
+
+</graph>
+
+
+
+
+<p>The equilibria are <m>E=$equilibria </m>.</p>
+</li>
+
+<li>
+Since <m>y=1</m> is an equilibrium, starting at <m>y_0=1</m> will lead to <m>y_1=</m>, <m>y_2=1</m>, and <m>y_3=1</m>.
+</li>
+
+<li>
+The point is shown on the above graph.  You can read off the graph that <m>y_1=$x1ex2 </m>.
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

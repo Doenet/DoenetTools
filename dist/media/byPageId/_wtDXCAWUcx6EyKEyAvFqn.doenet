@@ -1,0 +1,47 @@
+<problem>
+
+<setup>
+  <selectFromSequence assignNames='aa bb' numberToSelect='2' withReplacement="false" from="2" to="10"/>
+
+  <math name='difference' simplify='full'>abs($aa-$bb)</math>
+
+  <math name='sum_of_squares' simplify='full'>$aa^2+$bb^2</math>
+  <math name='the_numbers' unordered='true' simplify='full'>$aa,$bb</math>
+  <math name='a_plus_difference_squared_expand' simplify='full' expand='true'>(a+$difference)^2</math>
+  <math name='left_side_expand' simplify='full'>a^2+$a_plus_difference_squared_expand</math>
+  <math name='quadratic' simplify='full'>$left_side_expand-$sum_of_squares</math>
+  <math name='quadratic_simplified' simplify='full'>a^2 +$difference*a -$aa*$bb</math>
+  <math name='quadratic_factored' simplify='full'>(a-$aa)(a+$bb)</math>
+</setup>
+
+
+The difference between two positive numbers is $difference and the sum of their squares is $sum_of_squares.
+<p>The numbers are <mathinput name="input1"/> and <mathinput name="input2"/>.</p>
+
+
+<answer>
+  <award symbolicEquality='true' matchPartial="true" targetsAreResponses="input1 input2"><when>
+    <mathlist>$input1 $input2</mathlist> = $the_numbers
+  </when></award>
+</answer>
+
+
+<solution>
+Let the numbers be <m>a</m> and <m>b</m>.  According to the given information, we can let <m>b-a=$difference</m> and <m>a^2+b^2 = $sum_of_squares</m>.  Since the first condition is <m>b=a+$difference</m>, we can replace <m>b</m> with <m>a+$difference</m> in the sum of squares conditions.  The resulting equation is
+<me>a^2+(a+$difference)^2 = $sum_of_squares.</me>  Expanding the square, we can write the condition as
+<md>
+  <mrow>a^2 + $a_plus_difference_squared_expand\amp = $sum_of_squares</mrow>
+  <mrow>$left_side_expand\amp = $sum_of_squares</mrow>
+  <mrow>$quadratic \amp =0</mrow>
+</md>
+Simplifying the quadratic, factoring, and solving:
+<md>
+  <mrow>$quadratic_simplified\amp =0</mrow>
+  <mrow>$quadratic_factored\amp =0,</mrow>
+</md>
+so the solutions are <m>a=$aa</m> or <m>a=-$bb</m>.  Since we know <m>a</m> is a positive number, we can conclude that <m>a=$aa</m>.  Then, <m>b=a+$difference=$bb.</m>
+
+<p>The two numbers are $aa and $bb.</p>
+</solution>
+
+</problem>

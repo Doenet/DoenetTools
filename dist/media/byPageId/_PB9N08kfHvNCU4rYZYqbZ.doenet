@@ -1,0 +1,99 @@
+<!--
+  Doesn't work for negative
+  constant variants yet.
+  (Try Variant Index 6 for a working one.)
+
+  Compare symbolic but ignore order?
+  Currently need two answers.
+-->
+
+<!--
+#DESCRIPTION
+##  Calculus: Functions
+##ENDDESCRIPTION
+
+
+## DBsubject(Algebra)
+## DBchapter(Functions)
+## DBsection(Function notation)
+## Date(08/26/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(BuildToDerivDefn)
+## Level(3)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('1.1')
+## Problem1('25')
+## KEYWORDS('calculus', 'function', 'difference quotient')
+
+#####################################################################
+-->
+
+<setup>
+  <selectFromSequence from="2" to="8" numberToSelect="2" withReplacement assignNames="a b" />
+  <!-- Could also just do two separate selectFromSequences
+    <selectFromSequence from="2" to="8" name="a" />
+    <selectFromSequence from="2" to="8" name="b" />
+  -->
+  <selectFromSequence from="1" to="9" name="c" />
+
+  <math name="ans" simplify>($b-2*$c)-h</math>
+</setup>
+
+<p>
+  Let <m><math>f(x)=$a + $b x - x^2 </math></m>.
+  Find the difference quotient
+  <me>
+    <math>(f($c+h)-f($c))/h</math>.
+  </me>
+  Simplify your answer.
+</p>
+
+<p>
+  <answer>
+    <award symbolicEquality simplifyOnCompare="none">
+      <math>
+        -h+<math simplify format="latex">($b-2*$c)</math>
+      </math>
+    </award>
+    <award symbolicEquality simplifyOnCompare="none">
+      <math>
+        <math simplify format="latex">($b-2*$c)</math>-h
+      </math>
+    </award>
+    <award credit="0" name="notSimple">
+      <math simplify format="latex">($b-2*$c)-h</math>
+    </award>
+  </answer>
+</p>
+
+  <feedback condition="$notSimple">
+    Correct answer, but not in a simplified form.
+  </feedback>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        Not Simplified:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <math>($b-2*$c)-h</math>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        Simplified: 
+      </cell>
+      <cell></cell><cell></cell>
+      <cell>
+        <math simplify>($b-2*$c)-h</math>
+      </cell>
+   </row>
+  </tabular>
+</solution>

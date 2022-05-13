@@ -1,0 +1,40 @@
+<!--
+##DESCRIPTION
+##  Dummy Problem to direct students to a Survey Monkey Evaluation of WeBWorK
+##ENDDESCRIPTION
+
+##KEYWORDS('algebra', 'inequality', 'fraction')
+
+## Author('Jonathan Rogness')
+## Institution('University of Minnesota')
+-->
+
+<setup>
+  <math name="ans">
+    111211211
+  </math>
+</setup>
+
+<p>
+Please click on the following link to complete the course evaluation for this semester.  At the end of the survey you'll be given an answer which you can enter in the blank below for credit on this problem.
+</p>
+<p>
+  Link: https://umn.qualtrics.com/jfe/form/SV_2c5h5bFjkae01lH
+</p>
+
+<p>
+  Answer given at the end of the survey:
+  <answer>
+    <award>
+      $ans
+    </award>
+  </answer>
+</p>
+
+<solution>
+  $ans
+</solution>
+
+<!--
+<a href="https://umn.qualtrics.com/jfe/form/SV_2c5h5bFjkae01lH">Fall Course Evaluation</a>
+-->

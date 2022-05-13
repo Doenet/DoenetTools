@@ -1,0 +1,201 @@
+<problem>
+<!-- <title>Integral of polynomial and exponential</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a b c1 aaa bbb' from='-10' to='10' exclude='0' numberToSelect="5" withReplacement />
+
+<selectFromSequence assignNames='aa' from='4' to='5'  />
+<selectFromSequence assignNames='bb' from='2' to='3' />
+<select assignNames="(cc tcc)">
+  <option><number>0</number><math>1</math></option>
+  <option><number>1</number><math>t</math></option>
+</select>
+
+<selectFromSequence assignNames='lb' from='-2' to='1' />
+<selectFromSequence assignNames='ub' from='$lb+1' to='2' />
+
+
+<function name='f' variables='t' symbolic>
+  <math simplify>$a *t^$aa +$b *t^$bb +$c1 *$tcc</math>
+</function>
+<function symbolic simplify="numbers" name='indefinta' variables="t">
+  <math simplify="numbers">$a *t^($aa+1)/($aa+1)</math>
+</function>
+<function symbolic simplify="numbers" name='indefintb' variables="t">
+  <math simplify="numbers">$b *t^($bb+1)/($bb+1)</math>
+</function>
+<function symbolic simplify="numbers" name='indefintc' variables="t">
+  <math simplify="numbers">$c1 *t^($cc+1)/($cc+1)</math>
+</function>
+
+<function name='antideriv_f' variables='t' symbolic>
+  <math simplify="numbers">$indefinta + $indefintb +$indefintc</math>
+</function>
+
+
+  
+<math name='intfeval' simplify='numbers' >$$antideriv_f($ub)-$$antideriv_f($lb)</math>
+
+<math name="intaEval" simplify="numbers">$$indefinta($ub)-$$indefinta($lb)</math>
+<math name="intbEval" simplify="numbers">$$indefintb($ub)-$$indefintb($lb)</math>
+<math name="intcEval" simplify="numbers">$$indefintc($ub)-$$indefintc($lb)</math>
+<math name="intaEvalSignError" simplify="numbers">$$indefinta($ub)+$$indefinta($lb)</math>
+<math name="intbEvalSignError" simplify="numbers">$$indefintb($ub)+$$indefintb($lb)</math>
+<math name="intcEvalSignError" simplify="numbers">$$indefintc($ub)+$$indefintc($lb)</math>
+
+<math name='intf_signerror1a' simplify='numbers' >
+  $intaEvalSignError+$intbEval+$intcEval
+</math>
+<math name='intf_signerror1b' simplify='numbers' >
+  $intaEval+$intbEvalSignError+$intcEval
+</math>
+<math name='intf_signerror1c' simplify='numbers' >
+  $intaEval+$intbEval+$intcEvalSignError
+</math>
+<math name='intf_signerror2a' simplify='numbers' >
+  $intaEval+$intbEvalSignError+$intcEvalSignError
+</math>
+<math name='intf_signerror2b' simplify='numbers' >
+  $intaEvalSignError+$intbEval+$intcEvalSignError
+</math>
+<math name='intf_signerror2c' simplify='numbers' >
+  $intaEvalSignError+$intbEvalSignError+$intcEval
+</math>
+<math name='intf_signerror3' simplify='numbers' >
+  $intaEvalSignError+$intbEvalSignError+$intcEvalSignError
+</math>
+
+  
+
+<!-- <math name='intseval' simplify='numbersPreserveOrder' > $a *($indefinta_ub -$indefinta_lb )+$b *($indefintb_ub -$indefintb_lb )+$c1 *($indefintc_ub -$indefintc_lb ) </math> -->
+
+
+
+  
+<function name='g' variables='t' symbolic>
+  <math simplify="numbers">$aaa *e^($bbb *t)</math>
+</function>
+<math simplify="full" name='intgeval'>$aaa *e^($bbb *t)/$bbb</math>
+
+<math name='intgeval_C' >$intgeval +C</math>
+  
+</setup>
+
+
+<p>Evaluate the following integrals.  For full credit, do not round your answer to a decimal.  (Maximum of 90% credit will be awarded for rounded answers that include at least 5 correct significant digits.)</p>
+
+
+
+<ol>
+
+<li>
+<m>\displaystyle \int_{$lb}^{$ub} ($f) dt =</m> 
+<answer forceFullCheckworkButton>
+<award symbolicEquality simplifyOnCompare>$intfeval </award>
+<award allowedErrorInNumbers='0.0001' credit='0.9' name='award6'>$intfeval </award>
+<award credit='0.9' name='award7'>$intf_signerror1a </award>
+<award allowedErrorInNumbers='0.0001' credit='0.81' name='award8'>$intf_signerror1a </award>
+<award credit='0.9' name='award9'>$intf_signerror1b </award>
+<award allowedErrorInNumbers='0.0001' credit='0.81' name='award10'>$intf_signerror1b </award>
+<award credit='0.9' name='award11'>$intf_signerror1c </award>
+<award allowedErrorInNumbers='0.0001' credit='0.81' name='award12'>$intf_signerror1c </award>
+<award credit='0.81' name='award13'>$intf_signerror2a </award>
+<award allowedErrorInNumbers='0.0001' credit='0.73' name='award14'>$intf_signerror2a </award>
+<award credit='0.81' name='award15'>$intf_signerror2b </award>
+<award allowedErrorInNumbers='0.0001' credit='0.73' name='award16'>$intf_signerror2b </award>
+<award credit='0.81' name='award17'>$intf_signerror2c </award>
+<award allowedErrorInNumbers='0.0001' credit='0.73' name='award18'>$intf_signerror2c </award>
+<award credit='0.73' name='award19'>$intf_signerror3 </award>
+<award allowedErrorInNumbers='0.0001' credit='0.66' name='award20'>$intf_signerror3 </award>
+</answer>
+<feedback condition="$award6">Enter your answer as a fraction.</feedback>
+<feedback condition="$award7">It seems you may have added rather than subtracted one term of the integrand at the bounds.</feedback>
+<feedback condition="$award8">It seems you may have added rather than subtracted one term of the integrand at the bounds.  Enter your answer as a fraction.</feedback>
+<feedback condition="$award9">It seems you may have added rather than subtracted one term of the integrand at the bounds.</feedback>
+<feedback condition="$award10">It seems you may have added rather than subtracted one term of the integrand at the bounds.  Enter your answer as a fraction.</feedback>
+<feedback condition="$award11">It seems you may have added rather than subtracted one term of the integrand at the bounds.</feedback>
+<feedback condition="$award12">It seems you may have added rather than subtracted one term of the integrand at the bounds.  Enter your answer as a fraction.</feedback>
+<feedback condition="$award13">It seems you may have added rather than subtracted two terms of the integrand at the bounds.</feedback>
+<feedback condition="$award14">It seems you may have added rather than subtracted two terms of the integrand at the bounds.  Enter your answer as a fraction.</feedback>
+<feedback condition="$award15">It seems you may have added rather than subtracted two terms of the integrand at the bounds.</feedback>
+<feedback condition="$award16">It seems you may have added rather than subtracted two terms of the integrand at the bounds.  Enter your answer as a fraction.</feedback>
+<feedback condition="$award17">It seems you may have added rather than subtracted two terms of the integrand at the bounds.</feedback>
+<feedback condition="$award18">It seems you may have added rather than subtracted two terms of the integrand at the bounds.  Enter your answer as a fraction.</feedback>
+<feedback condition="$award19">It seems you may have added rather than subtracted three terms of the integrand at the bounds.</feedback>
+<feedback condition="$award20">It seems you may have added rather than subtracted three terms of the integrand at the bounds.  Enter your answer as a fraction.</feedback>
+
+
+</li>
+
+<li>
+<m>\displaystyle \int $g \, dt =</m> 
+<answer symbolicEquality simplifyOnCompare forceFullCheckworkButton>
+  <award>$intgeval_C </award>
+  <award credit='0.8' name='award0'>$intgeval </award>
+  <award allowedErrorInNumbers='0.0001' credit='0.9' name='award1'>$intgeval_C </award>
+  <award allowedErrorInNumbers='0.0001' credit='0.72' name='award2'>$intgeval </award>
+</answer>
+<feedback condition="$award0">Don't forget the constant.</feedback>
+<feedback condition="$award1">Enter your answer as a fraction.</feedback>
+<feedback condition="$award2">Enter your answer as a fraction, and don't forget the constant.</feedback>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<p>We first use the sum and constant product rules for integration: 
+</p>
+<p>
+<m>\displaystyle \int_{$lb}^{$ub} ($f) dt  =  
+  $a \int_{$lb}^{$ub} t^$aa \, dt
+  +$b \int_{$lb}^{$ub} t^$bb \, dt 
+  +$c1 \int_{$lb}^{$ub} $tcc \, dt</m>
+</p>
+<p>
+We then evaluate each of these integrals using the power rule for integration:
+</p>
+<p>
+<m>\displaystyle $indefinta \Big|_{ $lb  }^{ $ub  }+$indefintb \Big|_{ $lb  }^{ $ub  }+$indefintc \Big|_{ $lb  }^{ $ub  }</m>
+</p>
+<p>
+Finally, we substitute in the bounds and simplify:
+</p>
+<p>
+<m>\displaystyle $intaEval+$intbEval+$intcEval  = $intfeval </m>
+</p>
+
+</li>
+
+<li>
+<p>
+We first use the constant product rule for integration: 
+</p>
+<p>
+<m>\displaystyle \int $g \, dt  = $aaa \int <math>e^($bbb *t)</math> \, dt</m>
+</p>
+<p>
+We then find the antiderivative: 
+</p>
+<p>
+<m>\displaystyle $aaa \left(<math>e^($bbb *t)/$bbb</math> \right)+C=$intgeval +C</m>
+</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

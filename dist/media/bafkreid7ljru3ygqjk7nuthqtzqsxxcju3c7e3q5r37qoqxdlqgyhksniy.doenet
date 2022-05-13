@@ -1,0 +1,85 @@
+<title>Practice Example: the <tag>example</tag> component</title>
+<ref createButton="true" uri="https://docs.google.com/document/d/1XYEqWt552yKh-9oq8HBCOfKI01P-tb7HisadXeikyQs/edit?usp=sharing">Get Text File</ref>
+
+<!--***********************************************************
+*  Example 1: Using the <example> component within a <section>,
+demonstrating the default numbering that results. (and how it is
+remains independent of <table> and <figure> numbering)
+************************************************************-->
+<section>
+
+<example>
+  <table><title>Characteristics of a mature wizard</title>
+    <tabular top="minor" bottom="minor" left="minor" right="minor">
+      <row header >
+        <cell></cell>
+        <cell>Gandalf</cell>
+        <cell>Merlin</cell>
+        <cell>Dumbledore</cell>
+        <cell>Ron Weasley</cell>
+      </row>
+      <row>
+        <cell><alert>pointy hat</alert></cell>
+        <cell>✅</cell>
+        <cell>✅</cell>
+        <cell>✅</cell>
+        <cell>❌ (often disheveled and hatless)</cell>
+      </row>
+      <row>
+        <cell><alert>alternating esoteric and childish humor</alert></cell>
+        <cell>✅</cell>
+        <cell>✅</cell>
+        <cell>✅</cell>
+        <cell>❌ (mostly just childish)</cell>
+      </row>
+      <row>
+        <cell><alert>possessor of fanciful magical smoking item</alert></cell>
+        <cell>✅ pipeweed from the SouthFarthing</cell>
+        <cell>❓ </cell>
+        <cell>✅ the mirror of erised</cell>
+        <cell>✅ the first-year wand</cell>
+      </row>
+    </tabular>
+  </table>
+</example>
+
+<example>
+  <sideBySide width="50%">
+    <figure>
+      <image width="300" source="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Arthur-Pyle_The_Enchanter_Merlin.JPG/1280px-Arthur-Pyle_The_Enchanter_Merlin.JPG"/>
+<caption>Merlin</caption>
+    </figure>
+    <figure>
+      <caption>Gandalf</caption>
+        <image width="300" source="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Emblema_Gandalf.svg/1280px-Emblema_Gandalf.svg.png"/>
+    </figure>
+  </sideBySide>
+</example>
+
+
+<!--Delete or comment out the <examples> above and create your own.-->
+
+
+</section>
+<!--***********************************************************
+*  Example 2: Illustration of the default numbering system and
+contextual use within a larger document.
+************************************************************-->
+<section>
+<lorem generateParagraphs="2"/>
+  
+<example>
+  <alert>Trademark wizard skills to develop:</alert>
+    <ol>
+      <li>transform yourself into a mouse at will</li>
+      <li>provide exceptional fireworks free of charge to quaint villages</li>
+      <li>distinctly refrain from providing timely advice to heroes in peril</li>
+    </ol>
+</example>
+    
+
+
+<!--Delete or comment out the list above to create your own
+  auto-numbered example component-->
+
+</section>

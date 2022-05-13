@@ -1,0 +1,39 @@
+<sideBySide>
+  <ref createButton="true" uri="doenet:doenetId=_pXorGnWFwZn2kTil3HHw">Previous Chapter</ref>
+  <ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">ComponentIndex</ref>
+   <ref createButton="true"  uri="doenet:doenetId=11kv_2knqH_H81PUGeF9F">Next Chapter</ref>
+</sideBySide>
+
+<sideBySide>
+<document>
+<title>The DoenetML Guide</title>
+<section><title>Chapter 2:  General Content</title>
+  <subsection><title>Structure:  Sectional Components</title>
+<p><lorem generateParagraphs="3"/></p>
+  </subsection>
+  
+<subsection><title>Figures: Images and Video</title>
+<p></p>
+
+</subsection>
+
+<subsection><title>Links</title>
+<p></p>
+</subsection>
+
+<subsection><title>Basic Formatting</title>
+</subsection>
+</section>
+</document>
+<ol><title>Chapters</title>
+    <li><ref createButton="true" uri="doenet:doenetId=_pXorGnWFwZn2kTil3HHw">Introduction</ref></li>
+    <li><ref createButton="true" uri="">Current</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=11kv_2knqH_H81PUGeF9F">Mathematical Content</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=QwmPcHU0wV8VxcgqNUNSE">Graphical Content</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=CF2oaf_wwyyqiLodYtQ_g">Interactive Applets</ref></li>
+</ol>
+<document>
+
+
+</document>
+</sideBySide>

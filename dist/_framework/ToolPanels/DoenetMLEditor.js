@@ -1,5 +1,5 @@
 import React, {useRef, useEffect} from "../../_snowpack/pkg/react.js";
-import {editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom} from "./EditorViewer.js";
+import {editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom} from "./EditorViewer.js";
 import {
   atom,
   useRecoilValue,
@@ -9,21 +9,23 @@ import {
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import CodeMirror from "../CodeMirror.js";
 import axios from "../../_snowpack/pkg/axios.js";
-import {fileByDoenetId} from "../ToolHandlers/CourseToolHandler.js";
+import {fileByPageId} from "../ToolHandlers/CourseToolHandler.js";
+import {courseIdAtom} from "../../_reactComponents/Course/CourseActions.js";
 export default function DoenetMLEditor(props) {
   console.log(">>>===DoenetMLEditor");
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const updateInternalValue = useRecoilValue(updateTextEditorDoenetMLAtom);
+  const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramPageId = useRecoilValue(searchParamAtomFamily("pageId"));
-  const paramCourseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const courseId = useRecoilValue(courseIdAtom);
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   let editorRef = useRef(null);
   let timeout = useRef(null);
-  const saveDraft = useRecoilCallback(({snapshot, set}) => async (pageId, courseId) => {
+  const saveDraft = useRecoilCallback(({snapshot, set}) => async (pageId, courseId2) => {
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     try {
-      const {data} = await axios.post("/api/saveDoenetML.php", {doenetML, pageId, courseId});
-      set(fileByDoenetId(pageId), doenetML);
+      const {data} = await axios.post("/api/saveDoenetML.php", {doenetML, pageId, courseId: courseId2});
+      set(fileByPageId(pageId), doenetML);
       if (!data.success) {
         console.log("ERROR", data.message);
       }
@@ -34,14 +36,23 @@ export default function DoenetMLEditor(props) {
   useEffect(() => {
     return () => {
       if (initializedPageId !== "") {
-        saveDraft(initializedPageId, paramCourseId);
+        saveDraft(initializedPageId, courseId);
         if (timeout.current !== null) {
           clearTimeout(timeout.current);
         }
         timeout.current = null;
       }
     };
-  }, [initializedPageId, saveDraft]);
+  }, [initializedPageId, saveDraft, courseId]);
+  useEffect(() => {
+    if (initializedPageId !== "") {
+      saveDraft(initializedPageId, courseId);
+      if (timeout.current !== null) {
+        clearTimeout(timeout.current);
+      }
+      timeout.current = null;
+    }
+  }, [viewerDoenetML]);
   if (paramPageId !== initializedPageId) {
     return null;
   }
@@ -53,7 +64,7 @@ export default function DoenetMLEditor(props) {
       setEditorDoenetML(value);
       clearTimeout(timeout.current);
       timeout.current = setTimeout(function() {
-        saveDraft(initializedPageId, paramCourseId);
+        saveDraft(initializedPageId, courseId);
         timeout.current = null;
       }, 3e3);
     }

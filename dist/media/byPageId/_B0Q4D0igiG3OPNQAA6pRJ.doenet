@@ -1,0 +1,140 @@
+<document><title><tag>hint</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+  <p>The <tag>hint</tag><idx><tag>hint</tag></idx> component renders a boxed section of text that is closed by default and can be expanded when clicked.  It's appearance and functionality is similar to that of an <ref><tag>aside</tag></ref> component.  By default the hint banner is visible, however the author can nest a <tag>hint</tag> within a <ref><tag>conditionalContent</tag></ref> so that the hint only becomes visible after a specified incorrect response, or after a certain number of incorrect tries. See examples below. </p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+<!--<document>
+
+  Basic hint without a condition for appearance
+  
+  <p>What's my favorite color?</p>
+  <answer>
+    <choiceInput>
+      <choice credit="1">red</choice>
+      <choice>blue</choice>
+      <choice>green</choice>
+    </choiceInput>
+  </answer>
+  <hint>It's definitely not blue or green!</hint>
+
+
+Hint nested inside a conditionalContent tag
+<p>What's my favorite color?</p>
+  <answer>
+    <choiceInput>
+      <choice credit="1">red</choice>
+      <choice name="boring">blue</choice>
+      <choice name="moreBoring">green</choice>
+    </choiceInput>
+  </answer>
+ <conditionalContent condition="$boring">
+  <hint>
+    It's definitely not blue, there's already too much of it in the sky...</hint>
+ </conditionalContent>
+
+  <conditionalContent condition="$moreBoring">
+  <hint>
+    It's definitely not green, there's already too much of it in the grass...</hint>
+ </conditionalContent>-->
+
+
+
+
+

@@ -10,14 +10,14 @@ import {
   useAssignmentCrumb, 
 } from '../../../_utils/breadcrumbUtil';
 import { 
-  // authorItemByDoenetId, 
+  // itemByDoenetId, 
   courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
 
 export default function AssignmentBreadCrumb() {
   const courseId = useRecoilValue(courseIdAtom);
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
 
-  // const sectionId = useRecoilValue(authorItemByDoenetId(doenetId)).parentDoenetId;
+  // const sectionId = useRecoilValue(itemByDoenetId(doenetId)).parentDoenetId;
 
   const chooserCrumb = useCourseChooserCrumb();
   const dashboardCrumb = useDashboardCrumb(courseId);

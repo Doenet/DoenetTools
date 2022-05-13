@@ -1,0 +1,74 @@
+<problem>
+<!-- <title>Definite integrals -- more examples</title> -->
+
+<setup>
+
+<function name='f1' variables='x'>2e^(3x)</function>
+<number name='a1'>-2</number>
+<number name='b1'>0</number>
+<function name='f2' variables='t'>1-1/t</function>
+<number name='a2'>-3</number>
+<number name='b2'>-2</number>
+
+
+<math name='int_f1_eval'>-2e^(-6)/3+2/3</math>
+<math name='int_f2_eval'>-ln(2)+1+ln(3)</math>
+<math name='int_f1_ind' >2/3e^(3x)</math>
+<math name='int_f2_ind'>t-ln(|t|)</math>
+
+</setup>
+
+
+Evaluate the following integrals.  (Don't round your answers.)
+
+<ol>
+
+<li>
+<m>\int_{$a1}^{$b1} $f1\, dx=</m> 
+
+<answer>
+<award>$int_f1_eval </award>
+<award allowedErrorInNumbers='0.0001' credit='0' name='award1'>$int_f1_eval </award>
+</answer>
+<feedback condition="$award1">Your answer is close to the correct answer, but you have rounded.  Don't write your answer as a decimal.</feedback>
+
+
+
+</li>
+
+<li>
+<m>\int_{$a2}^{$b2} $f2\, dt=</m>
+<answer>
+<award>$int_f2_eval </award>
+<award allowedErrorInNumbers='0.0001' credit='0' name='award3'>$int_f2_eval </award>
+</answer>
+<feedback condition="$award3">Your answer is close to the correct answer, but you have rounded.  Don't write your answer as a decimal.</feedback>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<me> \int_{$a1}^{$b1} $f1\, dx =$int_f1_ind \Big|_{ $a1  }^{ $b1  } = $int_f1_eval </me>
+</li>
+
+<li>
+<me> \int_{$a2}^{$b2} $f2\, dt = $int_f2_ind \Big|_{ $a2  }^{ $b2  } = $int_f2_eval </me>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

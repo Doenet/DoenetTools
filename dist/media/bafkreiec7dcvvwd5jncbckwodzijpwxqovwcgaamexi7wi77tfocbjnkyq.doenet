@@ -1,0 +1,26 @@
+<title>Exam 1b</title>
+
+<problem>
+  <variantControl nvariants="3" variantNames="one two three"/>
+  <select >
+    <option selectForVariantNames="one">1 + 1 = <answer>2</answer></option>
+    <option selectForVariantNames="two">1 + 2 = <answer>3</answer></option>
+    <option selectForVariantNames="three">1 + 3 = <answer>4</answer></option>
+  </select>
+ <p>Enter Hello<answer type='text'>hello</answer></p>
+  <solution>
+    hello
+  </solution>
+</problem>
+
+<problem>
+<variantControl nvariants="2" variantNames="a b"/>
+  <select assignnames='letter'>
+  <option selectForVariantNames="a">a </option>
+  <option selectForVariantNames="b">b</option>
+</select>
+ <p>$letter = <answer type='text'>$letter</answer></p>
+    <solution>
+    hello
+  </solution>
+</problem>

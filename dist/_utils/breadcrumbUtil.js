@@ -12,7 +12,7 @@ import {
   assignmentData,
 } from '../_framework/ToolPanels/Gradebook.js';
 import {
-  authorItemByDoenetId,
+  itemByDoenetId,
   coursePermissionsAndSettingsByCourseId,
   findFirstPageOfActivity,
 } from '../_reactComponents/Course/CourseActions.js';
@@ -68,7 +68,7 @@ const navigationSelectorFamily = selectorFamily({
           label,
           parentDoenetId: itemParentDoenetId,
           type,
-        } = await get(authorItemByDoenetId(parentDoenetId));
+        } = await get(itemByDoenetId(parentDoenetId));
         if (courseId === itemParentDoenetId) {
           return [{ label, parentDoenetId, type }];
         }
@@ -147,11 +147,11 @@ export function useNavigationCrumbs(courseId, parentDoenetId) {
   return crumbs;
 }
 
-export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
+export function useEditorCrumb({ pageId, doenetId }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const pageObj = useRecoilValue(authorItemByDoenetId(pageId));
+  const pageObj = useRecoilValue(itemByDoenetId(pageId));
   let {label:pageLabel} = pageObj;
-  const activityObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  const activityObj = useRecoilValue(itemByDoenetId(doenetId));
   let { label:activityLabel } = activityObj;
 
   let crumbs = [{
@@ -162,8 +162,6 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
         tool: 'editor',
         view: '',
         params: {
-          courseId,
-          sectionId,
           doenetId,
           pageId,
         },
@@ -182,8 +180,6 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
           tool: 'editor',
           view: '',
           params: {
-            courseId,
-            sectionId,
             doenetId,
             pageId:firstPageDoenetId,
           },
@@ -198,8 +194,6 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
           tool: 'editor',
           view: '',
           params: {
-            courseId,
-            sectionId,
             doenetId,
             pageId,
           },
@@ -210,9 +204,9 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
   return crumbs;
 }
 
-export function useAssignmentCrumb({ doenetId, courseId, sectionId }) {
+export function useAssignmentCrumb({ doenetId}) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const { label } = useRecoilValue(authorItemByDoenetId(doenetId));
+  const { label } = useRecoilValue(itemByDoenetId(doenetId));
 
   return {
     label: label ?? '_',
@@ -222,8 +216,6 @@ export function useAssignmentCrumb({ doenetId, courseId, sectionId }) {
         tool: 'assignment',
         view: '',
         params: {
-          courseId,
-          sectionId,
           doenetId,
         },
       });
@@ -247,6 +239,54 @@ export function useEnrollmentCrumb(courseId) {
       });
     },
   };
+}
+
+export function useDataCrumb(courseId,parentDoenetId) {
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const folderInfoArray = useRecoilValue(
+    navigationSelectorFamily({ courseId, parentDoenetId }),
+  );
+  const crumbs = [
+    {
+      label: 'Data',
+      onClick: () => {
+        setPageToolView({
+          page: 'course',
+          tool: 'data',
+          view: '',
+          params: {
+            courseId,
+          },
+        });
+      },
+    }
+  ];
+
+  for (let { label, parentDoenetId, type } of folderInfoArray) {
+    switch (type) {
+      case 'section':
+        crumbs.push({
+          label,
+          onClick: () => {
+            setPageToolView({
+              page: 'course',
+              tool: 'data',
+              view: '',
+              params: {
+                courseId,
+                sectionId: parentDoenetId,
+              },
+            });
+          },
+        });
+        break;
+
+      default:
+        console.warn(`Unsupported navigration crumb type: ${type}`);
+    }
+  }
+
+  return crumbs;
 }
 
 export function useSurveyCrumb(driveId, doenetId) {

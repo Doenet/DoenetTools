@@ -24,7 +24,7 @@ import axios from '../_snowpack/pkg/axios.js';
 // componentClass to string: componentClass.componentType
 
 export default class Core {
-  constructor({ doenetML, doenetId, pageNumber, attemptNumber = 1, itemNumber = 1,
+  constructor({ doenetML, doenetId, activityCid, pageNumber, attemptNumber = 1, itemNumber = 1,
     serverSaveId,
     requestedVariant, requestedVariantIndex,
     flags = {},
@@ -35,6 +35,7 @@ export default class Core {
 
     this.coreId = coreId;
     this.doenetId = doenetId;
+    this.activityCid = activityCid;
     this.pageNumber = pageNumber;
     this.attemptNumber = attemptNumber;
     this.itemNumber = itemNumber;
@@ -8307,11 +8308,14 @@ export default class Core {
 
     const payload = {
       doenetId: this.doenetId,
+      activityCid: this.activityCid,
+      pageCid: this.cid,
       pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
+      variantIndex: this.requestedVariant.index,
       verb: event.verb,
       object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
-      result: JSON.stringify(event.result, serializeFunctions.serializedComponentsReplacer),
+      result: JSON.stringify(removeFunctionsMathExpressionClass(event.result), serializeFunctions.serializedComponentsReplacer),
       context: JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer),
       timestamp: event.timestamp,
       version: "0.1.0",
@@ -9506,7 +9510,7 @@ export default class Core {
       attemptNumber: this.attemptNumber,
       credit: itemCreditAchieved,
       itemNumber: this.itemNumber,
-      componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted, serializeFunctions.serializedComponentsReplacer))
+      componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted), serializeFunctions.serializedComponentsReplacer)
     }
 
     console.log('payload for save credit for item', payload);

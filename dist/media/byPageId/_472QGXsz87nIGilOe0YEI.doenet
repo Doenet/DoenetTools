@@ -1,0 +1,32 @@
+<problem>
+  
+<selectFromSequence assignNames='a b c d' exclude="0" numberToSelect='4' withReplacement hide from="-10" to="10"/>
+
+<select assignNames='f g' numberToSelect="2" hide>f g h k y z u v w</select>
+<function name='ff' hide variables='x' symbolic><math simplify="numbers">$a*e^($b*x+$c)</math></function>
+<function name='gg' hide variables='x' symbolic><math simplify="numbers">$d*x^2+x</math></function>
+<math name='answer' hide simplify expand>$$ff($$gg(x))</math>
+
+
+
+Let <m>$f(x) = $ff</m> and <m>$g(x) = $gg</m>.  What is <m>$f($g(x))</m>?
+
+<p><m>$f($g(x)) =</m> <mathinput name="answer1input"/>
+</p>
+<answer forcefullcheckworkbutton="true">
+<award targetsAreResponses="answer1input">
+  <when>$answer1input = $answer</when>
+</award>
+</answer>
+
+  
+<solution>
+<md>
+  <mrow>$f($g(x))\amp = $f($gg)</mrow>
+  <mrow>\amp = <math simplify="numbersPreserveOrder" format="latex">$a e^{ $b($gg) + $c }</math></mrow>
+  <mrow>\amp = <copy tname="answer" /></mrow>
+</md>
+<p>Note: either of the final two forms is fine.</p>
+</solution>
+
+</problem>

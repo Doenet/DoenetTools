@@ -1,7 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
-import {authorItemByDoenetId, copiedCourseItems, cutCourseItems, selectedCourseItems, useCourse} from "../../_reactComponents/Course/CourseActions.js";
+import {itemByDoenetId, copiedCourseItems, cutCourseItems, selectedCourseItems, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import {useToast, toastType} from "../Toast.js";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
@@ -13,12 +13,10 @@ export default function CutCopyPasteMenu() {
   let copiedObjs = useRecoilValue(copiedCourseItems);
   let selectedItems = useRecoilValue(selectedCourseItems);
   let firstSelectedDoenetId = selectedItems[0];
-  let firstSelectedItemObj = useRecoilValue(authorItemByDoenetId(firstSelectedDoenetId));
+  let firstSelectedItemObj = useRecoilValue(itemByDoenetId(firstSelectedDoenetId));
   let canCopy = true;
   let canCut = true;
   let canPaste = true;
-  console.log("selectedItems", selectedItems);
-  console.log("firstSelectedItemObj", firstSelectedItemObj);
   if (cutObjs.length == 0 && copiedObjs.length == 0) {
     canPaste = false;
   }

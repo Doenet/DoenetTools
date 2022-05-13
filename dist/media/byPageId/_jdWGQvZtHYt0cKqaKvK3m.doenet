@@ -1,0 +1,39 @@
+<document>
+
+  <!--Basic hint without a condition for appearance-->
+  
+  <p>What's my favorite color?</p>
+  <answer>
+    <choiceInput>
+      <choice credit="1">red</choice>
+      <choice>blue</choice>
+      <choice>green</choice>
+    </choiceInput>
+  </answer>
+  <hint>It's definitely not blue or green!</hint>
+
+
+<!--Hint nested inside a conditionalContent tag-->
+<p>What's my favorite color?</p>
+  <answer>
+    <choiceInput>
+      <choice credit="1">red</choice>
+      <choice name="boring">blue</choice>
+      <choice name="moreBoring">green</choice>
+    </choiceInput>
+  </answer>
+ <conditionalContent condition="$boring">
+  <hint>
+    It's definitely not blue, there's already too much of it in the sky...</hint>
+ </conditionalContent>
+
+  <conditionalContent condition="$moreBoring">
+  <hint>
+    It's definitely not green, there's already too much of it in the grass...</hint>
+ </conditionalContent>
+
+
+
+
+
+</document>

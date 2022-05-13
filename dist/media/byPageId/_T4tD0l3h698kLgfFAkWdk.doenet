@@ -1,0 +1,66 @@
+<problem>
+<!-- <title>Definite integral - exponential</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a b' from='-10' to='10' exclude="0" numberToSelect="2" withReplacement />
+
+<function name='f' variables='t' simplify symbolic><math simplify="numbers">$a *e^($b *t)</math></function>
+<selectFromSequence assignNames='lb' from='-2' to='1' />
+<selectFromSequence assignNames='ub' from='$lb+1' to='2' />
+
+<function name="antideriv_f" variables="t" simplify="numbers" symbolic>$a e^($b*t)/$b</function>
+
+<math name='intfeval' simplify='numbers' >$$antideriv_f($ub)-$$antideriv_f($lb)</math>
+
+</setup>
+
+<p>
+Evaluate the following integral:</p>
+  
+<p><m>\displaystyle \int_{$lb}^{$ub} $f\, dt  =</m> 
+<answer forceFullCheckworkButton>
+<award symbolicEquality='true' simplifyOnCompare>$intfeval </award>
+<award allowedErrorInNumbers='0.0001' credit='0.8' name='award1'>$intfeval </award>
+<award credit='0.64' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror' name="award2">$intfeval </award>
+</answer>
+</p>
+<feedback condition="$award1 or $award2">For full credit, don't round.  Use e^() or exp() and leave fractions as fractions.</feedback>
+
+<copy prop="feedbacks" tname="answer1" />
+
+<p>
+
+For full credit, do not round your answer to a decimal.  (Maximum of 80% credit will be awarded for rounded answers that include at least 5 correct significant digits.)
+</p>
+
+
+<solution>
+<setup>
+  <function name="antideriv_f_part" variables="t" simplify="numbers" symbolic>e^($b*t)/$b</function>
+  
+</setup>
+  
+<p>We first use the constant product rule for integration: 
+</p>
+<p>
+<m>\displaystyle  \int_{$lb}^{$ub} $f\, dt  = $a   \int_{$lb}^{$ub}<math simplify="numbers">e^($b *t)</math> dt</m>
+</p>
+<p>
+We then find the antiderivative:
+</p>
+<p>
+<m>\displaystyle $a \left( $antideriv_f_part \right) </m>
+</p>
+<p>
+Evaluating at the bounds gives us:
+</p>
+<p>
+<m>\displaystyle $$antideriv_f($ub) - $$antideriv_f($lb)  = $intfeval </m>
+</p>
+
+
+</solution>
+
+
+</problem>

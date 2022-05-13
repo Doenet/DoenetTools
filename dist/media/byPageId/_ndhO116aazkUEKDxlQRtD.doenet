@@ -1,0 +1,132 @@
+<setup>
+  <text name="w11">h</text>
+  <text name="w12">e</text>
+  <text name="w13">l</text>
+  <text name="w14">l</text>
+  <text name="w15">o</text>
+  <text name="w16">AA</text>
+  <text name="w17">AA</text>
+  <text name="w18">AA</text>
+  <text name="w21">w</text>
+  <text name="w22">o</text>
+  <text name="w23">r</text>
+  <text name="w24">l</text>
+  <text name="w25">d</text>
+  <text name="w26">AA</text>
+  <text name="w27">AA</text>
+  <text name="w28">AA</text>
+</setup>
+
+<spreadsheet name="test">
+  <row>
+    <cell>a</cell>
+    <cell>b</cell>
+    <cell>c</cell>
+    <cell>d</cell>
+    <cell>e</cell>
+    <cell>f</cell>
+    <cell>g</cell>
+    <cell>h</cell>
+    <cell>i</cell>
+    <cell>j</cell>
+    <cell>k</cell>
+    <cell>l</cell>
+    <cell>m</cell>
+    <cell>n</cell>
+    <cell>o</cell>
+    <cell>p</cell>
+    <cell>q</cell>
+    <cell>r</cell>
+    <cell>s</cell>
+    <cell>t</cell>
+    <cell>u</cell>
+    <cell>v</cell>
+    <cell>w</cell>
+    <cell>x</cell>
+    <cell>y</cell>
+    <cell>z</cell>
+    <cell></cell>
+  </row>
+  <row>
+    <cell>=mod((code(upper(a1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(b1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(c1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(d1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(e1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(f1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(g1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(h1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(i1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(j1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(k1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(l1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(m1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(n1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(o1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(p1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(q1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(r1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(s1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(t1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(u1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(v1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(w1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(x1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(y1))-65)+$shift,26)</cell>
+    <cell>=mod((code(upper(z1))-65)+$shift,26)</cell>
+  </row>
+  <row>
+    <cell>=char(a2+65)</cell>
+    <cell>=char(b2+65)</cell>
+    <cell>=char(c2+65)</cell>
+    <cell>=char(d2+65)</cell>
+    <cell>=char(e2+65)</cell>
+    <cell>=char(f2+65)</cell>
+    <cell>=char(g2+65)</cell>
+    <cell>=char(h2+65)</cell>
+    <cell>=char(i2+65)</cell>
+    <cell>=char(j2+65)</cell>
+    <cell>=char(k2+65)</cell>
+    <cell>=char(l2+65)</cell>
+    <cell>=char(m2+65)</cell>
+    <cell>=char(n2+65)</cell>
+    <cell>=char(o2+65)</cell>
+    <cell>=char(p2+65)</cell>
+    <cell>=char(q2+65)</cell>
+    <cell>=char(r2+65)</cell>
+    <cell>=char(s2+65)</cell>
+    <cell>=char(t2+65)</cell>
+    <cell>=char(u2+65)</cell>
+    <cell>=char(v2+65)</cell>
+    <cell>=char(w2+65)</cell>
+    <cell>=char(x2+65)</cell>
+    <cell>=char(y2+65)</cell>
+    <cell>=char(z2+65)</cell>
+  </row>
+  <row>
+    <cell>=$(w11)3&$(w12)3&$(w13)3&$(w14)3&$(w15)3&$(w16)3&$(w17)3&$(w18)3</cell>
+    <cell>=$(w21)3&$(w22)3&$(w23)3&$(w24)3&$(w25)3&$(w26)3&$(w27)3&$(w28)3</cell>
+  </row>
+</spreadsheet>
+
+<tabular>
+  <row>
+    <cell>Plaintext:</cell>
+    <cell>Hello, world!</cell>
+  </row>
+  <row>
+    <cell>Shift:</cell>
+    <cell><mathInput name="shift" prefill="13" /></cell>
+  </row>
+  <row>
+    <cell>Ciphertext (Cell):</cell>
+    <cell><copy prop="cellA2" tname="test" /></cell>
+  </row>
+  <row>
+    <cell>Ciphertext (evalCell):</cell>
+    <cell><copy prop="evaluatedCellA2" tname="test" /></cell>
+    <copy prop="evaluatedCellA2" tname="test" />
+  </row>
+</tabular>
+
+<p>hello: <copy prop="evaluatedcellA4" tname="test" /></p>

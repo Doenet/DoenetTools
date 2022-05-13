@@ -1,0 +1,58 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>integer</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+  <p>The <tag>integer</tag><idx><tag>integer</tag></idx> component renders an integer when supplied a rational number or a mathematical expression resulting in a rational number.  All values with a fractional part that is greater than or equal to one-half are rounded up to the next integer value. The integer component can be used within a <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> block, within an expression, or used purely for display when surrounding a named value. It is similar to the <ref><tag>round</tag></ref> component, when <tag>round</tag> is specified without additional attributes. See examples below. </p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tag>integer</tag> defined within <tag>setup</tag></title>
+<p>In the sample code below, several different forms of rational numbers are defined as <tag>integer</tag> components in the <ref uri="doenet:doenetId=gHn9-Jhc4JFQpUKxVPCE2"><tag>setup</tag></ref> to indicate the rounding behavior that the component confers. Values are rendered for display using the <c>&dollar;name</c> notation.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+<tag>setup</tag>
+  <tag>integer name="a"</tag>2.5<tag>/integer</tag>
+  <tag>integer name="b"</tag>4/3<tag>/integer</tag>
+  <tag>number name="c"</tag>17.3333+<tag>integer</tag>4.7<tag>/integer</tag><tag>/number</tag>
+<tag>/setup</tag>
+
+
+<tag>p</tag>The integer value for <tag>m</tag>a<tag>/m</tag> is:  <text>$</text>a<tag>/p</tag>
+<tag>p</tag>The integer value for <tag>m</tag>b<tag>/m</tag> is:  <text>$</text>b<tag>/p</tag>
+<tag>p</tag>The value for <tag>m</tag>c<tag>/m</tag> is:  <text>$</text>c<tag>/p</tag>
+<tag>p</tag>The integer value for <tag>m</tag>c<tag>/m</tag> is:  <tag>integer</tag><text>$</text>c<tag>/integer</tag><tag>/p</tag>
+</pre>
+  </example>
+</subsection>
+
+
+<!--*******************************************************-->
+
+<subsection><title>What Doenet Renders (Example 1)</title>
+<setup>
+  <integer name="a">2.5</integer>
+  <integer name="b">4/3</integer>
+  <number name="c">17.3333+<integer>4.7</integer></number>
+</setup>
+  <p>The integer value for <m>a</m> is:  $a</p>
+  <p>The integer value for <m>b</m> is:  $b</p>
+  <p>The value for <m>c</m> is:  $c</p>
+  <p>The integer value for <m>c</m> is:  <integer>$c</integer></p>
+</subsection>
+ 
+
+</section>
+</document>
+
+

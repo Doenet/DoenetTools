@@ -1,0 +1,59 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+<document><title><tag>attr</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>attr</tag><idx><tag>attr</tag></idx> component is a paragraph markup function which renders the enclosed text in the default font for component attributes.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: using <tag>attr</tag> in a paragraph (<tag>p</tag>)</title>
+<p>In the sample code below, the <tag>attr</tag> is used
+within a paragraph (<ref><tag>p</tag></ref>) of text to render 
+an attribute name in the default format of a component attribute.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)
+</title>
+<pre>
+&lt;p&gt;The &lt;attr&gt;width&lt;/attr&gt; attribute can be used with the
+&lt;tage&gt;image&lt;/tage&gt; component in Doenet to adjust the size of the
+rendered image.  If the &lt;attr&gt;height&lt;/attr&gt; is not specified as 
+well, the image will scale proportionally.
+&lt;/p&gt;
+</pre>
+        </example>
+      </subsection>
+
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>The <attr>width</attr> attribute can be used with the <tage>image</tage> component in Doenet to adjust the size of the rendered image.  If the <attr>height</attr> is not specified as well, the image will scale proportionally.
+</p>
+</example>
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

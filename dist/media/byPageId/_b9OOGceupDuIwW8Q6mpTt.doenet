@@ -1,0 +1,46 @@
+<problem>
+<!-- <title>differentiate product f(x)=exp(x)*quadratic(x)</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a' from='1' to=' 7' />
+<selectFromSequence assignNames='b c' numberToSelect='2' withReplacement from='-5' to=' 5' />
+
+<math name='answer' simplify='numbers' > (2*$a *x + $b  + $a *x^2+$b *x+$c )*(e^x)</math>
+<math name='fun' simplify='numbers' >($a *x^2 + $b *x+$c )* (e^x)</math>
+<math name='poly' simplify='numbers' >$a *x^2 + $b *x+$c </math>
+<math name='exponential' simplify='numbers' >e^x</math>
+<math name='dpoly' simplify='numbers' >2*$a *x+$b </math>
+<math name='dexponential' simplify='numbers' >$exponential </math>
+
+</setup>
+
+
+Compute the derivative, <m>\frac{ df }{ dx }</m>, of the function <m>f(x)</m> below
+
+<me>f(x) = $fun .</me>
+
+<m>f'(x) =</m> 
+<answer forceFullCheckworkButton>
+<award>$answer </award>
+<!-- <award credit='0.9' nSignErrorsMatched="1" feedbackCodes='onesignerror'>$answer </award> -->
+<!-- <award credit='0.81' nSignErrorsMatched="2" feedbackCodes='twosignerrors'>$answer </award> -->
+</answer>
+<!-- <copy prop="feedbacks" tname="answer1" /> -->
+
+
+
+
+<solution>
+To calculate the derivative of <m>f(x)=$fun </m>, we need to use the product rule.  The two factors are <m>$poly </m> and <m>$exponential </m>.  By the product rule
+<md>
+  <mrow>f'(x)\amp = \left($poly \right)' $exponential  + \left($poly \right)\left($exponential \right)'</mrow>
+  <mrow>\amp = \left($dpoly \right) $exponential  + \left($poly \right)\left($dexponential \right)</mrow>
+  <mrow>\amp = $answer </mrow>
+</md>
+
+
+</solution>
+
+
+</problem>

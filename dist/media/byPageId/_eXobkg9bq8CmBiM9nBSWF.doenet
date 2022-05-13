@@ -1,0 +1,4 @@
+<mathinput name='m' prefill='x^3/14'/>
+<graph width='5in' height='5in'>
+  <function><formula>$m</formula></function>
+</graph>

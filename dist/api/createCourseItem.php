@@ -69,9 +69,12 @@ if ($success){
 
 if ($success){
   $doenetId = include "randomId.php";
+  $doenetId = "_" . $doenetId;
+
   $label = 'Untitled';
 
   $jsonDefinition = null;
+  $isAssigned = 0;
 
   if ($previousContainingDoenetId == $courseId) {
     $sql = "SELECT sortOrder FROM `course_content` WHERE courseId = '$courseId' ORDER BY sortOrder DESC LIMIT 1";
@@ -98,9 +101,14 @@ if ($success){
 //Defaults for each item type
 if ($itemType == 'section'){
   $jsonDefinition = '{"isIncludedInStudentNavigation":true}';
+  $isAssigned = 1;
 }else if($itemType == 'activity'){
   $pageDoenetId = include "randomId.php";
+  $pageDoenetId = "_" . $pageDoenetId;
+
   $orderDoenetId = include "randomId.php";
+  $orderDoenetId = "_" . $orderDoenetId;
+
   $jsonDefinition = '{"type":"activity","version": "0.1.0","isSinglePage": true,"order":{"type":"order","doenetId":"'.$orderDoenetId.'","behavior":"sequence","content":["'.$pageDoenetId.'"]},"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
 
    //We need to clone an existing item
@@ -111,11 +119,15 @@ if ($itemType == 'section'){
    $clonePageDoenetIds = [];
    foreach ($pageDoenetIds as $pageDoenetId){
     $clonePageDoenetId = include "randomId.php";
+    $clonePageDoenetId = "_" . $clonePageDoenetId;
+
     array_push($clonePageDoenetIds,$clonePageDoenetId);
     $DangerousActivityObj = str_replace($pageDoenetId,$clonePageDoenetId,$DangerousActivityObj);
    }
    foreach ($orderDoenetIds as $sourceOrderDoenetId){
     $cloneOrderDoenetId = include "randomId.php";
+    $cloneOrderDoenetId = "_" . $cloneOrderDoenetId;
+
     $DangerousActivityObj = str_replace($sourceOrderDoenetId,$cloneOrderDoenetId,$DangerousActivityObj);
    }
 
@@ -177,8 +189,8 @@ if ($success){
             ));
 
             //Create a copy of original file for page
-            $sourceFilePath = "../media/bydoenetid/$sourcePageDoenetId.doenet";
-            $destFilePath = "../media/bydoenetid/$clonePageDoenetId.doenet";
+            $sourceFilePath = "../media/byPageId/$sourcePageDoenetId.doenet";
+            $destFilePath = "../media/byPageId/$clonePageDoenetId.doenet";
             if (!copy($sourceFilePath, $destFilePath)) {
               $success = false;
               $message = "failed to copy media\n";
@@ -206,7 +218,7 @@ if ($success){
           
     
           //Create blank file for page
-          $filename = "../media/bydoenetid/$pageDoenetId.doenet";
+          $filename = "../media/byPageId/$pageDoenetId.doenet";
           $dirname = dirname($filename);
           if (!is_dir($dirname)) {
               mkdir($dirname, 0755, true);
@@ -242,10 +254,11 @@ if ($success){
     parentDoenetId,
     label,
     creationDate,
+    isAssigned,
     sortOrder,
     jsonDefinition)
     VALUES
-    ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',NOW(),'$sortOrder','$jsonDefinition')
+    ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',NOW(),'$isAssigned','$sortOrder','$jsonDefinition')
     ";
     
     $result = $conn->query($sql); 
@@ -279,9 +292,9 @@ $itemEntered = array(
   "parentDoenetId"=>$row['parentDoenetId'],
   "label"=>$row['label'],
   "creationDate"=>$row['creationDate'],
-  "isAssigned"=>$row['isAssigned'],
-  "isGloballyAssigned"=>$row['isGloballyAssigned'],
-  "isPublic"=>$row['isPublic'],
+  "isAssigned"=>$row['isAssigned'] == '1' ? true : false,
+  "isGloballyAssigned"=>$row['isGloballyAssigned'] == '1' ? true : false,
+  "isPublic"=>$row['isPublic'] == '1' ? true : false,
 );
 
 $json = json_decode($row['json'],true);

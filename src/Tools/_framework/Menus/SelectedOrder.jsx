@@ -8,7 +8,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 import { useRecoilValue } from 'recoil';
-import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 import styled from 'styled-components';
@@ -20,8 +20,8 @@ const CheckboxLabelText = styled.span`
 
 export default function SelectedOrder() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
-  const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
-  const parentItemObj = useRecoilValue(authorItemByDoenetId(itemObj.parentDoenetId));
+  const itemObj = useRecoilValue(itemByDoenetId(doenetId));
+  const parentItemObj = useRecoilValue(itemByDoenetId(itemObj.parentDoenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'))
   const [behavior,setBehavior] = useState(itemObj.behavior);
   const [numberToSelect,setNumberToSelect] = useState(itemObj.numberToSelect);

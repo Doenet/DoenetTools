@@ -1,0 +1,362 @@
+<problem>
+<variantControl nVariants="1" />
+<!-- <title>Human embryo doubling</title> -->
+
+<setup>
+
+<math name='two'>2</math>
+<math name='one'>1</math>
+<math name='t'>t </math>
+<math name='q'><copy prop="submittedResponse" tname="userx" /></math>
+<math name='qt'>$(q)_$t </math>
+<math name='c0'>1</math>
+<math name='c280'>2**280</math>
+<math name='c40'>2**40</math>
+<math name='c7'>2^7</math>
+<math name='c14'>2^14</math>
+<math name='c21'>2^21</math>
+<math name='ct'>2**$t</math>
+<math name='function_iteration_form_rhs'>2*$qt </math>
+<math name='difference_form_rhs'>$qt </math>
+
+</setup>
+
+<p>
+In the first days of life, the cells in a human embryo divide into two cells approximately every day.  Our goal is to write down a discrete dynamical system describing the growth of the embryo. After solving the model, we can use the model to predict the embryo growth.  We can also evaluate the merits of the model.
+</p>
+
+<paragraphs>
+<title>Step 1: formulate the model</title>
+
+<p>The first step is to determine the state variable of the model.  Given the above description, what is the most natural quantity to describe what quantity about the embryo is changing from day to day?  The 
+<answer inline='true'>
+<choiceinput randomizeOrder>
+<choice name='choice24' credit='1'>number of cells</choice>
+<choice name='choice25'>volume</choice>
+<choice name='choice26'>mass</choice>
+<choice name='choice27'>diameter</choice>
+<choice name='choice28'>density</choice>
+<choice name='choice29'>color</choice>
+<choice name='choice30'>favorite vegetable</choice>
+</choiceinput>
+</answer>
+ of the embryo.
+</p>
+
+<feedback condition="$choice24" >Yes, this is the most natural answer.  When the cells divide into two, it's simple to describe what happens to the number of cells.</feedback>
+<feedback condition="$choice25" >This is a good choice and might work fine.  However, we aren't told what happens to the volume of the embryo when the cells divide.</feedback>
+<feedback condition="$choice26" >This is a good choice and might work fine.  However, we aren't told what happens to the mass of the embryo when the cells divide.</feedback>
+<feedback condition="$choice27" >This might work.  But, the diameter would depend in a complicated fashion on a quantity that has a simpler dynamics.  A model with the diameter as the state variable would be pretty complicated.</feedback>
+<feedback condition="$choice28" >We don't have any information on how the density of the embryo changes.</feedback>
+<feedback condition="$choice29" >Right, and how exactly would the color be changing as the embryo grows?</feedback>
+<feedback condition="$choice30" >While this might be the most important quantity for a developing human, it's not going to capture the dynamics we need for this model.</feedback>
+
+<p>
+Choose a variable to represent this quantity. We'll use <m>t</m> for time, so any letter other than <m>t</m> will work just fine:
+<answer name='userx'>
+<mathinput name="letterPicked" />
+<award>
+  <when>$letterPicked elementof {a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,O,P,Q,R,S,T,U,V,W,X,Y,Z}</when></award>
+</answer>
+
+</p>
+
+<p>
+With your choice of variable, <m>$qt</m> represents the 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>number of cells</choice>
+<choice>volume</choice>
+<choice>mass</choice>
+<choice>density</choice>
+<choice>diameter</choice>
+<choice>color</choice>
+<choice>favorite vegetable</choice>
+</choiceinput>
+</answer>
+ of the embryo that are present 
+<answer>
+<award>$t </award>
+</answer>
+ days after conception.
+ </p>
+
+<p>
+After fertilization (in day 0), the embryo consists of a single cell.  (OK, it should be called <ref uri="https://en.wikipedia.org/wiki/Zygote">zygote</ref> until if divides into multiple cells, but you get the idea.)  Therefore the initial condition is <m>$(q)_0=</m> 
+<answer>
+<award>$c0 </award>
+</answer>
+</p>
+
+<p>Write the dynamical system both in difference form as</p>
+
+<p>
+<m>$(q)_{$t + 1} - $qt =</m> 
+<answer>
+<award>$difference_form_rhs </award>
+<award credit="0" name="double_fi">$function_iteration_form_rhs </award>
+</answer>
+</p>
+<feedback condition="$double_fi">
+  <p>Gotcha!  The dynamics rule <m>$(q)_{$t + 1} - $qt = 2$qt</m> would mean that each day, the <m>change</m> in the number of cells is two times the number of cells, as if each cell had two daughter cells and also stuck around (leading to three cells total).  </p>
+
+  <p>This right-hand side would be correct if the system were in function iteration form, but here we have difference form.  If it is easier, answer the function iteration form question first (below) and then translate to difference form.</p>
+</feedback>
+
+
+<p>
+<m>$(q)_0=</m> 
+<answer>
+<award>$c0 </award>
+</answer>
+
+</p>
+<p>
+
+and in function iteration form as</p>
+
+<m>$(q)_{$t +1}  =</m> 
+<answer>
+<award>$function_iteration_form_rhs </award>
+</answer>
+
+<p>
+
+<m>$(q)_0=</m>
+<answer>
+<award>$c0 </award>
+</answer>
+</p>
+
+
+<p>The function iteration result is easy to understand because the number of cells in one day is 
+<answer>
+<award>$two </award>
+</answer>
+ times the number from the previous day.  To understand the difference form result, you need to deduce that for any given day, the <em>change</em> in the number of cells from the previous day to that day is equal to 
+<answer>
+<award>$one </award>
+</answer>
+ times the number from the previous day.</p>
+
+
+<hint>
+<p>One tricky part of setting up the dynamical system is deciding whether it is easier to start with the difference form (such as <m>x_{t+1}-x_t =</m> something) or the function iteration form (such as <m>x_{t+1}=</m> something).  If you choose to start with the difference form, then on the right hand side, you need to put the change in the number of cells.  (And, if the number of cells is doubling, the <em>change</em> is <alert>not</alert> twice the previous number of cells.)  If you choose to start with the function iteration form, then on the right hand side, you need to put an expression that gives the total number of cells after a day.  (And, if the number of cells is doubling, the total number is indeed twice the previous number of cells.)</p>
+
+<paragraphs>
+<title>Helpful pages</title>
+<ul>
+<li><ref uri='doenet:exponential_growth_decay_discrete'>Exponential growth and decay modeled by discrete dynamical systems</ref></li>
+</ul></paragraphs>
+</hint>
+
+</paragraphs>
+
+<paragraphs>
+<title>Step 2: solve the model</title>
+
+<p>Solve the dynamical system to obtain an expression for the number
+    of cells as a function of the number of days since fertilization.</p>
+
+<p><m>$qt =</m> 
+<answer>
+<award>$ct </award>
+</answer>
+</p>
+
+
+<hint>
+<p>Since the increase in the number of cells is proportional to the number of the previous day (i.e., we have a linear dynamical system), we will get exponential growth.  In each day, we multiply the number of cells by what number?</p>
+</hint>
+
+</paragraphs>
+
+<paragraphs>
+<title>Step 3: predict embryo growth and evaluate the merits of the model</title>
+
+<p>After one week, how many cells would there be in the embryo?  
+<answer>
+<award>$c7 </award>
+</answer>
+  After two weeks?  
+<answer>
+<award>$c14 </award>
+</answer>
+  After three weeks? 
+<answer>
+<award>$c21 </award>
+</answer>
+  These values seem 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>reasonable</choice>
+</choiceinput>
+</answer>
+, so we might 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>believe</choice>
+</choiceinput>
+</answer>
+ that our model is capturing the dynamics of the embryo growth during these first weeks.</p>
+
+<p>What about the predictions of the model for the later stages of the pregnancy?  If a pregnancy lasts 40 weeks, what does the model predict for the number of cells that the baby would have upon being born?  (Since this number is so large, you'll have to use scientific notation.  Include at least 6 significant digits.)
+<answer name='answer19'>
+<award allowedErrorInNumbers='0.00001'>$c280 </award>
+<award credit='0.5' allowedErrorInNumbers='0.0001' feedbackCodes='numericalerror'>$c280 </award>
+<award credit='0.25' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$c280 </award>
+<award credit='0.125' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$c280 </award>
+<award name="day40" credit="0" allowedErrorInNumbers='0.00001'>$c40 </award>
+</answer>
+</p>
+<copy prop="feedbacks" tname="answer19" />
+<feedback condition="$day40">
+  <p>That's the number of cells after 40 days.  We are asking for the number of cells after 40 <em>weeks</em> which is how many days? <answer weight="0">280</answer></p>
+</feedback>
+
+</paragraphs>
+
+<paragraphs>
+  <title>Believability of long time results</title>
+
+<p>The model predicted a really large number of cells after 40 weeks.  Does it make any sense?</p>
+
+<aside>
+  <title>The number of cells written out in long form</title>
+  <p>The number of cells that the model predicts after 40 weeks, written out in long form is:</p>
+
+  <p>
+  1,942,668,892,225,729,070,919,461,906,823,518,906,642,406,839,052,139,521,251,812,409,738,904,285,205,208,498,176
+  </p>
+</aside>
+
+<p>To give a sense of how large that number is, let's compare it to the <ref uri="https://en.wikipedia.org/wiki/Eddington_number">number of atoms in the observable universe</ref>, which is estimated to be about <m>10^{80}</m>.</p>
+
+<p>The predicted number of cells after 40 weeks is about 
+<choiceinput inline name="atomsTimes">
+<choice>10</choice>
+<choice>100</choice>
+<choice>1,000</choice>
+<choice>10,000</choice>
+<choice>100,000</choice>
+</choiceinput>
+ times
+<choiceinput inline name="atomsSize">
+<choice>larger</choice>
+<choice>smaller</choice>
+</choiceinput>
+than the number of atoms in the observable universe.
+<answer>
+  <award targetsAreResponses="atomsTimes atomsSize">
+    <when>$atomsTimes=<text>10,000</text> and $atomsSize=larger</when>
+  </award>
+</answer>
+</p>
+
+
+<p>
+ Does that make any sense? Do you believe the results of the model for the end of the pregnancy?
+
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>no</choice>
+<choice name='choice48'>yes</choice>
+</choiceinput>
+</answer>
+</p> 
+<feedback condition="$choice48" >OK, the answer-checker says you are incorrect, which could be wrong if you do actually believe the model results.  But, the answer-checker is programmed to think you shouldn't believe the results, as they are ridiculous.</feedback>
+
+<p>Assuming you are convinced that the predicted number is way too large, let's examine where the model went wrong.</p>
+
+<p>The initial rate of cell division per day seems to be <ref uri="https://en.wikipedia.org/wiki/Human_embryonic_development#Cleavage">in the right ballback</ref>.  So, we're good there.</p>
+
+<p>What does the model assume about the rate of cell division as the pregnancy progresses?  It assumes that the rate of division 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>stays constant</choice>
+<choice>slow down</choice>
+<choice>speeds up</choice>
+</choiceinput>
+</answer>
+ throughout the pregnancy.  Since that assumption leads to a ridiculous number of cells in week 40, the assumption must be 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>false</choice>
+<choice>true</choice>
+</choiceinput>
+</answer>
+.</p>
+
+<p>What must be true of the rate of cell division?  Can the cells continue to divide into two each day for the whole course of the pregnancy? 
+</p>
+<p>
+
+
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>The model is wrong.  The rate of cell division must slow down dramatically.</choice>
+<choice>The model is wrong.  The rate of cell division must slow down a little bit.</choice>
+<choice>The model is wrong.  The rate of cell division must speed up a little bit.</choice>
+<choice>The model is wrong.  The rate of cell division must speed up dramatically</choice>
+<choice>The model is fine.  The rate of cell division can continue at the same speed.</choice>
+<choice>The model is fine.  These calculations are irrelevant.</choice>
+<choice>The model is fine.  Humans are just larger than we realize when being born.</choice>
+<choice>The model is fine.  Scientists must have underestimated the number of atoms in the universe.</choice>
+</choiceinput>
+</answer>
+</p>
+
+
+
+<hint>
+
+<p>If, for the end of the pregnancy, the number of cells is ridiculously large, then what can you conclude about the rate of cell division?  It is at all possible that this model is correct, i.e., that the rate of cell division continues at a constant rate of one division per day for the whole pregnancy?  If the model is clearly bad, then what must be happening to the rate of cell division?</p>
+</hint>
+
+</paragraphs>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<p>
+Since the number of cells double each day, it's probably more intuitive to start with the function iteration form.  The dynamical system that describes how to go from day <m>t</m> to day <m>t+1</m> is simply
+<me>c_{t+1} = 2c_t \quad \text{for $ t=0,1,2, \ldots $ }.</me>
+If you decided to start with the difference form, then you need to recognize that, if the number of cells doubles, then the change from day <m>t</m> to day <m>t+1</m> is just one times the number of cells <m>c_t</m>.  In this case, you'd write the dynamical system as
+<me>c_{t+1} -c_t = c_t \quad \text{for $ t=0,1,2, \ldots $ }.</me>
+This dynamical system is exactly the same as the previous version, as you can add <m>c_t</m> to both sides to get to <m>c_{t+1}=2c_t</m>.
+
+</p>
+<p>
+
+To completely specify the dynamical system, we need an initial condition, such as specifying <m>c_0</m> the number of cells in day 0.  But, we'll do that in the next step.
+
+</p>
+</li>
+
+<li>
+If <m>t</m> is the number of days since fertilization, then the initial condition is <m>c_0=1</m>.  Since for each day, we multiply the number of cells by 2, the number of cells after <m>t</m> days is
+<me>c_t = 2^t.</me>
+
+</li>
+
+<li>
+A pregnancy of 40 weeks is <m>40 \cdot 7 = 280</m> days long.  If the number of cells doubled every day for 280 days, the number of cells after 280 days would be
+<md>
+  <mrow>c_{280}\amp = 2^{280}</mrow>
+  <mrow>\amp = 1,942,668,892,225,729,070,919,461,906,823,518,906,642,406,839,052,139,521,251,812,409,738,904,285,205,208,498,176</mrow>
+  <mrow>\amp \approx 1.94267 \times 10^{84}</mrow>
+</md>
+This number is about 10,000 times larger than the estimated number of atoms in the observable universe.  Since a newborn child is typically much smaller than the universe and each cell contains many atoms, we can safely assume that a newborn child has much fewer cells.  Therefore, we can conclude that the model where cell division continues at a constant rate is a bad model for cell division over the course of the whole pregnancy.  Instead, the rate of cell division must slow down as the pregnancy progresses.
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

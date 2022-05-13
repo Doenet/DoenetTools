@@ -71,6 +71,7 @@ export default function DateTime(props) {
       ref: inputRef,
       onClick: props.disabledOnClick,
       value: props.disabledText,
+      readOnly: true,
       style: {
         cursor: "not-allowed",
         color: "#545454",

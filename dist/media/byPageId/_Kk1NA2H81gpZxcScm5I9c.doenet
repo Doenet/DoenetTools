@@ -1,0 +1,121 @@
+<em><p>Adapted from the classic text <ref uri="https://www.google.com/books/edition/Elements_of_Algebra/X8yv0sj4_1YC?hl=en&gbpv=1&dq=elements+of+algebra+euler+hewlett&pg=PR1&printsec=frontcover">Elements of Algebra</ref> by Leonard Euler</p></em>
+<document>
+<title>CHAP. VIII</title>
+<section><title>Of the Properties of Fractions</title>
+<p><alert>88.</alert>  We have seen that every fraction may be represented by an infinite number of forms, each of which contains the same value; and it is evident that of all these forms, that which is composed of the least numbers, will be most easily understood.  For example, we might substitute, instead of <m>\frac{2}{3}</m>, the following fractions,<me>\frac{4}{6}, \frac{6}{9}, \frac{8}{12}, \frac{10}{15}, \frac{12}{18}, \text{&c.}</me> but of all these expressions <m>\frac{2}{3}</m> is that of which it is easiest to form an idea.  Here therefore a problem arises, how a fraction, such as <m>\frac{8}{12}</m>, which is not expressed by the least possible numbers, may be reduced to its simplest form, or to <em>its least terms;</em> that is to say, in our present example, to <m>\frac{2}{3}</m>.</p>
+
+<p><alert>89.</alert> It will be easy to resolve this problem, if we consider that a fraction still preserves its value, when we multiply both its terms, or its numerator and denominator, by the same number.</p>
+  <example boxed="true"><title>Example: Multiplying numerator and denominator by the same number</title>
+    <sideBySide margins="5%">
+      <p><slider label="Chosen number, m" name="m" from="-10" to="10" initialValue="0"/>
+        <p><em>note 1</em></p>
+      </p>
+      <p>
+        <m>\frac{m \cdot 35}{m \cdot 673} = <math name="fractionExample">($m/$m) (35/673)</math> = <math simplify>$fractionExample</math></m>
+        <p><em>note 2</em></p>
+      </p>
+    </sideBySide>
+  </example>
+<aside><title>Notes to author</title>
+    <ol>
+      <li><p>This simple illustration has been added into the original text for students to explore Euler's last comment in part <alert>89</alert>. A <tage>slider</tage> component was used to create the selection number line.</p></li>
+      <li><p>This is a classic case where a combination of mathematical display components (<tag>m</tag>) and mathematical content components (<tag>math</tag>) are used together to acheive the desired rendered result. The <tag>math</tag> attribute <attr>simplify</attr> is used to generate the final term in the equality statement.</p></li>
+    </ol>
+  </aside>
+<p>This is made more evident by means of the general expresssion <m>\frac{ma}{mb}</m>; for if we divide both the numerator <m>ma</m> and the denominator <m>mb</m> by the number <m>m</m>, we obtain the fraction <m>\frac{a}{b}</m>, which, as was before proved (to recall, see <alert>[72.]</alert> below), is equal to <m>\frac{ma}{mb}</m>.</p>
+<aside><title>Flashback to section [72.]</title>
+  <p>In oreder to obtain a more perfect knowledge of the nature of fractions, we shall begin by considering the case in which the numerator is equal to the denominator, as in <m>\frac{a}{a}</m>. Now, since this expresses the quotient obtained by dividing <m>a</m> by <m>a</m>, it is evident that this quotient is exactly unity, and that consequently the fraction <m>\frac{a}{a}</m> is of the same value as 1, or one integer; for the same reason, all the following fractions, <me>\frac{2}{2}, \frac{3}{3}, \frac{4}{4}, \frac{5}{5}, \frac{6}{6}, \frac{7}{7}, \frac{8}{8},\text{&c.}</me> are equal to one another, each being equal to 1, or one integer.</p></aside>
+<p><alert>90.</alert> In order therefore to reduce a given fraction to its least terms, it is required to find a number, by which both the numerator and denominator may be divided. Such a number is called a <em>common divisor</em>; and as long as we can find a common divisor to the numerator and the denominator, it is certain that the fraction may be reduced to a lower form; but, on the contrary, when we see that, except unity, no other common divisor can be found, this shows that the fraction is already in its simplest form.</p>
+<p>Quick Check:</p>
+  <p>The fraction <math>42/49</math> 
+    <answer name="fractionCheck">
+      <choiceInput inline="true" name="test">
+        <choice credit="1" name="a">does</choice>
+        <choice name="b" preSelect="true">does not</choice>
+      </choiceInput>
+    </answer> have a common divisor.</p>
+  <conditionalContent>
+    <case condition="$fractionCheck=$b"></case>
+    <case condition="$fractionCheck = does">
+      <p>Awesome!  Then, the <em>common divisor</em> is:</p>
+        <choiceInput randomizeOrder="true">
+          <choice credit="1" name="goodAns">7</choice>
+          <choice name="wrong1">6</choice>
+          <choice name="wrong2">2</choice>
+          <choice name="wrong3">3</choice>
+        </choiceInput>.
+    </case>
+  </conditionalContent>
+ $(fractionCheck{prop='creditAchieved'}) 
+$fractionCheck
+  $a
+
+<subsection boxed="true" name="common_divisor" ><title>Definition</title><term>common divisor</term> = a number that divides both the numerator and the denominator of a fraction.<nbsp/><nbsp/><nbsp/><em>note 1</em></subsection>
+<aside><title>Notes to author</title>
+  <ol>
+    <li><p>This definition box may be rendered by creating a <tag>subsection</tag> with the attribute <attr>boxed="true"</attr>.</p></li>
+  </ol>
+</aside>
+<p><alert>91.</alert></p>
+
+
+
+
+</section>
+<section><title>Questions for Practice</title>
+<setup>
+  <function name="function1" variables="x a c" symbolic="true">(cx + x^2)/(ca^2 + a^2 x)</function>
+  <function name="function2" variables="x b" symbolic="true">(x^3 - b^2x)/(x^2 + 2bx + b^2)</function>
+  <function name="function3" variables="x b" symbolic="true">(x^4 - b^4)/(x^5 - b^2x^3)</function>
+  <function name="function4" variables="x y" symbolic="true">(x^2 - y^2)/(x^4 - y^4)</function>
+  <function name="function5" variables="x a" symbolic="true">(a^4 - x^4)/(a^3 - a^2x - ax^2 + x^3)</function>
+  <function name="function6" variables="x a" symbolic="true">5a^5 + 10a^4x + 5a^3x^2)/(a^3x + 2a^2x^2 + 2ax^3 + x^4)</function>
+
+  <math name="ans1">x/a^2</math>
+  <math name="ans2">(x^2 - bx)/(x + b)</math>
+  <math name="ans3">(x^2 + b^2)/x^3</math>
+  <math name="ans4">1/(x^2 + y^2)</math>
+  <math name="ans5">(a^2 + x^2)/(a - x)</math>
+  <math name="ans6">(5a^4 + 5a^3x)/(a^2x + ax^2 + x^3)</math>
+
+  <math name="altAns2">(x^2 - bx)/(b + x)</math>
+</setup>
+  <exercise>
+    <p>Reduce $function1 to its lowest terms. <nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/> <m>\left( Ans. $ans1 \right)</m></p>
+    <p><answer>$ans1</answer><nbsp/><nbsp/><nbsp/><em>note 1</em></p>
+    <p><answer symbolicEquality>$ans1</answer><nbsp/><nbsp/><nbsp/><em>note 2</em></p>
+    <p><em>for solution definition explanation see note 3</em></p>
+  </exercise>
+
+  <aside><title>Notes to author</title>
+    <ol>
+      <li><p>Note, that both the fully simplified and the copied expression will register here as correct...This is not the desired evaluation behavior.  We need to add the <attr>symbolicEquality</attr> attribute to the answer tag.</p></li>
+      <li><p>Here, the <attr>symbolicEquality</attr> attribute has been used within the <tag>answer</tag>.  With allowance for parenthesis and white space, only the fully simplified $ans1 will be accepted here.</p></li>
+      <li><p>Full algebraic simplification within DoenetML is not possible to the level that Euler (and we!) desire in this exercise. While for most algebraic questions an author would likely to require flexibility in the way answers are accepted for credit (for example, <m>(x^2-2x+1)</m> is marked the same as <m>(x-1)^2)</m>) and we would therefore use DoenetML to compute correct answers based on our defined functions (See exercise xxxx). In this case, by contrast, the fully simplified answers must be "hard-coded".</p></li>
+    </ol>
+  </aside>
+  
+  <exercise>
+    <p>Reduce <m>$function2</m> to its lowest terms. <nbsp/><nbsp/><nbsp/><nbsp/><nbsp/><nbsp/> <m>\left( Ans. $ans2 \right)</m></p>
+    <p><answer symbolicEquality>$ans2</answer><nbsp/><nbsp/><nbsp/><em>note 1</em></p>
+    <p><mathInput name="userAns2"/><answer>
+      <award>
+        <when>$userAns2 = $ans2</when>
+      </award>
+      <award>
+        <when>$userAns2 = $altAns2</when>
+      </award>
+    </answer><nbsp/><nbsp/><nbsp/><em>note 2</em></p>
+
+    
+  </exercise>
+  <aside><title>Notes to author</title>
+    <ol>
+      <li><p>Here notice that due to the use of the <attr>symbolicEquality</attr> attribute within the <tag>answer</tag>, the order of terms in the sums of the numerator and the denominator cannot be reversed and still receive credit...</p></li>
+      <li><p>We employ a bit of teaching intuition.  While it seems unnatural for a student to reverse the order of the summands in the numerator as this would result in the awkward expression <m>(-bx + x^2)</m>, we could easily anticipate a student reversing the terms in the denominator and would like to mark this as correct as well.  To accomplish this, an <tag>award</tag> is used with two boolean statements defined by means of a <tag>when</tag> component.  This allows us to include the anticipated alternative response, which has been defined the <tag>setup</tag> block.</p></li>
+
+    </ol>
+  </aside>
+
+</section>
+</document>

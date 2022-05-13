@@ -1,0 +1,928 @@
+
+
+ <title>
+A graphical approach to solving autonomous differential equations
+</title>
+
+<math name="View" hide="true">1</math>
+
+<section aggregateScores name="pretest" newNamespace hide="$View !=1">
+<title>Introductory questions</title>
+
+<p>In this activity, you'll first answer some questions individually, then work with your group on an activity, then answer some follow up questions individually. You'll be brought to a new page when you click the <q>Move on to group activity</q> button, so don't click it until you are ready!</p>
+
+<p>We'd like to analyze the continuous dynamical system (or differential equation)
+<me>\frac{dv}{dt} = <function variables="v" name="f">v^3-5v^2-8v+12</function>,</me>
+where the function <m>f(v) = <copy tname="f"/></m> is graphed below.
+  </p>
+
+<graph name="vWithf" width="400" height="200" xmin="-4" xmax="8" ymin="-40" ymax="40" xlabel="v" ylabel="v'" newNamespace showNavigation="false">
+<copy name="f" tname="../f" stylenumber="2" />
+
+</graph>
+
+<p>Answer the following questions on your own.</p>
+
+<p>If <m>v(t)</m> is a solution to the differential equation and you know that at time <m>t=3</m> the value of the solution is <m>v(3)=5</m>, what can you conclude about the solution <m>v(t)</m> at the moment <m>t=3</m>?
+<answer showcorrectness="false">
+  <choiceinput>
+    <choice>The solution <m>v(t)</m> must be increasing at <m>t=3</m>.</choice>
+    <choice credit="1">The solution <m>v(t)</m> must be decreasing at <m>t=3</m>.</choice>
+    <choice>The solution <m>v(t)</m> must be not changing at <m>t=3</m>.</choice>
+    <choice>We don't have enough information to know if <m>v(t)</m> is increasing, decreasing, or not changing at <m>t=3</m>. </choice>
+    <choice>I don't know.</choice>
+  </choiceinput>
+</answer>
+</p>
+<p>If <m>v(t)</m> is a solution to the differential equation and you know that at time <m>t=2</m> the value of the solution is <m>v(2)=0</m>, what can you conclude about the solution <m>v(t)</m> at the moment <m>t=2</m>?
+<answer showcorrectness="false">
+  <choiceinput>
+    <choice credit="1">The solution <m>v(t)</m> must be increasing at <m>t=2</m>.</choice>
+    <choice>The solution <m>v(t)</m> must be decreasing at <m>t=2</m>.</choice>
+    <choice>The solution <m>v(t)</m> must be not changing at <m>t=2</m>.</choice>
+    <choice>We don't have enough information to know if <m>v(t)</m> is increasing, decreasing, or not changing at <m>t=2</m>. </choice>
+    <choice>I don't know.</choice>
+  </choiceinput>
+</answer>
+</p>
+
+<p>If <m>v(t)</m> is a solution to the differential equation and you know that at time <m>t=1</m> the solution <m>v(t)</m> is not changing, what are some possible values of <m>v(1)</m>?  If you are not sure, you can leave one or more answer blanks empty.</p>
+<p><m>v(1)=</m> <mathinput name="zero1" />,  <m>v(1)=</m> <mathinput name="zero2" />, or <m>v(1)=</m> <mathinput name="zero3" />.
+<answer showcorrectness="false">
+  <award unorderedCompare matchPartial>
+    <when>
+      (<copy prop="immediateValue" tname="zero1" isResponse />, <copy prop="immediateValue" tname="zero2" isResponse/>, <copy prop="immediateValue" tname="zero3" isResponse />)
+      =
+      (-2, 1, 6)
+    </when>
+  </award>
+</answer>
+</p>
+
+
+<p>The following are representations of the <m>v</m> state line that show for what values of <m>v(t)</m> is the solution increasing, decreasing or not changing.  Values of <m>v(t)</m> where <m>v(t)</m> is not changing are shown by <pluralize basedOnNumber="2"><copy prop="styleDescriptionWithNoun" tname="vAxisA/_point1" /></pluralize>.  Rightward arrows indicate values of <m>v(t)</m> where <m>v(t)</m> is increasing; leftward arrows indicate where <m>v(t)</m> is decreasing.  Length of each arrow indicates the speed of <m>v(t)</m>.</p>
+
+<p>Select which phase line best represents the state line for the solution <m>v(t)</m> of the above differential equation. (Click the radio button to make sure the your desired option is selected.)</p>
+
+<answer showcorrectness="false">
+  <choiceinput>
+
+    <choice>
+      A:
+      <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxisA" newNamespace showNavigation="false">
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-2, 0)</point>
+      <point draggable="false" styleNumber="3">(1, 0)</point>
+      <point draggable="false" styleNumber="3">(6, 0)</point>
+      <vector draggable="false" tail="(-4.0, 0)" displacement="(1,0)" />
+      <vector draggable="false" tail="(-2.7, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(-1.3, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(0, 0)" displacement="(-1,0)" />
+      <vector draggable="false" tail="(0.8, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(1.3, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(2.5, 0)" displacement="(1.5,0)" />
+      <vector draggable="false" tail="(5, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(6.7, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(7.9, 0)" displacement="(-1.0,0)" />
+
+      </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice credit="1">
+      B:
+      <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxisB" newNamespace showNavigation="false">
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-2, 0)</point>
+      <point draggable="false" styleNumber="3">(1, 0)</point>
+      <point draggable="false" styleNumber="3">(6, 0)</point>
+      <vector draggable="false" tail="(-3.0, 0)" displacement="(-1,0)" />
+      <vector draggable="false" tail="(-2.2, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(-1.8, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(-1, 0)" displacement="(1,0)" />
+      <vector draggable="false" tail="(0.3, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(1.8, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(4, 0)" displacement="(-1.5,0)" />
+      <vector draggable="false" tail="(5.5, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(6.2, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(6.9, 0)" displacement="(1.0,0)" />
+
+      </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice>
+    C:
+    <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxis2" newNamespace showNavigation="false">
+
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-0.8, 0)</point>
+      <point draggable="false" styleNumber="3">(4, 0)</point>
+
+      <vector draggable="false" tail="(-3.5, 0)" displacement="(1.5,0)" />
+      <vector draggable="false" tail="(-1.8, 0)" displacement="(0.5,0)" />
+
+      <vector draggable="false" tail="(0, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(2, 0)" displacement="(-1.5,0)" />
+      <vector draggable="false" tail="(3.5, 0)" displacement="(-0.5,0)" />
+
+      <vector draggable="false" tail="(4.5, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(6, 0)" displacement="(1.5,0)" />
+
+    </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice>
+    D:
+    <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxis3" newNamespace showNavigation="false">
+
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-0.8, 0)</point>
+      <point draggable="false" styleNumber="3">(4, 0)</point>
+
+      <vector draggable="false" tail="(-2, 0)" displacement="(-1.5,0)" />
+      <vector draggable="false" tail="(-1.3, 0)" displacement="(-0.5,0)" />
+
+      <vector draggable="false" tail="(-0.5, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(0.5, 0)" displacement="(1.5,0)" />
+      <vector draggable="false" tail="(3, 0)" displacement="(0.5,0)" />
+
+      <vector draggable="false" tail="(5, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(7.5, 0)" displacement="(-1.5,0)" />
+
+    </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice>E: I don't know.</choice>
+  </choiceinput>
+
+</answer>
+
+
+<p>When finished answering the questions, click the <q>Move on to group activity</q> button to go to the next section.  You will need to scroll up to the top of the new page.</p>
+<p><updatevalue label="Move on to group activity" tname="../View" newValue="2" />
+</p>
+
+<p><nbsp/></p>
+<p><nbsp/></p>
+<p><nbsp/></p>
+<p><nbsp/></p>
+
+</section>
+
+
+
+
+<section name="main" aggregateScores newNamespace hide="$View!=2">
+<title>The graphical approach</title>
+
+<p>You can work on this activity as a group.</p>
+
+<p> Our goal is to use a graphical approach to solve the continuous dynamical system (or differential equation)
+<md>
+  <mrow>\frac{du}{dt} \amp = <function variables="u" symbolic name="f">1−u^2/9</function></mrow>
+  <mrow>u(0) \amp =u_0</mrow>
+</md>
+<function variables="u" name="fnumeric" hide>$(f{prop='formula'})</function>
+for various initial conditions <m>u_0</m>. 
+By solving, we mean determine what <m>u(t)</m> looks like as a function of time, though we won't find a formula for <m>u(t)</m>.
+</p>
+
+<p>The dynamical system gives the rule of how the state variable <m>u</m> changes with time.  We will sometimes write the state variable as just <m>u</m> and other times as <m>u(t)</m>.  They both mean the same thing: a state variable whose value changes with time.</p>
+
+
+<aside>
+<title>
+  Why use both <m>u</m> and <m>u(t)</m>?
+</title>
+
+<p>In a dynamical system, the value of a state variable, such as <m>u</m>, changes with time <m>t</m>.  We can use different notation to emphasize different aspects of the state variable.</p>  
+
+<p>When we want to emphasize the value of the state variable, we will typically write the state variable as just <m>u</m>.  This notation is particularly useful when we want to convey that the actual time <m>t</m> is not important.</p>
+
+<p>When we want to emphasize that the state variable is a function of time, we can write it as <m>u(t)</m>.  This notation is particularly useful when we want to express the value of the variable at a particular time, such as <m>u(5) = 3</m>, which means that <m>u=3</m> at the moment when <m>t=5</m>.</p>
+
+</aside>
+
+
+
+
+<p>The differential equation gives a formula for calculating the rate of change <m>\frac{du}{dt}</m> given the current value of the state variable <m>u</m>.  We typically write the equation as above.  But, if it is helpful to remind yourself that <m>u</m> is a function of time <m>u(t)</m>, you can replace <m>u</m> with <m>u(t)</m> and write the derivative as <m>u'(t)</m>.  With this notation, the differential equation becomes
+<me>u'(t) = 1 - \frac{u(t)^2}{9}.</me>
+</p>
+
+<p>A key feature of this differential equation (in either notation) is that the rate of change <m>\frac{du}{dt}</m> (or <m>u'(t)</m>) depends only on the value of the state variable <m>u</m> (or <m>u(t)</m>).  It doesn't depend explicitly on time <m>t</m>.</p>
+
+<subsection>
+<title>Some preliminaries</title>
+
+<p>The differential equation means that, if the value of the state variable at some time is <m>u = 2</m>, then we know that <m>\frac{du}{dt} =</m> <answer allowedErrorInNumbers="1E-6"><award><evaluate name="upat2" function="$fnumeric" input="2" /></award></answer>.  So, for example, if we are given that the value of <m>u</m> when <m>t=11</m> is <m>u(11)=2</m>, we can conclude that the rate of change of <m>u</m> when <m>t=11</m>  must be <m>u'(11)=</m> <answer allowedErrorInNumbers="1E-6"><award><copy tname="upat2"/></award></answer>.</p>
+
+<p>We are particularly interested in the sign of the rate of change of <m>u</m> so that we can determine if <m>u</m> is increasing or decreasing.  The above calculation showed that whenever <m>u(t)</m> is 2, the rate of change of <m>u(t)</m> is 
+<answer inline>
+  <choiceinput randomizeOrder>
+  <choice credit="1">positive</choice>
+  <choice>negative</choice>
+  <choice>zero</choice>
+  </choiceinput>
+</answer>.
+We conclude that whenever <m>u(t)</m> is 2, the solution <m>u(t)</m> must be 
+<answer inline>
+  <choiceinput randomizeOrder>
+  <choice credit="1">increasing</choice>
+  <choice>decreasing</choice>
+  <choice>not changing</choice>
+  </choiceinput>
+</answer>
+at that moment.</p>
+
+<p>We found a value (<m>u(t)=2</m>) where <m>u(t)</m> must be increasing.  Now, it's your turn to find one point (there are many possibilities) where <m>u(t)</m> is decreasing.  By examining the differential equation, find a value of <m>u(t)</m> where <m>u(t)</m> must be decreasing:
+<m>u(t)</m> is decreasing when <m>u(t)=</m>
+<answer size="5" name="uDecrease">
+  <mathinput name="uDecreaseInput" />
+  <award>
+    <when><copy tname="uDecreaseInput" prop="immediateValue" /> < -3 or
+    <copy tname="uDecreaseInput" prop="immediateValue" /> > 3
+    </when>
+  </award>
+</answer>
+</p>
+
+<feedback condition="$(uDecrease{prop='submittedResponse'}) > -3 and $(uDecrease{prop='submittedResponse'}) < 3">
+  <p>No, <m>u(t)</m> is not decreasing when <m>u(t)=<copy prop="submittedResponse" tname="uDecrease" /></m>.
+  When <m>u(t)=<copy prop="submittedResponse" tname="uDecrease" /></m>, the rate of change is <m>\frac{du}{dt} = <math>1-<copy prop="submittedResponse" tname="uDecrease" />^2/9</math> = 
+  <evaluate simplify displayDigits="4" function="$f" input="$(uDecrease{prop='submittedResponse'})" />
+  \gt 0.
+ </m> 
+  Since the rate of change is positive, <m>u(t)</m> is increasing.</p>
+</feedback>
+<feedback condition="$(uDecrease{prop='submittedResponse'}) < -3 or $(uDecrease{prop='submittedResponse'}) > 3">
+    <p>Yes, <m>u(t)</m> is decreasing when <m>u(t)=<copy prop="submittedResponse" tname="uDecrease" /></m>.
+    When <m>u(t)=<copy prop="submittedResponse" tname="uDecrease" /></m>, the rate of change is <m>\frac{du}{dt} = <math>1-<copy prop="submittedResponse" tname="uDecrease" />^2/9</math> = 
+  <evaluate simplify displayDigits="4" function="$f" input="$(uDecrease{prop='submittedResponse'})" />
+  \lt 0.
+ </m> 
+  Since the rate of change is negative, <m>u(t)</m> is decreasing.</p>
+</feedback>
+<feedback condition="$(uDecrease{prop='submittedResponse'}) = -3 or $(uDecrease{prop='submittedResponse'}) = 3">
+  <p>No, <m>u(t)</m> is not decreasing when <m>u(t)=<copy prop="submittedResponse" tname="uDecrease" /></m>.
+  When <m>u(t)=<copy prop="submittedResponse" tname="uDecrease" /></m>, the rate of change is <m>\frac{du}{dt} = <math>1-<copy prop="submittedResponse" tname="uDecrease" />^2/9</math> = 0.
+ </m> 
+  Since the rate of change is zero, <m>u(t)</m> is not changing.</p>
+</feedback>
+<feedback condition="$(uDecrease{prop='responseHasBeenSubmitted'}) and not isnumber($(uDecrease{prop='submittedResponse'}))">
+  <p>Enter a numerical value for <m>u(t)</m>.</p>
+</feedback>
+
+<p>We can represent your findings on a plot of the <m>u</m>-axis, represented as a <copy prop="styleDescription" tname="uAxisPreliminary/uaxis" /> line below.  This plot is called the <q>state line</q> or <q>phase line</q> for the state variable <m>u</m>.  Notice how there is no represention of time <m>t</m> on this graph, as we don't need to know <m>t</m> in order to know how <m>u</m> is changing.
+</p>
+
+
+<boolean name="hideLeftArrow" hide>true</boolean>
+<boolean name="hideRightArrow" hide>true</boolean>
+
+
+<graph width="400" height="100" xmin="-6" xmax="6" ymin="-1" ymax="1" xlabel="u" displayyaxis="false" name="uAxisPreliminary" newNamespace showNavigation="false">
+<line name="uaxis" stylenumber="4" fixed draggable="false">y=0</line>
+
+  <point hide name="leftArrowTail" x="4" y="0.3">
+    <constraints>
+      <attractTo threshold="0.1"><copy tname="uaxis" /></attractTo>
+    </constraints>
+  </point>
+  <vector hide name="leftArrowDisplacement" fixed x="-1" y="0" />
+  <vector name="leftArrow" layer="2" headDraggable="false" hide="$(../hideLeftArrow)" tail="$leftArrowTail" displacement="$leftArrowDisplacement" />
+
+  <point hide name="rightArrowTail" x="4" y="0.2">
+    <constraints>
+      <attractTo threshold="0.1"><copy tname="uaxis" /></attractTo>
+    </constraints>
+  </point>
+  <vector hide name="rightArrowDisplacement" fixed x="1" y="0" />
+  <vector name="rightArrow" layer="2" headDraggable="false" hide="$(../hideRightArrow)" tail="$rightArrowTail" displacement="$rightArrowDisplacement" />
+
+</graph>
+
+
+<p>To represent the behavior of the dynamical system, we will use arrows on the state line to show where <m>u(t)</m> is increasing and where it is decreasing.  Since we calculated that <m>u(t)</m> is increasing whenever <m>u(t)=2</m>, we will draw a rightward arrow at <m>u=2</m> on the state line.</p>
+
+<p>Click
+<updatevalue label="reveal arrow" disabled="not $hideRightArrow" type="boolean" tname="hideRightArrow" newValue="false" />
+and drag the arrow so that it is on the <m>u</m>-axis and includes <m>u=2</m>.
+<answer disabled="$hideRightArrow">
+  <award>
+    <when>
+      <copy prop="tailX2" tname="uAxisPreliminary/rightArrow" isResponse /> = 0
+      and
+      <copy prop="tailX1" tname="uAxisPreliminary/rightArrow" isResponse /> < 2
+      and  
+      <copy prop="headX1" tname="uAxisPreliminary/rightArrow" /> > 2
+    </when>
+  </award>
+</answer>
+</p>
+
+<p>This rightward arrow at <m>u=2</m> indicates that <m>u(t)</m> must be increasing whenever its value is 2.
+</p>
+
+
+<p>Above, you also identified a value of <m>u(t)</m> where <m>u(t)</m> was decreasing.  Let's add a leftward arrow to the state line in a region where <m>u(t)</m> is decreasing.  (It doesn't have to include the point you identified above.)</p>
+
+
+<p>Click
+<updatevalue label="reveal arrow" disabled="not $hideLeftArrow" type="boolean" tname="hideLeftArrow" newValue="false" />
+and drag the arrow so that it is on the <m>u</m>-axis and it includes values of <m>u</m> where <m>u(t)</m> is decreasing.
+<answer name="uDecreaseArrow" disabled="$hideLeftArrow">
+  <award>
+    <when>
+      <copy prop="tailX2" tname="uAxisPreliminary/leftArrow" isResponse /> = 0
+      and (
+        <copy prop="tailX1" tname="uAxisPreliminary/leftArrow" isResponse /> < -3
+        or  
+        <copy prop="headX1" tname="uAxisPreliminary/leftArrow" isResponse /> > 3
+      )
+    </when>
+  </award>
+</answer>
+</p>
+
+
+<feedback condition="$(uDecreaseArrow{prop='submittedResponse1'}) = 0 and $(uDecreaseArrow{prop='submittedResponse3'}) > -3 and $(uDecreaseArrow{prop='submittedResponse2'}) < 3">
+  <p>No, the arrow is in a region where <m>u(t)</m> is increasing.  For example, the tail of the arrow is at <m>u = <copy tname="uDecreaseArrow" prop="submittedResponse2" displayDigits="4" /></m>, where the rate of change is <m>\frac{du}{dt} = <math displayDigits="4">1-<copy tname="uDecreaseArrow" prop="submittedResponse2" />^2/9</math> = 
+  <evaluate simplify displayDigits="4" function="$f" input="$(uDecreaseArrow{prop='submittedResponse2'})" />
+  \gt 0
+ </m>. 
+ </p>
+</feedback>
+<feedback condition="$(uDecreaseArrow{prop='submittedResponse1'}) = 0 and $(uDecreaseArrow{prop='submittedResponse3'}) <= -3 and $(uDecreaseArrow{prop='submittedResponse2'}) > -3">
+  <p>No, part of the arrow is in a region where <m>u(t)</m> is increasing.  The tail of the arrow is at <m>u = <copy tname="uDecreaseArrow" prop="submittedResponse2" displayDigits="4" /></m>, where the rate of change is <m>\frac{du}{dt} = <math displayDigits="4">1-<copy tname="uDecreaseArrow" prop="submittedResponse2" />^2/9</math> = 
+  <evaluate simplify displayDigits="4" function="$f" input="$(uDecreaseArrow{prop='submittedResponse2'})" />
+  \gt 0
+ </m>. 
+ </p>
+</feedback>
+<feedback condition="$(uDecreaseArrow{prop='submittedResponse1'}) = 0 and $(uDecreaseArrow{prop='submittedResponse3'}) < 3 and $(uDecreaseArrow{prop='submittedResponse2'}) >= 3">
+  <p>No, part of the arrow is in a region where <m>u(t)</m> is increasing. The head of the arrow is at <m>u = <copy tname="uDecreaseArrow" prop="submittedResponse3" displayDigits="4" /></m>, where the rate of change is <m>\frac{du}{dt} = <math displayDigits="4">1-<copy tname="uDecreaseArrow" prop="submittedResponse3" />^2/9</math> = 
+  <evaluate simplify displayDigits="4" function="$f" input="$(uDecreaseArrow{prop='submittedResponse3'})" />
+  \gt 0
+ </m>. 
+ </p>
+</feedback>
+
+</subsection>
+
+<subsection>
+<title>Reading rate of change from a graph</title>
+
+<p>To get a fuller picture of where <m>u(t)</m> is increasing and where it is decreasing, we'd like to draw many arrows on the <m>u</m> state line showing the direction of movement.  We're going to use a trick to help us do that.  We'll add to the phase line a graphical representation of the rate of change.   We'll superimpose a plot of the rate of change <m>u'(t)</m> as a function of <m>u(t)</m>.</p>
+
+<p>According to the differential equation, the rate of change <m>\frac{du}{dt}</m> is <copy tname="f" />.  We plot the rate of change by plotting the function <m>f(u) = <copy tname="f" /></m>, shown by the <copy prop="styleDescription" tname="uWithf/f" /> curve, on top of the <m>u</m> phase line.</p>
+
+
+
+<boolean name="hideEs" hide>true</boolean>
+<boolean name="hideRightArrows" hide>true</boolean>
+<boolean name="hideLeftArrows" hide>true</boolean>
+<graph name="uWithf" width="400" height="200" xmin="-6" xmax="6" ymin="-1" ymax="2" xlabel="u" ylabel="u'" newNamespace showNavigation="false">
+<copy name="f" tname="../fnumeric" hide="false" stylenumber="2" />
+<line name="uaxis" stylenumber="4" fixed draggable="false">y=0</line>
+
+  <point name="E1" stylenumber="3" hide="$(../hideEs)" x="-5" y="1" >
+    <constraints>
+      <attractTo threshold="0.2">
+        <point>(3,0)</point>
+        <point>(-3,0)</point>
+      </attractTo>
+    </constraints>
+  </point>
+  <point name="E2" stylenumber="3" hide="$(../hideEs)" x="-5" y="0.8">
+    <constraints>
+      <attractTo threshold="0.2">
+        <point>(3,0)</point>
+        <point>(-3,0)</point>
+      </attractTo>
+    </constraints>
+  </point>
+
+
+  <point name="shortRight1Tail" hide x="4" y="1" >
+    <constraints>
+      <attractTo threshold="0.1"><copy tname="uaxis" /></attractTo>
+    </constraints>
+  </point>
+  <vector name="shortRight1Displacement" hide fixed x="0.5" y="0" />
+  <vector name="shortRight1" layer="2" headDraggable="false" hide="$(../hideRightArrows)" tail="$shortRight1Tail" displacement="$shortRight1Displacement" />
+
+  <point name="shortRight2Tail" hide x="4" y="0.8" >
+    <constraints>
+      <attractTo threshold="0.1"><copy tname="uaxis" /></attractTo>
+    </constraints>
+  </point>
+  <vector name="shortRight2Displacement" hide fixed x="0.5" y="0" />
+  <vector name="shortRight2" layer="2" headDraggable="false" hide="$(../hideRightArrows)" tail="$shortRight2Tail" displacement="$shortRight2Displacement" />
+
+  <point name="longRightTail" hide x="4" y="0.6" >
+    <constraints>
+      <attractTo threshold="0.1"><copy tname="uaxis" /></attractTo>
+    </constraints>
+  </point>
+  <vector name="longRightDisplacement" hide fixed x="1.5" y="0" />
+  <vector name="longRight" layer="2" headDraggable="false" hide="$(../hideRightArrows)" tail="$longRightTail" displacement="$longRightDisplacement" />
+
+  <point name="longLeft1Tail" hide x="-1.5" y="1.5" >
+    <constraints>
+      <attractTo threshold="0.1"><copy tname="uaxis" /></attractTo>
+    </constraints>
+  </point>
+  <vector name="longLeft1Displacement" hide fixed x="-1.5" y="0" />
+  <vector name="longLeft1" layer="2" headDraggable="false" hide="$(../hideLeftArrows)" tail="$longLeft1Tail" displacement="$longLeft1Displacement" />
+
+  <point name="longLeft2Tail" hide x="-1.5" y="1.3" >
+    <constraints>
+      <attractTo threshold="0.1"><copy tname="uaxis" /></attractTo>
+    </constraints>
+  </point>
+  <vector name="longLeft2Displacement" hide fixed x="-1.5" y="0" />
+  <vector name="longLeft2" layer="2" headDraggable="false" hide="$(../hideLeftArrows)" tail="$longLeft2Tail" displacement="$longLeft2Displacement" />
+
+  <point name="shortLeft1Tail" hide x="-1.5" y="1.1" >
+    <constraints>
+      <attractTo threshold="0.1"><copy tname="uaxis" /></attractTo>
+    </constraints>
+  </point>
+  <vector name="shortLeft1Displacement" hide fixed x="-0.5" y="0" />
+  <vector name="shortLeft1" layer="2" headDraggable="false" hide="$(../hideLeftArrows)" tail="$shortLeft1Tail" displacement="$shortLeft1Displacement" />
+
+  <point name="shortLeft2Tail" hide x="-1.5" y="0.9" >
+    <constraints>
+      <attractTo threshold="0.1"><copy tname="uaxis" /></attractTo>
+    </constraints>
+  </point>
+  <vector name="shortLeft2Displacement" hide fixed x="-0.5" y="0" />
+  <vector name="shortLeft2" layer="2" headDraggable="false" hide="$(../hideLeftArrows)" tail="$shortLeft2Tail" displacement="$shortLeft2Displacement" />
+
+</graph>
+
+<p>We can immediately read off the graph that the velocity of <m>u</m> is zero at two points.  These points are 
+<m>u = </m> <mathinput name="z1" size="3"/> and
+<m>u = </m> <mathinput name="z2" size="3"/>. 
+<answer name="zeroVelocityPoints">
+  <award matchPartial unorderedCompare>
+    <when>
+      (<copy prop="immediateValue" tname="z1" isResponse/>, <copy prop="immediateValue" tname="z2" isResponse/>) = (3, -3)
+    </when>
+  </award>
+</answer>
+</p>
+
+<p>These two points, 
+<m>u = <copy prop="submittedResponse1" tname = "zeroVelocityPoints" includeUndefinedObjects /></m>
+and
+<m>u = <copy prop="submittedResponse2" tname = "zeroVelocityPoints" includeUndefinedObjects /></m>,
+are called equilibria of the dynamical system, as they correspond to two solutions where <m>u(t)</m> never changes.  
+</p>
+
+<p>Draw points at the equilibria by clicking
+<updatevalue label="reveal points" disabled="not $hideEs" type="boolean" tName="hideEs" newValue="false" />
+and moving the <pluralize basedOnNumber='2'><copy prop="styleDescriptionWithNoun" tname="uWithf/E1" /></pluralize> 
+to the locations on the <m>u</m>-axis where <m>u(t)</m> does not change.
+<answer name="equilibriumPoints" disabled="$hideEs">
+  <award matchPartial unorderedCompare>
+    <when>
+      (<copy prop="coords" tname="uWithf/E1" isResponse />,
+      <copy prop="coords" tname="uWithf/E2" isResponse />)
+      = (<coords>(-3, 0)</coords>, <coords>(3,0)</coords>)
+    </when>
+  </award>
+</answer>
+</p>
+
+<p>By looking at the graph of <m>f</m>, we see that there is one interval of <m>u</m> where <m>u(t)</m> is increasing, i.e., where <m>f(u)</m> is positive.  The solution <m>u(t)</m> must be increasing whenever
+<m>u > </m> <mathinput name="condIncrease1" size="3" /> and <m>u < </m> <mathinput name="condIncrease2" size="3" />.
+<answer>
+  <award matchPartial>
+    <when>
+      <copy prop="immediateValue" isResponse tname="condIncrease1" /> = -3
+      and
+      <copy prop="immediateValue" isResponse tname="condIncrease2" /> = 3
+    </when>
+  </award>
+</answer>
+</p>
+
+
+<p>Draw rightward arrows in this region by clicking
+<updatevalue label="reveal arrows" disabled="not $hideRightArrows" type="boolean" tName="hideRightArrows" newValue="false" />
+to reveal three arrows.  Notice that one of the arrows is longer than the other two.  The length of the arrow denotes how fast <m>u(t)</m> is changing.  Move the long arrow to the <m>u</m>-axis and make sure it includes the point where <m>u(t)</m> is increasing at its maximum rate.
+  <answer name="maximumRightArrow" disabled="$hideRightArrows">
+    <award>
+      <when>
+        <copy prop="tailX2" tname="uWithf/longRight" isResponse /> = 0
+        and
+        <copy prop="tailX1" tname="uWithf/longRight" isResponse /> <= 0
+        and
+        <copy prop="headX1" tname="uWithf/longRight" isResponse /> >= 0
+      </when>
+    </award>
+  </answer>
+</p>
+<feedback condition="$(maximumRightArrow{prop='submittedResponse1'}) = 0 and ($(maximumRightArrow{prop='submittedResponse3'}) > 3 or $(maximumRightArrow{prop='submittedResponse2'}) < -3)">
+  <p>At least part of the arrow is in a region where <m>u(t)</m> is decreasing.
+ </p>
+</feedback>
+<feedback condition="$(maximumRightArrow{prop='submittedResponse1'}) = 0 and $(maximumRightArrow{prop='submittedResponse3'}) <= 3 and $(maximumRightArrow{prop='submittedResponse2'}) >= -3 and ($(maximumRightArrow{prop='submittedResponse3'}) < 0 or $(maximumRightArrow{prop='submittedResponse2'}) > 0)">
+  <p>Although the arrow is indeed contained in a region where <m>u(t)</m> is increasing, it doesn't include the point where the speed is maximal.  What is the value of <m>u</m> where the graphed function <m>f</m> hits its maximum?  
+  <answer weight="0" size="3">0</answer>
+ </p>
+</feedback>
+
+<p>Place the shorter two rightward arrows on either side of the longest rightward arrow but still in the region where <m>u(t)</m> is increasing, to denote that <m>u(t)</m> is increasing at a slower rate in those regions.
+  <answer name="otherRightArrows" disabled="$hideRightArrows">
+    <award>
+      <when>
+        <copy prop="tailX2" tname="uWithf/shortRight1" isResponse /> = 0 and
+        <copy prop="tailX2" tname="uWithf/shortRight2" isResponse /> = 0 and
+        ((
+        <copy prop="tailX1" tname="uWithf/shortRight2" isResponse /> >
+        <copy prop="headX1" tname="uWithf/longRight" isResponse /> and
+        <copy prop="headX1" tname="uWithf/shortRight2" isResponse /> < 3 and
+        <copy prop="headX1" tname="uWithf/shortRight1" isResponse /> <
+        <copy prop="tailX1" tname="uWithf/longRight" isResponse /> and
+        <copy prop="tailX1" tname="uWithf/shortRight1" isResponse /> > -3
+        ) or (
+        <copy prop="tailX1" tname="uWithf/shortRight1" /> >
+        <copy prop="headX1" tname="uWithf/longRight" /> and
+        <copy prop="headX1" tname="uWithf/shortRight1" /> < 3 and
+        <copy prop="headX1" tname="uWithf/shortRight2" /> <
+        <copy prop="tailX1" tname="uWithf/longRight" /> and
+        <copy prop="tailX1" tname="uWithf/shortRight2" /> > -3
+        ))
+      </when>
+    </award>
+    <award credit="0.5">
+      <when>
+        <copy prop="tailX2" tname="uWithf/shortRight1" /> = 0 and
+        ((
+        <copy prop="headX1" tname="uWithf/shortRight1" /> <
+        <copy prop="tailX1" tname="uWithf/longRight" /> and
+        <copy prop="tailX1" tname="uWithf/shortRight1" /> > -3
+        ) or (
+        <copy prop="tailX1" tname="uWithf/shortRight1" /> >
+        <copy prop="headX1" tname="uWithf/longRight" /> and
+        <copy prop="headX1" tname="uWithf/shortRight1" /> < 3
+        ))
+      </when>
+    </award>
+    <award credit="0.5">
+      <when>
+        <copy prop="tailX2" tname="uWithf/shortRight2" /> = 0 and
+        ((
+        <copy prop="headX1" tname="uWithf/shortRight2" /> <
+        <copy prop="tailX1" tname="uWithf/longRight" /> and
+        <copy prop="tailX1" tname="uWithf/shortRight2" /> > -3
+        ) or (
+        <copy prop="tailX1" tname="uWithf/shortRight2" /> >
+        <copy prop="headX1" tname="uWithf/longRight" /> and
+        <copy prop="headX1" tname="uWithf/shortRight2" /> < 3
+        ))
+      </when>
+    </award>
+    <award credit="0.6">
+      <when>
+        <copy prop="tailX2" tname="uWithf/shortRight1" /> = 0 and
+        <copy prop="tailX2" tname="uWithf/shortRight2" /> = 0 and
+        <copy prop="tailX1" tname="uWithf/shortRight2" /> > -3 and
+        <copy prop="headX1" tname="uWithf/shortRight2" /> < 3 and
+        <copy prop="headX1" tname="uWithf/shortRight1" /> < 3 and
+        <copy prop="tailX1" tname="uWithf/shortRight1" /> > -3
+      </when>
+    </award>    
+    <award credit="0.3">
+      <when>
+        <copy prop="tailX2" tname="uWithf/shortRight1" /> = 0 and
+        <copy prop="headX1" tname="uWithf/shortRight1" /> < 3 and
+        <copy prop="tailX1" tname="uWithf/shortRight1" /> > -3
+      </when>
+    </award>    
+    <award credit="0.3">
+      <when>
+        <copy prop="tailX2" tname="uWithf/shortRight2" /> = 0 and
+        <copy prop="headX1" tname="uWithf/shortRight2" /> < 3 and
+        <copy prop="tailX1" tname="uWithf/shortRight2" /> > -3
+      </when>
+    </award>    
+    
+    </answer>
+</p>
+
+<feedback condition="($(otherRightArrows{prop='submittedResponse3'}) <= $(otherRightArrows{prop='submittedResponse4'}) and $(otherRightArrows{prop='submittedResponse3'}) >= $(otherRightArrows{prop='submittedResponse7'})) or ($(otherRightArrows{prop='submittedResponse5'}) <= $(otherRightArrows{prop='submittedResponse4'}) and $(otherRightArrows{prop='submittedResponse5'}) >= $(otherRightArrows{prop='submittedResponse7'})) or ($(otherRightArrows{prop='submittedResponse6'}) <= $(otherRightArrows{prop='submittedResponse4'}) and $(otherRightArrows{prop='submittedResponse6'}) >= $(otherRightArrows{prop='submittedResponse7'})) or ($(otherRightArrows{prop='submittedResponse8'}) <= $(otherRightArrows{prop='submittedResponse4'}) and $(otherRightArrows{prop='submittedResponse8'}) >= $(otherRightArrows{prop='submittedResponse7'})) or ($(otherRightArrows{prop='submittedResponse3'}) <= $(otherRightArrows{prop='submittedResponse6'}) and $(otherRightArrows{prop='submittedResponse3'}) >= $(otherRightArrows{prop='submittedResponse8'})) or ($(otherRightArrows{prop='submittedResponse5'}) <= $(otherRightArrows{prop='submittedResponse6'}) and $(otherRightArrows{prop='submittedResponse5'}) >= $(otherRightArrows{prop='submittedResponse8'}))">
+  <p>The arrows cannot overlap each other.
+ </p>
+</feedback>
+<feedback condition="($(otherRightArrows{prop='submittedResponse1'}) = 0 and ($(otherRightArrows{prop='submittedResponse6'}) > 3 or $(otherRightArrows{prop='submittedResponse8'}) < -3)) or ($(otherRightArrows{prop='submittedResponse2'}) = 0 and ($(otherRightArrows{prop='submittedResponse5'}) > 3 or $(otherRightArrows{prop='submittedResponse3'}) < -3))">
+  <p>At least part of an arrow is in a region where <m>u(t)</m> is decreasing.
+ </p>
+</feedback>
+<feedback condition="$(otherRightArrows{prop='submittedResponse1'}) = 0 and $(otherRightArrows{prop='submittedResponse2'}) = 0 and (($(otherRightArrows{prop='submittedResponse6'}) < $(otherRightArrows{prop='submittedResponse7'}) and $(otherRightArrows{prop='submittedResponse5'}) < $(otherRightArrows{prop='submittedResponse7'}) ) or ( $(otherRightArrows{prop='submittedResponse8'}) > $(otherRightArrows{prop='submittedResponse4'}) and $(otherRightArrows{prop='submittedResponse3'}) > $(otherRightArrows{prop='submittedResponse4'})))">
+  <p>The short arrows must be on opposite sides of the long arrow.
+ </p>
+</feedback>
+
+<p>On the other hand, there are two regions of <m>u</m> where the differential equation states that <m>u(t)</m> must be decreasing whenever its value is in those regions.  The solution <m>u(t)</m> must be decreasing whenever 
+<m>u \lt</m> <mathinput name="condDecrease1" size="3" /> or <m>u \gt </m> <mathinput name="condDecrease2" size="3" />.
+<answer>
+  <award matchPartial>
+    <when>
+      <copy prop="immediateValue" isResponse tname="condDecrease1" /> = -3
+      and
+      <copy prop="immediateValue" isResponse tname="condDecrease2" /> = 3
+    </when>
+  </award>
+</answer>
+</p>
+
+<p>In each of these regions, draw two leftward arrows by clicking
+<updatevalue label="reveal arrows" disabled="not $hideLeftArrows" type="boolean" tname="hideLeftArrows" newValue="false" />
+to reveal four arrows.  Notice that two of the arrows are longer than the other two.  The length of the arrow denotes how fast <m>u(t)</m> is changing.  Move the arrows to the <m>u</m>-axis, placing two of them in each of the reqions where <m>u(t)</m> is decreasing.  Make sure the length of the arrow corresponds to the rate of change of <m>u(t)</m>.
+<math hide name="minLeftShortTail"><min>
+  <copy prop="tailX1" tname="uWithf/shortLeft1" />
+  <copy prop="tailX1" tname="uWithf/shortLeft2" />
+</min></math>
+<math hide name="maxLeftShortTail"><max>
+  <copy prop="tailX1" tname="uWithf/shortLeft1" />
+  <copy prop="tailX1" tname="uWithf/shortLeft2" />
+</max></math>
+<math hide name="minLeftShortHead"><min>
+  <copy prop="headX1" tname="uWithf/shortLeft1" />
+  <copy prop="headX1" tname="uWithf/shortLeft2" />
+</min></math>
+<math hide name="maxLeftShortHead"><max>
+  <copy prop="headX1" tname="uWithf/shortLeft1" />
+  <copy prop="headX1" tname="uWithf/shortLeft2" />
+</max></math>
+<math hide name="minLeftLongTail"><min>
+  <copy prop="tailX1" tname="uWithf/longLeft1" />
+  <copy prop="tailX1" tname="uWithf/longLeft2" />
+</min></math>
+<math hide name="maxLeftLongTail"><max>
+  <copy prop="tailX1" tname="uWithf/longLeft1" />
+  <copy prop="tailX1" tname="uWithf/longLeft2" />
+</max></math>
+<math hide name="minLeftLongHead"><min>
+  <copy prop="headX1" tname="uWithf/longLeft1" />
+  <copy prop="headX1" tname="uWithf/longLeft2" />
+</min></math>
+<math hide name="maxLeftLongHead"><max>
+  <copy prop="headX1" tname="uWithf/longLeft1" />
+  <copy prop="headX1" tname="uWithf/longLeft2" />
+</max></math>
+
+
+  <answer name="leftArrows" disabled="$hideLeftArrows">
+    <award matchPartial>
+      <when>
+        <copy prop="tailX2" tname="uWithf/longLeft1" isResponse /> = 0 and
+        <copy prop="tailX2" tname="uWithf/longLeft2" isResponse /> = 0 and
+        <copy prop="tailX2" tname="uWithf/shortLeft1" isResponse /> = 0 and
+        <copy prop="tailX2" tname="uWithf/shortLeft2" isResponse /> = 0 and
+        <copy tname="minLeftLongTail" isResponse /> <
+        <copy tname="minLeftShortHead" isResponse />
+        and
+        <copy tname="minLeftShortTail" isResponse /> < -3
+        and
+        3 < <copy tname="maxLeftShortHead" isResponse />
+        and
+        <copy tname="maxLeftShortTail" isResponse /> <
+        <copy tname="maxLeftLongHead" isResponse />
+        <!-- though last two are redundant, add to increase partial credit penalty when arrow is in wrong region -->
+        and
+        <copy tname="minLeftLongTail" /> < -3
+        and
+        <copy tname="maxLeftLongHead" /> > 3
+      </when>
+    </award>
+    <considerAsResponses>
+    <copy tname="minLeftLongHead" />
+    <copy tname="maxLeftLongTail" />
+    </considerAsResponses>
+  </answer>
+</p>
+<feedback condition="($(leftArrows{prop='submittedResponse5'}) >= -3 and $(leftArrows{prop='submittedResponse5'}) <= 3) or ($(leftArrows{prop='submittedResponse6'}) >= -3 and $(leftArrows{prop='submittedResponse6'}) <= 3) or ($(leftArrows{prop='submittedResponse7'}) >= -3 and $(leftArrows{prop='submittedResponse7'}) <= 3) or ($(leftArrows{prop='submittedResponse8'}) >= -3 and $(leftArrows{prop='submittedResponse8'}) <= 3) or ($(leftArrows{prop='submittedResponse9'}) >= -3 and $(leftArrows{prop='submittedResponse9'}) <= 3) or ($(leftArrows{prop='submittedResponse10'}) >= -3 and $(leftArrows{prop='submittedResponse10'}) <= 3) or ($(leftArrows{prop='submittedResponse11'}) >= -3 and $(leftArrows{prop='submittedResponse11'}) <= 3) or ($(leftArrows{prop='submittedResponse12'}) >= -3 and $(leftArrows{prop='submittedResponse12'}) <= 3)">
+  <p>At least part of an arrow is in a region where <m>u(t)</m> is increasing.
+ </p>
+</feedback>
+<feedback condition="$(leftArrows{prop='submittedResponse5'}) >= $(leftArrows{prop='submittedResponse6'}) or $(leftArrows{prop='submittedResponse9'}) >= $(leftArrows{prop='submittedResponse10'})">
+  <p>The arrows must not overlap, and the longer arrows must be in locations where <m>u(t)</m> is moving faster.
+ </p>
+</feedback>
+<feedback condition="$(leftArrows{prop='submittedResponse9'}) < -3 or $(leftArrows{prop='submittedResponse6'}) > 3 or $(leftArrows{prop='submittedResponse12'}) < -3 or $(leftArrows{prop='submittedResponse11'}) > 3" >
+  <p>Place two arrows in each of the different regions where <m>u(t)</m> is decreasing.
+ </p>
+</feedback>
+
+<p>The equilibrium points and direction arrows on the <m>u</m> state line give a global picture of the behavior of <m>u(t)</m>.  We can now remove the graph of <m>f(u)</m>, as that was just needed to sketch the equilibria and direction arrows.  The final state line picture is shown below.</p>
+
+<graph width="400" height="100" xmin="-6" xmax="6" ymin="-1" ymax="1" xlabel="u" displayyaxis="false" name="uAxisFinal" newNamespace showNavigation="false">
+
+  <line name="uaxis" stylenumber="4" fixed draggable="false">y=0</line>
+
+  <copy tname="../uWithf/E1" />
+  <copy tname="../uWithf/E2" />
+  <copy tname="../uWithf/longRight" />
+  <copy tname="../uWithf/shortRight1" />
+  <copy tname="../uWithf/shortRight2" />
+  <copy tname="../uWithf/longLeft1" />
+  <copy tname="../uWithf/longLeft2" />
+  <copy tname="../uWithf/shortLeft1" />
+  <copy tname="../uWithf/shortLeft2" />
+
+</graph>
+
+
+</subsection>
+
+
+<p>When you have finished this activity, click the <q>Move on to final questions</q> button to move on to the final set of questions to be answered individually.  When the new page loads, scroll to the top to begin.</p>
+<p><updatevalue label="Move on to final questions" tname="../View" newValue="3" />
+</p>
+
+<p><nbsp/></p>
+<p><nbsp/></p>
+<p><nbsp/></p>
+<p><nbsp/></p>
+
+</section>
+
+
+
+<section aggregateScores name="posttest" newNamespace hide="$View != 3">
+<title>Final questions</title>
+
+<p>We'd like to analyze the continuous dynamical system (or differential equation)
+<me>\frac{dv}{dt} = <function variables="v" name="f">v^3-5v^2-8v+12</function>,</me>
+where the function <m>f(v) = <copy tname="f"/></m> is graphed below.
+</p>
+
+<graph name="vWithf" width="400" height="200" xmin="-4" xmax="8" ymin="-40" ymax="40" xlabel="v" ylabel="v'" newNamespace showNavigation="false">
+<copy name="f" tname="../f" stylenumber="2" />
+
+</graph>
+
+<p>Answer the following questions on your own.</p>
+
+<p>If <m>v(t)</m> is a solution to the differential equation and you know that at time <m>t=3</m> the value of the solution is <m>v(3)=5</m>, what can you conclude about the solution <m>v(t)</m> at the moment <m>t=3</m>?
+<answer showcorrectness="false">
+  <choiceinput>
+    <choice>The solution <m>v(t)</m> must be increasing at <m>t=3</m>.</choice>
+    <choice credit="1">The solution <m>v(t)</m> must be decreasing at <m>t=3</m>.</choice>
+    <choice>The solution <m>v(t)</m> must be not changing at <m>t=3</m>.</choice>
+    <choice>We don't have enough information to know if <m>v(t)</m> is increasing, decreasing, or not changing at <m>t=3</m>. </choice>
+    <choice>I don't know.</choice>
+  </choiceinput>
+</answer>
+</p>
+<p>If <m>v(t)</m> is a solution to the differential equation and you know that at time <m>t=2</m> the value of the solution is <m>v(2)=0</m>, what can you conclude about the solution <m>v(t)</m> at the moment <m>t=2</m>?
+<answer showcorrectness="false">
+  <choiceinput>
+    <choice credit="1">The solution <m>v(t)</m> must be increasing at <m>t=2</m>.</choice>
+    <choice>The solution <m>v(t)</m> must be decreasing at <m>t=2</m>.</choice>
+    <choice>The solution <m>v(t)</m> must be not changing at <m>t=2</m>.</choice>
+    <choice>We don't have enough information to know if <m>v(t)</m> is increasing, decreasing, or not changing at <m>t=2</m>. </choice>
+    <choice>I don't know.</choice>
+  </choiceinput>
+</answer>
+</p>
+
+<p>If <m>v(t)</m> is a solution to the differential equation and you know that at time <m>t=1</m> the solution <m>v(t)</m> is not changing, what are some possible values of <m>v(1)</m>?  If you are not sure, you can leave one or more answer blanks empty.</p>
+<p><m>v(1)=</m> <mathinput name="zero1" />,  <m>v(1)=</m> <mathinput name="zero2" />, or <m>v(1)=</m> <mathinput name="zero3" />.
+<answer showcorrectness="false">
+  <award unorderedCompare matchPartial>
+    <when>
+      (<copy prop="immediateValue" isResponse tname="zero1"/>, <copy prop="immediateValue" isResponse tname="zero2"/>, <copy prop="immediateValue" isResponse tname="zero3"/>)
+      =
+      (-2, 1, 6)
+    </when>
+  </award>
+</answer>
+</p>
+
+
+<p>The following are representations of the <m>v</m> state line that show for what values of <m>v(t)</m> is the solution increasing, decreasing or not changing.  Values of <m>v(t)</m> where <m>v(t)</m> is not changing are shown by <pluralize basedOnNumber="2"><copy prop="styleDescriptionWithNoun" tname="vAxisA/_point1" /></pluralize>.  Rightward arrows indicate values of <m>v(t)</m> where <m>v(t)</m> is increasing; leftward arrows indicate where <m>v(t)</m> is decreasing.  Length of each arrow indicates the speed of <m>v(t)</m>.</p>
+
+<p>Select which phase line best represents the state line for the solution <m>v(t)</m> of the above differential equation. (Click the radio button to make sure the your desired option is selected.)</p>
+
+<answer showcorrectness="false">
+  <choiceinput>
+
+    <choice>
+      A:
+      <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxisA" newNamespace showNavigation="false">
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-2, 0)</point>
+      <point draggable="false" styleNumber="3">(1, 0)</point>
+      <point draggable="false" styleNumber="3">(6, 0)</point>
+      <vector draggable="false" tail="(-4.0, 0)" displacement="(1,0)" />
+      <vector draggable="false" tail="(-2.7, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(-1.3, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(0, 0)" displacement="(-1,0)" />
+      <vector draggable="false" tail="(0.8, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(1.3, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(2.5, 0)" displacement="(1.5,0)" />
+      <vector draggable="false" tail="(5, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(6.7, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(7.9, 0)" displacement="(-1.0,0)" />
+
+      </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice credit="1">
+      B:
+      <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxisB" newNamespace showNavigation="false">
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-2, 0)</point>
+      <point draggable="false" styleNumber="3">(1, 0)</point>
+      <point draggable="false" styleNumber="3">(6, 0)</point>
+      <vector draggable="false" tail="(-3.0, 0)" displacement="(-1,0)" />
+      <vector draggable="false" tail="(-2.2, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(-1.8, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(-1, 0)" displacement="(1,0)" />
+      <vector draggable="false" tail="(0.3, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(1.8, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(4, 0)" displacement="(-1.5,0)" />
+      <vector draggable="false" tail="(5.5, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(6.2, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(6.9, 0)" displacement="(1.0,0)" />
+
+      </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice>
+    C:
+    <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxis2" newNamespace showNavigation="false">
+
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-0.8, 0)</point>
+      <point draggable="false" styleNumber="3">(4, 0)</point>
+
+      <vector draggable="false" tail="(-3.5, 0)" displacement="(1.5,0)" />
+      <vector draggable="false" tail="(-1.8, 0)" displacement="(0.5,0)" />
+
+      <vector draggable="false" tail="(0, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(2, 0)" displacement="(-1.5,0)" />
+      <vector draggable="false" tail="(3.5, 0)" displacement="(-0.5,0)" />
+
+      <vector draggable="false" tail="(4.5, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(6, 0)" displacement="(1.5,0)" />
+
+    </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice>
+    D:
+    <graph width="400" height="100" xmin="-4" xmax="8" ymin="-1" ymax="1" xlabel="v" displayyaxis="false" name="vAxis3" newNamespace showNavigation="false">
+
+      <line stylenumber="4" fixed draggable="false">y=0</line>
+
+      <point draggable="false" styleNumber="3">(-0.8, 0)</point>
+      <point draggable="false" styleNumber="3">(4, 0)</point>
+
+      <vector draggable="false" tail="(-2, 0)" displacement="(-1.5,0)" />
+      <vector draggable="false" tail="(-1.3, 0)" displacement="(-0.5,0)" />
+
+      <vector draggable="false" tail="(-0.5, 0)" displacement="(0.5,0)" />
+      <vector draggable="false" tail="(0.5, 0)" displacement="(1.5,0)" />
+      <vector draggable="false" tail="(3, 0)" displacement="(0.5,0)" />
+
+      <vector draggable="false" tail="(5, 0)" displacement="(-0.5,0)" />
+      <vector draggable="false" tail="(7.5, 0)" displacement="(-1.5,0)" />
+
+    </graph>
+      <p><nbsp/></p>
+    </choice>
+
+    <choice>E: I don't know.</choice>
+
+  </choiceinput>
+
+</answer>
+
+
+
+<p><nbsp/></p>
+<p><nbsp/></p>
+<p><nbsp/></p>
+<p><nbsp/></p>
+
+</section>

@@ -29,6 +29,7 @@ $latestAttemptOverrides = mysqli_real_escape_string(
 $getDraft = mysqli_real_escape_string($conn, $_REQUEST["getDraft"]);
 $publicOnly = mysqli_real_escape_string($conn, $_REQUEST["publicOnly"]);
 
+
 if ($doenetId == "") {
     $success = false;
     $message = "Internal Error: missing doenetId";

@@ -1,0 +1,154 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>point</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>draggable</attr>  <em>(boolean)</em></li>
+  <li><attr>x</attr>  <em>(math)</em></li>
+  <li><attr>y</attr>  <em>(math)</em></li>
+  <li><attr>z</attr>  <em>(math)</em></li>
+  <li><attr>xs</attr>  <em>(mathList)</em></li>
+  <li><attr>coords</attr>  <em>(coords)</em></li>
+  <li><attr>displayDigits</attr>  <em>(integer)</em></li>
+  <li><attr>displayDecimals</attr>  <em>(integer)</em></li>
+  <li><attr>displaySmallAsZero</attr>  <em>(boolean/number)</em></li>
+  <li><attr>labelPosition</attr>  <em>(text)</em></li>
+  <li><attr>showCoordsWhenDragging</attr>  <em>(boolean)</em></li>
+    <aside><title><alert>Inherited from parent component <c>GraphicalComponent</c>:</alert></title>
+      <li><attr>label</attr>  <em>(text)</em></li>
+      <li><attr>showLabel</attr>  <em>(boolean)</em></li>
+      <li><attr>layer</attr>  <em>(number)</em></li>
+    </aside>
+   
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>point</tag><idx><tag>point</tag></idx> component is a <c>GraphicalComponent</c> which renders a point when nested inside a <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref> and renders a coordinate pair when used otherwise.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: Specify a <tag>point</tag> with a coordinate pair</title>
+<p>In the sample code below, a <tag>point</tag> is rendered within a <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref> and also outside a <tag>graph</tag>, referenced by name with the <c>&dollar;name</c> notation.  The coordinates of the point are listed as a coordinate pair within opening and closing tags.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;A point inside a graph:&lt;/p&gt;
+&lt;graph&gt;
+  &lt;point name="p1"&gt;(1,3)&lt;/point&gt;
+&lt;/graph&gt;
+  
+&lt;p&gt;A point outside a graph:&lt;/p&gt;
+  &dollar;p1
+</pre>
+        </example>
+      </subsection>
+   
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>A point inside a graph:</p>
+<graph>
+  <point name="p1">(1,3)</point>
+</graph>
+<p>A point outside a graph:</p>
+  $p1
+</example>
+
+<!--******************************************************-->
+ 
+<subsection><title>Example 2: Using the <attr>draggable</attr>, <attr>x, y,</attr> and <attr>z</attr> attributes with <tag>point</tag></title>
+<p>In the sample code below, the use of the individual coordinate value attributes is illustrated.  This example also demonstrates that the default plane for graphing is the <m>XY</m>-plane, so a point with a <m>z</m>-coordinate will be graphed at its projection onto the <m>XY</m> plane, but will store the correct position data into its <c>coords</c> property.  The coordinates of each point are displayed with the <ref uri="doenet:doenetId=A-WNVoHYi-eREt6v9JBmk"><tage>copy</tage></ref> component. Finally, since points are draggable by default, in this example the <attr>draggable</attr> attribute has been set to <c>"false"</c> to fix the points in position on the <ref uri="doenet:doenetID=W7UM-eMckhRS3ktGSUR6B"><tag>graph</tag></ref>.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;sideBySide&gt;
+&lt;p&gt;
+  &lt;graph xlabel="X" ylabel="Y"&gt;
+    &lt;point y="3" x="2" draggable="false" name="pointXY_Plane"/&gt;
+  &lt;/graph&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The point on the &lt;m&gt;XY&lt;/m&gt;-plane is located at: &lt;copy prop="coords" tname="pointXY_Plane"/&gt;&lt;/p&gt;
+&lt;/sideBySide&gt;
+
+&lt;sideBySide&gt;
+&lt;p&gt;
+  &lt;graph xlabel="X" ylabel="Y"&gt;
+    &lt;point z="1" x="4" draggable="false" name="pointXZ_Plane"/&gt;
+  &lt;/graph&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The point on the &lt;m&gt;XZ&lt;/m&gt;-plane is located at: &lt;copy prop="coords" tname="pointXZ_Plane"/&gt;&lt;/p&gt;
+&lt;/sideBySide&gt;
+
+&lt;sideBySide&gt;
+&lt;p&gt;
+  &lt;graph xlabel="X" ylabel="Y"&gt;
+    &lt;point  z="4" y="5" draggable="false" name="pointYZ_Plane"/&gt;
+  &lt;/graph&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The point on the &lt;m&gt;YZ&lt;/m&gt;-plane is located at: &lt;copy prop="coords" tname="pointYZ_Plane"/&gt;&lt;/p&gt;
+&lt;/sideBySide&gt;
+</pre>
+        </example>
+      </subsection>
+ 
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 2)</title>
+<sideBySide>
+<p>
+  <graph xlabel="X" ylabel="Y">
+    <point y="3" x="2" draggable="false" name="pointXY_Plane"/>
+  </graph>
+</p>
+
+<p>The point on the <m>XY</m>-plane is located at: <copy prop="coords" tname="pointXY_Plane"/></p>
+</sideBySide>
+
+<sideBySide>
+<p>
+  <graph xlabel="X" ylabel="Y">
+    <point z="1" x="4" draggable="false" name="pointXZ_Plane"/>
+  </graph>
+</p>
+
+<p>The point on the <m>XZ</m>-plane is located at: <copy prop="coords" tname="pointXZ_Plane"/></p>
+</sideBySide>
+
+<sideBySide>
+<p>
+  <graph xlabel="X" ylabel="Y">
+    <point  z="4" y="5" draggable="false" name="pointYZ_Plane"/>
+  </graph>
+</p>
+
+<p>The point on the <m>YZ</m>-plane is located at: <copy prop="coords" tname="pointYZ_Plane"/></p>
+</sideBySide>
+  
+</example>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -2,7 +2,7 @@ import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { authorItemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
@@ -15,7 +15,7 @@ export default function SelectedBank() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const doenetId = useRecoilValue(selectedCourseItems)[0];
-  const itemObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  const itemObj = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const { renameItem } = useCourse(courseId);
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
@@ -51,25 +51,7 @@ export default function SelectedBank() {
 
 
   if (effectiveRole === 'student') {
-    return (
-      <>
-        {heading}
-        <ActionButton
-          width="menu"
-          value="Take Assignment"
-          onClick={() => {
-            setPageToolView({
-              page: 'course',
-              tool: 'assignment',
-              view: '',
-              params: {
-                doenetId,
-              },
-            });
-          }}
-        />
-      </>
-    );
+    return null;
   }
   
   return <>

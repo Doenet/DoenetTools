@@ -1,0 +1,83 @@
+<problem>
+<!-- <title>Linear rewrite function iteration and difference form</title> -->
+
+<setup>
+
+<select assignNames="(difference_form)" type="boolean">false true</select>
+
+<selectFromSequence assignNames='x0' from='0.1' to=' 10' step=' 0.1'/>
+<select assignNames='x' >x y z s u v w </select>
+<select assignNames='a' >a b c p q r </select>
+<select assignNames='n' >n t </select>
+
+<math name='answer' simplify='full' >
+
+<conditionalContent>
+<case condition="$difference_form">$a + 1</case>
+<else> $a - 1</else>
+</conditionalContent>
+
+</math>
+
+</setup>
+
+<p>Rewrite the discrete dynamical system
+<md>
+<mrow>
+
+<conditionalcontent>  
+<case condition='$difference_form'>
+$x _{ $n  +1} - $x _{ $n  }\amp = $a  $x _{ $n  }  
+</case>
+
+<else>
+$x _{ $n  +1}\amp = $a  $x _{ $n  }
+</else>
+
+</conditionalcontent>
+</mrow>
+  <mrow>$x _{0}\amp = $x0 </mrow>
+</md>
+in
+
+<conditionalcontent>
+<case condition='$difference_form'>function iteration</case>
+<else>difference</else>
+</conditionalcontent>
+
+ form.</p>
+
+<p><m>$x _{ $n  +1}
+
+<conditionalcontent>
+<case condition='not $difference_form'>
+ - $x _{ $n  } 
+</case>
+</conditionalcontent>
+ = (</m><mathinput name="coeff" /><m>) \, $x _{ $n  }</m></p>
+<answer>
+  <award targetsAreResponses="coeff">
+    <when>$coeff = $answer</when>
+  </award>
+</answer>
+
+<solution>
+
+<conditionalcontent>
+<case condition='$difference_form'>
+The original system is in difference form.  To convert to function iteration form, we must add <m>$x _$n </m> to both sides.  The result is
+<me>$x _{ $n  +1}  = ($a +1) $x _{ $n  }.</me>
+
+</case>
+
+<else>
+The original system is in function iteration form.  To convert to difference form, we must subtract <m>$x _$n </m> from both sides the result is
+<me>$x _{ $n  +1} - $x _{ $n  } = ($a -1) $x _{ $n  }.</me>
+
+</else>
+</conditionalcontent>
+
+
+</solution>
+
+</problem>

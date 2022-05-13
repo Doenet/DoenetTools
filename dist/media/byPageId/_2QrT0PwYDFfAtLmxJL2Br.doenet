@@ -1,0 +1,112 @@
+<section>From Glossary
+
+<setup>
+  <collect name="ps" componentTypes="point" tname="g" />
+</setup>
+
+  $ps
+
+<p>Number of points <mathinput name="n" prefill="4" /></p>
+
+<graph name="g">
+  <map>
+    <template>
+      <setup>
+        <copy prop="value" link="false" tname="i" assignNames="j" />
+        <copy prop="value" link="false" tname="i" assignNames="k" />
+      </setup>
+      <point x="-10+$j/2" y="10-$k/2" />
+    </template>
+    <sources alias="i"><sequence length="$n" /></sources>
+  </map>
+
+  <bestFitLine points="$ps" name="l" />
+
+</graph>
+
+<p>Equation of best fit line: <copy prop="equation" tname="l" displayDecimals="3" /></p>
+
+</section>
+
+
+<section newNameSpace>Test 1 - You can also collect lines (render as equations)
+<setup>
+  <collect name="lines" componentTypes="line" tname="testGraph"/>
+</setup>
+
+<graph name="testGraph">
+  <line name="l1" through="(0,0) (1,1)"/>
+  <line name="l2" through="(4,2) (1,1)"/>
+</graph>
+
+<asList>  $lines</asList>
+
+</section>
+
+
+<section newNameSpace>Test 3 - You can also collect functions 
+<setup>
+  <collect name="functions" componentTypes="function" tname="testGraph"/>
+</setup>
+
+<graph name="testGraph">
+  <function name="f" variables="x">x^2 - 2</function>
+  <function name="g" variables="x">x/2 - 1</function>
+</graph>
+
+<asList>$functions</asList>
+
+</section>
+
+<section newNameSpace>Test 5 - You cannot also collect parabolas
+<setup>
+  <collect name="parabolas" componentTypes="parabola" tname="testGraph"/>
+</setup>
+
+<graph name="testGraph">
+  <parabola name="para1" through="(0,0) (1,3) (-2,2)"/>
+  <parabola name="para2" through="(0,0) (-1,1) (4,3)"/>
+</graph>
+
+<asList>$parabolas</asList>
+</section>
+
+<section newNameSpace>Test 5 - maths work with collect, but aren't graphable
+<setup>
+  <collect name="maths" componentTypes="math" tname="testGraph"/>
+</setup>
+
+<graph name="testGraph">
+  <math name="math1">x+2-y=4</math>
+  <math name="math2">2x+y=6</math>
+</graph>
+
+<!--<asList>$maths</asList>-->
+</section>
+
+<!--work on precalculus example here that uses a template to check to see if the user shifts the graph correctly and modifies the equation correctly from a source function, i.e. x^2 source function, what is the equation/graph of (x^2 shifted up by 2)/(x^2+2) 
+<section newNameSpace>Test 6 - collect but not from a graph
+<setup>
+  <collect name="functions" componentTypes="mathInput function" tname="testSection"/>
+</setup>
+
+<subsection name="testSection">
+<m>f(x)=</m><mathInput name="userFunction1"></mathInput>
+<m>g(y)=<function>x-4</function></m>
+<m>h(z)=<function>x+y-1</function></m>
+</subsection>
+
+<asList>$functions</asList>
+
+<graph>
+  $functions
+  <curve>$userFunction1</curve> 
+</graph>
+</section>-->
+
+
+<p><tage>collect</tage> does not work with circles</p>
+<p><tage>collect</tage> does not work with parabolas</p>
+
+
+

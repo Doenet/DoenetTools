@@ -1,0 +1,130 @@
+<!--
+  Do you have the time to listen to me whine
+  We come from the land of the ice and snow
+  There must be some kinda way out of here
+  Theodosia writes me a letter every day
+  At first I was afraid, I was petrified
+  When I find myself in times of trouble
+  Please allow me to introduce myself
+-->
+<setup>
+  <select numberToSelect="1" assignNames="(ptext1 ctext1)">
+    <option>
+      <text>DO YOU HAVE THE TIME TO LISTEN TO ME WHINE</text>
+      <text>SD NDJ WPKT IWT IXBT ID AXHITC ID BT LWXCT</text>
+    </option>
+    <option>
+      <text>WE COME FROM THE LAND OF THE ICE AND SNOW</text>
+      <text>CK IUSK LXUS ZNK RGTJ UL ZNK OIK GTJ YTUC</text>
+    </option>
+    <option>
+      <text>THERE MUST BE SOME KINDA WAY OUT OF HERE</text>
+      <text>QEBOB JRPQ YB PLJB HFKAX TXV LRQ LC EBOB</text>
+    </option>
+    <option>
+      <text>THEODOSIA WRITES ME A LETTER EVERY DAY</text>
+      <text>PDAKZKOEW SNEPAO IA W HAPPAN ARANU ZWU</text>
+    </option>
+    <option>
+      <text>AT FIRST I WAS AFRAID, I WAS PETRIFIED</text>
+      <text>OH TWFGH W KOG OTFOWR, W KOG DSHFWTWSR</text>
+    </option>
+    <option>
+      <text>WHEN I FIND MYSELF IN TIMES OF TROUBLE</text>
+      <text>GROX S PSXN WICOVP SX DSWOC YP DBYELVO</text>
+    </option>
+    <option>
+      <text>PLEASE ALLOW ME TO INTRODUCE MYSELF</text>
+      <text>EATPHT PAADL BT ID XCIGDSJRT BNHTAU</text>
+    </option>
+  </select>
+  <select numberToSelect="1" assignNames="(ptext2 ctext2)">
+    <option>
+      <text>DO YOU HAVE THE TIME TO LISTEN TO ME WHINE</text>
+      <text>IT DTZ MFAJ YMJ YNRJ YT QNXYJS YT RJ BMNSJ</text>
+    </option>
+    <option>
+      <text>WE COME FROM THE LAND OF THE ICE AND SNOW</text>
+      <text>DL JVTL MYVT AOL SHUK VM AOL PJL HUK ZUVD</text>
+    </option>
+    <option>
+      <text>THERE MUST BE SOME KINDA WAY OUT OF HERE</text>
+      <text>DROBO WECD LO CYWO USXNK GKI YED YP ROBO</text>
+    </option>
+    <option>
+      <text>THEODOSIA WRITES ME A LETTER EVERY DAY</text>
+      <text>IWTDSDHXP LGXITH BT P ATIITG TKTGN SPN</text>
+    </option>
+    <option>
+      <text>AT FIRST I WAS AFRAID, I WAS PETRIFIED</text>
+      <text>LE QTCDE T HLD LQCLTO, T HLD APECTQTPO</text>
+    </option>
+    <option>
+      <text>WHEN I FIND MYSELF IN TIMES OF TROUBLE</text>
+      <text>VGDM H EHMC LXRDKE HM SHLDR NE SQNTAKD</text>
+    </option>
+    <option>
+      <text>PLEASE ALLOW ME TO INTRODUCE MYSELF</text>
+      <text>SOHDVH DOORZ PH WR LQWURGXFH PBVHOI</text>
+    </option>
+  </select>
+</setup>
+
+<p>
+  As we've seen, encryption with shift ciphers is a fairly easy operation.
+  By hand, the easiest way is to make a table like we saw on the last page,
+  putting the alphabet twice and lining it up for encryption by shifting the
+  second row by the chosen quantity.
+</p>
+<p>
+  Now, we'll see that despite ours' (and Caesar's --- although he had the advantage
+  that many people of the day would have been illiterate . . .), the shift
+  cipher is easily broken.
+</p>
+
+<p>
+  Below are several encrypted cipher texts, again, famous first lines of songs.
+  These are a little longer, but should be easy to decrypt by using
+  some computational assistance from this <ref uri="https://www.dcode.fr/caesar-cipher">website</ref>
+  (https://www.dcode.fr/caesar-cipher). Here you can copy and paste the
+  cipher text, choose "TEST ALL POSSSIBLE SHIFTS (BRUTE-FORCE ATTACK)",
+  and sit back and let java do the work for you and read off the only
+  reasonable possibility from the (fairly short) list.
+</p>
+
+<p />
+
+<p>
+  <row>(Answer form: Again, all capital letters, spaces as they appear, please and thank you! Include punctuation if it is present.)</row>
+  <me>\textbf{Ciphertext 1:}</me>
+  <me>\text{$ctext1}</me>
+  <row>
+    Plaintext 1:
+    <answer type="text">$ptext1</answer>
+  </row>
+</p>
+<p>
+  <me>\textbf{Ciphertext 2:}</me>
+  <me>\text{$ctext2}</me>
+  <row>
+    Plain Text 2:
+    <answer type="text">$ptext2</answer>
+  </row>
+</p>
+
+<p>
+  <row><alert>Follow Up Question:</alert></row>
+  If you had to do this by hand (because you are now a secret agent out in the field,
+  and you've intercepted a communication encrypted by a shift cipher and it will
+  be faster to decode it by hand than get to a computer). How would
+  you approach the task? It's still quite manageable, but spend a minute or two
+  thinking through what process you would try. You'll be asked to describe it
+  in the short responses at the end today.
+</p>
+
+<p>
+  <row><alert>Note for in Class:</alert></row>
+  In class we will learn to use a <em>Google Sheet</em> (or other spreadsheet)
+  to do these computations as well. It would be a good day to bring a laptop if
+  you have one and want to follow along in class.
+</p>

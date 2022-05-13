@@ -1,0 +1,193 @@
+<problem>
+<!-- <title>critical points of exp(cubic), double root</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a' from='-6' to=' 6' exclude="0" />
+<selectFromSequence assignNames='b' from='-5' to=' 5' />
+<selectFromSequence assignNames='d' from='-10' to=' 10' />
+<function name='cubic' variables='x' symbolic><math simplify>$a /3*x^3-$a *$b *x^2+$a *$b ^2*x+$d</math></function>
+
+<derivative name='dcubic' variables='x'>$cubic</derivative>
+<function name='fun' variables='x'>e^($$cubic(x))</function>
+<derivative name='fun_prime' variables='x'>$fun</derivative>
+<solveEquations name="solveForRoots">$$dcubic(x)=0</solveEquations>
+<mathlist name='critical_points'><copy prop="solutions" tname="solveForRoots"/></mathlist>
+<copy prop="math1" tname="critical_points" assignNames="cp1" />
+<subsetOfReals name='interval1'>(-Infinity,$cp1 )</subsetOfReals>
+<subsetOfReals name='interval2'>($cp1 ,Infinity)</subsetOfReals>
+
+<math name='auxpoint1' simplify='full' >floor($cp1 -1)</math>
+<math name='auxpoint2' simplify='full' >ceil($cp1 +1)</math>
+<math name='fun_prime_a1' simplify='full' >$$fun_prime($auxpoint1 )</math>
+<math name='fun_prime_a2' simplify='full' >$$fun_prime($auxpoint2 )</math>
+<conditionalContent assignNames='(increasedecrease1)'>
+  <case condition="$fun_prime_a1 >0">
+    <text>increasing</text>
+  </case>
+  <else><text>decreasing</text></else>
+</conditionalContent>
+<conditionalContent assignNames='(increasedecrease2)'>
+  <case condition="$fun_prime_a2 >0">
+    <text>increasing</text>
+  </case>
+  <else><text>decreasing</text></else>
+</conditionalContent>
+
+</setup>
+
+
+Let <m>f(x) =<copy prop="formula" tname="fun" /></m>.
+
+
+
+<ol>
+
+<li>
+<p>Calculate <m>f'(x)</m>.</p>
+
+<p><m>f'(x) =</m> 
+<answer>
+<award>$fun_prime </award>
+</answer>
+</p>
+
+
+
+</li>
+
+<li>
+<p>Find the critical points of <m>f</m>. </p>
+
+<p>Critical points = 
+<answer>
+<award>$cp1 </award>
+</answer>
+  (If there are multiple answers, separate by commas; do not round.)</p>
+
+</li>
+
+<li>
+<p>The critical points divide the number line into two intervals.  What are these two intervals?  Enter them from left to right.  Enter <em>oo</em> for <m>\infty</m>.</p>
+
+<p>Interval 1 = 
+<answer>
+  <mathinput name="mi1" />
+  <award targetsAreResponses="mi1">
+    <when><subsetOfReals>$mi1</subsetOfReals> = $interval1</when>
+  </award>
+</answer>
+</p>
+<p>Interval 2 = 
+<answer>
+  <mathinput name="mi2" />
+  <award targetsAreResponses="mi2">
+    <when><subsetOfReals>$mi2</subsetOfReals> = $interval2</when>
+  </award>
+</answer>
+</p>
+
+
+<hint>
+You can write the intervals as <m>(a,b)</m> or as <m>a < x < b</m>.  Or if an interval extends to infinity, you can write it, for example, as <m>(-\infty, b)</m> or <m>x < b</m>.
+</hint>
+
+
+</li>
+
+<li>
+<p>On each of these intervals, <m>f'(x)</m> does not change sign.  Pick an auxiliary point in each interval, test the sign of <m>f'(x)</m> at that point, and conclude whether <m>f</m> is increasing or decreasing on that interval.  Enter either <alert>increasing</alert> or <alert>decreasing</alert> in the answer blanks.</p>
+
+<p>On interval 1, <m>f</m> is 
+<answer type="text">
+<award>$increasedecrease1 </award>
+</answer>
+</p>
+<p>On interval 2, <m>f</m> is 
+<answer type="text">
+<award>$increasedecrease2 </award>
+</answer>
+</p>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<m>f'(x) = <copy prop="formula" tname="fun_prime" /></m>
+</li>
+
+<li>
+<p>The derivative always exists, so the critical points are where <m>f'(x)=0</m>.</p>
+
+<p>To solve <me><copy prop="formula" tname="fun_prime" />=0,</me>
+we observe that the exponential can never be zero.  The only way for the <m>f'(x)</m> to be zero is if
+<me><copy prop="formula" tname="dcubic" />=0.</me>
+We can solve this condition using the quadratic formula.  The result is the critical point <m>$cp1 </m>.  (The quadratic has a double root at <m>x=$cp1 </m>, but that just counts as one critical point.)</p>
+
+</li>
+
+<li>
+The intervals are: <m>(-\infty, $cp1 )</m> and <m>($cp1 ,\infty)</m>.
+</li>
+
+<li>
+<p>For the interval <m>(-\infty,$cp1 )</m>, we could pick the point <m>x=$auxpoint1 </m>.  <m>f'($auxpoint1 ) = $fun_prime_a1
+<conditionalcontent>
+<case condition='$fun_prime_a1 > 0'>
+\gt 
+</case>
+<else>
+\lt 
+</else>
+</conditionalcontent>
+ 0</m>.  <m>f(x)</m> is
+<conditionalcontent>
+<case condition='$fun_prime_a1 > 0'>
+increasing
+</case>
+<else>
+decreasing
+</else>
+</conditionalcontent>
+ on the interval <m>(-\infty,$cp1 )</m>.</p>
+
+<p>For the interval <m>($cp1 ,\infty)</m>, we could pick the point <m>x=$auxpoint2 </m>.  <m>f'($auxpoint2 ) = $fun_prime_a2
+<conditionalcontent>
+<case condition='$fun_prime_a2 > 0'>
+\gt 
+</case>
+<else>
+\lt 
+</else>
+</conditionalcontent>
+ 0</m>.  <m>f(x)</m> is
+<conditionalcontent>
+<case condition='$fun_prime_a2 > 0'>
+increasing
+</case>
+<else>
+decreasing
+</else>
+</conditionalcontent>
+ on the interval <m>($cp1 ,\infty)</m>.</p>
+
+<p>(Since the exponential is always positive, you can take a shortcut on all the above answers and just calculate the sign of the quadratic <m><copy prop="formula" tname="dcubic" /></m> at each auxiliary point.)</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

@@ -22,31 +22,34 @@ import {
 } from "../../_snowpack/pkg/recoil.js";
 import {
   authorCourseItemOrderByCourseId,
-  authorItemByDoenetId,
+  itemByDoenetId,
   coursePermissionsAndSettingsByCourseId,
   useInitCourseItems,
   selectedCourseItems,
   authorCourseItemOrderByCourseIdBySection,
-  findFirstPageOfActivity
+  studentCourseItemOrderByCourseId,
+  studentCourseItemOrderByCourseIdBySection
 } from "./CourseActions.js";
 import "../../_utils/util.css.proxy.js";
 import {pageToolViewAtom, searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
 import {mainPanelClickAtom} from "../../_framework/Panels/NewMainPanel.js";
-import {useToast, toastType} from "../../_framework/Toast.js";
 import {selectedMenuPanelAtom} from "../../_framework/Panels/NewMenuPanel.js";
-export default function CourseNavigator() {
+import {effectiveRoleAtom} from "../PanelHeaderComponents/RoleDropdown.js";
+export default function CourseNavigator(props) {
   console.log("=== CourseNavigator");
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const sectionId = useRecoilValue(searchParamAtomFamily("sectionId"));
+  const effectiveRole = useRecoilValue(effectiveRoleAtom);
   let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns, setNumberOfVisibleColumns] = useState(1);
   let setMainPanelClick = useSetRecoilState(mainPanelClickAtom);
   let clearSelections = useRecoilCallback(({snapshot, set}) => async () => {
     const selectedItems = await snapshot.getPromise(selectedCourseItems);
+    set(selectedMenuPanelAtom, null);
     set(selectedCourseItems, []);
     for (let deselectId of selectedItems) {
-      set(authorItemByDoenetId(deselectId), (was) => {
+      set(itemByDoenetId(deselectId), (was) => {
         let newObj = {...was};
         newObj.isSelected = false;
         return newObj;
@@ -63,28 +66,43 @@ export default function CourseNavigator() {
   if (!coursePermissionsAndSettings) {
     return null;
   }
-  if (coursePermissionsAndSettings.canEditContent == "1") {
-    return /* @__PURE__ */ React.createElement(AuthorCourseNavigation, {
-      courseId,
-      sectionId,
-      numberOfVisibleColumns,
-      setNumberOfVisibleColumns
-    });
-  } else {
+  if (coursePermissionsAndSettings.canEditContent == "0" || effectiveRole == "student" || props.displayRole == "student") {
     return /* @__PURE__ */ React.createElement(StudentCourseNavigation, {
+      courseNavigatorProps: props,
       courseId,
       sectionId,
       numberOfVisibleColumns,
       setNumberOfVisibleColumns
     });
   }
+  if (coursePermissionsAndSettings.canEditContent == "1" || effectiveRole == "instructor" || props.displayRole == "instructor") {
+    return /* @__PURE__ */ React.createElement(AuthorCourseNavigation, {
+      courseNavigatorProps: props,
+      courseId,
+      sectionId,
+      numberOfVisibleColumns,
+      setNumberOfVisibleColumns
+    });
+  }
+  return null;
 }
-function StudentCourseNavigation({courseId, numberOfVisibleColumns, setNumberOfVisibleColumns}) {
-  let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseId(courseId));
+function StudentCourseNavigation({courseId, sectionId, numberOfVisibleColumns, setNumberOfVisibleColumns, courseNavigatorProps}) {
+  let studentItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId, sectionId}));
+  console.log("studentItemOrder", studentItemOrder);
+  let previousSections = useRef([]);
+  let definedForSectionId = useRef("");
+  if (definedForSectionId.current != sectionId) {
+    previousSections.current = [];
+    definedForSectionId.current = sectionId;
+  }
   let items = [];
-  authorItemOrder.map((doenetId) => items.push(/* @__PURE__ */ React.createElement(Item, {
+  studentItemOrder.map((doenetId) => items.push(/* @__PURE__ */ React.createElement(StudentItem, {
     key: `itemcomponent${doenetId}`,
+    courseId,
     doenetId,
+    indentLevel: 0,
+    previousSections,
+    courseNavigatorProps,
     numberOfVisibleColumns
   })));
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(CourseNavigationHeader, {
@@ -93,31 +111,8 @@ function StudentCourseNavigation({courseId, numberOfVisibleColumns, setNumberOfV
     setNumberOfVisibleColumns
   }), items);
 }
-function AuthorCourseNavigation({courseId, sectionId, numberOfVisibleColumns, setNumberOfVisibleColumns}) {
-  let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId, sectionId}));
-  console.log("authorItemOrder", authorItemOrder);
-  let previousSections = useRef([]);
-  let definedForSectionId = useRef("");
-  if (definedForSectionId.current != sectionId) {
-    previousSections.current = [];
-    definedForSectionId.current = sectionId;
-  }
-  let items = authorItemOrder.map((doenetId) => /* @__PURE__ */ React.createElement(Item, {
-    key: `itemcomponent${doenetId}`,
-    previousSections,
-    courseId,
-    doenetId,
-    numberOfVisibleColumns,
-    indentLevel: 0
-  }));
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(CourseNavigationHeader, {
-    columnLabels: ["Assigned", "Public"],
-    numberOfVisibleColumns,
-    setNumberOfVisibleColumns
-  }), items);
-}
-function Item({courseId, doenetId, numberOfVisibleColumns, indentLevel, previousSections}) {
-  let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+function StudentItem({courseId, doenetId, numberOfVisibleColumns, indentLevel, previousSections, courseNavigatorProps}) {
+  let itemInfo = useRecoilValue(itemByDoenetId(doenetId));
   if (itemInfo.type == "section" && previousSections?.current) {
     previousSections.current.push(itemInfo.doenetId);
   }
@@ -125,17 +120,9 @@ function Item({courseId, doenetId, numberOfVisibleColumns, indentLevel, previous
     return null;
   }
   if (itemInfo.type == "section") {
-    return /* @__PURE__ */ React.createElement(Section, {
+    return /* @__PURE__ */ React.createElement(StudentSection, {
       key: `Item${doenetId}`,
-      courseId,
-      doenetId,
-      itemInfo,
-      numberOfVisibleColumns,
-      indentLevel
-    });
-  } else if (itemInfo.type == "bank") {
-    return /* @__PURE__ */ React.createElement(Bank, {
-      key: `Item${doenetId}`,
+      courseNavigatorProps,
       courseId,
       doenetId,
       itemInfo,
@@ -143,8 +130,9 @@ function Item({courseId, doenetId, numberOfVisibleColumns, indentLevel, previous
       indentLevel
     });
   } else if (itemInfo.type == "activity") {
-    return /* @__PURE__ */ React.createElement(Activity, {
+    return /* @__PURE__ */ React.createElement(StudentActivity, {
       key: `Item${doenetId}`,
+      courseNavigatorProps,
       courseId,
       doenetId,
       itemInfo,
@@ -154,12 +142,13 @@ function Item({courseId, doenetId, numberOfVisibleColumns, indentLevel, previous
   }
   return null;
 }
-function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel}) {
-  let authorSectionItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId, sectionId: itemInfo.doenetId}));
+function StudentSection({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
+  let studentSectionItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId, sectionId: itemInfo.doenetId}));
   let previousSections = useRef([]);
   if (itemInfo.isOpen) {
-    let sectionItems = authorSectionItemOrder.map((doenetId2) => /* @__PURE__ */ React.createElement(Item, {
+    let sectionItems = studentSectionItemOrder.map((doenetId2) => /* @__PURE__ */ React.createElement(Item, {
       key: `itemcomponent${doenetId2}`,
+      courseNavigatorProps,
       previousSections,
       courseId,
       doenetId: doenetId2,
@@ -168,6 +157,7 @@ function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLe
     }));
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      courseNavigatorProps,
       numberOfVisibleColumns,
       icon: faFolderTree,
       label: itemInfo.label,
@@ -180,6 +170,7 @@ function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLe
   } else {
     return /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      courseNavigatorProps,
       numberOfVisibleColumns,
       icon: faFolderTree,
       label: itemInfo.label,
@@ -191,7 +182,125 @@ function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLe
     });
   }
 }
-function Bank({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel}) {
+function StudentActivity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
+    courseId,
+    courseNavigatorProps,
+    numberOfVisibleColumns,
+    icon: faFileCode,
+    label: itemInfo.label,
+    doenetId,
+    isSelected: itemInfo.isSelected,
+    indentLevel,
+    isBeingCut: itemInfo.isBeingCut
+  }));
+}
+function AuthorCourseNavigation({courseId, sectionId, numberOfVisibleColumns, setNumberOfVisibleColumns, courseNavigatorProps}) {
+  let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId, sectionId}));
+  console.log("authorItemOrder", authorItemOrder);
+  let previousSections = useRef([]);
+  let definedForSectionId = useRef("");
+  if (definedForSectionId.current != sectionId) {
+    previousSections.current = [];
+    definedForSectionId.current = sectionId;
+  }
+  let items = authorItemOrder.map((doenetId) => /* @__PURE__ */ React.createElement(Item, {
+    key: `itemcomponent${doenetId}`,
+    courseNavigatorProps,
+    previousSections,
+    courseId,
+    doenetId,
+    numberOfVisibleColumns,
+    indentLevel: 0
+  }));
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(CourseNavigationHeader, {
+    columnLabels: ["Assigned", "Public"],
+    numberOfVisibleColumns,
+    setNumberOfVisibleColumns
+  }), items);
+}
+function Item({courseId, doenetId, numberOfVisibleColumns, indentLevel, previousSections, courseNavigatorProps}) {
+  let itemInfo = useRecoilValue(itemByDoenetId(doenetId));
+  if (itemInfo.type == "section" && previousSections?.current) {
+    previousSections.current.push(itemInfo.doenetId);
+  }
+  if (previousSections?.current.includes(itemInfo.parentDoenetId)) {
+    return null;
+  }
+  if (itemInfo.type == "section") {
+    return /* @__PURE__ */ React.createElement(Section, {
+      key: `Item${doenetId}`,
+      courseNavigatorProps,
+      courseId,
+      doenetId,
+      itemInfo,
+      numberOfVisibleColumns,
+      indentLevel
+    });
+  } else if (itemInfo.type == "bank") {
+    return /* @__PURE__ */ React.createElement(Bank, {
+      key: `Item${doenetId}`,
+      courseNavigatorProps,
+      courseId,
+      doenetId,
+      itemInfo,
+      numberOfVisibleColumns,
+      indentLevel
+    });
+  } else if (itemInfo.type == "activity") {
+    return /* @__PURE__ */ React.createElement(Activity, {
+      key: `Item${doenetId}`,
+      courseNavigatorProps,
+      courseId,
+      doenetId,
+      itemInfo,
+      numberOfVisibleColumns,
+      indentLevel
+    });
+  }
+  return null;
+}
+function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
+  let authorSectionItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId, sectionId: itemInfo.doenetId}));
+  let previousSections = useRef([]);
+  if (itemInfo.isOpen) {
+    let sectionItems = authorSectionItemOrder.map((doenetId2) => /* @__PURE__ */ React.createElement(Item, {
+      key: `itemcomponent${doenetId2}`,
+      courseNavigatorProps,
+      previousSections,
+      courseId,
+      doenetId: doenetId2,
+      numberOfVisibleColumns,
+      indentLevel: indentLevel + 1
+    }));
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
+      courseId,
+      courseNavigatorProps,
+      numberOfVisibleColumns,
+      icon: faFolderTree,
+      label: itemInfo.label,
+      doenetId,
+      hasToggle: true,
+      isOpen: itemInfo.isOpen,
+      isSelected: itemInfo.isSelected,
+      indentLevel
+    }), sectionItems);
+  } else {
+    return /* @__PURE__ */ React.createElement(Row, {
+      courseId,
+      courseNavigatorProps,
+      numberOfVisibleColumns,
+      icon: faFolderTree,
+      label: itemInfo.label,
+      doenetId,
+      hasToggle: true,
+      isOpen: itemInfo.isOpen,
+      isSelected: itemInfo.isSelected,
+      indentLevel
+    });
+  }
+}
+function Bank({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
   if (itemInfo.isOpen) {
     let pages = itemInfo.pages.map((pageDoenetId, i) => {
       return /* @__PURE__ */ React.createElement(Page, {
@@ -205,6 +314,7 @@ function Bank({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel
     });
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      courseNavigatorProps,
       numberOfVisibleColumns,
       icon: faLayerGroup,
       label: itemInfo.label,
@@ -217,6 +327,7 @@ function Bank({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel
   } else {
     return /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      courseNavigatorProps,
       numberOfVisibleColumns,
       icon: faLayerGroup,
       label: itemInfo.label,
@@ -228,10 +339,11 @@ function Bank({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel
     });
   }
 }
-function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel}) {
+function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
   if (itemInfo.isSinglePage) {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      courseNavigatorProps,
       numberOfVisibleColumns,
       icon: faFileCode,
       label: itemInfo.label,
@@ -244,6 +356,7 @@ function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentL
   if (itemInfo.isOpen) {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      courseNavigatorProps,
       numberOfVisibleColumns,
       icon: faFileCode,
       label: itemInfo.label,
@@ -255,6 +368,7 @@ function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentL
       isBeingCut: itemInfo.isBeingCut
     }), /* @__PURE__ */ React.createElement(Order, {
       key: `Order${doenetId}`,
+      courseNavigatorProps,
       orderInfo: itemInfo.order,
       courseId,
       activityDoenetId: doenetId,
@@ -264,6 +378,7 @@ function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentL
   } else {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      courseNavigatorProps,
       numberOfVisibleColumns,
       icon: faFileCode,
       label: itemInfo.label,
@@ -276,15 +391,16 @@ function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentL
     }));
   }
 }
-function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel, orderInfo}) {
+function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel, orderInfo, courseNavigatorProps}) {
   let {behavior, doenetId, content, numberToSelect, withReplacement} = orderInfo;
-  let recoilOrderInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  let recoilOrderInfo = useRecoilValue(itemByDoenetId(doenetId));
   let contentJSX = [];
   if (behavior == "sequence") {
     contentJSX = content.map((pageOrOrder, i) => {
       if (pageOrOrder?.type == "order") {
         return /* @__PURE__ */ React.createElement(Order, {
           key: `Order${i}${doenetId}`,
+          courseNavigatorProps,
           orderInfo: pageOrOrder,
           courseId,
           activityDoenetId: doenetId,
@@ -294,6 +410,7 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
       } else {
         return /* @__PURE__ */ React.createElement(Page, {
           key: `NavPage${i}`,
+          courseNavigatorProps,
           courseId,
           doenetId: pageOrOrder,
           activityDoenetId,
@@ -308,6 +425,7 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
       if (pageOrOrder?.type == "order") {
         return /* @__PURE__ */ React.createElement(Order, {
           key: `Order${i}${doenetId}`,
+          courseNavigatorProps,
           orderInfo: pageOrOrder,
           courseId,
           activityDoenetId: doenetId,
@@ -317,6 +435,7 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
       } else {
         return /* @__PURE__ */ React.createElement(Page, {
           key: `NavPage${i}`,
+          courseNavigatorProps,
           courseId,
           doenetId: pageOrOrder,
           activityDoenetId,
@@ -337,6 +456,7 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
   if (recoilOrderInfo.isOpen) {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      courseNavigatorProps,
       numberOfVisibleColumns,
       icon: faFileExport,
       label,
@@ -349,6 +469,7 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
   } else {
     return /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      courseNavigatorProps,
       numberOfVisibleColumns,
       icon: faFileExport,
       label,
@@ -360,10 +481,11 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
     });
   }
 }
-function Page({courseId, doenetId, activityDoenetId, numberOfVisibleColumns, indentLevel, number = null}) {
-  let recoilPageInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+function Page({courseId, doenetId, activityDoenetId, numberOfVisibleColumns, indentLevel, number = null, courseNavigatorProps}) {
+  let recoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
   return /* @__PURE__ */ React.createElement(Row, {
     courseId,
+    courseNavigatorProps,
     numberOfVisibleColumns,
     icon: faCode,
     label: recoilPageInfo.label,
@@ -374,13 +496,11 @@ function Page({courseId, doenetId, activityDoenetId, numberOfVisibleColumns, ind
     isBeingCut: recoilPageInfo.isBeingCut
   });
 }
-function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelected = false, indentLevel = 0, numbered, hasToggle = false, isOpen, isBeingCut = false}) {
-  const addToast = useToast();
+function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelected = false, indentLevel = 0, numbered, hasToggle = false, isOpen, isBeingCut = false, courseNavigatorProps}) {
   const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set}) => () => {
-    set(authorItemByDoenetId(doenetId), (was) => {
+    set(itemByDoenetId(doenetId), (was) => {
       let newObj = {...was};
       newObj.isOpen = !newObj.isOpen;
       return newObj;
@@ -411,12 +531,12 @@ function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelecte
     e.preventDefault();
     e.stopPropagation();
     let selectedItems = await snapshot.getPromise(selectedCourseItems);
-    let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+    let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
     console.log("clickedItem", clickedItem.type, clickedItem.doenetId, clickedItem);
     let newSelectedItems = [];
     if (selectedItems.length == 0) {
       newSelectedItems = [doenetId];
-      set(authorItemByDoenetId(doenetId), (was) => {
+      set(itemByDoenetId(doenetId), (was) => {
         let newObj = {...was};
         newObj.isSelected = true;
         return newObj;
@@ -424,7 +544,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelecte
     } else if (selectedItems.length == 1 && selectedItems[0] == doenetId) {
       if (e.metaKey) {
         newSelectedItems = [];
-        set(authorItemByDoenetId(doenetId), (was) => {
+        set(itemByDoenetId(doenetId), (was) => {
           let newObj = {...was};
           newObj.isSelected = false;
           return newObj;
@@ -440,7 +560,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelecte
         let parentDoenetIdsToSkip = [];
         for (let i = 0; i < authorItemDoenetIds.length; i++) {
           let itemDoenetId = authorItemDoenetIds[i];
-          const authorItemInfo = await snapshot.getPromise(authorItemByDoenetId(itemDoenetId));
+          const authorItemInfo = await snapshot.getPromise(itemByDoenetId(itemDoenetId));
           if (skip) {
             if (!parentDoenetIdsToSkip.includes(authorItemInfo.parentDoenetId)) {
               skip = false;
@@ -470,7 +590,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelecte
         for (let newDoenetId of itemsToSelect) {
           if (!selectedItems.includes(newDoenetId)) {
             newSelectedItems.push(newDoenetId);
-            set(authorItemByDoenetId(newDoenetId), (was) => {
+            set(itemByDoenetId(newDoenetId), (was) => {
               let newObj = {...was};
               newObj.isSelected = true;
               return newObj;
@@ -483,14 +603,14 @@ function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelecte
           newSelectedItems = selectedItems.filter((testId) => {
             return testId != doenetId;
           });
-          set(authorItemByDoenetId(doenetId), (was) => {
+          set(itemByDoenetId(doenetId), (was) => {
             let newObj = {...was};
             newObj.isSelected = false;
             return newObj;
           });
         } else {
           newSelectedItems = [...selectedItems, doenetId];
-          set(authorItemByDoenetId(doenetId), (was) => {
+          set(itemByDoenetId(doenetId), (was) => {
             let newObj = {...was};
             newObj.isSelected = true;
             return newObj;
@@ -498,14 +618,14 @@ function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelecte
         }
       } else {
         newSelectedItems = [doenetId];
-        set(authorItemByDoenetId(doenetId), (was) => {
+        set(itemByDoenetId(doenetId), (was) => {
           let newObj = {...was};
           newObj.isSelected = true;
           return newObj;
         });
         for (let doenetIdToUnselect of selectedItems) {
           if (doenetId != doenetIdToUnselect) {
-            set(authorItemByDoenetId(doenetIdToUnselect), (was) => {
+            set(itemByDoenetId(doenetIdToUnselect), (was) => {
               let newObj = {...was};
               newObj.isSelected = false;
               return newObj;
@@ -515,25 +635,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelecte
       }
     }
     set(selectedCourseItems, newSelectedItems);
-    if (newSelectedItems.length == 1) {
-      let selectedDoenetId = newSelectedItems[0];
-      let selectedItem = await snapshot.getPromise(authorItemByDoenetId(selectedDoenetId));
-      if (selectedItem.type == "activity") {
-        setSelectionMenu("SelectedActivity");
-      } else if (selectedItem.type == "order") {
-        setSelectionMenu("SelectedOrder");
-      } else if (selectedItem.type == "page") {
-        setSelectionMenu("SelectedPage");
-      } else if (selectedItem.type == "section") {
-        setSelectionMenu("SelectedSection");
-      } else if (selectedItem.type == "bank") {
-        setSelectionMenu("SelectedBank");
-      } else {
-        setSelectionMenu(null);
-      }
-    } else {
-      setSelectionMenu(null);
-    }
+    courseNavigatorProps?.updateSelectMenu({selectedItems: newSelectedItems});
   }, [doenetId, courseId, setSelectionMenu]);
   let bgcolor = "#ffffff";
   if (isSelected) {
@@ -541,44 +643,11 @@ function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelecte
   } else if (isBeingCut) {
     bgcolor = "#e2e2e2";
   }
-  let handleDoubleClick = useRecoilCallback(({snapshot}) => async (e) => {
-    let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+  let handleDoubleClick = useRecoilCallback(() => async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (clickedItem.type == "page") {
-      setPageToolView((prev) => {
-        return {
-          page: "course",
-          tool: "editor",
-          view: prev.view,
-          params: {pageId: doenetId, doenetId: clickedItem.containingDoenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId}
-        };
-      });
-    } else if (clickedItem.type == "activity") {
-      let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
-      if (pageDoenetId == null) {
-        addToast(`ERROR: No page found in activity`, toastType.INFO);
-      } else {
-        setPageToolView((prev) => {
-          return {
-            page: "course",
-            tool: "editor",
-            view: prev.view,
-            params: {pageId: pageDoenetId, doenetId, sectionId: clickedItem.parentDoenetId, courseId: prev.params.courseId}
-          };
-        });
-      }
-    } else if (clickedItem.type == "section") {
-      setPageToolView((prev) => {
-        return {
-          page: "course",
-          tool: "navigation",
-          view: prev.view,
-          params: {sectionId: clickedItem.doenetId, courseId}
-        };
-      });
-    }
-  }, [addToast, doenetId, setPageToolView]);
+    courseNavigatorProps?.doubleClickItem({doenetId, courseId});
+  }, [doenetId, courseId, courseNavigatorProps]);
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
   const indentPx = 25;
   let activityJSX = /* @__PURE__ */ React.createElement("div", {

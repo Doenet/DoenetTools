@@ -1,0 +1,66 @@
+
+<!--below, the weights do not work-->
+<p>credit achieved: <copy prop="creditAchieved" tname="_problem1"/></p>
+<problem>
+  <p>What is the capitol of England?</p>
+    <answer weight="0.25">
+      <choiceinput>
+        <choice credit="1">London</choice>
+        <choice>Washington D.C.</choice>
+        <choice>Paris</choice>
+      </choiceinput>
+    </answer>
+  
+  <p>What do you get when you mix blue and yellow?</p>
+    <answer weight="0.25">
+      <choiceinput>
+        <choice>purple</choice>
+        <choice>orange</choice>
+        <choice credit="1">green</choice>
+      </choiceinput>
+    </answer>
+  
+  <p>Who wrote "Romeo and Juliet"?</p>
+    <answer weight="0.5">
+      <choiceinput>
+        <choice>Emily Dickinson</choice>
+        <choice credit="1.0">Shakespeare</choice>
+        <choice>Voltaire</choice>
+      </choiceinput>
+    </answer>
+ 
+</problem>
+
+<!--using the award tag instead of "credit"-->
+<problem>
+  <exercise>What is the capitol of England?
+    <choiceinput name="ans1">
+        <choice>London</choice>
+        <choice>Washington D.C.</choice>
+        <choice>Paris</choice>
+      </choiceinput>
+    <answer weight="0.25">
+      <award>
+        <when>$ans1 = <text>London</text></when>
+      </award>
+    </answer>
+  </exercise>
+  <exercise>What do you get when you mix blue and yellow?
+    <answer weight="0.25">
+      <choiceinput>
+        <choice>purple</choice>
+        <choice>orange</choice>
+        <choice credit="1">green</choice>
+      </choiceinput>
+    </answer>
+  </exercise>
+  <exercise>Who wrote "Romeo and Juliet"?
+    <answer weight="0.5">
+      <choiceinput>
+        <choice>Emily Dickinson</choice>
+        <choice credit="1.0">Shakespeare</choice>
+        <choice>Voltaire</choice>
+      </choiceinput>
+    </answer>
+  </exercise>
+</problem>

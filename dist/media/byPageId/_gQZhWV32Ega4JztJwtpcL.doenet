@@ -1,0 +1,14 @@
+<document >
+<problem>
+  <title>Cat or dog</title>
+  <variantControl nVariants="2" variantNames="cat dog"/>
+
+
+  <select>
+    <option selectForVariantNames="cat">cat</option>
+    <option selectForVariantNames="dog">dog</option>
+  </select>
+
+</problem>
+
+</document>

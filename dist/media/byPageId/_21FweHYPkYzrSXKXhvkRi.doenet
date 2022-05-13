@@ -1,0 +1,39 @@
+<problem>
+<!-- <title>chain rule, f=exp(quadratic(x))</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a' from='1' to=' 7' />
+<selectFromSequence assignNames='b' from='-5' to=' 5' />
+
+<math name='poly' simplify='full' >$a *x^2 + $b *x</math>
+<math name='dpoly' simplify='full' >2*$a *x + $b </math>
+<math name='answer' simplify='full' >($dpoly )* e^($poly )</math>
+<math name='fun' simplify='full' >e^($poly )</math>
+
+</setup>
+
+
+Compute the derivative, <m>\frac{df}{dx}</m>, of the function <m>f(x)</m> below
+
+<me>f(x) = $fun .</me>
+
+<m>f'(x) =</m> 
+<answer forceFullCheckworkButton>
+<award>$answer </award>
+<!-- <award credit='0.9' nSignErrorsMatched="1" feedbackCodes='onesignerror'>$answer </award> -->
+<!-- <award credit='0.81' nSignErrorsMatched="2" feedbackCodes='twosignerrors'>$answer </award> -->
+</answer>
+<!-- <copy prop="feedbacks" tname="answer1" /> -->
+
+
+
+<solution>
+Since <m>f(x)</m> is an exponential of a polynomial, we must use the chain rule.  The derivative of <m>e^x</m> is <m>e^x</m>, and the derivative of <m>$poly </m> is <m>$dpoly </m>.  The derivative of <m>f(x)</m> is therefore
+<me>f'(x) = $answer .</me>
+
+
+</solution>
+
+
+</problem>

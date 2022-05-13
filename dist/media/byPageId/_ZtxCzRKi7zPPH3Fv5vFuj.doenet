@@ -1,0 +1,99 @@
+<problem>
+<!-- <title>Determine equilibria from function iteration graph</title>
+ -->
+<setup>
+
+
+<select assignNames='x' > x y z s u v w</select>
+<select assignNames='n' > n t</select>
+
+<selectFromSequence assignNames='xmin' from='-10' to=' -1' />
+<selectFromSequence assignNames='xmax' from='max($xmin +8, 1)' to='$xmin +15'/>
+
+<selectFromSequence assignNames='n_f' from='2' to=' 4' />
+<selectFromSequence assignNames='fsign' from='-1' to=' 1' step=' 2'/>
+
+
+
+<mathlist name='equilibria'>
+<sort>
+<selectFromSequence numberToSelect='$n_f' withReplacement='false' from='$xmin + 2' to='$xmax - 2' />
+</sort>
+</mathlist>
+
+<group name='fixedpoints'><map>
+
+<template><point>($equi, $equi)</point></template>
+<sources alias='equi'><copy tname='equilibria' prop='maths' /></sources>
+
+</map></group>
+
+<selectFromSequence assignNames='pos_slope_1 pos_slope_2' numberToSelect='2' withReplacement from='2' to='3.5' step='0.1'/>
+<select assignNames='((neg_slope_1)) ((neg_slope_2))' numberToSelect='2' withReplacement>
+  <option selectweight='2'><selectFromSequence from='-0.5' to='0.7' step='0.1' exclude='0'/></option>
+  <option selectweight='1'><selectFromSequence from='-4.5' to='-2' step='0.1'/></option>
+</select>
+
+<mathlist name='slopes' maximumNumber='$n_f'>
+<conditionalContent>
+<case condition='$fsign > 0'>$pos_slope_1 $neg_slope_1 $pos_slope_2 $neg_slope_2</case>
+<case condition='$fsign < 0'>$neg_slope_1 $pos_slope_1 $neg_slope_2 $pos_slope_2</case>
+</conditionalContent>
+</mathlist>
+
+
+<math name='xmin_zoomed' simplify='full'><min> 1 <copy tname='equilibria' prop='maths' /></min> - 2</math>
+<math name='xmax_zoomed' simplify='full'><max>-1 <copy tname='equilibria' prop='maths' /></max> + 2</math>
+
+
+</setup>
+
+
+<p>For the discrete dynamical system <m>$x _{ $n +1} = f($x _$n )</m>, the graph of <m>f</m> is shown below along with the diagonal. </p>
+
+
+<graph width='300' height='300' xmin='$xmin_zoomed' xmax='$xmax_zoomed' ymin='$xmin_zoomed' ymax='$xmax_zoomed' showNavigation='false' xlabel='$x' ylabel='$n' grid>
+
+<line fixed stylenumber='2' equation='y=x' />
+
+<function through='$fixedpoints' throughSlopes='$slopes'/>
+
+</graph>
+
+<p>Determine the equilibria of the dynamical system.  Enter the equilibria in increasing order. All equilibria are integers.</p>
+
+<p>Number of equilibria: <mathinput name='equiNum' /></p>
+
+<p>Equilibria:
+<map name="inputEquilibria">
+  <template><mathinput /></template>
+  <sources><sequence length="min(10,$equiNum)" /></sources>
+</map>
+</p>
+
+<answer>
+  <award matchPartial><when>
+    <mathlist isResponse><collect tname="inputEquilibria" componentTypes="mathinput" prop="value"/></mathlist> = $equilibria
+  </when></award>
+
+  <award matchPartial unorderedCompare credit='0.8' name='award1'><when>
+    <mathlist isResponse><collect tname="inputEquilibria" componentTypes="mathinput" prop="value"/></mathlist> = $equilibria
+  </when></award>
+
+</answer>
+<feedback condition="$award1">Be sure to enter the equilibria in increasing order.</feedback>
+
+
+
+<solution>
+
+
+<p>The equilibria are the points where the graph of <m>f</m> intersects the diagonal <m>$x _{ $n +1} = $x _$n </m>.  There are $n_f  intersection points: <asList>$fixedpoints</asList>.
+
+Therefore, there are $n_f  equilibria: <m>E = $equilibria </m>
+</p>
+
+</solution>
+
+
+</problem>

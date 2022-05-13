@@ -1,0 +1,43 @@
+
+<setup>
+ <Select name="a"> 120 135 150 180 210 225 240 300 315 330 360 390 405 420 450 480 495 510 540 570 585 600 630 660 675 690 720 750 765 780 810 840 855 870 900 930 945 960 990 1020 1035 1050 1080 </Select>
+  <selectfromsequence from="-1" to="1" exclude="0"  name="b" />
+ <math name="pi">3.141592653589793</math>
+  <!--
+    Calculate Answers
+  -->
+ <math simplify="none" name="ans1">sin($b*$a*$degree)</math>
+  
+</setup>
+
+<p>
+
+ Find <m>cos(\frac{<math simplify="full">$b*$a</math>*\Pi}{12})</m>.  Enter your answer as an exact value using square roots when necessary.  Do not use a calculator to give a decimal approximation.
+</p>
+
+<p>
+
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05" >
+      $ans1
+    </award>  
+  </answer>
+</p>
+
+
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+       <m>sin(\frac{<math simplify="full">$b*$a</math>*\Pi}{12})</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="1">$ans1</number>
+      </cell>
+    </row>
+   
+  </tabular>
+</solution>

@@ -1,0 +1,465 @@
+<!--
+  #27 should be multiple select,
+  which is not implemented yet.
+-->
+
+<problem>
+<title>
+  UMTYMP Student Evaluation for Fall Semester
+</title>
+</problem>
+
+<p>
+  1.
+  What class are you enrolled in?
+  <choiceInput name="q1">
+    <choice>UMTYMP Calculus I</choice>
+    <choice>UMTYMP Calculus II</choice>
+    <choice>UMTYMP Calculus III</choice>
+  </choiceInput>
+</p>
+<p>
+  2.
+  What grade are you in?
+  <choiceInput inline name="q2">
+    <choice>7</choice>
+    <choice>8</choice>
+    <choice>9</choice>
+    <choice>10</choice>
+    <choice>11</choice>
+    <choice>12</choice>
+  </choiceInput>
+</p>
+<p>
+  3.
+  Which gender do you identify with?
+  <choiceInput name="q3">
+    <choice>Male</choice>
+    <choice>Female</choice>
+    <choice><textInput size="20" prefill="Other: (Please enter)"/></choice>
+  </choiceInput>
+</p>
+
+<p>
+  4.
+  Who is your Workshop Leader this semester?
+  <choiceInput name="q4">
+    <choice>Mr. Bright</choice>
+    <choice>Mr. Erdmann</choice>
+    <choice>Dr. Hollingsworth</choice>
+    <choice>Dr. Johnson</choice>
+    <choice>Dr. Leifeld</choice>
+  </choiceInput>
+</p>
+
+<p>
+  5-7.
+  Rate your LECTURER based on the following criteria:
+  <tabular>
+    <row>
+      <cell></cell>
+      <cell halign="center">Strongly Disagree</cell>
+      <cell halign="center">Disagree</cell>
+      <cell halign="center">Neutral</cell>
+      <cell halign="center">Agree</cell>
+      <cell halign="center">Strongly Agree</cell>
+    </row>
+    <row>
+      <cell>Was well prepared for class</cell>
+      <cell colSpan="5">
+        <slider name="q5" initialNumber="0" />
+      </cell>
+    </row>
+    <row>
+      <cell>Presented the mathematics clearly</cell>
+      <cell colSpan="5">
+        <slider name="q6" initialNumber="0" />
+      </cell>
+    </row>
+    <row>
+      <cell>The presentations gave me a deeper understanding of content</cell>
+      <cell colSpan="5">
+        <slider name="q7" initialNumber="0" />
+      </cell>
+    </row>
+  </tabular>
+</p>
+
+<p>
+  8-10.
+  Rate your WORKSHOP LEADER based on the following criteria:
+  <tabular>
+    <row>
+      <cell></cell>
+      <cell halign="center">Strongly Disagree</cell>
+      <cell halign="center">Disagree</cell>
+      <cell halign="center">Neutral</cell>
+      <cell halign="center">Agree</cell>
+      <cell halign="center">Strongly Agree</cell>
+    </row>
+    <row>
+      <cell>Was able to answer student mathematical questions</cell>
+      <cell colSpan="5">
+        <slider name="q8" initialNumber="0" />
+      </cell>
+    </row>
+    <row>
+      <cell>Effectively led the discussions and helped me learn the mathematical content</cell>
+      <cell colSpan="5">
+        <slider name="q9" initialNumber="0" />
+      </cell>
+    </row>
+    <row>
+      <cell>Provided useful feedback which helped improve my class performance</cell>
+      <cell colSpan="5">
+        <slider name="q10" initialNumber="0" />
+      </cell>
+    </row>
+  </tabular>
+</p>
+
+<p>
+  11-13.
+  How valuable were the following aspects of LECTURE:
+  <tabular>
+    <row>
+      <cell></cell>
+      <cell halign="center">Not Valuable</cell>
+      <cell halign="center">Moderately Valuable</cell>
+      <cell halign="center">Valuable</cell>
+      <cell halign="center">Very Valuable</cell>
+      <cell halign="center">Extremely Valuable</cell>
+    </row>
+    <row>
+      <cell>Presentation of major mathematical ideas</cell>
+      <cell colSpan="5">
+        <slider name="q11" initialNumber="0" />
+      </cell>
+    </row>
+    <row>
+      <cell>Presentations of example/techniques</cell>
+      <cell colSpan="5">
+        <slider name="q12" initialNumber="0" />
+      </cell>
+    </row>
+    <row>
+      <cell>Presentations of theory/proofs</cell>
+      <cell colSpan="5">
+        <slider name="q13" initialNumber="0" />
+      </cell>
+    </row>
+  </tabular>
+</p>
+
+<p>
+  14-15.
+  How valuable were the following aspects of WORKSHOP:
+  <tabular>
+    <row>
+      <cell></cell>
+      <cell halign="center">Not Valuable</cell>
+      <cell halign="center">Moderately Valuable</cell>
+      <cell halign="center">Valuable</cell>
+      <cell halign="center">Very Valuable</cell>
+      <cell halign="center">Extremely Valuable</cell>
+    </row>
+    <row>
+      <cell>Extended/clarified ideas from lecture content</cell>
+      <cell colSpan="5">
+        <slider name="q14" initialNumber="0" />
+      </cell>
+    </row>
+    <row>
+      <cell>Group work and related discussions</cell>
+      <cell colSpan="5">
+        <slider name="q15" initialNumber="0" />
+      </cell>
+    </row>
+  </tabular>
+</p>
+
+<problem>
+<title>
+  Evaluation of Course Material
+</title>
+</problem>
+
+<p>
+  16-17.
+  The TEXTBOOK...
+  <tabular>
+    <row>
+      <cell></cell>
+      <cell halign="center">Strongly Disagree</cell>
+      <cell halign="center">Disagree</cell>
+      <cell halign="center">Neutral</cell>
+      <cell halign="center">Agree</cell>
+      <cell halign="center">Strongly Agree</cell>
+    </row>
+    <row>
+      <cell>presented mathematics clearly</cell>
+      <cell colSpan="5">
+        <slider name="q16" initialNumber="0" />
+      </cell>
+    </row>
+    <row>
+      <cell>has challenging problems</cell>
+      <cell colSpan="5">
+        <slider name="q17" initialNumber="0" />
+      </cell>
+    </row>
+  </tabular>
+</p>
+
+<p>
+  18-19.
+  The EXAMS...
+  <tabular>
+    <row>
+      <cell></cell>
+      <cell halign="center">Strongly Disagree</cell>
+      <cell halign="center">Disagree</cell>
+      <cell halign="center">Neutral</cell>
+      <cell halign="center">Agree</cell>
+      <cell halign="center">Strongly Agree</cell>
+    </row>
+    <row>
+      <cell>were good measures of my knowledge and understanding of the overall content</cell>
+      <cell colSpan="5">
+        <slider name="q18" initialNumber="0" />
+      </cell>
+    </row>
+    <row>
+      <cell>could be completed in the time allowed</cell>
+      <cell colSpan="5">
+        <slider name="q19" initialNumber="0" />
+      </cell>
+    </row>
+  </tabular>
+</p>
+
+<p>
+  20-22.
+  The HOMEWORK...
+  <tabular>
+    <row>
+      <cell></cell>
+      <cell halign="center">Strongly Disagree</cell>
+      <cell halign="center">Disagree</cell>
+      <cell halign="center">Neutral</cell>
+      <cell halign="center">Agree</cell>
+      <cell halign="center">Strongly Agree</cell>
+    </row>
+    <row>
+      <cell>reinforced my understanding of the overall mathematics content</cell>
+      <cell colSpan="5">
+        <slider name="q20" initialNumber="0" />
+      </cell>
+    </row>
+    <row>
+      <cell>amount was appropriate for me to successfully learn the mathematics content</cell>
+      <cell colSpan="5">
+        <slider name="q21" initialNumber="0" />
+      </cell>
+    </row>
+    <row>
+      <cell>grading was fairt</cell>
+      <cell colSpan="5">
+        <slider name="q22" initialNumber="0" />
+      </cell>
+    </row>
+  </tabular>
+</p>
+
+<p>
+  23.
+  How many hours per week do you spend on your written homework?
+  <choiceInput name="q23">
+    <choice>0-2 hours</choice>
+    <choice>3-5 hours</choice>
+    <choice>6-8 hours</choice>
+    <choice>9-11 hours</choice>
+    <choice>12-14 hours</choice>
+    <choice>15 hours or more</choice>
+  </choiceInput>
+</p>
+
+<p>
+  24.
+  How many hours per week do you spend on your WeBWorK homework?
+  <choiceInput name="q24">
+    <choice>0 hours</choice>
+    <choice>1-3 hours</choice>
+    <choice>4-6 hours</choice>
+    <choice>7-9 hours</choice>
+    <choice>10 hours or more</choice>
+  </choiceInput>
+</p>
+
+<problem>
+<title>
+  Moodle Website
+</title>
+</problem>
+
+<p>
+  25.
+  Do you log on to your Moodle account on a regular basis?
+  <choiceInput name="q25">
+    <choice>Yes</choice>
+    <choice>No</choice>
+  </choiceInput>
+</p>
+
+<p>
+  26.
+  Do you find Moodle to be a useful resource?
+  <choiceInput selectMultiple="true" name="q26">
+    <choice>Yes</choice>
+    <choice>No</choice>
+    <choice>Have not used</choice>
+  </choiceInput>
+</p>
+
+<p>
+  27.
+  What do you primarily use Moodle for?
+  <choiceInput selectMultiple="true" name="q27">
+    <choice>Downloading course worksheets & material</choice>
+    <choice>Posting questions to the Homework Help Forum</choice>
+    <choice>Seeing my grade summary</choice>
+    <choice><textInput size="20" prefill="Other: (Please enter)"/></choice>
+  </choiceInput>
+</p>
+
+<problem>
+<title>
+  Evaluation of Course Overall
+</title>
+</problem>
+
+<p>
+  28.
+  How much mathematics did you learn in this course?
+  <choiceInput selectMultiple="true" name="q28">
+    <choice>Very Little</choice>
+    <choice>Little</choice>
+    <choice>Average</choice>
+    <choice>Much</choice>
+    <choice>A Great Deal</choice>
+  </choiceInput>
+</p>
+
+<p>
+  29.
+  How did you personally find the overall mathematical content (concepts and computation)?
+  <choiceInput selectMultiple="true" name="q29">
+    <choice>Not at all challenging</choice>
+    <choice>Moderately challenging</choice>
+    <choice>Appropriately challenging</choice>
+    <choice>Challenging</choice>
+    <choice>Very Challenging</choice>
+  </choiceInput>
+</p>
+
+<p>
+  30.
+  How much was your interest in mathematics stimulated by this course?
+  <choiceInput selectMultiple="true" name="q30">
+    <choice>Very Little</choice>
+    <choice>Little</choice>
+    <choice>Average</choice>
+    <choice>Much</choice>
+    <choice>A Great Deal</choice>
+  </choiceInput>
+</p>
+
+<p>
+  31.
+  How much was your interest in mathematics stimulated by this course?
+  <textInput expanded="true" name="q31" width="600" height="60"/>
+</p>
+
+<p>
+  32.
+  What aspects of this course have most hindered your learning?
+  <textInput expanded="true" name="q32" width="600" height="60"/>
+</p>
+
+<p>
+  33.
+  If there was one thing you could change about this course, what would it be?
+  <textInput expanded="true" name="q33" width="600" height="60"/>
+</p>
+
+<p>
+  34.
+  Any additional comments?
+  <textInput expanded="true" name="q34" width="600" height="60"/>
+</p>
+
+<aside>
+  <title>Responses</title>
+  <tabular>
+    <row>
+      <cell>Class:</cell>
+      <cell>$q1</cell>
+    </row>
+    <row>
+      <cell>Grade:</cell>
+      <cell>$q2</cell>
+    </row>
+    <row>
+      <cell>Gender:</cell>
+      <cell>$q3</cell>
+    </row>
+    <row>
+      <cell>Workshop Leader:</cell>
+      <cell>$q4</cell>
+    </row>
+    <row>
+      <cell>LECTURER (Well-Prepared):</cell>
+      <cell>$q5</cell>
+    </row>
+    <row>
+      <cell>LECTURER (Presentation of Math):</cell>
+      <cell>$q6</cell>
+    </row>
+    <row>
+      <cell>LECTURER (Deeper Understanding):</cell>
+      <cell>$q7</cell>
+    </row>
+    <row>
+      <cell>WORKSHOP (Answer Questions):</cell>
+      <cell>$q8</cell>
+    </row>
+    <row>
+      <cell>WORKSHOP (Effectively Led):</cell>
+      <cell>$q9</cell>
+    </row>
+    <row>
+      <cell>WORKSHOP (Provided Feedback):</cell>
+      <cell>$q10</cell>
+    </row>
+    <row>
+      <cell>LECTURE (Major Ideas):</cell>
+      <cell>$q11</cell>
+    </row>
+    <row>
+      <cell>LECTURE (Example/Techniques):</cell>
+      <cell>$q12</cell>
+    </row>
+    <row>
+      <cell>LECTURE (Theory/Proofs):</cell>
+      <cell>$q13</cell>
+    </row>
+    <row>
+      <cell>WORKSHOP (Value Extended/clarified Ideas):</cell>
+      <cell>$q14</cell>
+    </row>
+    <row>
+      <cell>WORKSHOP (Value Group Work):</cell>
+      <cell>$q15</cell>
+    </row>
+  </tabular>
+</aside>

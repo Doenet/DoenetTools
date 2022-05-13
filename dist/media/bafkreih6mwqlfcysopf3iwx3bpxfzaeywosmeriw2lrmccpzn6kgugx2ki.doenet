@@ -1,0 +1,154 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tage>booleanInput</tage> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>prefill</attr>  <em>(boolean)</em></li>
+  <li><attr>label</attr>  <em>(text)</em></li>
+  <li><attr>bindValueTo</attr>  <em>(boolean)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tage>booleanInput</tage><idx><tage>booleanInput</tage></idx> component renders a checkbox. If the box is checked by the user, Doenet stores the boolean value <c>true</c> in the name of the <tage>booleanInput</tage>.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tage>booleanInput</tage> with <attr>label</attr> attribute</title>
+<p>In the sample code below, the <tage>booleanInput</tage> component is used with the <attr>label</attr> attribute to create a short mood survey.  The results of the survey are referenced later in an unordered list, or <ref uri="doenet:doenetId=NscifFtWYTqus6MOefEoH"><tag>ul</tag></ref>, using the &dollar;name notation. (See also, <ref uri="doenet:doenetId=1RITl0DcbD_QFSE9VK2Jj"><tag>li</tag></ref>)</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;How are you feeling today? (Check all that apply)&lt;/p&gt;
+  &lt;booleanInput name="isHappy" label="happy"/&gt;
+  &lt;booleanInput name="isSad" label="sad" /&gt;
+  &lt;booleanInput name="isRelaxed" label="relaxed" /&gt;
+  &lt;booleanInput name="isStressed" label="stressed"/&gt;
+&lt;p&gt;The user is feeling:
+  &lt;ul&gt;
+    &lt;li&gt;happy? &dollar;isHappy&lt;/li&gt;
+    &lt;li&gt;sad?  &dollar;isSad&lt;/li&gt;
+    &lt;li&gt;relaxed? &dollar;isRelaxed&lt;/li&gt;
+    &lt;li&gt;stressed? &dollar;isStressed&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/p&gt;
+
+</pre>
+ 
+        </example>  
+      </subsection>
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>How are you feeling today? (Check all that apply)</p>
+  <booleanInput name="isHappy" label="happy"/>
+  <booleanInput name="isSad" label="sad" />
+  <booleanInput name="isRelaxed" label="relaxed" />
+  <booleanInput name="isStressed" label="stressed"/>
+<p>The user is feeling:
+  <ul>
+    <li>happy? $isHappy</li>
+    <li>sad?  $isSad</li>
+    <li>relaxed? $isRelaxed</li>
+    <li>stressed? $isStressed</li>
+  </ul>
+</p>
+</example>
+
+
+<!--******************************************************-->
+
+<subsection><title>Example 2: <tage>booleanInput</tage> with <attr>bindValueTo</attr> attribute</title>
+<p>In the sample code below, a <tage>booleanInput</tage> is used to simulate a light switch using the <attr>bindValueTo</attr> attribute.  The behavior of the <tage>booleanInput</tage> checkbox is tied to the <ref uri="doenet:doenetId=ZKtFO1M4oFzd4S8zfJj55"><tag>p</tag></ref> that is named <c>"onText"</c> within the <attr>bindValueTo</attr> specification.  Inside this <tag>p</tag> tag, a <attr>hide</attr> condition is defined that causes the content to remain hidden while the <tage>booleanInput</tage> named <c>"lightOn"</c>is <em>not</em> checked.  If the <c>"lightOn"</c> checkbox gets checked, the <tag>p</tag> component that contains the text "OFF" will become hidden.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;booleanInput bindValueTo="&dollar;onText" name="lightOn"/&gt;
+  
+&lt;p hide="!&dollar;lightOn" name="onText"&gt;ON&lt;/p&gt;
+&lt;p hide="&dollar;lightOn"&gt;OFF&lt;/p&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 2)</title>
+<booleanInput bindValueTo="$onText" name="lightOn"/>
+  
+<p hide="!$lightOn" name="onText">ON</p>
+<p hide="$lightOn">OFF</p>
+
+</example>
+
+ 
+<!--******************************************************-->
+    
+<!--
+<subsection><title>Example 3: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+ -->
+<!--*******************************************************-->
+ 
+<!-- 
+<example><title>What Doenet Renders (Example 3)</title>
+
+</example>
+   -->
+
+
+<!--******************************************************-->
+    
+<!--  
+<subsection><title>Example 4: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+   -->
+<!--*******************************************************-->
+ 
+<!--
+<example><title>What Doenet Renders (Example 4)</title>
+
+</example>
+    -->
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

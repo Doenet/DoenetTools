@@ -1,0 +1,7 @@
+<textInput name="george"/>
+<mathInput name="ben"/>
+<answer maximumNumberOfAttempts="$ben" type="text"></answer>
+
+<ceil>49
+  /3</ceil>
+<p><copy prop="value" tname="ben"/></p>

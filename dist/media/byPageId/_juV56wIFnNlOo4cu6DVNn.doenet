@@ -1,0 +1,12 @@
+<p>If <m>v(t)</m> is a solution to the differential equation and you know that at time <m>t=1</m> the solution <m>v(t)</m> is not changing, what are some possible values of <m>v(1)</m>?  If you are not sure, you can leave one or more answer blanks empty.</p>
+<p><m>v(1)=</m> <mathinput name="zero1" />,  <m>v(1)=</m> <mathinput name="zero2" />, or <m>v(1)=</m> <mathinput name="zero3" />.
+<answer showcorrectness="false">
+  <award unorderedCompare matchPartial targetsAreResponses="zero1 zero2 zero3">
+    <when>
+      ($zero1, $zero2, $zero3)
+      =
+      (-2, 1, 6)
+    </when>
+  </award>
+</answer>
+</p>

@@ -1,0 +1,21 @@
+<mathinput name="x" />
+
+
+<answer name="ans">
+   <award targetsAreResponses="x">
+       <when>$x > 1</when>
+   </award>
+</answer>
+
+<p>Your response is <copy tname="ans" prop="submittedResponse" /></p>
+
+<answer name="ans2">
+   <award>
+       <when>$(x{isResponse prop="value"}) > 1</when>
+   </award>
+</answer>
+
+<p>Your response is <copy tname="ans2" prop="submittedResponse" /></p>
+
+
+

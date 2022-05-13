@@ -1,0 +1,238 @@
+<module>
+  <setup>
+  <!-- Shift Cipher Encryption Table -->
+    <spreadsheet name="encrypt">
+      <row>
+        <cell>A</cell><cell>B</cell><cell>C</cell><cell>D</cell><cell>E</cell>
+        <cell>F</cell><cell>G</cell><cell>H</cell><cell>I</cell><cell>J</cell>
+        <cell>K</cell><cell>L</cell><cell>M</cell><cell>N</cell><cell>O</cell>
+        <cell>P</cell><cell>Q</cell><cell>R</cell><cell>S</cell><cell>T</cell>
+        <cell>U</cell><cell>V</cell><cell>W</cell><cell>X</cell><cell>Y</cell>
+        <cell>Z</cell><cell></cell><cell>.</cell><cell>,</cell><cell>!</cell>
+        <cell>?</cell>
+      </row>
+      <row>
+        <cell>=mod((code(a1)-65)+$shift,26)</cell><cell>=mod((code(b1)-65)+$shift,26)</cell>
+        <cell>=mod((code(c1)-65)+$shift,26)</cell><cell>=mod((code(d1)-65)+$shift,26)</cell>
+        <cell>=mod((code(e1)-65)+$shift,26)</cell><cell>=mod((code(f1)-65)+$shift,26)</cell>
+        <cell>=mod((code(g1)-65)+$shift,26)</cell><cell>=mod((code(h1)-65)+$shift,26)</cell>
+        <cell>=mod((code(i1)-65)+$shift,26)</cell><cell>=mod((code(j1)-65)+$shift,26)</cell>
+        <cell>=mod((code(k1)-65)+$shift,26)</cell><cell>=mod((code(l1)-65)+$shift,26)</cell>
+        <cell>=mod((code(m1)-65)+$shift,26)</cell><cell>=mod((code(n1)-65)+$shift,26)</cell>
+        <cell>=mod((code(o1)-65)+$shift,26)</cell><cell>=mod((code(p1)-65)+$shift,26)</cell>
+        <cell>=mod((code(q1)-65)+$shift,26)</cell><cell>=mod((code(r1)-65)+$shift,26)</cell>
+        <cell>=mod((code(s1)-65)+$shift,26)</cell><cell>=mod((code(t1)-65)+$shift,26)</cell>
+        <cell>=mod((code(u1)-65)+$shift,26)</cell><cell>=mod((code(v1)-65)+$shift,26)</cell>
+        <cell>=mod((code(w1)-65)+$shift,26)</cell><cell>=mod((code(x1)-65)+$shift,26)</cell>
+        <cell>=mod((code(y1)-65)+$shift,26)</cell><cell>=mod((code(z1)-65)+$shift,26)</cell>
+      </row>
+      <row>
+        <cell>=char(a2+65)</cell><cell>=char(b2+65)</cell><cell>=char(c2+65)</cell>
+        <cell>=char(d2+65)</cell><cell>=char(e2+65)</cell><cell>=char(f2+65)</cell>
+        <cell>=char(g2+65)</cell><cell>=char(h2+65)</cell><cell>=char(i2+65)</cell>
+        <cell>=char(j2+65)</cell><cell>=char(k2+65)</cell><cell>=char(l2+65)</cell>
+        <cell>=char(m2+65)</cell><cell>=char(n2+65)</cell><cell>=char(o2+65)</cell>
+        <cell>=char(p2+65)</cell><cell>=char(q2+65)</cell><cell>=char(r2+65)</cell>
+        <cell>=char(s2+65)</cell><cell>=char(t2+65)</cell><cell>=char(u2+65)</cell>
+        <cell>=char(v2+65)</cell><cell>=char(w2+65)</cell><cell>=char(x2+65)</cell>
+        <cell>=char(y2+65)</cell><cell>=char(z2+65)</cell><cell></cell>
+        <cell>.</cell><cell>,</cell><cell>!</cell><cell>?</cell>
+      </row>
+      <row>
+        <cell>=$(w11)3&$(w12)3&$(w13)3&$(w14)3&$(w15)3&$(w16)3&$(w17)3&$(w18)3</cell>
+        <cell>=$(w21)3&$(w22)3&$(w23)3&$(w24)3&$(w25)3&$(w26)3&$(w27)3&$(w28)3</cell>
+      </row>
+      <row>
+        <cell>=A4&" "&B4&" "&C4&" "&D4</cell>
+      </row>
+    </spreadsheet>
+    <text name="space">AA</text>
+    <text name="period">AB</text>
+    <text name="comma">AC</text>
+    <text name="bang">AD</text>
+    <text name="qmark">AE</text>
+  </setup>
+  <setup> <!-- Select Words -->
+    <text name="w11">h</text>
+    <text name="w12">e</text>
+    <text name="w13">l</text>
+    <text name="w14">l</text>
+    <text name="w15">o</text>
+    <text name="w16">$comma</text>
+    <text name="w17">AA</text>
+    <text name="w18">AA</text>
+    <text name="w21">w</text>
+    <text name="w22">o</text>
+    <text name="w23">r</text>
+    <text name="w24">l</text>
+    <text name="w25">d</text>
+    <text name="w26">$bang</text>
+    <text name="w27">AA</text>
+    <text name="w28">AA</text>
+  </setup>
+
+  <p>
+    Our goal this semester is to learn some number theory and see how it can be
+    applied to the processes of <em>encryption</em> (obfuscating information) and
+    <em>decryption</em> (reconstructing the original information from the obfuscated data).
+    Less common terms for these are <em>encipherment</em> and <em>decipherment</em>.
+    In particular, we'll be focused on the <em>algorithms</em> used for these processes.
+  </p>
+
+  <p>
+    <alert>Definition 1</alert>
+    An <em>algorithm</em> is a process or set of rules to be followed in
+    calculations or other problem-solving operations, especially by a computer.
+  </p>
+
+  <p>
+    We'll be examining many algorithms this semester, as our definition of a cipher is actually a special type of algorithm.
+  </p>
+
+  <p>
+    <alert>Definition 2</alert>
+    A <em>cipher</em> (or <em>cypher</em> if you're feeling British) is an <em>algorithm</em>
+    for performing encryption or decryption. That is, a cipher is a series of well-defined steps
+    that can be followed as a procedure.
+  </p>
+
+  <p>
+    <alert>Example 1:</alert>
+    The obligatory first example is the <em>Caesar cipher</em> or <em>shift cipher</em>.
+    This is a simple, shift of the alphabet, so first we assign numbers to the letters, as in the table below.
+  </p>
+
+  <tabular width="800">
+    <row bottom="minor">
+      <cell /><cell /><cell /><cell /><cell /><cell />
+      <cell /><cell /><cell /><cell /><cell /><cell />
+      <cell /><cell /><cell /><cell /><cell /><cell />
+      <cell /><cell /><cell /><cell /><cell /><cell />
+      <cell /><cell /><cell />
+    </row>
+    <row bottom="minor">
+      <cell right="minor">PT:</cell>
+      <cell right="minor">A</cell><cell right="minor">B</cell><cell right="minor">C</cell>
+      <cell right="minor">D</cell><cell right="minor">E</cell><cell right="minor">F</cell>
+      <cell right="minor">G</cell><cell right="minor">H</cell><cell right="minor">I</cell>
+      <cell right="minor">J</cell><cell right="minor">K</cell><cell right="minor">L</cell>
+      <cell right="minor">M</cell><cell right="minor">N</cell><cell right="minor">O</cell>
+      <cell right="minor">P</cell><cell right="minor">Q</cell><cell right="minor">R</cell>
+      <cell right="minor">S</cell><cell right="minor">T</cell><cell right="minor">U</cell>
+      <cell right="minor">V</cell><cell right="minor">W</cell><cell right="minor">X</cell>
+      <cell right="minor">Y</cell><cell right="minor">Z</cell>
+    </row>
+    <row bottom="minor">
+      <cell right="minor">Value:</cell>
+      <cell right="minor">0</cell><cell right="minor">1</cell><cell right="minor">2</cell>
+      <cell right="minor">3</cell>
+      <cell right="minor">4</cell><cell right="minor">5</cell><cell right="minor">6</cell>
+      <cell right="minor">7</cell><cell right="minor">8</cell><cell right="minor">9</cell>
+      <cell right="minor">10</cell><cell right="minor">11</cell><cell right="minor">12</cell>
+      <cell right="minor">13</cell><cell right="minor">14</cell><cell right="minor">15</cell>
+      <cell right="minor">16</cell><cell right="minor">17</cell><cell right="minor">18</cell>
+      <cell right="minor">19</cell><cell right="minor">20</cell><cell right="minor">21</cell>
+      <cell right="minor">22</cell><cell right="minor">23</cell><cell right="minor">24</cell>
+      <cell right="minor">25</cell>
+    </row>
+  </tabular>
+
+  <p>
+    To encode, pick an integer value.
+    Then we'll add that to the numeric representation of each letter (computed <m>\mod 26</m>), and replace each letter in the original message (known as <em>plaintext</em>),
+    generating an encrypted message (known as <em>ciphertext</em>).
+    A table representing the replacements is below.
+    <tabular width="1100">
+      <row bottom="minor">
+        <cell />
+        <cell /><cell /><cell /><cell /><cell /><cell />
+        <cell /><cell /><cell /><cell /><cell /><cell />
+        <cell /><cell /><cell /><cell /><cell /><cell />
+        <cell /><cell /><cell /><cell /><cell /><cell />
+        <cell /><cell />
+      </row>
+      <row bottom="minor">
+        <cell right="minor">PT:</cell>
+        <cell right="minor">A</cell><cell right="minor">B</cell><cell right="minor">C</cell>
+        <cell right="minor">D</cell><cell right="minor">E</cell><cell right="minor">F</cell>
+        <cell right="minor">G</cell><cell right="minor">H</cell><cell right="minor">I</cell>
+        <cell right="minor">J</cell><cell right="minor">K</cell><cell right="minor">L</cell>
+        <cell right="minor">M</cell><cell right="minor">N</cell><cell right="minor">O</cell>
+        <cell right="minor">P</cell><cell right="minor">Q</cell><cell right="minor">R</cell>
+        <cell right="minor">S</cell><cell right="minor">T</cell><cell right="minor">U</cell>
+        <cell right="minor">V</cell><cell right="minor">W</cell><cell right="minor">X</cell>
+        <cell right="minor">Y</cell><cell right="minor">Z</cell>
+      </row>
+      <row bottom="minor">
+      <cell right="minor">Value:</cell>
+      <cell right="minor">0</cell><cell right="minor">1</cell><cell right="minor">2</cell>
+      <cell right="minor">3</cell>
+      <cell right="minor">4</cell><cell right="minor">5</cell><cell right="minor">6</cell>
+      <cell right="minor">7</cell><cell right="minor">8</cell><cell right="minor">9</cell>
+      <cell right="minor">10</cell><cell right="minor">11</cell><cell right="minor">12</cell>
+      <cell right="minor">13</cell><cell right="minor">14</cell><cell right="minor">15</cell>
+      <cell right="minor">16</cell><cell right="minor">17</cell><cell right="minor">18</cell>
+      <cell right="minor">19</cell><cell right="minor">20</cell><cell right="minor">21</cell>
+      <cell right="minor">22</cell><cell right="minor">23</cell><cell right="minor">24</cell>
+      <cell right="minor">25</cell>
+    </row>
+      <row bottom="minor">
+      <cell right="minor">Add <text>$shift:</text></cell>
+        <cell right="minor"><extract prop="text"><copy prop="evaluatedCellA2" tname="encrypt" /></extract></cell>
+            <copy prop="evaluatedCellB2" tname="encrypt" />
+        <copy prop="evaluatedCellC2" tname="encrypt" /><copy prop="evaluatedCellD2" tname="encrypt" />
+        <copy prop="evaluatedCellE2" tname="encrypt" /><copy prop="evaluatedCellF2" tname="encrypt" />
+        <copy prop="evaluatedCellG2" tname="encrypt" /><copy prop="evaluatedCellH2" tname="encrypt" />
+        <copy prop="evaluatedCellI2" tname="encrypt" /><copy prop="evaluatedCellJ2" tname="encrypt" />
+        <copy prop="evaluatedCellK2" tname="encrypt" /><copy prop="evaluatedCellL2" tname="encrypt" />
+        <copy prop="evaluatedCellM2" tname="encrypt" /><copy prop="evaluatedCellN2" tname="encrypt" />
+        <copy prop="evaluatedCellO2" tname="encrypt" /><copy prop="evaluatedCellP2" tname="encrypt" />
+        <copy prop="evaluatedCellQ2" tname="encrypt" /><copy prop="evaluatedCellR2" tname="encrypt" />
+        <copy prop="evaluatedCellS2" tname="encrypt" /><copy prop="evaluatedCellT2" tname="encrypt" />
+        <copy prop="evaluatedCellU2" tname="encrypt" /><copy prop="evaluatedCellV2" tname="encrypt" />
+        <copy prop="evaluatedCellW2" tname="encrypt" /><copy prop="evaluatedCellX2" tname="encrypt" />
+        <copy prop="evaluatedCellY2" tname="encrypt" /><copy prop="evaluatedCellZ2" tname="encrypt" />
+    </row>
+      <row bottom="minor">
+        <cell right="minor">CT:</cell>
+        <copy prop="evaluatedCellA3" tname="encrypt" /><copy prop="evaluatedCellB3" tname="encrypt" />
+        <copy prop="evaluatedCellC3" tname="encrypt" /><copy prop="evaluatedCellD3" tname="encrypt" />
+        <copy prop="evaluatedCellE3" tname="encrypt" /><copy prop="evaluatedCellF3" tname="encrypt" />
+        <copy prop="evaluatedCellG3" tname="encrypt" /><copy prop="evaluatedCellH3" tname="encrypt" />
+        <copy prop="evaluatedCellI3" tname="encrypt" /><copy prop="evaluatedCellJ3" tname="encrypt" />
+        <copy prop="evaluatedCellK3" tname="encrypt" /><copy prop="evaluatedCellL3" tname="encrypt" />
+        <copy prop="evaluatedCellM3" tname="encrypt" /><copy prop="evaluatedCellN3" tname="encrypt" />
+        <copy prop="evaluatedCellO3" tname="encrypt" /><copy prop="evaluatedCellP3" tname="encrypt" />
+        <copy prop="evaluatedCellQ3" tname="encrypt" /><copy prop="evaluatedCellR3" tname="encrypt" />
+        <copy prop="evaluatedCellS3" tname="encrypt" /><copy prop="evaluatedCellT3" tname="encrypt" />
+        <copy prop="evaluatedCellU3" tname="encrypt" /><copy prop="evaluatedCellV3" tname="encrypt" />
+        <copy prop="evaluatedCellW3" tname="encrypt" /><copy prop="evaluatedCellX3" tname="encrypt" />
+        <copy prop="evaluatedCellY3" tname="encrypt" /><copy prop="evaluatedCellZ3" tname="encrypt" />
+      </row>
+    </tabular>
+  </p>
+  <p>
+    For example, if we wanted to encode the plaintext message "HELLO, WORLD!" into ciphertext using
+    the <em>Caeser cipher</em> shifting each letter by $shift, we would get the message:
+    <me>\text{<copy prop="evaluatedCellA5" tname="encrypt" />}</me>
+    Here we've taken the letter `H', found in the plaintext (PT) row of our table, and encrypted it by replacing it with the letter from the ciphertext (CT) row in the same column.
+    We'll follow a similar algorithm for many classical ciphers.
+  </p>
+  <p>
+    In this example, the number $shift is known as the <em>key</em> to our cipher.
+    In general, the <em>key</em> to a cipher is the critical piece of information, along with knowledge of the algorithm, which is needed to encrypt and decrypt information.
+    We'll see later how important keeping the <em>key</em> secret is, and most of the modern keys we study will be focused on methods used to pass a <em>key</em> secretly over a public, insecure communications channel.
+    For now, play with the above example by trying different keys (enter any integer value to try out that key).
+    <em>Unless I've coded something terribly wrong, the example above should update with the new shift.</em>
+    <row><cell>Key:</cell><cell><mathInput name="shift" prefill="3" /></cell></row>
+  </p>
+  <p>
+    <alert>Follow-up Question:</alert>
+    How many non-trivial shift ciphers are there?
+    What would be a reasonable restriction on values of the keys for shift ciphers?
+  </p>
+  <p>
+    <alert>Up Next:</alert>
+    On the next exercise, you'll be given a short message to encode using a shift cipher.
+  </p>
+</module>

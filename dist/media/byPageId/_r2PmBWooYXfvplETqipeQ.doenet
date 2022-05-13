@@ -1,0 +1,46 @@
+<problem>
+<!-- <title>discrete equilibria 8</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a' from='1' to=' 10' />
+<selectFromSequence assignNames='d' from='5' to=' 100' step=' 5'/>
+<select assignNames='x' >x y z u v w p X Y Z S</select>
+<select assignNames='n' > n t</select>
+
+<math name='b' simplify='full' >2*$a -1</math>
+<math name='answer' >$a </math>
+<math name='asquare' simplify='full' >$a *$a </math>
+<math name='twoa' simplify='full' >2*$a </math>
+
+</setup>
+
+
+<p>Find all equilibria to the discrete dynamical system below.  If there are multiple equilibria, separate your answers by commas.  
+<md>
+  <mrow>$x _{ $n  +1}\amp = $x _$n  ^2   -$b $x _$n  + $asquare</mrow>
+  <mrow>$x _0\amp = $d</mrow>
+</md>
+</p>
+
+<p><m>E =</m> 
+<answer>
+<award symbolicEquality='true'>$answer </award>
+</answer>
+</p>
+
+
+<solution>
+<p>To find the equilibria, we set <m>$x _{n+1} = E</m> and <m>$x _n = E</m> in the evolution rule, obtaining
+<md>
+  <mrow>E\amp = E^2 - $b E + $asquare </mrow>
+  <mrow>0\amp = E^2 - $twoa E + $asquare </mrow>
+  <mrow>0\amp =(E-$a )^2</mrow>
+</md>
+The equilibrium is <m>E=$a </m>.</p>
+
+
+</solution>
+
+
+</problem>

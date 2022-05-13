@@ -1,0 +1,116 @@
+<document><title><tag>numberList</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>unordered</attr>  <em>(boolean)</em></li>
+  <li><attr>maximumNumber</attr>  <em>(boolean)</em></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>numberList</tag><idx><tag>numberList</tag></idx> component renders numerical data in a list structure separated by columns.  See examples below.</p>
+
+<!--experiment, differences with mathList-->
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<numberList name="listA">2.5 pi 1.618 7/5 (2+2)</numberList>
+<p>  <m>[ \, </m>$listA<m> ] \,</m></p>
+  <!--to present as above, you have to close off the <m> prior to calling $listA.  what about for single numbers?.  Not required for single numbers...-->
+  <number name="num">pi</number>
+  <p><m>$pi</m></p>
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

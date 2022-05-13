@@ -1,0 +1,385 @@
+<module name="stateLine">
+  <setup>
+    <customAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
+    <customAttribute componentType="_componentSize" attribute="height" defaultValue="100px" assignNames="height" />
+    <customAttribute componentType="number" attribute="vmin" defaultValue="-10" assignNames="vmin" />
+    <customAttribute componentType="number" attribute="vmax" defaultValue="10" assignNames="vmax" />
+    <customAttribute componentType="variable" attribute="var" defaultValue="x" assignNames="var" />
+    <customAttribute componentType="number" attribute="nEquilibria" defaultValue="0" assignNames="nEquilibria" />
+    <customAttribute componentType="number" attribute="E1" defaultValue="-6" assignNames="E1" />
+    <customAttribute componentType="number" attribute="E2" defaultValue="-2" assignNames="E2" />
+    <customAttribute componentType="number" attribute="E3" defaultValue="2" assignNames="E3" />
+    <customAttribute componentType="number" attribute="E4" defaultValue="6" assignNames="E4" />
+    <customAttribute componentType="boolean" attribute="E1stable" defaultValue="true" assignNames="E1stable" />
+    <customAttribute componentType="boolean" attribute="E2stable" defaultValue="not $E1stable" assignNames="E2stable" />
+    <customAttribute componentType="boolean" attribute="E3stable" defaultValue="not $E2stable" assignNames="E3stable" />
+    <customAttribute componentType="boolean" attribute="E4stable" defaultValue="not $E3stable" assignNames="E4stable" />
+    <customAttribute componentType="boolean" attribute="v1right" defaultValue="$E1stable" assignNames="v1right" />
+    <customAttribute componentType="boolean" attribute="v2right" defaultValue="$E2stable" assignNames="v2right" />
+    <customAttribute componentType="boolean" attribute="v3right" defaultValue="$E3stable" assignNames="v3right" />
+    <customAttribute componentType="boolean" attribute="v4right" defaultValue="$E4stable" assignNames="v4right" />
+    <customAttribute componentType="boolean" attribute="v5right" defaultValue="not $E4stable" assignNames="v5right" />
+    <customAttribute componentType="number" attribute="attractThreshold" defaultValue="0.3" assignNames="attractThreshold" />
+  </setup>
+
+  
+<setup>
+  <number name="zeroFixed" fixed>0</number>
+  <number name="vrange" fixed>$vmax-$vmin</number>
+  <number name="nEsUser">0</number>
+
+  <sort name="sortedEpointsUser"><collect componentTypes="point" tname="mapEpointsUser" name="EpointsUser" /></sort>
+
+  <boolean name="showVectors">false</boolean>
+  <sort name="sortedVectors1" sortVectorsBy="tail" assignNames="v1 v2 v3 v4 v5">
+    <collect componentTypes="vector" tname="phaseLine" />
+  </sort>
+  <copy prop="tailX1" assignNames="v1tx" tname="v1" />
+  <copy prop="tailX2" assignNames="v1ty" tname="v1" />
+  <copy prop="headX1" assignNames="v1hx" tname="v1" />
+  <copy prop="headX2" assignNames="v1hy" tname="v1" />
+
+  <conditionalContent condition="$nEquilibria >= 1" >
+    <copy prop="tailX1" assignNames="v2tx" tname="v2" />
+    <copy prop="tailX2" assignNames="v2ty" tname="v2" />
+    <copy prop="headX1" assignNames="v2hx" tname="v2" />
+    <copy prop="headX2" assignNames="v2hy" tname="v2" />
+  </conditionalContent>
+
+  <conditionalContent condition="$nEquilibria >= 2" >
+    <copy prop="tailX1" assignNames="v3tx" tname="v3" />
+    <copy prop="tailX2" assignNames="v3ty" tname="v3" />
+    <copy prop="headX1" assignNames="v3hx" tname="v3" />
+    <copy prop="headX2" assignNames="v3hy" tname="v3" />
+  </conditionalContent>
+
+  <conditionalContent condition="$nEquilibria >= 3" >
+    <copy prop="tailX1" assignNames="v4tx" tname="v4" />
+    <copy prop="tailX2" assignNames="v4ty" tname="v4" />
+    <copy prop="headX1" assignNames="v4hx" tname="v4" />
+    <copy prop="headX2" assignNames="v4hy" tname="v4" />
+  </conditionalContent>
+
+  <conditionalContent condition="$nEquilibria >= 4" >
+    <copy prop="tailX1" assignNames="v5tx" tname="v5" />
+    <copy prop="tailX2" assignNames="v5ty" tname="v5" />
+    <copy prop="headX1" assignNames="v5hx" tname="v5" />
+    <copy prop="headX2" assignNames="v5hy" tname="v5" />
+  </conditionalContent>
+
+
+  <mathlist name="Es">
+    <conditionalContent condition="$nEquilibria >= 1">
+     $E1
+    </conditionalContent>
+    <conditionalContent condition="$nEquilibria >= 2">
+     $E2
+    </conditionalContent>
+    <conditionalContent condition="$nEquilibria >= 3">
+     $E3
+    </conditionalContent>
+    <conditionalContent condition="$nEquilibria >= 4">
+     $E4
+    </conditionalContent>
+  </mathlist>
+
+  <map name="Epoints">
+    <template><point>($v,0)</point></template>
+    <sources alias="v"><copy prop="maths" tname="Es" /></sources>
+  </map>
+
+
+  <booleanList name="EstabilityBoolean">
+    <conditionalContent condition="$nEquilibria >= 1">
+      $E1stable
+    </conditionalContent>
+    <conditionalContent condition="$nEquilibria >= 2">
+      <boolean>$E2stable</boolean>
+    </conditionalContent>
+    <conditionalContent condition="$nEquilibria >= 3">
+      $E3stable
+    </conditionalContent>
+    <conditionalContent condition="$nEquilibria >= 4">
+      <boolean>$E4stable</boolean>
+    </conditionalContent>
+  </booleanList>
+
+</setup>
+
+
+<p>
+  <updateValue label="Add equilibrium" name="addEquilibrium" tname="nEsUser" newValue="$nEsUser+1" disabled = "$nEsUser >= 5" />
+  <updateValue label="Remove equilibrium" name="removeEquilibrium" tname="nEsUser" newValue="$nEsUser-1" disabled = "$nEsUser <= 0" />
+  <updateValue label="Show vectors" name="revealVectors" type="boolean" tname="showVectors" newValue="true" disabled = "$showVectors" />
+</p>
+
+
+<graph width='$width' height='$height' xmin='$vmin' xmax='$vmax' ymin="-3" ymax="3" fixAxes xlabel="$var" displayYAxis="false" name="phaseLine">
+
+  <map name="mapEpointsUser">
+    <template>
+      <equilibriumPoint styleNumber="9" x="$(v{prop='value' link='false'})" y="-2" switchable>
+        <constraints>
+          <attractTo>
+            <line>y=0</line>
+          </attractTo>
+          <attractTo threshold="$attractThreshold">
+            $Epoints
+          </attractTo>
+        </constraints>
+      </equilibriumPoint>
+    </template>
+    <sources alias="v"><sequence from="$vmin+0.1$vrange" length="min($nEsUser,5)" step="0.1$vrange" /></sources>
+  </map>
+
+
+  <point name="vATail" hide x="$(vmin{prop='value' link='false'})+0.1$vrange" y="2.5">
+    <constraints>
+      <attractTo><line>y=0</line></attractTo>
+    </constraints>
+  </point>
+  <point name="vAHead" hide x="$(vmin{prop='value' link='false'})+0.2$vrange" y="2.5">
+    <constraints>
+      <attractTo><line>y=0</line></attractTo>
+    </constraints>
+  </point>
+  <vector name="vA" hide="not $showVectors" head="$vAHead" tail="$vATail" styleNumber="2" />
+  
+
+  <conditionalContent condition="$nEsUser >= 1">
+    <point name="vBTail" hide x="$(vmin{prop='value' link='false'})+0.1$vrange" y="2">
+      <constraints>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <point name="vBHead" hide x="$(vmin{prop='value' link='false'})+0.2$vrange" y="2">
+      <constraints>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <vector name="vB" hide="not $showVectors" head="$vBHead" tail="$vBTail" styleNumber="2" />
+  </conditionalContent>
+
+
+  <conditionalContent condition="$nEsUser >= 2">
+    <point name="vCTail" hide x="$(vmin{prop='value' link='false'})+0.1$vrange" y="1.5">
+      <constraints>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <point name="vCHead" hide x="$(vmin{prop='value' link='false'})+0.2$vrange" y="1.5">
+      <constraints>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <vector name="vC" hide="not $showVectors" head="$vCHead" tail="$vCTail" styleNumber="2" />
+  </conditionalContent>
+
+
+  <conditionalContent condition="$nEsUser >= 3">
+    <point name="vDTail" hide x="$(vmin{prop='value' link='false'})+0.1$vrange" y="1">
+      <constraints>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <point name="vDHead" hide x="$(vmin{prop='value' link='false'})+0.2$vrange" y="1">
+      <constraints>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <vector name="vD" hide="not $showVectors" head="$vDHead" tail="$vDTail" styleNumber="2" />
+  </conditionalContent>
+
+
+  <conditionalContent condition="$nEsUser >= 4">
+    <point name="vETail" hide x="$(vmin{prop='value' link='false'})+0.1$vrange" y="-1">
+      <constraints>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <point name="vEHead" hide x="$(vmin{prop='value' link='false'})+0.2$vrange" y="-1">
+      <constraints>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <vector name="vE" hide="not $showVectors" head="$vEHead" tail="$vETail" styleNumber="2" />
+  </conditionalContent>
+
+
+  <conditionalContent condition="$nEsUser >= 5">
+    <point name="vFTail" hide x="$(vmin{prop='value' link='false'})+0.1$vrange" y="-1.5">
+      <constraints>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <point name="vFHead" hide x="$(vmin{prop='value' link='false'})+0.2$vrange" y="-1.5">
+      <constraints>
+        <attractTo><line>y=0</line></attractTo>
+      </constraints>
+    </point>
+    <vector name="vF" hide="not $showVectors" head="$vFHead" tail="$vFTail" styleNumber="2" />
+  </conditionalContent>
+
+
+
+</graph>
+
+  <setup>
+    <conditionalContent assignNames="(creditForStability)">
+      <case condition="$EpointsInLocation">
+        <number>0.5</number>
+      </case>
+      <else>
+        <number>0</number>
+      </else>
+    </conditionalContent>
+  </setup>
+
+  <p>Check Equilibria:
+<answer matchPartial name="ansEPoints" nAwardsCredited="2">
+  <award unorderedCompare credit="0.5">
+      <when name="EpointsInLocation">
+        <mathlist>$EpointsUser</mathlist>
+        = <mathlist>$Epoints</mathlist>
+      </when>
+  </award>
+  <award credit="$creditForStability" matchByExactPositions>
+      <when>
+        <booleanList><copy prop="stable" tname="sortedEpointsUser" /></booleanList>
+         = $EstabilityBoolean
+    </when>
+    </award>
+  </answer>
+
+  </p>
+
+  <feedback updateWithTname="ansEPoints" condition="not $EpointsInLocation" >
+    Some equilibria are not in the correct location.
+  </feedback>
+  <feedback updateWithTname="ansEPoints" condition="$EpointsInLocation and $(ansEPoints{prop='creditAchieved'}) < 1" >
+    Some equilibria have the incorrect stability.  You can click an equilibrium to toggle between stable (filled point) and unstable (unfilled point).
+  </feedback>
+  
+
+
+
+
+  <p>Vector field: 
+    
+  <answer matchPartial name="ansVs">
+    <award credit="$showVectors">
+      <when>
+        <when name="vsOnAxis">
+          <boolean>$v1hy = 0 and $v1ty = 0</boolean>
+          <conditionalContent condition="$nEquilibria >=1">
+            and 
+            <boolean>$v2hy = 0 and $v2ty = 0</boolean>
+          </conditionalContent>
+          <conditionalContent condition="$nEquilibria >=2">
+            and 
+            <boolean>$v3hy = 0 and $v3ty = 0</boolean>
+          </conditionalContent>
+          <conditionalContent condition="$nEquilibria >=3">
+            and
+            <boolean>$v4hy = 0 and $v4ty = 0</boolean>
+          </conditionalContent>
+          <conditionalContent condition="$nEquilibria >=4">
+            and
+            <boolean>$v5hy = 0 and $v5ty = 0</boolean>
+          </conditionalContent>
+        </when>
+        and
+        <when>
+          <conditionalContent assignNames="(v1Location)">
+            <case condition="$nEquilibria = 0">
+              <boolean>true</boolean>
+            </case>
+            <else>
+              <boolean>max($v1hx, $v1tx) < $E1</boolean>
+            </else>
+          </conditionalContent>
+          <conditionalContent assignNames="(v2Location)">
+            <case condition="$nEquilibria = 1">
+              and
+              <boolean>$E1 < min($v2hx, $v2tx)</boolean>
+            </case>
+            <case condition="$nEquilibria > 1">
+              and
+              <boolean>$E1 < min($v2hx, $v2tx) and max($v2hx, $v2tx) < $E2</boolean>
+            </case>
+          </conditionalContent>
+          <conditionalContent assignNames="(v3Location)">
+            <case condition="$nEquilibria = 2">
+              and
+              <boolean>$E2 < min($v3hx, $v3tx)</boolean>
+            </case>
+            <case condition="$nEquilibria > 2">
+              and
+              <boolean>$E2 < min($v3hx, $v3tx) and max($v3hx, $v3tx) < $E3</boolean>
+            </case>
+          </conditionalContent>
+          <conditionalContent assignNames="(v4Location v5Location)">
+            <case condition="$nEquilibria = 3">
+              and
+              <boolean>$E3 < min($v4hx, $v4tx)</boolean>
+            </case>
+            <case condition="$nEquilibria > 3">
+              and
+              <boolean>$E3 < min($v4hx, $v4tx) and max($v4hx, $v4tx) < $E4</boolean>
+              and
+              <boolean>$E4 < min($v5hx, $v5tx)</boolean>
+            </case>
+          </conditionalContent>
+        </when>
+        and
+        <when>
+          <boolean>$v1Location and <boolean>$v1hx > $v1tx</boolean> = $v1right</boolean>
+          <conditionalContent condition="$nEquilibria >= 1">
+            and
+            <boolean>$v2Location and <boolean>$v2hx > $v2tx</boolean> = $v2right</boolean>
+            <conditionalContent condition="$nEquilibria >= 2">
+              and
+              <boolean>$v3Location and <boolean>$v3hx > $v3tx</boolean> = $v3right</boolean>
+              <conditionalContent condition="$nEquilibria >= 3">
+                and
+                <boolean>$v4Location and <boolean>$v4hx > $v4tx</boolean> = $v4right</boolean>
+                <conditionalContent condition="$nEquilibria >= 4">
+                  and
+                  <boolean>$v5Location and <boolean>$v5hx > $v5tx</boolean> = $v5right</boolean>
+                </conditionalContent>
+              </conditionalContent>
+            </conditionalContent>  
+          </conditionalContent>
+        </when>
+      </when>
+    </award>
+    <considerAsResponses>
+      $v1hx $v1hy $v1tx $v1ty
+      $v2hx $v2hy $v2tx $v2ty
+      $v3hx $v3hy $v3tx $v3ty
+      $v4hx $v4hy $v4tx $v4ty
+      $v5hx $v5hy $v5tx $v5ty
+    </considerAsResponses>
+  </answer>
+  </p>
+
+  <feedback updateWithTname="ansVs" condition="$nEsUser != $nEquilibria">
+    The number of equilibria is incorrect.
+  </feedback>
+  <feedback updateWithTname="ansVs" condition="!$showVectors">
+    Click the Show vectors button to reveal the arrows for the vector field.
+  </feedback>
+  <feedback updateWithTname="ansVs" condition="$nEsUser = $nEquilibria and $showVectors and not $vsOnAxis">
+    All arrows must be on the state line.
+  </feedback>
+  <feedback updateWithTname="ansVs" condition="$nEsUser = $nEquilibria and $showVectors and $vsOnAxis and ($v1Location = false or $v2Location=false or $v3Location=false or $v4Location=false or $v5Location=false)">
+    Place one arrow into each of the intervals separated by equilibria.  Make sure no arrows cross an equilibrium.
+  </feedback>
+  <feedback updateWithTname="ansVs" condition="$nEsUser = $nEquilibria and $showVectors and $vsOnAxis and not ($v1Location = false or $v2Location=false or $v3Location=false or $v4Location=false or $v5Location=false) and $(ansVs{prop='creditAchieved'}) < 1">
+    An arrow is not pointed in the correct direction.
+  </feedback>
+
+
+
+
+</module>

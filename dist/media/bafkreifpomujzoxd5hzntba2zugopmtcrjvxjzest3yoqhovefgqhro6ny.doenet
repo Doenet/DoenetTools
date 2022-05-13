@@ -1,0 +1,21 @@
+<title>Stability of equilibria problem set</title>
+
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+  
+  <copy uri="doenet:contentId=ea108316d557a68ff4809b09cb1880c4a797d1a70db5259a78e9c8e581b4f4e6&doenetId=F5XRZxg5dZTR8yxsgAVo5" componentType="problem" assignNames="problem1" />
+  
+  <copy uri="doenet:contentId=c3be53702ae905b4794a66c523cb0014183786bf27af1725604a78a43582ee14&doenetId=SJwv4YsFJQQUOe7yqsZ35" componentType="problem" assignNames="problem2" />
+
+  <copy uri="doenet:contentId=0332ad1e6f1f9590963fcb00946d33a45efa0a6b3222f6cb9847f75e06b0725b&doenetId=UKuxjaEUllSeBhuggrlGO" componentType="problem" assignNames="problem3" />
+
+  <copy uri="doenet:contentId=e39f0242f84afdcf1960f9498d5dfd996055ee45c63d951001b8384cd4d0fc6d&doenetId=boIk0maGaqn9ufpncQKSX" componentType="problem" assignNames="problem4" />
+
+  <copy uri="doenet:contentId=9bbe6fe0027d17291f8390315f2d5db8e409f6455871dd202a51c4e76f392cb3&doenetId=oSDegxkOlEgRkytxDHLhk" componentType="problem" assignNames="problem5"  />
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

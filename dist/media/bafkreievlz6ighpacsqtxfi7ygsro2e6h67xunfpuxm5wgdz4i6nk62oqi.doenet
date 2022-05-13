@@ -1,0 +1,41 @@
+<title>An assignment</title>
+
+<video youtube="tJ4ypc5L6uU" />
+
+<p>What is 1+1?  <answer>2</answer></p>
+
+<p>What is the derivative of <math name="expr">sin(2x)</math>? 
+  <answer>
+    <award><derivative>$expr</derivative></award>
+  </answer>
+</p>
+
+<slider to="20" name="s" />
+
+<p>The value of the slider is $s. </p>
+
+<p>What is your name?  <textinput name="nm" /></p>
+<p>Hello, $nm</p>
+
+<graph>
+  <point name="A">($s,3)</point>
+
+  <circle  through="$B" center="$A"/>
+
+  <point name="B">(3,7)</point>
+  
+</graph>
+
+<graph>
+  <point name="P">(3,5)</point>
+</graph>
+
+<p>Move the point to the first quadrant.
+  <answer>
+    <award>
+      <when>$(P{prop='x'}) > 0 and $(P{prop='y'}) > 0</when>
+    </award>
+  </answer>
+</p>
+
+<spreadsheet />

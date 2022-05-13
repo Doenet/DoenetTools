@@ -437,15 +437,15 @@ export default function PageViewer(props) {
     return {localInfo, cid, attemptNumber};
   }
   function startCore() {
-    coreWorker.current = new Worker(props.unbundledCore ? "core/CoreWorker.js" : "viewer/core.js", {type: "module"});
+    coreWorker.current = new Worker(props.unbundledCore ? "core/CoreWorker.js" : "/viewer/core.js", {type: "module"});
     coreWorker.current.postMessage({
       messageType: "createCore",
       args: {
         coreId: coreId.current,
         userId: props.userId,
         doenetML,
-        cid,
         doenetId: props.doenetId,
+        activityCid: props.activityCid,
         flags: props.flags,
         requestedVariantIndex,
         pageNumber,
@@ -621,12 +621,12 @@ export default function PageViewer(props) {
   let noCoreWarning = null;
   let pageStyle = {maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px"};
   if (!coreCreated.current) {
-    noCoreWarning = /* @__PURE__ */ React.createElement("p", null, "Waiting for core to be created....");
+    noCoreWarning = /* @__PURE__ */ React.createElement("div", {
+      style: {backgroundColor: "lightCyan", padding: "10px"}
+    }, /* @__PURE__ */ React.createElement("p", null, "Waiting for core to be created...."));
     pageStyle.backgroundColor = "#F0F0F0";
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
-    style: {backgroundColor: "lightCyan", padding: "10px"}
-  }, noCoreWarning, /* @__PURE__ */ React.createElement("p", null, saveStatesButton)), /* @__PURE__ */ React.createElement("div", {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, noCoreWarning, /* @__PURE__ */ React.createElement("div", {
     style: pageStyle
   }, documentRenderer));
 }

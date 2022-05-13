@@ -1,0 +1,20 @@
+<textinput name="ti" prefill="" />
+
+<p>Split text:  <split splitBy="letter">$ti</split></p>
+
+<spreadsheet minNumRows="4" minNumColumns="4">
+  <row>
+    <map>
+      <template><cell>$v</cell></template>
+      <sources alias="v">
+        <extract prop="texts">
+          <split splitBy="letter">$ti</split>
+        </extract>
+      </sources>
+    </map>
+    <cell></cell>
+    <cell></cell>
+    <cell></cell>
+    <cell></cell>
+  </row>
+</spreadsheet>

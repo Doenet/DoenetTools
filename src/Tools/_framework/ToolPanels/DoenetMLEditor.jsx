@@ -15,8 +15,8 @@ import {
 import { searchParamAtomFamily } from '../NewToolRoot';
 import CodeMirror from '../CodeMirror';
 import axios from "axios";
-import { fileByDoenetId } from '../ToolHandlers/CourseToolHandler';
 import { DropTarget } from 'react-drag-drop-container';
+import { fileByPageId } from '../ToolHandlers/CourseToolHandler';
 import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
 
 
@@ -58,7 +58,7 @@ export default function DoenetMLEditor(props) {
 
     try {
       const { data } = await axios.post("/api/saveDoenetML.php", { doenetML, pageId, courseId })
-      set(fileByDoenetId(pageId),doenetML);
+      set(fileByPageId(pageId),doenetML);
       if (!data.success) {
         //TODO: Toast here
         console.log("ERROR", data.message)

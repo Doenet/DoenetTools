@@ -1,0 +1,53 @@
+<!--
+#DESCRIPTION
+##  Calculus: Optimization problems
+##ENDDESCRIPTION
+
+
+## DBsubject(Calculus - single variable)
+## DBchapter(Applications of differentiation)
+## DBsection(Optimization - general)
+## Date(01/25/2011)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(Optimization_Ladder)
+## Level(5)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('4.6')
+## Problem1('26')
+## KEYWORDS('calculus', 'derivative', 'optimization')
+-->
+
+<setup>
+  <selectFromSequence from="2" to="6" step="2" name="a" />
+  <selectFromSequence from="8" to="12" step="2" name="b" />
+  <math name="ans" simplify>
+    ($a)^(2/3)*sqrt(($a)^(2/3)+($b)^(2/3))+($b)^(2/3)*sqrt(($a)^(2/3)+($b)^(2/3))
+  </math>
+</setup>
+
+<p>
+  A fence
+  <m>$b \text{ft}</m>
+  high runs parallel to a tall building at a distance of 
+  <m>$a \text{ft}</m>
+  from the building.
+  What is the length of the shortest ladder that will reach from the ground over the fence to the wall of the building?
+</p>
+
+<p>
+  Answer (in feet)
+  <m>L=</m>
+  <answer>
+    <award>
+      $ans
+    </award>
+  </answer>
+</p>
+
+<solution>
+  Answer: $ans
+</solution>

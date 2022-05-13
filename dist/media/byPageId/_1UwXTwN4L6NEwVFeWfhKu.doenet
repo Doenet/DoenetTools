@@ -1,0 +1,188 @@
+<module>
+  <setup>
+  </setup>
+  <p>
+    <row><alert>Definition 1</alert></row>
+    An <em>arithmetic function</em> is a function that is defined for all positive integers.
+  </p>
+  <p>
+    An arithmetic function <m>f</m> is called <em>multiplicative</em>
+    if <m>f(mn)=f(m)f(n)</m> whenever <m>m</m> and <m>n</m> are
+    relatively prime positive integers.
+    It is called <em>completely multiplicative</em> if
+    <m>f(mn)=f(m)f(n)</m> for all positive integers <m>m</m> and <m>n</m>.
+  </p>
+  <p><row><alert>Example 1</alert></row>
+    One example you are already familiar with is the square root function.
+    Let <m>f(x)=\sqrt{x}</m>.
+    Then
+    <me>
+      f(xy) = \sqrt{xy}=\sqrt{x}\sqrt{y} = f(x)f(y)
+    </me>
+    for every non-negative real number, so this clearly holds for all positive integers.
+  </p>
+  <p><row><alert>Other Examples</alert></row>
+    Often, we define less explicit arithmetic functions.
+    For example, one arithmetic function counts the number of positive divisors of any positive integer.
+    Another computes the sum of all positive divisors.
+    This leads to strange like <ref uri="https://en.wikipedia.org/wiki/Perfect_number">Perfect numbers</ref> and <ref uri="https://en.wikipedia.org/wiki/Happy_number">Happy numbers</ref>.
+    Any property you can think of that can be generated as a simple function in this way could
+    be a well-studied arithmetic function in number theory. There are many! And some have
+    surprising applications.
+    We're going to focus on one in particular.
+  </p>
+  <p><row><alert>Euler's Totient Function</alert></row>
+    The arithmetic function that we're interested in today is Euler's Totient Function,
+    this is denoted by the Greek letter <m>\phi</m>, and <m>\phi(n)</m> is defined to be
+    the number of integers coprime to <m>n</m> which do not exceed <m>n</m>.
+    Simple enough, right? Some examples:
+    <me>
+      \begin{align*}
+        \phi(2) &amp; = 1 \\
+        \phi(3) &amp; = 2 \\
+        \phi(4) &amp; = 2 \\
+        \phi(5) &amp; = 4 \\
+        \phi(6) &amp; = 2 \\
+        \phi(7) &amp; = 6
+      \end{align*}
+    </me>
+    We can already see that while the concept and definition are fairly simple, the formula for this will probably not be so simple! So let's start with some easy cases.
+  </p>
+  <p><row><alert><m>\phi(p)</m> for primes <m>p</m></alert></row>
+    From the fundamental theorem of arithmetic, it should be fairly easy to see that
+    <me>\phi(p) = p-1</me>
+    if <m>p</m> is a prime number, as it's only divisors will be <m>1</m> and
+    <m>p</m>, so nothing less than <m>p</m> shares a divisor greater than <m>1</m>.
+  </p>
+  <p><row><alert><m>\phi(p^k)</m> for primes <m>p</m> and natural numbers <m>k</m></alert></row>
+    Slightly more difficult to see is the fact that
+    <me>\phi(p) = p^k-p^{k-1}</me>
+    if <m>p</m> is a prime number and <m>k</m> is a positive integer.
+    Think about it for a minute or two and then expand the note below to see why.
+    <aside>
+      <title>Why that formula?</title>
+        The positive integers not exceeding <m>p^k</m> that are not relatively
+      prime to <m>p^k</m> are those integers less than <m>p^k</m> that are of the form
+      <m>p\cdot k</m> for some integer <m>k</m>.
+      Then <m>k</m> must be between <m>1</m> and <m>p^{k-1}</m>, and there are <m>p^{k-1}</m> such integers. Therefore <me>\phi(p^k)=p^k-p^{k-1},</me>
+      the total number of integers not exceeding <m>p^k</m> minus those which are not relatively prime.
+      <row />
+      <row />
+      Alternatively, you can lay out the numbers in the following grid.
+      These are the numbers
+      <table>
+        <row>
+          <cell><m>p</m></cell>
+          <cell><m>2p</m></cell>
+          <cell><m>\ldots</m></cell>
+          <cell><m>(p-1)p</m></cell>
+          <cell><m>p^2</m></cell>
+        </row>
+        <row>
+          <cell><m>(p^2+1)p</m></cell>
+          <cell><m>(p^2+2)p</m></cell>
+          <cell><m>\ldots</m></cell>
+          <cell><m>(p^2+p-1)p</m></cell>
+          <cell><m>p^3</m></cell>
+        </row>
+        <row>
+          <cell><m>\vdots</m></cell>
+          <cell><m>\vdots</m></cell>
+          <cell><m>\vdots</m></cell>
+          <cell><m>\vdots</m></cell>
+          <cell><m>\vdots</m></cell>
+        </row>
+        <row>
+          <cell><m>(p^{k-2}+1)p</m></cell>
+          <cell><m>(p^{k-2}+2)p</m></cell>
+          <cell><m>\ldots</m></cell>
+          <cell><m>(p^{k-2}+p-1)p</m></cell>
+          <cell><m>(p^{k-1})p</m></cell>
+        </row>
+      </table>
+      Then each row contains <m>p</m> numbers and there are <m>p^{k-2}</m> many rows.
+      By the multiplicative principle then, we have that <m>p^{k-1}</m> many numbers
+      are in the list.
+    </aside>
+  </p>
+  <p><row><alert>You practice</alert></row>
+  Use one of the formulas in the proof to calculate <m>\phi(n)</m> for each <m>n</m> below.
+  <aside>
+    <title>Technology Use is Recommended</title>
+  It is recommended you take the numbers and use <ref uri="https://www.wolframalpha.com/">Wolfram Alpha</ref> or another
+  computer algebra system to do the prime factorizations for you.
+  For example, if you were given the value
+  <m>10142789312725007</m> and asked to find 
+  <m>\phi(10142789312725007)</m>, you can go to Wolfram Alpha, enter
+  <me>
+    \text{Factor}[10142789312725007]
+  </me>
+  to find that
+  <me>
+    10142789312725007=100711409\cdot 100711423,
+  </me>
+  which you would have almost no chance of discovering by hand.
+  <row><alert>Recall:</alert></row> Then you can either use Wolfram Alpha to compute the number of coprimes,
+  or you can enter the multiplicative factors directly into the answer blanks.
+  </aside>
+</p>
+<setup>
+  <select numberToSelect="4" assignNames="(p1) (p2) (p3) (p4)">
+    <option><math>4691</math></option>
+    <option><math>4993</math></option>
+    <option><math>5107</math></option>
+    <option><math>5113</math></option>
+    <option><math>5303</math></option>
+    <option><math>5387</math></option>
+    <option><math>5393</math></option>
+  </select>
+  <select numberToSelect="1" assignNames="(p5)">
+    <option><math>28657</math></option>
+    <option><math>84673</math></option>
+  </select>
+  <select numberToSelect="2" assignNames="(p6) (p7)">
+    <option><math>106033</math></option>
+    <option><math>108301</math></option>
+    <option><math>112909</math></option>
+    <option><math>115249</math></option>
+  </select>
+</setup>
+<p>
+  <row><alert>Section 1 - Primes and Prime Powers</alert></row>
+</p>
+<p>
+  <row>
+    <alert>1. </alert>
+    <m>n=<math simplify>$p6</math></m>, so <m>\phi(n)=</m>
+    <answer>$p6-1</answer>
+  </row>
+</p>
+<p>
+  <row>
+    <alert>2. </alert>
+    <m>n=<math simplify>$p7</math></m>, so <m>\phi(n)=</m>
+    <answer>$p7-1</answer>
+  </row>
+</p>
+<p>
+  <row>
+    <alert>3. </alert>
+    <m>n=<math simplify>$p1^2</math></m>, so <m>\phi(n)=</m>
+    <answer>($p1^2-$p1)</answer>
+  </row>
+</p>
+<p>
+  <row>
+    <alert>4. </alert>
+    <m>n=<math simplify>$p5^2</math></m>, so <m>\phi(n)=</m>
+    <answer>($p5^2-$p5)</answer>
+  </row>
+</p>
+<p>
+  <row>
+    <alert>5. </alert>
+    <m>n=<math simplify>$p2^2</math></m>, so <m>\phi(n)=</m>
+    <answer>($p2^2-$p2)</answer>
+  </row>
+</p>
+</module>
