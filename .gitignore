@@ -50,3 +50,5 @@ doenet_docker/volumes/db/*
 src/API/vendor
 
 src/Media/bydoenetid/
+
+src/Media/byPageId/
