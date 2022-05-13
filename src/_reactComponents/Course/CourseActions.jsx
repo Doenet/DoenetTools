@@ -819,6 +819,7 @@ export const useCourse = (courseId) => {
           set(itemByDoenetId(createdActivityDoenentId), {
             //Defaults for future assignment settings
             timeLimit: null,
+            numberOfAttemptsAllowed: null,
             totalPointsOrPercent: null,
             individualize: false,
             showSolution: true,
