@@ -279,24 +279,16 @@ export const TimeLimit = ({ courseId, doenetId }) => {
 
 export const AttempLimit = ({ courseId, doenetId }) => {
   const {
-    value: {
-      limitAttempts: recoilValue,
-      numberOfAttemptsAllowed: auxRecoilValue,
-    },
+    value: { numberOfAttemptsAllowed: recoilValue },
     updateAssignmentSettings,
   } = useActivity(courseId, doenetId);
 
-  const [limitAttempts, setLimitAttempts] = useState(recoilValue);
   const [numberOfAttemptsAllowed, setNumberOfAttemptsAllowed] =
-    useState(auxRecoilValue);
+    useState(recoilValue);
 
   useEffect(() => {
-    setLimitAttempts(recoilValue);
+    setNumberOfAttemptsAllowed(recoilValue);
   }, [recoilValue]);
-
-  useEffect(() => {
-    setNumberOfAttemptsAllowed(auxRecoilValue);
-  }, [auxRecoilValue]);
 
   return (
     <InputWrapper>
@@ -304,43 +296,41 @@ export const AttempLimit = ({ courseId, doenetId }) => {
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
           style={{ marginRight: '5px' }}
-          checked={limitAttempts !== null}
+          checked={numberOfAttemptsAllowed !== null}
           onClick={() => {
             let valueDescription = 'Not Limited';
             let value = null;
-            if (limitAttempts === null) {
+            if (numberOfAttemptsAllowed === null) {
               valueDescription = '1';
               value = 1;
             }
-            setLimitAttempts(value);
             setNumberOfAttemptsAllowed(value);
             updateAssignmentSettings({
               keyToUpdate: 'numberOfAttemptsAllowed',
               value,
-              description: 'Attempts Allowed ',
+              description: 'Attempts Allowe',
               valueDescription,
             });
           }}
         />
         <Increment
-          disabled={limitAttempts === null}
+          disabled={numberOfAttemptsAllowed === null}
           value={numberOfAttemptsAllowed}
           min={0}
           onBlur={() => {
-            if (auxRecoilValue !== numberOfAttemptsAllowed) {
-              let numberOfAttemptsAllowedLocal = null;
+            if (recoilValue !== numberOfAttemptsAllowed) {
+              let numberOfAttemptsAllowedLocal = 1;
               if (
-                numberOfAttemptsAllowed < 0 ||
+                numberOfAttemptsAllowed <= 0 ||
                 numberOfAttemptsAllowed === '' ||
                 isNaN(numberOfAttemptsAllowed)
               ) {
-                setNumberOfAttemptsAllowed(0);
-                numberOfAttemptsAllowedLocal = 0;
+                setNumberOfAttemptsAllowed(numberOfAttemptsAllowedLocal);
               } else {
                 numberOfAttemptsAllowedLocal = parseInt(
                   numberOfAttemptsAllowed,
                 );
-                setNumberOfAttemptsAllowed(parseInt(numberOfAttemptsAllowed));
+                setNumberOfAttemptsAllowed(numberOfAttemptsAllowedLocal);
               }
 
               updateAssignmentSettings({
