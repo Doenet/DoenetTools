@@ -5,11 +5,11 @@ const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: var(--mainBorder);
-  border-radius: var(--mainBorderRadius);
+  border: 2px solid #000;
+  border-radius: 5px;
   height: 125px;
   width: 100px;
-  background: white;
+  background: #fff;
   padding: 10px 0;
 `
 
@@ -20,6 +20,7 @@ const ImageContainer = styled.div`
   position: relative;
   padding: 5px 0;
   height: 80px;
+  // overflow: hidden;
 `
 
 const Image = styled.img`
@@ -40,15 +41,15 @@ const Label = styled.span`
   line-height: 1.1
 ` 
 
-const MiniCard = (props) => {
+const MiniCard = ({ image="/media/doenetML_pictures/placeholder.png", label="label" }) => {
 
   return (
-    <CardContainer onClick={props.onClick && props.onClick}>
+    <CardContainer >
       <ImageContainer>
-        <Image src={ props.image ? props.image : "/media/doenetML_pictures/placeholder.png"}/>
+        <Image src={ image }/>
       </ImageContainer>
       <LabelContainer>
-        <Label>{ props.label ? props.label : "Label" }</Label>
+        <Label>{ label }</Label>
       </LabelContainer>
     </CardContainer>
   )
