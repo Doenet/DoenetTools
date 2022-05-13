@@ -13,7 +13,8 @@ export default function Point(props) {
 
   const board = useContext(BoardContext);
 
-  let pointJXG = useRef(null)
+  let pointJXG = useRef(null);
+  let shadowPointJXG = useRef(null);
 
   let pointerAtDown = useRef(false);
   let pointAtDown = useRef(false);
@@ -33,11 +34,13 @@ export default function Point(props) {
     return () => {
       // if point is defined
       if (pointJXG.current !== null) {
-        pointJXG.current.off('drag');
-        pointJXG.current.off('down');
-        pointJXG.current.off('up');
+        shadowPointJXG.current.off('drag');
+        shadowPointJXG.current.off('down');
+        shadowPointJXG.current.off('up');
         board.removeObject(pointJXG.current);
+        board.removeObject(shadowPointJXG.current);
         pointJXG.current = null;
+        shadowPointJXG.current = null;
       }
 
     }
@@ -51,7 +54,7 @@ export default function Point(props) {
       name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      fixed: true,
       layer: 10 * SVs.layer + 9,
       fillColor: fillColor,
       strokeColor: SVs.selectedStyle.markerColor,
@@ -127,14 +130,20 @@ export default function Point(props) {
 
     let newPointJXG = board.create('point', coords, jsxPointAttributes);
 
-    newPointJXG.on('down', function (e) {
+    let shadowPointAttributes = {...jsxPointAttributes};
+    shadowPointAttributes.layer--;
+    shadowPointAttributes.fixed = !SVs.draggable || SVs.fixed;
+
+    let newShadowPointJXG = board.create('point', coords, shadowPointAttributes);
+    
+
+    newShadowPointJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
-      pointAtDown.current = [...newPointJXG.coords.scrCoords];
+      pointAtDown.current = [...newShadowPointJXG.coords.scrCoords];
       dragged.current = false;
     });
 
-    newPointJXG.on('up', function (e) {
-
+    newShadowPointJXG.on('up', function (e) {
       if (dragged.current) {
         callAction({
           action: actions.movePoint,
@@ -151,9 +160,10 @@ export default function Point(props) {
           action: actions.switchPoint
         });
       }
+      dragged.current = false;
     });
 
-    newPointJXG.on('drag', function (e) {
+    newShadowPointJXG.on('drag', function (e) {
       // the reason we calculate point position with this algorithm,
       // rather than using .X() and .Y() directly
       // is that attributes .X() and .Y() are affected by the
@@ -196,14 +206,16 @@ export default function Point(props) {
       }
 
     });
-    return newPointJXG;
+
+    pointJXG.current = newPointJXG;
+    shadowPointJXG.current = newShadowPointJXG;
   }
 
 
 
   if (board) {
     if (pointJXG.current === null) {
-      pointJXG.current = createPointJXG();
+      createPointJXG();
     } else {
       //if values update
       let newFillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
@@ -224,6 +236,9 @@ export default function Point(props) {
       let y = SVs.numericalXs?.[1];
 
       pointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
+      if(!dragged.current) {
+        shadowPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
+      }
 
       let visible = !SVs.hidden;
 
@@ -231,15 +246,20 @@ export default function Point(props) {
         let actuallyChangedVisibility = pointJXG.current.visProp["visible"] !== visible;
         pointJXG.current.visProp["visible"] = visible;
         pointJXG.current.visPropCalc["visible"] = visible;
+        shadowPointJXG.current.visProp["visible"] = visible;
+        shadowPointJXG.current.visPropCalc["visible"] = visible;
 
         if (actuallyChangedVisibility) {
           // this function is incredibly slow, so don't run it if not necessary
           // TODO: figure out how to make label disappear right away so don't need to run this function
           pointJXG.current.setAttribute({ visible: visible })
+          shadowPointJXG.current.setAttribute({ visible: visible })
         }
       } else {
         pointJXG.current.visProp["visible"] = false;
         pointJXG.current.visPropCalc["visible"] = false;
+        shadowPointJXG.current.visProp["visible"] = false;
+        shadowPointJXG.current.visPropCalc["visible"] = false;
         // pointJXG.current.setAttribute({visible: false})
       }
 
@@ -259,12 +279,12 @@ export default function Point(props) {
         pointJXG.current.visProp.highlightfillcolor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray"); 
         pointJXG.current.visProp.highlightstrokecolor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"); 
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
-        pointJXG.current.visProp.fixed = false;
+        shadowPointJXG.current.visProp.fixed = false;
       } else {
         pointJXG.current.visProp.highlightfillcolor = newFillColor;
         pointJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.markerColor;
         pointJXG.current.visProp.showinfobox = false;
-        pointJXG.current.visProp.fixed = true;
+        shadowPointJXG.current.visProp.fixed = true;
       }
 
       //Update only when the change was initiated with this point
@@ -334,6 +354,8 @@ export default function Point(props) {
 
       pointJXG.current.needsUpdate = true;
       pointJXG.current.update();
+      shadowPointJXG.current.needsUpdate = true;
+      shadowPointJXG.current.update();
       board.updateRenderer();
     }
 
