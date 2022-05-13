@@ -240,7 +240,6 @@ function localizeDates(obj, keys) {
 
 let dateKeys = ["assignedDate", "dueDate", "pinnedAfterDate", "pinnedUntilDate"];
 
-
 export function useInitCourseItems(courseId) {
   const getDataAndSetRecoil = useRecoilCallback(
      ({ snapshot,set }) =>
@@ -817,9 +816,25 @@ export const useCourse = (courseId) => {
           let createdActivityDoenentId = data.doenetId;
           newDoenetId = createdActivityDoenentId;
           //Activity
-          set(itemByDoenetId(createdActivityDoenentId), data.itemEntered); 
-          //Order
+          set(itemByDoenetId(createdActivityDoenentId), {
+            //Defaults for future assignment settings
+            timeLimit: null,
+            numberOfAttemptsAllowed: null,
+            totalPointsOrPercent: null,
+            individualize: false,
+            showSolution: true,
+            showSolutionInGradebook: true,
+            showFeedback: true,
+            showHints: true,
+            showCorrectness: true,
+            showCreditAchievedMenu: true,
+            proctorMakesAvailable: false,
+            pinnedAfterDate: null,
+            pinnedUntilDate: null,
+            ...data.itemEntered,
+          });
 
+          //Order
           let createdOrderDoenetId = data.itemEntered.order.doenetId;
           let numberToSelect = 1;
           let withReplacement = false;

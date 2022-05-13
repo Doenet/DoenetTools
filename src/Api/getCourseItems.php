@@ -67,6 +67,7 @@ $containingDoenetIds = [];
 		ORDER BY cc.sortOrder
 		";
 
+		//TODO: Emilio and Kevin Discuss default behavior on undefine server keys
 		$result = $conn->query($sql);
 		$items = [];
 		if ($result->num_rows > 0) {
@@ -89,14 +90,14 @@ $containingDoenetIds = [];
           "attemptAggregation" => $row['attemptAggregation'],
           "totalPointsOrPercent" => $row['totalPointsOrPercent'],
           "gradeCategory" => $row['gradeCategory'],
-          "individualize" => $row['individualize'] == '1' ? true : false,
-          "showSolution" => $row['showSolution'] == '1' ? true : false,
-          "showSolutionInGradebook" => $row['showSolutionInGradebook'] == '1' ? true : false,
-          "showFeedback" => $row['showFeedback'] == '1' ? true : false,
-          "showHints" => $row['showHints'] == '1' ? true : false,
-          "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
-          "showCreditAchievedMenu" => $row['showCreditAchievedMenu'] == '1' ? true : false,
-          "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
+          "individualize" => ($row['individualize'] ?: "0") == '1' ? true : false,
+          "showSolution" => ($row['showSolution'] ?: "1") == '1' ? true : false,
+          "showSolutionInGradebook" => ($row['showSolutionInGradebook'] ?: '1') == '1' ? true : false,
+          "showFeedback" => ($row['showFeedback'] ?: '1') == '1' ? true : false,
+          "showHints" => ($row['showHints'] ?: '1') == '1' ? true : false,
+          "showCorrectness" => ($row['showCorrectness'] ?: '1') == '1' ? true : false,
+          "showCreditAchievedMenu" => ($row['showCreditAchievedMenu'] ?: '1') == '1' ? true : false,
+          "proctorMakesAvailable" => ($row['proctorMakesAvailable'] ?: '0') == '1' ? true : false,
 				);
 
 				if ($row['type'] == 'activity' || $row['type'] == 'bank'){
