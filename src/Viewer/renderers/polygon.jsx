@@ -48,7 +48,7 @@ export default function Polygon(props) {
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"), 
-      visible: SVs.draggable && !SVs.fixed,
+      visible: SVs.draggable && !SVs.fixed && !SVs.hidden,
       withLabel: false,
       layer: 10 * SVs.layer + 9,
     };
@@ -57,6 +57,7 @@ export default function Polygon(props) {
       highlight: false,
       visible: !SVs.hidden,
       layer: 10 * SVs.layer + 6,
+      fixed: !SVs.draggable || SVs.fixed,
       strokeColor: SVs.selectedStyle.lineColor,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
       strokeWidth: SVs.selectedStyle.lineWidth,
@@ -264,10 +265,17 @@ export default function Polygon(props) {
       }
 
 
+      let verticesVisible = SVs.draggable && !SVs.fixed && !SVs.hidden;
+
       for (let i = 0; i < SVs.nVertices; i++) {
         polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalVertices[i]]);
         polygonJXG.current.vertices[i].needsUpdate = true;
         polygonJXG.current.vertices[i].update();
+        // // let actuallyChangedVisibility = polygonJXG.current.vertices[i].visProp["visible"] !== verticesVisible;
+        polygonJXG.current.vertices[i].visProp["visible"] = verticesVisible;
+        polygonJXG.current.vertices[i].visPropCalc["visible"] = verticesVisible;
+
+
       }
 
 
@@ -285,7 +293,8 @@ export default function Polygon(props) {
         visibleNow = false;
       }
 
-      polygonJXG.current.visProp.borders["visible"] = visibleNow;
+      polygonJXG.current.visProp.fixed = !SVs.draggable || SVs.fixed;
+
       polygonJXG.current.visProp["visible"] = visibleNow;
       polygonJXG.current.visPropCalc["visible"] = visibleNow;
       // polygonJXG.current.setAttribute({visible: visibleNow})
@@ -297,6 +306,7 @@ export default function Polygon(props) {
         let border = polygonJXG.current.borders[i];
         border.visProp.visible = visibleNow;
         border.visPropCalc.visible = visibleNow;
+        border.visProp.fixed = !SVs.draggable || SVs.fixed;
 
         border.needsUpdate = true;
         border.update();

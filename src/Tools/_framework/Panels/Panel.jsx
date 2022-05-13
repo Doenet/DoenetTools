@@ -9,7 +9,6 @@ import {
   faKeyboard,
 } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilState, atomFamily, useSetRecoilState } from 'recoil';
-
 import { handleRef } from '../Footers/MathInputSelector';
 
 export const handleDirection = {
@@ -190,7 +189,10 @@ export default function DragPanel({
         $rounding={direction.rounding}
         $handleSize={handleSize}
         {...bindX()}
-      >
+        onClick={() => {
+          setOpen(!open)
+        }}
+        >
         <FontAwesomeIcon
           icon={
             id === 'keyboard'

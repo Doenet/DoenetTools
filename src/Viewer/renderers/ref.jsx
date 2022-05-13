@@ -38,12 +38,10 @@ export default function Ref(props) {
       if (SVs.edit === true || SVs.edit === null && pageToolView.tool === "editor") {
         url = `tool=editor&${url}`;
       }
-      url = `public?${url}`
+      url = `/public?${url}`
     } else {
-      url = `course?tool=assignment&${url}`
+      url = `/course?tool=assignment&${url}`
     }
-
-    url = `/#/${url}`;
 
     haveValidTarget = true;
   } else if (SVs.uri) {
