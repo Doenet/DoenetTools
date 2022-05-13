@@ -1,7 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
@@ -14,31 +14,35 @@ $success = TRUE;
 $message = "";
 $events = [];
 
-
-$_POST = json_decode(file_get_contents("php://input"),true);
-
-if (!array_key_exists('doenetIds', $_POST)) {
-	$success = false;
-	$message = "Internal Error: missing doenetIds";
-}
-
-if ($success){
-	$doenetIds = array_map(function ($item) use ($conn) {
-		return mysqli_real_escape_string($conn, $item);
-	}, $_POST["doenetIds"]);
-}
+$doenetIds = array_map(function($item) use($conn) {
+  return mysqli_real_escape_string($conn, $item);
+}, $_REQUEST["doenetId"]);
 
 
+// $_POST = json_decode(file_get_contents("php://input"),true);
 
-//TODO: future permission system
-// if ($success){
-
-// $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
-//   if ($permissions["canEditContent"] != '1'){
-//     $success = FALSE;
-//     $message = "You need permission to edit content.";
-//   }
+// if (!array_key_exists('doenetIds', $_POST)) {
+// 	$success = false;
+// 	$message = "Internal Error: missing doenetIds";
 // }
+
+// if ($success){
+// 	$doenetIds = array_map(function ($item) use ($conn) {
+// 		return mysqli_real_escape_string($conn, $item);
+// 	}, $_POST["doenetIds"]);
+// }
+
+
+
+// //TODO: future permission system
+// // if ($success){
+
+// // $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
+// //   if ($permissions["canEditContent"] != '1'){
+// //     $success = FALSE;
+// //     $message = "You need permission to edit content.";
+// //   }
+// // }
 
 
 if ($success){

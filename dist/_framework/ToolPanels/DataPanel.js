@@ -53,9 +53,6 @@ const Td3Span = styled.span`
   animation-fill-mode: forwards;
 `;
 export default function DataPanel() {
-  const addToast = useToast();
-  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
-  const {findPagesFromDoenetIds} = useCourse(courseId);
   const updateSelectMenu = useRecoilCallback(({set}) => async ({selectedItems}) => {
     if (selectedItems.length > 0) {
       set(selectedMenuPanelAtom, "SelectedDataSources");
@@ -63,7 +60,7 @@ export default function DataPanel() {
       set(selectedMenuPanelAtom, null);
     }
   });
-  const doubleClickItem = useRecoilCallback(({set, snapshot}) => async ({doenetId, courseId: courseId2}) => {
+  const doubleClickItem = useRecoilCallback(({set, snapshot}) => async ({doenetId, courseId}) => {
     let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
     if (clickedItem.type == "section") {
       set(pageToolViewAtom, (prev) => {
@@ -71,16 +68,11 @@ export default function DataPanel() {
           page: "course",
           tool: "data",
           view: prev.view,
-          params: {sectionId: clickedItem.doenetId, courseId: courseId2}
+          params: {sectionId: clickedItem.doenetId, courseId}
         };
       });
     } else {
-      let pageDoenetIds = await findPagesFromDoenetIds([clickedItem.doenetId]);
-      if (pageDoenetIds.length == 0) {
-        addToast(`No pages found`, toastType.INFO);
-      } else {
-        console.log("Open Link to data for Pages", pageDoenetIds);
-      }
+      console.log("Open Link to data for Pages", doenetId);
     }
   });
   return /* @__PURE__ */ React.createElement(Suspense, {
@@ -99,7 +91,8 @@ export default function DataPanel() {
     }, /* @__PURE__ */ React.createElement(Td3Span, null)))))
   }, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(CourseNavigator, {
     updateSelectMenu,
-    doubleClickItem
+    doubleClickItem,
+    displayRole: "student"
   })));
 }
 function Container(props) {

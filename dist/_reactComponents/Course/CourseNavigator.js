@@ -27,7 +27,8 @@ import {
   useInitCourseItems,
   selectedCourseItems,
   authorCourseItemOrderByCourseIdBySection,
-  studentCourseItemOrderByCourseId
+  studentCourseItemOrderByCourseId,
+  studentCourseItemOrderByCourseIdBySection
 } from "./CourseActions.js";
 import "../../_utils/util.css.proxy.js";
 import {pageToolViewAtom, searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
@@ -65,7 +66,7 @@ export default function CourseNavigator(props) {
   if (!coursePermissionsAndSettings) {
     return null;
   }
-  if (coursePermissionsAndSettings.canEditContent == "0" || effectiveRole == "student") {
+  if (coursePermissionsAndSettings.canEditContent == "0" || effectiveRole == "student" || props.displayRole == "student") {
     return /* @__PURE__ */ React.createElement(StudentCourseNavigation, {
       courseNavigatorProps: props,
       courseId,
@@ -74,7 +75,7 @@ export default function CourseNavigator(props) {
       setNumberOfVisibleColumns
     });
   }
-  if (coursePermissionsAndSettings.canEditContent == "1" || effectiveRole == "instructor") {
+  if (coursePermissionsAndSettings.canEditContent == "1" || effectiveRole == "instructor" || props.displayRole == "instructor") {
     return /* @__PURE__ */ React.createElement(AuthorCourseNavigation, {
       courseNavigatorProps: props,
       courseId,
@@ -85,13 +86,22 @@ export default function CourseNavigator(props) {
   }
   return null;
 }
-function StudentCourseNavigation({courseId, numberOfVisibleColumns, setNumberOfVisibleColumns, courseNavigatorProps}) {
-  let studentItemOrder = useRecoilValue(studentCourseItemOrderByCourseId(courseId));
+function StudentCourseNavigation({courseId, sectionId, numberOfVisibleColumns, setNumberOfVisibleColumns, courseNavigatorProps}) {
+  let studentItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId, sectionId}));
   console.log("studentItemOrder", studentItemOrder);
+  let previousSections = useRef([]);
+  let definedForSectionId = useRef("");
+  if (definedForSectionId.current != sectionId) {
+    previousSections.current = [];
+    definedForSectionId.current = sectionId;
+  }
   let items = [];
   studentItemOrder.map((doenetId) => items.push(/* @__PURE__ */ React.createElement(StudentItem, {
     key: `itemcomponent${doenetId}`,
+    courseId,
     doenetId,
+    indentLevel: 0,
+    previousSections,
     courseNavigatorProps,
     numberOfVisibleColumns
   })));
@@ -110,7 +120,7 @@ function StudentItem({courseId, doenetId, numberOfVisibleColumns, indentLevel, p
     return null;
   }
   if (itemInfo.type == "section") {
-    return /* @__PURE__ */ React.createElement(Section, {
+    return /* @__PURE__ */ React.createElement(StudentSection, {
       key: `Item${doenetId}`,
       courseNavigatorProps,
       courseId,
@@ -131,6 +141,46 @@ function StudentItem({courseId, doenetId, numberOfVisibleColumns, indentLevel, p
     });
   }
   return null;
+}
+function StudentSection({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
+  let studentSectionItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId, sectionId: itemInfo.doenetId}));
+  let previousSections = useRef([]);
+  if (itemInfo.isOpen) {
+    let sectionItems = studentSectionItemOrder.map((doenetId2) => /* @__PURE__ */ React.createElement(Item, {
+      key: `itemcomponent${doenetId2}`,
+      courseNavigatorProps,
+      previousSections,
+      courseId,
+      doenetId: doenetId2,
+      numberOfVisibleColumns,
+      indentLevel: indentLevel + 1
+    }));
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
+      courseId,
+      courseNavigatorProps,
+      numberOfVisibleColumns,
+      icon: faFolderTree,
+      label: itemInfo.label,
+      doenetId,
+      hasToggle: true,
+      isOpen: itemInfo.isOpen,
+      isSelected: itemInfo.isSelected,
+      indentLevel
+    }), sectionItems);
+  } else {
+    return /* @__PURE__ */ React.createElement(Row, {
+      courseId,
+      courseNavigatorProps,
+      numberOfVisibleColumns,
+      icon: faFolderTree,
+      label: itemInfo.label,
+      doenetId,
+      hasToggle: true,
+      isOpen: itemInfo.isOpen,
+      isSelected: itemInfo.isSelected,
+      indentLevel
+    });
+  }
 }
 function StudentActivity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {

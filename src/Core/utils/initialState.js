@@ -62,7 +62,7 @@ export async function saveInitialRendererStates({ doenetML, cid, doenetId, nVari
 
 function calculateInitialRendererState({ doenetML, doenetId, requestedVariantIndex, flags = {} }) {
 
-  let coreWorker = new Worker('../../viewer/core.js', { type: 'module' });
+  let coreWorker = new Worker('/viewer/core.js', { type: 'module' });
 
   coreWorker.postMessage({
     messageType: "createCore",
