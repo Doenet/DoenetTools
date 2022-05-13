@@ -387,6 +387,12 @@ export default function attempt() {
           description: 'Sets a label next to the checkbox.',
         },
         {
+          name: 'Label - Vertical',
+          propPreview: '<Checkbox label="Checkbox" vertical/>} />',
+          propCode: { label: "Checkbox", vertical },
+          description: 'Sets a label below the checkbox.',
+        },
+        {
           name: 'Unchecked Icon',
           propPreview: '<Checkbox uncheckedIcon={<FontAwesomeIcon icon={faCode}} />} />',
           propCode: { uncheckedIcon: <FontAwesomeIcon icon={faCode} /> },
