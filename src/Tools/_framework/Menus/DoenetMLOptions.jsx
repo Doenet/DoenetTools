@@ -36,7 +36,7 @@ export default function DoenetMLOptions() {
 	const setUpdateInternalValue = useSetRecoilState(updateTextEditorDoenetMLAtom);
 	
 	useEffect(() => {
-		selectedGroup !== "all" ? setCurrentOptions(options.filter(option => option.group == selectedGroup.toLowerCase())) : setCurrentOptions(options)
+		selectedGroup !== "all" ? setCurrentOptions(options.filter(option => option.label.charAt(0).toLowerCase() == selectedGroup.toLowerCase())) : setCurrentOptions(options)
 	}, [selectedGroup])
 
 	const updateViewer = useRecoilCallback(({snapshot, set}) => 
