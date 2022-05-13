@@ -225,7 +225,7 @@ export const TimeLimit = ({ courseId, doenetId }) => {
   }, [recoilValue]);
   return (
     <InputWrapper>
-      <LabelText>Time Limit</LabelText>
+      <LabelText>Time Limit in Minutes</LabelText>
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
           style={{ marginRight: '5px' }}
