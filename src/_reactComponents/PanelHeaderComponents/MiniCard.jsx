@@ -41,7 +41,7 @@ const Label = styled.span`
   line-height: 1.1
 ` 
 
-const MiniCard = ({ image="/media/doenetML_pictures/placeholder.png", label="label" }) => {
+const MiniCard = ({ image="/media/placeholder.png", label="label" }) => {
 
   return (
     <CardContainer >
