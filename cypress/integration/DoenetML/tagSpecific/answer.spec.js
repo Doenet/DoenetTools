@@ -5559,6 +5559,8 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}" + answer[1], { delay: 5, force: true }).blur();
       cy.get('#\\/_mathinput2 textarea').type("{ctrl+home}{shift+end}{backspace}" + answer[2], { delay: 5, force: true }).blur();
       cy.get('#\\/_mathinput3 textarea').type("{end}{backspace}" + answer[3], { delay: 5, force: true }).blur();
+      // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
+      cy.wait(0)
       cy.get('#\\/_answer1_submit').click();
 
       cy.get('#\\/sr1 .mjx-mrow').should('have.text', answer[1])
@@ -6407,6 +6409,8 @@ describe('Answer Tag Tests', function () {
 
     cy.log("Submit answer")
     cy.get('#\\/_mathinput2 textarea').blur();
+    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
+    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
@@ -6504,6 +6508,8 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
+    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
+    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
@@ -6520,6 +6526,8 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
+    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
+    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -6651,6 +6659,8 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
+    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
+    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_textinput1_input').should('have.value', 'rain');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
@@ -6753,6 +6763,8 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
+    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
+    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_textinput1_input').should('have.value', 'rain');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
@@ -6776,6 +6788,8 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
+    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
+    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_textinput1_input').should('have.value', 'x');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
@@ -13612,5 +13626,95 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('verify tab behavior, math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer>x</answer>
+  `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+
+      cy.log("Type correct answer in")
+      cy.get(mathinputAnchor).type(`x`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+
+      cy.log("Press tab")
+      cy.get(mathinputSubmitAnchor).focus();
+      cy.get(mathinputAnchor).tab();
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+
+      cy.log("Press enter on submit button")
+      cy.get(mathinputSubmitAnchor).type(`{enter}`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+
+    })
+  });
+
+  it('verify tab behavior, text', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer type="text">hello</answer>
+  `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let textinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let textinputAnchor = cesc('#' + textinputName) + "_input";
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+      let textinputCorrectAnchor = cesc('#' + textinputName + '_correct');
+      let textinputIncorrectAnchor = cesc('#' + textinputName + '_incorrect');
+
+      cy.get(textinputSubmitAnchor).should('be.visible');
+      cy.get(textinputCorrectAnchor).should('not.exist');
+      cy.get(textinputIncorrectAnchor).should('not.exist');
+
+      cy.log("Type correct answer in")
+      cy.get(textinputAnchor).type(`hello`);
+      cy.get(textinputSubmitAnchor).should('be.visible');
+      cy.get(textinputCorrectAnchor).should('not.exist');
+      cy.get(textinputIncorrectAnchor).should('not.exist');
+
+      cy.log("Press tab")
+      cy.get(textinputAnchor).tab();
+      cy.get(textinputSubmitAnchor).should('be.visible');
+      cy.get(textinputCorrectAnchor).should('not.exist');
+      cy.get(textinputIncorrectAnchor).should('not.exist');
+
+      cy.log("Press enter on submit button")
+      cy.get(textinputSubmitAnchor).type(`{enter}`, { force: true });
+      cy.get(textinputSubmitAnchor).should('not.exist');
+      cy.get(textinputCorrectAnchor).should('be.visible');
+      cy.get(textinputIncorrectAnchor).should('not.exist');
+
+    })
+  });
 
 })
