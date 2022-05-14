@@ -15,6 +15,8 @@ import axios from "axios";
 import { fileByPageId } from '../ToolHandlers/CourseToolHandler';
 import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
 
+
+
 export default function DoenetMLEditor(props) {
   console.log(">>>===DoenetMLEditor")
 
@@ -22,7 +24,6 @@ export default function DoenetMLEditor(props) {
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const updateInternalValue = useRecoilValue(updateTextEditorDoenetMLAtom);
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom)
-  
   const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
   const courseId = useRecoilValue(courseIdAtom)
   
@@ -94,7 +95,7 @@ export default function DoenetMLEditor(props) {
       clearTimeout(timeout.current);
 
       timeout.current = setTimeout(function () {
-        saveDraft(initializedPageId, paramCourseId);
+        saveDraft(initializedPageId, courseId);
         timeout.current = null;
       }, 3000)//3 seconds
     }}
