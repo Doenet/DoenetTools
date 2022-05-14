@@ -88,15 +88,6 @@ export default function Section(props) {
 
   let checkworkComponent = null;
 
-  //TODO checkwork
-  let content = 
-  <>
-    <a name={name} />
-    {heading} <br/>
-    {children}
-    {checkworkComponent}
-  </>;
-
   
   if (SVs.createSubmitAllButton) {
   
