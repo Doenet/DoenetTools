@@ -126,7 +126,7 @@ export default function MathInput(props) {
         action: actions.updateValue,
         baseVariableValue: rendererValue.current,
       });
-      if (e.relatedTarget.id === checkWorkButton.props.id && includeCheckWork.current && validationState.current === 'unvalidated') {
+      if (e.relatedTarget?.id === checkWorkButton?.props.id && includeCheckWork.current && validationState.current === 'unvalidated') {
         callAction({
           action: actions.submitAnswer,
         });
