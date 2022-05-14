@@ -524,7 +524,7 @@ export function correctComponentTypeCapitalization(serializedComponents, compone
     if (componentTypeFixed) {
       component.componentType = componentTypeFixed;
     } else {
-      throw Error(`Invalid component type: ${component.componentType}`);
+      throw Error(`Invalid component type${indexRangeString(component)}: ${component.componentType}`);
     }
 
     if (component.children) {
@@ -564,7 +564,7 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
         if (attrObj) {
 
           if (propName in attributes) {
-            throw Error(`Cannot repeat prop ${propName}`)
+            throw Error(`Cannot repeat prop ${propName}.  Found in component type ${component.componentType}${indexRangeString(component)}`)
           }
 
           attributes[propName] = componentFromAttribute({
@@ -583,7 +583,7 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
               componentInfoObjects,
             });
           } else {
-            throw Error(`Invalid attribute for component of type ${component.componentType}: ${prop}`);
+            throw Error(`Invalid attribute ${prop} for component of type ${component.componentType}${indexRangeString(component)}`)
           }
 
         }
@@ -1603,7 +1603,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
             prescribedName = props[key];
             delete props[key];
           } else {
-            throw Error("Cannot define name twice for a component");
+            throw Error(`Cannot define name twice.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
           }
         } else if (lowercaseKey === "assignnames") {
           if (assignNames === undefined) {
@@ -1611,21 +1611,21 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
             if (result.success) {
               assignNames = result.pieces;
             } else {
-              throw Error("Invalid format for assignnames");
+              throw Error(`Invalid format for assignnames.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
             }
             delete props[key];
           } else {
-            throw Error("Cannot define assignNames twice for a component");
+            throw Error(`Cannot define assignNames twice for a component.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
           }
         } else if (lowercaseKey === "target") {
           if (target === undefined) {
             if (typeof props[key] !== "string") {
-              throw Error("Must specify value for target");
+              throw Error(`Must specify value for target.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
             }
             target = props[key].trim();
             delete props[key];
           } else {
-            throw Error("Cannot define target twice for a component");
+            throw Error(`Cannot define target twice for a component.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
           }
         }
       }
@@ -1637,10 +1637,10 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       if (!prescribedNameFromDoenetAttributes && !doenetAttributes.createdFromSugar) {
 
         if (!(/[a-zA-Z]/.test(prescribedName.substring(0, 1)))) {
-          throw Error(`Invalid component name: ${prescribedName}.  Component name must begin with a letter`);
+          throw Error(`Invalid component name: ${prescribedName}.  Component name must begin with a letter.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
         }
         if (!(/^[a-zA-Z0-9_\-]+$/.test(prescribedName))) {
-          throw Error(`Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores`);
+          throw Error(`Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
         }
       }
 
@@ -1671,7 +1671,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
       let assignNamesToReplacements = componentClass.assignNamesToReplacements;
       if (!assignNamesToReplacements) {
-        throw Error("Cannot assign names for component type " + serializedComponent.componentType);
+        throw Error(`Cannot assign names for component type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`);
       }
 
       // assignNames was specified
@@ -1682,15 +1682,15 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         let flattedNames = flattenDeep(assignNames);
         for (let name of flattedNames) {
           if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
-            throw Error("All assigned names must begin with a letter");
+            throw Error(`All assigned names must begin with a letter.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`);
           }
           if (!(/^[a-zA-Z0-9_\-]+$/.test(name))) {
-            throw Error("Assigned names can contain only letters, numbers, hyphens, and underscores");
+            throw Error(`Assigned names can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`);
           }
         }
         // check if unique names
         if (flattedNames.length !== new Set(flattedNames).size) {
-          throw Error("Duplicate assigned names");
+          throw Error(`Duplicate assigned names.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`);
         }
       }
     }
@@ -1740,7 +1740,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
     serializedComponent.componentName = componentName;
     if (prescribedName) {
       if (prescribedName in currentNamespace.namesUsed) {
-        throw Error("Duplicate component name " + componentName)
+        throw Error(`Duplicate component name ${componentName}.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
       }
       currentNamespace.namesUsed[prescribedName] = true;
     }
@@ -1751,7 +1751,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       if (assignNames) {
         for (let name of flattenDeep(assignNames)) {
           if (name in currentNamespace.namesUsed) {
-            throw Error(`Duplicate component name (from assignNames of ${componentName}): ${name}`)
+            throw Error(`Duplicate component name ${name} (from assignNames of ${componentName}).  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
           }
           currentNamespace.namesUsed[name] = true;
         }
@@ -1796,11 +1796,11 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
     if (target) {
       if (!componentClass.acceptTarget) {
-        throw Error(`Component type ${componentType} does not accept a target attribute`);
+        throw Error(`Component type ${componentType} does not accept a target attribute.   Found in component ${componentName}${indexRangeString(serializedComponent)}`);
       }
 
       if (target.includes('|')) {
-        throw Error('target cannot include |')
+        throw Error(`target cannot include |.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
       }
 
       // convert target to full name
@@ -2758,4 +2758,23 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
       }
     }
   }
+}
+
+
+function indexRangeString(serializedComponent) {
+  let message = "";
+  if (serializedComponent.range) {
+    let indBegin, indEnd;
+    if (serializedComponent.range.selfCloseBegin !== undefined) {
+      indBegin = serializedComponent.range.selfCloseBegin;
+      indEnd = serializedComponent.range.selfCloseEnd;
+    } else if (serializedComponent.range.openBegin !== undefined) {
+      indBegin = serializedComponent.range.openBegin;
+      indEnd = serializedComponent.range.openEnd;
+    }
+    if (indBegin !== undefined) {
+      message += ` at indices ${indBegin}-${indEnd}`;
+    }
+  }
+  return message;
 }
