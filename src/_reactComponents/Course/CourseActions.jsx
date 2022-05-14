@@ -18,7 +18,7 @@ const enrollmentAtomByCourseId = atomFamily({
   key:"enrollmentAtomByCourseId",
   default:[],
   effects:courseId => [ ({setSelf, trigger})=>{
-    if (trigger == 'get'){
+    if (trigger == 'get' && courseId){
       axios.get('/api/getEnrollment.php', { params: { courseId } })
       .then(resp=>{
         setSelf(resp.data.enrollmentArray)
