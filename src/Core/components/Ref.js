@@ -111,10 +111,6 @@ export default class Ref extends InlineComponent {
         if (dependencyValues.targetComponent === null || dependencyValues.targetInactive) {
           return { setValue: { targetName: "" } }
         } else {
-          if (dependencyValues.uri !== null) {
-            console.warn("Haven't implemented ref with uri and target, ignoring target.");
-            return { setValue: { targetName: "" } }
-          }
           return { setValue: { targetName: dependencyValues.targetComponent.componentName } }
         }
       },
