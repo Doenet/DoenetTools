@@ -97,6 +97,102 @@ export default function Section(props) {
     {checkworkComponent}
   </>;
 
+  
+  if (SVs.createSubmitAllButton) {
+  
+    updateValidationState();
+
+  
+    let checkWorkStyle = {
+      height: "23px",
+      display: "inline-block",
+      backgroundColor: "rgb(2, 117, 216)",
+      padding: "1px 6px 1px 6px",
+      color: "white",
+      fontWeight: "bold",
+      marginBottom: "30px",  //Space after check work
+    }
+
+    let checkWorkText = "Check Work";
+    if (!SVs.showCorrectness) {
+      checkWorkText = "Submit Response";
+    }
+    checkworkComponent = (
+      <button id={name + "_submit"}
+        tabIndex="0"
+        style={checkWorkStyle}
+        onClick={submitAllAnswers}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            submitAllAnswers();
+          }
+        }}
+      >
+        <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+    &nbsp;
+        {checkWorkText}
+      </button>);
+
+    if (SVs.showCorrectness) {
+      if (validationState.current === "correct") {
+        checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+        checkworkComponent = (
+          <span id={name + "_correct"}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faCheck} />
+        &nbsp;
+        Correct
+          </span>);
+      } else if (validationState.current === "incorrect") {
+        checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+        checkworkComponent = (
+          <span id={name + "_incorrect"}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faTimes} />
+        &nbsp;
+        Incorrect
+          </span>);
+      } else if (validationState.current === "partialcorrect") {
+        checkWorkStyle.backgroundColor = "#efab34";
+        let percent = Math.round(SVs.creditAchieved * 100);
+        let partialCreditContents = `${percent}% Correct`;
+
+        checkworkComponent = (
+          <span id={name + "_partial"}
+            style={checkWorkStyle}
+          >
+            {partialCreditContents}
+          </span>);
+      }
+    } else {
+      // showCorrectness is false
+      if (validationState.current !== "unvalidated") {
+        checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkworkComponent = (
+          <span id={name + "_saved"}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faCloud} />
+        &nbsp;
+        Response Saved
+          </span>);
+      }
+    }
+
+    checkworkComponent = <div>{checkworkComponent}</div>
+  }
+
+  //TODO checkwork
+  let content = 
+  <>
+    <a name={name} />
+    {heading} <br/>
+    {children}
+    {checkworkComponent}
+  </>;
+
   if (SVs.collapsible) {
     // if (SVs.open) {
       // if (SVs.boxed){
