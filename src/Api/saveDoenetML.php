@@ -18,6 +18,7 @@ $dangerousDoenetML = $_POST["doenetML"];
 $pageId = mysqli_real_escape_string($conn, $_POST["pageId"]);
 $courseId = mysqli_real_escape_string($conn, $_POST["courseId"]);
 $saveAsCid = mysqli_real_escape_string($conn, $_POST["saveAsCid"]);
+$backup = mysqli_real_escape_string($conn, $_POST["backup"]);
 
 $success = true;
 $message = "";
@@ -61,19 +62,22 @@ if ($success) {
     $result = $conn->query($sql);
 
     if ($result->num_rows < 1) {
-        $success = FALSE;
+        $success = false;
         $message = "Invalid page";
     }
 }
 
 if ($success) {
-
-    if($saveAsCid == "1") {
-        $SHA = hash('sha256', $dangerousDoenetML);
+    if ($saveAsCid == "1") {
+        $SHA = hash("sha256", $dangerousDoenetML);
         $cid = cidFromSHA($SHA);
         $filename = $cid;
     } else {
         $filename = "byPageId/$pageId";
+
+        if ($backup == "1" && file_exists("../media/$filename.doenet")) {
+            rename("../media/$filename.doenet", "../media/$filename.bak");
+        }
     }
 
     //TODO: Config file needed for server
