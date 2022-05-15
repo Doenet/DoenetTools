@@ -176,6 +176,9 @@ export function parseAndCompile(inText) {
       throw Error(`Invalid DoenetML at positions ${tc.node.from} to ${tc.node.to}.  Found ${inText.substring(tc.node.from, tc.node.to)}`)
     }
   }
+  if(!inText) {
+    return [];
+  }
   let tc = parse(inText);
   let out = [];
   if (!tc.firstChild()) {
