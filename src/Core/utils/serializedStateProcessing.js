@@ -7,42 +7,6 @@ import { parseAndCompile } from '../../Parser/parser';
 import subsets from './subset-of-reals';
 import { retrieveTextFileForCid } from './retrieveTextFile';
 
-export function scrapeOffAllDoumentRelated(serializedComponents) {
-
-  if (serializedComponents.length === 1 && serializedComponents[0].componentType === "document") {
-    serializedComponents = serializedComponents[0].children;
-  }
-
-  for (let ind = serializedComponents.length - 1; ind >= 0; ind--) {
-    let component = serializedComponents[ind];
-
-    // delete any title or meta components
-    if (["title", "meta"].includes(component.componentType)) {
-      let numberToDelete = 1;
-      let followingComponent = serializedComponents[ind + 1];
-      if (typeof followingComponent === "string" && followingComponent.trim() === "") {
-        numberToDelete = 2;
-      }
-      serializedComponents.splice(ind, numberToDelete);
-    }
-  }
-
-  // strip off any blank strings at beginning or end
-  let firstNonblankInd, lastNonblankInd;
-  for (let [ind, component] of serializedComponents.entries()) {
-    if (typeof component !== "string" || component.trim() !== "") {
-      if (firstNonblankInd === undefined) {
-        firstNonblankInd = ind;
-      }
-      lastNonblankInd = ind;
-    }
-  }
-  serializedComponents = serializedComponents.slice(firstNonblankInd, lastNonblankInd + 1);
-
-  return serializedComponents;
-
-}
-
 export async function expandDoenetMLsToFullSerializedComponents({
   cids, doenetMLs,
   componentInfoObjects,
@@ -202,7 +166,7 @@ export function removeBlankStringChildren(serializedComponents, componentInfoObj
 
 }
 
-export function findContentCopies({ serializedComponents }) {
+function findContentCopies({ serializedComponents }) {
 
   let cidComponents = {};
   for (let serializedComponent of serializedComponents) {
@@ -308,7 +272,7 @@ function cleanIfHaveJustDocument(serializedComponents) {
   }
 }
 
-export function correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping) {
+function correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping) {
 
   //special case for macros before application
   // componentTypeLowerCaseMapping["macro"] = "macro";
@@ -333,8 +297,7 @@ export function correctComponentTypeCapitalization(serializedComponents, compone
 
 }
 
-
-export function createAttributesFromProps(serializedComponents, componentInfoObjects) {
+function createAttributesFromProps(serializedComponents, componentInfoObjects) {
   for (let component of serializedComponents) {
     if (typeof component !== "object") {
       continue;
@@ -534,7 +497,6 @@ function findPreSugarIndsAndMarkFromSugar(components) {
 
   return preSugarIndsFound;
 }
-
 
 export function applyMacros(serializedComponents, componentInfoObjects) {
 
@@ -1020,7 +982,7 @@ function findFirstUnmatchedClosingParens(components) {
   return { success: false }
 }
 
-export function decodeXMLEntities(serializedComponents) {
+function decodeXMLEntities(serializedComponents) {
 
   function replaceEntities(s) {
     return s
@@ -1243,12 +1205,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
     }
   }
 }
-
-
-// function lowercaseDeep(arr1) {
-//   return arr1.map(val => Array.isArray(val) ? lowercaseDeep(val) : val.toLowerCase());
-// }
-
 
 function breakStringInPiecesBySpacesOrParens(string) {
 
@@ -1712,7 +1668,6 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
 }
 
-
 function createNewAssignNamesAndRenameMatchingTNames({
   originalAssignNames, longNameIdBase,
   namespace, oldNamespace, doenetAttributesByTargetComponentName
@@ -1897,7 +1852,6 @@ export function gatherVariantComponents({ serializedComponents, componentInfoObj
   return variantComponents;
 }
 
-
 export function getNumberOfVariants({ serializedComponent, componentInfoObjects }) {
 
   // get number of variants from document (or other sectioning component)
@@ -2031,7 +1985,6 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
   };
 
 }
-
 
 export function processAssignNames({
   assignNames = [],
@@ -2322,7 +2275,6 @@ function createComponentNamesFromParentName({
 
 }
 
-
 function setTargetsOutsideNamespaceToAbsoluteAndRecordAllTargetComponentNames({ namespace, components, doenetAttributesByTargetComponentName }) {
 
   let namespaceLength = namespace.length;
@@ -2391,7 +2343,6 @@ function renameMatchingTNames(component, doenetAttributesByTargetComponentName, 
     }
   }
 }
-
 
 function moveComponentNamesToOriginalNames(components) {
   for (let component of components) {
@@ -2480,7 +2431,6 @@ export function setTNamesToAbsolute(components) {
   }
 }
 
-
 export function restrictTNamesToNamespace({ components, namespace, parentNamespace, parentIsCopy = false }) {
 
   if (parentNamespace === undefined) {
@@ -2557,7 +2507,6 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
     }
   }
 }
-
 
 function indexRangeString(serializedComponent) {
   let message = "";
