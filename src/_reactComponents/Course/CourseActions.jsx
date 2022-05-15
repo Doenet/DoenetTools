@@ -1795,6 +1795,36 @@ export const useCourse = (courseId) => {
   const pasteItems = useRecoilCallback(
     ({ set,snapshot }) =>
       async ({successCallback, failureCallback = defaultFailure}) => {
+
+        //Given a containing DoenetId get all the associated doenetIds
+        async function getIds(doenetId,itemObj=null){
+          let allIds = [doenetId];
+          if (!itemObj){
+            itemObj = await snapshot.getPromise(itemByDoenetId(doenetId));
+          }
+          if (itemObj.type == 'activity'){
+            let activityIds = await getIds(itemObj.order.doenetId,itemObj.order)
+            allIds = [...allIds,...activityIds]
+          }else if (itemObj.type == 'order'){
+            let orderIds = []
+            for (let id of itemObj.content){
+              if (id?.type == 'order'){
+                let subOrderIds = await getIds(itemObj.doenetId,id)
+                orderIds = [...orderIds,...subOrderIds]
+              }else{
+                orderIds.push(id)
+              }
+            }
+            allIds = [...allIds,...orderIds]
+          }else if (itemObj.type == 'bank'){
+            allIds = [...allIds,...itemObj.pages]
+          }else if (itemObj.type == 'section'){
+            console.log("here!!!")
+          }
+          return allIds;
+        }
+
+
         let cutObjs = await snapshot.getPromise(cutCourseItems);
         let copiedObjs = await snapshot.getPromise(copiedCourseItems);
         let selectedDoenetIds = await snapshot.getPromise(selectedCourseItems);
@@ -1812,6 +1842,7 @@ export const useCourse = (courseId) => {
           sectionId = courseId;
         }
         let destParentDoenetId = sectionId;
+        let destPreviousItemDoenetId;
         let destPreviousContainingItemDoenetId;
         let destType = "section";
         //Update parentDoenetId if single selection
@@ -1830,6 +1861,12 @@ export const useCourse = (courseId) => {
           let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:destParentDoenetId}));
           let lastItemInSelectedSectionDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
           let lastItemInSelectedSectionObj = await snapshot.getPromise(itemByDoenetId(lastItemInSelectedSectionDoenetId));
+          destPreviousItemDoenetId = lastItemInSelectedSectionDoenetId;
+          if (!lastItemInSelectedSectionDoenetId){
+            //If none in selected section then use the section itself
+            lastItemInSelectedSectionDoenetId = destParentDoenetId;
+            lastItemInSelectedSectionObj = await snapshot.getPromise(itemByDoenetId(destParentDoenetId));
+          }
           if (lastItemInSelectedSectionObj.type == 'section' || 
             lastItemInSelectedSectionObj.type == 'bank' ||
             lastItemInSelectedSectionObj.type == 'activity'
@@ -1845,9 +1882,10 @@ export const useCourse = (courseId) => {
           failureCallback("Can only paste to one location.")
           return;
         }else{
-          //define destPreviousContainingItem when nothing is selected
+          //define destPreviousItemDoenetId and destPreviousContainingItem when nothing is selected
           let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
           let lastItemInSelectedSectionDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
+          destPreviousItemDoenetId = lastItemInSelectedSectionDoenetId
           let lastItemInSelectedSectionObj = await snapshot.getPromise(itemByDoenetId(lastItemInSelectedSectionDoenetId));
           if (lastItemInSelectedSectionObj.type == 'section' || 
             lastItemInSelectedSectionObj.type == 'bank' ||
@@ -1860,9 +1898,14 @@ export const useCourse = (courseId) => {
             destPreviousContainingItemDoenetId = lastItemInSelectedSectionObj.containingDoenetId;
           }
         }
+        if (!destPreviousItemDoenetId){
+          //Empty section
+          destPreviousItemDoenetId = destParentDoenetId;
+        }
 
         console.log("destParentDoenetId",destParentDoenetId)
         console.log("destPreviousContainingItemDoenetId",destPreviousContainingItemDoenetId)
+        console.log("destPreviousItemDoenetId",destPreviousItemDoenetId)
         console.log("destType",destType)
         
         
@@ -1908,31 +1951,53 @@ export const useCourse = (courseId) => {
             }
 
           }
-          console.log("doenetIdsToMove",doenetIdsToMove)
 
-              // if (doenetIdsToMove.length > 0){
-            //   //update the database for containing objects
-            //   try {
-                let resp = await axios.post('/api/moveContent.php',{
-                  courseId,
-                  doenetIdsToMove,
-                  destParentDoenetId,
-                  destPreviousContainingItemDoenetId,
-                })
-                console.log("moveContent resp.data",resp.data)
-            //     if (resp.status < 300) {
-              // for (let [i,cutObj] of Object.entries(cutObjs)){
-              //   let nextObj = nextObjs[i];
-              //   set(itemByDoenetId(cutObj.doenetId),nextObj); 
-              // }
-        //     successCallback?.();
-        //     } else {
-        //       throw new Error(`response code: ${resp.status}`);
-        //     }
-        //   } catch (err) {
-        //     failureCallback(err);
-        //   }
-        // }
+        if (doenetIdsToMove.length > 0){
+          //update the database for containing objects
+          try {
+            let resp = await axios.post('/api/moveContent.php',{
+              courseId,
+              doenetIdsToMove,
+              destParentDoenetId,
+              destPreviousContainingItemDoenetId,
+            })
+            // console.log("moveContent resp.data",resp.data)
+            if (resp.status < 300) {
+              //update each containing item with new parentId 
+              //and turn off selection and isBeingCut
+              for (let doenetId of doenetIdsToMove){
+                set(itemByDoenetId(doenetId),(prevObj)=>{
+                  let nextObj = {...prevObj}
+                  nextObj["isBeingCut"] = false;
+                  nextObj["isSelected"] = false;
+                  nextObj.parentDoenetId = destParentDoenetId;
+                  return nextObj
+                }); 
+              }
+
+              //stack all doenetIds associated with the move
+              let sortedDoenetIdsToMove = [];
+              for (let doenetId of doenetIdsToMove){
+                let associatedIds = await getIds(doenetId)
+                sortedDoenetIdsToMove = [...sortedDoenetIdsToMove,...associatedIds];
+              }
+              //update author order with the changes 
+              //remove from old positions
+              //add as a stack to the new position
+              set(authorCourseItemOrderByCourseId(courseId),(prevObj)=>{
+                let nextObj = [...prevObj];
+                nextObj = nextObj.filter((value)=>!sortedDoenetIdsToMove.includes(value))
+                nextObj.splice(nextObj.indexOf(destPreviousItemDoenetId)+1,0,...sortedDoenetIdsToMove)
+                return nextObj;
+              })
+            successCallback?.();
+            } else {
+              throw new Error(`response code: ${resp.status}`);
+            }
+          } catch (err) {
+            failureCallback(err);
+          }
+        }
 
           
           //Transfer cut to copy so we don't get duplicate doenetIds
