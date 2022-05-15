@@ -173,7 +173,7 @@ export function parseAndCompile(inText) {
         return txt;
       }
     } else {
-      return null;
+      throw Error(`Invalid DoenetML at positions ${tc.node.from} to ${tc.node.to}.  Found ${inText.substring(tc.node.from, tc.node.to)}`)
     }
   }
   let tc = parse(inText);

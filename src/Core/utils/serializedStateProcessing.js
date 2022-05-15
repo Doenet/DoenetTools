@@ -7,130 +7,6 @@ import { parseAndCompile } from '../../Parser/parser';
 import subsets from './subset-of-reals';
 import { retrieveTextFileForCid } from './retrieveTextFile';
 
-export function scrapeOffAllDoumentRelated(serializedComponents) {
-
-  if (serializedComponents.length === 1 && serializedComponents[0].componentType === "document") {
-    serializedComponents = serializedComponents[0].children;
-  }
-
-  for (let ind = serializedComponents.length - 1; ind >= 0; ind--) {
-    let component = serializedComponents[ind];
-
-    // delete any title or meta components
-    if (["title", "meta"].includes(component.componentType)) {
-      let numberToDelete = 1;
-      let followingComponent = serializedComponents[ind + 1];
-      if (typeof followingComponent === "string" && followingComponent.trim() === "") {
-        numberToDelete = 2;
-      }
-      serializedComponents.splice(ind, numberToDelete);
-    }
-  }
-
-  // strip off any blank strings at beginning or end
-  let firstNonblankInd, lastNonblankInd;
-  for (let [ind, component] of serializedComponents.entries()) {
-    if (typeof component !== "string" || component.trim() !== "") {
-      if (firstNonblankInd === undefined) {
-        firstNonblankInd = ind;
-      }
-      lastNonblankInd = ind;
-    }
-  }
-  serializedComponents = serializedComponents.slice(firstNonblankInd, lastNonblankInd + 1);
-
-  return serializedComponents;
-
-}
-
-function findNextTag(text) {
-  let tagRegEx = /<\/?\w+((\s+\w+(\s*=\s*(?:".*?"|'.*?'|[\^'">\s]+))?)+\s*|\s*)\/?>/;
-  let matchObj = tagRegEx.exec(text);
-  if (matchObj === null) { return false; } //no tags so return
-  let tagString = matchObj[0];
-  //make tags lower case
-  tagString = tagString.toLowerCase();
-  let tagIndex = matchObj.index;
-
-  //Find tagType
-  let parts = tagString.split(" ");
-  let tagType = parts[0].substring(1, parts[0].length - 1);
-  if (parts.length > 1) {
-    tagType = parts[0].substring(1, parts[0].length);
-  }
-  if (tagType.substring(tagType.length - 1, tagType.length) === '/') {
-    tagType = tagType.substring(0, tagType.length - 1);
-  }
-
-  let tagPropsString = matchObj[1];
-  tagPropsString = tagPropsString.trim();
-  let tagProps = {};
-
-  //Process Double Quoted Props
-  let startPropDoubleRegEx = /\w+\s*=\s*["]/;
-  matchObj = "not null";
-  while (matchObj !== null) {
-    matchObj = startPropDoubleRegEx.exec(tagPropsString);
-    if (matchObj !== null) {
-      let followingCode = tagPropsString.substring(matchObj.index + matchObj[0].length - 1, tagPropsString.length);
-      let doubleQuoteRegEx = /"[^"\\]*(?:\\.[^"\\]*)*"/;
-      let doubleMatchObj = doubleQuoteRegEx.exec(followingCode);
-      let insideDoubleQuotes = doubleMatchObj[0].substring(1, doubleMatchObj[0].length - 1);
-      let nameParts = matchObj[0].split('=');
-      let propName = nameParts[0].trim();
-      if (propName.substring(0, 1) === '_') {
-        throw Error("The prop " + propName + " is reserved for internal use only.");
-      }
-      insideDoubleQuotes = insideDoubleQuotes.replace(/\\"/g, '"');
-      if (propName in tagProps) {
-        throw Error("Duplicate attribute " + propName + " in tag " + tagType);
-      }
-      tagProps[propName] = insideDoubleQuotes;
-      tagPropsString = tagPropsString.substring(0, matchObj.index) +
-        tagPropsString.substring(matchObj.index + matchObj[0].length +
-          doubleMatchObj[0].length, tagPropsString.length);
-    }
-  }
-
-  //Process Single Quoted Props
-  let startPropSingleRegEx = /\w+\s*=\s*[']/;
-  matchObj = "not null";
-  while (matchObj !== null) {
-    matchObj = startPropSingleRegEx.exec(tagPropsString);
-    if (matchObj !== null) {
-      let followingCode = tagPropsString.substring(matchObj.index + matchObj[0].length - 1, tagPropsString.length);
-      let singleQuoteRegEx = /'[^'\\]*(?:\\.[^'\\]*)*'/;
-      let singleMatchObj = singleQuoteRegEx.exec(followingCode);
-      let insideSingleQuotes = singleMatchObj[0].substring(1, singleMatchObj[0].length - 1);
-      let nameParts = matchObj[0].split('=');
-      let propName = nameParts[0].trim();
-      if (propName.substring(0, 1) === '_') {
-        throw Error("The prop " + propName + " is reserved for internal use only.");
-      }
-      insideSingleQuotes = insideSingleQuotes.replace(/\\'/g, "'");
-      if (propName in tagProps) {
-        throw Error("Duplicate attribute " + propName + " in tag " + tagType);
-      }
-      tagProps[propName] = insideSingleQuotes;
-      tagPropsString = tagPropsString.substring(0, matchObj.index) +
-        tagPropsString.substring(matchObj.index + matchObj[0].length +
-          singleMatchObj[0].length, tagPropsString.length);
-
-    }
-  }
-
-  //Process Unquoted Props
-  if (/\S/.test(tagPropsString)) {
-    let unquotedParts = tagPropsString.split(" ");
-    for (let propName of unquotedParts) {
-      if (/\S/.test(propName)) {
-        tagProps[propName] = true;
-      }
-    }
-  }
-  return { tagString: tagString, tagType: tagType, tagIndex: tagIndex, tagProps: tagProps };
-}
-
 export async function expandDoenetMLsToFullSerializedComponents({
   cids, doenetMLs,
   componentInfoObjects,
@@ -142,7 +18,6 @@ export async function expandDoenetMLsToFullSerializedComponents({
   for (let doenetML of doenetMLs) {
 
     let serializedComponents = parseAndCompile(doenetML);
-    // let serializedComponents = doenetMLToSerializedComponents(doenetML);
 
     serializedComponents = cleanIfHaveJustDocument(serializedComponents);
 
@@ -264,119 +139,6 @@ function cidsToDoenetMLs(cids) {
 
 }
 
-
-
-export function doenetMLToSerializedComponents(doenetML, init = true) {
-  if (doenetML === undefined) { return []; }
-  if (init) {
-
-    let startCommentIndex = doenetML.search('<!--');
-    while (startCommentIndex !== -1) {
-      let endCommentIndex = doenetML.search('-->');
-      //if no end comment then the rest of the doenetML is commented out
-      if (endCommentIndex === -1) { endCommentIndex = doenetML.length; } else { endCommentIndex = endCommentIndex + 3 }
-      doenetML = doenetML.substring(0, startCommentIndex) + doenetML.substring(endCommentIndex, doenetML.length);
-      startCommentIndex = doenetML.search('<!--');
-    }
-
-  }
-  let json = [];
-
-  //starting and ending index candidates
-  let stringBeforeCode = "";
-  let betweenTagsCode = "";
-  while (doenetML.length > 0) {
-
-    let startTag = findNextTag(doenetML);
-
-    if (startTag === false) {
-      //just text remains so return it if it has something in it
-      if (doenetML.length > 0) {
-        json.push(doenetML);
-      }
-      return json;
-    }
-
-    let lastCharactorInsideStartTag =
-      startTag.tagString.substring(startTag.tagString.length - 2, startTag.tagString.length - 1);
-    if (lastCharactorInsideStartTag === '/') {
-      //empty tag
-      stringBeforeCode = doenetML.substring(0, startTag.tagIndex);
-      betweenTagsCode = "";
-      doenetML = doenetML.substring(startTag.tagIndex + startTag.tagString.length, doenetML.length);
-    } else {
-      //find the matching end tag
-      let numStarts = 1;
-      let numEnds = 0;
-      let nextTag = JSON.parse(JSON.stringify(startTag));
-      let searchForNextTagBeginingAtIndex = 0;
-      let afterStartCode = "";
-
-      while (numStarts > numEnds) {
-        // console.log(numStarts+" --- "+numEnds);
-        searchForNextTagBeginingAtIndex = Number(searchForNextTagBeginingAtIndex) + Number(nextTag.tagString.length) + Number(nextTag.tagIndex);
-        afterStartCode = doenetML.substring(searchForNextTagBeginingAtIndex, doenetML.length);
-        nextTag = findNextTag(afterStartCode);
-        if (nextTag === false) {
-          throw Error("No matching </" + startTag.tagType + "> end tag")
-        }
-        if (nextTag.tagType === startTag.tagType) { numStarts++; }
-        if (nextTag.tagType === "/" + startTag.tagType) { numEnds++; }
-      }
-
-      stringBeforeCode = doenetML.substring(0, startTag.tagIndex);
-      let startBetweenIndex = Number(startTag.tagIndex) + Number(startTag.tagString.length);
-      let endBetweenIndex = Number(searchForNextTagBeginingAtIndex) + Number(nextTag.tagIndex);
-      betweenTagsCode = doenetML.substring(startBetweenIndex, endBetweenIndex);
-      doenetML = doenetML.substring(Number(endBetweenIndex) + Number(nextTag.tagString.length), doenetML.length);
-    }
-
-    if (/\S/.test(stringBeforeCode)) {
-      // have non-blank string before code
-      json.push(stringBeforeCode);
-
-    } else if (stringBeforeCode.length > 0) {
-      json.push(stringBeforeCode);
-    }
-
-
-    let children = [];
-
-    if (betweenTagsCode.length > 0) {
-      children = doenetMLToSerializedComponents(betweenTagsCode, false);
-    }
-
-    json.push({ componentType: startTag.tagType, children: children, props: startTag.tagProps });
-
-    if (!/\S/.test(doenetML)) {
-      if (doenetML.length > 0) {
-        json.push(doenetML);
-      }
-
-      if (init) {
-        // if this is the initial call, strip off any blank strings
-        // at beginning or end
-        let firstNonblankInd, lastNonblankInd;
-        for (let [ind, component] of json.entries()) {
-          if (typeof component !== "string" || component.trim() !== "") {
-            if (firstNonblankInd === undefined) {
-              firstNonblankInd = ind;
-            }
-            lastNonblankInd = ind;
-          }
-        }
-        json = json.slice(firstNonblankInd, lastNonblankInd + 1);
-      }
-
-
-      return json;
-    }
-
-  }
-
-  return json;
-}
-
 export function removeBlankStringChildren(serializedComponents, componentInfoObjects) {
 
   for (let component of serializedComponents) {
@@ -404,7 +166,7 @@ export function removeBlankStringChildren(serializedComponents, componentInfoObj
 
 }
 
-export function findContentCopies({ serializedComponents }) {
+function findContentCopies({ serializedComponents }) {
 
   let cidComponents = {};
   for (let serializedComponent of serializedComponents) {
@@ -510,7 +272,7 @@ function cleanIfHaveJustDocument(serializedComponents) {
   }
 }
 
-export function correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping) {
+function correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping) {
 
   //special case for macros before application
   // componentTypeLowerCaseMapping["macro"] = "macro";
@@ -535,8 +297,7 @@ export function correctComponentTypeCapitalization(serializedComponents, compone
 
 }
 
-
-export function createAttributesFromProps(serializedComponents, componentInfoObjects) {
+function createAttributesFromProps(serializedComponents, componentInfoObjects) {
   for (let component of serializedComponents) {
     if (typeof component !== "object") {
       continue;
@@ -737,7 +498,6 @@ function findPreSugarIndsAndMarkFromSugar(components) {
   return preSugarIndsFound;
 }
 
-
 export function applyMacros(serializedComponents, componentInfoObjects) {
 
   for (let component of serializedComponents) {
@@ -789,7 +549,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
         if (result.additionalAttributes) {
           let newDoenetML = `<copy target="${result.targetName}" ${result.additionalAttributes} />`;
 
-          let newComponents = doenetMLToSerializedComponents(newDoenetML);
+          let newComponents = parseAndCompile(newDoenetML);
           createAttributesFromProps(newComponents, componentInfoObjects);
           markCreatedFromMacro(newComponents);
 
@@ -1222,7 +982,7 @@ function findFirstUnmatchedClosingParens(components) {
   return { success: false }
 }
 
-export function decodeXMLEntities(serializedComponents) {
+function decodeXMLEntities(serializedComponents) {
 
   function replaceEntities(s) {
     return s
@@ -1445,12 +1205,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
     }
   }
 }
-
-
-// function lowercaseDeep(arr1) {
-//   return arr1.map(val => Array.isArray(val) ? lowercaseDeep(val) : val.toLowerCase());
-// }
-
 
 function breakStringInPiecesBySpacesOrParens(string) {
 
@@ -1914,7 +1668,6 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
 }
 
-
 function createNewAssignNamesAndRenameMatchingTNames({
   originalAssignNames, longNameIdBase,
   namespace, oldNamespace, doenetAttributesByTargetComponentName
@@ -2099,7 +1852,6 @@ export function gatherVariantComponents({ serializedComponents, componentInfoObj
   return variantComponents;
 }
 
-
 export function getNumberOfVariants({ serializedComponent, componentInfoObjects }) {
 
   // get number of variants from document (or other sectioning component)
@@ -2233,7 +1985,6 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
   };
 
 }
-
 
 export function processAssignNames({
   assignNames = [],
@@ -2524,7 +2275,6 @@ function createComponentNamesFromParentName({
 
 }
 
-
 function setTargetsOutsideNamespaceToAbsoluteAndRecordAllTargetComponentNames({ namespace, components, doenetAttributesByTargetComponentName }) {
 
   let namespaceLength = namespace.length;
@@ -2593,7 +2343,6 @@ function renameMatchingTNames(component, doenetAttributesByTargetComponentName, 
     }
   }
 }
-
 
 function moveComponentNamesToOriginalNames(components) {
   for (let component of components) {
@@ -2682,7 +2431,6 @@ export function setTNamesToAbsolute(components) {
   }
 }
 
-
 export function restrictTNamesToNamespace({ components, namespace, parentNamespace, parentIsCopy = false }) {
 
   if (parentNamespace === undefined) {
@@ -2759,7 +2507,6 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
     }
   }
 }
-
 
 function indexRangeString(serializedComponent) {
   let message = "";
