@@ -2022,13 +2022,25 @@ export const useCourse = (courseId) => {
               }
               //Deduplicate
               sortedDoenetIdsToMove = [...new Set(sortedDoenetIdsToMove)]
+              // console.log("sortedDoenetIdsToMove",sortedDoenetIdsToMove)
               //update author order with the changes 
               //remove from old positions
               //add as a stack to the new position
               set(authorCourseItemOrderByCourseId(courseId),(prevObj)=>{
                 let nextObj = [...prevObj];
                 nextObj = nextObj.filter((value)=>!sortedDoenetIdsToMove.includes(value))
-                nextObj.splice(nextObj.indexOf(destPreviousItemDoenetId)+1,0,...sortedDoenetIdsToMove)
+                let insertIndex = nextObj.indexOf(destPreviousItemDoenetId)+1;
+                if (insertIndex == 0){
+                  //Not found so backtrack to find the closest
+                  let indexPreviousToPrevious = prevObj.indexOf(destPreviousItemDoenetId) -1
+                  let needle = prevObj[indexPreviousToPrevious];
+                  while (indexPreviousToPrevious > 0 && !nextObj.includes(needle)){
+                    indexPreviousToPrevious--
+                    needle = prevObj[indexPreviousToPrevious];
+                  }
+                  insertIndex = indexPreviousToPrevious + 1;
+                }
+                nextObj.splice(insertIndex,0,...sortedDoenetIdsToMove)
                 return nextObj;
               })
             successCallback?.();
