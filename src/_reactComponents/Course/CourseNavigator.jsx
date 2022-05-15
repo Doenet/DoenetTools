@@ -232,12 +232,12 @@ function Section({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,
     <Item key={`itemcomponent${doenetId}`} courseNavigatorProps={courseNavigatorProps} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel+1} />)
     
     return <>
-    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} isBeingCut={itemInfo.isBeingCut} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
     {sectionItems}
     </>
 
   }else{
-    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} isBeingCut={itemInfo.isBeingCut} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
   }
 }
 

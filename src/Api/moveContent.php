@@ -30,6 +30,9 @@ if (!array_key_exists('courseId', $_POST)) {
 } elseif (!array_key_exists('destPreviousContainingItemDoenetId', $_POST)) {
     $success = false;
     $message = 'Missing destPreviousContainingItemDoenetId';
+} elseif (!array_key_exists('noParentUpdateDoenetIds', $_POST)) {
+    $success = false;
+    $message = 'Missing noParentUpdateDoenetIds';
 } 
 
 //Test Permission to edit content
@@ -40,7 +43,9 @@ if ($success){
     }, $_POST["doenetIdsToMove"]);
     $destParentDoenetId = $_POST["destParentDoenetId"];
     $destPreviousContainingItemDoenetId = $_POST["destPreviousContainingItemDoenetId"];
-    
+    $noParentUpdateDoenetIds = array_map(function ($item) use ($conn) {
+        return mysqli_real_escape_string($conn, $item);
+    }, $_POST["noParentUpdateDoenetIds"]);
 
     $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
     if ($permissions["canEditContent"] != '1'){
@@ -74,14 +79,24 @@ if ($success) {
                 $sortOrder = SortOrder\getSortOrder($sortOrder, $next);
             }
 
-           $sql = "
-           UPDATE course_content
-           SET parentDoenetId = '$destParentDoenetId',
-           sortOrder = '$sortOrder'
-           WHERE doenetId = '$doenetId'
-           AND courseId='$courseId'
-           ";
-           $result = $conn->query($sql);
+            if (in_array($doenetId,$noParentUpdateDoenetIds)){
+                $sql = "
+                UPDATE course_content
+                SET sortOrder = '$sortOrder'
+                WHERE doenetId = '$doenetId'
+                AND courseId='$courseId'
+                ";
+            }else{
+                $sql = "
+                UPDATE course_content
+                SET parentDoenetId = '$destParentDoenetId',
+                sortOrder = '$sortOrder'
+                WHERE doenetId = '$doenetId'
+                AND courseId='$courseId'
+                ";
+            }
+            $result = $conn->query($sql);
+           
        }
     }
 }

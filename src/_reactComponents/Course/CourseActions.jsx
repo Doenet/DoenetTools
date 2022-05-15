@@ -1819,9 +1819,27 @@ export const useCourse = (courseId) => {
           }else if (itemObj.type == 'bank'){
             allIds = [...allIds,...itemObj.pages]
           }else if (itemObj.type == 'section'){
-            console.log("here!!!")
+            let sectionIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:doenetId}))
+            allIds = [...allIds,...sectionIds]
           }
           return allIds;
+        }
+
+        async function getContainingIds(sectionDoenetId){
+          let containingIds = [];
+          let sectionIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:sectionDoenetId}))
+          for (let id of sectionIds){
+            let itemObj = await snapshot.getPromise(itemByDoenetId(id));
+            if (itemObj.type == 'bank' || 
+            itemObj.type == 'activity' 
+            ){
+              containingIds.push(id)
+            }else if (itemObj.type == 'section'){
+              let subSectionIds = await getContainingIds(id);
+              containingIds = [...containingIds,id,...subSectionIds];
+            }
+          }
+          return containingIds;
         }
 
 
@@ -1903,16 +1921,17 @@ export const useCourse = (courseId) => {
           destPreviousItemDoenetId = destParentDoenetId;
         }
 
-        console.log("destParentDoenetId",destParentDoenetId)
-        console.log("destPreviousContainingItemDoenetId",destPreviousContainingItemDoenetId)
-        console.log("destPreviousItemDoenetId",destPreviousItemDoenetId)
-        console.log("destType",destType)
+        // console.log("destParentDoenetId",destParentDoenetId)
+        // console.log("destPreviousContainingItemDoenetId",destPreviousContainingItemDoenetId)
+        // console.log("destPreviousItemDoenetId",destPreviousItemDoenetId)
+        // console.log("destType",destType)
         
         
         //Paste the cut items 
         if (cutObjs.length > 0){
 
           let doenetIdsToMove = [];
+          let noParentUpdateDoenetIds = [];
           //Test if cut objects can go in destination
           for (let cutObj of cutObjs){
             // if (destType == 'section' && 
@@ -1949,9 +1968,26 @@ export const useCourse = (courseId) => {
             if (cutObj.type == 'activity' || cutObj.type == 'bank'){
               doenetIdsToMove.push(cutObj.doenetId);
             }
+            if (cutObj.type == 'section'){
+              //The code shouldn't change the parentDoenetId of the items in sections
+              let additionalNoParentUpdateDoenetIds = await getContainingIds(cutObj.doenetId)
+              //Deduplicate
+              additionalNoParentUpdateDoenetIds = [...new Set(additionalNoParentUpdateDoenetIds)]
+              noParentUpdateDoenetIds = [...noParentUpdateDoenetIds,...additionalNoParentUpdateDoenetIds]
+              doenetIdsToMove = [...doenetIdsToMove,cutObj.doenetId,...additionalNoParentUpdateDoenetIds]
+            }
 
           }
+          //filter out sectionDoenetIdsToNotInclude
+          // doenetIdsToMove = doenetIdsToMove.filter((id)=>!sectionDoenetIdsToNotInclude.includes(id))
 
+          // console.log("params",{
+          //   courseId,
+          //   doenetIdsToMove,
+          //   destParentDoenetId,
+          //   destPreviousContainingItemDoenetId,
+          //   noParentUpdateDoenetIds,
+          // })
         if (doenetIdsToMove.length > 0){
           //update the database for containing objects
           try {
@@ -1960,6 +1996,7 @@ export const useCourse = (courseId) => {
               doenetIdsToMove,
               destParentDoenetId,
               destPreviousContainingItemDoenetId,
+              noParentUpdateDoenetIds,
             })
             // console.log("moveContent resp.data",resp.data)
             if (resp.status < 300) {
@@ -1970,7 +2007,9 @@ export const useCourse = (courseId) => {
                   let nextObj = {...prevObj}
                   nextObj["isBeingCut"] = false;
                   nextObj["isSelected"] = false;
-                  nextObj.parentDoenetId = destParentDoenetId;
+                  if (!noParentUpdateDoenetIds.includes(doenetId)){
+                    nextObj.parentDoenetId = destParentDoenetId;
+                  }
                   return nextObj
                 }); 
               }
@@ -1981,6 +2020,8 @@ export const useCourse = (courseId) => {
                 let associatedIds = await getIds(doenetId)
                 sortedDoenetIdsToMove = [...sortedDoenetIdsToMove,...associatedIds];
               }
+              //Deduplicate
+              sortedDoenetIdsToMove = [...new Set(sortedDoenetIdsToMove)]
               //update author order with the changes 
               //remove from old positions
               //add as a stack to the new position
