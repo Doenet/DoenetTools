@@ -16,8 +16,8 @@ export default function CutCopyPasteMenu() {
   let cutObjs = useRecoilValue(cutCourseItems);
   let copiedObjs = useRecoilValue(copiedCourseItems);
   let selectedItems = useRecoilValue(selectedCourseItems);
-  let firstSelectedDoenetId = selectedItems[0]
-  let firstSelectedItemObj = useRecoilValue(itemByDoenetId(firstSelectedDoenetId))
+  // let firstSelectedDoenetId = selectedItems[0]
+  // let firstSelectedItemObj = useRecoilValue(itemByDoenetId(firstSelectedDoenetId))
 
   let canCopy = true;
   let canCut = true;
@@ -29,7 +29,11 @@ export default function CutCopyPasteMenu() {
   if (cutObjs.length == 0 && copiedObjs.length == 0){
     canPaste = false;
   }
-  if (selectedItems.length != 1 || firstSelectedItemObj?.type == 'order'){
+  // if (selectedItems.length != 1 || firstSelectedItemObj?.type == 'order'){
+  //   canCopy = false;
+  //   canCut = false;
+  // }
+  if (selectedItems.length == 0 ){
     canCopy = false;
     canCut = false;
   }
