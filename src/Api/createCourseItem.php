@@ -26,9 +26,9 @@ if (!array_key_exists('courseId', $_POST)) {
 } elseif (!array_key_exists('itemType', $_POST)) {
     $success = false;
     $message = 'Missing itemType';
-} elseif (!array_key_exists('placeInFolderFlag', $_POST)) {
+} elseif (!array_key_exists('parentDoenetId', $_POST)) {
     $success = false;
-    $message = 'Missing placeInFolderFlag';
+    $message = 'Missing parentDoenetId';
 } 
 
 if ($userId == ''){
@@ -76,7 +76,9 @@ if ($success){
 
   $sql = "SELECT sortOrder
   FROM `course_content`
-  WHERE courseId = '$courseId' and sortOrder >= (Select sortOrder From `course_content` WHERE doenetId='$previousContainingDoenetId')
+  WHERE courseId = '$courseId' 
+  AND sortOrder >= (Select sortOrder From `course_content` WHERE doenetId='$previousContainingDoenetId' AND isDeleted = 0)
+  AND isDeleted = 0
   ORDER BY sortOrder
   LIMIT 2";
   $result = $conn->query($sql); 

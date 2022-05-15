@@ -381,12 +381,10 @@ export const studentCourseItemOrderByCourseId = selectorFamily({
   }
 })
 
-//TODO: finish this
 export const studentCourseItemOrderByCourseIdBySection = selectorFamily({
   key: 'studentCourseItemOrderByCourseId',
   get:({courseId,sectionId})=> ({get})=>{
     let allStudentDoenetIdsInOrder = get(studentCourseItemOrderByCourseId(courseId));
-    console.log("allStudentDoenetIdsInOrder",allStudentDoenetIdsInOrder)
     let sectionDoenetIds = [];
     let inSection = false;
     let sectionDoenetIdsInSection = [sectionId];
@@ -755,47 +753,96 @@ export const useCourse = (courseId) => {
         if (sectionId == ''){
           sectionId = courseId;
         }
-         //Place in section if section is toggled open and is the only selected item
+        //If one item is selected
+        //SET parentDoenetId, previousDoenetId and previousContainingDoenetId 
+        //for when there was no selection
         let selectedArray = await snapshot.getPromise(selectedCourseItems);
         if (selectedArray.length == 1){
           let singleSelectedDoenetId = selectedArray[0];
           // previousDoenetId = singleSelectedDoenetId; //When in insert mode
           let selectedObj = await snapshot.getPromise(itemByDoenetId(singleSelectedDoenetId))
           if (selectedObj.type == 'section' ){
+            //Find last item in section
+            let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:singleSelectedDoenetId}));
+            let lastItemInSelectedSectionDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
+            
             parentDoenetId = singleSelectedDoenetId;
+            previousDoenetId = lastItemInSelectedSectionDoenetId
+            if (!lastItemInSelectedSectionDoenetId){
+              //Empty section so previous is the section itself
+              previousDoenetId = singleSelectedDoenetId
+              previousContainingDoenetId = singleSelectedDoenetId
+            }else{
+              //there are items in the section
+              let lastItemInSectionObj = await snapshot.getPromise(itemByDoenetId(lastItemInSelectedSectionDoenetId))
+              previousDoenetId = lastItemInSelectedSectionDoenetId;
+              if (lastItemInSectionObj.type == 'page' || lastItemInSectionObj.type == 'order'){
+                previousContainingDoenetId = lastItemInSectionObj.containingDoenetId;
+              }else if (lastItemInSectionObj.type == 'bank' || lastItemInSectionObj.type == 'section'){
+                previousContainingDoenetId = lastItemInSelectedSectionDoenetId
+              }
+
+            }
           }else if (selectedObj.type == 'activity' ||  selectedObj.type == 'bank'){
-            console.log("HERE selectedObj!!!!",selectedObj)
+            parentDoenetId = selectedObj.parentDoenetId;
+            let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:parentDoenetId}));
+            let lastItemInSelectedSectionDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
+            //there are items in the section
+            let lastItemInSectionObj = await snapshot.getPromise(itemByDoenetId(lastItemInSelectedSectionDoenetId))
+            previousDoenetId = lastItemInSelectedSectionDoenetId;
+            if (lastItemInSectionObj.type == 'page' || lastItemInSectionObj.type == 'order'){
+              previousContainingDoenetId = lastItemInSectionObj.containingDoenetId;
+            }else if (lastItemInSectionObj.type == 'bank' || lastItemInSectionObj.type == 'section'){
+              previousContainingDoenetId = lastItemInSelectedSectionDoenetId
+            }
           }else if (selectedObj.type == 'page' ||  selectedObj.type == 'order'){
-            console.log("HERE page order selectedObj",selectedObj)
+            let selectedItemsContainingObj = await snapshot.getPromise(itemByDoenetId(selectedObj.containingDoenetId))
+            parentDoenetId = selectedItemsContainingObj.parentDoenetId;
+            let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:parentDoenetId}));
+            let lastItemInSelectedSectionDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
+            //there are items in the section
+            let lastItemInSectionObj = await snapshot.getPromise(itemByDoenetId(lastItemInSelectedSectionDoenetId))
+            previousDoenetId = lastItemInSelectedSectionDoenetId;
+            if (lastItemInSectionObj.type == 'page' || lastItemInSectionObj.type == 'order'){
+              previousContainingDoenetId = lastItemInSectionObj.containingDoenetId;
+            }else if (lastItemInSectionObj.type == 'bank' || lastItemInSectionObj.type == 'section'){
+              previousContainingDoenetId = lastItemInSelectedSectionDoenetId
+            }
           }
         }
 
+        //SET parentDoenetId, previousDoenetId and previousContainingDoenetId 
+        //for when there was no selection
         if (previousDoenetId == undefined){
           //Find last item in section
           let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
           let lastItemInSectionDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
 
-          //Place at the end unless there are no items, then place after the parent
+          parentDoenetId = sectionId; //parent when nothing selected will always be sectionId
           if (lastItemInSectionDoenetId == undefined){
-            //No items in this section
+            //No items in this section so parent and previous are the section
             previousDoenetId = sectionId;
+            previousContainingDoenetId = sectionId;
           }else{
+            //Nothing selected 
             previousDoenetId = lastItemInSectionDoenetId; 
-            // previousContainingDoenetId = lastItemInSectionDoenetId;
-            // let lastItemObj = await snapshot.getPromise(itemByDoenetId(lastItemInSectionDoenetId));
-            // if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
-            //   previousContainingDoenetId = lastItemObj.containingDoenetId;
-            // }
-         
+            let lastItemObj = await snapshot.getPromise(itemByDoenetId(lastItemInSectionDoenetId));
+            if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
+              previousContainingDoenetId = lastItemObj.containingDoenetId;
+            }else if (lastItemObj.type == 'bank' || lastItemObj.type == 'section'){
+              previousContainingDoenetId = lastItemObj.doenetId;
+            }
 
           }
         }
 
-        console.log("WHERE IS IT GOING?")
-        console.log("parentDoenetId",parentDoenetId)
-        console.log("previousContainingDoenetId",previousContainingDoenetId)
+        // console.log("WHERE IS IT GOING?")
+        // console.log("itemType",itemType)
+        // console.log("parentDoenetId",parentDoenetId)
+        // console.log("previousDoenetId",previousDoenetId)
+        // console.log("previousContainingDoenetId",previousContainingDoenetId)
 
-
+  
         let newDoenetId;
         let coursePermissionsAndSettings = await snapshot.getPromise(
           coursePermissionsAndSettingsByCourseId(courseId),
@@ -1160,6 +1207,7 @@ export const useCourse = (courseId) => {
            
         }
         return newDoenetId;
+      
       },
   );
 
