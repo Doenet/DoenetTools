@@ -464,7 +464,9 @@ export default function AssignmentViewer() {
   // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}-`)
   // console.log(`>>>>attemptNumber -${attemptNumber}-`)
 
-  if (stage === 'Initializing') {
+  if(courseId === "__not_found__") {
+    return <h1>Content not found or no permission to view content</h1>;
+  } else if (stage === 'Initializing') {
     // initializeValues(recoilDoenetId, itemObj);
     return null;
   } else if (stage === 'Problem') {
