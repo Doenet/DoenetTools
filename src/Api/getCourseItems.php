@@ -27,6 +27,9 @@ if ($courseId == "") {
 if ($success){
 	$permissions = permissionsAndSettingsForOneCourseFunction( $conn, $userId, $courseId );
 
+function nullishCoalesce(&$value, $default) {
+	return isset($value) ? $value : $default;
+}
 
 $containingDoenetIds = [];
 	//Can the user edit content?
@@ -84,22 +87,22 @@ $containingDoenetIds = [];
 					"isPublic"=>$row['isPublic'] == '1' ? true : false,
 					"userCanViewSource"=>$row['userCanViewSource'] == '1' ? true : false,
 					"assignedDate" => $row['assignedDate'],
-					"pinnedAfterDate" => $row['pinnedAfterDate'],
-					"pinnedUntilDate" => $row['pinnedUntilDate'],
-					"dueDate" => $row['dueDate'],
-					"timeLimit" => $row['timeLimit'],
-					"numberOfAttemptsAllowed" => $row['numberOfAttemptsAllowed'],
-					"attemptAggregation" => $row['attemptAggregation'],
-					"totalPointsOrPercent" => $row['totalPointsOrPercent'],
-					"gradeCategory" => $row['gradeCategory'],
-					"individualize" => ($row['individualize'] ?: "0") == '1' ? true : false,
-					"showSolution" => ($row['showSolution'] ?: "1") == '1' ? true : false,
-					"showSolutionInGradebook" => ($row['showSolutionInGradebook'] ?: '1') == '1' ? true : false,
-					"showFeedback" => ($row['showFeedback'] ?: '1') == '1' ? true : false,
-					"showHints" => ($row['showHints'] ?: '1') == '1' ? true : false,
-					"showCorrectness" => ($row['showCorrectness'] ?: '1') == '1' ? true : false,
-					"showCreditAchievedMenu" => ($row['showCreditAchievedMenu'] ?: '1') == '1' ? true : false,
-					"proctorMakesAvailable" => ($row['proctorMakesAvailable'] ?: '0') == '1' ? true : false,
+                    "pinnedAfterDate" => $row['pinnedAfterDate'],
+                    "pinnedUntilDate" => $row['pinnedUntilDate'],
+                    "dueDate" => $row['dueDate'],
+                    "timeLimit" => $row['timeLimit'],
+                    "numberOfAttemptsAllowed" => $row['numberOfAttemptsAllowed'],
+                    "attemptAggregation" => $row['attemptAggregation'],
+                    "totalPointsOrPercent" => $row['totalPointsOrPercent'],
+                    "gradeCategory" => $row['gradeCategory'],
+                    "individualize" => nullishCoalesce($row['individualize'], "0") == '1' ? true : false,
+                    "showSolution" => nullishCoalesce($row['showSolution'], "1") == '1' ? true : false,
+                    "showSolutionInGradebook" => nullishCoalesce($row['showSolutionInGradebook'], '1') == '1' ? true : false,
+                    "showFeedback" => nullishCoalesce($row['showFeedback'], '1') == '1' ? true : false,
+                    "showHints" => nullishCoalesce($row['showHints'], '1') == '1' ? true : false,
+                    "showCorrectness" => nullishCoalesce($row['showCorrectness'], '1') == '1' ? true : false,
+                    "showCreditAchievedMenu" => nullishCoalesce($row['showCreditAchievedMenu'], '1') == '1' ? true : false,
+                    "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
 				);
 
 				if ($row['type'] == 'activity' || $row['type'] == 'bank'){
