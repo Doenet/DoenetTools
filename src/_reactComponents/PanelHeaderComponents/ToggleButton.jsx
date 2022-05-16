@@ -136,7 +136,7 @@ export default function ToggleButton(props) {
       <div style={container}>
         <p style={label}>{label.value}</p>
         <Button
-          id="toggleButton"
+          id={props.id}
           style={toggleButton}
           disabled={disabled}
           alert={alert}
