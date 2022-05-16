@@ -602,6 +602,28 @@ export const ShowCreditAchieved = ({ courseId, doenetId }) => {
   );
 };
 
+export const MakePublic = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="isPublic"
+      description="Make Publicly Visible"
+    />
+  );
+};
+
+export const ShowDoenetMLSource = ({ courseId, doenetId }) => {
+  return (
+    <CheckedSetting
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="userCanViewSource"
+      description="Show DoenetML Source"
+    />
+  );
+};
+
 export const ProctorMakesAvailable = ({ courseId, doenetId }) => {
   return (
     <CheckedSetting
