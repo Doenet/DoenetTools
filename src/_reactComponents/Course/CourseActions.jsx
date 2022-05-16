@@ -1222,73 +1222,76 @@ export const useCourse = (courseId) => {
     [courseId, defaultFailure],
   );
 
-  const renameItem = useRecoilCallback( ({ snapshot,set }) =>
-  async (doenetId,newLabel, successCallback, failureCallback = defaultFailure) => {
-    try {
-        //Undo copy and cut
-        let cutObjs = await snapshot.getPromise(cutCourseItems);
-        for (let cutObj of cutObjs){
-          set(itemByDoenetId(cutObj.doenetId),(prev)=>{
-            let next = {...prev};
-            next['isBeingCut'] = false;
-            return next;
-          })
+  const renameItem = useRecoilCallback(
+    ({ snapshot,set }) =>
+      async (doenetId,newLabel, successCallback, failureCallback = defaultFailure) => {
+        try {
+          //Undo copy and cut
+          let cutObjs = await snapshot.getPromise(cutCourseItems);
+          for (let cutObj of cutObjs){
+            set(itemByDoenetId(cutObj.doenetId),(prev)=>{
+              let next = {...prev};
+              next['isBeingCut'] = false;
+              return next;
+            })
+          }
+          set(cutCourseItems,[]);
+          set(copiedCourseItems,[]);
+
+
+          let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId))
+          let resp = await axios.get('/api/renameCourseItem.php', {params:{ courseId,doenetId,newLabel,type:itemObj.type } });
+          if (resp.status < 300) {
+            let updatedItem = resp.data.item;
+            if (itemObj.type !== 'page'){
+              updatedItem.isOpen = itemObj.isOpen;
+            }
+            set(itemByDoenetId(doenetId),(prev)=>{
+              let next = {...prev}
+              next.label = updatedItem.label;
+              return next
+            });
+            
+            // updatedItem.isSelected = itemObj.isSelected;
+            // set(itemByDoenetId(doenetId),updatedItem);
+
+            successCallback?.();
+          } else {
+            throw new Error(`response code: ${resp.status}`);
+          }
+        } catch (err) {
+          failureCallback(err);
         }
-        set(cutCourseItems,[]);
-        set(copiedCourseItems,[]);
-
-
-      let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId))
-      let resp = await axios.get('/api/renameCourseItem.php', {params:{ courseId,doenetId,newLabel,type:itemObj.type } });
-      if (resp.status < 300) {
-        let updatedItem = resp.data.item;
-        if (itemObj.type !== 'page'){
-          updatedItem.isOpen = itemObj.isOpen;
-        }
-        set(itemByDoenetId(doenetId),(prev)=>{
-          let next = {...prev}
-          next.label = updatedItem.label;
-          return next
-        });
-        
-        // updatedItem.isSelected = itemObj.isSelected;
-        // set(itemByDoenetId(doenetId),updatedItem);
-
-        successCallback?.();
-      } else {
-        throw new Error(`response code: ${resp.status}`);
-      }
-    } catch (err) {
-      failureCallback(err);
-    }
   },
-[courseId, defaultFailure],
-);
+  [courseId, defaultFailure],
+  );
 
-const updateAssignItem = useRecoilCallback(
-  ({ set }) =>
-    async ({ doenetId, isAssigned, successCallback, failureCallback = defaultFailure }) => {
-      try {
+  const updateAssignItem = useRecoilCallback(
+    ({ set }) =>
+      async ({ doenetId, isAssigned, successCallback, failureCallback = defaultFailure }) => {
+        try {
 
-      let resp = await axios.get('/api/updateIsAssignedOnAnItem.php', {params:{ courseId,doenetId,isAssigned } });
-      // console.log("resp.data",resp.data)
-      if (resp.status < 300) {
-        // let isAssigned = resp.data.isAssigned;
+        let resp = await axios.get('/api/updateIsAssignedOnAnItem.php', {params:{ courseId,doenetId,isAssigned } });
+        // console.log("resp.data",resp.data)
+        if (resp.status < 300) {
+          // let isAssigned = resp.data.isAssigned;
 
-        set(itemByDoenetId(doenetId),(prev)=>{
-          let next = {...prev}
-          next.isAssigned = isAssigned;
-          return next
-        });
-        
-        successCallback?.();
-      } else {
-        throw new Error(`response code: ${resp.status}`);
-      }
-      } catch (err) {
-      failureCallback(err);
-      }
-    },[courseId,defaultFailure]);
+          set(itemByDoenetId(doenetId),(prev)=>{
+            let next = {...prev}
+            next.isAssigned = isAssigned;
+            return next
+          });
+          
+          successCallback?.();
+        } else {
+          throw new Error(`response code: ${resp.status}`);
+        }
+        } catch (err) {
+          failureCallback(err);
+        }
+    },
+    [courseId,defaultFailure]
+  );
 
   const compileActivity = useRecoilCallback(
     ({ set, snapshot }) =>
