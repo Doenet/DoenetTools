@@ -657,7 +657,7 @@ export default function attempt() {
         {
           name: 'Max',
           propPreview: '<Increment max={5}/>',
-          propCode: { min: 5 },
+          propCode: { max: 5 },
           description:
             'Restricts the menu to have values smaller or equal to max',
         },
