@@ -380,20 +380,8 @@ export default function attempt() {
           description: 'Sets a custom icon to the unchecked state.',
         },
         {
-          name: 'Label',
-          propPreview: '<Checkbox label="Checkbox" />} />',
-          propCode: { label: "Checkbox" },
-          description: 'Sets a label next to the checkbox.',
-        },
-        {
-          name: 'Unchecked Icon',
-          propPreview: '<Checkbox uncheckedIcon={<FontAwesomeIcon icon={faCode}} />} />',
-          propCode: { uncheckedIcon: <FontAwesomeIcon icon={faCode} /> },
-          description: 'Sets a custom icon to the unchecked state.',
-        },
-        {
           name: 'Alert - Unchecked',
-          propPreview: '<Checkbox alert />',
+          propPreview: '<Checkbox alert  />',
           propCode: { alert },
           description: 'Alert checkbox in unchecked state.',
         },
