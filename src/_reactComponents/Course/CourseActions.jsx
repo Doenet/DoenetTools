@@ -1863,6 +1863,7 @@ export const useCourse = (courseId) => {
         let destPreviousItemDoenetId;
         let destPreviousContainingItemDoenetId;
         let destType = "section";
+        let destinationContainingObj;
         //Update parentDoenetId if single selection
         if (selectedDoenetIds.length == 1){
           singleSelectedObj = await snapshot.getPromise(itemByDoenetId(selectedDoenetIds[0]));
@@ -1870,9 +1871,11 @@ export const useCourse = (courseId) => {
           if (singleSelectedObj.type == 'section'){
             destParentDoenetId = singleSelectedObj.doenetId;
           }else if (singleSelectedObj.type == 'activity' || singleSelectedObj.type == 'bank'){
+            destinationContainingObj = {...singleSelectedObj}
             destParentDoenetId = singleSelectedObj.parentDoenetId;
           }else if (singleSelectedObj.type == 'order' || singleSelectedObj.type == 'page'){
             let selectedContainingObj = await snapshot.getPromise(itemByDoenetId(singleSelectedObj.containingDoenetId));
+            destinationContainingObj = {...selectedContainingObj}
             destParentDoenetId = selectedContainingObj.parentDoenetId;
           }
           //define destPreviousContainingItemDoenetId from destParentDoenetId
@@ -1921,37 +1924,27 @@ export const useCourse = (courseId) => {
           destPreviousItemDoenetId = destParentDoenetId;
         }
 
-        // console.log("destParentDoenetId",destParentDoenetId)
-        // console.log("destPreviousContainingItemDoenetId",destPreviousContainingItemDoenetId)
-        // console.log("destPreviousItemDoenetId",destPreviousItemDoenetId)
-        // console.log("destType",destType)
-        
-        
         //Paste the cut items 
         if (cutObjs.length > 0){
 
           let doenetIdsToMove = [];
           let noParentUpdateDoenetIds = [];
-          //Test if cut objects can go in destination
+          let sourcePagesAndOrdersToMove = [];
+          //Test if cut orders and pages can go in destination
           for (let cutObj of cutObjs){
-            // if (destType == 'section' && 
-            // (cutObj.type == 'page' ||
-            // cutObj.type == 'order'
-            // )
-            // ){
-            //   failureCallback("Can't paste pages or orders in a section.")
-            //   return;
-            // }
-            // if (destType == 'bank' && 
-            //   (cutObj.type == 'order' ||
-            //   cutObj.type == 'activity' ||
-            //   cutObj.type == 'section' ||
-            //   cutObj.type == 'bank' 
-            //   )
-            // ){
-            //   failureCallback("Collections can only accept pages.")
-            //   return;
-            // }
+            if ((destType == 'section' ||
+            destType == 'activity' ) && 
+            (cutObj.type == 'page' ||
+            cutObj.type == 'order'
+            )
+            ){
+              failureCallback(`Pasting ${cutObj.type} in a ${destType} is not supported.`)
+              return;
+            }
+            if (destType == 'bank' && cutObj.type == 'order' ){
+              failureCallback("Collections can only accept pages.")
+              return;
+            }
             // if (destType == 'activity' && 
             //   (cutObj.type == 'activity' ||
             //   cutObj.type == 'section' ||
@@ -1976,18 +1969,17 @@ export const useCourse = (courseId) => {
               noParentUpdateDoenetIds = [...noParentUpdateDoenetIds,...additionalNoParentUpdateDoenetIds]
               doenetIdsToMove = [...doenetIdsToMove,cutObj.doenetId,...additionalNoParentUpdateDoenetIds]
             }
+            if (cutObj.type == 'order' || cutObj.type == 'page'){
+              sourcePagesAndOrdersToMove.push({...cutObj})
+            }
 
           }
-          //filter out sectionDoenetIdsToNotInclude
-          // doenetIdsToMove = doenetIdsToMove.filter((id)=>!sectionDoenetIdsToNotInclude.includes(id))
+          if (sourcePagesAndOrdersToMove.length > 0 && doenetIdsToMove.length > 0 ){
+            failureCallback("Can't paste pages or orders with other types.")
+            return;
+          }
+      
 
-          // console.log("params",{
-          //   courseId,
-          //   doenetIdsToMove,
-          //   destParentDoenetId,
-          //   destPreviousContainingItemDoenetId,
-          //   noParentUpdateDoenetIds,
-          // })
         if (doenetIdsToMove.length > 0){
           //update the database for containing objects
           try {
@@ -2050,6 +2042,172 @@ export const useCourse = (courseId) => {
           } catch (err) {
             failureCallback(err);
           }
+        }
+        if (sourcePagesAndOrdersToMove.length > 0){
+          let destinationType = destinationContainingObj.type;
+          let destinationDoenetId = destinationContainingObj.doenetId;
+          let destinationJSON;
+          if (destinationType == 'bank'){
+            destinationJSON = [...destinationContainingObj.pages];
+          }else if (destinationType == 'activity'){
+            destinationJSON = {...destinationContainingObj.order};
+          }
+          let sourceTypes = []
+          let sourceDoenetIds = []
+          let sourceJSONs = []
+          for (let cutObj of sourcePagesAndOrdersToMove){
+            console.log("cutObj",cutObj)
+            let sourceContainingDoenetId = cutObj.containingDoenetId
+            let indexOfPriorEntry = sourceDoenetIds.indexOf(sourceContainingDoenetId)
+            //if already in in sourceDoenetIds then update that index
+            if (indexOfPriorEntry == -1){
+        
+              sourceDoenetIds.push(sourceContainingDoenetId)
+              let containingObj = await snapshot.getPromise(itemByDoenetId(sourceContainingDoenetId))
+              sourceTypes.push(containingObj.type);
+              let updatedSourceItemJSON =  {}
+              if (containingObj.type == 'activity'){
+                //Remove from Activity
+                updatedSourceItemJSON = deletePageFromOrder({orderObj:containingObj.order,needleDoenetId:cutObj.doenetId})
+              }else if (containingObj.type == 'bank'){
+                //Remove from Collection
+                let nextPages = [...containingObj.pages]
+                nextPages.splice(containingObj.pages.indexOf(cutObj.doenetId),1)
+                updatedSourceItemJSON = nextPages;
+              }
+              sourceJSONs.push(updatedSourceItemJSON)
+            }else{
+              //Only need to update JSON
+              let containingObjtype = sourceTypes[indexOfPriorEntry];
+              let previousObj = sourceJSONs[indexOfPriorEntry];
+              let updatedSourceItemJSON =  {}
+              if (containingObjtype == 'activity'){
+                //Remove from Activity
+                updatedSourceItemJSON = deletePageFromOrder({orderObj:previousObj,needleDoenetId:cutObj.doenetId})
+              }else if (containingObjtype == 'bank'){
+                //Remove from Collection
+                let nextPages = [...previousObj]
+                nextPages.splice(previousObj.indexOf(cutObj.doenetId),1)
+                updatedSourceItemJSON = nextPages;
+              }
+              sourceJSONs[indexOfPriorEntry] = updatedSourceItemJSON
+            }
+            // sourceTypes.push(cutObj.containingDoenetId)
+            //Add to destination
+            if (destinationType == 'bank'){
+              destinationJSON.push(cutObj.doenetId)
+            }else if (destinationType == 'activity'){
+              let orderDoenetIdToAddToDoenetId = singleSelectedObj.doenetId;
+              if (singleSelectedObj.type == 'page'){
+                orderDoenetIdToAddToDoenetId = singleSelectedObj.parentDoenetId;
+              }
+              console.log(">>orderDoenetIdToAddToDoenetId",orderDoenetIdToAddToDoenetId)
+              let previousDoenetId;
+              ({order:destinationJSON,previousDoenetId} = addToOrder({
+                orderObj:destinationContainingObj.order,
+                needleOrderDoenetId:orderDoenetIdToAddToDoenetId,
+                itemToAdd:cutObj.doenetId})
+              )
+            }
+          }
+
+          
+        console.log("\n-----------------------")
+        console.log("Cut and Paste pages and orders")
+        console.log("-----------------------")
+        console.log("sourceTypes",sourceTypes)
+        console.log("sourceDoenetIds",sourceDoenetIds)
+        console.log("sourceJSONs",sourceJSONs)
+        console.log("destParentDoenetId",destParentDoenetId)
+        console.log("destPreviousContainingItemDoenetId",destPreviousContainingItemDoenetId)
+        console.log("destPreviousItemDoenetId",destPreviousItemDoenetId)
+
+        console.log("destinationType",destinationType)
+        console.log("destinationDoenetId",destinationDoenetId)
+        console.log("destinationJSON",destinationJSON)
+        
+        console.log("-----------------------\n")
+
+        //update database
+        // try {
+        //   let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
+        //     isCopy:false,
+        //     courseId,
+        //     originalPageDoenetId,
+        //     sourceType,
+        //     sourceDoenetId,
+        //     sourceJSON,
+        //     destinationType,
+        //     destinationDoenetId,
+        //     destinationJSON,
+        //   });
+        //   // console.log("resp.data",resp.data)
+        //   if (resp.status < 300) {
+        //     //Update source
+        //     if (sourceType == 'bank'){
+        //       set(itemByDoenetId(sourceDoenetId),(prev)=>{
+        //         let next = {...prev}
+        //         next.pages = sourceJSON;
+        //         return next;
+        //       })
+        //     } else if (sourceType == 'activity'){
+        //       set(itemByDoenetId(sourceDoenetId),(prev)=>{
+        //         let next = {...prev}
+        //         next.order = sourceJSON;
+        //         return next;
+        //       })
+        //     }
+
+        //     //Update destination
+        //     if (destinationDoenetId != sourceDoenetId){
+        //       if (destinationType == 'bank'){
+        //         set(itemByDoenetId(destinationDoenetId),(prev)=>{
+        //           let next = {...prev}
+        //           next.pages = destinationJSON;
+        //           return next;
+        //         })
+        //         //Update page
+        //         set(itemByDoenetId(originalPageDoenetId),(prev)=>{
+        //           let next = {...prev}
+        //           next.containingDoenetId = destinationDoenetId;
+        //           next.parentDoenetId = singleSelectedObj.doenetId;
+        //           next.isBeingCut = false
+        //           return next;
+        //         })
+        //       }else if (destinationType == 'activity'){
+        //         set(itemByDoenetId(destinationDoenetId),(prev)=>{
+        //           let next = {...prev}
+        //           next.order = destinationJSON;
+        //           return next;
+        //         })
+        //     }
+        //   }
+        //       //Update page
+        //       set(itemByDoenetId(originalPageDoenetId),(prev)=>{
+        //         let next = {...prev}
+        //         next.containingDoenetId = destinationDoenetId;
+        //         next.parentDoenetId = singleSelectedObj.doenetId;
+        //         next.isBeingCut = false
+        //         return next;
+        //       })
+            
+        //     set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
+        //       let next = [...prev];
+        //       next.splice(next.indexOf(originalPageDoenetId),1);  //remove 
+        //       next.splice(next.indexOf(previousDoenetId)+1,0,originalPageDoenetId);  //insert
+        //       return next
+        //     })
+        //     successCallback?.();
+        //     //Update recoil
+        //     // set(itemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
+            
+            
+        //   } else {
+        //     throw new Error(`response code: ${resp.status}`);
+        //   }
+        // } catch (err) {
+        //   failureCallback(err);
+        // }
         }
 
           
