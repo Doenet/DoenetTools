@@ -62,7 +62,6 @@ if (
 ) {
     $success = false;
     $message = 'You need permission to publish content.';
-    http_response_code(403);
 }
 
 if (
@@ -71,7 +70,6 @@ if (
 ) {
     $success = false;
     $message = 'You need permission to edit content.';
-    http_response_code(403);
 }
 
 function array_map_assoc($callback, $array)
@@ -106,10 +104,6 @@ if ($success) {
     if ($result == false) {
         $success = false;
         $message = 'Database error';
-        http_response_code(500);
-    } else {
-        // set response code - 200 OK
-        http_response_code(202);
     }
 }
 
@@ -117,6 +111,9 @@ $response_arr = [
     'success' => $success,
     'message' => $message,
 ];
+
+//set response code - 200 OK
+http_response_code(200);
 
 // make it json format
 echo json_encode($response_arr);
