@@ -25,7 +25,8 @@ const Label = styled.span`
 `;
 
 const Container = styled.div`
-  display: ${ props => props.label && !props.vertical && 'flex' };
+  display: ${ props => props.label ? 'flex' : 'block'};
+  flex-direction: ${ props => props.label && props.vertical && 'column' };
   align-items: ${props => props.label && !props.vertical && 'center'};
 `;
 
@@ -115,7 +116,6 @@ export default function Button(props) {
       vertical={props.vertical} 
     >
       { props.label && <Label>{props.label}</Label> }
-      { props.label && props.vertical && <br />}
       <StyledButton 
         disabled={props.disabled} 
         alert={props.alert} 
