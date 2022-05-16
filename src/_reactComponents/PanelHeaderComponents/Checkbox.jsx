@@ -15,29 +15,39 @@ const Button = styled.button`
   background-color: ${(props) => props.color};
   
   &:hover {
-    color: ${props =>(props.disabled ? 'white' : 'black')};
+    color: black;
     background-color: ${props => props.alert ? 'var(--lightRed)' : (props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)')};
   }
 `;
 
-export default function Checkbox(props) {
-
-  let checkedIcon = props.checkedIcon ? props.checkedIcon : <FontAwesomeIcon icon={faCheck} />
-  let uncheckedIcon = props.uncheckedIcon ? props.uncheckedIcon : <FontAwesomeIcon icon={faBan} />
-
-  // const icon = props.checked ? checkedIcon : uncheckedIcon;
-  // const color = props.checked ? 'var(--mainBlue)' : 'var(--mainGray)';
+export default function CalendarButton(props) {
+  let checkedIcon = props.checkedIcon ? (
+    props.checkedIcon
+  ) : (
+    <FontAwesomeIcon icon={faCheck} />
+  );
+  let uncheckedIcon = props.uncheckedIcon ? (
+    props.uncheckedIcon
+  ) : (
+    <FontAwesomeIcon icon={faBan} />
+  );
+  const icon = props.checked ? checkedIcon : uncheckedIcon;
+  const color = props.checked ? 'var(--mainBlue)' : 'var(--mainGray)';
   const buttonRef = useRef(null);
+
+  // console.log(checkedIcon, props.checkedIcon);
 
   return (
     <Button
-      alert={props.alert}
-      disabled={props.disabled}
-      color={props.checked ? (props.alert ? 'var(--mainRed)' : 'var(--mainBlue)') : 'var(--mainGray)'}
+      style={props.style}
+      color={color}
       ref={buttonRef}
-      onClick={(e) => props.onClick && props.onClick(e)}
+      onClick={(e) => {
+        // console.log('contains click', buttonRef.current.contains(e.target));
+        props.onClick(e);
+      }}
     >
-      {props.checked ? checkedIcon : uncheckedIcon}
+      {icon}
     </Button>
   );
 }
