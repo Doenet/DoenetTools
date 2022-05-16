@@ -10,7 +10,7 @@ export default function CallAction(props) {
   }
 
   return (
-    <div style={{ margin: "12px 0", display: "inline-block"}}>
+    <div style={{ margin: "12px 0" }}>
       <a name={name} />
       <Button id={name + "_button"} onClick={() => callAction({ action: actions.callAction })} disabled={SVs.disabled} value={SVs.label} />
     </div>

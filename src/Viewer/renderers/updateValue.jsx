@@ -11,7 +11,7 @@ export default function UpdateValue(props) {
   }
 
   return (
-    <div id={name} style={{ margin: "12px 0", display: "inline-block" }}>
+    <div id={name} margin="12px 0">
       <a name={name} />
       <Button
         id={name + "_button"} 
