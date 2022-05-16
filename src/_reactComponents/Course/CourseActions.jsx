@@ -258,35 +258,38 @@ export function useInitCourseItems(courseId) {
           const { data } = await axios.get('/api/getCourseItems.php', {
            params: { courseId },
           });
-          //DoenetIds depth first search and going into json structures
-          // console.log("data",data)
-          //TODO: make more efficent for student only view
-          let pageDoenetIdToParentDoenetId = {};
-          let doenetIds = data.items.reduce((items,item)=>{
-            if (item.type !== 'page'){
-              items.push(item.doenetId)
-            }
-            if (item.type === 'activity'){
-              let newPageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.order);
-              pageDoenetIdToParentDoenetId = {...pageDoenetIdToParentDoenetId,...newPageDoenetIdToParentDoenetId}
 
-              let ordersAndPages = findOrderAndPageDoenetIdsAndSetOrderObjs(set,item.order,item.doenetId,item.doenetId);
-              items = [...items,...ordersAndPages];
-            }else if (item.type === 'bank'){
-              item.pages.map((childDoenetId)=>{
-                pageDoenetIdToParentDoenetId[childDoenetId] = item.doenetId;
-              })
-              items = [...items,...item.pages];
-            }else if (item.type === 'page'){
-              item['parentDoenetId'] = pageDoenetIdToParentDoenetId[item.doenetId];
-            }
-            //Store activity, bank and page information
-            set(itemByDoenetId(item.doenetId), localizeDates(item, dateKeys));
+          if(data.success) {
+            //DoenetIds depth first search and going into json structures
+            // console.log("data",data)
+            //TODO: make more efficent for student only view
+            let pageDoenetIdToParentDoenetId = {};
+            let doenetIds = data.items.reduce((items,item)=>{
+              if (item.type !== 'page'){
+                items.push(item.doenetId)
+              }
+              if (item.type === 'activity'){
+                let newPageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.order);
+                pageDoenetIdToParentDoenetId = {...pageDoenetIdToParentDoenetId,...newPageDoenetIdToParentDoenetId}
 
-            return items
-          },[])
-          // console.log("init authorCourseItemOrderByCourseId",doenetIds)
-          set(authorCourseItemOrderByCourseId(courseId), doenetIds);
+                let ordersAndPages = findOrderAndPageDoenetIdsAndSetOrderObjs(set,item.order,item.doenetId,item.doenetId);
+                items = [...items,...ordersAndPages];
+              }else if (item.type === 'bank'){
+                item.pages.map((childDoenetId)=>{
+                  pageDoenetIdToParentDoenetId[childDoenetId] = item.doenetId;
+                })
+                items = [...items,...item.pages];
+              }else if (item.type === 'page'){
+                item['parentDoenetId'] = pageDoenetIdToParentDoenetId[item.doenetId];
+              }
+              //Store activity, bank and page information
+              set(itemByDoenetId(item.doenetId), localizeDates(item, dateKeys));
+
+              return items
+            },[])
+            // console.log("init authorCourseItemOrderByCourseId",doenetIds)
+            set(authorCourseItemOrderByCourseId(courseId), doenetIds);
+          }
         }
         
       },
@@ -315,9 +318,11 @@ export function useSetCourseIdFromDoenetId(doenetId) {
       params: { doenetId },
     });
   
-    // TODO: handle failure
-  
-    setCourseId(data.courseId);
+    if(data.success) {
+      setCourseId(data.courseId);
+    } else {
+      setCourseId("__not_found__")
+    }
   
   }, [doenetId])
 
