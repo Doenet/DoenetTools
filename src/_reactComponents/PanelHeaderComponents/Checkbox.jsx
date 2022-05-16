@@ -7,13 +7,13 @@ import React, { useRef } from 'react';
 import styled from 'styled-components';
 
 const CheckboxContainer = styled.div`
-  display: ${props => props.label && !props.vertical ? 'flex' : 'inline-block'};
-  align-items: ${props => props.label && !props.vertical && 'center'};
+  display: ${props => props.label ? 'flex' : 'inline-block'};
+  align-items: ${props => props.label && 'center'};
 `
 
 const Label = styled.span`
   font-size: 14px;
-  margin-right: 5px;
+  margin-left: 5px;
 `;
 
 const StyledCheckbox = styled.button`
@@ -39,9 +39,7 @@ export default function Checkbox(props) {
   const buttonRef = useRef(null);
 
   return (
-    <CheckboxContainer label={props.label} vertical={props.vertical}>
-      { props.label && <Label>{props.label}</Label> }
-      { props.label && props.vertical && <br />}
+    <CheckboxContainer label={props.label} >
       <StyledCheckbox
         alert={props.alert}
         disabled={props.disabled}
@@ -51,6 +49,7 @@ export default function Checkbox(props) {
       >
         {props.checked ? checkedIcon : uncheckedIcon}
       </StyledCheckbox>
+      {props.label && <Label>{props.label}</Label>}
     </CheckboxContainer>
     
   );
