@@ -19,7 +19,7 @@ export default function Ref(props) {
   }
 
   let url = "";
-  let target = "_blank";
+  let targetForATag = "_blank";
   let haveValidTarget = false;
   if (SVs.cid || SVs.doenetId) {
     if (SVs.cid) {
@@ -44,6 +44,10 @@ export default function Ref(props) {
     }
 
     haveValidTarget = true;
+
+    if(SVs.targetName) {
+      url += "#" + SVs.targetName;
+    }
   } else if (SVs.uri) {
     url = SVs.uri;
     if (url.substring(0, 8) === "https://" || url.substring(0, 7) === "http://") {
@@ -51,7 +55,7 @@ export default function Ref(props) {
     }
   } else {
     url = "#" + SVs.targetName;
-    target = null;
+    targetForATag = null;
     haveValidTarget = true;
   }
 
@@ -63,7 +67,7 @@ export default function Ref(props) {
 
   } else {
     if (haveValidTarget) {
-      return <a target={target} id={name} name={name} href={url}>{linkContent}</a>
+      return <a target={targetForATag} id={name} name={name} href={url}>{linkContent}</a>
     } else {
       return <span id={name}>{linkContent}</span>
     }

@@ -95,7 +95,9 @@ export default function EditorViewer() {
     }
   }, [paramPageId, pageInitiated]);
 
-  if (paramPageId !== initializedPageId) {
+  if(courseId === "__not_found__") {
+    return <h1>Content not found or no permission to view content</h1>;
+  } else if (paramPageId !== initializedPageId) {
     //DoenetML is changing to another PageId
     return null;
   }
