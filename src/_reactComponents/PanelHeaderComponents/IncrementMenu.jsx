@@ -7,12 +7,6 @@ const FONT_SIZES = [8, 9, 10, 11, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96];
 
 const Container = styled.div`
   display: flex;
-  flex-direction: ${(props) => props.vertical && 'column' };
-  align-items: ${(props) => !props.vertical && 'center' };
-`
-
-const IncrementBox = styled.div`
-  display: flex;
   justify-content: space-between;
   align-items: center;
   height: 20px;
@@ -20,6 +14,7 @@ const IncrementBox = styled.div`
   margin: 0;
   border-radius: 5px;
   border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+
 `;
 
 const IncreaseButton = styled.button`
@@ -63,7 +58,7 @@ const TextField = styled.input`
   border: none;
 `;
 
-const Label = styled.span`
+const Label = styled.div`
   font-size: 14px;
   margin-right: 5px;
 `;
@@ -357,9 +352,9 @@ export default function Increment(props) {
   // console.log('props.disabled', props.disabled);
 
   return (
-    <Container vertical={props.vertical}>
-      {props.label && <Label>{props.label}</Label> }
-      <IncrementBox
+    <div style={{ display: "flex", alignItems: "center" }}>
+      {props.vertical && props.label && <Label>{props.label}</Label> }
+      <Container
         ref={containerRef}
         onBlur={containerOnBlur}
         alert={props.alert}
@@ -396,7 +391,7 @@ export default function Increment(props) {
         >
           {increaseIcon}
         </IncreaseButton>
-      </IncrementBox>
+      </Container>
       {menuOptions && menuToggle && (
         <div style={{ display: 'flex' }}>
           {!props.vertical && props.label ? (
@@ -410,6 +405,6 @@ export default function Increment(props) {
           </Menu>
         </div>
       )}
-    </Container>
+    </div>
   );
 };
