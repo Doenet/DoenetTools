@@ -97,7 +97,7 @@ export default function ToggleButton(props) {
   function handleClick() {
     if (props.onClick)
       props.onClick(
-        props.index !== null && props.index !== undefined ? props.index : null,
+        props.isSelected !== null && props.isSelected !== undefined ? props.isSelected : null,
       );
   };
 
