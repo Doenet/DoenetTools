@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
 import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime.jsx';
-import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox.jsx';
+import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/ColorImagePicker.jsx';
 import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
@@ -101,7 +101,7 @@ export default function attempt() {
         },
         {
           name: 'Icon',
-          propPreview: '<ActionButton icon={<FontAwesomeIcon icon={faCode} />} />',
+          propPreview: '<ActionButton icon={<FontAwesomeIcon icon={faCode}}/>',
           propCode: { icon: <FontAwesomeIcon icon={faCode} /> },
           description:
             'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button',
@@ -309,7 +309,7 @@ export default function attempt() {
         },
         {
           name: 'Icon',
-          propPreview: '<Card icon={<FontAwesomeIcon icon={faCode} />} />',
+          propPreview: '<Card icon={<FontAwesomeIcon icon={faCode}}/>',
           propCode: { icon: <FontAwesomeIcon icon={faCode} />},
           description:
             'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button',
@@ -345,59 +345,6 @@ export default function attempt() {
           description: 'Makes button not able to be used.',
         },
       ],
-    },
-    {
-      name: 'Checkbox',
-      id: 'checkbox',
-      code: Checkbox,
-      codePreview: '<Checkbox />',
-      req_props: null,
-      req_children: null,
-      use: 'This is a custom checkbox.',
-      props: [
-        {
-          name: 'Checked',
-          propPreview: '<Checkbox checked={true} />',
-          propCode: { checked: true },
-          description: 'Check the checkbox.',
-        },
-        {
-          name: 'On Click',
-          propPreview: '<Checkbox onClick={() => console.log("Checkbox is clicked")} />',
-          propCode: { onClick: () => console.log("Checkbox is clicked") },
-          description: 'Function called when checkbox is clicked.',
-        },
-        {
-          name: 'Checked Icon',
-          propPreview: '<Checkbox checked={true} checkedIcon={<FontAwesomeIcon icon={faCode}} />} />',
-          propCode: { checked: true, checkedIcon: <FontAwesomeIcon icon={faCode} /> },
-          description: 'Sets a custom icon to the checked state.',
-        },
-        {
-          name: 'Unchecked Icon',
-          propPreview: '<Checkbox uncheckedIcon={<FontAwesomeIcon icon={faCode}} />} />',
-          propCode: { uncheckedIcon: <FontAwesomeIcon icon={faCode} /> },
-          description: 'Sets a custom icon to the unchecked state.',
-        },
-        {
-          name: 'Alert - Unchecked',
-          propPreview: '<Checkbox alert  />',
-          propCode: { alert },
-          description: 'Alert checkbox in unchecked state.',
-        },
-        {
-          name: 'Alert - Checked',
-          propPreview: '<Checkbox alert checked={true} />',
-          propCode: { alert, checked: true },
-          description: 'Alert checkbox in checked state.',
-        },
-        {
-          name: 'Disabled',
-          propPreview: '<Checkbox disabled />',
-          propCode: { disabled },
-          description: 'Disable the checkbox.',
-        },
-      ]
     },
     {
       name: 'CollapseSection',
@@ -1284,7 +1231,7 @@ export default function attempt() {
         },
         {
           name: 'Icon',
-          propPreview: '<ToggleButton icon={<FontAwesomeIcon icon={faCode} />} />',
+          propPreview: '<ToggleButton icon={<FontAwesomeIcon icon={faCode}}/>',
           propCode: { icon: <FontAwesomeIcon icon={faCode} /> },
           description:
             'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button',
@@ -1292,7 +1239,7 @@ export default function attempt() {
         {
           name: 'Value + Icon',
           propPreview:
-            '<ToggleButton icon={<FontAwesomeIcon icon={faCode} />} value="code"/>',
+            '<ToggleButton icon={<FontAwesomeIcon icon={faCode}} value="code"/>',
           propCode: { icon: <FontAwesomeIcon icon={faCode} />, value: 'code' },
           description:
             'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button',
