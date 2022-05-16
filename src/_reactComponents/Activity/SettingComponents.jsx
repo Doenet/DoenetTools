@@ -525,6 +525,48 @@ export const CheckedSetting = ({
   );
 };
 
+export const CheckedFlag = ({
+  courseId,
+  doenetId,
+  keyToUpdate,
+  description,
+  label,
+}) => {
+  const {
+    value: { [keyToUpdate]: recoilValue },
+    updateActivityFlags,
+  } = useActivity(courseId, doenetId);
+  const [localValue, setLocalValue] = useState(recoilValue);
+
+  useEffect(() => {
+    setLocalValue(recoilValue);
+  }, [recoilValue]);
+  return (
+    <InputWrapper flex>
+      <Checkbox
+        style={{ marginRight: '5px' }}
+        checked={localValue}
+        onClick={() => {
+          let valueDescription = 'False';
+          let value = false;
+          if (!localValue) {
+            valueDescription = 'True';
+            value = true;
+          }
+          setLocalValue(value);
+          updateActivityFlags({
+            keyToUpdate,
+            value,
+            description,
+            valueDescription,
+          });
+        }}
+      />
+      <CheckboxLabelText>{label ?? description}</CheckboxLabelText>
+    </InputWrapper>
+  );
+};
+
 export const Individualize = ({ courseId, doenetId }) => {
   return (
     <CheckedSetting
@@ -604,7 +646,7 @@ export const ShowCreditAchieved = ({ courseId, doenetId }) => {
 
 export const MakePublic = ({ courseId, doenetId }) => {
   return (
-    <CheckedSetting
+    <CheckedFlag
       courseId={courseId}
       doenetId={doenetId}
       keyToUpdate="isPublic"
@@ -615,7 +657,7 @@ export const MakePublic = ({ courseId, doenetId }) => {
 
 export const ShowDoenetMLSource = ({ courseId, doenetId }) => {
   return (
-    <CheckedSetting
+    <CheckedFlag
       courseId={courseId}
       doenetId={doenetId}
       keyToUpdate="userCanViewSource"
