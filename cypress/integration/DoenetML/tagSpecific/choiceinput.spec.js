@@ -1,4 +1,5 @@
 import cssesc from 'cssesc';
+import me from 'math-expressions';
 
 function cesc(s) {
   s = cssesc(s, { isIdentifier: true });
@@ -559,7 +560,7 @@ describe('ChoiceInput Tag Tests', function () {
     <choiceinput bindValueTo="$_textinput1" randomizeOrder name="ci1">
       <choice>caT</choice>
       <choice>  dog </choice>
-      <choice>Monkey</choice>
+      <choice><text>Monkey</text></choice>
     </choiceinput>
 
     <p>Select by typing: <textinput prefill="monkey" /></p>
@@ -704,7 +705,7 @@ describe('ChoiceInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <choiceinput bindValueTo="$_textinput1" randomizeOrder selectMultiple name="ci1">
-      <choice>caT</choice>
+      <choice><text>caT</text></choice>
       <choice>  dog </choice>
       <choice>Monkey</choice>
     </choiceinput>
@@ -930,6 +931,130 @@ describe('ChoiceInput Tag Tests', function () {
     cy.get('#\\/b').should('have.text', "false")
     checkStillMonkey();
 
+
+  });
+
+  it('bind value to mathinput', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput bindValueTo="$_mathinput1" name="ci1">
+      <choice><math>x^2/2</math></choice>
+      <choice><m>y</m></choice>
+      <choice><math format="latex">\\frac{\\partial f}{\\partial x}</math></choice>
+      <choice>3</choice>
+      <choice><text>1/e^x</text></choice>
+    </choiceinput>
+    
+    <p>Select by typing: <mathinput prefill="y" /></p>
+
+    <copy name="copy" inline target="ci1" assignNames="ci2" />
+
+    <p>Selected values: <aslist>
+    <copy prop='selectedvalue' target="ci1" />
+    <copy prop='selectedvalue' target="copy" />
+    </aslist></p>
+    <p>Selected indices: <aslist>
+    <copy prop='selectedindex' target="ci1" />
+    <copy prop='selectedindex' target="copy" />
+    </aslist></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    let textOrder = ["x^2/2", "y", "∂f/∂x", "3", "1/e^x"];
+
+    let checkChoices = function (selectedIndex, inputText, inputMath) {
+
+      let choiceArray, indexArray;
+
+      let selectedChoice = null;
+
+      if (selectedIndex === null) {
+        choiceArray = indexArray = [];
+
+        for (let i = 1; i <= 3; i++) {
+          cy.get(`#\\/ci1_choice${i}_input`).should('not.be.checked')
+        }
+        cy.get(`#\\/ci2`).should('have.value', '')
+
+        cy.get('#\\/_p2').should('have.text', `Selected values: `)
+        cy.get('#\\/_p3').should('have.text', `Selected indices: `)
+
+      } else {
+        selectedChoice = textOrder[selectedIndex - 1]
+        choiceArray = [selectedChoice];
+        indexArray = [selectedIndex];
+
+        for (let i = 1; i <= 3; i++) {
+          if (i === selectedIndex) {
+            cy.get(`#\\/ci1_choice${i}_input`).should('be.checked')
+          } else {
+            cy.get(`#\\/ci1_choice${i}_input`).should('not.be.checked')
+          }
+        }
+        cy.get(`#\\/ci2`).should('have.value', String(selectedIndex))
+        cy.get('#\\/_p2').should('have.text', `Selected values: ${selectedChoice}, ${selectedChoice}`)
+        cy.get('#\\/_p3').should('have.text', `Selected indices: ${selectedIndex}, ${selectedIndex}`)
+      }
+
+      cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal(inputText)
+      })
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/ci1'].stateValues.selectedValues).eqls(choiceArray)
+        expect(stateVariables['/ci1'].stateValues.selectedIndices).eqls(indexArray)
+        expect(stateVariables['/ci2'].stateValues.selectedValues).eqls(choiceArray)
+        expect(stateVariables['/ci2'].stateValues.selectedIndices).eqls(indexArray)
+        expect(stateVariables['/_mathinput1'].stateValues.value).eqls(inputMath)
+      })
+    }
+
+    cy.get("#\\/_math1").should('contain.text', "x22");
+
+    checkChoices(2, "y", "y")
+
+
+    cy.log('select x^2/2 from first input');
+    let selectedIndex = 1;
+    let inputText = "x22";
+    cy.get(`#\\/ci1_choice${selectedIndex}_input`).click();
+    checkChoices(selectedIndex, inputText, ["/", ["^", "x", 2], 2])
+
+    cy.log('Type 3')
+    selectedIndex = 4;
+    inputText = "3";
+    cy.get('#\\/_mathinput1 textarea').type(`{ctrl+home}{shift+end}{backspace}${inputText}{enter}`, { force: true })
+    checkChoices(selectedIndex, inputText, 3)
+
+    cy.log('select ∂f/∂x from second input');
+    selectedIndex = 3;
+    inputText = "∂f∂x";
+    cy.get(`#\\/ci2`).select(`${selectedIndex}`);
+    checkChoices(selectedIndex, inputText, ["partial_derivative_leibniz", "f", ["tuple", "x"]])
+
+    cy.log('type e^{-x}');
+    selectedIndex = null;
+    inputText = "e−x";
+    cy.get('#\\/_mathinput1 textarea').type(`{ctrl+home}{shift+end}{backspace}e^-x{enter}`, { force: true })
+    checkChoices(selectedIndex, inputText, ["^", "e", ["-", "x"]])
+
+    cy.log('type 1/e^{x}');
+    selectedIndex = 5;
+    inputText = "1ex";
+    cy.get('#\\/_mathinput1 textarea').type(`{ctrl+home}{shift+end}{backspace}1/e^x{enter}`, { force: true })
+    checkChoices(selectedIndex, inputText, ["/", 1, ["^", "e", "x"]])
+
+    cy.log('select y from second input');
+    selectedIndex = 2;
+    inputText = "y";
+    cy.get(`#\\/ci2`).select(`${selectedIndex}`);
+    checkChoices(selectedIndex, inputText, "y")
 
   });
 
