@@ -2055,13 +2055,14 @@ export const useCourse = (courseId) => {
           let sourceTypes = []
           let sourceDoenetIds = []
           let sourceJSONs = []
+          let originalPageDoenetIds = []
           for (let cutObj of sourcePagesAndOrdersToMove){
-            console.log("cutObj",cutObj)
             let sourceContainingDoenetId = cutObj.containingDoenetId
             let indexOfPriorEntry = sourceDoenetIds.indexOf(sourceContainingDoenetId)
             //if already in in sourceDoenetIds then update that index
             if (indexOfPriorEntry == -1){
-        
+              originalPageDoenetIds.push([cutObj.doenetId]);
+              
               sourceDoenetIds.push(sourceContainingDoenetId)
               let containingObj = await snapshot.getPromise(itemByDoenetId(sourceContainingDoenetId))
               sourceTypes.push(containingObj.type);
@@ -2077,7 +2078,9 @@ export const useCourse = (courseId) => {
               }
               sourceJSONs.push(updatedSourceItemJSON)
             }else{
-              //Only need to update JSON
+              //Only need to update JSON and add orginal doenet ids
+              originalPageDoenetIds[indexOfPriorEntry].push(cutObj.doenetId);
+
               let containingObjtype = sourceTypes[indexOfPriorEntry];
               let previousObj = sourceJSONs[indexOfPriorEntry];
               let updatedSourceItemJSON =  {}
@@ -2104,7 +2107,7 @@ export const useCourse = (courseId) => {
               console.log(">>orderDoenetIdToAddToDoenetId",orderDoenetIdToAddToDoenetId)
               let previousDoenetId;
               ({order:destinationJSON,previousDoenetId} = addToOrder({
-                orderObj:destinationContainingObj.order,
+                orderObj:destinationJSON,
                 needleOrderDoenetId:orderDoenetIdToAddToDoenetId,
                 itemToAdd:cutObj.doenetId})
               )
@@ -2115,6 +2118,7 @@ export const useCourse = (courseId) => {
         console.log("\n-----------------------")
         console.log("Cut and Paste pages and orders")
         console.log("-----------------------")
+        console.log("originalPageDoenetIds",originalPageDoenetIds)
         console.log("sourceTypes",sourceTypes)
         console.log("sourceDoenetIds",sourceDoenetIds)
         console.log("sourceJSONs",sourceJSONs)
@@ -2130,18 +2134,18 @@ export const useCourse = (courseId) => {
 
         //update database
         // try {
-        //   let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
-        //     isCopy:false,
-        //     courseId,
-        //     originalPageDoenetId,
-        //     sourceType,
-        //     sourceDoenetId,
-        //     sourceJSON,
-        //     destinationType,
-        //     destinationDoenetId,
-        //     destinationJSON,
-        //   });
-        //   // console.log("resp.data",resp.data)
+          let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
+            isCopy:false,
+            courseId,
+            originalPageDoenetIds,
+            sourceTypes,
+            sourceDoenetIds,
+            sourceJSONs,
+            destinationType,
+            destinationDoenetId,
+            destinationJSON,
+          });
+          console.log("cutCopyAndPasteAPage resp.data",resp.data)
         //   if (resp.status < 300) {
         //     //Update source
         //     if (sourceType == 'bank'){
