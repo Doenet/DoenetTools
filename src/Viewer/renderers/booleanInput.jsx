@@ -41,13 +41,7 @@ export default function BooleanInput(props) {
 
   function onChangeHandler(e) {
 
-    let newValue;
-
-    if (e.target) {
-      newValue = e.target.checked;
-    } else {
-      newValue = !e;
-    }
+    let newValue = !rendererValue;
 
     setRendererValue(newValue);
     valueWhenSetState.current = SVs.value;
@@ -182,15 +176,15 @@ export default function BooleanInput(props) {
 
   let input;
   if (SVs.asToggleButton) {
-    input = 
+    input =
       <ToggleButton
-      id={inputKey}
-      key={inputKey}
-      isSelected={rendererValue}
-      onClick={onChangeHandler}
-      value={SVs.label}
-      disabled={disabled}
-    />;
+        id={inputKey}
+        key={inputKey}
+        isSelected={rendererValue}
+        onClick={onChangeHandler}
+        value={SVs.label}
+        disabled={disabled}
+      />;
   } else {
     input = <label>
       <input
