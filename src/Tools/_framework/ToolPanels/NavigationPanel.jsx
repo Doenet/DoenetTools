@@ -48,7 +48,7 @@ const Td = styled.td `
 const TBody = styled.tbody ``;
 const Td2Span = styled.span `
   display: block; 
-  background-color: var(--canvastext);
+  //background-color: var(--canvastext);
   width: 70px;
   height: 16px;
   border-radius: 5px;

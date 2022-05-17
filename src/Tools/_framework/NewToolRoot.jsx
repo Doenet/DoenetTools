@@ -18,6 +18,7 @@ import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanel from './Panels/NewMenuPanel';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
+import { darkModeAtom } from './Panels/NewMenuPanel';
 
 import { useNavigate, useLocation } from 'react-router';
 
@@ -36,7 +37,11 @@ const ToolContainer = styled(animated.div)`
   padding: 0px;
   gap: 0px;
   box-sizing: border-box;
+  border: var(--canvastext);
+  color: var(--canvastext);
 `;
+
+
 
 export const profileAtom = atom({
   key: 'profileAtom',
@@ -497,6 +502,7 @@ let navigationObj = {
       headerControls: ['DashboardBreadCrumb'],
       onLeave: 'DashboardLeave',
       waitForMenuSuppression: true,
+      color: 'var(--canvastext)',
     },
     draftactivity: {
       pageName: 'DraftActivity',
@@ -1066,7 +1072,7 @@ function RootController(props) {
 
 
 const LoadingFallback = styled.div`
-  background-color: var(--mainGray);
+  background-color: var(--canvas);
   border-radius: 4px;
   display: ${props => props.display ? props.display : "flex"};
   justify-content: center;

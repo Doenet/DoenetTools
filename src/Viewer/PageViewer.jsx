@@ -888,12 +888,12 @@ export default function PageViewer(props) {
   let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
   if (!coreCreated.current) {
     noCoreWarning = <p>Waiting for core to be created....</p>
-    pageStyle.backgroundColor = "#F0F0F0";
+    pageStyle.backgroundColor = "var(--canvas)";
   }
 
   //Spacing around the whole doenetML document
   return <>
-    <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
+    <div style={{ backgroundColor: "var(--lightBlue)", padding: "10px" }}>
       {noCoreWarning}
       <p>{saveStatesButton}</p>
     </div>

@@ -104,7 +104,7 @@ const MenuHeaderButton = styled.button`
   border: none;
   border-top: ${({ linkedPanel, activePanel }) =>
     linkedPanel === activePanel ? '8px solid var(--mainBlue)' : 'none'};
-  background-color: var(--canvas);
+  background-color: white;
   border-bottom: 2px solid
     ${({ linkedPanel, activePanel }) =>
       linkedPanel === activePanel ? 'var(--canvas)' : 'var(--canvastext)'};
@@ -176,8 +176,9 @@ function SelectionMenu(props){
       paddingLeft: "4px",
       paddingRight: "4px",
       // backgroundColor:"hsl(209,54%,90%)"
-      backgroundColor: 'white',
-      borderLeft:"8px solid #1A5A99"
+      backgroundColor: 'var(--canvas)',
+      color:'var(--canvastext)',
+      borderLeft:"8px solid var(--mainBlue)"
       }}>
         {/* <h3 style={{textAlign: "center", width: "240px", height: "35px",
  fontSize: "16px", marginTop: "5px", marginLeft: "-8px"}}>Current Selection</h3> */}
@@ -237,6 +238,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
 // console.log(">>>currentMenus",currentMenus)
 
   //These maintain the panels' state
+  const [darkModeToggle, setDarkModeToggle] = useRecoilState(darkModeAtom);
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let menusArray = [];

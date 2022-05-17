@@ -29,7 +29,7 @@ const DragHandle = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: var(--canvas);
+  color: white;
   padding: 0;
   cursor: ew-resize;
   background-color: var(--mainBlue);

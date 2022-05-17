@@ -74,7 +74,7 @@ const DragHandle = styled.div`
   flex: 0 0 ${({ $handleSize }) => $handleSize}px;
   display: flex;
   justify-content: center;
-  color: var(--canvas);
+  color: white;
   font-size: ${(props) => (props.id === 'keyboard' ? 16 : 12)};
   padding: 0;
   cursor: ${({ $vertical }) => ($vertical ? 'ew-resize' : 'ns-resize')};

@@ -473,11 +473,11 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
 
 },[doenetId, courseId, setSelectionMenu])
 
-  let bgcolor = '#ffffff';
+  let bgcolor = 'var(--canvas)';
   if (isSelected){
-    bgcolor = 'hsl(209,54%,82%)';
+    bgcolor = 'var(--lightBlue)';
   }else if (isBeingCut){
-    bgcolor = '#e2e2e2'; //grey
+    bgcolor = 'var(--mainGray)'; //grey
   }
 
   //Used to open editor or assignment
@@ -501,7 +501,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       cursor: 'pointer',
       padding: '8px',
       border: '0px',
-      borderBottom: '2px solid black',
+      borderBottom: '2px solid var(--canvastext)',
       backgroundColor: bgcolor,
       width: 'auto',
       // marginLeft: marginSize,
@@ -529,11 +529,11 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       <circle cx="11"
               cy="11"
               r="12"
-              stroke="white"
+              stroke="var(--canvas)"
               strokeWidth="2"
-              fill="#1A5A99"/>
+              fill="var(--mainBlue)"/>
       <text fontSize="14"
-            fill="white"
+            fill="var(--canvas)"
             fontFamily="Verdana"
             textAnchor="middle"
             alignmentBaseline="baseline"
@@ -626,7 +626,7 @@ function CourseNavigationHeader({columnLabels,numberOfVisibleColumns,setNumberOf
           style={{
             padding: '8px',
             border: '0px',
-            borderBottom: '1px solid grey',
+            borderBottom: '1px solid var(--canvastext)',
             maxWidth: '850px',
             margin: '0px',
           }}

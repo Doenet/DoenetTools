@@ -21,7 +21,7 @@ const SectionHeader = Styled.div `
   display: block;
   text-align: center;
   background-color: var(--mainGray);
-  color: var(--canvastext);
+ // color: var(--canvastext);
 `;
 
 const SectionContent = Styled.div `

@@ -48,7 +48,7 @@ const BreadcrumbSpan = styled.span`
   padding: 0px 0px 0px 45px;
   position: relative;
   float: left;
-  color: white;
+  color: var(--canvas);
   background: var(--mainBlue);
   border-radius: 15px 0px 0px 15px;
   cursor: pointer;
@@ -71,7 +71,7 @@ const BreadcrumbSpan = styled.span`
     height: 0;
     border-top: 50px solid transparent;
     border-bottom: 50px solid transparent;
-    border-left: 30px solid white;
+    border-left: 30px solid var(--canvas);
     position: absolute;
     top: 50%;
     margin-top: -50px;

@@ -39,15 +39,21 @@ const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
   display: ${(props) => (props.flex ? 'flex' : 'block')};
   align-items: ${(props) => props.flex && 'center'};
+  
+  
 `;
 
 const LabelText = styled.span`
   margin-bottom: 5px;
+  
+  
 `;
 
 const CheckboxLabelText = styled.span`
   font-size: 15px;
   line-height: 1.1;
+  border:var(--canvas);
+  
 `;
 
 const InputControl = styled.div`

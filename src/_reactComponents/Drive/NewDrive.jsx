@@ -2719,9 +2719,9 @@ const DragGhost = ({ id, element, numItems, copyMode = false }) => {
   const containerStyle = {
     transform: 'rotate(-5deg)',
     zIndex: '10',
-    background: '#e2e2e2',
+    background: 'var(--mainGray)',
     width: '40vw',
-    border: '2px solid black',
+    border: '2px solid var(--canvastext)',
     padding: '0px',
     height: '38px',
     overflow: 'hidden',
@@ -2729,12 +2729,12 @@ const DragGhost = ({ id, element, numItems, copyMode = false }) => {
 
   const singleItemStyle = {
     boxShadow: 'rgba(0, 0, 0, 0.20) 5px 5px 3px 3px',
-    borderRadius: '2px solid black',
+    borderRadius: '2px solid var(--canvastext)',
     animation: 'dragAnimation 2s',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    background: '#e2e2e2',
+    background: 'var(--mainGray)',
     // marginLeft: "-60px"
   };
 

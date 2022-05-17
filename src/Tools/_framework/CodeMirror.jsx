@@ -9,6 +9,7 @@ import { LRLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp }
 import { completeFromSchema } from '@codemirror/lang-xml';
 import { parser } from "../../Parser/doenet";
 import { atom, useRecoilValue } from "recoil";
+import { getRenderer } from 'handsontable/renderers';
 
 const editorConfigStateAtom = atom({
     key: 'editorConfigStateAtom',
@@ -23,6 +24,31 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
     if(readOnly === undefined){
         readOnly = false;
     }
+
+    let colorTheme = EditorView.theme({
+        "&": {
+          color: "green",
+          backgroundColor: "#034"
+        },
+        ".cm-content": {
+          caretColor: "#0e9"
+        },
+        ".cm-editor": {
+            caretColor: "#0e9",
+            backgroundColor: "var(--canvas)"
+          },
+        "&.cm-focused .cm-cursor": {
+          borderLeftColor: "#0e9"
+        },
+        "&.cm-focused .cm-selectionBackground, ::selection": {
+          backgroundColor: "#074"
+        },
+        ".cm-gutters": {
+          backgroundColor: "#045",
+          color: "#ddd",
+          border: "none"
+        }
+      })
 
     let editorConfig = useRecoilValue(editorConfigStateAtom);
     view = useRef(null);
@@ -74,6 +100,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
         basicSetup,
         doenet(doenetSchema),
         EditorView.lineWrapping,
+        colorTheme,
         tabExtension,
         cutExtension,
         copyExtension,
@@ -179,7 +206,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
     //should rewrite using compartments once a more formal config component is established
     return (
         <>
-        <div ref={parent} ></div>
+        <div ref={parent}></div>
         </>
     )
 }
@@ -290,7 +317,7 @@ props : [
         Is: t.definitionOperator,
         "EntityReference CharacterReference": t.character,
         Comment: t.blockComment,
-        Macro: t.macroName
+        Macro: t.macroName,
         })
 ]
 });
